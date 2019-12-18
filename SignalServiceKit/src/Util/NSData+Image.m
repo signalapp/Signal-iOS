@@ -430,7 +430,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
     }
 
     if (declaredMimeType.length > 0 && ![self ows_isValidMimeType:declaredMimeType imageFormat:imageFormat]) {
-        OWSFailDebug(@"Mimetypes do not match: %@, %@", mimeType, declaredMimeType);
+        OWSLogInfo(@"Mimetypes do not match: %@, %@", mimeType, declaredMimeType);
         // Do not fail in production.
     }
 
@@ -439,8 +439,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
         NSString *_Nullable mimeTypeForFileExtension = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
         if (mimeTypeForFileExtension.length > 0 &&
             [mimeType caseInsensitiveCompare:mimeTypeForFileExtension] != NSOrderedSame) {
-            OWSFailDebug(
-                @"fileExtension does not match: %@, %@, %@", fileExtension, mimeType, mimeTypeForFileExtension);
+            OWSLogInfo(@"fileExtension does not match: %@, %@, %@", fileExtension, mimeType, mimeTypeForFileExtension);
             // Do not fail in production.
         }
     }
