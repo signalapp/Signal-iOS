@@ -56,6 +56,10 @@ public class StickerPackViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     @objc
     public func present(from fromViewController: UIViewController,
                         animated: Bool) {
@@ -64,7 +68,12 @@ public class StickerPackViewController: OWSViewController {
         #if swift(>=5.1)
             if #available(iOS 13, *) {
                 // iOS 13 on the iOS 13 SDK handles the modal blur correctly.
-                fromViewController.presentFormSheet(self, animated: animated)
+                fromViewController.presentFormSheet(self, animated: animated) {
+                    // ensure any presented keyboard is dismissed, this seems to be
+                    // an issue only when opening signal from a universal link in
+                    // an external app
+                    self.becomeFirstResponder()
+                }
                 return
             }
         #endif
@@ -74,7 +83,12 @@ public class StickerPackViewController: OWSViewController {
 
         modalPresentationStyle = .custom
         transitioningDelegate = self
-        fromViewController.present(self, animated: animated)
+        fromViewController.present(self, animated: animated) {
+            // ensure any presented keyboard is dismissed, this seems to be
+            // an issue only when opening signal from a universal link in
+            // an external app
+            self.becomeFirstResponder()
+        }
     }
 
     override public func loadView() {
