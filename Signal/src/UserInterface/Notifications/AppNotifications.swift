@@ -532,7 +532,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
 
-        let notificationBody = infoOrErrorMessage.previewText(with: transaction)
+        let notificationBody: String
+        switch previewType {
+        case .noNameNoPreview, .nameNoPreview:
+            notificationBody = NotificationStrings.incomingMessageBody
+        case .namePreview:
+            notificationBody = infoOrErrorMessage.previewText(with: transaction)
+        }
+
         let threadId = thread.uniqueId
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId
