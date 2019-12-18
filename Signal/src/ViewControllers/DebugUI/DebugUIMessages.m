@@ -85,15 +85,34 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Delete all messages in thread"
-                                     actionBlock:^{
-                                         [DebugUIMessages deleteAllMessagesInThread:thread];
-                                     }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Thrash insert/deletes"
-                                     actionBlock:^{
-                                         [DebugUIMessages thrashInsertAndDeleteForThread:(TSThread *)thread
-                                                                                 counter:300];
-                                     }]];
+    [items addObjectsFromArray:@[
+        [OWSTableItem itemWithTitle:@"Delete all messages in thread"
+                        actionBlock:^{
+                            [DebugUIMessages deleteAllMessagesInThread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"👷 Create Fake Messages"
+                        actionBlock:^{
+                            [DebugUIMessages askForQuantityWithTitle:@"How many messages?"
+                                                          completion:^(NSUInteger quantity) {
+                                                              [DebugUIMessages createFakeMessages:quantity
+                                                                                           thread:thread
+                                                                                       isTextOnly:NO];
+                                                          }];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create Fake Messages (textonly)"
+                        actionBlock:^{
+                            [DebugUIMessages askForQuantityWithTitle:@"How many messages?"
+                                                          completion:^(NSUInteger messageQuantity) {
+                                                              [DebugUIMessages createFakeMessages:messageQuantity
+                                                                                           thread:thread
+                                                                                       isTextOnly:YES];
+                                                          }];
+                        }],
+        [OWSTableItem itemWithTitle:@"Thrash insert/deletes"
+                        actionBlock:^{
+                            [DebugUIMessages thrashInsertAndDeleteForThread:(TSThread *)thread counter:300];
+                        }]
+    ]];
 
     [items addObjectsFromArray:[self itemsForActions:@[
         [DebugUIMessages fakeAllContactShareAction:thread],
@@ -124,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendNTextMessagesInThread:thread];
                         }],
-        [OWSTableItem itemWithTitle:@"👷 Receive UUID message"
+        [OWSTableItem itemWithTitle:@"Receive UUID message"
                         actionBlock:^{
                             [DebugUIMessages receiveUUIDEnvelopeInNewThread];
                         }],
@@ -163,85 +182,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Misc.
 
-        [OWSTableItem itemWithTitle:@"Perform 100 random actions"
+        [OWSTableItem itemWithTitle:@"Perform random actions"
                         actionBlock:^{
-                            [DebugUIMessages performRandomActions:100 thread:thread];
+                            [DebugUIMessages askForQuantityWithTitle:@"How many actions?"
+                                                          completion:^(NSUInteger quantity) {
+                                                              [DebugUIMessages performRandomActions:quantity
+                                                                                             thread:thread];
+                                                          }];
                         }],
-        [OWSTableItem itemWithTitle:@"Perform 1,000 random actions"
+        [OWSTableItem itemWithTitle:@"Create Threads"
                         actionBlock:^{
-                            [DebugUIMessages performRandomActions:1000 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 10 fake messages"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMessages:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 1 fake thread with 1 message"
-                        actionBlock:^{
-                            [DebugUIMessages createFakeThreads:1 withFakeMessages:1];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 100 fake threads with 10 messages"
-                        actionBlock:^{
-                            [DebugUIMessages createFakeThreads:100 withFakeMessages:10];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 10 fake threads with 100 messages"
-                        actionBlock:^{
-                            [DebugUIMessages createFakeThreads:10 withFakeMessages:100];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 10 fake threads with 10 messages"
-                        actionBlock:^{
-                            [DebugUIMessages createFakeThreads:10 withFakeMessages:10];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 100 fake threads with 100 messages"
-                        actionBlock:^{
-                            [DebugUIMessages createFakeThreads:100 withFakeMessages:100];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 1k fake threads with 1 message"
-                        actionBlock:^{
-                            [DebugUIMessages createFakeThreads:1000 withFakeMessages:1];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 10 fake threads with 1k messages"
-                        actionBlock:^{
-                            [DebugUIMessages createFakeThreads:10 withFakeMessages:1 * 1000];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 1k fake threads with 1k messages"
-                        actionBlock:^{
-                            [DebugUIMessages createFakeThreads:1000 withFakeMessages:1 * 1000];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 5 fake threads with 10k messages"
-                        actionBlock:^{
-                            [DebugUIMessages createFakeThreads:5 withFakeMessages:10 * 1000];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 1k fake threads with 10k messages"
-                        actionBlock:^{
-                            [DebugUIMessages createFakeThreads:1000 withFakeMessages:10 * 1000];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 1k fake messages"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMessages:1000 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 10 fake text messages"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMessages:10 thread:thread isTextOnly:YES];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 1k fake text messages"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMessages:1 * 1000 thread:thread isTextOnly:YES];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 10k fake messages"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMessages:10 * 1000 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 10k fake text messages"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMessages:10 * 1000 thread:thread isTextOnly:YES];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 100k fake messages"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMessages:100 * 1000 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Create 100k fake text messages"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMessages:100 * 1000 thread:thread isTextOnly:YES];
+                            [DebugUIMessages
+                                askForQuantityWithTitle:@"How many threads?"
+                                             completion:^(NSUInteger threadQuantity) {
+                                                 [DebugUIMessages
+                                                     askForQuantityWithTitle:@"How many messages in each thread?"
+                                                                  completion:^(NSUInteger messageQuantity) {
+                                                                      [DebugUIMessages
+                                                                          createFakeThreads:threadQuantity
+                                                                           withFakeMessages:messageQuantity];
+                                                                  }];
+                                             }];
                         }],
         [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
                         actionBlock:^{
@@ -263,18 +224,13 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages createTimestampMessagesInThread:thread];
                         }],
-
-        [OWSTableItem itemWithTitle:@"Send 10 text and system messages"
+        [OWSTableItem itemWithTitle:@"Send text and system messages"
                         actionBlock:^{
-                            [DebugUIMessages sendTextAndSystemMessages:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 text and system messages"
-                        actionBlock:^{
-                            [DebugUIMessages sendTextAndSystemMessages:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1,000 text and system messages"
-                        actionBlock:^{
-                            [DebugUIMessages sendTextAndSystemMessages:1000 thread:thread];
+                            [DebugUIMessages askForQuantityWithTitle:@"How many messages?"
+                                                          completion:^(NSUInteger quantity) {
+                                                              [DebugUIMessages sendTextAndSystemMessages:quantity
+                                                                                                  thread:thread];
+                                                          }];
                         }],
         [OWSTableItem
             itemWithTitle:@"Request Bogus group info"
@@ -292,17 +248,13 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages createDisappearingMessagesWhichFailedToStartInThread:thread];
                         }],
-        [OWSTableItem itemWithTitle:@"Inject 10 fake incoming messages"
+        [OWSTableItem itemWithTitle:@"Inject fake incoming messages"
                         actionBlock:^{
-                            [DebugUIMessages injectFakeIncomingMessages:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Inject 100 fake incoming messages"
-                        actionBlock:^{
-                            [DebugUIMessages injectFakeIncomingMessages:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Inject 1,000 fake incoming messages"
-                        actionBlock:^{
-                            [DebugUIMessages injectFakeIncomingMessages:1000 thread:thread];
+                            [DebugUIMessages askForQuantityWithTitle:@"How many messages?"
+                                                          completion:^(NSUInteger quantity) {
+                                                              [DebugUIMessages injectFakeIncomingMessages:quantity
+                                                                                                   thread:thread];
+                                                          }];
                         }],
         [OWSTableItem itemWithTitle:@"Test Indic Scripts"
                         actionBlock:^{
@@ -326,17 +278,14 @@ NS_ASSUME_NONNULL_BEGIN
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         SignalServiceAddress *recipientAddress = contactThread.contactAddress;
-        [items addObject:[OWSTableItem itemWithTitle:@"Create 10 new groups"
+        [items addObject:[OWSTableItem itemWithTitle:@"Create new groups"
                                          actionBlock:^{
-                                             [DebugUIMessages createNewGroups:10 recipientAddress:recipientAddress];
-                                         }]];
-        [items addObject:[OWSTableItem itemWithTitle:@"Create 100 new groups"
-                                         actionBlock:^{
-                                             [DebugUIMessages createNewGroups:100 recipientAddress:recipientAddress];
-                                         }]];
-        [items addObject:[OWSTableItem itemWithTitle:@"Create 1,000 new groups"
-                                         actionBlock:^{
-                                             [DebugUIMessages createNewGroups:1000 recipientAddress:recipientAddress];
+                                             [DebugUIMessages askForQuantityWithTitle:@"How many Groups?"
+                                                                           completion:^(NSUInteger quantity) {
+                                                                               [DebugUIMessages
+                                                                                    createNewGroups:quantity
+                                                                                   recipientAddress:recipientAddress];
+                                                                           }];
                                          }]];
     }
     if ([thread isKindOfClass:[TSGroupThread class]]) {
@@ -498,30 +447,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Infrastructure
 
-+ (void)performActionNTimes:(DebugUIMessagesAction *)action
++ (void)askForQuantityWithTitle:(NSString *)title completion:(void (^)(NSUInteger))completion
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(action);
-
-    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:@"How many?" message:nil];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:title message:nil];
     for (NSNumber *countValue in @[
              @(1),
              @(10),
+             @(25),
              @(100),
              @(1 * 1000),
              @(10 * 1000),
          ]) {
-        [alert addAction:[[ActionSheetAction alloc]
-                             initWithTitle:countValue.stringValue
-                                     style:ActionSheetActionStyleDefault
-                                   handler:^(ActionSheetAction *ignore) {
-                                       [action prepareAndPerformNTimes:countValue.unsignedIntegerValue];
-                                   }]];
+        [alert addAction:[[ActionSheetAction alloc] initWithTitle:countValue.stringValue
+                                                            style:ActionSheetActionStyleDefault
+                                                          handler:^(ActionSheetAction *ignore) {
+                                                              completion(countValue.unsignedIntegerValue);
+                                                          }]];
     }
 
     [alert addAction:[OWSActionSheets cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
     [fromViewController presentActionSheet:alert];
+}
+
++ (void)performActionNTimes:(DebugUIMessagesAction *)action
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(action);
+
+    [self askForQuantityWithTitle:@"How many?"
+                       completion:^(NSUInteger quantity) {
+                           [action prepareAndPerformNTimes:quantity];
+                       }];
 }
 
 #pragma mark - Send Media
@@ -3774,7 +3732,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                       [TSContactThread getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc]
                                                                                initWithPhoneNumber:phoneNumber.toE164]];
                   @autoreleasepool {
-                      [self sendFakeMessages:messageCount thread:contactThread];
+                      [self createFakeMessages:messageCount thread:contactThread];
                   }
                   [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                       NSUInteger interactionCount = [contactThread numberOfInteractionsWithTransaction:transaction];
@@ -3785,17 +3743,17 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
               }];
 }
 
-+ (void)sendFakeMessages:(NSUInteger)counter thread:(TSThread *)thread
++ (void)createFakeMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
-    [self sendFakeMessages:counter thread:thread isTextOnly:NO];
+    [self createFakeMessages:counter thread:thread isTextOnly:NO];
 }
 
-+ (void)sendFakeMessages:(NSUInteger)counter thread:(TSThread *)thread isTextOnly:(BOOL)isTextOnly
++ (void)createFakeMessages:(NSUInteger)counter thread:(TSThread *)thread isTextOnly:(BOOL)isTextOnly
 {
     const NSUInteger kMaxBatchSize = 200;
     if (counter < kMaxBatchSize) {
         [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-            [self sendFakeMessages:counter thread:thread isTextOnly:isTextOnly transaction:transaction];
+            [self createFakeMessages:counter thread:thread isTextOnly:isTextOnly transaction:transaction];
         }];
     } else {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -3804,11 +3762,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 @autoreleasepool {
                     NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
                     [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-                        [self sendFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
+                        [self createFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
                     }];
                     remainder -= batchSize;
                     OWSLogInfo(
-                        @"sendFakeMessages %lu / %lu", (unsigned long)(counter - remainder), (unsigned long)counter);
+                        @"createFakeMessages %lu / %lu", (unsigned long)(counter - remainder), (unsigned long)counter);
                 }
             }
         });
@@ -3822,7 +3780,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
     uint32_t sendDelay = arc4random_uniform((uint32_t)(0.01 * NSEC_PER_SEC));
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, sendDelay), dispatch_get_main_queue(), ^{
-        [self sendFakeMessages:1 thread:thread isTextOnly:YES];
+        [self createFakeMessages:1 thread:thread isTextOnly:YES];
     });
 
     uint32_t deleteDelay = arc4random_uniform((uint32_t)(0.01 * NSEC_PER_SEC));
@@ -3837,12 +3795,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 }
 
 // TODO: Remove.
-+ (void)sendFakeMessages:(NSUInteger)counter
-                  thread:(TSThread *)thread
-              isTextOnly:(BOOL)isTextOnly
-             transaction:(SDSAnyWriteTransaction *)transaction
++ (void)createFakeMessages:(NSUInteger)counter
+                    thread:(TSThread *)thread
+                isTextOnly:(BOOL)isTextOnly
+               transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSLogInfo(@"sendFakeMessages: %lu", (unsigned long)counter);
+    OWSLogInfo(@"createFakeMessages: %lu", (unsigned long)counter);
 
     for (NSUInteger i = 0; i < counter; i++) {
         NSString *randomText = [[self randomText] stringByAppendingFormat:@" (sequence: %lu)", (unsigned long)i + 1];
@@ -4066,7 +4024,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         },
         ^(SDSAnyWriteTransaction *transaction) {
             NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
-            [self sendFakeMessages:messageCount thread:thread isTextOnly:NO transaction:transaction];
+            [self createFakeMessages:messageCount thread:thread isTextOnly:NO transaction:transaction];
         },
         ^(SDSAnyWriteTransaction *transaction) {
             NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
