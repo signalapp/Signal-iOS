@@ -157,6 +157,14 @@ class ConversationSplitViewController: UISplitViewController {
         }
     }
 
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        if let presentedViewController = presentedViewController {
+            return presentedViewController.supportedInterfaceOrientations
+        } else {
+            return super.supportedInterfaceOrientations
+        }
+    }
+
     // The stock implementation of `showDetailViewController` will in some cases,
     // particularly when launching a conversation from another window, fail to
     // recognize the right context to present the view controller. When this happens,
