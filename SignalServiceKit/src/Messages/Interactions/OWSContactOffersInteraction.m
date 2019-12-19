@@ -96,6 +96,11 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (BOOL)shouldBeSaved
+{
+    return NO;
+}
+
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_Offer;

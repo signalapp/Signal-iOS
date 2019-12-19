@@ -23,12 +23,8 @@
 		"TSAttachmentStream.cachedAudioWaveform",
 		"TSThread.isArchivedByLegacyTimestampForSorting",
 		"TSContactThread.contactThreadSchemaVersion",
-		"OWSContactOffersInteraction.beforeInteractionId",
 		"TSCall.callSchemaVersion",
 		"TSErrorMessage.errorMessageSchemaVersion",
-		"OWSContactOffersInteraction.hasAddToContactsOffer",
-		"OWSContactOffersInteraction.hasAddToProfileWhitelistOffer",
-		"OWSContactOffersInteraction.hasBlockOffer",
 		"TSMessage.schemaVersion",
 		"TSIncomingMessage.incomingMessageSchemaVersion",
 		"TSInfoMessage.infoMessageSchemaVersion",
@@ -45,6 +41,7 @@
 		"SSKJobRecord.sortId": "id"
 	},
 	"class_to_skip_serialization": [
+		"OWSContactOffersInteraction",
 		"OWSOutgoingSyncMessage",
 		"OWSOutgoingReactionMessage",
 		"OWSEndSessionMessage",
