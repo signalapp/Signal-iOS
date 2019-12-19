@@ -39,6 +39,7 @@ public enum SDSRecordType: UInt {
     case linkedDeviceReadReceipt = 36
     case messageContentJob = 15
     case messageDecryptJob = 8
+    case reaction = 62
     case recipientIdentity = 38
     case resaveCollectionDBMigration = 49
     case sessionResetJobRecord = 52
@@ -68,7 +69,6 @@ public enum SDSRecordType: UInt {
     case invalidIdentityKeySendingErrorMessage = 23
     case message = 11
     case outgoingMessage = 21
-    case reaction = 62
     case recipientReadReceipt = 12
     case thread = 2
     case unreadIndicatorInteraction = 4
