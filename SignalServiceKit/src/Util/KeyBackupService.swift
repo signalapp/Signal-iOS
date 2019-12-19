@@ -471,8 +471,10 @@ public class KeyBackupService: NSObject {
         // Trigger a re-creation of the storage manifest, our keys have changed
         storageServiceManager.restoreOrCreateManifestIfNecessary()
 
-        // Sync our new keys with linked devices.
-        syncManager.sendKeysSyncMessage()
+        if tsAccountManager.isRegisteredAndReady {
+            // Sync our new keys with linked devices.
+            syncManager.sendKeysSyncMessage()
+        }
     }
 
     public static func storeSyncedKey(type: DerivedKey, data: Data?, transaction: SDSAnyWriteTransaction) {
