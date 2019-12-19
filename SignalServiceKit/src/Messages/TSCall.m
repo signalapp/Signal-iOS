@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSCall.h"
 #import "TSContactThread.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -46,11 +47,10 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 @implementation TSCall
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         callType:(RPRecentCallType)callType
-                         inThread:(TSContactThread *)thread
+- (instancetype)initWithCallType:(RPRecentCallType)callType
+                        inThread:(TSContactThread *)thread
 {
-    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread];
 
     if (!self) {
         return self;

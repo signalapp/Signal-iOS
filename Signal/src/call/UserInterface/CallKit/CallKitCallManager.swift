@@ -118,14 +118,20 @@ final class CallKitCallManager: NSObject {
     }
 
     func addCall(_ call: SignalCall) {
+        Logger.verbose("call: \(call)")
+        call.wasReportedToSystem = true
         calls.append(call)
     }
 
     func removeCall(_ call: SignalCall) {
+        Logger.verbose("call: \(call)")
+        call.wasRemovedFromSystem = true
         calls.removeFirst(where: { $0 === call })
     }
 
     func removeAllCalls() {
+        Logger.verbose("")
+        calls.forEach { $0.wasRemovedFromSystem = true }
         calls.removeAll()
     }
 }

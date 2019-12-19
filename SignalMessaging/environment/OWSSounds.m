@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSounds.h"
@@ -176,7 +176,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         case OWSSound_CallBusy:
             return @"Call Busy";
         case OWSSound_CallEnded:
-            return @"Call Failure";
+            return @"Call Ended";
         case OWSSound_MessageSent:
             return @"Message Sent";
 

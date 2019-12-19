@@ -132,7 +132,7 @@ protocol CallAudioServiceDelegate: class {
     private func ensureProperAudioSession(call: SignalCall?) {
         AssertIsOnMainThread()
 
-        guard let call = call, !call.isTerminated else {
+        guard let call = call, !call.isEnded else {
             // Revert to default audio
             setAudioSession(category: .soloAmbient,
                             mode: .default)

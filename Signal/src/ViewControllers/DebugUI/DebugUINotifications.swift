@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -110,7 +110,7 @@ class DebugUINotifications: DebugUIPage {
     }
 
     func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (SignalCall) -> Void) -> Guarantee<Void> {
-        let call = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress, signalingId: 0)
+        let call = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress)
 
         return delayedNotificationDispatch {
             callBlock(call)

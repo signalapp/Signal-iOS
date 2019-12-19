@@ -82,14 +82,16 @@ import SignalMessaging
 
     @objc
     public func setup() {
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
-            // For now, we can't create createCallUIAdapter until
-            // storage is ready, because the FeatureFlag.calling
-            // consults storage.
-
-            // TODO MULTIRING - once calling is enabled on all devices
-            // we can move this back to an inline call.
-            self.callService.createCallUIAdapter()
+        if FeatureFlags.multiRing {
+            callService.createCallUIAdapter()
+        } else {
+            AppReadiness.runNowOrWhenAppWillBecomeReady {
+                // Currently, we only build the CallUIAdapter for the primary device, which we can't
+                // determine until *after* storage has been setup. Once we create calling on all
+                // devices, we can create the callUIAdapter unconditionally, on all devices, and get
+                // rid of this.
+                self.callService.createCallUIAdapter()
+            }
         }
 
         // Hang certain singletons on SSKEnvironment too.
