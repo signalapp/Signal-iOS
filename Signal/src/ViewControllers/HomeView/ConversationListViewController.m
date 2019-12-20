@@ -161,6 +161,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return SSKEnvironment.shared.primaryStorage;
 }
 
+- (nullable MessageFetcherJob *)messageFetcherJob
+{
+    return SSKEnvironment.shared.messageFetcherJob;
+}
+
 #pragma mark -
 
 - (void)observeNotifications
@@ -1377,16 +1382,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
     OWSLogInfo(@"beggining refreshing.");
 
-    [[AppEnvironment.shared.messageFetcherJob run].then(^{
-        if (TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
-            return [AnyPromise promiseWithValue:nil];
-        }
+    [[self.messageFetcherJob runObjc]
+            .then(^{
+                if (TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
+                    return [AnyPromise promiseWithValue:nil];
+                }
 
-        return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
-    }).ensure(^{
-        OWSLogInfo(@"ending refreshing.");
-        [refreshControl endRefreshing];
-    }) retainUntilComplete];
+                return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
+            })
+            .ensure(^{
+                OWSLogInfo(@"ending refreshing.");
+                [refreshControl endRefreshing];
+            }) retainUntilComplete];
 }
 
 #pragma mark - Edit Actions

@@ -404,6 +404,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return YES;
 }
 
+- (BOOL)shouldProcessIncomingMessages
+{
+    return YES;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

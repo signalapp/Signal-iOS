@@ -6,6 +6,7 @@
 #import "AppContext.h"
 #import "AppReadiness.h"
 #import "NSArray+OWS.h"
+#import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSBackgroundTask.h"
 #import "OWSBatchMessageProcessor.h"
@@ -20,6 +21,9 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueue
+    = @"kNSNotificationNameMessageDecryptionDidFlushQueue";
 
 @implementation OWSMessageDecryptJob
 
@@ -282,9 +286,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     _isDrainingQueue = NO;
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (CurrentAppContext().isMainApp) {
-            [self drainQueue];
-        }
+        [self drainQueue];
     }];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -330,9 +332,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     OWSAssertIsOnMainThread();
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (CurrentAppContext().isMainApp) {
-            [self drainQueue];
-        }
+        [self drainQueue];
     }];
 }
 
@@ -357,8 +357,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     OWSAssertDebug(AppReadiness.isAppReady || CurrentAppContext().isRunningTests);
 
-    // Don't decrypt messages in app extensions.
-    if (!CurrentAppContext().isMainApp) {
+    if (!CurrentAppContext().shouldProcessIncomingMessages) {
         return;
     }
     if (!self.tsAccountManager.isRegisteredAndReady) {
@@ -375,6 +374,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     });
 }
 
+- (BOOL)hasPendingJobsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return nil != [self.finder nextJobWithTransaction:transaction];
+}
+
 - (void)drainQueueWorkStep
 {
     AssertOnDispatchQueue(self.serialQueue);
@@ -388,6 +392,12 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     if (!job) {
         self.isDrainingQueue = NO;
         OWSLogVerbose(@"Queue is drained.");
+
+        [[NSNotificationCenter defaultCenter]
+            postNotificationNameAsync:kNSNotificationNameMessageDecryptionDidFlushQueue
+                               object:nil
+                             userInfo:nil];
+
         return;
     }
 
@@ -497,9 +507,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     _yapProcessingQueue = yapProcessingQueue;
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (CurrentAppContext().isMainApp) {
-            [self.yapProcessingQueue drainQueue];
-        }
+        [self.yapProcessingQueue drainQueue];
     }];
 
     return self;
@@ -560,6 +568,16 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     } else {
         // We *could* use this processing Queue for Yap *and* GRDB
         [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData];
+    }
+}
+
+- (BOOL)hasPendingJobsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
+        OWSFailDebug(@"GRDB-for-all should ship before we use this method in production.");
+        return [self.yapProcessingQueue hasPendingJobsWithTransaction:transaction];
+    } else {
+        return [self.messageDecryptJobQueue hasPendingJobsObjcWithTransaction:transaction];
     }
 }
 

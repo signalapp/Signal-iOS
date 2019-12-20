@@ -186,6 +186,11 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     return Environment.shared.launchJobs;
 }
 
+- (nullable MessageFetcherJob *)messageFetcherJob
+{
+    return SSKEnvironment.shared.messageFetcherJob;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -705,7 +710,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
-            [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
+            [[self.messageFetcherJob runObjc] retainUntilComplete];
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");
@@ -1118,7 +1123,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     }
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
+        [[self.messageFetcherJob runObjc] retainUntilComplete];
     }];
 }
 
@@ -1137,7 +1142,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     }
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
+        [[self.messageFetcherJob runObjc] retainUntilComplete];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             completionHandler(UIBackgroundFetchResultNewData);
         });
@@ -1149,7 +1154,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 {
     OWSLogInfo(@"performing background fetch");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
+        __block AnyPromise *job = [self.messageFetcherJob runObjc].then(^{
             // HACK: Call completion handler after n seconds.
             //
             // We don't currently have a convenient API to know when message fetching is *done* when
@@ -1228,7 +1233,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
         // seconds before receiving an actionable push notification.
-        [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
+        [[self.messageFetcherJob runObjc] retainUntilComplete];
 
         // This should happen at any launch, background or foreground.
         __unused AnyPromise *pushTokenpromise =

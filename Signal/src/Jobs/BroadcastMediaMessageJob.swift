@@ -36,6 +36,10 @@ public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
         // no special handling
     }
 
+    public func didFlushQueue(transaction: SDSAnyWriteTransaction) {
+        // Do nothing.
+    }
+
     let defaultQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "BroadcastMediaMessageJobQueue"

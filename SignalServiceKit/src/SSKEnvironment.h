@@ -7,6 +7,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class AccountServiceClient;
 @class ContactsUpdater;
 @class GroupsV2MessageProcessor;
+@class MessageFetcherJob;
+@class MessageProcessing;
 @class MessageSenderJobQueue;
 @class OWS2FAManager;
 @class OWSAttachmentDownloads;
@@ -90,7 +92,9 @@ NS_ASSUME_NONNULL_BEGIN
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
                          sskPreferences:(SSKPreferences *)sskPreferences
-                               groupsV2:(id<GroupsV2>)groupsV2 NS_DESIGNATED_INITIALIZER;
+                               groupsV2:(id<GroupsV2>)groupsV2
+                      messageProcessing:(MessageProcessing *)messageProcessing
+                      messageFetcherJob:(MessageFetcherJob *)messageFetcherJob NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -142,6 +146,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic, readonly) StorageCoordinator *storageCoordinator;
 @property (nonatomic, readonly) SSKPreferences *sskPreferences;
+@property (nonatomic, readonly) MessageProcessing *messageProcessing;
+@property (nonatomic, readonly) MessageFetcherJob *messageFetcherJob;
 
 @property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 

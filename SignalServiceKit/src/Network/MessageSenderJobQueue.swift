@@ -93,6 +93,10 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         }
     }
 
+    public func didFlushQueue(transaction: SDSAnyWriteTransaction) {
+        // Do nothing.
+    }
+
     public func buildOperation(jobRecord: SSKMessageSenderJobRecord, transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
         let message: TSOutgoingMessage
         if let invisibleMessage = jobRecord.invisibleMessage {

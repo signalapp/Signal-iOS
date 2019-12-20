@@ -1,12 +1,30 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
-import SignalServiceKit
 
-@objc(OWSMessageFetcherJob)
+// This token can be used to observe the completion of a given fetch cycle.
+public struct MessageFetchCycle: Hashable, Equatable {
+    public let uuid = UUID()
+    public let promise: Promise<Void>
+
+    // MARK: Hashable
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
+    }
+
+    // MARK: Equatable
+
+    public static func == (lhs: MessageFetchCycle, rhs: MessageFetchCycle) -> Bool {
+        return lhs.uuid == rhs.uuid
+    }
+}
+
+// MARK: -
+
 public class MessageFetcherJob: NSObject {
 
     private var timer: Timer?
@@ -20,43 +38,154 @@ public class MessageFetcherJob: NSObject {
 
     // MARK: Singletons
 
-    private var networkManager: TSNetworkManager {
+    private class var networkManager: TSNetworkManager {
         return SSKEnvironment.shared.networkManager
     }
 
-    private var messageReceiver: OWSMessageReceiver {
+    private class var messageReceiver: OWSMessageReceiver {
         return SSKEnvironment.shared.messageReceiver
     }
 
-    private var signalService: OWSSignalService {
+    private class var signalService: OWSSignalService {
         return OWSSignalService.sharedInstance()
     }
 
-    private var tsAccountManager: TSAccountManager {
+    private class var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
     }
 
-    // MARK: 
+    // MARK: -
+
+    // This operation queue ensures that only one fetch operation is
+    // running at a given time.
+    private let operationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "MessageFetcherJob.operationQueue"
+        operationQueue.maxConcurrentOperationCount = 1
+        return operationQueue
+    }()
+
+    fileprivate var activeOperationCount: Int {
+        return operationQueue.operationCount
+    }
+
+    private let serialQueue = DispatchQueue(label: "org.signal.messageFetcherJob.serialQueue")
+
+    private let completionQueue = DispatchQueue(label: "org.signal.messageFetcherJob.completionQueue")
+
+    // This property should only be accessed on serialQueue.
+    private var activeFetchCycles = Set<UUID>()
+
+    // This property should only be accessed on serialQueue.
+    private var completedFetchCyclesCounter: UInt = 0
+
+    @objc
+    public static let didChangeStateNotificationName = Notification.Name("MessageFetcherJob.didChangeStateNotificationName")
 
     @discardableResult
-    public func run() -> Promise<Void> {
+    public func run() -> MessageFetchCycle {
+        Logger.debug("")
+
+        // Use an operation queue to ensure that only one fetch cycle is done
+        // at a time.
+        let operation = MessageFetchOperation()
+        let promise = operation.promise
+        let fetchCycle = MessageFetchCycle(promise: promise)
+
+        _ = self.serialQueue.sync {
+            activeFetchCycles.insert(fetchCycle.uuid)
+        }
+
+        operationQueue.addOperation(operation)
+
+        promise.retainUntilComplete()
+
+        completionQueue.async {
+            self.operationQueue.waitUntilAllOperationsAreFinished()
+
+            _ = self.serialQueue.sync {
+                self.activeFetchCycles.remove(fetchCycle.uuid)
+                self.completedFetchCyclesCounter += 1
+            }
+
+            self.postDidChangeState()
+        }
+
+        self.postDidChangeState()
+
+        return fetchCycle
+    }
+
+    @objc
+    @discardableResult
+    public func runObjc() -> AnyPromise {
+        return AnyPromise(run().promise)
+    }
+
+    private func postDidChangeState() {
+        NotificationCenter.default.postNotificationNameAsync(MessageFetcherJob.didChangeStateNotificationName, object: nil)
+    }
+
+    public func isFetchCycleComplete(fetchCycle: MessageFetchCycle) -> Bool {
+        return self.serialQueue.sync {
+            return self.activeFetchCycles.contains(fetchCycle.uuid)
+        }
+    }
+
+    public var areAllFetchCyclesComplete: Bool {
+        return self.serialQueue.sync {
+            return self.activeFetchCycles.isEmpty
+        }
+    }
+
+    public var completedRestFetches: UInt {
+        return self.serialQueue.sync {
+            return self.completedFetchCyclesCounter
+        }
+    }
+
+    public class var shouldUseWebSocket: Bool {
+        return CurrentAppContext().isMainApp && !signalService.isCensorshipCircumventionActive
+    }
+
+    // MARK: -
+
+    fileprivate class func fetchMessages(resolver: Resolver<Void>) {
         Logger.debug("")
 
         guard tsAccountManager.isRegisteredAndReady else {
             assert(AppReadiness.isAppReady())
             Logger.warn("not registered")
-            return Promise.value(())
+            return resolver.fulfill(())
         }
 
-        guard signalService.isCensorshipCircumventionActive else {
+        if shouldUseWebSocket {
             Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
             TSSocketManager.shared.requestSocketOpen()
-            return Promise.value(())
+            return resolver.fulfill(())
+        } else if CurrentAppContext().shouldProcessIncomingMessages {
+            // Main app should use REST if censorship circumvention is active.
+            // Notification extension that should always use REST.
+        } else {
+            return resolver.reject(OWSAssertionError("App extensions should not fetch messages."))
         }
 
-        Logger.info("fetching messages via REST.")
+        Logger.info("Fetching messages via REST.")
 
-        let promise = self.fetchUndeliveredMessages().then { (envelopes: [SSKProtoEnvelope], more: Bool) -> Promise<Void> in
+        fetchMessagesViaRest()
+            .done {
+                resolver.fulfill(())
+            }.catch { error in
+                resolver.reject(error)
+            }.retainUntilComplete()
+    }
+
+    // MARK: -
+
+    private class func fetchMessagesViaRest() -> Promise<Void> {
+        Logger.debug("")
+
+        return fetchBatchViaRest().then { (envelopes: [SSKProtoEnvelope], more: Bool) -> Promise<Void> in
             for envelope in envelopes {
                 Logger.info("received envelope.")
                 do {
@@ -70,30 +199,23 @@ public class MessageFetcherJob: NSObject {
 
             if more {
                 Logger.info("fetching more messages.")
-                return self.run()
+
+                return self.fetchMessagesViaRest()
             } else {
                 // All finished
                 return Promise.value(())
             }
         }
-
-        promise.retainUntilComplete()
-
-        return promise
     }
 
-    @objc
-    @discardableResult
-    public func run() -> AnyPromise {
-        return AnyPromise(run() as Promise)
-    }
+    // MARK: - Run Loop
 
     // use in DEBUG or wherever you can't receive push notifications to poll for messages.
     // Do not use in production.
     public func startRunLoop(timeInterval: Double) {
         Logger.error("Starting message fetch polling. This should not be used in production.")
         timer = WeakTimer.scheduledTimer(timeInterval: timeInterval, target: self, userInfo: nil, repeats: true) {[weak self] _ in
-            let _: Promise<Void>? = self?.run()
+            _ = self?.run()
             return
         }
     }
@@ -103,9 +225,11 @@ public class MessageFetcherJob: NSObject {
         timer = nil
     }
 
-    private func parseMessagesResponse(responseObject: Any?) -> (envelopes: [SSKProtoEnvelope], more: Bool)? {
+    // MARK: -
+
+    private class func parseMessagesResponse(responseObject: Any?) -> (envelopes: [SSKProtoEnvelope], more: Bool)? {
         guard let responseObject = responseObject else {
-            Logger.error("response object was surpringly nil")
+            Logger.error("response object was unexpectedly nil")
             return nil
         }
 
@@ -136,7 +260,7 @@ public class MessageFetcherJob: NSObject {
         )
     }
 
-    private func buildEnvelope(messageDict: [String: Any]) -> SSKProtoEnvelope? {
+    private class func buildEnvelope(messageDict: [String: Any]) -> SSKProtoEnvelope? {
         do {
             let params = ParamParser(dictionary: messageDict)
 
@@ -182,7 +306,7 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-    private func fetchUndeliveredMessages() -> Promise<(envelopes: [SSKProtoEnvelope], more: Bool)> {
+    private class func fetchBatchViaRest() -> Promise<(envelopes: [SSKProtoEnvelope], more: Bool)> {
         return Promise { resolver in
             let request = OWSRequestFactory.getMessagesRequest()
             self.networkManager.makeRequest(
@@ -206,7 +330,7 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-    private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
+    private class func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
         let request: TSRequest
         if let serverGuid = envelope.serverGuid, serverGuid.count > 0 {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
@@ -224,5 +348,29 @@ public class MessageFetcherJob: NSObject {
                                         failure: { (_: URLSessionDataTask?, error: Error?) in
                                             Logger.debug("acknowledging delivery for message at timestamp: \(envelope.timestamp) failed with error: \(String(describing: error))")
         })
+    }
+}
+
+// MARK: -
+
+private class MessageFetchOperation: OWSOperation {
+
+    let promise: Promise<Void>
+    let resolver: Resolver<Void>
+
+    override required init() {
+
+        let (promise, resolver) = Promise<Void>.pending()
+        self.promise = promise
+        self.resolver = resolver
+    }
+
+    public override func run() {
+        Logger.debug("")
+
+        MessageFetcherJob.fetchMessages(resolver: resolver)
+        promise.ensure {
+            self.reportSuccess()
+        }.retainUntilComplete()
     }
 }

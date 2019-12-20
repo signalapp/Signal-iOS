@@ -161,7 +161,7 @@
                                              @"Error indicating that this device is no longer linked.");
                                      accessoryLabel.textColor = UIColor.ows_accentRedColor;
                                  } else {
-                                     switch (TSSocketManager.shared.highestSocketState) {
+                                     switch (TSSocketManager.shared.socketState) {
                                          case OWSWebSocketStateClosed:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
                                              accessoryLabel.textColor = UIColor.ows_accentRedColor;

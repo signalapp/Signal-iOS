@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSWebSocket.h"
@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 // connectivity issues.  We want to show the "best" or "highest"
 // socket state of the sockets.  e.g. the UI should reflect
 // "open" if any of the sockets is open.
-- (OWSWebSocketState)highestSocketState;
+- (OWSWebSocketState)socketState;
+- (BOOL)hasEmptiedInitialQueue;
 
 // If the app is in the foreground, we'll try to open the socket unless it's already
 // open or connecting.

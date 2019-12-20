@@ -47,6 +47,10 @@ public class SessionResetJobQueue: NSObject, JobQueue {
         // no special handling
     }
 
+    public func didFlushQueue(transaction: SDSAnyWriteTransaction) {
+        // Do nothing.
+    }
+
     let operationQueue: OperationQueue = {
         // no need to serialize the operation queuing, since sending will ultimately be serialized by MessageSender
         let operationQueue = OperationQueue()

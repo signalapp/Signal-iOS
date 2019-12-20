@@ -23,6 +23,7 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSData *_Nullable r
 @interface OWSWebSocket : NSObject
 
 @property (nonatomic, readonly) OWSWebSocketState state;
+@property (nonatomic, readonly) BOOL hasEmptiedInitialQueue;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

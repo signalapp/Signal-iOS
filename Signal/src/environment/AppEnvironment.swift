@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -35,9 +35,6 @@ import SignalMessaging
     public var outboundCallInitiator: OutboundCallInitiator
 
     @objc
-    public var messageFetcherJob: MessageFetcherJob
-
-    @objc
     public var accountManager: AccountManager
 
     @objc
@@ -65,7 +62,6 @@ import SignalMessaging
         self.callMessageHandler = WebRTCCallMessageHandler()
         self.callService = CallService()
         self.outboundCallInitiator = OutboundCallInitiator()
-        self.messageFetcherJob = MessageFetcherJob()
         self.accountManager = AccountManager()
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
