@@ -6,10 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSContactOffersInteraction;
-
-#pragma mark -
-
 @interface OWSContactOffersCell : ConversationViewCell
 
 + (NSString *)cellReuseIdentifier;

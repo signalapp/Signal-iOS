@@ -2463,13 +2463,16 @@ typedef enum : NSUInteger {
                             OWSLogInfo(@"Blocking an unknown user.");
                             [self.blockingManager addBlockedAddress:contactThread.contactAddress
                                                 wasLocallyInitiated:YES];
-                            // Delete the offers.
                             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                                 [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                                                block:^(TSContactThread *thread) {
+                                                                                   // The contactoffers interaction is
+                                                                                   // an unsaved interaction. The
+                                                                                   // conversationViewModel will delete
+                                                                                   // it when it reloads interaction in
+                                                                                   // response to this change.
                                                                                    thread.hasDismissedOffers = YES;
                                                                                }];
-                                [interaction anyRemoveWithTransaction:transaction];
                             }];
                         }];
     [actionSheet addAction:blockAction];
@@ -2501,13 +2504,14 @@ typedef enum : NSUInteger {
 
     [self.navigationController pushViewController:contactVC animated:YES];
 
-    // Delete the offers.
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                        block:^(TSContactThread *thread) {
+                                                           // The contactoffers interaction is an unsaved interaction.
+                                                           // The conversationViewModel will delete it when it reloads
+                                                           // interaction in response to this change.
                                                            thread.hasDismissedOffers = YES;
                                                        }];
-        [interaction anyRemoveWithTransaction:transaction];
     }];
 }
 
@@ -2521,13 +2525,15 @@ typedef enum : NSUInteger {
     TSContactThread *contactThread = (TSContactThread *)self.thread;
 
     [self presentAddThreadToProfileWhitelistWithSuccess:^() {
-        // Delete the offers.
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                            block:^(TSContactThread *thread) {
+                                                               // The contactoffers interaction is an unsaved
+                                                               // interaction. The conversationViewModel will delete it
+                                                               // when it reloads interaction in response to this
+                                                               // change.
                                                                thread.hasDismissedOffers = YES;
                                                            }];
-            [interaction anyRemoveWithTransaction:transaction];
         }];
     }];
 }
