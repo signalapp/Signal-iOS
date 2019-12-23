@@ -323,10 +323,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Mark as Read Locally
 
-- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread
+- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread completion:(void (^)(void))completion
 {
     OWSAssertDebug(thread);
-
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         uint64_t readTimestamp = [NSDate ows_millisecondTimeStamp];
         __block NSArray<id<OWSReadTracking>> *unreadMessages;
@@ -338,11 +337,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         }];
         if (unreadMessages.count < 1) {
             // Avoid unnecessary writes.
+            dispatch_async(dispatch_get_main_queue(), completion);
             return;
         }
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [self markMessagesAsRead:unreadMessages readTimestamp:readTimestamp wasLocal:YES transaction:transaction];
         }];
+        dispatch_async(dispatch_get_main_queue(), completion);
     });
 }
 
