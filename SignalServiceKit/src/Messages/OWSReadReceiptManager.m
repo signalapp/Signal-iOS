@@ -323,9 +323,20 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Mark as Read Locally
 
+- (dispatch_queue_t)markAsReadSerialQueue
+{
+    static dispatch_queue_t serialQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        serialQueue = dispatch_queue_create("org.whispersystems.readReceiptManager", DISPATCH_QUEUE_SERIAL);
+    });
+    return serialQueue;
+}
+
 - (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread completion:(void (^)(void))completion
 {
     OWSAssertDebug(thread);
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         uint64_t readTimestamp = [NSDate ows_millisecondTimeStamp];
         __block NSArray<id<OWSReadTracking>> *unreadMessages;
@@ -349,20 +360,22 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)messageWasReadLocally:(TSIncomingMessage *)message
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        @synchronized(self)
-        {
-            NSString *threadUniqueId = message.uniqueThreadId;
-            OWSAssertDebug(threadUniqueId.length > 0);
+    // It's possible to mark hundreds of messages (or more) as read at a time
+    // in conversation view.  We use a serial queue to avoid overwhelming GCD
+    // in that case.
+    dispatch_async(self.markAsReadSerialQueue, ^{
+        NSString *threadUniqueId = message.uniqueThreadId;
+        OWSAssertDebug(threadUniqueId.length > 0);
 
-            SignalServiceAddress *messageAuthorAddress = message.authorAddress;
-            OWSAssertDebug(messageAuthorAddress.isValid);
+        SignalServiceAddress *messageAuthorAddress = message.authorAddress;
+        OWSAssertDebug(messageAuthorAddress.isValid);
 
-            OWSLinkedDeviceReadReceipt *newReadReceipt =
-                [[OWSLinkedDeviceReadReceipt alloc] initWithSenderAddress:messageAuthorAddress
-                                                       messageIdTimestamp:message.timestamp
-                                                            readTimestamp:[NSDate ows_millisecondTimeStamp]];
+        OWSLinkedDeviceReadReceipt *newReadReceipt =
+            [[OWSLinkedDeviceReadReceipt alloc] initWithSenderAddress:messageAuthorAddress
+                                                   messageIdTimestamp:message.timestamp
+                                                        readTimestamp:[NSDate ows_millisecondTimeStamp]];
 
+        @synchronized(self) {
             OWSLinkedDeviceReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
             if (oldReadReceipt && oldReadReceipt.messageIdTimestamp > newReadReceipt.messageIdTimestamp) {
                 // If there's an existing "linked device" read receipt for the same thread with
@@ -372,20 +385,19 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 OWSLogVerbose(@"Enqueuing read receipt for linked devices.");
                 self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
             }
-
-            if (message.authorAddress.isLocalAddress) {
-                OWSLogVerbose(@"Ignoring read receipt for self-sender.");
-                return;
-            }
-
-            if ([self areReadReceiptsEnabled]) {
-                OWSLogVerbose(@"Enqueuing read receipt for sender.");
-                [self.outgoingReceiptManager enqueueReadReceiptForAddress:messageAuthorAddress
-                                                                timestamp:message.timestamp];
-            }
-
-            [self scheduleProcessing];
         }
+
+        if (message.authorAddress.isLocalAddress) {
+            OWSLogVerbose(@"Ignoring read receipt for self-sender.");
+            return;
+        }
+
+        if ([self areReadReceiptsEnabled]) {
+            OWSLogVerbose(@"Enqueuing read receipt for sender.");
+            [self.outgoingReceiptManager enqueueReadReceiptForAddress:messageAuthorAddress timestamp:message.timestamp];
+        }
+
+        [self scheduleProcessing];
     });
 }
 
