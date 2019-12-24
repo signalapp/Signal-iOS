@@ -335,6 +335,10 @@ class GRDBFullTextSearchFinder: NSObject {
         let collection = self.collection(forModel: model)
         let ftsContent = AnySearchIndexer.indexContent(object: model, transaction: transaction.asAnyRead) ?? ""
 
+        // FTS writes are expensive. We use two approaches to avoid them.
+        //
+        // 1. We use ftsCache to quickly discard redundant writes to
+        //    recently-written models.
         let shouldSkipUpdate: Bool = serialQueue.sync {
             guard !CurrentAppContext().isRunningTests else {
                 return false
@@ -352,6 +356,13 @@ class GRDBFullTextSearchFinder: NSObject {
             return
         }
 
+        // 2. We query current FTS state to avoid redundant writes.
+        //    Reads are cheaper than writes.
+        if fetchSearchContent(forModel: model, transaction: transaction) == ftsContent {
+            Logger.verbose("Skipping FTS update")
+            return
+        }
+
         executeUpdate(
             sql: """
             UPDATE \(databaseTableName)
@@ -361,6 +372,29 @@ class GRDBFullTextSearchFinder: NSObject {
             """,
             arguments: [ftsContent, collection, uniqueId],
             transaction: transaction)
+    }
+
+    private class func fetchSearchContent(forModel model: SDSModel, transaction: GRDBReadTransaction) -> String? {
+        do {
+            let uniqueId = model.uniqueId
+            let collection = self.collection(forModel: model)
+
+            let sql: String = """
+            SELECT \(ftsContentColumn)
+            FROM \(databaseTableName)
+            WHERE \(collectionColumn) == ?
+            AND \(uniqueIdColumn) == ?
+            """
+            let arguments: StatementArguments = [collection, uniqueId]
+            let cursor = try String.fetchCursor(transaction.database, sql: sql, arguments: arguments)
+            guard let next = try cursor.next() else {
+                return nil
+            }
+            return next
+        } catch {
+            owsFailDebug("db Error: \(error)")
+            return nil
+        }
     }
 
     public class func modelWasRemoved(model: SDSModel, transaction: GRDBWriteTransaction) {
