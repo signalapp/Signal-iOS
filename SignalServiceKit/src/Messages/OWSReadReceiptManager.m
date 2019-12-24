@@ -384,13 +384,15 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
 
     if ([self areReadReceiptsEnabled]) {
-        //                OWSLogVerbose(@"Enqueuing read receipt for sender.");
+        OWSLogVerbose(@"Enqueuing read receipt for sender.");
         [self.outgoingReceiptManager enqueueReadReceiptForAddress:messageAuthorAddress
                                                         timestamp:message.timestamp
                                                       transaction:transaction];
     }
 
-    [self scheduleProcessing];
+    [transaction addCompletionWithBlock:^{
+        [self scheduleProcessing];
+    }];
 }
 
 #pragma mark - Read Receipts From Recipient
