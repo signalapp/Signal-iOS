@@ -38,7 +38,7 @@ protocol InteractionFinderAdapter {
     func unreadCount(transaction: ReadTransaction) -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
     func enumerateInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
-    func enumerateUnseenInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
+    func enumerateUnseenInteractions(isOrdered: Bool, transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
     func existsOutgoingMessage(transaction: ReadTransaction) -> Bool
     func outgoingMessageCount(transaction: ReadTransaction) -> UInt
 
@@ -311,12 +311,12 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     @objc
-    public func enumerateUnseenInteractions(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+    public func enumerateUnseenInteractions(isOrdered: Bool, transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
-            return try yapAdapter.enumerateUnseenInteractions(transaction: yapRead, block: block)
+            return try yapAdapter.enumerateUnseenInteractions(isOrdered: isOrdered, transaction: yapRead, block: block)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.enumerateUnseenInteractions(transaction: grdbRead, block: block)
+            return try grdbAdapter.enumerateUnseenInteractions(isOrdered: isOrdered, transaction: grdbRead, block: block)
         }
     }
 
@@ -554,10 +554,11 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
     }
 
-    func enumerateUnseenInteractions(transaction: YapDatabaseReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+    func enumerateUnseenInteractions(isOrdered: Bool, transaction: YapDatabaseReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
         guard let view = unseenExt(transaction) else {
             return
         }
+        // `isOrdered` is unused for yap. Views are always ordered.
         view.safe_enumerateKeysAndObjects(inGroup: threadUniqueId,
                                           extensionName: TSUnseenDatabaseViewExtensionName,
                                           with: []) { (_, _, object, _, stopPtr) in
@@ -1010,14 +1011,14 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
     }
 
-    func enumerateUnseenInteractions(transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+    func enumerateUnseenInteractions(isOrdered: Bool, transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
 
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(sqlClauseForAllUnreadInteractions)
-            ORDER BY \(interactionColumn: .id)
+            \(isOrdered ? "ORDER BY \(interactionColumn: .id)" : "")
         """
         let arguments: StatementArguments = [threadUniqueId]
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
