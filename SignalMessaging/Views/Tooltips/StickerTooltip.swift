@@ -12,12 +12,11 @@ public class StickerTooltip: TooltipView {
 
     // MARK: Initializers
 
-    @objc
-    required public init(fromView: UIView,
-                         widthReferenceView: UIView,
-                         tailReferenceView: UIView,
-                         stickerPack: StickerPack,
-                         wasTappedBlock: (() -> Void)?) {
+    private required init(fromView: UIView,
+                          widthReferenceView: UIView,
+                          tailReferenceView: UIView,
+                          stickerPack: StickerPack,
+                          wasTappedBlock: (() -> Void)?) {
         self.stickerPack = stickerPack
 
         super.init(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
@@ -34,6 +33,15 @@ public class StickerTooltip: TooltipView {
     }
 
     private let iconView = YYAnimatedImageView()
+
+    @objc
+    private class func present(fromView: UIView,
+                               widthReferenceView: UIView,
+                               tailReferenceView: UIView,
+                               stickerPack: StickerPack,
+                               wasTappedBlock: (() -> Void)?) {
+        StickerTooltip(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, stickerPack: stickerPack, wasTappedBlock: wasTappedBlock)
+    }
 
     public override func bubbleContentView() -> UIView {
         iconView.autoSetDimensions(to: CGSize(width: 24, height: 24))

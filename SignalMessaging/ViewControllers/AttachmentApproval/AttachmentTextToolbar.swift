@@ -376,6 +376,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     private var viewOnceTooltip: UIView?
 
+    // Show the tooltip if a) it should be shown b) isn't already showing.
     private func showViewOnceTooltipIfNecessary() {
         guard shouldShowViewOnceTooltip else {
             return
