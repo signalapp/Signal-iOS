@@ -160,10 +160,8 @@ public class FeatureFlags: NSObject {
     @objc
     public static let strictSyncTranscriptTimestamps = false
 
-    // This shouldn't be enabled in production until the receive side has been
-    // in production for "long enough".
     @objc
-    public static let viewOnceSending = build.includes(.qa)
+    public static let viewOnceSending = true
 
     // Don't enable this flag in production.
     @objc
