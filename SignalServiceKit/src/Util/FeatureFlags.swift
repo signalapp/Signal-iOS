@@ -31,8 +31,12 @@ public enum StorageMode: Int {
     // If no YDB database exists, a throwaway db is not used.
     //
     // Supercedes grdbMigratesFreshDBEveryLaunch.
+    //
+    // TODO: Remove.
     case grdbThrowawayIfMigrating
     // Use GRDB under certain conditions.
+    //
+    // TODO: Remove.
     case grdbForAlreadyMigrated
     case grdbForLegacyUsersOnly
     case grdbForNewUsersOnly

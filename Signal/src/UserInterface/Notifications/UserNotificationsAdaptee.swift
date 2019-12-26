@@ -193,6 +193,28 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
     }
 
+    private static let kMigrationNotificationId = "kMigrationNotificationId"
+
+    func notifyUserForGRDBMigration() {
+        AssertIsOnMainThread()
+
+        let title = NSLocalizedString("GRDB_MIGRATION_NOTIFICATION_TITLE",
+                                      comment: "Title of notification shown during GRDB migration indicating that user may need to open app to view their content.")
+        let body = NSLocalizedString("GRDB_MIGRATION_NOTIFICATION_BODY",
+                                      comment: "Body message of notification shown during GRDB migration indicating that user may need to open app to view their content.")
+        // By re-using the same identifier, we ensure that we never
+        // show this notification more than once at a time.
+        let identifier = UserNotificationPresenterAdaptee.kMigrationNotificationId
+        notify(category: .grdbMigration, title: title, body: body, threadIdentifier: nil, userInfo: [:], sound: nil, replacingIdentifier: identifier)
+    }
+
+    func clearNotificationForGRDBMigration() {
+        AssertIsOnMainThread()
+
+        let identifier = UserNotificationPresenterAdaptee.kMigrationNotificationId
+        cancelNotification(identifier: identifier)
+    }
+
     private func clearLegacyNotifications() {
         // This will cancel all "scheduled" local notifications that haven't
         // been presented yet.
@@ -224,6 +246,9 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
              .missedCallFromNoLongerVerifiedIdentity:
             // Always show these notifications whenever the app is in the foreground.
             return true
+        case .grdbMigration:
+            // Never show these notifications if the app is in the foreground.
+            return false
         }
 
         guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {

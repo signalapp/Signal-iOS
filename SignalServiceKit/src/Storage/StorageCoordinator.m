@@ -2,10 +2,11 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/StorageCoordinator.h>
+#import "AppReadiness.h"
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,6 +55,15 @@ NSString *NSStringForDataStore(DataStore value)
 #pragma mark -
 
 @implementation StorageCoordinator
+
+#pragma mark - Dependencies
+
++ (id<NotificationsProtocol>)notificationsManager
+{
+    return SSKEnvironment.shared.notificationsManager;
+}
+
+#pragma mark -
 
 - (instancetype)init
 {
@@ -169,17 +179,25 @@ NSString *NSStringForDataStore(DataStore value)
         case StorageModeGrdbForNewUsersOnly:
         case StorageModeGrdbForAll:
         case StorageModeGrdbThrowawayIfMigrating:
-            if (hasUnmigratedYdbFile && !CurrentAppContext().isRunningTests) {
-                if (!CurrentAppContext().isMainApp) {
-                    // Don't migrate the database in an app extension.
-                    OWSLogInfo(@"Avoiding YDB-to-GRDB migration in app extension.");
-                    return DataStoreYdb;
+            if (CurrentAppContext().isRunningTests) {
+                // Do nothing.
+            } else if (hasUnmigratedYdbFile) {
+                if (!CurrentAppContext().canPresentNotifications) {
+                    // Don't migrate the database in an app extension
+                    // unless it can present notifications.
+                    OWSFail(@"Avoiding YDB-to-GRDB migration in app extension.");
                 }
                 if (CurrentAppContext().mainApplicationStateOnLaunch == UIApplicationStateBackground) {
-                    // Don't migrate the database if the app was launched into the background;
-                    // long migrations might prevent the user from receiving notifications and/or calls.
                     OWSLogInfo(@"Avoiding YDB-to-GRDB migration in background.");
-                    return DataStoreYdb;
+                    // If we are migrating the database and the app was launched into the background,
+                    // show the "GRDB migration" notification in case the migration fails.
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.notificationsManager notifyUserForGRDBMigration];
+
+                        [AppReadiness runNowOrWhenAppWillBecomeReady:^{
+                            [self.notificationsManager clearNotificationForGRDBMigration];
+                        }];
+                    });
                 }
             }
             break;

@@ -179,6 +179,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.appSharedDataDirectoryPath;
 }
 
+- (BOOL)canPresentNotifications
+{
+    return NO;
+}
+
 @end
 
 #endif

@@ -30,6 +30,7 @@ enum AppNotificationCategory: CaseIterable {
     case missedCallWithActions
     case missedCallWithoutActions
     case missedCallFromNoLongerVerifiedIdentity
+    case grdbMigration
 }
 
 enum AppNotificationAction: CaseIterable {
@@ -69,6 +70,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.missedCall"
         case .missedCallFromNoLongerVerifiedIdentity:
             return "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
+        case .grdbMigration:
+            return "Signal.AppNotificationCategory.grdbMigration"
         }
     }
 
@@ -91,6 +94,8 @@ extension AppNotificationCategory {
         case .missedCallWithoutActions:
             return []
         case .missedCallFromNoLongerVerifiedIdentity:
+            return []
+        case .grdbMigration:
             return []
         }
     }
@@ -132,6 +137,9 @@ protocol NotificationPresenterAdaptee: class {
 
     func cancelNotifications(threadId: String)
     func clearAllNotifications()
+
+    func notifyUserForGRDBMigration()
+    func clearNotificationForGRDBMigration()
 
     var hasReceivedSyncMessageRecently: Bool { get }
 }
@@ -572,12 +580,22 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     @objc
     public func cancelNotifications(threadId: String) {
-        self.adaptee.cancelNotifications(threadId: threadId)
+        adaptee.cancelNotifications(threadId: threadId)
     }
 
     @objc
     public func clearAllNotifications() {
         adaptee.clearAllNotifications()
+    }
+
+    @objc
+    public func notifyUserForGRDBMigration() {
+        adaptee.notifyUserForGRDBMigration()
+    }
+
+    @objc
+    public func clearNotificationForGRDBMigration() {
+        adaptee.clearNotificationForGRDBMigration()
     }
 
     // MARK: -
