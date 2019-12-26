@@ -13,9 +13,9 @@ typedef void (^OWSUserProfileCompletion)(void);
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 
-extern NSString *const kNSNotificationName_LocalProfileDidChange;
-extern NSString *const kNSNotificationName_OtherUsersProfileWillChange;
-extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
+extern NSNotificationName const kNSNotificationNameLocalProfileDidChange;
+extern NSNotificationName const kNSNotificationNameOtherUsersProfileWillChange;
+extern NSNotificationName const kNSNotificationNameOtherUsersProfileDidChange;
 
 extern NSString *const kNSNotificationKey_ProfileAddress;
 extern NSString *const kNSNotificationKey_ProfileGroupId;

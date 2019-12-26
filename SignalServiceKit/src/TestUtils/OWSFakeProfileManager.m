@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSMutableSet<SignalServiceAddress *> *recipientWhitelist;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *threadWhitelist;
 @property (nonatomic, readonly) OWSAES256Key *localProfileKey;
+@property (nonatomic, readonly) UserProfileReadCache *userProfileReadCache;
 
 @end
 
@@ -37,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     _profileKeys = [NSMutableDictionary new];
     _recipientWhitelist = [NSMutableSet new];
     _threadWhitelist = [NSMutableSet new];
+    _userProfileReadCache = [UserProfileReadCache new];
 
     return self;
 }

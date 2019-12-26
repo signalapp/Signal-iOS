@@ -71,4 +71,9 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
     public func avatarImage(forCNContactId contactId: String?) -> UIImage? {
         return nil
     }
+
+    private let _signalAccountReadCache = SignalAccountReadCache()
+    public func signalAccountReadCache() -> SignalAccountReadCache {
+        return _signalAccountReadCache
+    }
 }

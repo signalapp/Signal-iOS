@@ -220,7 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
-                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                                 name:kNSNotificationNameOtherUsersProfileDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(typingIndicatorStateDidChange:)

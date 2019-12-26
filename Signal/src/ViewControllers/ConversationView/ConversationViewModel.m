@@ -273,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localProfileDidChange:)
-                                                 name:kNSNotificationName_LocalProfileDidChange
+                                                 name:kNSNotificationNameLocalProfileDidChange
                                                object:nil];
 }
 
