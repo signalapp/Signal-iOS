@@ -341,16 +341,17 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     NSError *error;
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
     [interactionFinder
-        enumerateUnseenInteractionsWithTransaction:transaction
-                                             error:&error
-                                             block:^(TSInteraction *interaction, BOOL *stop) {
-                                                 if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
-                                                     OWSFailDebug(@"Unexpected object in unseen messages: %@",
-                                                         interaction.class);
-                                                     return;
-                                                 }
-                                                 [messages addObject:(id<OWSReadTracking>)interaction];
-                                             }];
+        enumerateUnseenInteractionsWithIsOrdered:NO
+                                     transaction:transaction
+                                           error:&error
+                                           block:^(TSInteraction *interaction, BOOL *stop) {
+                                               if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
+                                                   OWSFailDebug(
+                                                       @"Unexpected object in unseen messages: %@", interaction.class);
+                                                   return;
+                                               }
+                                               [messages addObject:(id<OWSReadTracking>)interaction];
+                                           }];
     if (error != nil) {
         OWSFailDebug(@"Error during enumeration: %@", error);
     }
