@@ -323,10 +323,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Mark as Read Locally
 
-- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread
+- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread completion:(void (^)(void))completion
 {
     OWSAssertDebug(thread);
-
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         uint64_t readTimestamp = [NSDate ows_millisecondTimeStamp];
         __block NSArray<id<OWSReadTracking>> *unreadMessages;
@@ -338,11 +337,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         }];
         if (unreadMessages.count < 1) {
             // Avoid unnecessary writes.
+            dispatch_async(dispatch_get_main_queue(), completion);
             return;
         }
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [self markMessagesAsRead:unreadMessages readTimestamp:readTimestamp wasLocal:YES transaction:transaction];
         }];
+        dispatch_async(dispatch_get_main_queue(), completion);
     });
 }
 
@@ -613,30 +614,31 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
     NSError *error;
     [interactionFinder
-        enumerateUnseenInteractionsWithTransaction:transaction
-                                             error:&error
-                                             block:^(TSInteraction *interaction, BOOL *stop) {
-                                                 if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
-                                                     OWSFailDebug(@"Expected to conform to OWSReadTracking: object "
-                                                                  @"with class: %@ collection: %@ "
-                                                                  @"key: %@",
-                                                         [interaction class],
-                                                         TSInteraction.collection,
-                                                         interaction.uniqueId);
-                                                     return;
-                                                 }
-                                                 id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)interaction;
-                                                 if (possiblyRead.sortId > sortId) {
-                                                     *stop = YES;
-                                                     return;
-                                                 }
+        enumerateUnseenInteractionsWithIsOrdered:NO
+                                     transaction:transaction
+                                           error:&error
+                                           block:^(TSInteraction *interaction, BOOL *stop) {
+                                               if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
+                                                   OWSFailDebug(@"Expected to conform to OWSReadTracking: object "
+                                                                @"with class: %@ collection: %@ "
+                                                                @"key: %@",
+                                                       [interaction class],
+                                                       TSInteraction.collection,
+                                                       interaction.uniqueId);
+                                                   return;
+                                               }
+                                               id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)interaction;
+                                               if (possiblyRead.sortId > sortId) {
+                                                   *stop = YES;
+                                                   return;
+                                               }
 
-                                                 OWSAssertDebug(!possiblyRead.read);
-                                                 OWSAssertDebug(possiblyRead.expireStartedAt == 0);
-                                                 if (!possiblyRead.read) {
-                                                     [newlyReadList addObject:possiblyRead];
-                                                 }
-                                             }];
+                                               OWSAssertDebug(!possiblyRead.read);
+                                               OWSAssertDebug(possiblyRead.expireStartedAt == 0);
+                                               if (!possiblyRead.read) {
+                                                   [newlyReadList addObject:possiblyRead];
+                                               }
+                                           }];
     if (error != nil) {
         OWSFailDebug(@"Error during enumeration: %@", error);
     }

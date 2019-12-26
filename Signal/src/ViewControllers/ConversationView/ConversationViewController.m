@@ -159,6 +159,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) NSUUID *voiceMessageUUID;
 
 @property (nonatomic, nullable) NSTimer *readTimer;
+@property (nonatomic) BOOL isMarkingAsRead;
 @property (nonatomic) NSCache *cellMediaCache;
 @property (nonatomic) ConversationHeaderView *headerView;
 @property (nonatomic, nullable) UIView *bannerView;
@@ -3665,7 +3666,22 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeSortId:self.lastVisibleSortId thread:self.thread];
+    OWSAssertIsOnMainThread();
+    if (self.isMarkingAsRead) {
+        return;
+    }
+    self.isMarkingAsRead = YES;
+    [BenchManager benchAsyncWithTitle:@"marking as read"
+                                block:^(void (^benchCompletion)(void)) {
+                                    [OWSReadReceiptManager.sharedManager
+                                        markAsReadLocallyBeforeSortId:self.lastVisibleSortId
+                                                               thread:self.thread
+                                                           completion:^{
+                                                               OWSAssertIsOnMainThread();
+                                                               self.isMarkingAsRead = NO;
+                                                               benchCompletion();
+                                                           }];
+                                }];
 }
 
 // GRDB TODO: Revisit this method.

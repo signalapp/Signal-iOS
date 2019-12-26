@@ -453,12 +453,13 @@ NS_ASSUME_NONNULL_BEGIN
         firstUnseenSortId = @(lastUnreadIndicator.firstUnseenSortId);
     } else {
         NSError *error;
-        [interactionFinder enumerateUnseenInteractionsWithTransaction:transaction
-                                                                error:&error
-                                                                block:^(TSInteraction *interaction, BOOL *stop) {
-                                                                    firstUnseenSortId = @(interaction.sortId);
-                                                                    *stop = YES;
-                                                                }];
+        [interactionFinder enumerateUnseenInteractionsWithIsOrdered:YES
+                                                        transaction:transaction
+                                                              error:&error
+                                                              block:^(TSInteraction *interaction, BOOL *stop) {
+                                                                  firstUnseenSortId = @(interaction.sortId);
+                                                                  *stop = YES;
+                                                              }];
         if (error != nil) {
             OWSFailDebug(@"Error: %@", error);
         }
