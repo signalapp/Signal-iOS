@@ -35,7 +35,7 @@ public class StickerTooltip: TooltipView {
     private let iconView = YYAnimatedImageView()
 
     @objc
-    private class func present(fromView: UIView,
+    public class func present(fromView: UIView,
                                widthReferenceView: UIView,
                                tailReferenceView: UIView,
                                stickerPack: StickerPack,

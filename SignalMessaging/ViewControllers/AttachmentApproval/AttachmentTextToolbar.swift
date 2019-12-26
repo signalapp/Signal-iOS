@@ -388,7 +388,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         guard !viewOnceButton.isHidden && !viewOnceWrapper.isHidden else {
             return
         }
-        let tooltip = ViewOnceTooltip(fromView: self, widthReferenceView: self, tailReferenceView: viewOnceButton) { [weak self] in
+        let tooltip = ViewOnceTooltip.present(fromView: self, widthReferenceView: self, tailReferenceView: viewOnceButton) { [weak self] in
             self?.removeViewOnceTooltip()
         }
         viewOnceTooltip = tooltip

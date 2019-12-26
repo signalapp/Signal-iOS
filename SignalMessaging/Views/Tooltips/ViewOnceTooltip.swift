@@ -7,17 +7,24 @@ import Foundation
 @objc
 public class ViewOnceTooltip: TooltipView {
 
-    @objc
-    public override init(fromView: UIView,
-                         widthReferenceView: UIView,
-                         tailReferenceView: UIView,
-                         wasTappedBlock: (() -> Void)?) {
+    private override init(fromView: UIView,
+                          widthReferenceView: UIView,
+                          tailReferenceView: UIView,
+                          wasTappedBlock: (() -> Void)?) {
 
         super.init(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    @objc
+    public class func present(fromView: UIView,
+                              widthReferenceView: UIView,
+                              tailReferenceView: UIView,
+                              wasTappedBlock: (() -> Void)?) {
+        ViewOnceTooltip(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
     }
 
     public override func bubbleContentView() -> UIView {
