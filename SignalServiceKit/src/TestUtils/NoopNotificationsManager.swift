@@ -32,8 +32,4 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
     public func notifyUserForGRDBMigration() {
         Logger.warn("notifyUserForGRDBMigration")
     }
-
-    public func clearNotificationForGRDBMigration() {
-        Logger.warn("clearNotificationForGRDBMigration")
-    }
 }

@@ -139,7 +139,6 @@ protocol NotificationPresenterAdaptee: class {
     func clearAllNotifications()
 
     func notifyUserForGRDBMigration()
-    func clearNotificationForGRDBMigration()
 
     var hasReceivedSyncMessageRecently: Bool { get }
 }
@@ -591,11 +590,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     @objc
     public func notifyUserForGRDBMigration() {
         adaptee.notifyUserForGRDBMigration()
-    }
-
-    @objc
-    public func clearNotificationForGRDBMigration() {
-        adaptee.clearNotificationForGRDBMigration()
     }
 
     // MARK: -

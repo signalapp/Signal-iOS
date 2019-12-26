@@ -191,13 +191,7 @@ NSString *NSStringForDataStore(DataStore value)
                     OWSLogInfo(@"Avoiding YDB-to-GRDB migration in background.");
                     // If we are migrating the database and the app was launched into the background,
                     // show the "GRDB migration" notification in case the migration fails.
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.notificationsManager notifyUserForGRDBMigration];
-
-                        [AppReadiness runNowOrWhenAppWillBecomeReady:^{
-                            [self.notificationsManager clearNotificationForGRDBMigration];
-                        }];
-                    });
+                    [self showGRDBMigrationNotification];
                 }
             }
             break;
@@ -244,6 +238,23 @@ NSString *NSStringForDataStore(DataStore value)
         case StorageModeGrdbTests:
             return DataStoreGrdb;
     }
+}
+
++ (void)showGRDBMigrationNotification
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // Dispatch async so that Environments are configured.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            OWSLogInfo(@"");
+            // This notification be cleared by:
+            //
+            // * Main app when it becomes active (along with the other notifications).
+            // * When any other notification is presented (e.g. if processing
+            //   background notifications).
+            [self.notificationsManager notifyUserForGRDBMigration];
+        });
+    });
 }
 
 - (void)configure

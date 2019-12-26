@@ -151,7 +151,17 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
 
         Logger.debug("presenting notification with identifier: \(notificationIdentifier)")
-        notificationCenter.add(request)
+        notificationCenter.add(request) { (error: Error?) in
+            if let error = error {
+                owsFailDebug("Error: \(error)")
+                return
+            }
+            guard notificationIdentifier != UserNotificationPresenterAdaptee.kMigrationNotificationId else {
+                return
+            }
+            // If we show any other notification, we can clear the "GRDB migration" notification.
+            self.clearNotificationForGRDBMigration()
+        }
         notifications[notificationIdentifier] = request
     }
 
@@ -164,6 +174,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
     func cancelNotification(_ notification: UNNotificationRequest) {
         AssertIsOnMainThread()
+
         cancelNotification(identifier: notification.identifier)
     }
 
@@ -208,7 +219,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         notify(category: .grdbMigration, title: title, body: body, threadIdentifier: nil, userInfo: [:], sound: nil, replacingIdentifier: identifier)
     }
 
-    func clearNotificationForGRDBMigration() {
+    private func clearNotificationForGRDBMigration() {
         AssertIsOnMainThread()
 
         let identifier = UserNotificationPresenterAdaptee.kMigrationNotificationId
