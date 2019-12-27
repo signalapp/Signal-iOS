@@ -238,56 +238,6 @@
     XCTAssertEqualObjects(@"abc", UIPasteboard.generalPasteboard.string);
 }
 
-- (void)testPerformCopyEditingActionWithStillImageMessage
-{
-    // Reset the pasteboard.
-    UIPasteboard.generalPasteboard.items = @[];
-    XCTAssertNil(UIPasteboard.generalPasteboard.image);
-    XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeJPEG]);
-
-    ConversationInteractionViewItem *viewItem = self.stillImageViewItem;
-    [viewItem copyMediaAction];
-    NSData *_Nullable copiedData = [UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeJPEG];
-    XCTAssertTrue(copiedData.length > 0);
-}
-
-- (void)testPerformCopyEditingActionWithAnimatedImageMessage
-{
-    // Reset the pasteboard.
-    UIPasteboard.generalPasteboard.items = @[];
-    XCTAssertNil(UIPasteboard.generalPasteboard.image);
-    XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeGIF]);
-
-    ConversationInteractionViewItem *viewItem = self.animatedImageViewItem;
-    [viewItem copyMediaAction];
-    NSData *_Nullable copiedData = [UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeGIF];
-    XCTAssertTrue(copiedData.length > 0);
-}
-
-- (void)testPerformCopyEditingActionWithVideoMessage
-{
-    // Reset the pasteboard.
-    UIPasteboard.generalPasteboard.items = @[];
-    XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMPEG4]);
-
-    ConversationInteractionViewItem *viewItem = self.videoViewItem;
-    [viewItem copyMediaAction];
-    NSData *_Nullable copiedData = [UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMPEG4];
-    XCTAssertTrue(copiedData.length > 0);
-}
-
-- (void)testPerformCopyEditingActionWithMp3AudioMessage
-{
-    // Reset the pasteboard.
-    UIPasteboard.generalPasteboard.items = @[];
-    XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMP3]);
-
-    ConversationInteractionViewItem *viewItem = self.audioViewItem;
-    [viewItem copyMediaAction];
-    NSData *_Nullable copiedData = [UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMP3];
-    XCTAssertTrue(copiedData.length > 0);
-}
-
 - (void)unknownAction:(id)sender
 {
     // It's easier to create this stub method than to suppress the "unknown selector" build warnings.
