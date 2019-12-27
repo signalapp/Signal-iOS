@@ -23,8 +23,8 @@ public class ViewOnceTooltip: TooltipView {
     public class func present(fromView: UIView,
                               widthReferenceView: UIView,
                               tailReferenceView: UIView,
-                              wasTappedBlock: (() -> Void)?) {
-        ViewOnceTooltip(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
+                              wasTappedBlock: (() -> Void)?) -> ViewOnceTooltip {
+        return ViewOnceTooltip(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
     }
 
     public override func bubbleContentView() -> UIView {

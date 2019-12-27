@@ -12,11 +12,11 @@ public class StickerTooltip: TooltipView {
 
     // MARK: Initializers
 
-    private required init(fromView: UIView,
-                          widthReferenceView: UIView,
-                          tailReferenceView: UIView,
-                          stickerPack: StickerPack,
-                          wasTappedBlock: (() -> Void)?) {
+    required init(fromView: UIView,
+                  widthReferenceView: UIView,
+                  tailReferenceView: UIView,
+                  stickerPack: StickerPack,
+                  wasTappedBlock: (() -> Void)?) {
         self.stickerPack = stickerPack
 
         super.init(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
@@ -39,8 +39,8 @@ public class StickerTooltip: TooltipView {
                                widthReferenceView: UIView,
                                tailReferenceView: UIView,
                                stickerPack: StickerPack,
-                               wasTappedBlock: (() -> Void)?) {
-        StickerTooltip(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, stickerPack: stickerPack, wasTappedBlock: wasTappedBlock)
+                               wasTappedBlock: (() -> Void)?) -> StickerTooltip {
+        return StickerTooltip(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, stickerPack: stickerPack, wasTappedBlock: wasTappedBlock)
     }
 
     public override func bubbleContentView() -> UIView {
