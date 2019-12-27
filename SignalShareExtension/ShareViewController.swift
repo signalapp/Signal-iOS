@@ -79,6 +79,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
+        // If we need to migrate YDB-to-GRDB, show an error view and abort.
+        guard StorageCoordinator.isReadyForShareExtension else {
+            showNotReadyView()
+            return
+        }
+
         // If we haven't migrated the database file to the shared data
         // directory we can't load it, and therefore can't init TSSPrimaryStorage,
         // and therefore don't want to setup most of our machinery (Environment,
@@ -86,11 +92,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // abort.
         isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
         guard isReadyForAppExtensions else {
-            showNotReadyView()
-            return
-        }
-        // If we need to migrate YDB-to-GRDB, show an error view and abort.
-        guard StorageCoordinator.isReadyForShareExtension else {
             showNotReadyView()
             return
         }
