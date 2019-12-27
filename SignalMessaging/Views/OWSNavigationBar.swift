@@ -31,7 +31,7 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public var fullWidth: CGFloat {
-        return superview?.frame.width ?? CurrentAppContext().frame.width
+        return superview?.frame.width ?? .zero
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -233,6 +233,18 @@ public class OWSNavigationBar: UINavigationBar {
                 subview.frame = self.bounds
             }
         }
+    }
+
+    public override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+
+        // `fullWidth` will not be accurate until the navbar has a defined
+        // superview. By forcing a re-layout after moving to a superview, we
+        // ensure that the correct width is always used. This works around a bug
+        // on iPad where the navigation bar is larger than the application frame
+        // when in slide over mode.
+        setNeedsLayout()
+        layoutIfNeeded()
     }
 
     // MARK: Override Theme
