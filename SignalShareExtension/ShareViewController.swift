@@ -89,6 +89,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             showNotReadyView()
             return
         }
+        // If we need to migrate YDB-to-GRDB, show an error view and abort.
+        guard StorageCoordinator.isReadyForShareExtension else {
+            showNotReadyView()
+            return
+        }
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         AppSetup.setupEnvironment(appSpecificSingletonBlock: {
@@ -406,7 +411,17 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AssertIsOnMainThread()
 
         let viewController = SAEFailedViewController(delegate: self, title: title, message: message)
-        self.showPrimaryViewController(viewController)
+
+        let navigationController = UINavigationController()
+        navigationController.presentationController?.delegate = self
+        navigationController.setViewControllers([viewController], animated: false)
+        if self.presentedViewController == nil {
+            Logger.debug("presenting modally: \(viewController)")
+            self.present(navigationController, animated: true)
+        } else {
+            owsFailDebug("modal already presented. swapping modal content for: \(viewController)")
+            assert(self.presentedViewController == navigationController)
+        }
     }
 
     // MARK: View Lifecycle

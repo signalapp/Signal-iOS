@@ -240,6 +240,19 @@ NSString *NSStringForDataStore(DataStore value)
     }
 }
 
++ (BOOL)isReadyForShareExtension
+{
+    OWSAssertDebug(SSKFeatureFlags.storageMode == StorageModeGrdbForAll);
+
+    // NOTE: By now, any move of YDB from the "app container"
+    //       to the "shared container" should be complete, so
+    //       we can ignore the "legacy" database files.
+    BOOL hasUnmigratedYdbFile = self.hasUnmigratedYdbFile;
+    OWSLogInfo(@"hasUnmigratedYdbFile: %d", hasUnmigratedYdbFile);
+
+    return !hasUnmigratedYdbFile;
+}
+
 + (void)showGRDBMigrationNotification
 {
     static dispatch_once_t onceToken;
