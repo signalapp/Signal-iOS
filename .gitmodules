@@ -7,3 +7,6 @@
 [submodule "ThirdParty/WebRTC"]
 	path = ThirdParty/WebRTC
 	url = https://github.com/signalapp/signal-webrtc-ios-artifacts
+[submodule "ThirdParty/RingRTC"]
+	path = ThirdParty/RingRTC
+	url = https://github.com/signalapp/ringrtc

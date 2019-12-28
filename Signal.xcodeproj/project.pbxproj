@@ -3597,9 +3597,7 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/ThirdParty/WebRTC/Build/WebRTC.framework",
 				"$(SRCROOT)/ThirdParty/Carthage/Build/iOS/ZXingObjC.framework",
-				"$(SRCROOT)/ThirdParty/WebRTC/Build/SignalRingRTC.framework",
 			);
 			name = "[Carthage] Copy Frameworks";
 			outputPaths = (
@@ -3644,7 +3642,6 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/ThirdParty/WebRTC/Build/WebRTC.framework",
 				"$(SRCROOT)/ThirdParty/Carthage/Build/iOS/ZXingObjC.framework",
 			);
 			name = "[Carthage] Copy Frameworks";
@@ -3677,6 +3674,8 @@
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
+				"${PODS_ROOT}/../ThirdParty/WebRTC/Build/WebRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
@@ -3705,6 +3704,8 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",

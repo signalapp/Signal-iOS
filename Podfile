@@ -71,6 +71,7 @@ end
 target 'Signal' do
   shared_pods
   pod 'SSZipArchive', :inhibit_warnings => true
+  pod 'SignalRingRTC', path: 'ThirdParty/SignalRingRTC.podspec', inhibit_wranings: true
 
   target 'SignalTests' do
     inherit! :search_paths
