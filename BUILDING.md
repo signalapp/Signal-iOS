@@ -4,8 +4,8 @@ We typically develop against the latest stable version of Xcode.
 
 ## Pre-requisites
 
-* You need Xcode 10 installed, we're currently using 10.1
-* You need to be using Ruby 2.5.0
+* You need Xcode 11 installed, we're currently using 11.3
+* You need to be using Ruby 2.6.0
 
 ## 1. Clone
 
@@ -38,11 +38,11 @@ To build and configure the libraries Signal uses, just run:
 make dependencies
 ```
 
-### Building WebRTC
+### Building RingRTC
 
-A prebuilt version of WebRTC.framework resides in a sub-module and should be
-installed by the above steps.  However, if you'd like to build it from source,
-see: https://github.com/signalapp/signal-webrtc-ios
+A prebuilt version of WebRTC.framework and the libringrtc static library reside
+in a sub-module and should be installed by the above steps.  However, if you'd 
+like to build it from source, see: https://github.com/signalapp/ringrtc
 
 ## 3. Xcode
 

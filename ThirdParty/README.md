@@ -1,2 +1,2 @@
-The WebRTC framework is generated from https://github.com/signalapp/signal-webrtc-ios
+The WebRTC framework and libringrtc are generated from https://github.com/signalapp/ringrtc
 
