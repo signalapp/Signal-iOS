@@ -94,18 +94,19 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages askForQuantityWithTitle:@"How many messages?"
                                                           completion:^(NSUInteger quantity) {
-                                                              [DebugUIMessages createFakeMessages:quantity
-                                                                                           thread:thread
-                                                                                       isTextOnly:NO];
+                                                              [DebugUIMessages createFakeMessagesInBatches:quantity
+                                                                                                    thread:thread
+                                                                                                isTextOnly:NO];
                                                           }];
                         }],
         [OWSTableItem itemWithTitle:@"Create Fake Messages (textonly)"
                         actionBlock:^{
                             [DebugUIMessages askForQuantityWithTitle:@"How many messages?"
                                                           completion:^(NSUInteger messageQuantity) {
-                                                              [DebugUIMessages createFakeMessages:messageQuantity
-                                                                                           thread:thread
-                                                                                       isTextOnly:YES];
+                                                              [DebugUIMessages
+                                                                  createFakeMessagesInBatches:messageQuantity
+                                                                                       thread:thread
+                                                                                   isTextOnly:YES];
                                                           }];
                         }],
         [OWSTableItem itemWithTitle:@"Thrash insert/deletes"
@@ -3728,13 +3729,16 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                   OWSAssertDebug(phoneNumber);
                   OWSAssertDebug(phoneNumber.toE164);
 
-                  TSContactThread *contactThread =
-                      [TSContactThread getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc]
-                                                                               initWithPhoneNumber:phoneNumber.toE164]];
-                  @autoreleasepool {
-                      [self createFakeMessages:messageCount thread:contactThread];
-                  }
-                  [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                  [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                      SignalServiceAddress *address =
+                          [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber.toE164];
+                      TSContactThread *contactThread =
+                          [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
+                      [self createFakeMessagesInBatches:messageCount
+                                                 thread:contactThread
+                                             isTextOnly:YES
+                                            transaction:transaction];
+
                       NSUInteger interactionCount = [contactThread numberOfInteractionsWithTransaction:transaction];
                       OWSLogInfo(@"Create fake thread: %@, interactions: %lu",
                           phoneNumber.toE164,
@@ -3743,33 +3747,31 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
               }];
 }
 
-+ (void)createFakeMessages:(NSUInteger)counter thread:(TSThread *)thread
++ (void)createFakeMessagesInBatches:(NSUInteger)counter thread:(TSThread *)thread isTextOnly:(BOOL)isTextOnly
 {
-    [self createFakeMessages:counter thread:thread isTextOnly:NO];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self createFakeMessagesInBatches:counter thread:thread isTextOnly:isTextOnly transaction:transaction];
+    }];
 }
 
-+ (void)createFakeMessages:(NSUInteger)counter thread:(TSThread *)thread isTextOnly:(BOOL)isTextOnly
++ (void)createFakeMessagesInBatches:(NSUInteger)counter
+                             thread:(TSThread *)thread
+                         isTextOnly:(BOOL)isTextOnly
+                        transaction:(SDSAnyWriteTransaction *)transaction
 {
     const NSUInteger kMaxBatchSize = 200;
-    if (counter < kMaxBatchSize) {
-        [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-            [self createFakeMessages:counter thread:thread isTextOnly:isTextOnly transaction:transaction];
-        }];
-    } else {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSUInteger remainder = counter;
-            while (remainder > 0) {
-                @autoreleasepool {
-                    NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
-                    [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-                        [self createFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
-                    }];
-                    remainder -= batchSize;
-                    OWSLogInfo(
-                        @"createFakeMessages %lu / %lu", (unsigned long)(counter - remainder), (unsigned long)counter);
-                }
-            }
-        });
+    NSUInteger remainder = counter;
+    while (remainder > 0) {
+        @autoreleasepool {
+            NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
+            [self createFakeMessages:batchSize
+                         batchOffset:counter - remainder
+                              thread:thread
+                          isTextOnly:isTextOnly
+                         transaction:transaction];
+            remainder -= batchSize;
+            OWSLogInfo(@"createFakeMessages %lu / %lu", (unsigned long)(counter - remainder), (unsigned long)counter);
+        }
     }
 }
 
@@ -3780,7 +3782,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
     uint32_t sendDelay = arc4random_uniform((uint32_t)(0.01 * NSEC_PER_SEC));
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, sendDelay), dispatch_get_main_queue(), ^{
-        [self createFakeMessages:1 thread:thread isTextOnly:YES];
+        [self createFakeMessagesInBatches:1 thread:thread isTextOnly:YES];
     });
 
     uint32_t deleteDelay = arc4random_uniform((uint32_t)(0.01 * NSEC_PER_SEC));
@@ -3796,6 +3798,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 // TODO: Remove.
 + (void)createFakeMessages:(NSUInteger)counter
+               batchOffset:(NSUInteger)offset
                     thread:(TSThread *)thread
                 isTextOnly:(BOOL)isTextOnly
                transaction:(SDSAnyWriteTransaction *)transaction
@@ -3803,7 +3806,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     OWSLogInfo(@"createFakeMessages: %lu", (unsigned long)counter);
 
     for (NSUInteger i = 0; i < counter; i++) {
-        NSString *randomText = [[self randomText] stringByAppendingFormat:@" (sequence: %lu)", (unsigned long)i + 1];
+        NSString *randomText =
+            [[self randomText] stringByAppendingFormat:@" (sequence: %lu)", (unsigned long)i + 1 + offset];
         switch (arc4random_uniform(isTextOnly ? 2 : 4)) {
             case 0: {
                 // MJK - should be safe to remove this senderTimestamp
@@ -3830,7 +3834,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 [self createFakeOutgoingMessage:thread
                                     messageBody:randomText
                                 fakeAssetLoader:nil
-                                   messageState:TSOutgoingMessageStateFailed
+                                   messageState:TSOutgoingMessageStateSent
                                     isDelivered:NO
                                          isRead:NO
                                   quotedMessage:nil
@@ -4024,7 +4028,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         },
         ^(SDSAnyWriteTransaction *transaction) {
             NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
-            [self createFakeMessages:messageCount thread:thread isTextOnly:NO transaction:transaction];
+            [self createFakeMessages:messageCount batchOffset:0 thread:thread isTextOnly:NO transaction:transaction];
         },
         ^(SDSAnyWriteTransaction *transaction) {
             NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
