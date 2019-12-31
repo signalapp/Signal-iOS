@@ -265,16 +265,16 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 /**
  * Iterate over this thread's interactions
  */
-- (void)enumerateInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
-                                  usingBlock:(void (^)(TSInteraction *interaction))block
+- (void)enumerateRecentInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
+                                        usingBlock:(void (^)(TSInteraction *interaction))block
 {
     NSError *error;
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
-    [interactionFinder enumerateInteractionsWithTransaction:transaction
-                                                      error:&error
-                                                      block:^(TSInteraction *interaction, BOOL *stop) {
-                                                          block(interaction);
-                                                      }];
+    [interactionFinder enumerateRecentInteractionsWithTransaction:transaction
+                                                            error:&error
+                                                            block:^(TSInteraction *interaction, BOOL *stop) {
+                                                                block(interaction);
+                                                            }];
     if (error != nil) {
         OWSFailDebug(@"Error during enumeration: %@", error);
     }
@@ -284,13 +284,13 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
  * Enumerates all the threads interactions. Note this will explode if you try to create a transaction in the block.
  * If you need a transaction, use the sister method: `enumerateInteractionsWithTransaction:usingBlock`
  */
-- (void)enumerateInteractionsUsingBlock:(void (^)(TSInteraction *interaction))block
+- (void)enumerateRecentInteractionsUsingBlock:(void (^)(TSInteraction *interaction))block
 {
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self enumerateInteractionsWithTransaction:transaction
-                                        usingBlock:^(TSInteraction *interaction) {
-                                            block(interaction);
-                                        }];
+        [self enumerateRecentInteractionsWithTransaction:transaction
+                                              usingBlock:^(TSInteraction *interaction) {
+                                                  block(interaction);
+                                              }];
     }];
 }
 
@@ -300,7 +300,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 - (NSArray<TSInteraction *> *)allInteractions
 {
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-    [self enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
+    [self enumerateRecentInteractionsUsingBlock:^(TSInteraction *interaction) {
         [interactions addObject:interaction];
     }];
 
@@ -312,7 +312,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
 {
     NSMutableArray *errorMessages = [NSMutableArray new];
-    [self enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
+    [self enumerateRecentInteractionsUsingBlock:^(TSInteraction *interaction) {
         if ([interaction isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
             TSInvalidIdentityKeyReceivingErrorMessage *error = (TSInvalidIdentityKeyReceivingErrorMessage *)interaction;
             @try {
@@ -341,8 +341,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     NSError *error;
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
     [interactionFinder
-        enumerateUnseenInteractionsWithIsOrdered:NO
-                                     transaction:transaction
+        enumerateUnseenInteractionsWithTransaction:transaction
                                            error:&error
                                            block:^(TSInteraction *interaction, BOOL *stop) {
                                                if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {

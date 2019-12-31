@@ -92,15 +92,16 @@ NS_ASSUME_NONNULL_BEGIN
         for (NSString *threadId in threadIds) {
             InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:threadId];
             NSError *error;
-            [interactionFinder enumerateInteractionsWithTransaction:transaction
-                                                              error:&error
-                                                              block:^(TSInteraction *interaction, BOOL *stop) {
-                                                                  NSTimeInterval ageSeconds = fabs(
-                                                                      interaction.receivedAtDate.timeIntervalSinceNow);
-                                                                  if (ageSeconds >= maxAgeSeconds) {
-                                                                      [interactionsToDelete addObject:interaction];
-                                                                  }
-                                                              }];
+            [interactionFinder
+                enumerateRecentInteractionsWithTransaction:transaction
+                                                     error:&error
+                                                     block:^(TSInteraction *interaction, BOOL *stop) {
+                                                         NSTimeInterval ageSeconds
+                                                             = fabs(interaction.receivedAtDate.timeIntervalSinceNow);
+                                                         if (ageSeconds >= maxAgeSeconds) {
+                                                             [interactionsToDelete addObject:interaction];
+                                                         }
+                                                     }];
         }
 
         OWSLogInfo(@"Deleting %zd interactions.", interactionsToDelete.count);

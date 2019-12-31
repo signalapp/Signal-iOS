@@ -301,7 +301,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
         rowsStackView.spacing = ScaleFromIPhone5To7Plus(12, 30)
 
         paletteView.addSubview(rowsStackView)
-        rowsStackView.ows_autoPinToSuperviewMargins()
+        rowsStackView.autoPinEdgesToSuperviewMargins()
 
         // no-op gesture to keep taps from dismissing SheetView
         paletteView.addGestureRecognizer(UITapGestureRecognizer(target: nil, action: nil))
@@ -345,7 +345,6 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var shouldHideFooter: Bool = false
     var isFirstInCluster: Bool = true
     var isLastInCluster: Bool = true
-    var unreadIndicator: OWSUnreadIndicator?
     var lastAudioMessageView: AudioMessageView?
     var audioDurationSeconds: CGFloat = 0
     var audioProgressSeconds: CGFloat = 0

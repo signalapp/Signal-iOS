@@ -48,7 +48,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/OWSTextField.h>
 #import <SignalMessaging/OWSTextView.h>
-#import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalMessaging/OWSWindowManager.h>
 #import <SignalMessaging/PrivateMethodsForMigration.h>
 #import <SignalMessaging/ScreenLockViewController.h>

@@ -19,6 +19,7 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_TypingIndicator,
     OWSInteractionType_ThreadDetails,
     OWSInteractionType_Offer,
+    OWSInteractionType_UnreadIndicator,
 };
 
 NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
@@ -36,6 +37,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       timestamp:(uint64_t)timestamp
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        inThread:(TSThread *)thread;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 

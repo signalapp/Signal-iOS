@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<id<ConversationViewLayoutItem>> *)layoutItems;
 
 - (CGFloat)layoutHeaderHeight;
+- (CGFloat)layoutFooterHeight;
 
 @end
 

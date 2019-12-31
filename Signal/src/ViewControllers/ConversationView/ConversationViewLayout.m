@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGSize contentSize;
 
 @property (nonatomic, readonly) NSMutableDictionary<NSNumber *, UICollectionViewLayoutAttributes *> *itemAttributesMap;
+@property (nonatomic, nullable) UICollectionViewLayoutAttributes *headerLayoutAttributes;
+@property (nonatomic, nullable) UICollectionViewLayoutAttributes *footerLayoutAttributes;
 
 // This dirty flag may be redundant with logic in UICollectionViewLayout,
 // but it can't hurt and it ensures that we can safely & cheaply call
@@ -102,7 +104,21 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<id<ConversationViewLayoutItem>> *layoutItems = self.delegate.layoutItems;
 
-    CGFloat y = self.conversationStyle.contentMarginTop + self.delegate.layoutHeaderHeight;
+    CGFloat y = 0;
+
+    if (layoutItems.count == 0) {
+        self.footerLayoutAttributes = nil;
+    } else {
+        NSIndexPath *headerIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes
+            layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                                         withIndexPath:headerIndexPath];
+
+        headerLayoutAttributes.frame = CGRectMake(0, y, viewWidth, self.delegate.layoutHeaderHeight);
+        self.headerLayoutAttributes = headerLayoutAttributes;
+    }
+    y += self.delegate.layoutHeaderHeight;
+    y += self.conversationStyle.contentMarginTop;
     CGFloat contentBottom = y;
 
     NSInteger row = 0;
@@ -134,6 +150,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     contentBottom += self.conversationStyle.contentMarginBottom;
+
+    if (layoutItems.count == 0) {
+        self.footerLayoutAttributes = nil;
+    } else {
+        NSIndexPath *footerIndexPath = [NSIndexPath indexPathForRow:(NSInteger)layoutItems.count - 1 inSection:0];
+        UICollectionViewLayoutAttributes *footerLayoutAttributes = [UICollectionViewLayoutAttributes
+            layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter
+                                         withIndexPath:footerIndexPath];
+
+        footerLayoutAttributes.frame = CGRectMake(0, contentBottom, viewWidth, self.delegate.layoutFooterHeight);
+        self.footerLayoutAttributes = footerLayoutAttributes;
+        contentBottom += self.delegate.layoutFooterHeight;
+    }
+
     self.contentSize = CGSizeMake(viewWidth, contentBottom);
     self.lastViewWidth = viewWidth;
 }
@@ -141,9 +171,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSArray<__kindof UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect
 {
     NSMutableArray<UICollectionViewLayoutAttributes *> *result = [NSMutableArray new];
+    if (self.headerLayoutAttributes != nil) {
+        if (CGRectIntersectsRect(rect, self.headerLayoutAttributes.frame)) {
+            [result addObject:self.headerLayoutAttributes];
+        }
+    }
     for (UICollectionViewLayoutAttributes *itemAttributes in self.itemAttributesMap.allValues) {
         if (CGRectIntersectsRect(rect, itemAttributes.frame)) {
             [result addObject:itemAttributes];
+        }
+    }
+    if (self.footerLayoutAttributes != nil) {
+        if (CGRectIntersectsRect(rect, self.footerLayoutAttributes.frame)) {
+            [result addObject:self.footerLayoutAttributes];
         }
     }
     return result;
@@ -152,6 +192,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     return self.itemAttributesMap[@(indexPath.row)];
+}
+
+- (nullable UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)elementKind
+                                                                              atIndexPath:(NSIndexPath *)indexPath
+{
+    if ([elementKind isEqualToString:UICollectionElementKindSectionHeader]) {
+        return self.headerLayoutAttributes;
+    } else if ([elementKind isEqualToString:UICollectionElementKindSectionFooter]) {
+        return self.footerLayoutAttributes;
+    } else {
+        return nil;
+    }
 }
 
 - (CGSize)collectionViewContentSize

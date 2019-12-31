@@ -614,8 +614,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
     NSError *error;
     [interactionFinder
-        enumerateUnseenInteractionsWithIsOrdered:NO
-                                     transaction:transaction
+        enumerateUnseenInteractionsWithTransaction:transaction
                                            error:&error
                                            block:^(TSInteraction *interaction, BOOL *stop) {
                                                if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {

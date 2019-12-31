@@ -8,7 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSLinkPreviewDraft;
 @class OWSMessageSender;
 @class OWSQuotedReplyModel;
-@class OWSUnreadIndicator;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SignalAttachment;
@@ -20,23 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSOutgoingMessage;
 @class TSThread;
 @class YapDatabaseReadTransaction;
-
-@interface ThreadDynamicInteractions : NSObject
-
-// Represents the "reverse index" of the focus message, if any.
-// The "reverse index" is the distance of this interaction from
-// the last interaction in the thread.  Therefore the last interaction
-// will have a "reverse index" of zero.
-//
-// We use "reverse indices" because (among other uses) we use this to
-// determine the initial load window size.
-@property (nonatomic, nullable, readonly) NSNumber *focusMessagePosition;
-
-@property (nonatomic, nullable, readonly) OWSUnreadIndicator *unreadIndicator;
-
-- (void)clearUnreadIndicatorState;
-
-@end
 
 #pragma mark -
 
@@ -98,32 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                messageSender:(OWSMessageSender *)messageSender
                                                   completion:(void (^)(NSError *_Nullable error))completion;
 
-#pragma mark - dynamic interactions
-
-// This method will create and/or remove any offers and indicators
-// necessary for this thread.  This includes:
-//
-// * Block offers.
-// * "Add to contacts" offers.
-// * Unread indicators.
-//
-// Parameters:
-//
-// * hideUnreadMessagesIndicator: If YES, the "unread indicator" has
-//   been cleared and should not be shown.
-// * firstUnseenInteractionTimestamp: A snapshot of unseen message state
-//   when we entered the conversation view.  See comments on
-//   ThreadOffersAndIndicators.
-// * maxRangeSize: Loading a lot of messages in conversation view is
-//   slow and unwieldy.  This number represents the maximum current
-//   size of the "load window" in that view. The unread indicator should
-//   always be inserted within that window.
-+ (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
-                                      hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
-                                              lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
-                                                   focusMessageId:(nullable NSString *)focusMessageId
-                                                     maxRangeSize:(NSUInteger)maxRangeSize
-                                                      transaction:(SDSAnyReadTransaction *)transaction;
+#pragma mark - Profile Whitelist
 
 // This method should be called right _before_ we send a message to a thread,
 // since we want to auto-add any thread to the profile whitelist that was

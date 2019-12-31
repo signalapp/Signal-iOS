@@ -1,8 +1,6 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
-
-extern const CGFloat OWSMessageHeaderViewDateHeaderVMargin;
 
 @class ConversationStyle;
 
