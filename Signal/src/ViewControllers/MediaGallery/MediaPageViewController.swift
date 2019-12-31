@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -125,7 +125,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: Bottom Bar
     lazy var bottomContainer = UIView()
-    lazy var footerBar = makeClearToolbar()
+    lazy var footerBar = UIToolbar.clear()
     let captionContainerView: CaptionContainerView = CaptionContainerView()
     var galleryRailView: GalleryRailView = GalleryRailView()
 
@@ -279,20 +279,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         if currentViewController.galleryItem.isVideo {
             currentViewController.playVideo()
         }
-    }
-
-    private func makeClearToolbar() -> UIToolbar {
-        let toolbar = UIToolbar()
-
-        toolbar.backgroundColor = UIColor.clear
-
-        // Making a toolbar transparent requires setting an empty uiimage
-        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-
-        // hide 1px top-border
-        toolbar.clipsToBounds = true
-
-        return toolbar
     }
 
     private var shouldHideToolbars: Bool = false {

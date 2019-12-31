@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -627,3 +627,18 @@ public extension UIView {
         return superview as? T ?? superview.firstAncestor(ofType: type)
     }
 }
+
+public extension UIToolbar {
+    static func clear() -> UIToolbar {
+        let toolbar = UIToolbar()
+        toolbar.backgroundColor = .clear
+
+        // Making a toolbar transparent requires setting an empty uiimage
+        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+
+        // hide 1px top-border
+        toolbar.clipsToBounds = true
+
+        return toolbar
+    }
+ }

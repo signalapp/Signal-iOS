@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
@@ -257,6 +257,9 @@ typedef enum : NSUInteger {
     _recordVoiceNoteAudioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:OWSAudioBehavior_PlayAndRecord];
 
     self.scrollContinuity = kScrollContinuityBottom;
+
+    _inputAccessoryPlaceholder = [InputAccessoryViewPlaceholder new];
+    self.inputAccessoryPlaceholder.delegate = self;
 }
 
 #pragma mark - Dependencies
@@ -490,6 +493,11 @@ typedef enum : NSUInteger {
     _searchController = [[ConversationSearchController alloc] initWithThread:thread];
     _searchController.delegate = self;
 
+    // because the search bar view is hosted in the navigation bar, it's not in the CVC's responder
+    // chain, and thus won't inherit our inputAccessoryView, so we manually set it here.
+    OWSAssertDebug(self.inputAccessoryPlaceholder != nil);
+    _searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder;
+
     self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
                                                             target:self
                                                           selector:@selector(reloadTimerDidFire)
@@ -612,9 +620,6 @@ typedef enum : NSUInteger {
     [self.view addSubview:self.bottomBar];
     self.bottomBarBottomConstraint = [self.bottomBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.bottomBar autoPinWidthToSuperview];
-
-    _inputAccessoryPlaceholder = [InputAccessoryViewPlaceholder new];
-    self.inputAccessoryPlaceholder.delegate = self;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self updateShowLoadMoreHeadersWithTransaction:transaction];
@@ -1448,10 +1453,14 @@ typedef enum : NSUInteger {
     }
 
     if (self.isShowingSearchUI) {
-        self.navigationItem.rightBarButtonItems = @[];
-        self.navigationItem.leftBarButtonItem = nil;
-        self.navigationItem.hidesBackButton = YES;
-        return;
+        if (@available(iOS 11.0, *)) {
+            OWSAssertDebug(self.navigationItem.searchController != nil);
+        } else {
+            self.navigationItem.rightBarButtonItems = @[];
+            self.navigationItem.leftBarButtonItem = nil;
+            self.navigationItem.hidesBackButton = YES;
+            return;
+        }
     }
 
     const CGFloat kBarButtonSize = 44;
@@ -3576,6 +3585,8 @@ typedef enum : NSUInteger {
         }
     }
     if (lastVisibleIndexPath && lastVisibleIndexPath.row >= (NSInteger)self.viewItems.count) {
+        // unclear to me why this should happen, so adding an assert to catch it.
+        OWSFailDebug(@"invalid lastVisibleIndexPath");
         return (self.viewItems.count > 0 ? [NSIndexPath indexPathForRow:(NSInteger)self.viewItems.count - 1 inSection:0]
                                          : nil);
     }
@@ -4215,64 +4226,33 @@ typedef enum : NSUInteger {
 {
     self.isShowingSearchUI = YES;
 
-    UIView *searchBar = self.searchController.uiSearchController.searchBar;
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.searchController = self.searchController.uiSearchController;
+    } else {
+        // Note: setting a searchBar as the titleView causes UIKit to render the navBar
+        // *slightly* taller (44pt -> 56pt)
+        self.navigationItem.titleView = self.searchController.uiSearchController.searchBar;
+    }
 
-    // Note: setting a searchBar as the titleView causes UIKit to render the navBar
-    // *slightly* taller (44pt -> 56pt)
-    self.navigationItem.titleView = searchBar;
     [self updateBarButtonItems];
     [self reloadBottomBar];
-
-    // Hack so that the ResultsBar stays on the screen when dismissing the search field
-    // keyboard.
-    //
-    // Details:
-    //
-    // When the search UI is activated, both the SearchField and the ConversationVC
-    // have the resultsBar as their inputAccessoryView.
-    //
-    // So when the SearchField is first responder, the ResultsBar is shown on top of the keyboard.
-    // When the ConversationVC is first responder, the ResultsBar is shown at the bottom of the
-    // screen.
-    //
-    // When the user swipes to dismiss the keyboard, trying to see more of the content while
-    // searching, we want the ResultsBar to stay at the bottom of the screen - that is, we
-    // want the ConversationVC to becomeFirstResponder.
-    //
-    // If the SearchField were a subview of ConversationVC.view, this would all be automatic,
-    // as first responder status is percolated up the responder chain via `nextResponder`, which
-    // basically travereses each superView, until you're at a rootView, at which point the next
-    // responder is the ViewController which controls that View.
-    //
-    // However, because SearchField lives in the Navbar, it's "controlled" by the
-    // NavigationController, not the ConversationVC.
-    //
-    // So here we stub the next responder on the navBar so that when the searchBar resigns
-    // first responder, the ConversationVC will be in it's responder chain - keeeping the
-    // ResultsBar on the bottom of the screen after dismissing the keyboard.
-    if (![self.navigationController.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
-        OWSFailDebug(@"unexpected navigationController: %@", self.navigationController);
-        return;
-    }
-    OWSNavigationBar *navBar = (OWSNavigationBar *)self.navigationController.navigationBar;
-    navBar.stubbedNextResponder = self;
 }
 
 - (void)hideSearchUI
 {
     self.isShowingSearchUI = NO;
 
-    self.navigationItem.titleView = self.headerView;
-    [self updateBarButtonItems];
-
-    if (![self.navigationController.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
-        OWSFailDebug(@"unexpected navigationController: %@", self.navigationController);
-        return;
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.searchController = nil;
+        // HACK: For some reason at this point the OWSNavbar retains the extra space it
+        // used to house the search bar. This only seems to occur when dismissing
+        // the search UI when scrolled to the very top of the conversation.
+        [self.navigationController.navigationBar sizeToFit];
+    } else {
+        self.navigationItem.titleView = self.headerView;
     }
-    OWSNavigationBar *navBar = (OWSNavigationBar *)self.navigationController.navigationBar;
-    OWSAssertDebug(navBar.stubbedNextResponder == self);
-    navBar.stubbedNextResponder = nil;
 
+    [self updateBarButtonItems];
     [self reloadBottomBar];
 }
 
@@ -4389,10 +4369,6 @@ typedef enum : NSUInteger {
         return;
     }
 
-    // Limit outgoing text messages to 16kb.
-    //
-    // We convert large text messages to attachments
-    // which are presented as normal text messages.
     BOOL didAddToProfileWhitelist =
         [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
     __block TSOutgoingMessage *message;
