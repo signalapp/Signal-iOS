@@ -1,3 +1,13 @@
+GIT
+  remote: https://github.com/signalapp/cocoapods-binary.git
+  revision: 0abc38a2cfd8810e3c5492d5ec4463a486a8497a
+  branch: nt/fix-readlink
+  specs:
+    cocoapods-binary (0.4.4)
+      cocoapods (>= 1.5.0, < 2.0)
+      fourflusher (~> 2.0)
+      xcpretty (~> 0.3.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -32,9 +42,6 @@ GEM
       nap (~> 1.0)
       ruby-macho (~> 1.4)
       xcodeproj (>= 1.10.0, < 2.0)
-    cocoapods-binary (0.4.1)
-      cocoapods (>= 1.5.0, < 2.0)
-      fourflusher (~> 2.0)
     cocoapods-core (1.7.5)
       activesupport (>= 4.0.2, < 6)
       fuzzy_match (~> 2.0.4)
@@ -211,7 +218,7 @@ PLATFORMS
 DEPENDENCIES
   anbt-sql-formatter
   cocoapods
-  cocoapods-binary
+  cocoapods-binary!
   fastlane
 
 BUNDLED WITH
