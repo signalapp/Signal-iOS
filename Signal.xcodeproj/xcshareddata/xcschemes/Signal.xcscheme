@@ -72,7 +72,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B772E882F193AA2F25932C514BBF0805"
+               BlueprintIdentifier = "11A6D3ED18260650136E8F509A45FB35"
                BuildableName = "SignalServiceKit-Unit-Tests.xctest"
                BlueprintName = "SignalServiceKit-Unit-Tests"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">

@@ -2,12 +2,6 @@
 
 We typically develop against the latest stable version of Xcode.
 
-As of this writing, that's Xcode 10.1
-
-## Prerequistes
-
-Install [Carthage](https://github.com/Carthage/Carthage#installing-carthage)
-
 ## 1. Clone
 
 Clone the repo to a working directory:
@@ -16,7 +10,7 @@ Clone the repo to a working directory:
 git clone --recurse-submodules https://github.com/signalapp/Signal-iOS
 ```
 
-Since we make use of submodules, you must use `git clone`, rather than
+Since we make use of sub-modules, you must use `git clone`, rather than
 downloading a prepared zip file from Github.
 
 We recommend you fork the repo on GitHub, then clone your fork:
@@ -39,11 +33,11 @@ To build and configure the libraries Signal uses, just run:
 make dependencies
 ```
 
-### Building WebRTC
+### Building RingRTC
 
-A prebuilt version of WebRTC.framework resides in a submodule and should be
-installed by the above steps.  However, if you'd like to build it from source,
-see: https://github.com/signalapp/signal-webrtc-ios
+A prebuilt version of WebRTC.framework and the libringrtc static library reside
+in a sub-module and should be installed by the above steps.  However, if you'd 
+like to build it from source, see: https://github.com/signalapp/ringrtc
 
 ## 3. Xcode
 
