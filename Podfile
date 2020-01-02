@@ -30,15 +30,14 @@ pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
 # see: https://github.com/mxcl/PromiseKit/issues/990
 pod 'PromiseKit', "6.5.3"
 
-###
-# forked third party pods
-###
-
 # pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 pod 'GRDB.swift/SQLCipher'
 
-# Includes some soon to be released "unencrypted header" changes required for the Share Extension
 pod 'SQLCipher', ">= 4.0.1"
+
+###
+# forked third party pods
+###
 
 # Forked for performance optimizations that are not likely to be upstreamed as they are specific
 # to our limited use of Mantle

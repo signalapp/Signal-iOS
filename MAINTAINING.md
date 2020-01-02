@@ -10,8 +10,8 @@ Keeping CocoaPods based dependencies is easy enough.
 - To just update one dependency: `bundle exec pod update DependencyKit`
 - To update all dependencies to the latest according to the Podfile range: `bundle exec pod update`
 
-WebRTC updates are managed separately, and manually based on:
-- https://github.com/signalapp/signal-webrtc-ios
+RingRTC/WebRTC updates are managed separately, and manually based on:
+- https://github.com/signalapp/ringrtc
 - You can find the latest build at https://github.com/signalapp/signal-webrtc-ios-artifacts
 
 ## Translations

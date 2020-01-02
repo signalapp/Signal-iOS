@@ -2,11 +2,6 @@
 
 We typically develop against the latest stable version of Xcode.
 
-## Pre-requisites
-
-* You need Xcode 11 installed, we're currently using 11.3
-* You need to be using Ruby 2.6.0
-
 ## 1. Clone
 
 Clone the repo to a working directory:
