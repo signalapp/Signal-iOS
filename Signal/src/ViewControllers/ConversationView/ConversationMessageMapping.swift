@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -46,7 +46,7 @@ public class ConversationMessageMapping: NSObject {
 
         let result = Int(messageCountToFillScreen * 2)
         Logger.verbose("initialLoadCount: \(result)")
-        guard result > 10 else {
+        guard result >= 10 else {
             owsFailDebug("unexpectedly small initialLoadCount: \(result)")
             return 10
         }
