@@ -28,4 +28,8 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
     public func clearAllNotifications() {
         Logger.warn("clearAllNotifications")
     }
+
+    public func notifyUserForGRDBMigration() {
+        Logger.warn("notifyUserForGRDBMigration")
+    }
 }

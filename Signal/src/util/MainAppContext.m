@@ -399,6 +399,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];
 }
 
+- (BOOL)canPresentNotifications
+{
+    return YES;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

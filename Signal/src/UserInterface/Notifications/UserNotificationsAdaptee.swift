@@ -151,7 +151,17 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
 
         Logger.debug("presenting notification with identifier: \(notificationIdentifier)")
-        notificationCenter.add(request)
+        notificationCenter.add(request) { (error: Error?) in
+            if let error = error {
+                owsFailDebug("Error: \(error)")
+                return
+            }
+            guard notificationIdentifier != UserNotificationPresenterAdaptee.kMigrationNotificationId else {
+                return
+            }
+            // If we show any other notification, we can clear the "GRDB migration" notification.
+            self.clearNotificationForGRDBMigration()
+        }
         notifications[notificationIdentifier] = request
     }
 
@@ -164,6 +174,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
     func cancelNotification(_ notification: UNNotificationRequest) {
         AssertIsOnMainThread()
+
         cancelNotification(identifier: notification.identifier)
     }
 
@@ -191,6 +202,28 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         if !FeatureFlags.onlyModernNotificationClearance {
             clearLegacyNotifications()
         }
+    }
+
+    private static let kMigrationNotificationId = "kMigrationNotificationId"
+
+    func notifyUserForGRDBMigration() {
+        AssertIsOnMainThread()
+
+        let title = NSLocalizedString("GRDB_MIGRATION_NOTIFICATION_TITLE",
+                                      comment: "Title of notification shown during GRDB migration indicating that user may need to open app to view their content.")
+        let body = NSLocalizedString("GRDB_MIGRATION_NOTIFICATION_BODY",
+                                      comment: "Body message of notification shown during GRDB migration indicating that user may need to open app to view their content.")
+        // By re-using the same identifier, we ensure that we never
+        // show this notification more than once at a time.
+        let identifier = UserNotificationPresenterAdaptee.kMigrationNotificationId
+        notify(category: .grdbMigration, title: title, body: body, threadIdentifier: nil, userInfo: [:], sound: nil, replacingIdentifier: identifier)
+    }
+
+    private func clearNotificationForGRDBMigration() {
+        AssertIsOnMainThread()
+
+        let identifier = UserNotificationPresenterAdaptee.kMigrationNotificationId
+        cancelNotification(identifier: identifier)
     }
 
     private func clearLegacyNotifications() {
@@ -224,6 +257,9 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
              .missedCallFromNoLongerVerifiedIdentity:
             // Always show these notifications whenever the app is in the foreground.
             return true
+        case .grdbMigration:
+            // Never show these notifications if the app is in the foreground.
+            return false
         }
 
         guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
