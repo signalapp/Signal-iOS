@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -600,8 +600,11 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (void)endEditingMessage
 {
     [self.inputTextView resignFirstResponder];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-result"
     [self.stickerKeyboard resignFirstResponder];
     [self.attachmentKeyboard resignFirstResponder];
+#pragma clang diagnostic pop
 }
 
 - (BOOL)isInputViewFirstResponder
