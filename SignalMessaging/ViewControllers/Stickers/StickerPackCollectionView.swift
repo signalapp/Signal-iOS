@@ -126,17 +126,6 @@ public class StickerPackCollectionView: UICollectionView {
 
     @objc
     func handleLongPress(sender: UIGestureRecognizer) {
-
-        guard let indexPath = self.indexPathForItem(at: sender.location(in: self)) else {
-            hidePreview()
-            return
-        }
-        guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
-            owsFailDebug("Invalid index path: \(indexPath)")
-            hidePreview()
-            return
-        }
-
         switch sender.state {
         case .began, .changed:
             break
@@ -144,6 +133,15 @@ public class StickerPackCollectionView: UICollectionView {
             fallthrough
         @unknown default:
             hidePreview()
+            return
+        }
+
+        // Do nothing if we're not currently pressing on a pack, we'll hide it when we release
+        // or update it when the user moves their touch over another pack. This prevents "flashing"
+        // as the user moves their finger between packs.
+        guard let indexPath = self.indexPathForItem(at: sender.location(in: self)) else { return }
+        guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
+            owsFailDebug("Invalid index path: \(indexPath)")
             return
         }
 
