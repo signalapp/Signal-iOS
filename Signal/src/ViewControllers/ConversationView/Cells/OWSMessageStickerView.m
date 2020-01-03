@@ -323,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)stickerSize
 {
-    return 128;
+    return 175;
 }
 
 - (CGSize)bodyMediaSize

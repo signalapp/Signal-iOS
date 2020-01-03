@@ -303,6 +303,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];
 }
 
+- (BOOL)canPresentNotifications
+{
+    return NO;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

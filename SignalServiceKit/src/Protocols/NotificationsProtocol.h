@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearAllNotifications;
 
+- (void)notifyUserForGRDBMigration;
+
 @end
 
 NS_ASSUME_NONNULL_END

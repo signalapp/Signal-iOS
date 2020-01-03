@@ -57,6 +57,22 @@ NS_ASSUME_NONNULL_BEGIN
     });
     return regex;
 }
+- (NSRegularExpression *)ios13DataRegex
+{
+    static NSRegularExpression *regex = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSError *error;
+        regex = [NSRegularExpression
+            regularExpressionWithPattern:@"\\{length = \\d+, bytes = 0x([\\da-f]{2})([\\da-f]{2})*\\}"
+                                 options:NSRegularExpressionCaseInsensitive
+                                   error:&error];
+        if (error || !regex) {
+            OWSFail(@"could not compile regular expression: %@", error);
+        }
+    });
+    return regex;
+}
 
 - (NSRegularExpression *)ipV4AddressRegex
 {
@@ -99,6 +115,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                     options:0
                                                       range:NSMakeRange(0, [logString length])
                                                withTemplate:@"[ REDACTED_DATA:$1... ]"];
+
+    // On iOS 13, when built with the 13 SDK, NSData's description has changed
+    // and needs to be scrubbed specifically.
+    // example log line: "Called someFunction with nsData: {length = 8, bytes = 0x0123456789abcdef}"
+    //  scrubbed output: "Called someFunction with nsData: [ REDACTED_DATA:96 ]"
+    NSRegularExpression *ios13DataRegex = self.ios13DataRegex;
+    logString = [ios13DataRegex stringByReplacingMatchesInString:logString
+                                                         options:0
+                                                           range:NSMakeRange(0, [logString length])
+                                                    withTemplate:@"[ REDACTED_DATA:$1... ]"];
 
     NSRegularExpression *ipV4AddressRegex = self.ipV4AddressRegex;
     logString = [ipV4AddressRegex stringByReplacingMatchesInString:logString

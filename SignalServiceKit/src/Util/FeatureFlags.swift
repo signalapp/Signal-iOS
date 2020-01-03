@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
 
 // MARK: -
 
@@ -31,8 +31,12 @@ public enum StorageMode: Int {
     // If no YDB database exists, a throwaway db is not used.
     //
     // Supercedes grdbMigratesFreshDBEveryLaunch.
+    //
+    // TODO: Remove.
     case grdbThrowawayIfMigrating
     // Use GRDB under certain conditions.
+    //
+    // TODO: Remove.
     case grdbForAlreadyMigrated
     case grdbForLegacyUsersOnly
     case grdbForNewUsersOnly
@@ -160,10 +164,8 @@ public class FeatureFlags: NSObject {
     @objc
     public static let strictSyncTranscriptTimestamps = false
 
-    // This shouldn't be enabled in production until the receive side has been
-    // in production for "long enough".
     @objc
-    public static let viewOnceSending = build.includes(.qa)
+    public static let viewOnceSending = true
 
     // Don't enable this flag in production.
     @objc

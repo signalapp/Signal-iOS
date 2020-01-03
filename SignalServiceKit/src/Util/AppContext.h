@@ -123,6 +123,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 // This method should only be called by the main app.
 - (UIApplicationState)mainApplicationStateOnLaunch;
 
+- (BOOL)canPresentNotifications;
+
 @end
 
 id<AppContext> CurrentAppContext(void);

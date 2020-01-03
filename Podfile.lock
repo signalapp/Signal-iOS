@@ -106,6 +106,11 @@ PODS:
     - HKDFKit
     - SignalCoreKit
     - SwiftProtobuf
+  - SignalRingRTC (0.2.0):
+    - SignalCoreKit
+    - SignalRingRTC/WebRTC (= 0.2.0)
+  - SignalRingRTC/WebRTC (0.2.0):
+    - SignalCoreKit
   - SignalServiceKit (0.9.0):
     - AFNetworking
     - AxolotlKit
@@ -216,9 +221,14 @@ PODS:
     - YapDatabase/SQLCipher/Core
   - YapDatabase/SQLCipher/Extensions/View (3.1.1):
     - YapDatabase/SQLCipher/Core
+  - YYImage (1.0.4):
+    - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
   - YYImage/WebP (1.0.4):
     - YYImage/Core
+  - ZXingObjC (3.6.4):
+    - ZXingObjC/All (= 3.6.4)
+  - ZXingObjC/All (3.6.4)
 
 DEPENDENCIES:
   - AFNetworking
@@ -240,12 +250,15 @@ DEPENDENCIES:
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
   - "SignalMetadataKit (from `git@github.com:signalapp/SignalMetadataKit`)"
   - "SignalMetadataKit/Tests (from `git@github.com:signalapp/SignalMetadataKit`)"
+  - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
   - SQLCipher (>= 4.0.1)
   - SSZipArchive
   - "Starscream (from `git@github.com:signalapp/Starscream.git`, branch `signal-release`)"
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
+  - YYImage
+  - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -285,6 +298,9 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :git: "git@github.com:signalapp/SignalMetadataKit"
+  SignalRingRTC:
+    :inhibit_wranings: true
+    :path: ThirdParty/SignalRingRTC.podspec
   SignalServiceKit:
     :path: "."
   Starscream:
@@ -293,6 +309,8 @@ EXTERNAL SOURCES:
   YapDatabase:
     :branch: signal-release
     :git: https://github.com/signalapp/YapDatabase.git
+  ZXingObjC:
+    :git: https://github.com/TheLevelUp/ZXingObjC
 
 CHECKOUT OPTIONS:
   AxolotlKit:
@@ -325,6 +343,9 @@ CHECKOUT OPTIONS:
   YapDatabase:
     :commit: e43ab163b2dcb4c817339c819b07dac545f05fea
     :git: https://github.com/signalapp/YapDatabase.git
+  ZXingObjC:
+    :commit: cac61d5404b3ee75fca58433dd2ae825c631e4ee
+    :git: https://github.com/TheLevelUp/ZXingObjC
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
@@ -345,6 +366,7 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
   SignalMetadataKit: a7aacedf262d947c22e2c619f0fd217163d2a637
+  SignalRingRTC: f97baf94c1fd6081f30284df5bc485aeb2e51d0a
   SignalServiceKit: 71856e789067b45672443a9fdc5152409db2cd19
   SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
@@ -352,7 +374,8 @@ SPEC CHECKSUMS:
   SwiftProtobuf: 4fd9645e69b72cbae6ec8da5be0cdd20ca6565dd
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
+  ZXingObjC: 512b34b9b6920e8ef0461a4159d0814c5e48c28a
 
-PODFILE CHECKSUM: 2f7a0f003a761c1fc599028af38507ef1fc295b7
+PODFILE CHECKSUM: c332d05a6088ffb72df8548a2fd026c0f76d4149
 
 COCOAPODS: 1.7.5

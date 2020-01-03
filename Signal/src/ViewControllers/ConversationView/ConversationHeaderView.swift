@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -121,6 +121,8 @@ public class ConversationHeaderView: UIStackView {
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
         self.addGestureRecognizer(tapGesture)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
     }
 
     required public init(coder: NSCoder) {
@@ -134,6 +136,12 @@ public class ConversationHeaderView: UIStackView {
     public override var intrinsicContentSize: CGSize {
         // Grow to fill as much of the navbar as possible.
         return UIView.layoutFittingExpandedSize
+    }
+
+    @objc
+    func themeDidChange() {
+        titleLabel.textColor = Theme.navbarTitleColor
+        subtitleLabel.textColor = Theme.navbarTitleColor
     }
 
     @objc

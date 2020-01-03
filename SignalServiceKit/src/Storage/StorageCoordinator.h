@@ -51,6 +51,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 // This data store may not be available before then.
 @property (class, nonatomic, readonly) DataStore dataStoreForUI;
 
+@property (class, nonatomic, readonly) BOOL isReadyForShareExtension;
+
 - (BOOL)isDatabasePasswordAccessible;
 
 #ifdef TESTABLE_BUILD

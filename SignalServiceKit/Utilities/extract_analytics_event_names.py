@@ -168,7 +168,7 @@ def should_ignore_path(path):
             return True
         if component.endswith('.framework'):
             return True
-        if component in ('Pods', 'ThirdParty', 'Carthage',):
+        if component in ('Pods', 'ThirdParty',):
             return True                
         
     return False

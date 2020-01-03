@@ -79,6 +79,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
+        // If we need to migrate YDB-to-GRDB, show an error view and abort.
+        guard StorageCoordinator.isReadyForShareExtension else {
+            showNotReadyView()
+            return
+        }
+
         // If we haven't migrated the database file to the shared data
         // directory we can't load it, and therefore can't init TSSPrimaryStorage,
         // and therefore don't want to setup most of our machinery (Environment,
@@ -406,7 +412,17 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AssertIsOnMainThread()
 
         let viewController = SAEFailedViewController(delegate: self, title: title, message: message)
-        self.showPrimaryViewController(viewController)
+
+        let navigationController = UINavigationController()
+        navigationController.presentationController?.delegate = self
+        navigationController.setViewControllers([viewController], animated: false)
+        if self.presentedViewController == nil {
+            Logger.debug("presenting modally: \(viewController)")
+            self.present(navigationController, animated: true)
+        } else {
+            owsFailDebug("modal already presented. swapping modal content for: \(viewController)")
+            assert(self.presentedViewController == navigationController)
+        }
     }
 
     // MARK: View Lifecycle
