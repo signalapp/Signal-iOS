@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -235,6 +235,7 @@ public class StickerPackCollectionView: UICollectionView {
 
         let stickerView = YYAnimatedImageView()
         stickerView.image = stickerImage
+        stickerView.contentMode = .scaleAspectFit
         return stickerView
     }
 }
