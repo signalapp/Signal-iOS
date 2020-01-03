@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewModel.h"
@@ -952,7 +952,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSIndexPath *)indexPathForViewItem:(id<ConversationViewItem>)viewItem
 {
-    return [self.messageMapping indexPathForInteractionId:viewItem.interaction.uniqueId];
+    return [self indexPathForInteractionId:viewItem.interaction.uniqueId];
+}
+
+- (nullable NSIndexPath *)indexPathForInteractionId:(NSString *)interactionId
+{
+    NSUInteger index = [self.viewState.viewItems indexOfObjectPassingTest:^BOOL(id<ConversationViewItem>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        return [obj.interaction.uniqueId isEqualToString:interactionId];
+    }];
+    if (index == NSNotFound) {
+        return nil;
+    }
+    return [NSIndexPath indexPathForRow:(NSInteger)index inSection:0];
 }
 
 - (void)ensureConversationProfileStateWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -1560,7 +1571,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    NSIndexPath *_Nullable indexPath = [self.messageMapping indexPathForInteractionId:interactionId];
+    NSIndexPath *_Nullable indexPath = [self indexPathForInteractionId:interactionId];
     if (indexPath == nil) {
         OWSFailDebug(@"indexPath was unexpectedly nil");
     }
