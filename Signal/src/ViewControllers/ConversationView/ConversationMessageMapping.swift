@@ -123,17 +123,6 @@ public class ConversationMessageMapping: NSObject {
 
     // MARK: -
 
-    @objc(indexPathForInteractionId:)
-    public func indexPath(interactionId: String) -> IndexPath? {
-        guard let index = loadedUniqueIds.firstIndex(of: interactionId) else {
-            return nil
-        }
-
-        return IndexPath(item: index, section: 0)
-    }
-
-    // MARK: -
-
     private func ensureLoaded(_ direction: LoadWindowDirection, count: Int, transaction: SDSAnyReadTransaction) throws {
         let conversationSize = interactionFinder.count(transaction: transaction)
 
