@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -380,11 +380,19 @@ class PhotoCaptureViewController: OWSViewController {
 
         photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
 
-        // Don't show animation if it's in the bottom row.
+        // If the user taps near the capture button, it's more likely a mis-tap than intentional.
+        // Skip the focus animation in that case, since it looks bad.
         let captureButtonOrigin = captureButton.superview!.convert(captureButton.frame.origin, to: view)
-        guard viewLocation.y < captureButtonOrigin.y else {
-            Logger.verbose("Skipping animation for bottom row")
-            return
+        if UIDevice.current.isIPad {
+            guard viewLocation.x < captureButtonOrigin.x else {
+                Logger.verbose("Skipping animation for right edge on iPad")
+                return
+            }
+        } else {
+            guard viewLocation.y < captureButtonOrigin.y else {
+                Logger.verbose("Skipping animation for bottom row on iPhone")
+                return
+            }
         }
 
         lastUserFocusTapPoint = devicePoint
