@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -159,8 +159,10 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             guard notificationIdentifier != UserNotificationPresenterAdaptee.kMigrationNotificationId else {
                 return
             }
-            // If we show any other notification, we can clear the "GRDB migration" notification.
-            self.clearNotificationForGRDBMigration()
+            DispatchQueue.main.async {
+                // If we show any other notification, we can clear the "GRDB migration" notification.
+                self.clearNotificationForGRDBMigration()
+            }
         }
         notifications[notificationIdentifier] = request
     }
