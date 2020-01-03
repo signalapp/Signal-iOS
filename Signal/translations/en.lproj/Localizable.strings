@@ -204,7 +204,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recent photos from here.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Attachment";
@@ -525,7 +525,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering your phone number from the server. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Are you sure you want to delete your account?";
@@ -645,7 +645,7 @@
 "CONTACT_WITHOUT_NAME" = "Unnamed Contact";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "The conversation will only be deleted for yourself. This cannot be undone.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
@@ -898,7 +898,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this conversation will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this conversation will disappear after they have been seen.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
@@ -982,7 +982,7 @@
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN must be at least 4 digits.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Make up your own Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
 "ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "For increased security, enable a Registration Lock PIN that will be required in order to register this phone number with Signal again.";
@@ -1450,7 +1450,7 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message For Myself";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "More Info";
@@ -1462,7 +1462,7 @@
 "MESSAGE_ACTION_REPLY" = "Reply to This Message";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Forward Media";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
@@ -1540,7 +1540,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
 
 /* A button used to share your profile with an existing thread. */
-"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Share Profile";
+"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Make Profile Visible";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
@@ -2392,7 +2392,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this QR code with your phone:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
@@ -2554,7 +2554,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Calls from unlisted contacts are always routed through the Signal server to avoid revealing your IP address to your contact. Enabling this will also relay calls with listed contacts, but it will reduce call quality.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
@@ -2599,7 +2599,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Also send a preview image if your message contains a link to Imgur, Instagram, Pinterest, Reddit, or YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
@@ -2728,7 +2728,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people to whom you have not made your profile visible. This comes at the increased risk of receiving unwanted messages.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Version";
@@ -2770,7 +2770,7 @@
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Unable to Prepare Attachment";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Share using Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
@@ -2800,22 +2800,22 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Series";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stickers You Received";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Sticker packs You Received";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installed Stickers";
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installed Sticker packs";
 
 /* Label indicating that one or more known sticker packs is loading. */
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Loading…";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No stickers installed";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No sticker packs installed";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Stickers from incoming messages will appear here";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Sticker packs from incoming messages will appear here";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "Stickers";
@@ -2824,7 +2824,7 @@
 "STICKERS_PACK_DEFAULT_TITLE" = "Sticker Pack";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Forward Sticker Pack";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Sticker Pack";
@@ -2866,25 +2866,25 @@
 "TIME_AMOUNT_DAYS" = "%@ days";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ hours";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ minutes";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5min' not '5 min'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@min";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ min";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ seconds";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_DAY" = "%@ day";
@@ -2902,7 +2902,7 @@
 "TIME_AMOUNT_WEEKS" = "%@ weeks";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ w";
 
 /* {{1 month}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 month}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MONTH" = "%@ month";
@@ -2911,7 +2911,7 @@
 "TIME_AMOUNT_MONTHS" = "%@ months";
 
 /* Label text below navbar button, embeds {{number of months}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5mth' not '5 mth'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MONTHS_SHORT_FORMAT" = "%@mth";
+"TIME_AMOUNT_MONTHS_SHORT_FORMAT" = "%@ mth";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
@@ -2920,7 +2920,7 @@
 "TIME_AMOUNT_YEARS" = "%@ years";
 
 /* Label text below navbar button, embeds {{number of years}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5y' not '5 y'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_SHORT_FORMAT" = "%@y";
+"TIME_AMOUNT_YEARS_SHORT_FORMAT" = "%@ y";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Cancel";
