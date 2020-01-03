@@ -386,11 +386,23 @@ class PhotoCaptureViewController: OWSViewController {
         if UIDevice.current.isIPad {
             guard viewLocation.x < captureButtonOrigin.x else {
                 Logger.verbose("Skipping animation for right edge on iPad")
+
+                // Finish any outstanding focus animation, otherwise it will remain in an
+                // uncompleted state.
+                if let lastUserFocusTapPoint = lastUserFocusTapPoint {
+                    completeFocusAnimation(forFocusPoint: lastUserFocusTapPoint)
+                }
                 return
             }
         } else {
             guard viewLocation.y < captureButtonOrigin.y else {
                 Logger.verbose("Skipping animation for bottom row on iPhone")
+
+                // Finish any outstanding focus animation, otherwise it will remain in an
+                // uncompleted state.
+                if let lastUserFocusTapPoint = lastUserFocusTapPoint {
+                    completeFocusAnimation(forFocusPoint: lastUserFocusTapPoint)
+                }
                 return
             }
         }
