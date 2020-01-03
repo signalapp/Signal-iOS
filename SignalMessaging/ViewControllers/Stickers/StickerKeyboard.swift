@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -132,9 +132,16 @@ public class StickerKeyboard: CustomKeyboard {
     private static let packCoverSize: CGFloat = 32
     private static let packCoverInset: CGFloat = 4
     private static let packCoverSpacing: CGFloat = 4
-    private let packsCollectionView = StickerHorizontalListView(cellSize: StickerKeyboard.packCoverSize,
-                                                                cellInset: StickerKeyboard.packCoverInset,
-                                                                spacing: StickerKeyboard.packCoverSpacing)
+    private let packsCollectionView: StickerHorizontalListView = {
+        let view = StickerHorizontalListView(cellSize: StickerKeyboard.packCoverSize,
+                                             cellInset: StickerKeyboard.packCoverInset,
+                                             spacing: StickerKeyboard.packCoverSpacing)
+
+        view.contentInset = .zero
+        view.autoSetDimension(.height, toSize: StickerKeyboard.packCoverSize + view.contentInset.top + view.contentInset.bottom)
+
+        return view
+    }()
 
     private func populateHeaderView() {
         headerView.spacing = StickerKeyboard.packCoverSpacing

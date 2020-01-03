@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -54,7 +54,6 @@ class LinearHorizontalLayout: UICollectionViewLayout {
             return
         }
         let itemCount = collectionView.numberOfItems(inSection: 0)
-        let insets = collectionView.contentInset
 
         guard itemCount > 0 else {
             contentSize = .zero
@@ -63,9 +62,8 @@ class LinearHorizontalLayout: UICollectionViewLayout {
 
         for row in 0..<itemCount {
             // TODO: We should ultimately make this layout RTL.
-            let itemX: CGFloat = insets.left + CGFloat(row) * (itemSize.width + spacing)
-            let itemY: CGFloat = insets.top
-            let itemFrame = CGRect(x: itemX, y: itemY, width: itemSize.width, height: itemSize.height)
+            let itemX: CGFloat = CGFloat(row) * (itemSize.width + spacing)
+            let itemFrame = CGRect(x: itemX, y: 0, width: itemSize.width, height: itemSize.height)
 
             let indexPath = NSIndexPath(row: row, section: 0)
             let itemAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath as IndexPath)
@@ -73,8 +71,8 @@ class LinearHorizontalLayout: UICollectionViewLayout {
             itemAttributesMap.append(itemAttributes)
         }
 
-        contentSize = CGSize(width: insets.left + insets.right + CGFloat(itemCount) * itemSize.width + CGFloat(itemCount - 1) * spacing,
-                             height: insets.top + insets.bottom + itemSize.height)
+        contentSize = CGSize(width: CGFloat(itemCount) * itemSize.width + CGFloat(itemCount - 1) * spacing,
+                             height: itemSize.height)
     }
 
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
