@@ -107,7 +107,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSSingletonAssert();
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self rotateLocalProfileKeyIfNecessary];
+        if (TSAccountManager.sharedInstance.isRegistered) {
+            [self rotateLocalProfileKeyIfNecessary];
+        }
     }];
 
     [self observeNotifications];
@@ -164,7 +166,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return SSKEnvironment.shared.blockingManager;
 }
 
-- (id<OWSSyncManagerProtocol>)syncManager
+- (id<SyncManagerProtocol>)syncManager
 {
     return SSKEnvironment.shared.syncManager;
 }
@@ -296,7 +298,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         //
         // NOTE: We also inform the desktop in the failure case,
         //       since that _may have_ affected service state.
-        [[self.syncManager syncLocalContact] retainUntilComplete];
+        if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+            [[self.syncManager syncLocalContact] retainUntilComplete];
+        }
+
+        // Notify all our devices that the profile has changed.
+        // Older linked devices may not handle this message.
+        [self.syncManager sendFetchLatestProfileSyncMessage];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             failureBlockParameter();
@@ -308,7 +316,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // We use a "self-only" contact sync to indicate to desktop
         // that we've changed our profile and that it should do a
         // profile fetch for "self".
-        [[self.syncManager syncLocalContact] retainUntilComplete];
+        if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+            [[self.syncManager syncLocalContact] retainUntilComplete];
+        }
+
+        // Notify all our devices that the profile has changed.
+        // Older linked devices may not handle this message.
+        [self.syncManager sendFetchLatestProfileSyncMessage];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             successBlockParameter();
@@ -521,28 +535,24 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     });
 }
 
-- (void)fetchLocalUsersProfile
+- (void)fetchAndUpdateLocalUsersProfile
 {
-    OWSAssertIsOnMainThread();
-
     SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
     if (!localAddress.isValid) {
         return;
     }
-    [self fetchProfileForAddress:localAddress];
+    [self updateProfileForAddress:localAddress];
 }
 
-- (void)fetchProfileForAddress:(SignalServiceAddress *)address
+- (void)updateProfileForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertIsOnMainThread();
-
-    [ProfileFetcherJob runWithAddress:address ignoreThrottling:YES];
+    [ProfileFetcherJob fetchAndUpdateProfileWithAddress:address ignoreThrottling:YES];
 }
 
-- (void)fetchProfileForUsername:(NSString *)username
-                        success:(void (^)(SignalServiceAddress *))successHandler
-                       notFound:(void (^)(void))notFoundHandler
-                        failure:(void (^)(NSError *))failureHandler
+- (void)fetchAndUpdateProfileForUsername:(NSString *)username
+                                 success:(void (^)(SignalServiceAddress *))success
+                                notFound:(void (^)(void))notFound
+                                 failure:(void (^)(NSError *))failure
 {
     OWSAssertDebug(username.length > 0);
 
@@ -556,24 +566,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         }];
 
         if (userProfile) {
-            successHandler(userProfile.address);
+            success(userProfile.address);
             return;
         }
 
-        [ProfileFetcherJob
-            runWithUsername:username
-                 completion:^(SignalServiceAddress *address, BOOL notFound, NSError *error) {
-                     if (error) {
-                         failureHandler(error);
-                     } else if (notFound) {
-                         notFoundHandler();
-                     } else if (address) {
-                         successHandler(address);
-                     } else {
-                         OWSFailDebug(@"Unexpected username lookup response.");
-                         failureHandler(OWSErrorMakeAssertionError(@"unexpected username lookup response"));
-                     }
-                 }];
+        [ProfileFetcherJob fetchAndUpdateProfileWithUsername:username
+                                                     success:success
+                                                    notFound:notFound
+                                                     failure:failure];
     });
 }
 
@@ -596,6 +596,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 }
 
 - (void)rotateLocalProfileKeyIfNecessary {
+    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+        OWSAssertDebug(self.tsAccountManager.isRegistered);
+        OWSLogVerbose(@"Not rotating profile key on non-primary device");
+        return;
+    }
+
     [self
         rotateLocalProfileKeyIfNecessaryWithSuccess:^{
         }
@@ -608,6 +614,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(AppReadiness.isAppReady);
 
     if (!self.tsAccountManager.isRegistered) {
+        OWSFailDebug(@"tsAccountManager.isRegistered was unexpectely false");
         success();
         return;
     }
@@ -815,15 +822,17 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         // Fetch local profile.
         promise = promise.then(^(id value) {
-            [self fetchLocalUsersProfile];
-            
+            [self fetchAndUpdateLocalUsersProfile];
+
             return @(1);
         });
 
         // Sync local profile key.
-        promise = promise.thenInBackground(^(id value) {
-            return [self.syncManager syncLocalContact];
-        });
+        if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+            promise = promise.thenInBackground(^(id value) {
+                return [self.syncManager syncLocalContact];
+            });
+        }
 
         promise = promise.thenInBackground(^(id value) {
             [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileKeyDidChange
@@ -881,13 +890,35 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }];
 }
 
-- (void)regenerateLocalProfileWithSneakyTransaction
+- (void)debug_regenerateLocalProfileWithSneakyTransaction
 {
     OWSUserProfile *userProfile = self.localUserProfile;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey] transaction:transaction completion:nil];
     }];
     [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
+}
+
+- (void)setLocalProfileKey:(OWSAES256Key *)key transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSUserProfile *localUserProfile;
+    
+    @synchronized(self)
+    {
+        // If it didn't exist, create it in a safe way as accessing the property
+        // will do a sneaky transaction.
+        if (!_localUserProfile) {
+            // We assert on the ivar directly here, as we want this to be cached already
+            // by the time this method is called. If it's not, we've changed our caching
+            // logic and should re-evalulate this method.
+            OWSFailDebug(@"Missing local profile when setting key.");
+
+            _localUserProfile = [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress transaction:transaction];
+        }
+        localUserProfile = _localUserProfile;
+    }
+
+    [localUserProfile clearWithProfileKey:key transaction:transaction completion:nil];
 }
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
@@ -901,60 +932,151 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSAssertDebug(addresses);
 
-    NSMutableSet<SignalServiceAddress *> *newAddresses = [NSMutableSet new];
-    [self.databaseStorage
-        asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            for (SignalServiceAddress *address in addresses) {
-
-                // Normally we add all system contacts to the whitelist, but we don't want to do that for
-                // blocked contacts.
-                if ([self.blockingManager isAddressBlocked:address]) {
-                    continue;
+    // Try to avoid opening a write transaction.
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction * readTransaction) {
+        NSMutableSet<SignalServiceAddress *> *newAddresses = [NSMutableSet new];
+        for (SignalServiceAddress *address in addresses) {
+            
+            // Normally we add all system contacts to the whitelist, but we don't want to do that for
+            // blocked contacts.
+            if ([self.blockingManager isAddressBlocked:address]) {
+                continue;
+            }
+            
+            // We want to add both the UUID and the phone number to the white list.
+            // It's possible we white listed one but not both, so we check each.
+            
+            BOOL shouldAdd = NO;
+            if (address.uuidString) {
+                BOOL currentlyWhitelisted =
+                [self.whitelistedUUIDsStore hasValueForKey:address.uuidString transaction:readTransaction];
+                if (!currentlyWhitelisted) {
+                    shouldAdd = YES;
                 }
-
-                BOOL updatedCollection = NO;
-
-                // We want to add both the UUID and the phone number to the white list.
-                // It's possible we white listed one but not both, so we check each.
-
-                if (address.uuidString) {
-                    BOOL currentlyWhitelisted =
-                        [self.whitelistedUUIDsStore hasValueForKey:address.uuidString transaction:transaction];
-                    if (!currentlyWhitelisted) {
-                        [self.whitelistedUUIDsStore setBool:YES key:address.uuidString transaction:transaction];
-                        updatedCollection = YES;
-                    }
+            }
+            
+            if (address.phoneNumber) {
+                BOOL currentlyWhitelisted =
+                [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber transaction:readTransaction];
+                if (!currentlyWhitelisted) {
+                    shouldAdd = YES;
                 }
-
-                if (address.phoneNumber) {
-                    BOOL currentlyWhitelisted =
-                        [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber transaction:transaction];
-                    if (!currentlyWhitelisted) {
-                        [self.whitelistedPhoneNumbersStore setBool:YES key:address.phoneNumber transaction:transaction];
-                        updatedCollection = YES;
-                    }
-                }
-
-                if (updatedCollection) {
-                    [newAddresses addObject:address];
-                }
+            }
+            
+            if (shouldAdd) {
+                [newAddresses addObject:address];
             }
         }
-        completion:^{
-            // Mark the new whitelisted addresses for update
-            if (newAddresses.count > 0) {
-                [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:newAddresses.allObjects];
+        
+        if (newAddresses.count < 1) {
+            return;
+        }
+        
+        [self.databaseStorage
+         asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+             for (SignalServiceAddress *address in newAddresses) {
+                 if (address.uuidString) {
+                     [self.whitelistedUUIDsStore setBool:YES key:address.uuidString transaction:writeTransaction];
+                 }
+                 
+                 if (address.phoneNumber) {
+                     [self.whitelistedPhoneNumbersStore setBool:YES key:address.phoneNumber transaction:writeTransaction];
+                 }
+             }
+         }
+         completion:^{
+             // Mark the new whitelisted addresses for update
+             if (newAddresses.count > 0) {
+                 [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:newAddresses.allObjects];
+             }
+             
+             for (SignalServiceAddress *address in newAddresses) {
+                 [[NSNotificationCenter defaultCenter]
+                  postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                  object:nil
+                  userInfo:@ {
+                      kNSNotificationKey_ProfileAddress : address,
+                  }];
+             }
+         }];
+    }];
+}
+
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
+{
+    OWSAssertDebug(address.isValid);
+
+    [self removeUsersFromProfileWhitelist:@[ address ]];
+}
+
+- (void)removeUsersFromProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+{
+    OWSAssertDebug(addresses);
+
+    // Try to avoid opening a write transaction.
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
+        NSMutableSet<SignalServiceAddress *> *removedAddresses = [NSMutableSet new];
+        for (SignalServiceAddress *address in addresses) {
+
+            // We want to remove both the UUID and the phone number from the white list.
+            // It's possible we white listed one but not both, so we check each.
+
+            BOOL shouldRemove = NO;
+            if (address.uuidString) {
+                BOOL currentlyWhitelisted = [self.whitelistedUUIDsStore hasValueForKey:address.uuidString
+                                                                           transaction:readTransaction];
+                if (currentlyWhitelisted) {
+                    shouldRemove = YES;
+                }
             }
 
-            for (SignalServiceAddress *address in newAddresses) {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                       object:nil
-                                     userInfo:@ {
-                                         kNSNotificationKey_ProfileAddress : address,
-                                     }];
+            if (address.phoneNumber) {
+                BOOL currentlyWhitelisted = [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber
+                                                                                  transaction:readTransaction];
+                if (currentlyWhitelisted) {
+                    shouldRemove = YES;
+                }
             }
-        }];
+
+            if (shouldRemove) {
+                [removedAddresses addObject:address];
+            }
+        }
+
+        if (removedAddresses.count < 1) {
+            return;
+        }
+
+        [self.databaseStorage
+            asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+                for (SignalServiceAddress *address in removedAddresses) {
+                    if (address.uuidString) {
+                        [self.whitelistedUUIDsStore removeValueForKey:address.uuidString transaction:writeTransaction];
+                    }
+
+                    if (address.phoneNumber) {
+                        [self.whitelistedPhoneNumbersStore removeValueForKey:address.phoneNumber
+                                                                 transaction:writeTransaction];
+                    }
+                }
+            }
+            completion:^{
+                // Mark the removed whitelisted addresses for update
+                if (removedAddresses.count > 0) {
+                    [OWSStorageServiceManager.shared
+                        recordPendingUpdatesWithUpdatedAddresses:removedAddresses.allObjects];
+                }
+
+                for (SignalServiceAddress *address in removedAddresses) {
+                    [[NSNotificationCenter defaultCenter]
+                        postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                           object:nil
+                                         userInfo:@ {
+                                             kNSNotificationKey_ProfileAddress : address,
+                                         }];
+                }
+            }];
+    }];
 }
 
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
@@ -986,26 +1108,25 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     NSString *groupIdKey = [self groupKeyForGroupId:groupId];
 
-    __block BOOL didChange = NO;
-    [self.databaseStorage
-        asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            if ([self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:transaction]) {
-                // Do nothing.
-            } else {
-                [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:transaction];
-                didChange = YES;
-            }
+    // Try to avoid opening a write transaction.
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction * readTransaction) {
+        if ([self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:readTransaction]) {
+            // Do nothing.
+            return;
         }
-        completion:^{
-            if (didChange) {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileGroupId : groupId,
-                                     }];
-            }
-        }];
+        [self.databaseStorage
+         asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+             [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:writeTransaction];
+         }
+         completion:^{
+             [[NSNotificationCenter defaultCenter]
+              postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+              object:nil
+              userInfo:@{
+                         kNSNotificationKey_ProfileGroupId : groupId,
+                         }];
+         }];
+    }];
 }
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread
@@ -1021,9 +1142,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // also add all current members to the profile whitelist
         // individually as well just in case delivery of the profile key
         // fails.
-        for (SignalServiceAddress *address in groupThread.recipientAddresses) {
-            [self addUserToProfileWhitelist:address];
-        }
+        [self addUsersToProfileWhitelist:groupThread.recipientAddresses];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress];
@@ -1077,6 +1196,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSLogError(@"logUserProfiles: %ld", (unsigned long)[OWSUserProfile anyCountWithTransaction:transaction]);
 
         [OWSUserProfile anyEnumerateWithTransaction:transaction
+                                            batched:YES
                                               block:^(OWSUserProfile *userProfile, BOOL *stop) {
                                                   OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
                                                               @"avatar file: %d, name: %@, username: %@",
@@ -1114,9 +1234,19 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                  completion:^{
                      dispatch_async(dispatch_get_main_queue(), ^{
                          [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown address:address];
-                         [self fetchProfileForAddress:address];
+                         [self updateProfileForAddress:address];
                      });
                  }];
+}
+
+- (void)setProfileName:(nullable NSString *)profileName
+            forAddress:(SignalServiceAddress *)address
+           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
+    [userProfile updateWithProfileName:profileName transaction:transaction completion:nil];
 }
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
@@ -1559,22 +1689,21 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSAssertIsOnMainThread();
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:nil message:nil];
 
     NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
         @"Button to confirm that user wants to share their profile with a user or group.");
-    [alert addAction:[UIAlertAction actionWithTitle:shareTitle
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_profile")
-                                              style:UIAlertActionStyleDefault
-                                            handler:^(UIAlertAction *_Nonnull action) {
-                                                [self userAddedThreadToProfileWhitelist:thread];
-                                                successHandler();
-                                            }]];
-    [alert addAction:[OWSAlerts cancelAction]];
+    [actionSheet
+        addAction:[[ActionSheetAction alloc] initWithTitle:shareTitle
+                                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_profile")
+                                                     style:ActionSheetActionStyleDefault
+                                                   handler:^(ActionSheetAction *_Nonnull action) {
+                                                       [self userAddedThreadToProfileWhitelist:thread];
+                                                       successHandler();
+                                                   }]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    [fromViewController presentAlert:alert];
+    [fromViewController presentActionSheet:actionSheet];
 }
 
 - (void)userAddedThreadToProfileWhitelist:(TSThread *)thread

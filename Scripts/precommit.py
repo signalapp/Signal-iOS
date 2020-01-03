@@ -391,7 +391,7 @@ def process_if_appropriate(filepath):
 
 def check_diff_for_keywords():
     objc_keywords = [
-        "OWSAbstractMethod\("
+        "OWSAbstractMethod\(",
         "OWSAssert\(", 
         "OWSCAssert\(", 
         "OWSFail\(", 
@@ -433,14 +433,13 @@ def check_diff_for_keywords():
         print("⚠️  keywords detected in diff:")
         print(output)
 
-
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='Precommit script.')
     parser.add_argument('--all', action='store_true', help='process all files in or below current dir')
     parser.add_argument('--path', help='used to specify a path to process.')
     args = parser.parse_args()
-    
+
     if args.all:
         for rootdir, dirnames, filenames in os.walk(git_repo_path):
             for filename in filenames:
@@ -470,6 +469,7 @@ if __name__ == "__main__":
             process_if_appropriate(filepath)
 
     print 'git clang-format...'
-    print commands.getoutput('git clang-format')
+    # we don't want to format .proto files, so we specify every other supported extension
+    print commands.getoutput('git clang-format --extensions "c,h,m,mm,cc,cp,cpp,c++,cxx,hh,hxx,cu,java,js,ts,cs"')
 
     check_diff_for_keywords()

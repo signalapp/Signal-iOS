@@ -19,6 +19,9 @@ const NSUInteger kThumbnailDimensionPointsMedium = 450;
 // This size is large enough to render full screen.
 const NSUInteger ThumbnailDimensionPointsLarge()
 {
+    // We use the screen size here rather than the application size, as we
+    // want the thumbnail to be big enough to adapt to when the app is running
+    // full screen.
     CGSize screenSizePoints = UIScreen.mainScreen.bounds.size;
     const CGFloat kMinZoomFactor = 2.f;
     return MAX(screenSizePoints.width, screenSizePoints.height) * kMinZoomFactor;
@@ -26,7 +29,7 @@ const NSUInteger ThumbnailDimensionPointsLarge()
 
 typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
-@interface TSAttachmentStream ()
+@interface TSAttachmentStream () <AudioWaveformSamplingObserver>
 
 // We only want to generate the file path for this attachment once, so that
 // changes in the file path generation logic don't break existing attachments.
@@ -38,6 +41,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 // This property should only be accessed on the main thread.
 @property (nullable, nonatomic) NSNumber *cachedAudioDurationSeconds;
+@property (nullable, nonatomic) AudioWaveform *cachedAudioWaveform;
 
 @property (atomic, nullable) NSNumber *isValidImageCached;
 @property (atomic, nullable) NSNumber *isValidVideoCached;
@@ -60,6 +64,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return SDSDatabaseStorage.shared;
 }
 
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 #pragma mark -
 
 - (instancetype)initWithContentType:(NSString *)contentType
@@ -67,7 +76,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
                      albumMessageId:(nullable NSString *)albumMessageId
-                  shouldAlwaysPad:(BOOL)shouldAlwaysPad
 {
     self = [super initAttachmentWithContentType:contentType
                                       byteCount:byteCount
@@ -78,14 +86,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return self;
     }
 
-    self.isDownloaded = YES;
     // TSAttachmentStream doesn't have any "incoming vs. outgoing"
     // state, but this constructor is used only for new outgoing
     // attachments which haven't been uploaded yet.
     _isUploaded = NO;
     _creationTimestamp = [NSDate new];
-
-    _shouldAlwaysPad = shouldAlwaysPad;
 
     [self ensureFilePath];
 
@@ -93,7 +98,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 }
 
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer transaction:(SDSAnyReadTransaction *)transaction
-
 {
     // Once saved, this AttachmentStream will replace the AttachmentPointer in the attachments collection.
     self = [super initWithPointer:pointer transaction:transaction];
@@ -102,7 +106,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 
     _contentType = pointer.contentType;
-    self.isDownloaded = YES;
     // TSAttachmentStream doesn't have any "incoming vs. outgoing"
     // state, but this constructor is used only for new incoming
     // attachments which don't need to be uploaded.
@@ -139,15 +142,15 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
-         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
+                        blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
-                    isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
@@ -159,17 +162,16 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
-                 shouldAlwaysPad:(BOOL)shouldAlwaysPad
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                     albumMessageId:albumMessageId
-           attachmentSchemaVersion:attachmentSchemaVersion
                     attachmentType:attachmentType
+                          blurHash:blurHash
                          byteCount:byteCount
                            caption:caption
                        contentType:contentType
                      encryptionKey:encryptionKey
-                      isDownloaded:isDownloaded
                           serverId:serverId
                     sourceFilename:sourceFilename];
 
@@ -186,7 +188,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     _isValidImageCached = isValidImageCached;
     _isValidVideoCached = isValidVideoCached;
     _localRelativeFilePath = localRelativeFilePath;
-    _shouldAlwaysPad = shouldAlwaysPad;
 
     return self;
 }
@@ -346,6 +347,27 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return [[[self class] attachmentsFolder] stringByAppendingPathComponent:self.localRelativeFilePath];
 }
 
+/// For new attachments, we create a folder based on the uniqueId where we store all attachment data.
+/// Legacy attachments may have data stored directly in the `attachmentsFolder`.
+- (nullable NSString *)uniqueIdAttachmentFolder
+{
+    return [[[self class] attachmentsFolder] stringByAppendingPathComponent:self.uniqueId];
+}
+
+- (BOOL)ensureUniqueIdAttachmentFolder
+{
+    return [OWSFileSystem ensureDirectoryExists:self.uniqueIdAttachmentFolder];
+}
+
+- (nullable NSString *)audioWaveformPath
+{
+    if (!self.isAudio) {
+        return nil;
+    }
+
+    return [self.uniqueIdAttachmentFolder stringByAppendingPathComponent:@"waveform.dat"];
+}
+
 - (nullable NSString *)legacyThumbnailPath
 {
     NSString *filePath = self.originalFilePath;
@@ -426,6 +448,20 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     if (error || !success) {
         OWSLogError(@"remove file failed with: %@", error);
     }
+
+
+
+    // Remove the attachment specific directory and any associated files stored for this attachment.
+    NSString *_Nullable attachmentFolder = self.uniqueIdAttachmentFolder;
+    if (attachmentFolder && ![OWSFileSystem deleteFileIfExists:attachmentFolder]) {
+        OWSFailDebug(@"remove unique attachment folder failed.");
+    }
+}
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+    [AnyMediaGalleryFinder didInsertAttachmentStream:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -433,6 +469,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     [super anyDidRemoveWithTransaction:transaction];
 
     [self removeFile];
+    [AnyMediaGalleryFinder didRemoveAttachmentStream:self transaction:transaction];
 }
 
 - (BOOL)isValidVisualMedia
@@ -465,18 +502,26 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
             OWSLogVerbose(@"Updating isValidImageCached.");
             self.isValidImageCached = @([NSData ows_isValidImageAtPath:self.originalFilePath
                                                               mimeType:self.contentType]);
+            if (!self.isValidImageCached) {
+                OWSLogWarn(@"Invalid image.");
+            }
             didUpdateCache = YES;
         }
         result = self.isValidImageCached.boolValue;
     }
 
-    if (didUpdateCache) {
+    if (didUpdateCache && self.canAsyncUpdate) {
         [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
             latestInstance.isValidImageCached = @(result);
         }];
     }
 
     return result;
+}
+
+- (BOOL)canAsyncUpdate
+{
+    return (!CurrentAppContext().isRunningTests && !self.storageCoordinator.isMigrating);
 }
 
 - (BOOL)isValidVideo
@@ -489,12 +534,15 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         if (!self.isValidVideoCached) {
             OWSLogVerbose(@"Updating isValidVideoCached.");
             self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath]);
+            if (!self.isValidVideoCached) {
+                OWSLogWarn(@"Invalid video.");
+            }
             didUpdateCache = YES;
         }
         result = self.isValidVideoCached.boolValue;
     }
 
-    if (didUpdateCache) {
+    if (didUpdateCache && self.canAsyncUpdate) {
         [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
             latestInstance.isValidVideoCached = @(result);
         }];
@@ -566,7 +614,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return image;
 }
 
-+ (void)deleteAttachments
++ (void)deleteAttachmentsFromDisk
 {
     NSError *error;
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -628,10 +676,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         self.cachedImageWidth = @(imageSize.width);
         self.cachedImageHeight = @(imageSize.height);
 
-        [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
-            latestInstance.cachedImageWidth = @(imageSize.width);
-            latestInstance.cachedImageHeight = @(imageSize.height);
-        }];
+        if (self.canAsyncUpdate) {
+            [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
+                latestInstance.cachedImageWidth = @(imageSize.width);
+                latestInstance.cachedImageHeight = @(imageSize.height);
+            }];
+        }
 
         return imageSize;
     }
@@ -729,11 +779,89 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     CGFloat audioDurationSeconds = [self calculateAudioDurationSeconds];
     self.cachedAudioDurationSeconds = @(audioDurationSeconds);
 
-    [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
-        latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
-    }];
+    if (self.canAsyncUpdate) {
+        [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
+            latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
+        }];
+    }
 
     return audioDurationSeconds;
+}
+
+- (nullable AudioWaveform *)audioWaveform
+{
+    @synchronized(self) {
+        if (self.cachedAudioWaveform) {
+            return self.cachedAudioWaveform;
+        }
+
+        NSString *_Nullable audioWaveformPath = self.audioWaveformPath;
+
+        // This attachment doesn't support waveforms, likely because it's not audio.
+        if (!audioWaveformPath) {
+            OWSAssertDebug(!self.isAudio);
+            return nil;
+        }
+
+        AudioWaveform *_Nullable waveform;
+
+        // We have a cached waveform on disk, read it into memory.
+        if ([[NSFileManager defaultManager] fileExistsAtPath:audioWaveformPath]) {
+            NSError *error;
+            waveform = [[AudioWaveform alloc] initWithContentsOfFile:audioWaveformPath error:&error];
+            if (error || !waveform) {
+                OWSFailDebug(@"Failed to intialize audio waveform from cached file: %@", error);
+
+                // Remove the file from disk and create a new one.
+                if (![OWSFileSystem deleteFileIfExists:audioWaveformPath]) {
+                    OWSFailDebug(@"failed to remove corrupt waveform from disk: %@", error);
+                    return nil;
+                }
+
+                return self.audioWaveform;
+            }
+        } else {
+            AVURLAsset *asset = [AVURLAsset assetWithURL:self.originalMediaURL];
+
+            // If the asset isn't readable, we may not be able to generate a waveform for this file
+            if (!asset.isReadable) {
+                // Android sends voice messages in a hacky m4a container that we can't process
+                // when it has the m4a extension. If we hint to the OS that it's an AAC file with
+                // the file extension, we can. This is pretty brittle and hopefully android will
+                // be able to fix the issue in the future in which case `isReadable` will become
+                // true and this path will no longer be hit.
+                if (self.isVoiceMessage && [self.originalFilePath hasSuffix:@"m4a"]) {
+                    NSString *symlinkPath = [self.uniqueIdAttachmentFolder stringByAppendingString:@"/Voice-Memo.aac"];
+                    if (![NSFileManager.defaultManager fileExistsAtPath:symlinkPath]) {
+                        [self ensureUniqueIdAttachmentFolder];
+                        NSError *error;
+                        [[NSFileManager defaultManager] createSymbolicLinkAtPath:symlinkPath
+                                                             withDestinationPath:self.originalFilePath
+                                                                           error:&error];
+                        if (error) {
+                            OWSFailDebug(@"Failed to create voice memo symlink: %@", error);
+                            return nil;
+                        }
+                    }
+                    asset = [AVURLAsset assetWithURL:[NSURL fileURLWithPath:symlinkPath]];
+                }
+            }
+
+            if (!asset.isReadable) {
+                OWSFailDebug(@"unexpectedly encountered unreadable audio file.");
+                return nil;
+            }
+
+            waveform = [[AudioWaveform alloc] initWithAsset:asset];
+
+            // Listen for sampling completion so we can cache the final waveform to disk.
+            [waveform addSamplingObserver:self];
+        }
+
+        self.cachedAudioWaveform = waveform;
+
+        return waveform;
+    }
 }
 
 #pragma mark - Thumbnails
@@ -799,6 +927,15 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                                                      success:(OWSLoadedThumbnailSuccess)success
                                                                      failure:(OWSThumbnailFailure)failure
 {
+    if (!self.isValidVisualMedia) {
+        // Never thumbnail (or try to use the original of) invalid media.
+        OWSFailDebug(@"Invalid image.");
+        // Any time we return nil from this method we have to call the failure handler
+        // or else the caller waits for an async thumbnail
+        failure();
+        return nil;
+    }
+
     CGSize originalSize = self.imageSize;
     if (originalSize.width < 1 || originalSize.height < 1) {
         // Any time we return nil from this method we have to call the failure handler
@@ -809,7 +946,16 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     if (originalSize.width <= thumbnailDimensionPoints || originalSize.height <= thumbnailDimensionPoints) {
         // There's no point in generating a thumbnail if the original is smaller than the
         // thumbnail size.
-        return [[OWSLoadedThumbnail alloc] initWithImage:self.originalImage filePath:self.originalFilePath];
+        UIImage *_Nullable originalImage = self.originalImage;
+        if (originalImage == nil) {
+            OWSFailDebug(@"originalImage was unexpectedly nil");
+            // Any time we return nil from this method we have to call the failure handler
+            // or else the caller waits for an async thumbnail
+            failure();
+            return nil;
+        }
+
+        return [[OWSLoadedThumbnail alloc] initWithImage:originalImage filePath:self.originalFilePath];
     }
 
     NSString *thumbnailPath = [self pathForThumbnailDimensionPoints:thumbnailDimensionPoints];
@@ -889,7 +1035,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return data;
 }
 
-- (NSArray<NSString *> *)allThumbnailPaths
+- (NSArray<NSString *> *)allSecondaryFilePaths
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
 
@@ -909,8 +1055,13 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 
     NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
-    if (legacyThumbnailPath && [[NSFileManager defaultManager] fileExistsAtPath:legacyThumbnailPath]) {
+    if (legacyThumbnailPath != nil && [[NSFileManager defaultManager] fileExistsAtPath:legacyThumbnailPath]) {
         [result addObject:legacyThumbnailPath];
+    }
+
+    NSString *_Nullable audioWaveformPath = self.audioWaveformPath;
+    if (audioWaveformPath != nil && [[NSFileManager defaultManager] fileExistsAtPath:audioWaveformPath]) {
+        [result addObject:audioWaveformPath];
     }
 
     return result;
@@ -959,8 +1110,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                               byteCount:(uint32_t)thumbnailData.length
                                          sourceFilename:thumbnailName
                                                 caption:nil
-                                         albumMessageId:nil
-                                        shouldAlwaysPad:NO];
+                                         albumMessageId:nil];
 
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];
@@ -975,17 +1125,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 // MARK: Protobuf serialization
 
 + (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
+                                                      transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(attachmentId.length > 0);
-
-    // TODO we should past in a transaction, rather than sneakily generate one in `fetch...` to make sure we're
-    // getting a consistent view in the message sending process. A brief glance shows it touches quite a bit of code,
-    // but should be straight forward.
-    __block TSAttachmentStream *_Nullable attachmentStream;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        attachmentStream =
-            [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId transaction:transaction];
-    }];
+    TSAttachmentStream *_Nullable attachmentStream =
+        [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId transaction:transaction];
     if (attachmentStream == nil) {
         return nil;
     }
@@ -1013,6 +1157,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     builder.key = self.encryptionKey;
     builder.digest = self.digest;
     builder.flags = self.isVoiceMessage ? SSKProtoAttachmentPointerFlagsVoiceMessage : 0;
+    if (self.blurHash.length > 0) {
+        builder.blurHash = self.blurHash;
+    }
 
     if (self.shouldHaveImageSize) {
         CGSize imageSize = self.imageSize;
@@ -1033,6 +1180,28 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return nil;
     }
     return attachmentProto;
+}
+
+#pragma mark - AudioWaveformSamplingObserver
+
+- (void)audioWaveformDidFinishSampling:(AudioWaveform *)audioWaveform
+{
+    // We finished sampling the audio waveform, write it to disk.
+    __typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+
+        [strongSelf ensureUniqueIdAttachmentFolder];
+
+        NSError *error;
+        [audioWaveform writeToFile:strongSelf.audioWaveformPath atomically:YES error:&error];
+        if (error) {
+            OWSFailDebug(@"could not cache audio waveform to disk: %@", error);
+        }
+    });
 }
 
 @end

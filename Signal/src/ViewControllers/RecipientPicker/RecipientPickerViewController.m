@@ -9,9 +9,9 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
-#import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
+#import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/AppVersion.h>
@@ -56,6 +56,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
 @property (nonatomic, readonly) UISearchBar *searchBar;
 @property (nonatomic, nullable) ComposeScreenSearchResultSet *searchResults;
+@property (nonatomic, nullable) NSString *lastSearchText;
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 
 // A list of possible phone numbers parsed from the search text as
@@ -146,14 +147,10 @@ const NSUInteger kMinimumSearchLength = 2;
     [self addChildViewController:self.tableViewController];
     [self.view insertSubview:self.tableViewController.view atIndex:0];
 
-    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
-    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-    [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.tableViewController.view autoPinEdgesToSuperviewEdges];
 
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
-
-    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view avoidNotch:NO];
     _tableViewController.tableView.tableHeaderView = searchBar;
 
     _noSignalContactsView = [self createNoSignalContactsView];
@@ -190,13 +187,18 @@ const NSUInteger kMinimumSearchLength = 2;
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
     OWSAssertIsOnMainThread();
+    OWSLogInfo(@"beggining refreshing.");
 
-    [self.contactsManager userRequestedSystemContactsRefreshWithCompletion:^(NSError *_Nullable error) {
-        if (error) {
-            OWSLogError(@"refreshing contacts failed with error: %@", error);
+    [[self.contactsManager userRequestedSystemContactsRefresh].then(^{
+        if (TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
+            return [AnyPromise promiseWithValue:nil];
         }
+
+        return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
+    }).ensure(^{
+        OWSLogInfo(@"ending refreshing.");
         [refreshControl endRefreshing];
-    }];
+    }) retainUntilComplete];
 }
 
 - (UIView *)createNoSignalContactsView
@@ -224,8 +226,8 @@ const NSUInteger kMinimumSearchLength = 2;
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = NSLocalizedString(
         @"EMPTY_CONTACTS_LABEL_LINE1", "Full width label displayed when attempting to compose message");
-    titleLabel.textColor = [Theme primaryColor];
-    titleLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(17.f, 20.f)];
+    titleLabel.textColor = Theme.primaryTextColor;
+    titleLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(17.f, 20.f)];
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     titleLabel.numberOfLines = 0;
@@ -237,7 +239,7 @@ const NSUInteger kMinimumSearchLength = 2;
     UILabel *subtitleLabel = [UILabel new];
     subtitleLabel.text = NSLocalizedString(
         @"EMPTY_CONTACTS_LABEL_LINE2", "Full width label displayed when attempting to compose message");
-    subtitleLabel.textColor = [Theme secondaryColor];
+    subtitleLabel.textColor = Theme.secondaryTextAndIconColor;
     subtitleLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(12.f, 14.f)];
     subtitleLabel.textAlignment = NSTextAlignmentCenter;
     subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -252,7 +254,7 @@ const NSUInteger kMinimumSearchLength = 2;
         [inviteContactsButton setTitle:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                                            "Label for the cell that presents the 'invite contacts' workflow.")
                               forState:UIControlStateNormal];
-        [inviteContactsButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+        [inviteContactsButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
         [inviteContactsButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
         [contents addSubview:inviteContactsButton];
         [inviteContactsButton autoHCenterInSuperview];
@@ -270,7 +272,7 @@ const NSUInteger kMinimumSearchLength = 2;
             setTitle:NSLocalizedString(@"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
                          @"Label for a button that lets users search for contacts by phone number")
             forState:UIControlStateNormal];
-        [searchByPhoneNumberButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+        [searchByPhoneNumberButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
         [searchByPhoneNumberButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
         [contents addSubview:searchByPhoneNumberButton];
         [searchByPhoneNumberButton autoHCenterInSuperview];
@@ -314,7 +316,7 @@ const NSUInteger kMinimumSearchLength = 2;
 {
     [super viewDidAppear:animated];
 
-    [OWSAlerts showIOSUpgradeNagIfNecessary];
+    [OWSActionSheets showIOSUpgradeNagIfNecessary];
 }
 
 #pragma mark - Table Contents
@@ -700,7 +702,16 @@ const NSUInteger kMinimumSearchLength = 2;
         NSString *usernameMatch = self.searchText;
         NSString *_Nullable localUsername = helper.profileManager.localUsername;
 
-        if (usernameMatch.length > 0 && ![NSObject isNullableObject:usernameMatch equalTo:localUsername]
+        NSError *error;
+        NSRegularExpression *startsWithNumberRegex = [[NSRegularExpression alloc] initWithPattern:@"^[0-9]+"
+                                                                                          options:0
+                                                                                            error:&error];
+        if (!startsWithNumberRegex || error) {
+            OWSFailDebug(@"Unexpected error creating regex %@", error.localizedDescription);
+        }
+
+        if (usernameMatch.length > 0 && ![startsWithNumberRegex hasMatchWithInput:usernameMatch]
+            && ![NSObject isNullableObject:usernameMatch equalTo:localUsername]
             && ![matchedAccountUsernames containsObject:usernameMatch]) {
             hasSearchResults = YES;
 
@@ -833,25 +844,25 @@ const NSUInteger kMinimumSearchLength = 2;
             stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
     }
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
-                                                                   message:confirmMessage
-                                                            preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert =
+        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
+                                             message:confirmMessage];
 
-    UIAlertAction *okAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"OK", @"")
+    ActionSheetAction *okAction = [[ActionSheetAction alloc]
+                  initWithTitle:NSLocalizedString(@"OK", @"")
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
-                          style:UIAlertActionStyleDefault
-                        handler:^(UIAlertAction *action) {
+                          style:ActionSheetActionStyleDefault
+                        handler:^(ActionSheetAction *action) {
                             [self.searchBar resignFirstResponder];
                             if ([MFMessageComposeViewController canSendText]) {
                                 [inviteFlow sendSMSToPhoneNumbers:@[ phoneNumber ]];
                             } else {
-                                [OWSAlerts
+                                [OWSActionSheets
                                     showErrorAlertWithMessage:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")];
                             }
                         }];
 
-    [alert addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSActionSheets cancelAction]];
     [alert addAction:okAction];
     self.searchBar.text = @"";
     [self searchTextDidChange];
@@ -860,10 +871,10 @@ const NSUInteger kMinimumSearchLength = 2;
     if ([self presentedViewController]) {
         [self dismissViewControllerAnimated:YES
                                  completion:^{
-                                     [self presentAlert:alert];
+                                     [self presentActionSheet:alert];
                                  }];
     } else {
-        [self presentAlert:alert];
+        [self presentActionSheet:alert];
     }
 }
 
@@ -877,7 +888,7 @@ const NSUInteger kMinimumSearchLength = 2;
         case MessageComposeResultCancelled:
             break;
         case MessageComposeResultFailed: {
-            [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"SEND_INVITE_FAILURE", @"")];
+            [OWSActionSheets showErrorAlertWithMessage:NSLocalizedString(@"SEND_INVITE_FAILURE", @"")];
             break;
         }
         case MessageComposeResultSent: {
@@ -885,8 +896,8 @@ const NSUInteger kMinimumSearchLength = 2;
                                      completion:^{
                                          OWSLogDebug(@"view controller dismissed");
                                      }];
-            [OWSAlerts
-                showAlertWithTitle:NSLocalizedString(@"SEND_INVITE_SUCCESS", @"Alert body after invite succeeded")];
+            [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"SEND_INVITE_SUCCESS",
+                                                          @"Alert body after invite succeeded")];
             break;
         }
         default:
@@ -908,57 +919,55 @@ const NSUInteger kMinimumSearchLength = 2;
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modal) {
-                      [self.contactsViewHelper.profileManager fetchProfileForUsername:username
+                      [self.contactsViewHelper.profileManager fetchAndUpdateProfileForUsername:username
                           success:^(SignalServiceAddress *address) {
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  if (modal.wasCancelled) {
+                              OWSAssertIsOnMainThread();
+                              if (modal.wasCancelled) {
+                                  return;
+                              }
+
+                              [modal dismissWithCompletion:^{
+                                  __strong typeof(self) strongSelf = weakSelf;
+                                  if (!strongSelf) {
                                       return;
                                   }
 
-                                  [modal dismissWithCompletion:^{
-                                      __strong typeof(self) strongSelf = weakSelf;
-                                      if (!strongSelf) {
-                                          return;
-                                      }
-
-                                      [strongSelf.delegate recipientPicker:strongSelf
-                                                        didSelectRecipient:[PickedRecipient forAddress:address]];
-                                  }];
-                              });
+                                  [strongSelf.delegate recipientPicker:strongSelf
+                                                    didSelectRecipient:[PickedRecipient forAddress:address]];
+                              }];
                           }
                           notFound:^{
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  if (modal.wasCancelled) {
-                                      return;
-                                  }
+                              OWSAssertIsOnMainThread();
+                              if (modal.wasCancelled) {
+                                  return;
+                              }
 
-                                  [modal dismissWithCompletion:^{
-                                      NSString *usernameNotFoundFormat = NSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
-                                          @"A message indicating that the given username is not a registered signal "
-                                          @"account. Embeds "
-                                          @"{{username}}");
-                                      [OWSAlerts showAlertWithTitle:
-                                                     NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
-                                                         @"A message indicating that the given username was not "
-                                                         @"registered with signal.")
-                                                            message:[[NSString alloc]
-                                                                        initWithFormat:usernameNotFoundFormat,
-                                                                        [CommonFormats formatUsername:username]]];
-                                  }];
-                              });
+                              [modal dismissWithCompletion:^{
+                                  NSString *usernameNotFoundFormat = NSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
+                                      @"A message indicating that the given username is not a registered signal "
+                                      @"account. Embeds "
+                                      @"{{username}}");
+                                  [OWSActionSheets
+                                      showActionSheetWithTitle:
+                                          NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
+                                              @"A message indicating that the given username was not "
+                                              @"registered with signal.")
+                                                       message:[[NSString alloc]
+                                                                   initWithFormat:usernameNotFoundFormat,
+                                                                   [CommonFormats formatUsername:username]]];
+                              }];
                           }
                           failure:^(NSError *error) {
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  if (modal.wasCancelled) {
-                                      return;
-                                  }
+                              OWSAssertIsOnMainThread();
+                              if (modal.wasCancelled) {
+                                  return;
+                              }
 
-                                  [modal dismissWithCompletion:^{
-                                      [OWSAlerts showErrorAlertWithMessage:
-                                                     NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
-                                                         @"A message indicating that username lookup failed.")];
-                                  }];
-                              });
+                              [modal dismissWithCompletion:^{
+                                  [OWSActionSheets showErrorAlertWithMessage:
+                                                       NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
+                                                           @"A message indicating that username lookup failed.")];
+                              }];
                           }];
                   }];
 }
@@ -1051,20 +1060,33 @@ const NSUInteger kMinimumSearchLength = 2;
 
     if (searchText.length < kMinimumSearchLength) {
         self.searchResults = nil;
+        self.lastSearchText = nil;
         return;
     }
+
+    if ([NSObject isNullableObject:self.lastSearchText equalTo:searchText]) {
+        return;
+    }
+
+    self.lastSearchText = searchText;
 
     __weak __typeof(self) weakSelf = self;
 
     __block ComposeScreenSearchResultSet *searchResults;
     [self.databaseStorage
         asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
-                                                                            transaction:transaction];
+            searchResults =
+                [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
+                                                                 maxResults:FullTextSearcher.kDefaultMaxResults
+                                                                transaction:transaction];
         }
         completion:^{
             __typeof(self) strongSelf = weakSelf;
             if (!strongSelf) {
+                return;
+            }
+            if (![NSObject isNullableObject:strongSelf.lastSearchText equalTo:searchText]) {
+                // Discard obsolete search results.
                 return;
             }
             strongSelf.searchResults = searchResults;

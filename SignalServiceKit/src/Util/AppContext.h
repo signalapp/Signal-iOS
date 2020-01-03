@@ -29,6 +29,7 @@ typedef void (^AppActiveBlock)(void);
 
 NSString *NSStringForUIApplicationState(UIApplicationState value);
 
+@class ActionSheetAction;
 @class OWSAES256Key;
 
 @protocol SSKKeychainStorage;
@@ -46,6 +47,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 @property (nonatomic, readonly) NSDate *buildTime;
 
 @property (atomic, nullable) UIWindow *mainWindow;
+
+@property (nonatomic, readonly) CGRect frame;
 
 @property (nonatomic, readonly) UIInterfaceOrientation interfaceOrientation;
 
@@ -85,7 +88,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 - (void)endBackgroundTask:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier;
 
 // Should be a NOOP if isMainApp is NO.
-- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects;
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjectsDescription:(NSString *)blockingObjectsDescription;
 
 // Should only be called if isMainApp is YES.
 - (void)setMainAppBadgeNumber:(NSInteger)value;
@@ -98,7 +101,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 - (nullable UIViewController *)frontmostViewController;
 
 // Returns nil if isMainApp is NO
-- (nullable UIAlertAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion;
+- (nullable ActionSheetAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion;
 
 // Should be a NOOP if isMainApp is NO.
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value;
@@ -116,6 +119,9 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 - (NSString *)appDatabaseBaseDirectoryPath;
 
 - (NSUserDefaults *)appUserDefaults;
+
+// This method should only be called by the main app.
+- (UIApplicationState)mainApplicationStateOnLaunch;
 
 @end
 

@@ -60,7 +60,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         assert(AppReadiness.isAppReady() || CurrentAppContext().isRunningTests)
         do {
             let messageRecord = try message.prepareMessage(transaction: transaction)
-            let jobRecord = try SSKMessageSenderJobRecord(message: messageRecord, removeMessageAfterSending: false, label: self.jobRecordLabel, transaction: transaction)
+            let jobRecord = try SSKMessageSenderJobRecord(message: messageRecord, removeMessageAfterSending: removeMessageAfterSending, label: self.jobRecordLabel, transaction: transaction)
             self.add(jobRecord: jobRecord, transaction: transaction)
         } catch {
             message.unpreparedMessage.update(sendingError: error, transaction: transaction)
@@ -70,6 +70,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     // MARK: JobQueue
 
     public typealias DurableOperationType = MessageSenderOperation
+    @objc
     public static let jobRecordLabel: String = "MessageSender"
     public static let maxRetries: UInt = 30
     public let requiresInternet: Bool = true
@@ -202,6 +203,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
             if self.jobRecord.removeMessageAfterSending {
                 self.message.anyRemove(transaction: transaction)
+                self.message.removeTemporaryAttachments(with: transaction)
             }
         }
     }

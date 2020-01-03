@@ -3,10 +3,13 @@
 //
 
 #import <SignalServiceKit/StorageCoordinator.h>
+#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const StorageIsReadyNotification = @"StorageIsReadyNotification";
 
 NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 {
@@ -26,11 +29,25 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     }
 }
 
+NSString *NSStringForDataStore(DataStore value)
+{
+    switch (value) {
+        case DataStoreYdb:
+            return @"DataStoreYdb";
+        case DataStoreGrdb:
+            return @"DataStoreGrdb";
+    }
+}
+
 #pragma mark -
 
 @interface StorageCoordinator () <SDSDatabaseStorageDelegate>
 
 @property (atomic) StorageCoordinatorState state;
+
+@property (atomic) BOOL isStorageSetupComplete;
+
+@property (nonatomic, readonly) DataStore dataStoreForUI;
 
 @end
 
@@ -47,6 +64,10 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 
     OWSSingletonAssert();
 
+    _dataStoreForUI = [StorageCoordinator computeDataStoreForUI];
+
+    OWSLogInfo(@"dataStoreForUI: %@", NSStringForDataStore(self.dataStoreForUI));
+
     _databaseStorage = [[SDSDatabaseStorage alloc] initWithDelegate:self];
 
     [self configure];
@@ -57,7 +78,13 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 + (BOOL)hasYdbFile
 {
     NSString *ydbFilePath = OWSPrimaryStorage.sharedDataDatabaseFilePath;
-    return [OWSFileSystem fileOrFolderExistsAtPath:ydbFilePath];
+    BOOL hasYdbFile = [OWSFileSystem fileOrFolderExistsAtPath:ydbFilePath];
+
+    if (hasYdbFile && !SSKPreferences.didEverUseYdb) {
+        [SSKPreferences setDidEverUseYdb:YES];
+    }
+
+    return hasYdbFile;
 }
 
 + (BOOL)hasGrdbFile
@@ -66,9 +93,139 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     return [OWSFileSystem fileOrFolderExistsAtPath:grdbFilePath];
 }
 
++ (BOOL)hasUnmigratedYdbFile
+{
+    return self.hasYdbFile && ![SSKPreferences isYdbMigrated];
+}
+
++ (BOOL)hasInvalidDatabaseVersion
+{
+    BOOL prefersYdb = SSKFeatureFlags.storageMode == StorageModeYdbForAll;
+    BOOL willUseYdb = StorageCoordinator.dataStoreForUI == DataStoreYdb;
+
+    BOOL hasValidGrdb = self.hasGrdbFile;
+    if (self.hasUnmigratedYdbFile) {
+        hasValidGrdb = NO;
+    }
+
+    // A check to avoid trying to revert to YDB when we've already migrated to GRDB.
+    if ((prefersYdb || willUseYdb) && hasValidGrdb &&
+        // Allow developers to do this, but not QA, internal,
+        // public beta or production.
+        !SSKFeatureFlags.canRevertToYDB) {
+        OWSFailDebug(@"Reverting to YDB.");
+        return YES;
+    }
+
+    if (SSKPreferences.hasUnknownGRDBSchema) {
+        OWSFailDebug(@"Unknown GRDB schema.");
+        return YES;
+    }
+
+    return NO;
+}
+
 - (StorageCoordinatorState)storageCoordinatorState
 {
     return self.state;
+}
+
+- (BOOL)isMigrating
+{
+    StorageCoordinatorState state = self.state;
+    return (state == StorageCoordinatorStateBeforeYDBToGRDBMigration
+        || state == StorageCoordinatorStateDuringYDBToGRDBMigration);
+}
+
++ (DataStore)dataStoreForUI
+{
+    // Computing dataStoreForUI is slightly expensive.
+    // Once SSKEnvironment is configured, we use the cached value
+    // that hangs on StorageCoordinator.  Until then, we compute every
+    // time.
+    if (!SSKEnvironment.hasShared) {
+        return self.computeDataStoreForUI;
+    }
+
+    return SSKEnvironment.shared.storageCoordinator.dataStoreForUI;
+}
+
++ (DataStore)computeDataStoreForUI
+{
+    // NOTE: By now, any move of YDB from the "app container"
+    //       to the "shared container" should be complete, so
+    //       we can ignore the "legacy" database files.
+    BOOL hasYdbFile = self.hasYdbFile;
+    BOOL hasGrdbFile = self.hasGrdbFile;
+    BOOL hasUnmigratedYdbFile = self.hasUnmigratedYdbFile;
+    BOOL isNewUser = !hasYdbFile && !hasGrdbFile;
+
+    // In the GRDB-possible modes, avoid migrations in certain cases.
+    switch (SSKFeatureFlags.storageMode) {
+        case StorageModeYdbForAll:
+            break;
+        case StorageModeGrdbForAlreadyMigrated:
+        case StorageModeGrdbForLegacyUsersOnly:
+        case StorageModeGrdbForNewUsersOnly:
+        case StorageModeGrdbForAll:
+        case StorageModeGrdbThrowawayIfMigrating:
+            if (hasUnmigratedYdbFile && !CurrentAppContext().isRunningTests) {
+                if (!CurrentAppContext().isMainApp) {
+                    // Don't migrate the database in an app extension.
+                    OWSLogInfo(@"Avoiding YDB-to-GRDB migration in app extension.");
+                    return DataStoreYdb;
+                }
+                if (CurrentAppContext().mainApplicationStateOnLaunch == UIApplicationStateBackground) {
+                    // Don't migrate the database if the app was launched into the background;
+                    // long migrations might prevent the user from receiving notifications and/or calls.
+                    OWSLogInfo(@"Avoiding YDB-to-GRDB migration in background.");
+                    return DataStoreYdb;
+                }
+            }
+            break;
+        case StorageModeYdbTests:
+        case StorageModeGrdbTests:
+            break;
+    }
+
+    switch (SSKFeatureFlags.storageMode) {
+        case StorageModeYdbForAll:
+            return DataStoreYdb;
+        case StorageModeGrdbForAlreadyMigrated:
+            if (isNewUser) {
+                // New users should use YDB.
+                return DataStoreYdb;
+            } else if (hasUnmigratedYdbFile) {
+                // Existing users should use YDB.
+                return DataStoreYdb;
+            } else {
+                // Only users who have already migrated to GRDB should use GRDB.
+                return DataStoreGrdb;
+            }
+        case StorageModeGrdbForLegacyUsersOnly:
+            if (isNewUser) {
+                // New users should use YDB.
+                return DataStoreYdb;
+            } else {
+                return DataStoreGrdb;
+            }
+        case StorageModeGrdbForNewUsersOnly:
+            if (isNewUser) {
+                // New users should use GRDB.
+                return DataStoreGrdb;
+            } else if (hasUnmigratedYdbFile) {
+                return DataStoreYdb;
+            } else {
+                return DataStoreGrdb;
+            }
+        case StorageModeGrdbForAll:
+        case StorageModeGrdbThrowawayIfMigrating:
+            return DataStoreGrdb;
+        case StorageModeYdbTests:
+            return DataStoreYdb;
+        case StorageModeGrdbTests:
+            return DataStoreGrdb;
+    }
 }
 
 - (void)configure
@@ -79,28 +236,43 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     //       to the "shared container" should be complete, so
     //       we can ignore the "legacy" database files.
     BOOL hasYdbFile = self.class.hasYdbFile;
-    OWSLogVerbose(@"hasYdbFile: %d", hasYdbFile);
+    OWSLogInfo(@"hasYdbFile: %d", hasYdbFile);
 
     BOOL hasGrdbFile = self.class.hasGrdbFile;
-    OWSLogVerbose(@"hasGrdbFile: %d", hasGrdbFile);
+    OWSLogInfo(@"hasGrdbFile: %d", hasGrdbFile);
+
+    BOOL hasUnmigratedYdbFile = self.class.hasUnmigratedYdbFile;
+    OWSLogInfo(@"hasUnmigratedYdbFile: %d", hasUnmigratedYdbFile);
+
+    OWSLogInfo(@"didEverUseYdb: %d", SSKPreferences.didEverUseYdb);
 
     switch (SSKFeatureFlags.storageMode) {
-        case StorageModeYdb:
-            self.state = StorageCoordinatorStateYDB;
-            break;
-        case StorageModeGrdb:
+        case StorageModeYdbForAll:
+        case StorageModeGrdbForAll:
+        case StorageModeGrdbForAlreadyMigrated:
+        case StorageModeGrdbForLegacyUsersOnly:
+        case StorageModeGrdbForNewUsersOnly:
         case StorageModeGrdbThrowawayIfMigrating:
-            if (hasYdbFile && ![SSKPreferences isYdbMigrated]) {
-                self.state = StorageCoordinatorStateBeforeYDBToGRDBMigration;
-
-                // We might want to delete any existing GRDB database
-                // files here, since they represent an incomplete
-                // previous migration and might cause problems.
-                [self.databaseStorage deleteGrdbFiles];
+            if (self.dataStoreForUI == DataStoreYdb) {
+                self.state = StorageCoordinatorStateYDB;
             } else {
-                self.state = StorageCoordinatorStateGRDB;
+                if (SSKFeatureFlags.storageMode == StorageModeGrdbThrowawayIfMigrating) {
+                    // Clear flag to force migration.
+                    [SSKPreferences setIsYdbMigrated:NO];
+                }
 
-                // GRDB TODO: Delete YDB files?
+                if (hasUnmigratedYdbFile) {
+                    self.state = StorageCoordinatorStateBeforeYDBToGRDBMigration;
+
+                    // We might want to delete any existing GRDB database
+                    // files here, since they represent an incomplete
+                    // previous migration and might cause problems.
+                    [self.databaseStorage deleteGrdbFiles];
+                } else {
+                    self.state = StorageCoordinatorStateGRDB;
+
+                    [self removeYdbFiles];
+                }
             }
             break;
         case StorageModeYdbTests:
@@ -120,6 +292,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     OWSAssert(self.state == StorageCoordinatorStateBeforeYDBToGRDBMigration);
 
     self.state = StorageCoordinatorStateDuringYDBToGRDBMigration;
+    
+    [self.databaseStorage logAllFileSizes];
 
     OWSLogInfo(@"state: %@", NSStringFromStorageCoordinatorState(self.state));
 }
@@ -133,10 +307,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 
     OWSLogInfo(@"state: %@", NSStringFromStorageCoordinatorState(self.state));
 
-    // Don't set this flag for "throwaway" migrations.
-    if (SSKFeatureFlags.storageMode == StorageModeGrdb) {
-        [SSKPreferences setIsYdbMigrated];
-    }
+    [self.databaseStorage logAllFileSizes];
 }
 
 - (BOOL)isDatabasePasswordAccessible
@@ -158,13 +329,64 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 - (void)useGRDBForTests
 {
     self.state = StorageCoordinatorStateGRDBTests;
+    _dataStoreForUI = DataStoreGrdb;
 }
 
 - (void)useYDBForTests
 {
     self.state = StorageCoordinatorStateYDBTests;
+    _dataStoreForUI = DataStoreYdb;
 }
 #endif
+
+- (void)removeYdbFiles
+{
+    if (SSKFeatureFlags.preserveYdb) {
+        // Don't clean up YDB..
+        return;
+    }
+    if (SSKFeatureFlags.storageMode == StorageModeGrdbThrowawayIfMigrating) {
+        // Don't clean up YDB; we're in throwaway mode.
+        return;
+    }
+
+    [OWSStorage deleteDatabaseFiles];
+    [OWSStorage deleteDBKeys];
+}
+
+- (void)markStorageSetupAsComplete
+{
+    self.isStorageSetupComplete = YES;
+
+    [self postStorageIsReadyNotification];
+}
+
+- (void)postStorageIsReadyNotification
+{
+    OWSLogInfo(@"");
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:StorageIsReadyNotification
+                                                                 object:nil
+                                                               userInfo:nil];
+    });
+}
+
+- (BOOL)isStorageReady
+{
+    switch (self.state) {
+        case StorageCoordinatorStateYDB:
+        case StorageCoordinatorStateYDBTests:
+            return [OWSStorage isStorageReady] && self.isStorageSetupComplete;
+        case StorageCoordinatorStateBeforeYDBToGRDBMigration:
+        case StorageCoordinatorStateDuringYDBToGRDBMigration:
+            return NO;
+        case StorageCoordinatorStateGRDB:
+        case StorageCoordinatorStateGRDBTests:
+            return self.isStorageSetupComplete;
+    }
+}
 
 @end
 

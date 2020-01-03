@@ -157,6 +157,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     uint64_t timestamp = [quoteProto id];
+    if (![SDS fitsInInt64:timestamp]) {
+        OWSFailDebug(@"Invalid timestamp");
+        return nil;
+    }
 
     if (!quoteProto.hasValidAuthor) {
         OWSFailDebug(@"quoted message missing author");
@@ -167,16 +171,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *_Nullable body = nil;
     BOOL hasAttachment = NO;
-    TSQuotedMessageContentSource bodySource = TSQuotedMessageContentSourceUnknown;
+    TSQuotedMessageContentSource contentSource = TSQuotedMessageContentSourceUnknown;
 
     // Prefer to generate the text snippet locally if available.
-    TSMessage *_Nullable quotedMessage = [self findQuotedMessageWithTimestamp:timestamp
-                                                                     threadId:thread.uniqueId
-                                                                authorAddress:authorAddress
-                                                                  transaction:transaction];
+    TSMessage *_Nullable quotedMessage = [InteractionFinder findMessageWithTimestamp:timestamp
+                                                                            threadId:thread.uniqueId
+                                                                              author:authorAddress
+                                                                         transaction:transaction];
 
     if (quotedMessage) {
-        bodySource = TSQuotedMessageContentSourceLocal;
+        contentSource = TSQuotedMessageContentSourceLocal;
 
         if (quotedMessage.isViewOnceMessage) {
             // We construct a quote that does not include any of the
@@ -195,16 +199,15 @@ NS_ASSUME_NONNULL_BEGIN
         if (localText.length > 0) {
             body = localText;
         }
-    }
-
-    if (body.length == 0) {
+    } else {
+        OWSLogWarn(@"Could not find quoted message: %llu", timestamp);
+        contentSource = TSQuotedMessageContentSourceRemote;
         if (quoteProto.text.length > 0) {
-            bodySource = TSQuotedMessageContentSourceRemote;
             body = quoteProto.text;
         }
     }
 
-    OWSAssertDebug(bodySource != TSQuotedMessageContentSourceUnknown);
+    OWSAssertDebug(contentSource != TSQuotedMessageContentSourceUnknown);
 
     NSMutableArray<OWSAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SSKProtoDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
@@ -222,18 +225,20 @@ NS_ASSUME_NONNULL_BEGIN
                                              transaction:transaction];
 
         if (localThumbnail) {
-            OWSLogDebug(@"Generated local thumbnail for quoted quoted message: %@:%lu",
-                thread.uniqueId,
-                (unsigned long)timestamp);
+            OWSLogDebug(@"Generated local thumbnail for quoted quoted message: %@:%llu", thread.uniqueId, timestamp);
+            // It would be surprising if we could derive a local thumbnail when
+            // the body had to be derived remotely.
+            OWSAssertDebug(contentSource == TSQuotedMessageContentSourceLocal);
 
             [localThumbnail anyInsertWithTransaction:transaction];
 
             attachmentInfo.thumbnailAttachmentStreamId = localThumbnail.uniqueId;
         } else if (quotedAttachment.thumbnail) {
-            OWSLogDebug(@"Saving reference for fetching remote thumbnail for quoted message: %@:%lu",
+            OWSLogDebug(@"Saving reference for fetching remote thumbnail for quoted message: %@:%llu",
                 thread.uniqueId,
-                (unsigned long)timestamp);
+                timestamp);
 
+            contentSource = TSQuotedMessageContentSourceRemote;
             SSKProtoAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
             TSAttachmentPointer *_Nullable thumbnailPointer =
                 [TSAttachmentPointer attachmentPointerFromProto:thumbnailAttachmentProto albumMessage:nil];
@@ -245,7 +250,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Invalid thumbnail attachment.");
             }
         } else {
-            OWSLogDebug(@"No thumbnail for quoted message: %@:%lu", thread.uniqueId, (unsigned long)timestamp);
+            OWSLogDebug(@"No thumbnail for quoted message: %@:%llu", thread.uniqueId, timestamp);
         }
 
         [attachmentInfos addObject:attachmentInfo];
@@ -263,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
                                         authorAddress:authorAddress
                                                  body:body
-                                           bodySource:bodySource
+                                           bodySource:contentSource
                         receivedQuotedAttachmentInfos:attachmentInfos];
 }
 
@@ -273,11 +278,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                             contentType:(NSString *)contentType
                                                             transaction:(SDSAnyWriteTransaction *)transaction
 {
-    TSMessage *_Nullable quotedMessage = [self findQuotedMessageWithTimestamp:timestamp
-                                                                     threadId:threadId
-                                                                authorAddress:authorAddress
-                                                                  transaction:transaction];
+    TSMessage *_Nullable quotedMessage = [InteractionFinder findMessageWithTimestamp:timestamp
+                                                                            threadId:threadId
+                                                                              author:authorAddress
+                                                                         transaction:transaction];
+
     if (!quotedMessage) {
+        OWSLogWarn(@"Could not find quoted message: %llu", timestamp);
         return nil;
     }
 
@@ -301,65 +308,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [sourceStream cloneAsThumbnail];
 }
 
-+ (nullable TSMessage *)findQuotedMessageWithTimestamp:(uint64_t)timestamp
-                                              threadId:(NSString *)threadId
-                                         authorAddress:(SignalServiceAddress *)authorAddress
-                                           transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    if (timestamp <= 0) {
-        OWSFailDebug(@"Invalid timestamp: %llu", timestamp);
-        return nil;
-    }
-    if (threadId.length <= 0) {
-        OWSFailDebug(@"Invalid thread.");
-        return nil;
-    }
-    if (!authorAddress.isValid) {
-        OWSFailDebug(@"Invalid authorAddress: %@", authorAddress);
-        return nil;
-    }
-
-    NSError *error;
-    NSArray<TSInteraction *> *interactions =
-        [InteractionFinder interactionsWithTimestamp:timestamp
-                                              filter:^(TSInteraction *interaction) {
-                                                  return [interaction isKindOfClass:[TSMessage class]];
-                                              }
-                                         transaction:transaction
-                                               error:&error];
-    if (error != nil) {
-        OWSFailDebug(@"Error loading interactions: %@", error);
-        return nil;
-    }
-    for (TSInteraction *interaction in interactions) {
-        TSMessage *message = (TSMessage *)interaction;
-        if (![message.uniqueThreadId isEqualToString:threadId]) {
-            continue;
-        }
-        if ([message isKindOfClass:[TSIncomingMessage class]]) {
-            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-            if (![authorAddress isEqualToAddress:incomingMessage.authorAddress]) {
-                continue;
-            }
-        } else if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-            if (!authorAddress.isLocalAddress) {
-                continue;
-            }
-        }
-
-        return message;
-    }
-    OWSLogWarn(@"Could not find quoted message: %llu", timestamp);
-    return nil;
-}
-
 #pragma mark - Attachment (not necessarily with a thumbnail)
 
 - (nullable OWSAttachmentInfo *)firstAttachmentInfo
 {
-    OWSAssertDebug(self.quotedAttachments.count <= 1);
     return self.quotedAttachments.firstObject;
 }
 

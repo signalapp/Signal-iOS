@@ -159,6 +159,8 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
             return @"BlockedRequest";
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeConfiguration) {
             return @"ConfigurationRequest";
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeKeys) {
+            return @"KeysRequest";
         } else {
             OWSFailDebug(@"Unknown sync message request type");
             return @"UnknownRequest";
@@ -191,6 +193,15 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         }
         [description appendFormat:@"StickerPackOperation: %@", [operationTypes componentsJoinedByString:@", "]];
         return description;
+    } else if (syncMessage.fetchLatest) {
+        switch (syncMessage.fetchLatest.unwrappedType) {
+            case SSKProtoSyncMessageFetchLatestTypeUnknown:
+                return @"FetchLatest_Unknown";
+            case SSKProtoSyncMessageFetchLatestTypeLocalProfile:
+                return @"FetchLatest_LocalProfile";
+            case SSKProtoSyncMessageFetchLatestTypeStorageManifest:
+                return @"FetchLatest_StorageManifest";
+        }
     } else {
         OWSFailDebug(@"Unknown sync message type");
         return @"Unknown";

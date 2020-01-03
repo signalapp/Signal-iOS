@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -56,6 +56,13 @@ public class ReturnToCallViewController: UIViewController {
         returnToCallLabel.autoHCenterInSuperview()
     }
 
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { _ in
+            OWSWindowManager.shared.ensureReturnToCallWindowFrame()
+        }, completion: nil)
+    }
+
     @objc
     public func didTapView(gestureRecognizer: UITapGestureRecognizer) {
         self.delegate?.returnToCallWasTapped(self)
@@ -81,7 +88,7 @@ public class ReturnToCallViewController: UIViewController {
     // MARK: Orientation
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
+        return UIDevice.current.isIPad ? .all : .portrait
     }
 
 }

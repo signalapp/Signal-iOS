@@ -27,6 +27,28 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
+struct ProvisioningProtos_ProvisioningUuid {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// @required
+  var uuid: String {
+    get {return _uuid ?? String()}
+    set {_uuid = newValue}
+  }
+  /// Returns true if `uuid` has been explicitly set.
+  var hasUuid: Bool {return self._uuid != nil}
+  /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
+  mutating func clearUuid() {self._uuid = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _uuid: String? = nil
+}
+
 struct ProvisioningProtos_ProvisionEnvelope {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -113,7 +135,6 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `provisioningCode`. Subsequent reads from it will return its default value.
   mutating func clearProvisioningCode() {self._provisioningCode = nil}
 
-  /// @required
   var userAgent: String {
     get {return _userAgent ?? String()}
     set {_userAgent = newValue}
@@ -133,7 +154,6 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
   mutating func clearProfileKey() {self._profileKey = nil}
 
-  /// @required
   var readReceipts: Bool {
     get {return _readReceipts ?? false}
     set {_readReceipts = newValue}
@@ -142,6 +162,15 @@ struct ProvisioningProtos_ProvisionMessage {
   var hasReadReceipts: Bool {return self._readReceipts != nil}
   /// Clears the value of `readReceipts`. Subsequent reads from it will return its default value.
   mutating func clearReadReceipts() {self._readReceipts = nil}
+
+  var provisioningVersion: UInt32 {
+    get {return _provisioningVersion ?? 0}
+    set {_provisioningVersion = newValue}
+  }
+  /// Returns true if `provisioningVersion` has been explicitly set.
+  var hasProvisioningVersion: Bool {return self._provisioningVersion != nil}
+  /// Clears the value of `provisioningVersion`. Subsequent reads from it will return its default value.
+  mutating func clearProvisioningVersion() {self._provisioningVersion = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -155,11 +184,41 @@ struct ProvisioningProtos_ProvisionMessage {
   fileprivate var _userAgent: String? = nil
   fileprivate var _profileKey: Data? = nil
   fileprivate var _readReceipts: Bool? = nil
+  fileprivate var _provisioningVersion: UInt32? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "ProvisioningProtos"
+
+extension ProvisioningProtos_ProvisioningUuid: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ProvisioningUuid"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "uuid"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._uuid)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._uuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: ProvisioningProtos_ProvisioningUuid, rhs: ProvisioningProtos_ProvisioningUuid) -> Bool {
+    if lhs._uuid != rhs._uuid {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
 
 extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ProvisionEnvelope"
@@ -207,6 +266,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     5: .same(proto: "userAgent"),
     6: .same(proto: "profileKey"),
     7: .same(proto: "readReceipts"),
+    9: .same(proto: "provisioningVersion"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -220,6 +280,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
       case 6: try decoder.decodeSingularBytesField(value: &self._profileKey)
       case 7: try decoder.decodeSingularBoolField(value: &self._readReceipts)
       case 8: try decoder.decodeSingularStringField(value: &self._uuid)
+      case 9: try decoder.decodeSingularUInt32Field(value: &self._provisioningVersion)
       default: break
       }
     }
@@ -250,6 +311,9 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     if let v = self._uuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 8)
     }
+    if let v = self._provisioningVersion {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -262,6 +326,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     if lhs._userAgent != rhs._userAgent {return false}
     if lhs._profileKey != rhs._profileKey {return false}
     if lhs._readReceipts != rhs._readReceipts {return false}
+    if lhs._provisioningVersion != rhs._provisioningVersion {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -42,7 +42,7 @@ public struct BidirectionalDictionary<ElementOne: Hashable, ElementTwo: Hashable
     fileprivate typealias BackwardType = [ElementTwo: ElementOne]
 
     fileprivate var forwardDictionary: ForwardType
-    fileprivate var backwardDictionary: [ElementTwo: ElementOne]
+    fileprivate var backwardDictionary: BackwardType
 
     public init() {
         forwardDictionary = [:]
@@ -103,6 +103,14 @@ public struct BidirectionalDictionary<ElementOne: Hashable, ElementTwo: Hashable
     public var count: Int {
         assert(forwardDictionary.count == backwardDictionary.count)
         return forwardDictionary.count
+    }
+
+    public var forwardKeys: [ElementOne] {
+        return Array(forwardDictionary.keys)
+    }
+
+    public var backwardKeys: [ElementTwo] {
+        return Array(backwardDictionary.keys)
     }
 }
 

@@ -5,29 +5,33 @@
 import Foundation
 import SignalMessaging
 import SafariServices
+import Lottie
 
 private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
+    private let animationView = AnimationView(name: "stickerSplashComplete")
+
     // MARK: - View lifecycle
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        animationView.play()
+    }
 
     override func loadView() {
         self.view = UIView.container()
         self.view.backgroundColor = Theme.backgroundColor
 
-        let heroImageView = UIImageView()
-        heroImageView.setImage(imageName: "introducing-link-previews-dark")
-        if let heroImage = heroImageView.image {
-            heroImageView.autoPinToAspectRatio(with: heroImage.size)
-        } else {
-            owsFailDebug("Missing hero image.")
-        }
-        view.addSubview(heroImageView)
-        heroImageView.autoPinTopToSuperviewMargin(withInset: 20)
-        // TODO: Depending on the final asset, we might autoPinWidthToSuperview()
-        // and add spacing  with the content below.
-        heroImageView.autoHCenterInSuperview()
-        heroImageView.setContentHuggingLow()
-        heroImageView.setCompressionResistanceLow()
+        animationView.backgroundBehavior = .forceFinish
+        animationView.loopMode = .playOnce
+        animationView.contentMode = .scaleAspectFit
+
+        view.addSubview(animationView)
+        animationView.autoPinTopToSuperviewMargin(withInset: 20)
+        animationView.autoPinWidthToSuperview()
+        animationView.setContentHuggingLow()
+        animationView.setCompressionResistanceLow()
 
         let title = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE", comment: "Header for stickers splash screen")
         let body = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION", comment: "Body text for stickers splash screen")
@@ -37,20 +41,20 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_mediumWeight()
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.minimumScaleFactor = 0.5
         titleLabel.adjustsFontSizeToFitWidth = true
         view.addSubview(titleLabel)
         titleLabel.autoPinWidthToSuperview(withMargin: hMargin)
-        titleLabel.autoPinEdge(.top, to: .bottom, of: heroImageView, withOffset: 20)
+        titleLabel.autoPinEdge(.top, to: .bottom, of: animationView, withOffset: 20)
         titleLabel.setContentHuggingVerticalHigh()
 
         // Body label
         let bodyLabel = UILabel()
         bodyLabel.text = body
         bodyLabel.font = UIFont.ows_dynamicTypeBody
-        bodyLabel.textColor = Theme.primaryColor
+        bodyLabel.textColor = Theme.primaryTextColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
@@ -61,7 +65,8 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
 
         // Icon
         let iconImageView = UIImageView()
-        iconImageView.setTemplateImageName("sticker-smiley-outline-24", tintColor: Theme.secondaryColor)
+        let stickerIcon = Theme.iconImage(.stickerButton)
+        iconImageView.setTemplateImage(stickerIcon, tintColor: Theme.secondaryTextAndIconColor)
         iconImageView.layer.minificationFilter = .trilinear
         iconImageView.layer.magnificationFilter = .trilinear
         view.addSubview(iconImageView)
@@ -73,9 +78,9 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
 
         // Dismiss button
         let dismissButton = OWSFlatButton.button(title: dismissButtonTitle(),
-                                                 font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
+                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold(),
                                                  titleColor: UIColor.white,
-                                                 backgroundColor: UIColor.ows_materialBlue,
+                                                 backgroundColor: UIColor.ows_signalBlue,
                                                  target: self,
                                                  selector: #selector(didTapDismissButton))
         dismissButton.autoSetHeightUsingFont()
@@ -135,7 +140,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         self.view.backgroundColor = Theme.backgroundColor
 
         let heroImageView = UIImageView()
-        heroImageView.setImage(imageName: "introducing-pins-\(Theme.isDarkThemeEnabled ? "dark" : "light")")
+        heroImageView.setImage(imageName: Theme.isDarkThemeEnabled ? "introducing-pins-dark" : "introducing-pins-light")
         if let heroImage = heroImageView.image {
             heroImageView.autoPinToAspectRatio(with: heroImage.size)
         } else {
@@ -164,8 +169,8 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semiBold()
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.minimumScaleFactor = 0.5
         titleLabel.adjustsFontSizeToFitWidth = true
         view.addSubview(titleLabel)
@@ -179,7 +184,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         let bodyLabel = UILabel()
         bodyLabel.text = body
         bodyLabel.font = UIFont.ows_dynamicTypeBody
-        bodyLabel.textColor = Theme.primaryColor
+        bodyLabel.textColor = Theme.primaryTextColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
@@ -190,9 +195,9 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
 
         // Primary button
         let primaryButton = OWSFlatButton.button(title: primaryButtonTitle(),
-                                                 font: UIFont.ows_dynamicTypeBody.ows_semiBold(),
+                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold(),
                                                  titleColor: .white,
-                                                 backgroundColor: .ows_materialBlue,
+                                                 backgroundColor: .ows_signalBlue,
                                                  target: self,
                                                  selector: #selector(didTapPrimaryButton))
         primaryButton.autoSetHeightUsingFont()
@@ -205,7 +210,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         // Secondary button
         let secondaryButton = UIButton()
         secondaryButton.setTitle(secondaryButtonTitle(), for: .normal)
-        secondaryButton.setTitleColor(.ows_materialBlue, for: .normal)
+        secondaryButton.setTitleColor(.ows_signalBlue, for: .normal)
         secondaryButton.titleLabel?.font = .ows_dynamicTypeBody
         secondaryButton.addTarget(self, action: #selector(didTapSecondaryButton), for: .touchUpInside)
         view.addSubview(secondaryButton)
@@ -310,7 +315,22 @@ public class ExperienceUpgradeViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
+        #if swift(>=5.1)
+
+        // Don't allow interactive dismissal.
+        if #available(iOS 13, *) {
+            presentationController?.delegate = self
+            isModalInPresentation = !canDismissWithGesture
+        } else {
+            addDismissGesture()
+        }
+
+        #else
+
         addDismissGesture()
+
+        #endif
     }
 
     // MARK: -
@@ -324,14 +344,18 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
     @objc
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        markAsSeen()
+        super.dismiss(animated: flag, completion: completion)
+    }
+
+    func markAsSeen() {
         // Blocking write before dismiss, to be sure they're marked as complete
-        // before HomeView.didAppear is re-fired.
+        // before ConversationList.didAppear is re-fired.
         databaseStorage.write { transaction in
             Logger.info("marking all upgrades as seen.")
             ExperienceUpgradeFinder.shared.markAsSeen(experienceUpgrade: self.experienceUpgrade,
                                                       transaction: transaction)
         }
-        super.dismiss(animated: flag, completion: completion)
     }
 
     @objc
@@ -351,6 +375,12 @@ public class ExperienceUpgradeViewController: OWSViewController {
     // MARK: Orientation
 
     override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
+        return UIDevice.current.isIPad ? .all : .portrait
+    }
+}
+
+extension ExperienceUpgradeViewController: UIAdaptivePresentationControllerDelegate {
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        markAsSeen()
     }
 }

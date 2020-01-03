@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 @objc
 public protocol ConversationViewDatabaseSnapshotDelegate: AnyObject {
@@ -26,16 +26,37 @@ public class ConversationViewDatabaseObserver: NSObject {
         _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
     }
 
-    @objc
-    public func touch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
+    // internal - should only be called by DatabaseStorage
+    func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        let rowId = RowId(interaction.sortId)
+        assert(rowId > 0)
+        pendingInteractionChanges.insert(rowId)
 
-        UIDatabaseObserver.serializedSync {
-            let rowId = RowId(interaction.sortId)
-            pendingInteractionChanges.insert(rowId)
+        let interactionThread: TSThread? = interaction.thread(transaction: transaction.asAnyRead)
+        if let thread = interactionThread {
+            didTouch(thread: thread, transaction: transaction)
+        } else {
+            owsFailDebug("Could not load thread for interaction.")
         }
+    }
+
+    // internal - should only be called by DatabaseStorage
+    func didTouch(thread: TSThread, transaction: GRDBWriteTransaction) {
+        // Note: We don't actually use the `transaction` param, but touching must happen within
+        // a write transaction in order for the touch machinery to notify it's observers
+        // in the expected way.
+        AssertIsOnUIDatabaseObserverSerialQueue()
+
+        guard let grdbId = thread.grdbId else {
+            owsFailDebug("Missing grdbId.")
+            return
+        }
+
+        pendingThreadChanges.insert(grdbId.int64Value)
     }
 
     private typealias RowId = Int64
@@ -63,38 +84,28 @@ public class ConversationViewDatabaseObserver: NSObject {
             _committedInteractionChanges = newValue
         }
     }
-}
 
-extension ConversationViewDatabaseObserver: TransactionObserver {
-
-    public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
-        return eventKind.tableName == InteractionRecord.databaseTableName
-    }
-
-    public func databaseDidChange(with event: DatabaseEvent) {
-        Logger.verbose("")
-        assert(event.tableName == InteractionRecord.databaseTableName)
-        UIDatabaseObserver.serializedSync {
-            _ = pendingInteractionChanges.insert(event.rowID)
+    private var _pendingThreadChanges: Set<RowId> = Set()
+    private var pendingThreadChanges: Set<RowId> {
+        get {
+            AssertIsOnUIDatabaseObserverSerialQueue()
+            return _pendingThreadChanges
+        }
+        set {
+            AssertIsOnUIDatabaseObserverSerialQueue()
+            _pendingThreadChanges = newValue
         }
     }
 
-    public func databaseDidCommit(_ db: Database) {
-        // no - op
-
-        // Although this class is a TransactionObserver, it is also a delegate
-        // (DatabaseSnapshotDelegate) of another TransactionObserver, the UIDatabaseObserver.
-        //
-        // We use our own TransactionObserver methods to collect details about the changes,
-        // but we wait for the UIDatabaseObserver's TransactionObserver methods to inform our own
-        // delegate of these details in sync with when the UI DB Snapshot is updated
-        // (via DatabaseSnapshotDelegate).
-    }
-
-    public func databaseDidRollback(_ db: Database) {
-        owsFailDebug("we should verify this works if we ever start to use rollbacks")
-        UIDatabaseObserver.serializedSync {
-            pendingInteractionChanges = Set()
+    private var _committedThreadChanges: Set<RowId>?
+    private var committedThreadChanges: Set<RowId>? {
+        get {
+            AssertIsOnMainThread()
+            return _committedThreadChanges
+        }
+        set {
+            AssertIsOnMainThread()
+            _committedThreadChanges = newValue
         }
     }
 }
@@ -102,13 +113,15 @@ extension ConversationViewDatabaseObserver: TransactionObserver {
 @objc
 public class ConversationViewDatabaseTransactionChanges: NSObject {
     private let updatedRowIds: Set<Int64>
+    private let updatedThreadIds: Set<Int64>
 
-    init(updatedRowIds: Set<Int64>) throws {
+    init(updatedRowIds: Set<Int64>, updatedThreadIds: Set<Int64>) throws {
         guard updatedRowIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
 
         self.updatedRowIds = updatedRowIds
+        self.updatedThreadIds = updatedThreadIds
     }
 
     @objc
@@ -136,18 +149,48 @@ public class ConversationViewDatabaseTransactionChanges: NSObject {
 
         return Set(uniqueIds)
     }
+
+    @objc(containsThreadRowId:)
+    public func contains(threadRowId: NSNumber) -> Bool {
+        return updatedThreadIds.contains(threadRowId.int64Value)
+    }
 }
 
 extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
-    public func databaseSnapshotSourceDidCommit(db: Database) {
+
+    // MARK: - Transaction LifeCycle
+
+    public func snapshotTransactionDidChange(with event: DatabaseEvent) {
+        Logger.verbose("")
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        if event.tableName == InteractionRecord.databaseTableName {
+            _ = pendingInteractionChanges.insert(event.rowID)
+        } else if event.tableName == ThreadRecord.databaseTableName {
+            _ = pendingThreadChanges.insert(event.rowID)
+        }
+    }
+
+    public func snapshotTransactionDidCommit(db: Database) {
         AssertIsOnUIDatabaseObserverSerialQueue()
         let pendingInteractionChanges = self.pendingInteractionChanges
         self.pendingInteractionChanges = Set()
+        let pendingThreadChanges = self.pendingThreadChanges
+        self.pendingThreadChanges = Set()
 
         DispatchQueue.main.async {
             self.committedInteractionChanges = pendingInteractionChanges
+            self.committedThreadChanges = pendingThreadChanges
         }
     }
+
+    public func snapshotTransactionDidRollback(db: Database) {
+        owsFailDebug("we should verify this works if we ever start to use rollbacks")
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        pendingInteractionChanges = Set()
+        pendingThreadChanges = Set()
+    }
+
+    // MARK: - Snapshot LifeCycle (Post Commit)
 
     public func databaseSnapshotWillUpdate() {
         AssertIsOnMainThread()
@@ -164,7 +207,13 @@ extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
             }
             self.committedInteractionChanges = nil
 
-            let transactionChanges = try ConversationViewDatabaseTransactionChanges(updatedRowIds: committedInteractionChanges)
+            guard let committedThreadChanges = self.committedThreadChanges else {
+                throw OWSErrorMakeAssertionError("committedThreadChanges was unexpectedly nil")
+            }
+            self.committedThreadChanges = nil
+
+            let transactionChanges = try ConversationViewDatabaseTransactionChanges(updatedRowIds: committedInteractionChanges,
+                                                                                    updatedThreadIds: committedThreadChanges)
             for delegate in snapshotDelegates {
                 delegate.conversationViewDatabaseSnapshotDidUpdate(transactionChanges: transactionChanges)
             }

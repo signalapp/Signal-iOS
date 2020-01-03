@@ -84,8 +84,11 @@ NS_ASSUME_NONNULL_BEGIN
 // country code -> country name
 + (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode
 {
-    OWSAssertDebug(countryCode);
+    OWSAssertDebug(countryCode != nil);
 
+    if (countryCode.length < 1) {
+        return NSLocalizedString(@"UNKNOWN_VALUE", "Indicates an unknown or unrecognizable value.");
+    }
     NSDictionary *countryCodeComponent = @{NSLocaleCountryCode : countryCode};
     NSString *identifier               = [NSLocale localeIdentifierFromComponents:countryCodeComponent];
     NSString *countryName = [NSLocale.currentLocale displayNameForKey:NSLocaleIdentifier value:identifier];
@@ -101,6 +104,10 @@ NS_ASSUME_NONNULL_BEGIN
 // country code -> calling code
 + (NSString *)callingCodeFromCountryCode:(NSString *)countryCode
 {
+    if (countryCode.length < 1) {
+        return @"+0";
+    }
+
     if ([countryCode isEqualToString:@"AQ"]) {
         // Antarctica
         return @"+672";
@@ -523,6 +530,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(source != nil);
     OWSAssertDebug(target != nil);
     OWSAssertDebug(offset <= source.length);
+    if (source == nil || target == nil || offset > source.length) {
+        return 0;
+    }
 
     NSUInteger n = source.length;
     NSUInteger m = target.length;

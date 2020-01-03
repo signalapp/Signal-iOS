@@ -6,6 +6,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SignalServiceAddress;
 
+extern NSString *const OWSUserAgent;
+extern uint32_t const OWSProvisioningVersion;
+
 @interface OWSProvisioningMessage : NSObject
 
 - (instancetype)initWithMyPublicKey:(NSData *)myPublicKey

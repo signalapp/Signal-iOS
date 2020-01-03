@@ -8,22 +8,6 @@ import SignalServiceKit
 
 class SDSPerformanceTest: PerformanceBaseTest {
 
-    // MARK: - Dependencies
-
-    var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
-    // MARK: -
-
-    override func setUp() {
-        super.setUp()
-        // Logging queries is expensive and affects the results of this test.
-        // This is restored in tearDown().
-        SDSDatabaseStorage.shouldLogDBQueries = false
-        storageCoordinator.useGRDBForTests()
-    }
-
     // MARK: - Insert Messages
 
     func testYDBPerf_insertMessages() {
@@ -118,28 +102,40 @@ class SDSPerformanceTest: PerformanceBaseTest {
         write { transaction in
             TSThread.anyRemoveAllWithInstantation(transaction: transaction)
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            TSThread.anyRemoveAllWithoutInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithoutInstantation(transaction: transaction)
         }
     }
 
     // MARK: - Enumerate Messages
 
-    func testYDBPerf_enumerateMessages() {
+    func testYDBPerf_enumerateMessagesUnbatched() {
         storageCoordinator.useYDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            enumerateMessages()
+            enumerateMessages(batched: false)
         }
     }
 
-    func testGRDBPerf_enumerateMessages() {
+    func testGRDBPerf_enumerateMessagesUnbatched() {
         storageCoordinator.useGRDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            enumerateMessages()
+            enumerateMessages(batched: false)
         }
     }
 
-    func enumerateMessages() {
+    func testYDBPerf_enumerateMessagesBatched() {
+        storageCoordinator.useYDBForTests()
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            enumerateMessages(batched: true)
+        }
+    }
+
+    func testGRDBPerf_enumerateMessagesBatched() {
+        storageCoordinator.useGRDBForTests()
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            enumerateMessages(batched: true)
+        }
+    }
+
+    func enumerateMessages(batched: Bool) {
         let messageCount = 100
         let enumerationCount = 10
 
@@ -157,7 +153,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
         read { transaction in
             var enumeratedCount = 0
             for _ in 0..<enumerationCount {
-                TSInteraction.anyEnumerate(transaction: transaction) { _, _ in
+                TSInteraction.anyEnumerate(transaction: transaction, batched: batched) { _, _ in
                     enumeratedCount += 1
                 }
             }
@@ -169,8 +165,161 @@ class SDSPerformanceTest: PerformanceBaseTest {
         write { transaction in
             TSThread.anyRemoveAllWithInstantation(transaction: transaction)
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            TSThread.anyRemoveAllWithoutInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithoutInstantation(transaction: transaction)
         }
+    }
+
+    // MARK: - Thread Util
+
+    func testPerf_enumerateBlockingSafetyNumberChanges() {
+        storageCoordinator.useGRDBForTests()
+
+        let thread: TSContactThread = ContactThreadFactory().create()
+
+        createInteractionsForSafetyNumberTests(thread: thread)
+
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: true) {
+            read { transaction in
+                let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+                interactionFinder.enumerateBlockingSafetyNumberChanges(transaction: transaction) { (_, _) in
+                    // Do nothing.
+                }
+            }
+        }
+
+        write { transaction in
+            thread.anyRemove(transaction: transaction)
+        }
+    }
+
+    func testPerf_enumerateNonBlockingSafetyNumberChanges() {
+        storageCoordinator.useGRDBForTests()
+
+        let thread: TSContactThread = ContactThreadFactory().create()
+
+        createInteractionsForSafetyNumberTests(thread: thread)
+
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: true) {
+            read { transaction in
+                let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+                interactionFinder.enumerateNonBlockingSafetyNumberChanges(transaction: transaction) { (_, _) in
+                    // Do nothing.
+                }
+            }
+        }
+
+        write { transaction in
+            thread.anyRemove(transaction: transaction)
+        }
+    }
+
+    func testPerf_ThreadUtil_ensureDynamicInteractions() {
+        storageCoordinator.useGRDBForTests()
+
+        let thread: TSContactThread = ContactThreadFactory().create()
+
+        createInteractionsForSafetyNumberTests(thread: thread)
+
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: true) {
+            read { transaction in
+                ThreadUtil.ensureDynamicInteractions(for: thread,
+                                                     hideUnreadMessagesIndicator: false,
+                                                     last: nil,
+                                                     focusMessageId: nil,
+                                                     maxRangeSize: 100,
+                                                     transaction: transaction)
+            }
+        }
+
+        write { transaction in
+            thread.anyRemove(transaction: transaction)
+        }
+    }
+
+    func createInteractionsForSafetyNumberTests(thread: TSContactThread) {
+
+        read { transaction in
+            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
+            XCTAssertEqual(0, TSInteraction.anyFetchAll(transaction: transaction).count)
+        }
+
+        write { transaction in
+            let createBlockingSafetyNumberChanges = { ( count: Int, markAsRead: Bool ) in
+                for _ in 0..<count {
+                    let envelope = self.buildEnvelope(for: thread)
+                    let message = TSInvalidIdentityKeyReceivingErrorMessage.untrustedKey(with: envelope,
+                                                                                         with: transaction)!
+                    message.anyInsert(transaction: transaction)
+                    if markAsRead {
+                        message.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), sendReadReceipt: false, transaction: transaction)
+                    }
+                }
+            }
+
+            let createNonBlockingSafetyNumberChanges = { ( count: Int, markAsRead: Bool ) in
+                for _ in 0..<count {
+                    let address = thread.contactAddress
+                    let timestamp = NSDate.ows_millisecondTimeStamp()
+                    let message = TSErrorMessage(timestamp: timestamp,
+                                                 in: thread,
+                                                 failedMessageType: .nonBlockingIdentityChange,
+                                                 address: address)
+                    message.anyInsert(transaction: transaction)
+                    if markAsRead {
+                        message.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), sendReadReceipt: false, transaction: transaction)
+                    }
+                }
+            }
+
+            let createNormalMessages = { ( count: Int, markAsRead: Bool ) in
+                let factory = IncomingMessageFactory()
+                factory.threadCreator = { _ in return thread }
+                for _ in 0..<count {
+                    let message = factory.create(transaction: transaction)
+                    message.anyInsert(transaction: transaction)
+                    if markAsRead {
+                        message.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), sendReadReceipt: false, transaction: transaction)
+                    }
+                }
+            }
+
+            let safetyNumberChangeCount: Int = 100
+            let normalMessageCount: Int = 10000
+
+            createBlockingSafetyNumberChanges(safetyNumberChangeCount, true)
+            createNonBlockingSafetyNumberChanges(safetyNumberChangeCount, true)
+            createNormalMessages(normalMessageCount, true)
+            createNormalMessages(1, false)
+            createBlockingSafetyNumberChanges(1, false)
+            createNonBlockingSafetyNumberChanges(1, false)
+
+            let expectedMessageCount = (safetyNumberChangeCount * 2 +
+                    normalMessageCount + 3)
+            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
+            XCTAssertEqual(expectedMessageCount, TSInteraction.anyFetchAll(transaction: transaction).count)
+        }
+    }
+
+    private func buildEnvelope(for thread: TSThread) -> SSKProtoEnvelope {
+        let source: SignalServiceAddress
+        switch thread {
+        case let groupThread as TSGroupThread:
+            source = groupThread.groupModel.groupMembers[0]
+        case let contactThread as TSContactThread:
+            source = contactThread.contactAddress
+        default:
+            owsFail("Invalid thread.")
+        }
+
+        let timestamp = NSDate.ows_millisecondTimeStamp()
+        let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: timestamp)
+        envelopeBuilder.setType(.ciphertext)
+        if let phoneNumber = source.phoneNumber {
+            envelopeBuilder.setSourceE164(phoneNumber)
+        }
+        if let uuid = source.uuid {
+            envelopeBuilder.setSourceUuid(uuid.uuidString)
+        }
+        envelopeBuilder.setSourceDevice(1)
+        return try! envelopeBuilder.build()
     }
 }

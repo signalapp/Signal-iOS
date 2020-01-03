@@ -50,6 +50,9 @@
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Dëshironi të ndani me këtë përdorues profilin tuaj?";
 
+/* generic button text to acknowledge that the corresponding text was read. */
+"ALERT_ACTION_ACKNOWLEDGE" = "U mor";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Hidhe tej";
 
@@ -74,6 +77,15 @@
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Gabim";
 
+/* Error indicating that the app could not launch because the database could not be loaded. */
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "S’u Ngarkuan Dot Baza e të Dhënave";
+
+/* Error indicating that the app could not launch without reverting unknown database migrations. */
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Ju lutemi, përmirësojeni me versionin më të ri të Signal-it.";
+
+/* Error indicating that the app could not launch without reverting unknown database migrations. */
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Version i Panjohur Baze të Dhënash.";
+
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Jepni emrin tuaj";
 
@@ -88,6 +100,15 @@
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Përditësoje";
+
+/* Name indicating that the dark theme is enabled. */
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "E errët";
+
+/* Name indicating that the light theme is enabled. */
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "E çelët";
+
+/* Name indicating that the system theme is enabled. */
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Sistem";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -106,6 +127,9 @@
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Transkriptim";
+
+/* Error that outgoing attachments could not be exported. */
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Eksportimi i bashkëngjitjes dështoi.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Dështoi Ruajtja";
@@ -159,7 +183,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Bashkëngjitja është e zbrazët.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "Zgjidhni Media për Dërgim";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Kamerë";
@@ -326,6 +350,9 @@
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Përdoruesit e bllokuar s’do të jenë në gjendje t’ju thërrasin apo t’ju dërgojnë mesazhe.";
 
+/* browse files option from file sharing menu */
+"BROWSE_FILES_BUTTON" = "Shfletoni";
+
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Vazhdo";
 
@@ -476,6 +503,12 @@
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Krahasojeni me Të papastrën";
 
+/* Accessibility hint describing what you can do with the compose button */
+"COMPOSE_BUTTON_HINT" = "Përzgjidhni ose kërkoni për një përdorues Signal-i që të nisni me të një bisedë.";
+
+/* Accessibility label from compose button. */
+"COMPOSE_BUTTON_LABEL" = "Hartoni";
+
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontakte";
 
@@ -496,6 +529,12 @@
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Jeni i sigurt se doni të fshihet llogaria juaj?";
+
+/* No comment provided by engineer. */
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Kjo do ta kthejë aplikacionin në fillimet, duke fshirë krejt mesazhet tuaj nga kjo pajisje. Mundeni përherë ta rilidhni telefonin tuaj, por kjo s’do të rikthejë mesazhet e fshira. Pasi ky proces të jetë plotësuar, aplikacioni do të mbyllet.";
+
+/* No comment provided by engineer. */
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Jeni i sigurt se doni të fshihen krejt të dhënat?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "S’do të jeni më në gjendje të dërgoni ose merrni mesazhe në këtë grup.";
@@ -640,6 +679,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Shtoje te Kontaktet Ekzistuese";
+
+/* button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Shtoje te Kontakte Sistemi";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bllokoje Këtë Grup";
@@ -870,9 +912,6 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopjoje";
 
-/* No comment provided by engineer. */
-"EDIT_TXT" = "Përpunojeni";
-
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Hej,\n\nTani së fundi kam përdorur Signal-in, për t’i pasur private bisedat në iPhone-in tim. Do të doja ta instalonit edhe ju, që të jemi të sigurt se vetëm ju dhe unë i lexojmë mesazhet tona ose dëgjojmë thirrjet tona.\n\nSignal-i është i gatshëm për telefona iPhone dhe Android. Merreni nga këtu: %@\n\nSignal-i funksionon njësoj si aplikacioni ekzistues për mesazhe. Mund të dërgojmë foto dhe video, të bëjmë thirrje, dhe të bisedojmë në grup. Gjëja më e mirë është se askush tjetër nuk mund të shohë gjë prej këtyre, as edhe ata që krijojnë Signal-in!\n\nMë tepër rreth Open Whisper Systems, njerëzit që ndërtojnë Signal-in, mund të lexoni këtu: %@";
 
@@ -931,10 +970,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Thirrja Dështoi.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "Veçoritë më të reja të Signal-it s’do të funksionojnë në këtë version të iOS-it. Ju lutemi, përmirësojeni këtë pajisje që të marrë përditësime të ardhshme të Signal-it.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "S’u hy dot te kontaktet.";
+
+/* Error indicating that 'save video' failed. */
+"ERROR_COULD_NOT_SAVE_VIDEO" = "S’u ruajt dot videoja.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "S’u arrit të dërgohej mesazhi.";
@@ -1005,6 +1047,12 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Ndryshoi numri i sigurisë.";
 
+/* Error indicating a send failure due to a delinked application. */
+"ERROR_SENDING_DELINKED" = "Pajisja juaj s’është më e lidhur. Ju lutemi, që të dërgoni më tej mesazhe, rilidheni.";
+
+/* Error indicating a send failure due to a deregistered application. */
+"ERROR_SENDING_DEREGISTERED" = "Pajisja juaj s’është më e regjistruar. Ju lutemi, që të dërgoni më tej mesazhe, rilidheni.";
+
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "Versioni juaj i Signal-it ka skaduar. Ju lutemi, që të vazhdoni të dërgoni mesazhe, përmirësojeni.";
 
@@ -1043,6 +1091,12 @@
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Përfundoje krijimin e grupit";
+
+/* Label and title for 'contact forwarding' views. */
+"FORWARD_CONTACT" = "Përcillni Kontakt";
+
+/* Label and title for 'message forwarding' views. */
+"FORWARD_MESSAGE" = "Përcillni Mesazh";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "S’keni ndonjë media në këtë bisedë.";
@@ -1098,9 +1152,6 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = " %@ e braktisi grupin. ";
 
-/* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Shtoni Kontakt";
-
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Thirre";
 
@@ -1117,10 +1168,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Jo Më Me Shenjë si i Verifikuar";
 
 /* Button label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Dërgoji Mesazh";
-
-/* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Të dhëna Kontakti";
+"GROUP_MEMBERS_SEND_MESSAGE" = "Mesazh";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Tani titulli është '%@'. ";
@@ -1158,10 +1206,10 @@
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "S’u gjetën përfundime kërkimi për '%@'";
 
-/* Title for the home view's 'archive' mode. */
+/* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arkiv";
 
-/* Title for the home view's default mode. */
+/* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
@@ -1188,7 +1236,7 @@
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Këto biseda janë të arkivuara dhe do të shfaqen te Të marrë vetëm nëse merren mesazhe të rinj.";
 
-/* Message shown in the home view when the inbox is empty. */
+/* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Sajoni diçka për shkrim në shtëpi. Fillojani duke shkruar një mesazh për një shok.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
@@ -1205,6 +1253,9 @@
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "E humbët thirrjen sepse numri i sigurisë i tyre ka ndryshuar.";
+
+/* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
+"INFO_MESSAGE_SYNCED_THREAD" = "Mund të dërgoni ose merrni mesazhe të njëkohësuar që prej telefonit ose iPad-it tuaj.\nPër sigurinë tuaj, historiku i bisedave nuk shpërngulet te pajisje të lidhura rishtas.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ është në Signal! ";
@@ -1241,6 +1292,48 @@
 
 /* Slider label when disappearing messages is off */
 "KEEP_MESSAGES_FOREVER" = "Mesazhet nuk zhduken.";
+
+/* A keyboard command to open the current conversation's all media view. */
+"KEY_COMMAND_ALL_MEDIA" = "Shko te Krejt Mediat";
+
+/* A keyboard command to archive the current coversation. */
+"KEY_COMMAND_ARCHIVE" = "Arkivojeni Bisedën";
+
+/* A keyboard command to open the current conversation's attachment picker. */
+"KEY_COMMAND_ATTACHMENTS" = "Shfaq Bashkëngjitje";
+
+/* A keyboard command to open the current conversation's settings. */
+"KEY_COMMAND_CONVERSATION_INFO" = "Shko te Të dhëna Bisede";
+
+/* A keyboard command to focus the current conversation's input field. */
+"KEY_COMMAND_FOCUS_COMPOSER" = "Fokusohu te Shtyllë Input-esh";
+
+/* A keyboard command to open the current conversations GIF picker. */
+"KEY_COMMAND_GIF_SEARCH" = "Shko te Kërkim GIF-esh";
+
+/* A keyboard command to present the new group dialog. */
+"KEY_COMMAND_NEW_GROUP" = "Grup i Ri";
+
+/* A keyboard command to present the new message dialog. */
+"KEY_COMMAND_NEW_MESSAGE" = "Mesazh i Ri";
+
+/* A keyboard command to jump to the next conversation in the list. */
+"KEY_COMMAND_NEXT_CONVERSATION" = "Shko te Biseda Pasuese";
+
+/* A keyboard command to jump to the previous conversation in the list. */
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Shko te E mëparshmja";
+
+/* A keyboard command to begin a search on the conversation list. */
+"KEY_COMMAND_SEARCH" = "Kërko";
+
+/* A keyboard command to present the application settings dialog. */
+"KEY_COMMAND_SETTINGS" = "Rregullime";
+
+/* A keyboard command to open the current conversation's sticker picker. */
+"KEY_COMMAND_STICKERS" = "Shfaq Ngjitësa";
+
+/* A keyboard command to unarchive the current coversation. */
+"KEY_COMMAND_UNARCHIVE" = "Çarkivoje Bisedën";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Braktise";
@@ -1284,6 +1377,9 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Anëtarë Grupi";
 
+/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Ju)";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Kërkoni sipas emrash ose adresash";
 
@@ -1311,9 +1407,6 @@
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Fshije Mesazhin";
 
-/* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ më %@";
-
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -1324,31 +1417,25 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Këtë Muaj";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Kopjojeni Median";
-
-/* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopjoni Tekstin e Mesazhit";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Fshije Këtë Mesazh";
 
-/* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Do të fshihet vetëm në këtë pajisje.";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Më Tepër të Dhëna";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Përcilleni Këtë Mesazh";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Përgjigjuni Këtij Mesazhi";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Ruajeni Median";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Ndani Media";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesazh";
-
-/* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "Për:";
 
 /* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Mesazh i Ri";
@@ -1494,12 +1581,10 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "Thirrje e humbur";
 
-/* Alert body
-   Alert body when camera is not authorized */
+/* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Për të bërë thirrje video në Signal, përdorimin e kamerës mund ta lejoni që nga aplikacioni Rregullime iOS-i.";
 
-/* Alert title
-   Alert title when camera is not authorized */
+/* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal-i lyp hyrje te kamera juaj.";
 
 /* Alert body indicating the user has denied location permissios */
@@ -1538,6 +1623,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTING" = "Po lidhet";
 
+/* Error indicating that this device is no longer linked. */
+"NETWORK_STATUS_DELINKED" = "Jo Më e Lidhur";
+
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "Jo Më e Regjistruar";
 
@@ -1553,8 +1641,14 @@
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Caktoni Foto Grupi";
 
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "Krijoni një grup të ri";
+
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Krijoni";
+
+/* Error indicating that a new group could not be created. */
+"NEW_GROUP_CREATION_FAILED" = "S’u krijua dot grup i ri.";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Grup i Ri";
@@ -1589,6 +1683,12 @@
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Gjeni Kontakte sipas Numri Telefoni";
 
+/* Explanation of how to see a conversation. */
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Përzgjidhni një kontakt ose grup që të filloni të fjaloseni.";
+
+/* Title welcoming to the app */
+"NO_SELECTED_CONVERSATION_TITLE" = "Mirë se vini te Signal-i";
+
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Mesazh i ri për:";
 
@@ -1602,7 +1702,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Mund të keni marrë mesazhe teksa %@ po rinisej.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Për shkak të metash në mekanizmin push të Apple-it, paraparje mesazhesh do të shfaqen vetëm nëse mesazhi merret brenda 30 sekondash pasi është dërguar. Për pasojë, stema që i vihet nga aplikacioni mund të jetë e pasaktë.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Veprimet përfshijnë “Vëri Shenjë si I lexuar”, “Përgjigjuni”, dhe “Kthejini Thirrjen”.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "S’ka Emër apo Lëndë";
@@ -1614,7 +1714,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Tinguj";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Emër dhe Lëndë";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Emër, Lëndë dhe Veprime";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Vetëm Emër";
@@ -1661,17 +1761,38 @@
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Shtojini një grimë dore njerëzore mesazheve tuaj";
 
+/* button indicating that the user will register their ipad */
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Regjistroni iPad";
+
+/* button indicating that the user will link their phone */
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Lidhni iPhone";
+
+/* explanation to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Prekja e “Regjistroni iPad-in” do t’ju lejojë të krijoni një llogari Signal fringo të re ose të sillni te ky iPad një llogari ekzistuese. Kjo do ta çaktivizojë Signal-in në çfarëdo pajisje tjetër aktualisht të regjistruar me të njëjtin numër telefoni.";
+
+/* explanation to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Prekja e “Lidhni iPhone” do t’ju lejojë të lidhni telefonin tuaj me një llogari ekzistuese. Lidhja e telefonit tuaj përgjithësisht nuk këshillohet dhe do të kufizojë disa funksione, bie fjala, thirrjet.";
+
+/* header text indicating to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Regjistro këtë iPad";
+
+/* header text indicating to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Lidhe këtë iPhone";
+
+/* warning to the user that registering an ipad is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Regjistrimi i këtij iPad-i do të çaktivizojë Signal-in në çfarëdo pajisje tjetër aktualisht të regjistruar me të njëjtin numër telefoni.";
+
+/* warning to the user that linking a phone is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Lidhja e iPhone-it tuaj nuk këshillohet dhe do të kufizojë funksionet bazë.";
+
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Aktivizoni Leje";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Të dhënat tuaja të kontaktit transmetohen përherë në mënyrë të sigurt.";
-
-/* Label for the 'not now' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Jo Tani";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Njoftimet ju lejojnë të shihni kur arrijnë mesazhe dhe të merrni përditësime rreth veprimtarish në biseda.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal-i mund t’ju lejojë të mësoni se kur merrni një mesazh (dhe se prej kujt është)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Merrni mesazhin.";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Që t’ia filloni, jepni numrin tuaj të telefonit";
@@ -1760,14 +1881,23 @@
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Gabim në trajtimin e mesazhit ardhës";
 
-/* Notification for incoming disappearing photo. */
-"PER_MESSAGE_EXPIRATION_NOTIFICATION" = "Foto Që Tretet";
+/* inbox cell and notification text for an already viewed view-once media message. */
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Mesazh media";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Foto";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
+
+/* inbox cell and notification text for a view-once photo. */
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Foto Që Tretet";
+
+/* inbox cell and notification text for a view-once video. */
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Video Që Zhduket";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Shihni Foton";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Foto";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Parë";
@@ -2015,6 +2145,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
+/* notification body */
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagoi me %@ te mesazhi juaj";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Harrova PIN-in tim.";
 
@@ -2062,15 +2195,6 @@
 
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "S’mund ta aktivizojmë llogarinë tuaj para se të verifikoni kodin që ju dërguam.";
-
-/* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Regjistrimi tani do të çaktivizojë Signal-in në çfarëdo pajisje të regjistruar me këtë numër telefoni.";
-
-/* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Regjistro këtë iPad";
-
-/* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Keni tashmë një llogari Signal?";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Ky format numrash telefoni nuk mbulohet, ju lutemi, lidhuni me asistencën.";
@@ -2201,6 +2325,51 @@
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "Mesazhe";
 
+/* alert title */
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "S’arrihet të Sillet Kod Lidhjeje";
+
+/* alert message for outdated linking device */
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Pajisja juaj tjetër po xhiron një version të dikurshëm të Signal-it që nuk mbulon skanim kodesh QR në iPad. Ju lutemi, instaloni hedhjen më të re në qarkullim të Signal-it dhe riprovoni.";
+
+/* alert title for outdated linking device */
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Përditësoni Pajisje Skanimi";
+
+/* alert title */
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "S'u arrit të Lidhej Pajisja Juaj";
+
+/* header text when this device is being added as a secondary */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Zgjidhni një emër për këtë pajisje";
+
+/* label text */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Këtë emër do ta shihni nën \"Pajisje të Lidhura\".";
+
+/* text field placeholder */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Zgjidhni një emër";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Përfundoni Lidhjen";
+
+/* header text before the user can link this device */
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Që të lidhni këtë iPad me llogarinë tuaj, niseni Signal-in në telefonin tuaj";
+
+/* Link explaining what to do when trying to link a device before having a primary device. */
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nuk kam Signal në telefonin tim…";
+
+/* alert body */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Shkoni te Store në telefonin tuaj, instaloni Signal-in, plotësoni procesin e regjistrimit dhe mandej mund ta lidhni  iPad-in tuaj me të njëjtën llogari.";
+
+/* alert title */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instaloni Signal-in në Telefonin Tuaj";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Prekni foton tuaj të profilit që të hapen Rregullime Signal-i në telefonin tuaj. Mandej \"Pajisje të Lidhura\" dhe \"Lidhni Pajisje të Re\" që të skanoni këtë kod me telefonin tuaj:";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Merrni nga këtu ndihmë rreth lidhjes së iPad-it tuaj";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Skanojeni Kodin QR me telefonin tuaj";
+
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "U rimor sesioni i sigurt.";
 
@@ -2224,9 +2393,6 @@
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "E ftuat shokun tuaj të përdorë Signal-in!";
-
-/* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "Të hidhet tej Media?";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Hidhe tej Median";
@@ -2283,7 +2449,13 @@
 "SETTINGS_ADVANCED_TITLE" = "Të mëtejshme";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Shihni Regjistra Gabimesh";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Regjistra Gabimesh";
+
+/* The title for the theme section in the appearance settings. */
+"SETTINGS_APPEARANCE_THEME_TITLE" = "Temë";
+
+/* The title for the appearance settings. */
+"SETTINGS_APPEARANCE_TITLE" = "Dukje";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (parazgjedhje)";
@@ -2450,6 +2622,9 @@
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Shihni dhe ndajeni me të tjerët, pasi të jenë lexuar mesazhet. Ky rregullim është opsional dhe vlen për krejt bisedat.";
 
+/* Label for re-link button. */
+"SETTINGS_RELINK_BUTTON" = "Rilidheni";
+
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "Riregjistroje";
 
@@ -2457,7 +2632,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Skadim Kyçjeje Ekrani";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Shkyçeni ekranin e Signal-it duke përdorur Touch ID, Face ID, ose frazëkalimin e pajisjes suaj iOS. Mundeni gjithnjë t’u përgjigjeni thirrjeve dhe të merrni njoftime mesazhesh teksa Kyçja e Ekranit është e aktivizuar. Rregullimet për njoftime nga Signal-i ju lejojnë të përshtatni informacionin që shfaqet.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Shkyçeni ekranin e Signal-it duke përdorur Touch ID, Face ID, ose frazëkalimin e pajisjes tuaj iOS. Mundeni prapë t’u përgjigjeni thirrjeve ardhëse dhe të merrni thirrje dhe njoftime mesazhesh teksa Kyçja e Ekranit është e aktivizuar. Rregullimet e njoftimeve nga Signal-i ju lejojnë të përshtatni të dhënat që shfaqen.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Kyçje Ekrani";
@@ -2579,7 +2754,7 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Asnjë";
 
-/* Preview text shown in notifications and home view for sticker messages. */
+/* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Mesazh Ngjitësi";
 
 /* Tooltip indicating that a sticker pack was installed. */
@@ -2618,9 +2793,6 @@
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Paketë Ngjitësish";
 
-/* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "Instalimi i paketës së ngjitësve dështoi.";
-
 /* Title of the 'share sticker pack' view. */
 "STICKERS_PACK_SHARE_VIEW_TITLE" = "Ndani Paketë Ngjitësish";
 
@@ -2647,6 +2819,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Anëtar i %@, %@, dhe %lu grupesh shtesë";
+
+/* Subtitle appearing at the top of the users 'note to self' conversation */
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Në këtë bisedë mund të shtoni shënime për veten. Nëse llogaria juaj ka ndonjë pajisje të lidhur, shënimet e reja do të njëkohësohen.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Anëtar i %@";
@@ -2750,6 +2925,9 @@
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Të shkëputet \"%@\"?";
 
+/* Label warning the user that they have been unlinked from their primary device. */
+"UNLINKED_WARNING" = "Pajisje që s’është më e lidhur. Që të vazhdoni të shkëmbeni mesazhe, rilidhni Signal-in me telefonin tuaj.";
+
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal-i s’qe në gjendje të bëjë shkëputjen e pajisjes tuaj.";
 
@@ -2828,6 +3006,9 @@
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
+/* An error indicating that the supplied username cannot start with a number. */
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Emrat e përdoruesve s’mund të fillojnë me një numër.";
+
 /* The title for the username view. */
 "USERNAME_TITLE" = "Emër përdoruesi";
 
@@ -2839,6 +3020,12 @@
 
 /* Error moessage shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Përditësimi i emrit të përdoruesit dështoi.";
+
+/* error label near a field */
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Emri i pajisjes s’mund të jetë i zbrazët";
+
+/* error label near a field */
+"VALIDATION_ERROR_TOO_LONG" = "Emri i pajisjes është shumë i gjatë";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "I keni vënë shenjë %@ si jo të verifikuar.";

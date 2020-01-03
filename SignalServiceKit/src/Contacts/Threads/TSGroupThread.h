@@ -22,19 +22,17 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
-isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-                 lastMessageDate:(nullable NSDate *)lastMessageDate
+                      isArchived:(BOOL)isArchived
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
-                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                       groupModel:(TSGroupModel *)groupModel
-NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:groupModel:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:groupModel:));
 
 // clang-format on
 
@@ -46,14 +44,11 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 //       convert getOrCreateThreadWithContactId to take "any" transaction.
 - (instancetype)initWithGroupModel:(TSGroupModel *)groupModel;
 
-+ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
++ (nullable instancetype)getThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(SDSAnyWriteTransaction *)transaction;
 
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId;
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction;
-
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 

@@ -275,15 +275,17 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSSyncPushTokensJob alloc] initWithAccountManager:AppEnvironment.shared.accountManager
                                                  preferences:Environment.shared.preferences];
     job.uploadOnlyIfStale = NO;
-    [job run]
-        .then(^{
-            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"PUSH_REGISTER_SUCCESS",
-                                              @"Title of alert shown when push tokens sync job succeeds.")];
-        })
-        .catch(^(NSError *error) {
-            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_BODY",
-                                              @"Title of alert shown when push tokens sync job fails.")];
-        });
+    [[job run]
+            .then(^{
+                [OWSActionSheets
+                    showActionSheetWithTitle:NSLocalizedString(@"PUSH_REGISTER_SUCCESS",
+                                                 @"Title of alert shown when push tokens sync job succeeds.")];
+            })
+            .catch(^(NSError *error) {
+                [OWSActionSheets
+                    showActionSheetWithTitle:NSLocalizedString(@"REGISTRATION_BODY",
+                                                 @"Title of alert shown when push tokens sync job fails.")];
+            }) retainUntilComplete];
 }
 
 - (void)didToggleEnableLogSwitch:(UISwitch *)sender

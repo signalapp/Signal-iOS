@@ -8,6 +8,7 @@
 #import "OWSPrimaryStorage.h"
 #import "TSAccountManager.h"
 #import <SignalServiceKit/ProfileManagerProtocol.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,13 +36,14 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
-@property (nonatomic) id<OWSSyncManagerProtocol> syncManager;
+@property (nonatomic) id<SyncManagerProtocol> syncManager;
 @property (nonatomic) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
 @property (nonatomic) StickerManager *stickerManager;
 @property (nonatomic) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic) StorageCoordinator *storageCoordinator;
+@property (nonatomic) SSKPreferences *sskPreferences;
 
 @end
 
@@ -79,7 +81,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                      readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
-                            syncManager:(id<OWSSyncManagerProtocol>)syncManager
+                            syncManager:(id<SyncManagerProtocol>)syncManager
                        typingIndicators:(id<OWSTypingIndicators>)typingIndicators
                     attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
                          stickerManager:(StickerManager *)stickerManager
@@ -88,6 +90,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
+                         sskPreferences:(SSKPreferences *)sskPreferences
 {
     self = [super init];
     if (!self) {
@@ -128,6 +131,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(accountServiceClient);
     OWSAssertDebug(storageServiceManager);
     OWSAssertDebug(storageCoordinator);
+    OWSAssertDebug(sskPreferences);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -164,6 +168,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _accountServiceClient = accountServiceClient;
     _storageServiceManager = storageServiceManager;
     _storageCoordinator = storageCoordinator;
+    _sskPreferences = sskPreferences;
 
     return self;
 }
@@ -251,7 +256,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 - (void)warmCaches
 {
-    // Pre-heat caches to avoid sneaky transactions during the migrations.
+    // Pre-heat caches to avoid sneaky transactions during the YDB->GRDB migrations.
     // We need to warm these caches _before_ the migrations run.
     //
     // We need to do as few writes as possible here, to avoid conflicts
@@ -259,6 +264,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     [self.blockingManager warmCaches];
     [self.profileManager warmCaches];
     [self.tsAccountManager warmCaches];
+    [OWSKeyBackupService warmCaches];
 }
 
 - (nullable OWSPrimaryStorage *)primaryStorage

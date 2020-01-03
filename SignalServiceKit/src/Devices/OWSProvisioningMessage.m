@@ -11,6 +11,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const OWSUserAgent = @"OWI";
+uint32_t const OWSProvisioningVersion = 1;
+
 @interface OWSProvisioningMessage ()
 
 @property (nonatomic, readonly) NSData *myPublicKey;
@@ -52,12 +55,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)buildEncryptedMessageBody
 {
     ProvisioningProtoProvisionMessageBuilder *messageBuilder =
-        [ProvisioningProtoProvisionMessage builderWithIdentityKeyPublic:self.myPublicKey
+        [ProvisioningProtoProvisionMessage builderWithIdentityKeyPublic:[self.myPublicKey prependKeyType]
                                                      identityKeyPrivate:self.myPrivateKey
                                                        provisioningCode:self.provisioningCode
-                                                              userAgent:@"OWI"
-                                                             profileKey:self.profileKey
-                                                           readReceipts:self.areReadReceiptsEnabled];
+                                                             profileKey:self.profileKey];
+
+    messageBuilder.userAgent = OWSUserAgent;
+    messageBuilder.readReceipts = self.areReadReceiptsEnabled;
+    messageBuilder.provisioningVersion = OWSProvisioningVersion;
 
     NSString *_Nullable phoneNumber = self.accountAddress.phoneNumber;
     if (!phoneNumber) {

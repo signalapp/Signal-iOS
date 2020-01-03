@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 @class CNContact;
+@class LabeledPhoneNumber;
 @class PhoneNumber;
 @class SDSAnyReadTransaction;
 @class SignalRecipient;
@@ -28,8 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) NSArray<NSString *> *userTextPhoneNumbers;
 @property (readonly, nonatomic) NSArray<NSString *> *emails;
 @property (readonly, nonatomic) NSString *uniqueId;
-@property (nonatomic, readonly) BOOL isSignalContact;
-@property (nonatomic, readonly) NSString *cnContactId;
+@property (nonatomic, readonly, nullable) NSString *cnContactId;
+@property (nonatomic, readonly) BOOL isFromContactSync;
 
 - (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(SDSAnyReadTransaction *)transaction;
 // TODO: Remove this method.
@@ -37,7 +38,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_IOS
 
-- (instancetype)initWithSystemContact:(CNContact *)cnContact NS_AVAILABLE_IOS(9_0);
+- (instancetype)initWithSystemContact:(CNContact *)cnContact;
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     cnContactId:(nullable NSString *)cnContactId
+                       firstName:(nullable NSString *)firstName
+                        lastName:(nullable NSString *)lastName
+                        fullName:(NSString *)fullName
+            userTextPhoneNumbers:(NSArray<NSString *> *)userTextPhoneNumbers
+              phoneNumberNameMap:(NSDictionary<NSString *, NSString *> *)phoneNumberNameMap
+              parsedPhoneNumbers:(NSArray<PhoneNumber *> *)parsedPhoneNumbers
+                          emails:(NSArray<NSString *> *)emails
+                 imageDataToHash:(nullable NSData *)imageDataToHash NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 + (nullable Contact *)contactWithVCardData:(NSData *)data;
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data;
 

@@ -112,7 +112,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -128,15 +129,14 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
-        infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
                          timestamp:timestamp
@@ -152,7 +152,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion
       storedShouldStartExpireTimer:storedShouldStartExpireTimer];
 
     if (!self) {
@@ -160,7 +159,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     }
 
     _customMessage = customMessage;
-    _infoMessageSchemaVersion = infoMessageSchemaVersion;
     _messageType = messageType;
     _read = read;
     _unregisteredAddress = unregisteredAddress;
@@ -196,6 +194,18 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_Info;
+}
+
+- (NSString *)systemMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    switch (self.messageType) {
+        case TSInfoMessageSyncedThread:
+            return NSLocalizedString(@"INFO_MESSAGE_SYNCED_THREAD",
+                                     @"Shown in inbox and conversation after syncing as a placeholder indicating why your message history "
+                                     @"is missing.");
+        default:
+            return [self previewTextWithTransaction:transaction];
+    }
 }
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -245,6 +255,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                     @"name}}");
                 return [NSString stringWithFormat:format, recipientName];
         }
+        case TSInfoMessageSyncedThread:
+            return @"";
     }
 
     OWSFailDebug(@"Unknown info message type");
@@ -267,9 +279,10 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageAddUserToProfileWhitelistOffer:
         case TSInfoMessageAddGroupToProfileWhitelistOffer:
         case TSInfoMessageUnknownProtocolVersion:
+        case TSInfoMessageSyncedThread:
             return NO;
         case TSInfoMessageUserJoinedSignal:
-            // In the home view, we want conversations with an unread "new user" notification to
+            // In the conversation list, we want conversations with an unread "new user" notification to
             // be badged and bolded, like they received a message.
             return YES;
     }

@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import SignalCoreKit
 
 // This class can be used to:
@@ -22,6 +22,7 @@ public class SDSKeyValueStore: NSObject {
     //   GRDB maintains a mapping between tables and collections.
     //   For the purposes of this mapping only we use dataStoreCollection.
     static let dataStoreCollection = "keyvalue"
+    static let tableName = "keyvalue"
 
     // By default, all reads/writes use this collection.
     @objc
@@ -32,7 +33,7 @@ public class SDSKeyValueStore: NSObject {
     static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
     // TODO: For now, store all key-value in a single table.
     public static let table = SDSTableMetadata(collection: SDSKeyValueStore.dataStoreCollection,
-        tableName: "keyvalue",
+        tableName: SDSKeyValueStore.tableName,
         columns: [
         collectionColumn,
         keyColumn,
@@ -45,6 +46,22 @@ public class SDSKeyValueStore: NSObject {
         self.collection = collection
 
         super.init()
+    }
+
+    public class func createTable(database: Database) throws {
+        let sql = """
+            CREATE TABLE \(table.tableName) (
+                \(keyColumn.columnName) TEXT NOT NULL,
+                \(collectionColumn.columnName) TEXT NOT NULL,
+                \(valueColumn.columnName) BLOB NOT NULL,
+                PRIMARY KEY (
+                    \(keyColumn.columnName),
+                    \(collectionColumn.columnName)
+                )
+            )
+        """
+        let statement = try database.makeUpdateStatement(sql: sql)
+        try statement.execute()
     }
 
     // MARK: Class Helpers
@@ -72,7 +89,7 @@ public class SDSKeyValueStore: NSObject {
                                               arguments: [key, collection]) ?? 0
                 return count > 0
             } catch {
-                owsFailDebug("Read failed.")
+                owsFailDebug("error: \(error)")
                 return false
             }
         }
@@ -194,6 +211,25 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func setInt(_ value: Int, key: String, transaction: SDSAnyWriteTransaction) {
+        setObject(NSNumber(value: value), key: key, transaction: transaction)
+    }
+
+    // MARK: - UInt32
+
+    public func getUInt32(_ key: String, transaction: SDSAnyReadTransaction) -> UInt32? {
+        guard let number: NSNumber = read(key, transaction: transaction) else {
+            return nil
+        }
+        return number.uint32Value
+    }
+
+    @objc
+    public func getUInt32(_ key: String, defaultValue: UInt32, transaction: SDSAnyReadTransaction) -> UInt32 {
+        return getUInt32(key, transaction: transaction) ?? defaultValue
+    }
+
+    @objc
+    public func setUInt32(_ value: UInt32, key: String, transaction: SDSAnyWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
@@ -433,7 +469,7 @@ public class SDSKeyValueStore: NSObject {
                                      sql: "SELECT \(self.valueColumn.columnName) FROM \(self.table.tableName) WHERE \(self.keyColumn.columnName) = ? AND \(collectionColumn.columnName) == ?",
                 arguments: [key, collection])
         } catch {
-            owsFailDebug("Read failed.")
+            owsFailDebug("error: \(error)")
             return nil
         }
     }
@@ -481,21 +517,23 @@ public class SDSKeyValueStore: NSObject {
 
     private class func write(transaction: GRDBWriteTransaction, key: String, collection: String, encoded: Data?) throws {
         if let encoded = encoded {
-            let count = try Int.fetchOne(transaction.database,
-                                         sql: "SELECT COUNT(*) FROM \(table.tableName) WHERE \(keyColumn.columnName) == ? AND \(collectionColumn.columnName) == ?",
-                arguments: [
-                    key, collection
-                ]) ?? 0
-            if count > 0 {
-                let sql = "UPDATE \(table.tableName) SET \(valueColumn.columnName) = ? WHERE \(keyColumn.columnName) = ? AND \(collectionColumn.columnName) == ?"
-                try update(transaction: transaction, sql: sql, arguments: [ encoded, key, collection ])
-            } else {
-                let sql = "INSERT INTO \(table.tableName) ( \(keyColumn.columnName), \(collectionColumn.columnName), \(valueColumn.columnName) ) VALUES (?, ?, ?)"
-                try update(transaction: transaction, sql: sql, arguments: [ key, collection, encoded ])
-            }
+            // See: https://www.sqlite.org/lang_UPSERT.html
+            let sql = """
+                INSERT INTO \(table.tableName) (
+                    \(keyColumn.columnName),
+                    \(collectionColumn.columnName),
+                    \(valueColumn.columnName)
+                ) VALUES (?, ?, ?)
+                ON CONFLICT (
+                    \(keyColumn.columnName),
+                    \(collectionColumn.columnName)
+                ) DO UPDATE
+                SET \(valueColumn.columnName) = ?
+            """
+            try update(transaction: transaction, sql: sql, arguments: [ key, collection, encoded, encoded ])
         } else {
             // Setting to nil is a delete.
-            let sql = "DELETE FROM \(table.tableName) WHERE \(keyColumn.columnName) == ? AND  \(collectionColumn.columnName) == ?"
+            let sql = "DELETE FROM \(table.tableName) WHERE \(keyColumn.columnName) == ? AND \(collectionColumn.columnName) == ?"
             try update(transaction: transaction, sql: sql, arguments: [ key, collection ])
         }
     }

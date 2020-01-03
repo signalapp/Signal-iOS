@@ -101,7 +101,7 @@ extension ContactConversationItem: ConversationItem {
     }
 
     var image: UIImage? {
-        return databaseStorage.uiReadReturningResult { transaction in
+        return databaseStorage.uiread { transaction in
             return self.contactManager.image(for: self.address, transaction: transaction)
         }
     }

@@ -3,7 +3,6 @@
 //
 
 #import "ConversationScrollButton.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -83,9 +82,9 @@ NS_ASSUME_NONNULL_BEGIN
     UIColor *backgroundColor;
     if (self.hasUnreadMessages) {
         foregroundColor = UIColor.whiteColor;
-        backgroundColor = UIColor.ows_materialBlueColor;
+        backgroundColor = UIColor.ows_signalBlueColor;
     } else {
-        foregroundColor = UIColor.ows_materialBlueColor;
+        foregroundColor = UIColor.ows_signalBlueColor;
         backgroundColor = Theme.scrollButtonBackgroundColor;
     }
 

@@ -39,8 +39,12 @@ extern ConversationColorName const kConversationColorName_Default;
 
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly, nullable) NSDate *creationDate;
-@property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
-@property (nonatomic, readonly) int64_t rowId;
+@property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting DEPRECATED_MSG_ATTRIBUTE("this property is only to be used in the sortId migration");
+@property (nonatomic, readonly) BOOL isArchived;
+
+// zero if thread has never had an interaction.
+// The corresponding interaction may have been deleted.
+@property (nonatomic, readonly) int64_t lastInteractionRowId;
 
 // --- CODE GENERATION MARKER
 
@@ -48,18 +52,16 @@ extern ConversationColorName const kConversationColorName_Default;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
-isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-                 lastMessageDate:(nullable NSDate *)lastMessageDate
+                      isArchived:(BOOL)isArchived
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
-                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
 
 // clang-format on
 
@@ -72,7 +74,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  */
 - (BOOL)isGroupThread;
 
-@property (nonatomic, readonly) ConversationColorName conversationColorName;
+@property (nonatomic) ConversationColorName conversationColorName;
 
 - (void)updateConversationColorName:(ConversationColorName)colorName transaction:(SDSAnyWriteTransaction *)transaction;
 + (ConversationColorName)stableColorNameForNewConversationWithString:(NSString *)colorSeed;
@@ -119,17 +121,14 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 /**
  *  Updates the thread's caches of the latest interaction.
  *
- *  @param lastMessage Latest Interaction to take into consideration.
+ *  @param message Latest Interaction to take into consideration.
  *  @param transaction Database transaction.
  */
-- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark Archival
-
-/**
- * @return YES if no new messages have been sent or received since the thread was last archived.
- */
-- (BOOL)isArchivedWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  *  Archives a thread

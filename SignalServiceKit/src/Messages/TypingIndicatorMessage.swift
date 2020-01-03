@@ -63,7 +63,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
         return true
     }
 
-    private func protoAction(forAction action: TypingIndicatorAction) -> SSKProtoTypingMessage.SSKProtoTypingMessageAction {
+    private func protoAction(forAction action: TypingIndicatorAction) -> SSKProtoTypingMessageAction {
         switch action {
         case .started:
             return .started
@@ -73,12 +73,14 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     }
 
     @objc
-    public override func buildPlainTextData(_ recipient: SignalRecipient) -> Data? {
+    public override func buildPlainTextData(_ recipient: SignalRecipient,
+                                            thread: TSThread,
+                                            transaction: SDSAnyReadTransaction) -> Data? {
 
         let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp)
         typingBuilder.setAction(protoAction(forAction: action))
 
-        if let groupThread = self.threadWithSneakyTransaction as? TSGroupThread {
+        if let groupThread = thread as? TSGroupThread {
             typingBuilder.setGroupID(groupThread.groupModel.groupId)
         }
 

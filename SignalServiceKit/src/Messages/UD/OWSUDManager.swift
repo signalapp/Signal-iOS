@@ -312,7 +312,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // if we have a valid profile key for them.
     @objc
     public func udAccessKey(forAddress address: SignalServiceAddress) -> SMKUDAccessKey? {
-        let profileKeyData = databaseStorage.readReturningResult { transaction in
+        let profileKeyData = databaseStorage.read { transaction in
             return self.profileManager.profileKeyData(for: address,
                                                       transaction: transaction)
         }
@@ -452,11 +452,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func senderCertificateKey() -> String {
-        return IsUsingProductionService() ? kUDCurrentSenderCertificateKey_Production : kUDCurrentSenderCertificateKey_Staging
+        return TSConstants.isUsingProductionService ? kUDCurrentSenderCertificateKey_Production : kUDCurrentSenderCertificateKey_Staging
     }
 
     private func senderCertificateDateKey() -> String {
-        return IsUsingProductionService() ? kUDCurrentSenderCertificateDateKey_Production : kUDCurrentSenderCertificateDateKey_Staging
+        return TSConstants.isUsingProductionService ? kUDCurrentSenderCertificateDateKey_Production : kUDCurrentSenderCertificateDateKey_Staging
     }
 
     @objc
@@ -530,7 +530,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public class func trustRoot() -> ECPublicKey {
-        guard let trustRootData = NSData(fromBase64String: kUDTrustRoot) else {
+        guard let trustRootData = NSData(fromBase64String: TSConstants.kUDTrustRoot) else {
             // This exits.
             owsFail("Invalid trust root data.")
         }
@@ -547,7 +547,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func shouldAllowUnrestrictedAccessLocal() -> Bool {
-        return databaseStorage.readReturningResult { transaction in
+        return databaseStorage.read { transaction in
             self.keyValueStore.getBool(self.kUDUnrestrictedAccessKey, defaultValue: false, transaction: transaction)
         }
     }

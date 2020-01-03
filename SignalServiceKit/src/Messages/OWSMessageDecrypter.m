@@ -176,7 +176,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         });
     };
 
-    uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
+    uint32_t localDeviceId = self.tsAccountManager.storedDeviceId;
     DecryptSuccessBlock successBlock = ^(OWSMessageDecryptResult *result, SDSAnyWriteTransaction *transaction) {
         // Ensure all blocked messages are discarded.
         if ([self isEnvelopeSenderBlocked:envelope]) {
@@ -204,6 +204,14 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         if (!envelope.hasType) {
             OWSFailDebug(@"Incoming envelope is missing type.");
+            return failureBlock();
+        }
+        if (![SDS fitsInInt64:envelope.timestamp]) {
+            OWSFailDebug(@"Invalid timestamp.");
+            return failureBlock();
+        }
+        if (envelope.hasServerTimestamp && ![SDS fitsInInt64:envelope.serverTimestamp]) {
+            OWSFailDebug(@"Invalid serverTimestamp.");
             return failureBlock();
         }
 
@@ -441,12 +449,18 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         return failureBlock(error);
     }
     UInt64 serverTimestamp = envelope.serverTimestamp;
+    if (![SDS fitsInInt64:serverTimestamp]) {
+        NSString *errorDescription = @"Invalid serverTimestamp.";
+        OWSFailDebug(@"%@", errorDescription);
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
+        return failureBlock(error);
+    }
 
     id<SMKCertificateValidator> certificateValidator =
         [[SMKCertificateDefaultValidator alloc] initWithTrustRoot:self.udManager.trustRoot];
 
     SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
-    uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
+    uint32_t localDeviceId = self.tsAccountManager.storedDeviceId;
 
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSError *cipherError;

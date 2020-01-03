@@ -5,7 +5,6 @@
 #import "OWSMessageBubbleView.h"
 #import "AttachmentUploadView.h"
 #import "ConversationViewItem.h"
-#import "OWSAudioMessageView.h"
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
 #import "OWSContactShareButtonsView.h"
@@ -16,7 +15,6 @@
 #import "OWSMessageTextView.h"
 #import "OWSQuotedMessageView.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -116,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.senderNameContainer = [UIView new];
     self.senderNameContainer.layoutMargins = UIEdgeInsetsMake(0, 0, self.senderNameBottomSpacing, 0);
     [self.senderNameContainer addSubview:self.senderNameLabel];
-    [self.senderNameLabel ows_autoPinToSuperviewMargins];
+    [self.senderNameLabel autoPinEdgesToSuperviewMargins];
 
     self.bodyTextView = [self newTextView];
     self.bodyTextView.hidden = YES;
@@ -866,12 +864,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(attachment);
     OWSAssertDebug([attachment isAudio]);
 
-    OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:attachment
-                                                                                 isIncoming:self.isIncoming
-                                                                                   viewItem:self.viewItem
-                                                                          conversationStyle:self.conversationStyle];
+    AudioMessageView *audioMessageView = [[AudioMessageView alloc] initWithAttachment:attachment
+                                                                           isIncoming:self.isIncoming
+                                                                             viewItem:self.viewItem
+                                                                    conversationStyle:self.conversationStyle];
     self.viewItem.lastAudioMessageView = audioMessageView;
-    [audioMessageView createContents];
     [self addProgressViewsIfNecessary:audioMessageView shouldShowDownloadProgress:NO];
 
     self.loadCellContentBlock = ^{
@@ -1043,7 +1040,7 @@ NS_ASSUME_NONNULL_BEGIN
     label.text = NSLocalizedString(
         @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
     label.font = UIFont.ows_dynamicTypeBodyFont;
-    label.textColor = Theme.secondaryColor;
+    label.textColor = Theme.secondaryTextAndIconColor;
     label.numberOfLines = 0;
     label.lineBreakMode = NSLineBreakByWordWrapping;
     label.textAlignment = NSTextAlignmentCenter;
@@ -1106,7 +1103,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         case OWSMessageCellType_Audio:
-            result = CGSizeMake(maxMediaMessageWidth, OWSAudioMessageView.bubbleHeight);
+            result = CGSizeMake(maxMediaMessageWidth, AudioMessageView.bubbleHeight);
             break;
         case OWSMessageCellType_GenericAttachment: {
             TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
@@ -1556,10 +1553,10 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_GenericAttachment:
             if (self.viewItem.attachmentStream) {
                 if (PdfViewController.canRenderPdf &&
-                    [OWSMimeTypeImagePdf isEqualToString:self.viewItem.attachmentStream.contentType]) {
+                    [OWSMimeTypePdf isEqualToString:self.viewItem.attachmentStream.contentType]) {
                     [self.delegate didTapPdfForItem:self.viewItem attachmentStream:self.viewItem.attachmentStream];
                 } else {
-                    [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
+                    [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream sender:self];
                 }
             }
             break;
@@ -1595,11 +1592,17 @@ NS_ASSUME_NONNULL_BEGIN
                     // Treat the tap as a "retry" tap if the user taps on a failed download.
                     [self.delegate didTapFailedIncomingAttachment:self.viewItem];
                     return;
+                } else {
+                    OWSLogWarn(@"Media attachment not yet downloaded.");
+                    return;
                 }
-            } else if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                OWSLogWarn(@"Media attachment not yet downloaded.");
+            }
+
+            if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                OWSFailDebug(@"unexpected attachment: %@", attachment);
                 return;
             }
+
             TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
             [self.delegate didTapImageViewItem:self.viewItem attachmentStream:attachmentStream imageView:mediaView];
             break;
@@ -1629,12 +1632,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.delegate);
 
-    if (![self.bodyMediaView isKindOfClass:[OWSAudioMessageView class]]) {
+    if (![self.bodyMediaView isKindOfClass:[AudioMessageView class]]) {
         OWSFailDebug(@"Unexpected body media view: %@", self.bodyMediaView.class);
         return NO;
     }
 
-    OWSAudioMessageView *audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
+    AudioMessageView *audioMessageView = (AudioMessageView *)self.bodyMediaView;
 
     CGPoint locationInAudioView = [sender locationInView:audioMessageView];
 

@@ -23,14 +23,16 @@
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesFinder.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
+#import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
 #import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
+#import <SignalServiceKit/OWSReaction.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSSessionResetJobRecord.h>
-#import <SignalServiceKit/OWSSyncManagerProtocol.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/OWSUserProfile.h>
@@ -59,4 +61,5 @@
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
+#import <SignalServiceKit/TestModel.h>
 #import <SignalServiceKit/YAPDBMessageContentJobFinder.h>

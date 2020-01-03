@@ -174,7 +174,8 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
 #pragma mark - Proto Serialization
 
-+ (nullable SSKProtoDataMessageContact *)protoForContact:(OWSContact *)contact;
++ (nullable SSKProtoDataMessageContact *)protoForContact:(OWSContact *)contact
+                                             transaction:(SDSAnyReadTransaction *)transaction;
 
 + (nullable OWSContact *)contactForDataMessage:(SSKProtoDataMessage *)dataMessage
                                    transaction:(SDSAnyWriteTransaction *)transaction;

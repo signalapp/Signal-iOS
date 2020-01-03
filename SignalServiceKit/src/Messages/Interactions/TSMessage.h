@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
 @property (nonatomic, readonly) BOOL hasPerConversationExpiration;
+@property (nonatomic, readonly) BOOL hasPerConversationExpirationStarted;
 
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
@@ -59,7 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -75,9 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:));
 
 // clang-format on
 
@@ -103,7 +104,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (nullable NSString *)oversizeTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSString *)bodyTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (BOOL)shouldStartExpireTimer;
 
 - (BOOL)hasRenderableContent;
 
@@ -115,7 +116,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction;
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 
 // This method is for testing purposes only.
 - (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(SDSAnyWriteTransaction *)transaction;

@@ -3,6 +3,7 @@
 //
 
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 @class YapDatabaseAutoViewTransaction;
 @class YapDatabaseFullTextSearchTransaction;

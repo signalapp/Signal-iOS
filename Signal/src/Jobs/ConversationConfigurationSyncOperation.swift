@@ -21,7 +21,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         return Environment.shared.contactsManager
     }
 
-    private var syncManager: OWSSyncManagerProtocol {
+    private var syncManager: SyncManagerProtocol {
         return SSKEnvironment.shared.syncManager
     }
 
@@ -61,7 +61,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
             return
         }
 
-        syncManager.syncContacts(for: [signalAccount]).retainUntilComplete()
+        syncManager.syncContacts(forSignalAccounts: [signalAccount]).retainUntilComplete()
     }
 
     private func sync(groupThread: TSGroupThread) {
@@ -75,7 +75,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         }
         let syncMessage = OWSSyncGroupsMessage(thread: thread)
         do {
-            let attachmentDataSource: DataSource = try self.databaseStorage.readReturningResult { transaction in
+            let attachmentDataSource: DataSource = try self.databaseStorage.read { transaction in
                 guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
                     throw OWSAssertionError("could not serialize sync groups data")
                 }

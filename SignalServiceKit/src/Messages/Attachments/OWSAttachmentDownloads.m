@@ -338,6 +338,12 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             attachmentPointer =
                 [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:job.attachmentId transaction:transaction];
             if (attachmentPointer == nil) {
+                // This isn't necessarily a bug.  For example:
+                //
+                // * Receive an incoming message with an attachment.
+                // * Kick off download of that attachment.
+                // * Receive read receipt for that message, causing it to be disappeared immediately.
+                // * Try to download that attachment - but it's missing.
                 OWSFailDebug(@"Missing attachment.");
                 return;
             }
@@ -347,8 +353,8 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                                                            = TSAttachmentPointerStateDownloading;
                                                                    }];
 
-            if (job.message) {
-                [self.databaseStorage touchInteraction:job.message transaction:transaction];
+            if (job.message != nil) {
+                [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
             }
         }];
 
@@ -374,16 +380,11 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     if (![existingAttachment isKindOfClass:[TSAttachmentPointer class]]) {
                         OWSFailDebug(@"Unexpected attachment pointer class: %@", existingAttachment.class);
                     }
-                    [existingAttachment anyRemoveWithTransaction:transaction];
+                    [attachmentPointer anyRemoveWithTransaction:transaction];
                     [attachmentStream anyInsertWithTransaction:transaction];
 
-                    if (job.message) {
-                        [self.databaseStorage touchInteraction:job.message transaction:transaction];
-                        [transaction
-                            addCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                                             block:^{
-                                                 [OWSDisappearingMessagesJob.sharedJob schedulePass];
-                                             }];
+                    if (job.message != nil) {
+                        [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
                     }
                 }];
 
@@ -409,14 +410,12 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     }
                     [attachmentPointer anyUpdateAttachmentPointerWithTransaction:transaction
                                                                            block:^(TSAttachmentPointer *attachment) {
-                                                                               attachment.mostRecentFailureLocalizedText
-                                                                                   = error.localizedDescription;
                                                                                attachment.state
                                                                                    = TSAttachmentPointerStateFailed;
                                                                            }];
 
-                    if (job.message) {
-                        [self.databaseStorage touchInteraction:job.message transaction:transaction];
+                    if (job.message != nil) {
+                        [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
                     }
                 }];
 
@@ -429,6 +428,13 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 [self tryToStartNextDownload];
             }];
     });
+}
+
+- (void)reloadAndTouchLatestVersionOfMessage:(TSMessage *)message transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Ensure relevant sortId is loaded for touch to succeed.
+    [message anyReloadWithTransaction:transaction];
+    [self.databaseStorage touchInteraction:message transaction:transaction];
 }
 
 #pragma mark -

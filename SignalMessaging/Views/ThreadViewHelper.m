@@ -4,9 +4,11 @@
 
 #import "ThreadViewHelper.h"
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
@@ -15,10 +17,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ThreadViewHelper ()
+@interface ThreadViewHelper () <SDSDatabaseStorageObserver>
 
-@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
-@property (nonatomic) YapDatabaseViewMappings *threadMappings;
+@property (nonatomic, nullable) YapDatabaseConnection *uiDatabaseConnection;
+@property (nonatomic, nullable) YapDatabaseViewMappings *threadMappings;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 
 @end
@@ -34,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
+// POST GRDB TODO - Remove
 - (nullable OWSPrimaryStorage *)primaryStorage
 {
     return SSKEnvironment.shared.primaryStorage;
@@ -62,15 +65,17 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    NSString *grouping = TSInboxGroup;
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
+        NSString *grouping = TSInboxGroup;
 
-    self.threadMappings =
-        [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ] view:TSThreadDatabaseViewExtensionName];
-    [self.threadMappings setIsReversed:YES forGroup:grouping];
+        self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ]
+                                                                         view:TSThreadDatabaseViewExtensionName];
+        [self.threadMappings setIsReversed:YES forGroup:grouping];
 
-    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
         self.uiDatabaseConnection = [self.primaryStorage newDatabaseConnection];
         [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    } else {
+        [self.databaseStorage addDatabaseStorageObserver:self];
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -111,11 +116,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
-    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
+        if (shouldObserveDBModifications) {
+            [self updateThreads];
+        }
         return;
     }
 
     if (shouldObserveDBModifications) {
+        OWSAssertDebug(self.uiDatabaseConnection != nil);
+        OWSAssertDebug(self.threadMappings != nil);
+
         [self.uiDatabaseConnection beginLongLivedReadTransaction];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.threadMappings updateWithTransaction:transaction];
@@ -143,16 +154,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Database
 
-- (YapDatabaseConnection *)uiDatabaseConnection
+- (nullable YapDatabaseConnection *)uiDatabaseConnection
 {
     OWSAssertIsOnMainThread();
 
+    OWSAssertDebug(_uiDatabaseConnection != nil);
     return _uiDatabaseConnection;
 }
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.uiDatabaseConnection != nil);
+    OWSAssertDebug(self.threadMappings != nil);
 
     OWSLogVerbose(@"");
 
@@ -176,6 +190,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.uiDatabaseConnection != nil);
+    OWSAssertDebug(self.threadMappings != nil);
 
     OWSLogVerbose(@"");
 
@@ -208,7 +224,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateThreads
 {
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
+        [self updateThreadsYDB];
+    } else {
+        [self updateThreadsGRDB];
+    }
+}
+
+- (void)updateThreadsGRDB
+{
     OWSAssertIsOnMainThread();
+
+    NSMutableArray<TSThread *> *threads = [NSMutableArray new];
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        AnyThreadFinder *threadFinder = [AnyThreadFinder new];
+        NSError *_Nullable error;
+        [threadFinder enumerateVisibleThreadsWithIsArchived:NO
+                                                transaction:transaction
+                                                      error:&error
+                                                      block:^(TSThread *thread) {
+                                                          [threads addObject:thread];
+                                                      }];
+        if (error != nil) {
+            OWSFailDebug(@"error: %@", error);
+        }
+    }];
+    _threads = [threads copy];
+}
+
+- (void)updateThreadsYDB
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.uiDatabaseConnection != nil);
+    OWSAssertDebug(self.threadMappings != nil);
 
     NSMutableArray<TSThread *> *threads = [NSMutableArray new];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -226,6 +274,47 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     _threads = [threads copy];
+}
+
+#pragma mark - SDSDatabaseStorageObserver
+
+- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    if (![change didUpdateModelWithCollection:TSThread.collection]) {
+        return;
+    }
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
+    [self updateThreads];
+}
+
+- (void)databaseStorageDidUpdateExternally
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
+    [self updateThreads];
+}
+
+- (void)databaseStorageDidReset
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
+    [self updateThreads];
 }
 
 @end

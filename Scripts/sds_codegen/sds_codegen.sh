@@ -34,18 +34,4 @@ $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalShareExtension
 $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalMessaging --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
 $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path Signal --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
 
-# We parse Swift source files to extract simple class descriptions (class name, base class, property names and types, etc.)
-#
-# NOTE: This script isn't working yet.
-#
-# $REPO_ROOT/Scripts/sds_codegen/sds_parse_swift.py --src-path SignalDataStoreCommon/
-
-# We generate Swift extensions to handle serialization, etc. for models.
-RECORD_TYPE_SWIFT="SignalServiceKit/src/Storage/Database/SDSRecordType.swift"
-RECORD_TYPE_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds_record_type_map.json"
-CONFIG_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds-config.json"
-$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalServiceKit/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
-$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalShareExtension/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
-$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalMessaging/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
-$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path Signal  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
- 
+$REPO_ROOT/Scripts/sds_codegen/sds_regenerate.sh

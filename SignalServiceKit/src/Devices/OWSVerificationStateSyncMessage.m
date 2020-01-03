@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(self.identityKey.length == kIdentityKeyLength);
     OWSAssertDebug(self.verificationForRecipientAddress.isValid);

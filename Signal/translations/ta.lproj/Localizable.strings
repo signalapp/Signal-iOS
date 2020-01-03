@@ -1,0 +1,3070 @@
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "இப்போது இல்லை";
+
+/* Action sheet item */
+"ACCEPT_NEW_IDENTITY_ACTION" = "புதிய பாதுகாப்பு எண்ணை ஒப்புக்கொள்";
+
+/* Accessibility label for attachment. */
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "இணைப்பு";
+
+/* Accessibility label for audio. */
+"ACCESSIBILITY_LABEL_AUDIO" = "ஒலி";
+
+/* Accessibility label for contact. */
+"ACCESSIBILITY_LABEL_CONTACT" = "தொடர்பு";
+
+/* Accessibility label for media. */
+"ACCESSIBILITY_LABEL_MEDIA" = "ஊடகம்";
+
+/* Accessibility label for message. */
+"ACCESSIBILITY_LABEL_MESSAGE" = "செய்தி";
+
+/* Accessibility label for messages sent by you. */
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "நீங்கள்";
+
+/* Accessibility label for stickers. */
+"ACCESSIBILITY_LABEL_STICKER" = "ஓட்டி";
+
+/* Label for 'audio call' button in contact view. */
+"ACTION_AUDIO_CALL" = "சிக்னல் அழைப்பு";
+
+/* Label for 'invite' button in contact view. */
+"ACTION_INVITE" = "Signal க்கு அழைக்கவும்";
+
+/* Label for 'send message' button in contact view.
+   Label for button that lets you send a message to a contact. */
+"ACTION_SEND_MESSAGE" = "செய்தி அனுப்ப";
+
+/* Label for 'share contact' button. */
+"ACTION_SHARE_CONTACT" = "தொடர்பை பகிர் ";
+
+/* Label for 'video call' button in contact view. */
+"ACTION_VIDEO_CALL" = "வீடியோ அழைப்பு";
+
+/* Message shown in conversation view that offers to share your profile with a group. */
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "இந்த குழுவுடன் உங்கள் சுயவிவரத்தைப் பகிர விரும்புகிறீர்களா?";
+
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"ADD_TO_CONTACTS_OFFER" = "உங்கள் தொடர்புகளில் இந்த பயனரைச் சேர்க்க விரும்புகிறீர்களா?";
+
+/* Message shown in conversation view that offers to share your profile with a user. */
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "இந்த பயனருடன் உங்கள் சுயவிவரத்தைப் பகிர விரும்புகிறீர்களா?";
+
+/* generic button text to acknowledge that the corresponding text was read. */
+"ALERT_ACTION_ACKNOWLEDGE" = "அறிந்துகொண்டேன்";
+
+/* The label for the 'discard' button in alerts and action sheets. */
+"ALERT_DISCARD_BUTTON" = "நிராகரி";
+
+/* The label for the 'don't save' button in action sheets. */
+"ALERT_DONT_SAVE" = "சேமிக்க வேண்டாம்";
+
+/* No comment provided by engineer. */
+"ALERT_ERROR_TITLE" = "பிழை";
+
+/* The label for the 'save' button in action sheets. */
+"ALERT_SAVE" = "சேமி";
+
+/* notification action */
+"ANSWER_CALL_BUTTON_TITLE" = "பதில்";
+
+/* notification body */
+"APN_Message" = "புதிய தகவல்!";
+
+/* Message for the 'app launch failed' alert. */
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal லைத் தொடங்க முடியாது. தயவுசெய்து பிழைத்திருத்த பதிவை support@signal.org க்கு அனுப்புங்கள், இதன்மூலம் இந்த சிக்கலை சரிசெய்யலாம்.";
+
+/* Title for the 'app launch failed' alert. */
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "பிழை";
+
+/* Error indicating that the app could not launch because the database could not be loaded. */
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "தரவுத்தளத்தை ஏற்ற முடியவில்லை";
+
+/* Error indicating that the app could not launch without reverting unknown database migrations. */
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Signal லின் சமீபத்திய பதிப்பிற்கு மேம்படுத்தவும்.";
+
+/* Error indicating that the app could not launch without reverting unknown database migrations. */
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "அறியப்படாத தரவுத்தள பதிப்பு.";
+
+/* Text prompting user to edit their profile name. */
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "உங்கள் பெயரை உள்ளிடவும்";
+
+/* Label for the 'dismiss' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "இப்போது இல்லை";
+
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "பயன்பாடு%@ இப்போது ஆப் ஸ்டோரில் கிடைக்கும்.";
+
+/* Title for the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_TITLE" = "Signal லின் புதிய பதிப்பு கிடைக்கும்";
+
+/* Label for the 'update' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "புதுப்பிக்கப்பட்டது";
+
+/* Name indicating that the dark theme is enabled. */
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "இருள்கொண்ட ";
+
+/* Name indicating that the light theme is enabled. */
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "வெளிச்சமிக்க";
+
+/* Name indicating that the system theme is enabled. */
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "அமைப்பு";
+
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
+/* Pressing this button moves a thread from the inbox to the archive */
+"ARCHIVE_ACTION" = "காப்பகம்";
+
+/* No comment provided by engineer. */
+"ATTACHMENT" = "இணைப்பு";
+
+/* One-line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "தலைப்பு வரம்பை அடைந்தது.";
+
+/* placeholder text for an empty captioning field */
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "ஒரு தலைப்பை சேர்க்க…";
+
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "தலைப்பு";
+
+/* Error that outgoing attachments could not be exported. */
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "இணைப்பு ஏற்றுமதி செய்யத் தவறிவிட்டது.";
+
+/* alert text when Signal was unable to save a copy of the attachment to the system photo library */
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "சேமிப்பதில் தோல்வி";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "கோப்பு வகை: %@";
+
+/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "அளவு: %@";
+
+/* toast alert shown after user taps the 'save' button */
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "சேமித்த";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "அனுப்புக";
+
+/* Generic filename for an attachment with no known name */
+"ATTACHMENT_DEFAULT_FILENAME" = "இணைப்பு";
+
+/* Status label when an attachment download has failed. */
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "பதிவிறக்கம் தோல்வியடைந்தது. மீண்டும் முயற்சிக்க தட்டவும்.";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "இணைப்பு அனுப்புவதில் பிழை";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "படத்தை மாற்ற முடியவில்லை.";
+
+/* Attachment error message for video attachments which could not be converted to MP4 */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "வீடியோவை செயலாக்க முடியவில்லை.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "படத்தை அலச முடியவில்லை.";
+
+/* Attachment error message for image attachments in which metadata could not be removed */
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "படத்திலிருந்து மெட்டாடேட்டாவை அகற்ற முடியவில்லை.";
+
+/* Attachment error message for image attachments which could not be resized */
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "படத்தின் அளவை மாற்ற முடியவில்லை.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "இணைப்பு மிகப் பெரியது.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "இணைப்பு தவறான உள்ளடக்கம் உள்ளது.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "இணைப்பு தவறான கோப்பு வடிவத்தைக் கொண்டுள்ளது.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "இணைப்பு காலியாக உள்ளது.";
+
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "அனுப்ப மீடியாவைத் தேர்வுசெய்க";
+
+/* A button to open the camera from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_CAMERA" = "புகைப்பட கருவி";
+
+/* A button to select a contact from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_CONTACT" = "தொடர்பு";
+
+/* A button to select a file from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_FILE" = "கோப்பு";
+
+/* A button to select a GIF from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_GIF" = "GIF,";
+
+/* A button to select a location from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_LOCATION" = "இருப்பிடம்";
+
+/* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "உங்கள் புகைப்படங்களை இங்கே அனுப்ப அமைப்புகளில் அணுகலை வழங்கவும்.";
+
+/* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "நீங்கள் புகைப்படங்களை எடுத்தவுடன், உங்கள் சமீபத்தியவற்றை  இங்கு அனுப்ப முடியும்.";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "இணைப்பு";
+
+/* Alert title when picking a document fails for an unknown reason */
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "ஆவணத்தைத் தேர்ந்தெடுப்பதில் தோல்வி.";
+
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "தயவுசெய்து இந்த கோப்பு அல்லது கோப்பகத்தின் சுருக்கப்பட்ட காப்பகத்தை உருவாக்கி, அதற்கு பதிலாக அனுப்ப முயற்சிக்கவும்.";
+
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ஆதரிக்கப்படாத கோப்பு";
+
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "குரல் செய்தி";
+
+/* A string indicating that an audio message is playing. */
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ஆடியோ செய்தி";
+
+/* action sheet button title to enable built in speaker during a call */
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "சபாநாயகர்";
+
+/* return to the previous screen */
+"BACK_BUTTON" = "மீண்டும்";
+
+/* Error indicating the backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "காப்புப்பதிவு பயனர் தரவு  ஏற்றுமதி செய்ய முடியவில்லை.";
+
+/* Error indicating that the app received an invalid response from CloudKit. */
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "தவறான சேவை பதில்";
+
+/* Indicates that the cloud is being cleaned up. */
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "காப்புப்பதிவு பயனர் தரவு சுத்தம் செய்தல்";
+
+/* Indicates that the backup export is being configured. */
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "காப்புப்பிரதி துவக்குகிறது";
+
+/* Indicates that the database data is being exported. */
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "தரவை ஏற்றுமதி செய்கிறது";
+
+/* Indicates that the backup export data is being exported. */
+"BACKUP_EXPORT_PHASE_EXPORT" = "காப்புப்பிரதி ஏற்றுமதி செய்யப்படுகிறது ";
+
+/* Indicates that the backup export data is being uploaded. */
+"BACKUP_EXPORT_PHASE_UPLOAD" = "காப்புப்பிரதி பதிவேற்றுகிறது";
+
+/* Error indicating the backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "காப்புப்பிரதி இறக்குமதி செய்ய முடியவில்லை.";
+
+/* Indicates that the backup import is being configured. */
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "காப்புப்பிரதி  உள்ளமைக்கிறது";
+
+/* Indicates that the backup import data is being downloaded. */
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = " காப்புப்பிரதி  பதிவிறக்குகிறது";
+
+/* Indicates that the backup import data is being finalized. */
+"BACKUP_IMPORT_PHASE_FINALIZING" = "காப்புப்பிரதி  இறுதி செய்தல்";
+
+/* Indicates that the backup import data is being imported. */
+"BACKUP_IMPORT_PHASE_IMPORT" = "காப்புப்பிரதி  இறக்குமதி செய்கிறது.";
+
+/* Indicates that the backup database is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "தரவுத்தளத்தை மீட்டமைக்கிறது";
+
+/* Indicates that the backup import data is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "கோப்புகளை மீட்டமைக்கிறது";
+
+/* Label for the backup restore decision section. */
+"BACKUP_RESTORE_DECISION_TITLE" = "காப்புப்பிரதி  கிடைக்கும்";
+
+/* Label for the backup restore description. */
+"BACKUP_RESTORE_DESCRIPTION" = "காப்புப்பதிவு பயனர் தரவு மீட்டமைக்கிறது";
+
+/* Label for the backup restore progress. */
+"BACKUP_RESTORE_PROGRESS" = "முன்னேற்றம்";
+
+/* Label for the backup restore status. */
+"BACKUP_RESTORE_STATUS" = "நிலைமை";
+
+/* Error shown when backup fails due to an unexpected error. */
+"BACKUP_UNEXPECTED_ERROR" = "எதிர்பாராத காப்புப்பதிவு பயனர் தரவு பிழை ";
+
+/* An explanation of the consequences of blocking a group. */
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "இந்த குழுவிலிருந்து நீங்கள் இனி செய்திகளையோ புதுப்பிப்புகளையோ பெற மாட்டீர்கள்.";
+
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "தடு ";
+
+/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" குழுவைத் தடுத்து வெளியேறு?";
+
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ ஐத் தடுக்கவா?";
+
+/* Section header for groups that have been blocked */
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "தடுக்கப்பட்ட குழுக்கள்";
+
+/* Section header for users that have been blocked */
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "தடுக்கப்பட்ட பயனர்கள்";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "தடைநீக்கு ";
+
+/* Action sheet body when confirming you want to unblock a group */
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "தற்போதுள்ள உறுப்பினர்கள் உங்களை மீண்டும் குழுவில் சேர்க்க முடியும்.";
+
+/* Action sheet title when confirming you want to unblock a group. */
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "இந்த குழுவைத் தடைநீக்கவா?";
+
+/* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ ஐ தடைநீக்கு?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "தடு ";
+
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ தடுக்கப்பட்டது.";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "பயனர் தடுக்கப்பட்டது";
+
+/* The title of the 'group blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "குழு தடுக்கப்பட்டது";
+
+/* The message of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "உங்களை நீங்களே தடுக்க முடியாது.";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "பிழை";
+
+/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ தடுக்கப்பட்டது.";
+
+/* Alert body after unblocking a group. */
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "தற்போதுள்ள உறுப்பினர்கள் இப்போது உங்களை மீண்டும் குழுவில் சேர்க்கலாம்.";
+
+/* Action sheet that will block an unknown user. */
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "தடு ";
+
+/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "1%@ஐ தடுக்கவா?";
+
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "தடுக்கப்பட்ட பயனர்கள் உங்களை அழைக்கவோ அல்லது செய்திகளை அனுப்பவோ முடியாது.";
+
+/* browse files option from file sharing menu */
+"BROWSE_FILES_BUTTON" = "உலவு";
+
+/* Label for 'continue' button. */
+"BUTTON_CONTINUE" = "தொடர்ந்து செல் ";
+
+/* Label for generic done button. */
+"BUTTON_DONE" = "முடிந்தது";
+
+/* Label for the 'next' button. */
+"BUTTON_NEXT" = "அடுத்தது";
+
+/* Label for the 'okay' button. */
+"BUTTON_OKAY" = "சரி";
+
+/* Button text to enable batch selection mode */
+"BUTTON_SELECT" = "தேர்வு";
+
+/* Label for the 'submit' button. */
+"BUTTON_SUBMIT" = "சமர்ப்பி";
+
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "மீண்டும் அழை";
+
+/* Alert message when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal லில் அழைப்புகள் மற்றும் குரல் செய்திகளைப் பதிவுசெய்ய iOS அமைப்புகள் பயன்பாடு மைக்ரோஃபோன் அணுகலை இயக்கலாம்.";
+
+/* Alert title when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_TITLE" = "மைக்ரோஃபோன் அணுகல் தேவை";
+
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ உள்வரும் அழைப்பு";
+
+/* Accessibility label for placing call button */
+"CALL_LABEL" = "அழைப்பு";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "அழைப்பாளரின் பாதுகாப்பு எண் மாற்றப்பட்டதால் தவறவிட்ட அழைப்பு☎️.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ தவறவிட்ட அழைப்பு";
+
+/* Call setup status label after outgoing call times out */
+"CALL_SCREEN_STATUS_NO_ANSWER" = "பதில் இல்லை";
+
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
+/* Label for call button for alert offering to call a user. */
+"CALL_USER_ALERT_CALL_BUTTON" = "அழைப்பு";
+
+/* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "%@ஐ அழைக்க விரும்புகிறீர்களா?";
+
+/* Title for alert offering to call a user. */
+"CALL_USER_ALERT_TITLE" = "அழைப்பு?";
+
+/* Accessibility label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "உள்வரும் அழைப்பை ஒப்புக்கொள்";
+
+/* Accessibility label for selection the audio source */
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "ஒலி";
+
+/* Accessibility label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "உள்வரும் அழைப்பை நிராகரிக்கவும்";
+
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "உங்கள் வீடியோவை இயக்க இங்கே தட்டவும்";
+
+/* Accessibility label for hang up call */
+"CALL_VIEW_HANGUP_LABEL" = "அழைப்பை முடி ";
+
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "முடக்கு";
+
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "உங்கள் பூட்டுத் திரையில் இருந்து உள்வரும் அழைப்புகளுக்கு பதிலளிக்க உங்கள் Signal தனியுரிமை அமைப்புகளில் iOS அழைப்பு ஒருங்கிணைப்பை இயக்கலாம்.";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "உள்வரும் அழைப்புகளுக்கான பெயர் மற்றும் தொலைபேசி எண்ணைக் காண உங்கள் Signal தனியுரிமை அமைப்புகளில் iOS அழைப்பு ஒருங்கிணைப்பை இயக்கலாம்.";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "இப்போது இல்லை";
+
+/* Label for button that shows the privacy settings. */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "தனியுரிமை அமைப்புகளைக் காட்டு";
+
+/* Accessibility label to toggle front- vs. rear-facing camera */
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "கேமரா திசையை மாற்றவும்";
+
+/* Accessibility label to switch to audio only */
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "ஆடியோ அழைப்பிற்கு மாறவும்";
+
+/* Accessibility label to switch to video call */
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "வீடியோ அழைப்புக்கு மாறவும்";
+
+/* Label for the 'return to call' banner. */
+"CALL_WINDOW_RETURN_TO_CALL" = "அழைப்பிற்குத் திரும்பத் தொடவும்";
+
+/* notification action */
+"CALLBACK_BUTTON_TITLE" = "மீண்டும் அழைக்கவும்";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal பயனர்";
+
+/* Accessibility hint describing what you can do with the camera button */
+"CAMERA_BUTTON_HINT" = "ஒரு படத்தை எடுத்து பின்னர் அனுப்பவும்";
+
+/* Accessibility label for camera button. */
+"CAMERA_BUTTON_LABEL" = "புகைப்பட கருவி";
+
+/* Message for alert explaining that a user cannot be verified. */
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "நீங்கள் அவர்களுடன் செய்திகளைப் பரிமாறிக் கொள்ளும் வரை இந்த பயனரைச் சரிபார்க்க முடியாது.";
+
+/* Title for alert explaining that a user cannot be verified. */
+"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "பிழை";
+
+/* Title for the 'censorship circumvention country' view. */
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "நாட்டினை தேர்வுசெய்";
+
+/* The label for the 'do not restore backup' button. */
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "மீட்டமைக்க வேண்டாம்";
+
+/* Message for alert shown when the app failed to check for an existing backup. */
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "மீட்டெடுக்கக்கூடிய காப்புப்பதிவு பயனர் தரவு உள்ளதா என்பதை தீர்மானிக்க முடியவில்லை.";
+
+/* Title for alert shown when the app failed to check for an existing backup. */
+"CHECK_FOR_BACKUP_FAILED_TITLE" = "பிழை";
+
+/* The label for the 'restore backup' button. */
+"CHECK_FOR_BACKUP_RESTORE" = "மீட்டமை";
+
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "உங்கள் iCloud கணக்கு நிலையை Signal தீர்மானிக்க முடியவில்லை. உங்கள் Signal காப்புப்பதிவு பயனர் தரவு பிரதி எடுக்க iOS அமைப்புகள் பயன்பாடு உங்கள் iCloud கணக்கு உள்நுழைக.";
+
+/* Error indicating that user does not have an iCloud account. */
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "ICloud கணக்கு இல்லை. உங்கள் Signal காப்புப்பதிவு பயனர் தரவு பிரதி எடுக்க iOS செயலி பயன்பாட்டில்  உங்கள் iCloud கணக்கு உள்நுழைக.";
+
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "காப்புப்பதிவு பயனர் தரவு உங்கள் iCloud கணக்கில் அணுக Signal மறுக்கப்பட்டது. உங்கள் Signal தரவை காப்புப் பிரதி எடுக்க iOS அமைப்புகள் செயலியில் உங்கள் iCloud கணக்கில்  Signal  அணுகலை வழங்கவும்.";
+
+/* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
+"COLOR_PICKER_DEMO_MESSAGE_1" = "இந்த உரையாடலில் வெளிச்செல்லும் செய்திகளின் நிறத்தைத் தேர்வுசெய்க.";
+
+/* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
+"COLOR_PICKER_DEMO_MESSAGE_2" = "நீங்கள் தேர்வு செய்யும் வண்ணத்தை மட்டுமே நீங்கள் காண்பீர்கள்.";
+
+/* Modal Sheet title when picking a conversation color. */
+"COLOR_PICKER_SHEET_TITLE" = "உரையாடல் வண்ணம்";
+
+/* Activity Sheet label */
+"COMPARE_SAFETY_NUMBER_ACTION" = "கிளிப்போர்டுடன் ஒப்பிடுக";
+
+/* Accessibility hint describing what you can do with the compose button */
+"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+
+/* Accessibility label from compose button. */
+"COMPOSE_BUTTON_LABEL" = "Compose";
+
+/* Table section header for contact listing when composing a new message */
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "தொடர்புகள்";
+
+/* Table section header for group listing when composing a new message */
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "குழுக்கள்";
+
+/* Table section header for phone number search when composing a new message */
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "தொலைபேசி எண் தேடல்";
+
+/* Table section header for username search when composing a new message */
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "பயனர்பெயர் தேடல்";
+
+/* Multi-line label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "உங்கள் அமைப்புகளில் Signal பயனர்கள் யார் என்பதைக் காண, iOS அமைப்புகள் செயலியில்  தொடர்புகள் அணுகலை இயக்கலாம்.";
+
+/* No comment provided by engineer. */
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "இது உங்கள் செய்திகளை நீக்கி, சேவையகத்துடன் பதிவு செய்யாமல் பயன்பாட்டை மீட்டமைக்கும். இந்த செயல்முறை முடிந்ததும் பயன்பாடு மூடப்படும்.";
+
+/* No comment provided by engineer. */
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "உங்கள் கணக்கு நீக்க விரும்புகிறீர்களா?";
+
+/* No comment provided by engineer. */
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "இந்தச் சாதனத்திலிருந்து உங்கள் எல்லா செய்திகளையும் நீக்குவதன் மூலம் இது செயலியை மீட்டமைக்கும். நீங்கள் எப்போதும் உங்கள் தொலைபேசியுடன் மீண்டும் இணைக்க முடியும், ஆனால் அது நீக்கப்பட்ட செய்திகளை மீட்டெடுக்காது. இந்த செயல்முறை முடிந்ததும் செயலி  மூடப்படும்";
+
+/* No comment provided by engineer. */
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "எல்லா தரவையும் நீக்க விரும்புகிறீர்களா?";
+
+/* Alert body */
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "இந்த குழுவில் நீங்கள் இனி செய்திகளை அனுப்பவோ பெறவோ முடியாது.";
+
+/* Alert title */
+"CONFIRM_LEAVE_GROUP_TITLE" = "நீங்கள் உண்மையில் வெளியேற விரும்புகிறீர்களா?";
+
+/* Button text */
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "புதிய சாதனத்தை இணைக்கவும்";
+
+/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ சாதனங்களை மீண்டும் நிறுவியிருக்கலாம் அல்லது மாற்றியிருக்கலாம். தனியுரிமையை உறுதிப்படுத்த அவர்களுடன் உங்கள் பாதுகாப்பு எண்ணைச் சரிபார்க்கவும்.";
+
+/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "%@ உடன் பாதுகாப்பு எண் மாற்றப்பட்டுள்ளது";
+
+/* No comment provided by engineer. */
+"CONFIRMATION_TITLE" = "உறுதிப்படுத்தவும்";
+
+/* Label for a contact's postal address. */
+"CONTACT_ADDRESS" = "முகவரி";
+
+/* An indicator that a contact or group has been blocked. */
+"CONTACT_CELL_IS_BLOCKED" = "தடுக்கப்பட்ட";
+
+/* An indicator that a contact is no longer verified. */
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "சரிபார்க்கப்படவில்லை";
+
+/* No comment provided by engineer. */
+"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "பதிவு செய்யப்படாத எண்";
+
+/* Label for the 'edit name' button in the contact share approval view. */
+"CONTACT_EDIT_NAME_BUTTON" = "தொகு";
+
+/* Label for a contact's email address. */
+"CONTACT_EMAIL" = "மின்னஞ்சல்";
+
+/* Label for the 'city' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_CITY" = "நகரம்";
+
+/* Label for the 'country' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_COUNTRY" = "நாடு";
+
+/* Label for the 'neighborhood' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "அக்கம்பக்கத்து";
+
+/* Label for the 'pobox' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. பெட்டி";
+
+/* Label for the 'postcode' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "அஞ்சல் குறியீடு";
+
+/* Label for the 'region' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_REGION" = "பகுதி";
+
+/* Label for the 'street' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_STREET" = "தெரு";
+
+/* Label for the 'family name' field of a contact. */
+"CONTACT_FIELD_FAMILY_NAME" = "குடும்ப பெயர்";
+
+/* Label for the 'given name' field of a contact. */
+"CONTACT_FIELD_GIVEN_NAME" = "கொடுக்கப்பட்ட பெயர்";
+
+/* Label for the 'middle name' field of a contact. */
+"CONTACT_FIELD_MIDDLE_NAME" = "மத்திய பெயர்";
+
+/* Label for the 'name prefix' field of a contact. */
+"CONTACT_FIELD_NAME_PREFIX" = "முன்னொட்டு";
+
+/* Label for the 'name suffix' field of a contact. */
+"CONTACT_FIELD_NAME_SUFFIX" = "பின்னொட்டு";
+
+/* Label for the 'organization' field of a contact. */
+"CONTACT_FIELD_ORGANIZATION" = "அமைப்பு";
+
+/* Label for a contact's phone number. */
+"CONTACT_PHONE" = "தொலைபேசி";
+
+/* table cell subtitle when contact card has no email */
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "மின்னஞ்சல் கிடைப்பில் இல்லை  .";
+
+/* table cell subtitle when contact card has no known phone number */
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "தொலைபேசி எண் கிடைப்பில் இல்லை  ";
+
+/* navbar title for contact picker when sharing a contact */
+"CONTACT_PICKER_TITLE" = "தொடர்பு என்பதைத் தேர்ந்தெடுக்கவும்";
+
+/* Title for the 'Approve contact share' view. */
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "தொடர்பை பகிர் ";
+
+/* Title for the 'edit contact share name' view. */
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "பெயரைத் திருத்து";
+
+/* Error indicating that an invalid contact cannot be shared. */
+"CONTACT_SHARE_INVALID_CONTACT" = "தவறான தொடர்பு.";
+
+/* Error indicating that at least one contact field must be selected before sharing a contact. */
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "தொடர்பு புலங்கள் எதுவும் தேர்ந்தெடுக்கப்படவில்லை.";
+
+/* Label for 'open address in maps app' button in contact view. */
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "வரைபடத்தில் திறக்கவும்";
+
+/* Label for 'open email in email app' button in contact view. */
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "மின்னஞ்சல் அனுப்பு";
+
+/* Indicates that a contact has no name. */
+"CONTACT_WITHOUT_NAME" = "பெயரிடப்படாத தொடர்பு";
+
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "இதை செயல்தவிர்க்க முடியாது .";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "உரையாடலை அழி?";
+
+/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "%@ க்கும் மேற்பட்ட உரையாடல்களை நீங்கள் தேர்ந்தெடுக்க முடியாது.";
+
+/* table section header for section containing groups */
+"CONVERSATION_PICKER_SECTION_GROUPS" = "குழுக்கள்";
+
+/* table section header for section containing recent conversations */
+"CONVERSATION_PICKER_SECTION_RECENTS" = "சமீபத்திய அரட்டைகள்";
+
+/* table section header for section containing contacts */
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "மக்கள்";
+
+/* navbar header */
+"CONVERSATION_PICKER_TITLE" = "பெறுநர்களைத் தேர்வுசெய்க";
+
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "பொருத்தங்கள் இல்லை";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 பொருத்தம் ";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d உள்ள %d பொருத்தங்கள் ";
+
+/* title for conversation settings screen */
+"CONVERSATION_SETTINGS" = "உரையாடல் அமைப்புகள்";
+
+/* Label for 'new contact' button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "இருக்கும் தொடர்புக்குச் சேர்க்கவும்";
+
+/* button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "அமைப்புமுறை  தொடர்புகளில் சேர்";
+
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "இந்த குழுவைத் தடு";
+
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "இந்த பயனரைத் தடு";
+
+/* Navbar title when viewing settings for a 1-on-1 thread */
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "தொடர்பு தகவல்";
+
+/* Label for table cell which leads to picking a new conversation color */
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "உரையாடல் வண்ணம்";
+
+/* Navbar title when viewing settings for a group thread */
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "குழு தகவல்";
+
+/* Title of the 'mute this thread' action sheet. */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "முடக்கு";
+
+/* label for 'mute thread' cell in conversation settings */
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "முடக்கு";
+
+/* Indicates that the current thread is not muted. */
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "முடக்கப்படவில்லை";
+
+/* Label for button to mute a thread for a day. */
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "ஒரு நாள் முடக்கு";
+
+/* Label for button to mute a thread for a hour. */
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "ஒரு மணி நேரம் முடக்கு";
+
+/* Label for button to mute a thread for a minute. */
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "ஒரு நிமிடம் முடக்கு";
+
+/* Label for button to mute a thread for a week. */
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "ஒரு வாரம் முடக்கு";
+
+/* Label for button to mute a thread for a year. */
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "ஒரு வருடம் முடக்கு";
+
+/* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@ வரை";
+
+/* Label for 'new contact' button in conversation settings view. */
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "புதிய தொடர்பை உருவாக்கவும்";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "உரையாடலை தேடு ";
+
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "மாற்ற தட்டவும்";
+
+/* Label for button to unmute a thread. */
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "தடுப்புநீக்கு";
+
+/* Indicates that user is in the system contacts list. */
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "இந்த பயனர் உங்கள் தொடர்புகளில் உள்ளார்";
+
+/* Indicates that user's profile has been shared with a group. */
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "இந்த குழு உங்கள் சுயவிவரத்தைக் காணலாம்.";
+
+/* Indicates that user's profile has been shared with a user. */
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "இந்த பயனர் உங்கள் சுயவிவரத்தைக் காணலாம்.";
+
+/* Button to confirm that user wants to share their profile with a user or group. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "சுயவிவரத்தைப் பகிரவும்";
+
+/* Action that shares user profile with a group. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "உங்கள் சுயவிவரத்தைப் பகிரவும்";
+
+/* Action that shares user profile with a user. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "உங்கள் சுயவிவரத்தைப் பகிரவும்";
+
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "தொடர்பு பட்டியலில் சேர்க்க";
+
+/* Message shown in conversation view that offers to share your profile with a user. */
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "இந்த பயனருடன் உங்கள் சுயவிவரத்தைப் பகிரவும்";
+
+/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "இந்த பயனர் உங்கள் தொடர்புகளில் இல்லை.";
+
+/* Indicates that the app is loading more messages in this conversation. */
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "மேலும் செய்திகளை ஏற்றுகிறது…";
+
+/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "மேலும் தட்டவும்";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "இந்த பயனரைத் தடு";
+
+/* ActionSheet title */
+"CORRUPTED_SESSION_DESCRIPTION" = "உங்கள் அமர்வை மீட்டமைப்பது எதிர்கால செய்திகளை %@ from இலிருந்து பெற உங்களை அனுமதிக்கும், ஆனால் இது ஏற்கனவே சிதைந்த செய்திகளை மீட்டெடுக்காது.";
+
+/* No comment provided by engineer. */
+"COUNTRYCODE_SELECT_TITLE" = "நாட்டின் குறியீட்டைத் தேர்ந்தெடுக்கவும்";
+
+/* Title for the 'crop/scale image' dialog. */
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "நகர்த்தி அளவுகோல் செய் ";
+
+/* Subtitle shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "இதற்கு சில நிமிடங்கள் ஆகலாம்.";
+
+/* Title shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_TITLE" = "தரவுத்தளத்தை மேம்படுத்துகிறது";
+
+/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_FORMAT" = "%@ மணி நேரம் முன்பு";
+
+/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_FORMAT" = "%@ நிமிடம் முன்பு";
+
+/* The present; the current time. */
+"DATE_NOW" = "இப்போது";
+
+/* The current day. */
+"DATE_TODAY" = "இன்று";
+
+/* The day before today. */
+"DATE_YESTERDAY" = "நேற்று";
+
+/* Error indicating that the debug logs could not be copied. */
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "பதிவுகளை நகலெடுக்க முடியவில்லை.";
+
+/* Error indicating that the debug logs could not be packaged. */
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "பதிவுகளை தொகுக்க முடியவில்லை.";
+
+/* Error indicating that a debug log could not be uploaded. */
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "பதிவுகளை பதிவேற்ற முடியவில்லை.";
+
+/* Message of the debug log alert. */
+"DEBUG_LOG_ALERT_MESSAGE" = "உங்கள் பிழைத்திருத்த பதிவின் இணைப்புடன் நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?";
+
+/* Error indicating that no debug logs could be found. */
+"DEBUG_LOG_ALERT_NO_LOGS" = "எந்த பதிவுகளையும் கண்டுபிடிக்க முடியவில்லை.";
+
+/* Label for the 'Open a Bug Report' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "பிழை அறிக்கையைத் திறக்கவும்";
+
+/* Label for the 'copy link' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "இணைப்பை நகலெடுக்கவும்";
+
+/* Label for the 'email debug log' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "மின்னஞ்சல் ஆதரவு";
+
+/* Label for the 'send to self' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "சுயமாக அனுப்பு";
+
+/* Label for the 'Share' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "பகிர்";
+
+/* Title of the alert shown for failures while uploading debug logs.
+   Title of the debug log alert. */
+"DEBUG_LOG_ALERT_TITLE" = "இன்னும் ஒரு படி";
+
+/* Error indicating that the app could not launch the Email app. */
+"DEBUG_LOG_COULD_NOT_EMAIL" = "மின்னஞ்சல் பயன்பாடு திறக்க முடியவில்லை.";
+
+/* Message of the alert before redirecting to GitHub Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "சுருக்கம் இணைப்பு உங்கள் கிளிப்போர்டில் நகலெடுக்கப்பட்டது. நீங்கள் GitHub வெளியீட்டு பட்டியலுக்கு திருப்பி விடப்பட உள்ளீர்கள்.";
+
+/* Title of the alert before redirecting to GitHub Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "கிட்ஹப் திருப்பிவிடுதல்";
+
+/* Label for button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "இந்த தொலைபேசி எண்ணை மீண்டும் பதிவு செய்யுங்கள்";
+
+/* Label warning the user that they have been de-registered. */
+"DEREGISTRATION_WARNING" = "சாதனம் இன்னும்  பதிவு செய்யப்படவில்லை. உங்கள் தொலைபேசி எண் வேறு சாதனத்தில் Signal லுடன் பதிவு செய்யப்பட்டிருக்கலாம் . மீண்டும் பதிவு செய்ய தட்டவும்.";
+
+/* {{Short Date}} when device last communicated with Signal Server. */
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "கடைசியாக செயலில்: %@ ";
+
+/* {{Short Date}} when device was linked. */
+"DEVICE_LINKED_AT_LABEL" = "இணைக்கப்பட்டது: %@";
+
+/* Alert title that can occur when viewing device manager. */
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "சாதனப் பட்டியலைப் புதுப்பிப்பதில் தோல்வி.";
+
+/* table cell label in conversation settings */
+"DISAPPEARING_MESSAGES" = "காணாமல் போகும் செய்திகள்";
+
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "இந்த உரையாடலில் உள்ள செய்திகள் %@  க்குப் பிறகு மறைந்துவிடும்.";
+
+/* subheading in conversation settings */
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "இயக்கப்பட்டால், இந்த உரையாடலில் அனுப்பப்பட்ட மற்றும் பெறப்பட்ட செய்திகள் காணப்பட்ட பிறகு அவை மறைந்துவிடும்.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "தற்போது %@  க்குப் பிறகு செய்திகள் மறைந்துவிடும்";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "செய்தி அமைப்புகள் மறைந்துவிடும்";
+
+/* Short text to dismiss current modal / actionsheet / screen */
+"DISMISS_BUTTON_TEXT" = "நிராகரி";
+
+/* Section title for the 'domain fronting country' view. */
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "தணிக்கை சுற்றறிக்கை இடம்";
+
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "IOS செயலி அமைப்புகள் அணுகலை இயக்கலாம்.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "தொடர்புத் தகவலைத் திருத்த Signal லுக்கு தொடர்பு அணுகல் தேவை";
+
+/* table cell label in conversation settings */
+"EDIT_GROUP_ACTION" = "குழுவைத் திருத்து";
+
+/* a title for the contacts section of the 'new/update group' view. */
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "தொடர்புகள்";
+
+/* The navbar title for the 'update group' view. */
+"EDIT_GROUP_DEFAULT_TITLE" = "குழுவைத் திருத்து";
+
+/* An indicator that a user is a new member of the group. */
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "சேர்க்கப்பட்டது";
+
+/* The title for the 'update group' button. */
+"EDIT_GROUP_UPDATE_BUTTON" = "புதுப்பிக்கப்பட்டது";
+
+/* The alert message if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "இந்த குழுவில் நீங்கள் செய்த மாற்றங்களைச் சேமிக்க விரும்புகிறீர்களா?";
+
+/* The alert title if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "சேமிக்கப்படாத மாற்றங்கள்";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "நகல்";
+
+/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
+"EMAIL_INVITE_BODY" = "ஏய்,\n\nஎனது ஐபோனில் உரையாடல்களை தனிப்பட்டதாக வைத்திருக்க சமீபத்தில் நான் Signal லைப் பயன்படுத்துகிறேன். நீங்களும் இதை நிறுவ விரும்புகிறேன், எனவே நீங்களும் நானும் மட்டுமே நம்முடைய  செய்திகளைப் படிக்க முடியும் அல்லது நம்முடைய  அழைப்புகளைக் கேட்க முடியும் என்று நாங்கள் நம்பலாம்.\n\nஐபோன்கள் மற்றும் அண்ட்ராய்டு கு Signal கிடைக்கும். இங்கே பெறுங்கள்: %@\n\nஉங்களிடம்  இருக்கும் செய்தியிடல் செயலி போலவே Signal செயல்படுகிறது. நாம்  படங்களையும் வீடியோவையும் அனுப்பலாம், அழைப்புகள் செய்யலாம் மற்றும் குழு அரட்டைகளைத் தொடங்கலாம். சிறந்த அம்சம் என்னவென்றால், வேறு யாராலும் இதைப் பார்க்க முடியாது, Signal லை உருவாக்கும் நபர்கள் கூட இல்லை!\n\nSignal உருவாக்கும் நபர்களான ஓபன் விஸ்பர் சிஸ்டம்ஸ் பற்றி நீங்கள் இங்கு மேலும் படிக்கலாம்: %@";
+
+/* subject of email sent to contacts when inviting to install Signal */
+"EMAIL_INVITE_SUBJECT" = "Signal லுக்கு மாறலாம்";
+
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "உங்கள் தொடர்புகள் எதுவும் Signal லைக் கொண்டிருக்கவில்லை.";
+
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "நீங்கள் ஏன் எவேரேனுமொருவரை அழைக்கக்கூடாது ?";
+
+/* Indicates that user should confirm their 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "உங்கள் பின்னை உறுதிப்படுத்தவும்.";
+
+/* Error indicating that attempt to disable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "பதிவு பூட்டை முடக்க முடியவில்லை.";
+
+/* Error indicating that attempt to enable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "பதிவு பூட்டை இயக்க முடியவில்லை.";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "முடக்கு";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "இயக்கு";
+
+/* Label for the 'next' button in the 'enable two factor auth' views. */
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "அடுத்தது";
+
+/* Error indicating that the entered 'two-factor auth PINs' do not match. */
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "பின் பொருந்தவில்லை.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too long. */
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "பின் 20 இலக்கங்களுக்கு மேல் இருக்கக்கூடாது.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too short. */
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "பின் குறைந்தபட்சம் 4 இலக்கங்களாக இருக்க வேண்டும்.";
+
+/* Indicates that user should select a 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "பதிவு பூட்டு பின்னை உள்ளிடவும். அடுத்த முறை இந்த தொலைபேசி எண்ணை Signal லுடன் பதிவுசெய்யும்போது இந்த PIN ஐ உள்ளிடுமாறு கேட்கப்படுவீர்கள்.";
+
+/* Indicates that user has 'two factor auth pin' disabled. */
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "அதிகரித்த பாதுகாப்பிற்காக, இந்த தொலைபேசி எண்ணை மீண்டும் Signal லுடன் பதிவுசெய்ய தேவைப்படும் பதிவு பூட்டு பின்னை இயக்கவும்.";
+
+/* Indicates that user has 'two factor auth pin' enabled. */
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "பதிவு பூட்டு இயக்கப்பட்டது. உங்கள் தொலைபேசி எண்ணை மீண்டும் Signal லுடன் பதிவுசெய்யும்போது உங்கள் பின்னை உள்ளிட வேண்டும்.";
+
+/* Title for the 'enable two factor auth PIN' views. */
+"ENABLE_2FA_VIEW_TITLE" = "பதிவு பூட்டு";
+
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "பரபரப்பு";
+
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "அழைப்பு தோல்வியுற்றது.";
+
+/* Label indicating that this OS version is no longer supported. */
+"END_OF_LIFE_OS_WARNING" = "IOS இன் இந்த பதிப்பில் சமீபத்திய  Signal ல் அம்சங்கள் இயங்காது. எதிர்கால Signal புதுப்பிப்புகளைப் பெற இந்த சாதனத்தை மேம்படுத்தவும்.";
+
+/* Error indicating that the phone's contacts could not be retrieved. */
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "தொடர்புகளை அணுக முடியவில்லை.";
+
+/* Error indicating that 'save video' failed. */
+"ERROR_COULD_NOT_SAVE_VIDEO" = "காணொளியை சேமிக்க முடியவில்லை";
+
+/* Generic notice when message failed to send. */
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "செய்தி அனுப்புவதில் தோல்வி.";
+
+/* Error message indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "பழைய ப்ரீக்கி தரவு காரணமாக அனுப்ப முடியவில்லை.";
+
+/* Error message indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "நீங்கள் அவர்களைத் தடுத்ததால் பயனருக்கு செய்தி அனுப்புவதில் தோல்வி.";
+
+/* Generic error used whenever Signal can't contact the server */
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal லை இணையத்துடன் இணைக்க முடியவில்லை. தயவு செய்து மீண்டும் முயற்சிக்கவும்.";
+
+/* Error indicating that an outgoing message had no valid recipients. */
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "சரியான பெறுநர்கள் இல்லாததால் செய்தி அனுப்புவது தோல்வியடைந்தது.";
+
+/* Error indicating that a socket request failed. */
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "பிணைய கோரிக்கை தோல்வியடைந்தது.";
+
+/* Error indicating that a socket request timed out. */
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "பிணைய கோரிக்கை நேரம் முடிந்தது.";
+
+/* Error indicating that a socket response failed. */
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "சேவையிலிருந்து தவறான பதில்.";
+
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "இந்த சாதனம் இனி உங்கள் தொலைபேசி எண்ணுடன் பதிவு செய்யப்படாது. Signal லை மீண்டும் நிறுவவும்.";
+
+/* Generic server error */
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "சேவையக பிழை. பின்னர் மீண்டும் முயற்சிக்கவும்.";
+
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "அறியப்படாத பிழை ஏற்பட்டது.";
+
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "தொடர்பு ஒரு Signal பயனர் அல்ல.";
+
+/* Error message indicating that attachment download(s) failed. */
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "இணைப்பு பதிவிறக்கம் தோல்வியுற்றது.";
+
+/* Error message when unable to receive an attachment because the sending client is too old. */
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "இணைப்பு தோல்வி: Signal லின் சமீபத்திய பதிப்பிற்கு புதுப்பித்த பிறகு அவர்களின் தொடர்பை மீண்டும் அனுப்ப இந்த தொடர்பைக் கேளுங்கள்.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "நகல் செய்தி கிடைத்தது.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "பெறுநரின் விசை செல்லுபடியாகாது.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_MESSAGE" = "பெறப்பட்ட செய்தி ஒத்திசைக்கப்படவில்லை.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_VERSION" = "இந்த பதிப்போடு பொருந்தாத செய்தியைப் பெற்றது.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_NO_SESSION" = "தொடர்புக்கு கிடைக்கும் அமர்வு இல்லை.";
+
+/* Shown when signal users safety numbers changed */
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "பாதுகாப்பு எண் மாற்றப்பட்டது.";
+
+/* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@ உடன் உங்கள் பாதுகாப்பு எண் மாற்றப்பட்டுள்ளது.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "அறியப்படாத பிழை ஏற்பட்டது.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "பாதுகாப்பு எண் மாற்றப்பட்டது.";
+
+/* Error indicating a send failure due to a delinked application. */
+"ERROR_SENDING_DELINKED" = "உங்கள் சாதனம் இனி இணைக்கப்படவில்லை. மேலும் செய்திகளை அனுப்ப மீண்டும் இணைக்கவும்";
+
+/* Error indicating a send failure due to a deregistered application. */
+"ERROR_SENDING_DEREGISTERED" = "உங்கள் சாதனம் இனி பதிவு செய்யப்படவில்லை. மேலும் செய்திகளை அனுப்ப மீண்டும் பதிவுசெய்க";
+
+/* Error indicating a send failure due to an expired application. */
+"ERROR_SENDING_EXPIRED" = "Signal லின் உங்கள் பதிப்பு காலாவதியானது. மேலும் செய்திகளை அனுப்ப புதுப்பிக்கவும்.";
+
+/* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
+"ERROR_UNREGISTERED_USER_FORMAT" = "பதிவு செய்யப்படாத பயனர்: %@";
+
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "இப்போது வேண்டாம் ";
+
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "போகலாம்";
+
+/* Label notifying the user that the app has expired. */
+"EXPIRATION_ERROR" = "Signal லின் உங்கள் பதிப்பு காலாவதியானது! செய்திகள் இனி வெற்றிகரமாக அனுப்பப்படாது. மிக சமீபத்திய பதிப்பிற்கு புதுப்பிக்க தட்டவும்.";
+
+/* Label warning the user that the app will expire soon. */
+"EXPIRATION_WARNING_SOON" = "Signal லின் உங்கள் பதிப்பு 1%d நாட்களில் காலாவதியாகும். மிக சமீபத்திய பதிப்பிற்கு புதுப்பிக்க தட்டவும்.";
+
+/* Label warning the user that the app will expire today. */
+"EXPIRATION_WARNING_TODAY" = "சிக்னலின் உங்கள் பதிப்பு இன்று காலாவதியாகும். மிக சமீபத்திய பதிப்பிற்கு புதுப்பிக்க தட்டவும்.";
+
+/* action sheet header when re-sending message which failed because of too many attempts */
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "இந்த தொடர்புடன் பல தோல்விகள். பின்னர் மீண்டும் முயற்சிக்கவும்.";
+
+/* action sheet header when re-sending message which failed because of untrusted identity keys */
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%@  உடன் உங்கள் பாதுகாப்பு எண் சமீபத்தில் மாற்றப்பட்டது. இந்த செய்தியை மீண்டும் அனுப்புவதற்கு முன்பு நீங்கள் சரிபார்க்க விரும்பலாம்.";
+
+/* alert title */
+"FAILED_VERIFICATION_TITLE" = "பாதுகாப்பு எண்ணை சரிபார்க்க முடியவில்லை!";
+
+/* Button that marks user as verified after a successful fingerprint scan. */
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "சரிபார்க்கப்பட்டதாகக் குறிக்கவும்";
+
+/* No comment provided by engineer. */
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "அமர்வை மீட்டமை";
+
+/* Accessibility label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "குழுவை உருவாக்குவதை முடிக்கவும்";
+
+/* Label and title for 'contact forwarding' views. */
+"FORWARD_CONTACT" = "தொடர்பை முன்னோக்கு ";
+
+/* Label and title for 'message forwarding' views. */
+"FORWARD_MESSAGE" = "செய்தியை முன்னோக்கு ";
+
+/* Label indicating media gallery is empty */
+"GALLERY_TILES_EMPTY_GALLERY" = "இந்த உரையாடலில் உங்களிடம் எந்த ஊடகமும் இல்லை.";
+
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "புதிய மீடியாவை ஏற்றுகிறது…";
+
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "பழைய மீடியாவை ஏற்றுகிறது…";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "இணைப்பு";
+
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "கோரப்பட்ட GIF ஐப் பெறுவதில் தோல்வி. நீங்கள் ஆன்லைனில் இருக்கிறீர்களா என்பதை சரிபார்க்கவும்.";
+
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "அறியப்படாத பிழை ஏற்பட்டது.";
+
+/* Shown when selected GIF couldn't be fetched */
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "GIF ஐ தேர்வு செய்ய முடியவில்லை";
+
+/* Alert message shown when user tries to search for GIFs without entering any search terms. */
+"GIF_PICKER_VIEW_MISSING_QUERY" = "உங்கள் தேடலை உள்ளிடவும்.";
+
+/* Title for the 'GIF picker' dialog. */
+"GIF_PICKER_VIEW_TITLE" = "GIF தேடல்";
+
+/* Indicates that an error occurred while searching. */
+"GIF_VIEW_SEARCH_ERROR" = "பிழை. மீண்டும் முயற்சிக்க தட்டவும்.";
+
+/* Indicates that the user's search had no results. */
+"GIF_VIEW_SEARCH_NO_RESULTS" = "முடிவுகள் இல்லை.";
+
+/* Placeholder text for the search field in GIF view */
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "உங்கள் தேடலை உள்ளிடவும்";
+
+/* No comment provided by engineer. */
+"GROUP_AVATAR_CHANGED" = "அவதாரம் மாற்றப்பட்டது.";
+
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "குழு உருவாக்கப்பட்டது.";
+
+/* Message shown in conversation view that indicates there were issues with group creation. */
+"GROUP_CREATION_FAILED" = "அனைத்து உறுப்பினர்களையும் குழுவில் சேர்க்க முடியாது. மீண்டும் முயற்சிக்க தட்டவும்.";
+
+/* Conversation settings table section title */
+"GROUP_MANAGEMENT_SECTION" = "குழு மேலாண்மை";
+
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@ குழுவில் சேர்ந்தார்.";
+
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ குழுவிலிருந்து வெளியேறினார்.";
+
+/* Button label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "அழைப்பு";
+
+/* Label for the button that clears all verification errors in the 'group members' view. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "அனைவருக்கும் தெளிவான சரிபார்ப்பு";
+
+/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "கடைசியாக சரிபார்க்கப்பட்டதிலிருந்து பாதுகாப்பு எண்கள் மாற்றப்பட்ட அனைத்து குழு உறுப்பினர்களின் சரிபார்ப்பையும் இது அழிக்கும்.";
+
+/* Title for the 'members' section of the 'group members' view. */
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "உறுப்பினர்கள்";
+
+/* Title for the 'no longer verified' section of the 'group members' view. */
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "இனியும் சரிபார்க்கப்பட்டதாக குறிக்கப்படவில்லை";
+
+/* Button label for the 'send message to group member' button */
+"GROUP_MEMBERS_SEND_MESSAGE" = "செய்தி";
+
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "தலைப்பு இப்போது '%@'.";
+
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "குழு புதுப்பிக்கப்பட்டது.";
+
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "நீங்கள் குழுவிலிருந்து வெளியேறிவிட்டீர்கள்.";
+
+/* Label for 'archived conversations' button. */
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "காப்பகப்படுத்தப்பட்ட உரையாடல்கள்";
+
+/* Table cell subtitle label for a conversation the user has blocked. */
+"HOME_VIEW_BLOCKED_CONVERSATION" = "தடுக்கப்பட்ட";
+
+/* Placeholder text for search bar which filters conversations. */
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "தேடல்";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "உங்கள் தொடர்புகள் சில ஏற்கனவே  Signal லில் உள்ளன%@  உட்பட.";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "உங்கள் தொடர்புகள் சில ஏற்கனவே Signal லில் உள்ளன, இதில் %@ மற்றும் 1%@  உட்பட";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "உங்கள் தொடர்புகள் சில ஏற்கனவே Signal லில் உள்ளன, இதில் %@, %@ மற்றும் %@ உட்பட";
+
+/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "உங்கள் முதல் உரையாடலை இங்கே தொடங்கவும்.";
+
+/* Table cell subtitle label for a conversation the user has not accepted. */
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "செய்தி கோரிக்கை";
+
+/* Format string when search returns no results. Embeds {{search term}} */
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "'%@ ' க்கான முடிவுகள் எதுவும் கிடைக்கவில்லை";
+
+/* Title for the conversation list's 'archive' mode. */
+"HOME_VIEW_TITLE_ARCHIVE" = "காப்பகம்";
+
+/* Title for the conversation list's default mode. */
+"HOME_VIEW_TITLE_INBOX" = "Signal";
+
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "நீங்கள் %@ க்கும் மேற்பட்ட உருப்படிகளைப் பகிர முடியாது.";
+
+/* alert title */
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "இணைப்பு தேர்ந்தெடுப்பதில் தோல்வி.";
+
+/* Call setup status label */
+"IN_CALL_CONNECTING" = "இணைக்கிறது ...";
+
+/* Call setup status label */
+"IN_CALL_RECONNECTING" = "மீண்டும் இணைக்கிறது ...";
+
+/* Call setup status label */
+"IN_CALL_RINGING" = "மணி அடிக்கிறது ...";
+
+/* Call setup status label */
+"IN_CALL_SECURING" = "பதிலளிக்கப்பட்டது. பாதுகாத்தல் ...";
+
+/* Call setup status label */
+"IN_CALL_TERMINATED" = "அழைப்பு முடிந்தது.";
+
+/* Label reminding the user that they are in archive mode. */
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "இந்த உரையாடல்கள் காப்பகப்படுத்தப்பட்டுள்ளன, மேலும் புதிய செய்திகள் வந்தால் மட்டுமே இன்பாக்ஸில் தோன்றும்.";
+
+/* Message shown in the conversation list when the inbox is empty. */
+"INBOX_VIEW_EMPTY_INBOX" = "உங்கள் இன்பாக்ஸைப் பற்றி வீட்டிற்கு எழுத ஏதாவது கொடுங்கள். நண்பருக்கு செய்தி அனுப்புவதன் மூலம் தொடங்கவும்.";
+
+/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "உங்கள் Signal உரையாடல் பட்டியலில் தொடர்பு பெயர்களைக் காண iOS அமைப்புகள் செயலியில் தொடர்புகள் அணுகலை இயக்கலாம்.";
+
+/* info message text in conversation view */
+"INCOMING_CALL" = "உள்வரும் அழைப்பு";
+
+/* info message recorded in conversation history when local user declined a call */
+"INCOMING_DECLINED_CALL" = "நீங்கள் அழைப்பை மறுத்துவிட்டீர்கள்";
+
+/* info message text in conversation view */
+"INCOMING_INCOMPLETE_CALL" = "உள்வரும் அழைப்பு";
+
+/* info message text shown in conversation view */
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "அவர்களின் பாதுகாப்பு எண் மாறிவிட்டதால் அழைப்பு தவறவிட்டது.";
+
+/* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
+"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+
+/* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal லில் உள்ளது!";
+
+/* accessibility label for the button which shows the sticker picker */
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "ஓட்டிகள்";
+
+/* accessibility label for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "குரல் செய்தி";
+
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "தவறான ஆடியோ கோப்பு.";
+
+/* Alert body when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Signal லில் சேர உங்கள் நண்பர்களை அழைக்க iOS அமைப்புகள் செயலியில்  தொடர்புகள் அணுகலை இயக்கலாம்.";
+
+/* Alert title when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "தொடர்பு அணுகலை அனுமதிக்கவும்";
+
+/* Label for the cell that presents the 'invite contacts' workflow. */
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Signal லுக்கு நண்பர்களை அழைக்கவும்";
+
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "தேடல்";
+
+/* Navbar title */
+"INVITE_FRIENDS_PICKER_TITLE" = "நண்பர்களை அழைக்க";
+
+/* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "ஒரே நேரத்தில் பல பயனர்களை அழைப்பது குழு செய்தியைத் தொடங்கும், மேலும் பெறுநர்கள் ஒருவருக்கொருவர் பார்க்க முடியும்.";
+
+/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
+"KEEP_MESSAGES_DURATION" = "%@  க்குப் பிறகு செய்திகள் மறைந்துவிடும்.";
+
+/* Slider label when disappearing messages is off */
+"KEEP_MESSAGES_FOREVER" = "செய்திகள் மறைந்துவிடாது.";
+
+/* A keyboard command to open the current conversation's all media view. */
+"KEY_COMMAND_ALL_MEDIA" = "எல்லா மெடியாவிற்கு செல் ";
+
+/* A keyboard command to archive the current coversation. */
+"KEY_COMMAND_ARCHIVE" = "காப்பக உரையாடல்";
+
+/* A keyboard command to open the current conversation's attachment picker. */
+"KEY_COMMAND_ATTACHMENTS" = "இணைப்புகள்  காட்டு";
+
+/* A keyboard command to open the current conversation's settings. */
+"KEY_COMMAND_CONVERSATION_INFO" = "உரையாடல் தகவலுக்குச் செல்லவும்";
+
+/* A keyboard command to focus the current conversation's input field. */
+"KEY_COMMAND_FOCUS_COMPOSER" = "உள்ளீட்டு பட்டியில் கவனம் செலுத்துங்கள்";
+
+/* A keyboard command to open the current conversations GIF picker. */
+"KEY_COMMAND_GIF_SEARCH" = "GIF தேடலுக்குச் செல்லவும்";
+
+/* A keyboard command to present the new group dialog. */
+"KEY_COMMAND_NEW_GROUP" = "புதிய குழு";
+
+/* A keyboard command to present the new message dialog. */
+"KEY_COMMAND_NEW_MESSAGE" = "புதிய தகவல்";
+
+/* A keyboard command to jump to the next conversation in the list. */
+"KEY_COMMAND_NEXT_CONVERSATION" = "அடுத்த உரையாடலுக்குச் செல்லவும்";
+
+/* A keyboard command to jump to the previous conversation in the list. */
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "முந்தைய உரையாடலுக்குச் செல்லவும்";
+
+/* A keyboard command to begin a search on the conversation list. */
+"KEY_COMMAND_SEARCH" = "தேடு ";
+
+/* A keyboard command to present the application settings dialog. */
+"KEY_COMMAND_SETTINGS" = "அமைப்புகள்";
+
+/* A keyboard command to open the current conversation's sticker picker. */
+"KEY_COMMAND_STICKERS" = "ஓட்டிகளை காட்டு ";
+
+/* A keyboard command to unarchive the current coversation. */
+"KEY_COMMAND_UNARCHIVE" = "காப்பகப்படுத்தாத உரையாடல் ";
+
+/* Confirmation button within contextual alert */
+"LEAVE_BUTTON_TITLE" = "விலகு";
+
+/* table cell label in conversation settings */
+"LEAVE_GROUP_ACTION" = "குழுவிலிருந்து விலகு";
+
+/* report an invalid linking code */
+"LINK_DEVICE_INVALID_CODE_BODY" = "இந்த QR குறியீடு செல்லுபடியாகாது. நீங்கள் இணைக்க விரும்பும் சாதனத்தில் காட்டப்படும் QR குறியீட்டை ஸ்கேன் செய்கிறீர்கள் என்பதை உறுதிப்படுத்தவும்.";
+
+/* report an invalid linking code */
+"LINK_DEVICE_INVALID_CODE_TITLE" = "சாதனத்தை இணைப்பதில் தோல்வி";
+
+/* confirm the users intent to link a new device */
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "இந்தச் சாதனம் உங்கள் குழுக்கள் மற்றும் தொடர்புகளைக் காணவும், உங்கள் உரையாடல்களை அணுகவும், உங்கள் பெயரில் செய்திகளை அனுப்பவும் முடியும்.";
+
+/* confirm the users intent to link a new device */
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "இந்த சாதனத்தை இணைக்கவா?";
+
+/* attempt another linking */
+"LINK_DEVICE_RESTART" = "மீண்டும் முயற்சி செய்";
+
+/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "நீங்கள் இணைக்க விரும்பும் சாதனத்தில் காட்டப்படும் QR குறியீட்டை ஸ்கேன் செய்யுங்கள்.";
+
+/* Subheading for 'Link New Device' navigation */
+"LINK_NEW_DEVICE_SUBTITLE" = "QR குறியீட்டை ஸ்கேன் செய்யுங்கள்";
+
+/* Navigation title when scanning QR code to add new device. */
+"LINK_NEW_DEVICE_TITLE" = "புதிய சாதனத்தை இணைக்கவும்";
+
+/* Label for link previews with an unknown host. */
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "இணைப்பு முன்னோட்டம்";
+
+/* Menu item and navbar title for the device manager */
+"LINKED_DEVICES_TITLE" = "இணைக்கப்பட்ட சாதனங்கள்";
+
+/* Alert Title */
+"LINKING_DEVICE_FAILED_TITLE" = "சாதனத்தை இணைப்பதில் தோல்வி";
+
+/* table cell label in conversation settings */
+"LIST_GROUP_MEMBERS_ACTION" = "குழு உறுப்பினர்கள் ";
+
+/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+
+/* A string indicating that the user can search for a location */
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "பெயர் அல்லது முகவரி மூலம் தேடுங்கள்";
+
+/* The title for the location picker view */
+"LOCATION_PICKER_TITLE" = "இருப்பிடத்தைத் தேர்ந்தெடுக்கவும்";
+
+/* No comment provided by engineer. */
+"LOGGING_SECTION" = "ஏட்டில்பதிகிறது ";
+
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "செய்தி";
+
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "அனைத்து மீடியா";
+
+/* media picker option to take photo or video */
+"MEDIA_FROM_CAMERA_BUTTON" = "புகைப்பட கருவி";
+
+/* media picker option to choose from library */
+"MEDIA_FROM_LIBRARY_BUTTON" = "புகைப்பட நூலகம்";
+
+/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%d செய்திகளை நீக்கு";
+
+/* Confirmation button text to delete selected media message from the gallery */
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "செய்தியை நீக்கு";
+
+/* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
+
+/* Short sender label for media sent by you */
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "நீங்கள்";
+
+/* Section header in media gallery collection view */
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "இந்த மாதம்";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_TEXT" = "செய்தி உரையை நகலெடுக்கவும்";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DELETE_MESSAGE" = "இந்த செய்தியை நீக்கு";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DETAILS" = "மேலும் தகவல்";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "இந்த செய்தியை முன்னோக்கு ";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_REPLY" = "இந்த செய்திக்கு பதில்";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+
+/* Title for the 'message approval' dialog. */
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "செய்தி";
+
+/* Title for the compose view. */
+"MESSAGE_COMPOSEVIEW_TITLE" = "புதிய தகவல்";
+
+/* Label for file size of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "கோப்பின் அளவு";
+
+/* Label for the MIME type of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME வகை";
+
+/* Status label for messages which are delivered. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "வழங்கு ப்பட்டது";
+
+/* Status label for messages which are failed. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "தோல்வி";
+
+/* Status label for messages which are read. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "படி";
+
+/* Status label for messages which are sending. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "அனுப்பப்படுகிறது ";
+
+/* Status label for messages which are sent. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "அனுப்பப்பட்டது ";
+
+/* Status label for messages which were skipped. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "தவிர்க்கப்பட்டது";
+
+/* Status label for messages which are uploading. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "பதிவேற்றுகிறது";
+
+/* Label for messages without a body or attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "செய்திக்கு உள்ளடக்கம் அல்லது இணைப்பு இல்லை.";
+
+/* Label for the 'received date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "பெறப்பட்டது";
+
+/* Label for the 'sender' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENDER" = "அனுப்புநர்";
+
+/* Label for the 'sent date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "அனுப்பப்பட்டது ";
+
+/* Label for the original filename of any attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "கோப்புபெயர்";
+
+/* Title for the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_TITLE" = "செய்தி";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "ஒப்புக்கொள்";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "தடு ";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "அழி";
+
+/* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%@  உடன் உங்கள் உரையாடலைத் தொடர உங்கள் சுயவிவரத்தைப் பகிர வேண்டும்.";
+
+/* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "உங்கள் உரையாடலை %@  இல் தொடர உங்கள் சுயவிவரத்தைப் பகிர வேண்டும்.";
+
+/* A button used to learn more about why you must share your profile. */
+"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "மேலும் அறிக";
+
+/* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ உங்களுக்கு செய்தி அனுப்ப விரும்புகிறீர்களா? நீங்கள் ஒப்புக்கொள் வரை அவர்களின் செய்திகளைப் பார்த்திருப்பதை அவர்கள் அறிய மாட்டார்கள்.";
+
+/* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "%@  குழுவில் சேர விரும்புகிறீர்களா? நீங்கள் ஒப்புக்கொள் வரை அவர்களின் செய்திகளைப் பார்த்திருப்பதை அவர்கள் அறிய மாட்டார்கள்.";
+
+/* A button used to share your profile with an existing thread. */
+"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "சுயவிவரத்தைப் பகிரவும்";
+
+/* message status for message delivered to their recipient. */
+"MESSAGE_STATUS_DELIVERED" = "வழங்கப்பட்டது ";
+
+/* message status while message is downloading. */
+"MESSAGE_STATUS_DOWNLOADING" = "பதிவிறக்குகிறது";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED" = "அனுப்புவது தோல்வியுற்றது.";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "தோல்வி";
+
+/* status message for read messages */
+"MESSAGE_STATUS_READ" = "படி";
+
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "தவிர்க்கப்பட்டது";
+
+/* Label indicating that a message failed to send. */
+"MESSAGE_STATUS_SEND_FAILED" = "அனுப்புதல்  தோல்வியுற்றது";
+
+/* message status while message is sending. */
+"MESSAGE_STATUS_SENDING" = "அனுப்புகிறது ...";
+
+/* status message for sent messages */
+"MESSAGE_STATUS_SENT" = "அனுப்பியது ";
+
+/* status message while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "ஏற்றுகிறது ...";
+
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "புதிய தகவல்";
+
+/* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ இனி சரிபார்க்கப்பட்டதாக குறிக்கப்படவில்லை. விருப்பங்களுக்குத் தட்டவும்.";
+
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "இந்த பயனரை நீங்கள் தடுத்தீர்கள்";
+
+/* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ இனி சரிபார்க்கப்பட்டதாக குறிக்கப்படவில்லை. விருப்பங்களுக்குத் தட்டவும்.";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "இந்த குழுவின் 1 உறுப்பினரை நீங்கள் தடுத்தீர்கள்";
+
+/* Indicates that this group conversation has been blocked. */
+"MESSAGES_VIEW_GROUP_BLOCKED" = "இந்த குழுவை நீங்கள் தடுத்தீர்கள்";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "நீங்கள்  %@ இந்த குழுவின் உறுப்பினர்களைத் தடுத்தீர்கள்";
+
+/* Indicates that more than one member of this group conversation is no longer verified. */
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "இந்த குழுவில் ஒன்றுக்கு மேற்பட்ட உறுப்பினர்கள் சரிபார்க்கப்பட்டதாக இனி குறிக்கப்படவில்லை. விருப்பங்களுக்குத் தட்டவும்.";
+
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "அமைப்புகளுக்கு இங்கே தட்டவும்";
+
+/* Indicator that separates read from unread messages. */
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "புதிய செய்திகள்";
+
+/* Messages that indicates that there are more unseen messages. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "மேலும் பல படிக்காத செய்திகள் உள்ளன.";
+
+/* Messages that indicates that there are more unseen messages including safety number changes. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "மேலும் பல படிக்காத செய்திகள் உள்ளன (பாதுகாப்பு எண் மாற்றங்கள் உட்பட).";
+
+/* info message text in conversation view */
+"MISSED_CALL" = "தவறிய அழைப்பு";
+
+/* Alert body */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal லில் வீடியோ அழைப்புகளைச் செய்ய iOS அமைப்புகள் செயலியில்   கேமரா அணுகலை இயக்கலாம்.";
+
+/* Alert title */
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal உங்கள் கேமராவை அணுக வேண்டும்.";
+
+/* Alert body indicating the user has denied location permissios */
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "IOS அமைப்புகள் பயன்பாட்டில் இந்த அனுமதியை நீங்கள் இயக்கலாம்.";
+
+/* Alert title indicating the user has denied location permissios */
+"MISSING_LOCATION_PERMISSION_TITLE" = "இந்த அம்சத்திற்கு Signal க்கு உங்கள் இருப்பிடத்தை அணுக வேண்டும்.";
+
+/* Alert body when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "IOS அமைப்புகள் பயன்பாட்டில் இந்த அனுமதியை நீங்கள் இயக்கலாம்.";
+
+/* Alert title when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "இந்த அம்சத்திற்கு Signal க்கு உங்கள் புகைப்படங்களை அணுக வேண்டும்.";
+
+/* alert title: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_DESC" = "நீங்கள் மேலும் சாதனங்களை இணைக்க முடியாது.";
+
+/* alert body: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "உங்கள் கணக்கு   தற்போது இணைக்கக்கூடிய அதிகபட்ச சாதனங்களை நீங்கள் அடைந்துவிட்டீர்கள். ஒரு சாதனத்தை அகற்றிவிட்டு மீண்டும் முயற்சிக்கவும்.";
+
+/* An explanation of the consequences of muting a thread. */
+"MUTE_BEHAVIOR_EXPLANATION" = "முடக்கிய உரையாடல்களுக்கான அறிவிப்புகளைப் பெற மாட்டீர்கள்.";
+
+/* A button to skip a view. */
+"NAVIGATION_ITEM_SKIP_BUTTON" = "தவிர்க்க ";
+
+/* No comment provided by engineer. */
+"NETWORK_ERROR_RECOVERY" = "நீங்கள் ஆன்லைனில் இருக்கிறீர்களா என்பதை சரிபார்த்து மீண்டும் முயற்சிக்கவும்.";
+
+/* Indicates to the user that censorship circumvention has been activated. */
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "தணிக்கை சுற்றறிக்கை: ஆன்";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_CONNECTED" = "இணைக்கப்பட்டது";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_CONNECTING" = "இணைக்கிறது";
+
+/* Error indicating that this device is no longer linked. */
+"NETWORK_STATUS_DELINKED" = "இனியும் இணைப்பில் இல்லை ";
+
+/* Error indicating that this device is no longer registered. */
+"NETWORK_STATUS_DEREGISTERED" = "நீண்ட நேரம் பதிவு செய்யப்படவில்லை";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_HEADER" = "பிணைய நிலை";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_OFFLINE" = "ஆஃப்லைன்";
+
+/* A label the cell that lets you add a new member to a group. */
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "தொலைபேசி எண் மூலம் கண்டுபிடிக்கவும்";
+
+/* Action Sheet title prompting the user for a group avatar */
+"NEW_GROUP_ADD_PHOTO_ACTION" = "குழு புகைப்படத்தை அமைக்கவும்";
+
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+
+/* The title for the 'create group' button. */
+"NEW_GROUP_CREATE_BUTTON" = "உருவாக்கவும்";
+
+/* Error indicating that a new group could not be created. */
+"NEW_GROUP_CREATION_FAILED" = "புதிய குழுவை உருவாக்க முடியவில்லை.";
+
+/* Used in place of the group name when a group has not yet been named. */
+"NEW_GROUP_DEFAULT_TITLE" = "புதிய குழு";
+
+/* An indicator that a user is a member of the new group. */
+"NEW_GROUP_MEMBER_LABEL" = "உறுப்பினர்";
+
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ முதல் %@";
+
+/* Placeholder text for group name field */
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "இந்த குழு அரட்டைக்கு பெயரிடுங்கள்";
+
+/* a title for the selected section of the 'recipient picker' view. */
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "பிற பயனர்கள்";
+
+/* The alert message if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "இந்த மாற்றங்களை நிராகரிக்க விரும்புகிறீர்களா?";
+
+/* The alert title if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "சேமிக்கப்படாத மாற்றங்கள்";
+
+/* No comment provided by engineer. */
+"new_message" = "புதிய தகவல்";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "தேடல்";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "பயனரைக் கண்டறியவும்";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "தொலைபேசி எண் மூலம் தொடர்புகளைக் கண்டறியவும்";
+
+/* Explanation of how to see a conversation. */
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "அரட்டையடிக்க ஒரு தொடர்பு அல்லது குழுவைத் தேர்ந்தெடுக்கவும்.";
+
+/* Title welcoming to the app */
+"NO_SELECTED_CONVERSATION_TITLE" = "Signal லுக்கு வருக";
+
+/* A string prompting the user to send a new mesaage to a user */
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "இதற்கு புதிய செய்தி:";
+
+/* A string asking the user if they'd like to invite a number to signal via SMS. */
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "எந்த பயனரும் கிடைக்கவில்லை. எஸ்எம்எஸ் வழியாக அழைக்கவா?";
+
+/* Label for 1:1 conversation with yourself. */
+"NOTE_TO_SELF" = "சுய குறிப்பு";
+
+/* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "உங்கள் %@ மறுதொடக்கம் செய்யும்போது செய்திகளைப் பெற்றிருக்கலாம்.";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "பெயர் அல்லது உள்ளடக்கம் இல்லை";
+
+/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "பயன்பாடு திறந்திருக்கும் போது இயக்கு";
+
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "ஒலிகள் ";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "பெயர் மட்டும்";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SHOW" = "காட்டு";
+
+/* No comment provided by engineer. */
+"OK" = "சரி";
+
+/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "தவறான பின். முயற்சிகள் தீர்ந்துவிட்டன.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_1" = "இந்த தொலைபேசி எண்ணில் பதிவு பூட்டு இயக்கப்பட்டுள்ளது. பதிவு பூட்டு பின்னை உள்ளிடவும்.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_2" = "கடைசி கட்டத்தில் உங்கள் தொலைபேசியில் அனுப்பப்பட்ட தானியங்கு சரிபார்ப்புக் குறியீடும்  உங்கள் பதிவு பூட்டு பின்'னும் வெவ்வேறு .";
+
+/* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "உங்கள் பின்னை மறந்துவிட்டீர்களா?";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN" = "தவறான பின்";
+
+/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "தவறான பின். %lu முயற்சிகள் மீதமுள்ளன.";
+
+/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "தவறான பின். 1 முயற்சி மீதமுள்ளது.";
+
+/* Title of the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_TITLE" = "பதிவு பூட்டு";
+
+/* Explanation of the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "உங்கள் தனியுரிமை மற்றும் உங்கள் கணக்கு பாதுகாப்பைப் பாதுகாக்க, நாங்கள் அதை 7 நாட்களுக்கு பூட்டியுள்ளோம்.\n\n7 நாட்கள் செயலற்ற நிலையில், உங்கள் பின் தேவைப்படாமல் இந்த தொலைபேசி எண்ணை மீண்டும் பதிவுசெய்ய முடியும். எல்லா உள்ளடக்கமும் அழிக்கப்படும்.";
+
+/* Label for the 'learn more' link in the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "பூட்டப்பட்ட கணக்குகளைப் பற்றி மேலும் அறிக";
+
+/* Title of the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "கணக்கு பூட்டப்பட்டுள்ளது";
+
+/* Title of the 'onboarding Captcha' view. */
+"ONBOARDING_CAPTCHA_TITLE" = "உங்கள் செய்திகளில் மனிதநேயத்தைத் தொடவும்";
+
+/* button indicating that the user will register their ipad */
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+
+/* button indicating that the user will link their phone */
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+
+/* explanation to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+
+/* explanation to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+
+/* header text indicating to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "இந்த ஐபாட் ஐ பதிவு செய் ";
+
+/* header text indicating to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+
+/* warning to the user that registering an ipad is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+
+/* warning to the user that linking a phone is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "அனுமதிகளை இயக்கு";
+
+/* Explanation in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "செய்திகள் வரும்போது புதிய உரையாடல் செயல்பாடு குறித்த புதுப்பிப்புகளைப் பெற அறிவிப்புகள் உங்களை அனுமதிக்கும்.";
+
+/* Title of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_TITLE" = "செய்தியை பெறு ";
+
+/* Title of the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_TITLE" = "தொடங்க உங்கள் தொலைபேசி எண்ணை உள்ளிடவும்";
+
+/* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "தவறான எண்";
+
+/* Title of the 'onboarding PIN' view. */
+"ONBOARDING_PIN_EXPLANATION" = "உங்கள் கணக்கு நீங்கள் உருவாக்கிய பின்னை உள்ளிடவும். இது உங்கள் எஸ்எம்எஸ் சரிபார்ப்புக் குறியீட்டிலிருந்து வேறுபட்டது.";
+
+/* Title of the 'onboarding PIN' view. */
+"ONBOARDING_PIN_TITLE" = "உங்கள் பின்னை உள்ளிடவும்";
+
+/* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கை";
+
+/* Title of the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TITLE" = "உங்களின் தனியுரிமையை எடுத்துக் கொள்ளுங்கள்.\nஒவ்வொரு செய்தியிலும் நீஙகள் நீங்களாகவே இருங்கள் .";
+
+/* Label for the link that lets users change their phone number in the onboarding views. */
+"ONBOARDING_VERIFICATION_BACK_LINK" = "தவறான எண்?";
+
+/* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "எனக்கு குறியீடு கிடைக்கவில்லை   (%@ இல் கிடைக்கிறது)";
+
+/* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Signal ஆதரவைத் தொடர்பு கொள்ளுங்கள்";
+
+/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "இந்த குறியீடு தவறானது";
+
+/* Label for link that can be used when the original code did not arrive. */
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "எனக்கு குறியீடு கிடைக்கவில்லை";
+
+/* Message for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "உங்களிடம் செல்லுலார் சேவை இருப்பதை உறுதிசெய்து, எஸ்எம்எஸ் செய்திகளைப் பெறலாம்.";
+
+/* Title for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "குறியீடு இல்லையா?";
+
+/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "குறியீட்டை மீண்டும் அனுப்பு";
+
+/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "அதற்கு பதிலாக என்னை அழைக்கவும்";
+
+/* Label for link that can be used when the resent code did not arrive. */
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "இன்னும் குறியீடு இல்லையா?";
+
+/* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "நாங்கள் அனுப்பிய குறியீட்டை %@  க்கு உள்ளிடவும்";
+
+/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "ஒரு குறியீட்டை மீண்டும் %@ க்கு அனுப்பினோம்  ";
+
+/* Button text which opens the settings app */
+"OPEN_SETTINGS_BUTTON" = "அமைப்புகள்";
+
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@மறைந்த  செய்திகளை முடக்கியது.";
+
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ காணாமல் போகும் செய்தி நேரத்தை %@  ஆக அமைக்கவும்.";
+
+/* Label warning the user that the Signal service may be down. */
+"OUTAGE_WARNING" = "சிக்னல் தொழில்நுட்ப சிக்கல்களை எதிர்கொள்கிறது. சேவையை விரைவாக மீட்டெடுக்க நாங்கள் கடுமையாக உழைத்து வருகிறோம்.";
+
+/* info message text in conversation view */
+"OUTGOING_CALL" = "வெளிசெல்லும் அழைப்பு";
+
+/* info message text in conversation view */
+"OUTGOING_INCOMPLETE_CALL" = "வெளிசெல்லும் அழைப்பு";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "பதிலளிக்கப்படாத  வெளிச்செல்லும் அழைப்பு";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@ ...";
+
+/* Error indicating that a PDF could not be displayed. */
+"PDF_VIEW_COULD_NOT_RENDER" = "பிடிஎப் ஐக் காட்ட முடியவில்லை";
+
+/* Navbar title for for PDF view. */
+"PDF_VIEW_TITLE" = "பிடிஎப்";
+
+/* Label for view-once messages that have invalid content. */
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "உள்வரும் செய்தியைக் கையாளுவதில் பிழை";
+
+/* inbox cell and notification text for an already viewed view-once media message. */
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "ஊடக செய்தி";
+
+/* Label for outgoing view-once messages. */
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "ஊடகம்";
+
+/* inbox cell and notification text for a view-once photo. */
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "மறைந்துபோகின்ற  புகைப்படம்";
+
+/* inbox cell and notification text for a view-once video. */
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "மறைந்துபோகின்ற  வீடியோ";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "புகைப்படம் ";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "காணொளி";
+
+/* Label for view-once messages indicating that the local user has viewed the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEWED" = "பார்க்கப்பட்டவை";
+
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "உதாரணம் : %@";
+
+/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
+
+/* Label for 'Home' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME" = "வீடு";
+
+/* Label for 'HomeFAX' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME_FAX" = "முகப்பு தொலைநகல்";
+
+/* Label for 'iPhone' phone numbers. */
+"PHONE_NUMBER_TYPE_IPHONE" = "ஐபோன்";
+
+/* Label for 'Main' phone numbers. */
+"PHONE_NUMBER_TYPE_MAIN" = "முதன்மை";
+
+/* Label for 'Mobile' phone numbers. */
+"PHONE_NUMBER_TYPE_MOBILE" = "கைபேசி";
+
+/* Label for 'Other' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER" = "மற்றவை ";
+
+/* Label for 'Other FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "பிற தொலைநகல்";
+
+/* Label for 'Pager' phone numbers. */
+"PHONE_NUMBER_TYPE_PAGER" = "பேஜர்";
+
+/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
+"PHONE_NUMBER_TYPE_UNKNOWN" = "தெரியாத";
+
+/* Label for 'Work' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK" = "வேலை";
+
+/* Label for 'Work FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK_FAX" = "வேலை தொலைநகல்";
+
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "படத்தைப் பிடிக்க முடியவில்லை.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "படத்தைப் பிடிக்க முடியவில்லை.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "கேமராவை உள்ளமைப்பதில் தோல்வி.";
+
+/* label for system photo collections which have no name. */
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "பெயரிடப்படாத ஆல்பம்";
+
+/* The bold portion of the explanation in the 'pin creation' view. */
+"PIN_CREATION_BOLD_EXPLANATION" = "உங்கள் பின்னை மீட்டெடுக்க வழி இல்லை, எனவே அதை நினைவில் கொள்ளுங்கள்.";
+
+/* Title of the 'pin creation' recreation view. */
+"PIN_CREATION_CHANGING_TITLE" = "உங்கள் பின்னை மாற்றவும்";
+
+/* The explanation of confirmation in the 'pin creation' view. */
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "உங்கள் புதிய பின்னை உறுதிப்படுத்தவும்.";
+
+/* The explanation in the 'pin creation' view. */
+"PIN_CREATION_EXPLANATION" = "உங்கள் பின் சேர்க்கிறது மற்றும் கூடுதல் பாதுகாப்பு அடுக்கு மற்றும் உங்கள் கணக்கு காப்புப் பிரதி எடுக்கிறது.";
+
+/* Label indicating that the attempted PIN does not match the first PIN */
+"PIN_CREATION_MISMATCH_ERROR" = "பின்'கள்  பொருந்தவில்லை. மீண்டும் முயற்சி செய்.";
+
+/* The placeholder when confirming a pin in the 'pin creation' view. */
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "பின்னை மீண்டும் உள்ளிடவும்";
+
+/* The placeholder when creating a pin in the 'pin creation' view. */
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "பின் 4+ இலக்கங்களாக இருக்க வேண்டும்";
+
+/* The bold portion of the re-creation explanation in the 'pin creation' view. */
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "நீங்கள் வெளியேறும்போது, ​​உங்கள் பின்னை மீட்டெடுக்க வழி இல்லை.";
+
+/* The re-creation explanation in the 'pin creation' view. */
+"PIN_CREATION_RECREATION_EXPLANATION" = "நீங்கள் இன்னும் உள்நுழைந்திருப்பதால், புதிய பின்'ஐ  உருவாக்கலாம்.";
+
+/* Title of the 'pin creation' recreation view. */
+"PIN_CREATION_RECREATION_TITLE" = "புதிய பின்னை உருவாக்கவும்";
+
+/* Title of the 'pin creation' view. */
+"PIN_CREATION_TITLE" = "உங்கள் பின்னை உருவாக்கவும்";
+
+/* Label indicating that the attempted PIN is too long */
+"PIN_CREATION_TOO_LONG_ERROR" = "பின் 20 இலக்கங்களுக்கு மிகாமல் இருக்க வேண்டும்.";
+
+/* Label indicating that the attempted PIN is too short */
+"PIN_CREATION_TOO_SHORT_ERROR" = "பின் குறைந்தபட்சம் 4 இலக்கங்களாக இருக்க வேண்டும்.";
+
+/* The explanation for the 'pin reminder' dialog. */
+"PIN_REMINDER_EXPLANATION" = "உங்கள் பின்னை மனப்பாடம் செய்ய உங்களுக்கு உதவ, அவ்வப்போது அதை உள்ளிடுமாறு கேட்டுக்கொள்கிறோம். காலப்போக்கில் குறைவாகக் கேட்போம்.";
+
+/* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
+"PIN_REMINDER_FORGOT_PIN" = "உங்கள் பின்னை மறந்துவிட்டீர்களா?";
+
+/* Label indicating that the attempted PIN does not match the user's PIN */
+"PIN_REMINDER_MISMATCH_ERROR" = "தவறான பின், மீண்டும் முயற்சிக்கவும்.";
+
+/* The title for the 'pin reminder' dialog. */
+"PIN_REMINDER_TITLE" = "உங்கள் Signal பின்னை உள்ளிடவும்";
+
+/* Label indicating that the attempted PIN is too short */
+"PIN_REMINDER_TOO_SHORT_ERROR" = "பின் குறைந்தபட்சம் 4 இலக்கங்களாக இருக்க வேண்டும்.";
+
+/* Accessibility label for button to start media playback */
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "மீடியா விளையாடு";
+
+/* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "சரிபார்க்கப்பட்டதாக நீங்கள் %@  ஐக் குறிக்கவில்லை.";
+
+/* Badge indicating that the user is verified. */
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "சரிபார்க்கப்பட்ட";
+
+/* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ சரிபார்க்கப்பட்டது.";
+
+/* Label for a link to more information about safety numbers and verification. */
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "மேலும் அறிக";
+
+/* Button that shows the 'scan with camera' view. */
+"PRIVACY_TAP_TO_SCAN" = "ஸ்கேன் செய்ய தட்டவும்";
+
+/* Button that lets user mark another user's identity as unverified. */
+"PRIVACY_UNVERIFY_BUTTON" = "சரிபார்ப்பு அழி";
+
+/* Alert body when verifying with {{contact name}} */
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "இது %@  உடன் உங்கள் பாதுகாப்பு எண்ணாகத் தெரியவில்லை. சரியான தொடர்பை சரிபார்க்கிறீர்களா?";
+
+/* Alert body */
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "உங்கள் கிளிப்போர்டில் உள்ள எண் இந்த உரையாடலுக்கான சரியான பாதுகாப்பு எண்ணாகத் தெரியவில்லை.";
+
+/* Alert body for user error */
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "உங்கள் கிளிப்போர்டில் Signal க்கு எந்த பாதுகாப்பு எண்ணையும் கண்டுபிடிக்க முடியவில்லை. நீங்கள் அதை சரியாக நகலெடுத்துள்ளீர்களா?";
+
+/* Alert body when verifying with {{contact name}} */
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "ஒவ்வொரு ஜோடி Signal பயனர்களும் ஒரு தனித்துவமான பாதுகாப்பு எண்ணைப் பகிர்ந்து கொள்கிறார்கள். %@ * உங்கள் * தனித்துவமான பாதுகாப்பு எண்ணைக் காண்பிக்கிறதா என்பதை இருமுறை சரிபார்க்கவும்.";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "நீங்கள் Signal லின் பழைய பதிப்பை இயக்குகிறீர்கள். நீங்கள் சரிபார்க்கும் முன் புதுப்பிக்க வேண்டும்.";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "உங்கள் கூட்டாளர் Signal லின் பழைய பதிப்பை இயக்குகிறார். நீங்கள் சரிபார்க்கும் முன் அவை புதுப்பிக்கப்பட வேண்டும்.";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "ஸ்கேன் செய்யப்பட்ட குறியீடு பாதுகாப்பு எண்ணாகத் தெரியவில்லை. நீங்கள் இருவரும் Signal லின் புதுப்பித்த பதிப்பில் இருக்கிறீர்களா?";
+
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "உங்கள் இறுதி முதல் இறுதி குறியாக்கத்தின் பாதுகாப்பை %@உடன் சரிபார்க்க விரும்பினால், மேலே உள்ள எண்களை அவற்றின் சாதனத்தில் உள்ள எண்களுடன் ஒப்பிடுக.\n\nமாற்றாக, நீங்கள் அவர்களின் தொலைபேசியில் குறியீட்டை ஸ்கேன் செய்யலாம் அல்லது உங்கள் குறியீட்டை ஸ்கேன் செய்யுமாறு அவர்களிடம் கேட்கலாம்.";
+
+/* Navbar title */
+"PRIVACY_VERIFICATION_TITLE" = "பாதுகாப்பு எண்ணைச் சரிபார்க்கவும்";
+
+/* Button that lets user mark another user's identity as verified. */
+"PRIVACY_VERIFY_BUTTON" = "சரிபார்க்கப்பட்டதாகக் குறிக்கவும்";
+
+/* No comment provided by engineer. */
+"PROCEED_BUTTON" = "தொடர";
+
+/* Action Sheet title prompting the user for a profile avatar */
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "சுயவிவர அவதாரம் அமைக்கவும்";
+
+/* Label for action that clear's the user's profile avatar */
+"PROFILE_VIEW_CLEAR_AVATAR" = "அவதாரம் அழி";
+
+/* A string indicating that the user can create a username on the profile view. */
+"PROFILE_VIEW_CREATE_USERNAME" = "பயனர்பெயரை உருவாக்கவும்";
+
+/* Error message shown when user tries to update profile with a profile name that is too long. */
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "உங்கள் சுயவிவரப் பெயர் மிக நீளமாக உள்ளது .";
+
+/* Error message shown when a profile update fails. */
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "சுயவிவர புதுப்பிப்பு தோல்வியுற்றது.";
+
+/* Default text for the profile name field of the profile view. */
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "உங்கள் பெயரை உள்ளிடவும்";
+
+/* Description of the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "நீங்கள் புதிய உரையாடல்களைத் தொடங்கும்போது, ​​மற்ற பயனர்களுடனும் குழுக்களுடனும் பகிரும்போது உங்கள் Signal சுயவிவரம் உங்கள் தொடர்புகளுக்குத் தெரியும்.";
+
+/* Link to more information about the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "மேலும் அறிய இங்கே தட்டவும்.";
+
+/* Label for the profile name field of the profile view. */
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "சுயவிவரப் பெயர்";
+
+/* Button to save the profile view in the profile view. */
+"PROFILE_VIEW_SAVE_BUTTON" = "சேமி";
+
+/* Title for the profile view. */
+"PROFILE_VIEW_TITLE" = "விவரம்";
+
+/* Label for the username field of the profile view. */
+"PROFILE_VIEW_USERNAME_FIELD" = "பயனர்பெயர்";
+
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "படித்ததாக குறி ";
+
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "பதில்";
+
+/* Title of alert shown when push tokens sync job succeeds. */
+"PUSH_REGISTER_SUCCESS" = "புஷ் அறிவிப்புகளுக்கு வெற்றிகரமாக மீண்டும் பதிவுசெய்யப்பட்டது.";
+
+/* Used in table section header and alert view title contexts */
+"PUSH_REGISTER_TITLE" = "அறிவிப்புகளை அழுத்துக";
+
+/* No comment provided by engineer. */
+"QUESTIONMARK_PUNCTUATION" = "?";
+
+/* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@  க்கு பதிலளிக்கிறது";
+
+/* message header label when someone else is quoting you */
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "உங்களுக்கு பதிலளிக்கிறது";
+
+/* message header label when quoting yourself */
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "உங்களுக்கு பதிலளித்தல்";
+
+/* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "அசல் செய்தி கிடைக்கவில்லை.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "அசல் செய்தி இனி கிடைக்கும்.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "அசல் செய்தி கிடைக்கவில்லை.";
+
+/* Indicates this message is a quoted reply to an attachment of unknown type. */
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "இணைப்பு";
+
+/* Indicates this message is a quoted reply to an audio file. */
+"QUOTED_REPLY_TYPE_AUDIO" = "ஒலி";
+
+/* Indicates this message is a quoted reply to animated GIF file. */
+"QUOTED_REPLY_TYPE_GIF" = "GIF,";
+
+/* Indicates this message is a quoted reply to an image file. */
+"QUOTED_REPLY_TYPE_IMAGE" = "உருவம்  ";
+
+/* Indicates this message is a quoted reply to a video file. */
+"QUOTED_REPLY_TYPE_VIDEO" = "காணொளி";
+
+/* notification body */
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+
+/* Label for 'I forgot my PIN' link in the 2FA registration view. */
+"REGISTER_2FA_FORGOT_PIN" = "எனது பின்னை மறந்துவிட்டேன்.";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "உங்கள் தனியுரிமை மற்றும் பாதுகாப்பிற்காக, உங்கள் பின்னை மீட்டெடுக்க வழி இல்லை. உங்கள் பின்னை நினைவில் கொள்ள முடியாவிட்டால், 7 நாட்கள் செயலற்ற நிலையில் எஸ்எம்எஸ் மூலம் மீண்டும் சரிபார்க்கலாம். இந்த வழக்கில், உங்கள் கணக்கு அழிக்கப்பட்டு அனைத்து உள்ளடக்கமும் நீக்கப்படும்.";
+
+/* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "உங்கள் பின்னை மறந்துவிட்டீர்களா?";
+
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "உங்களிடம் %lu முயற்சிகள் உள்ளன. முயற்சிகள் முடிந்தால் உங்கள் கணக்கு பூட்டப்படும். செயலற்ற 7 நாட்களுக்குப் பிறகு, உங்கள் பின் இல்லாமல் மீண்டும் பதிவு செய்யலாம். உங்கள் கணக்கு அழிக்கப்பட்டு அனைத்து உள்ளடக்கமும் நீக்கப்படும்.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "உங்களிடம் 1 முயற்சி மீதம் உள்ளது. முயற்சிகள் முடிந்தால் உங்கள் கணக்கு பூட்டப்படும். செயலற்ற 7 நாட்களுக்குப் பிறகு, உங்கள் பின் இல்லாமல் மீண்டும் பதிவு செய்யலாம். உங்கள் கணக்கு அழிக்கப்பட்டு அனைத்து உள்ளடக்கமும் நீக்கப்படும்.";
+
+/* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "தவறான பின்";
+
+/* Label for 'submit' button in the 2FA registration view. */
+"REGISTER_2FA_SUBMIT_BUTTON" = "சமர்ப்பி";
+
+/* No comment provided by engineer. */
+"REGISTER_CONTACTS_WELCOME" = "நல்வரவு!";
+
+/* No comment provided by engineer. */
+"REGISTER_FAILED_TRY_AGAIN" = "மீண்டும் முயற்சி செய்";
+
+/* No comment provided by engineer. */
+"REGISTER_RATE_LIMITING_BODY" = "நீங்கள் அடிக்கடி முயற்சித்தீர்கள். மீண்டும் முயற்சிக்கும் முன் ஒரு நிமிடம் காத்திருங்கள்.";
+
+/* No comment provided by engineer. */
+"REGISTER_RATE_LIMITING_ERROR" = "நீங்கள் அடிக்கடி முயற்சித்தீர்கள். மீண்டும் முயற்சிக்கும் முன் ஒரு நிமிடம் காத்திருங்கள்.";
+
+/* Title of alert shown when push tokens sync job fails. */
+"REGISTRATION_BODY" = "புஷ் அறிவிப்புகளுக்கு மீண்டும் பதிவுசெய்வதில் தோல்வி.";
+
+/* Label for the country code field */
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "நாட்டின் குறியீடு";
+
+/* Placeholder text for the phone number textfield */
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "எண்ணை உள்ளிடவும்";
+
+/* No comment provided by engineer. */
+"REGISTRATION_ERROR" = "பதிவு பிழை";
+
+/* alert body during registration */
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "நாங்கள் உங்களுக்கு அனுப்பிய குறியீட்டை நீங்கள் சரிபார்க்கும் வரை உங்கள் கணக்கு நாங்கள் செயல்படுத்த முடியாது.";
+
+/* No comment provided by engineer. */
+"REGISTRATION_NON_VALID_NUMBER" = "இந்த தொலைபேசி எண் வடிவம் ஆதரிக்கப்படவில்லை, தயவுசெய்து ஆதரவைத் தொடர்பு கொள்ளவும்.";
+
+/* Label for the phone number textfield */
+"REGISTRATION_PHONENUMBER_BUTTON" = "தொலைபேசி எண்";
+
+/* No comment provided by engineer. */
+"REGISTRATION_RESTRICTED_MESSAGE" = "நீங்கள் ஒரு செய்தியை அனுப்புவதற்கு முன்பு பதிவு செய்ய வேண்டும்.";
+
+/* Alert view title */
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "சரிபார்ப்பு தோல்வியுற்றது";
+
+/* Error message indicating that registration failed due to a missing or incorrect verification code. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "நீங்கள் சமர்ப்பித்த எண்கள் நாங்கள் அனுப்பியவற்றுடன் பொருந்தவில்லை. இருமுறை சரிபார்க்க வேண்டுமா?";
+
+/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "தவறான பதிவு பூட்டு பின்.";
+
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "பதிவு செய்ய சரியான தொலைபேசி எண்ணை உள்ளிடவும்.";
+
+/* Title of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "தவறான தொலைபேசி எண்";
+
+/* Message of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "பதிவு செய்ய தொலைபேசி எண்ணை உள்ளிடவும்.";
+
+/* Title of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "தொலைபேசி எண் இல்லை";
+
+/* notification action */
+"REJECT_CALL_BUTTON_TITLE" = "நிராகரி";
+
+/* No comment provided by engineer. */
+"RELAY_REGISTERED_ERROR_RECOVERY" = "நீங்கள் பதிவு செய்ய முயற்சிக்கும் தொலைபேசி எண் ஏற்கனவே வேறொரு சேவையகத்தில் பதிவு செய்யப்பட்டுள்ளது, தயவுசெய்து அங்கிருந்து பதிவுசெய்து மீண்டும் முயற்சிக்கவும்.";
+
+/* Body text for when user is periodically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY" = "உங்கள் தொலைபேசி எண்ணுக்கு பதிவு பூட்டு இயக்கப்பட்டது. உங்கள் பதிவு பூட்டு பின்னை மனப்பாடம் செய்ய உங்களுக்கு உதவ, சிக்னல் அவ்வப்போது அதை உறுதிப்படுத்தும்படி கேட்கும்.";
+
+/* Body header for when user is periodically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "நினைவூட்டல்:";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "பதிவு பூட்டு உங்கள் தொலைபேசி எண்ணை அங்கீகரிக்கப்படாத பதிவு முயற்சிகளிலிருந்து பாதுகாக்க உதவுகிறது. உங்கள் Signal தனியுரிமை அமைப்புகளில் எந்த நேரத்திலும் இந்த அம்சத்தை முடக்கலாம்.";
+
+/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
+"REMINDER_2FA_NAV_TITLE" = "உங்கள் பதிவு பூட்டு பின்னை உள்ளிடவும்";
+
+/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "உங்கள் தனியுரிமை அமைப்புகளில் புதிய பின்னை அமைக்கலாம்.";
+
+/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "அது சரியான பின் அல்ல.";
+
+/* No comment provided by engineer. */
+"REREGISTER_FOR_PUSH" = "புஷ் அறிவிப்புகளுக்கு மீண்டும் பதிவுசெய்க";
+
+/* Generic text for button that retries whatever the last action was. */
+"RETRY_BUTTON_TEXT" = "மீண்டும் முயற்சி செய்";
+
+/* button title to confirm adding a recipient to a group when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "எப்படியும் குழுவில் சேர்";
+
+/* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "எப்படியும் அழைக்கவும்";
+
+/* button title to confirm sending to a recipient whose safety number recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "இருந்தாலும் அனுப்பு";
+
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "எங்கள் Signal பாதுகாப்பு எண்:\n%@";
+
+/* Action sheet heading */
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@  உடன் உங்கள் பாதுகாப்பு எண் மாற்றப்பட்டுள்ளது. நீங்கள் அதை சரிபார்க்க விரும்பலாம்.";
+
+/* label presented once scanning (camera) view is visible. */
+"SCAN_CODE_INSTRUCTIONS" = "உங்கள் தொடர்பு சாதனத்தில் QR குறியீட்டை ஸ்கேன் செய்யுங்கள்.";
+
+/* Title for the 'scan QR code' view. */
+"SCAN_QR_CODE_VIEW_TITLE" = "QR குறியீட்டை ஸ்கேன் செய்யுங்கள்";
+
+/* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "உடனடி";
+
+/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "அங்கீகாரத்தை அணுக முடியவில்லை.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "அங்கீகரிப்பு தோல்வியுற்றது.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "பல தோல்வியுற்ற அங்கீகார முயற்சிகள். பின்னர் மீண்டும் முயற்சிக்கவும்.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "திரை பூட்டைப் பயன்படுத்த உங்கள் iOS அமைப்புகளில் கடவுக்குறியீட்டை இயக்க வேண்டும்.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "திரை பூட்டைப் பயன்படுத்த உங்கள் iOS அமைப்புகளில் கடவுக்குறியீட்டை இயக்க வேண்டும்.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "திரை பூட்டைப் பயன்படுத்த உங்கள் iOS அமைப்புகளில் கடவுக்குறியீட்டை இயக்க வேண்டும்.";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Signal லைத் திறக்க அங்கீகரிக்கவும்.";
+
+/* Title for alert indicating that screen lock could not be unlocked. */
+"SCREEN_LOCK_UNLOCK_FAILED" = "அங்கீகரிப்பு தோல்வியுற்றது";
+
+/* Label for button on lock screen that lets users unlock Signal. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal லைத் திற";
+
+/* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "பெயர், பயனர்பெயர் அல்லது எண்";
+
+/* Placeholder text indicating the user can search for contacts by name or phone number. */
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "பெயர் அல்லது எண்ணின் அடிப்படையில் தேடுங்கள்";
+
+/* placeholder text in an empty search field */
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "தேடல்";
+
+/* section header for search results that match a contact who doesn't have an existing conversation */
+"SEARCH_SECTION_CONTACTS" = "பிற தொடர்புகள்";
+
+/* section header for search results that match existing conversations (either group or contact conversations) */
+"SEARCH_SECTION_CONVERSATIONS" = "உரையாடல்கள்";
+
+/* section header for search results that match a message in a conversation */
+"SEARCH_SECTION_MESSAGES" = "செய்திகள்";
+
+/* alert title */
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "இணைப்புக் குறியீட்டைப் பெற முடியவில்லை";
+
+/* alert message for outdated linking device */
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+
+/* alert title for outdated linking device */
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
+
+/* alert title */
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "உங்கள் சாதனத்தை இணைப்பதில் தோல்வி";
+
+/* header text when this device is being added as a secondary */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "இந்த சாதனத்திற்கு ஒரு பெயரைத் தேர்வுசெய்க";
+
+/* label text */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "இந்த பெயரை \"இணைக்கப்பட்ட சாதனங்கள்\" என்பதன் கீழ் காண்பீர்கள்.";
+
+/* text field placeholder */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "பெயரைத் தேர்வுசெய்க";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "இணைப்பதை முடிக்கவும்";
+
+/* header text before the user can link this device */
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "இந்த ஐபாட் உங்கள் கணக்கில் இணைக்க உங்கள் தொலைபேசியில் Signal லைத் தொடங்கவும்";
+
+/* Link explaining what to do when trying to link a device before having a primary device. */
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "எனது தொலைபேசியில் Signal இல்லை ...";
+
+/* alert body */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "உங்கள் தொலைபேசியில் உள்ள செயலி ஸ்டோருக்குச் சென்று, Signal லை நிறுவவும், பதிவு செய்யும் பணியை முடிக்கவும், பின்னர் உங்கள் ஐபாட் அதே கணக்கில் இணைக்கலாம்";
+
+/* alert title */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "உங்கள் தொலைபேசியில் Signal நிறுவவும்";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "உங்கள் தொலைபேசியில் Signal அமைப்புகளைத் திறக்க உங்கள் சுயவிவரப் படத்தைத் தட்டவும். உங்கள் தொலைபேசியுடன் இந்த குறியீட்டை ஸ்கேன் செய்ய \"இணைக்கப்பட்ட சாதனங்கள்\" மற்றும் \"புதிய சாதனத்தை இணைக்கவும்\":";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "உங்கள் ஐபாட் இணைக்க இங்கே உதவி பெறவும்";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "உங்கள் தொலைபேசியுடன் QR குறியீட்டை ஸ்கேன் செய்யுங்கள்";
+
+/* No comment provided by engineer. */
+"SECURE_SESSION_RESET" = "பாதுகாப்பான அமர்வு மீட்டமைக்கப்பட்டது.";
+
+/* Table section header for conversations you haven't recently used. */
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "பிற தொடர்புகள்";
+
+/* Table section header for recently active conversations */
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "சமீபத்திய அரட்டைகள்";
+
+/* No comment provided by engineer. */
+"SEND_AGAIN_BUTTON" = "மீண்டும் அனுப்பு";
+
+/* Label for the button to send a message */
+"SEND_BUTTON_TITLE" = "அனுப்புக";
+
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "உங்கள் செய்தி அனுப்பத் தவறிவிட்டது.";
+
+/* Alert body after invite failed */
+"SEND_INVITE_FAILURE" = "அழைப்பை அனுப்புவது தோல்வியுற்றது, பின்னர் மீண்டும் முயற்சிக்கவும்.";
+
+/* Alert body after invite succeeded */
+"SEND_INVITE_SUCCESS" = "Signal லைப் பயன்படுத்த உங்கள் நண்பரை அழைத்தீர்கள்!";
+
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "மீடியாவை நிராகரி";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "கேமராவுக்குத் திரும்பு";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "மீடியா நூலகத்திற்குத் திரும்பு";
+
+/* No comment provided by engineer. */
+"SEND_SMS_CONFIRM_TITLE" = "பாதுகாப்பற்ற எஸ்எம்எஸ் வழியாக நண்பரை அழைக்கவா?";
+
+/* No comment provided by engineer. */
+"SEND_SMS_INVITE_TITLE" = "பின்வரும் எண்ணை Signal லுக்கு அழைக்க விரும்புகிறீர்களா:";
+
+/* Navbar title */
+"SETTINGS_ABOUT" = "பற்றி";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "தடு ";
+
+/* Label for the  'manual censorship circumvention' switch. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "தணிக்கை சுற்றறிக்கை";
+
+/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "இடம்: %@";
+
+/* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "இயக்கப்பட்டால், தணிக்கை தவிர்க்க Signal முயற்சிக்கும். நீங்கள் Signal தணிக்கை செய்யப்பட்ட இடத்தில் இல்லாவிட்டால் இந்த அம்சத்தை இயக்க வேண்டாம்.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "உங்கள் கணக்கு தொலைபேசி எண்ணின் அடிப்படையில் தணிக்கை சுற்றளவு செயல்படுத்தப்பட்டுள்ளது.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "நீங்கள் தணிக்கை சுற்றளவை கைமுறையாக முடக்கியுள்ளீர்கள்.";
+
+/* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "இணையத்துடன் இணைக்கப்படும்போது மட்டுமே தணிக்கை சுற்றறிக்கை செயல்படுத்தப்படும்.";
+
+/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "தணிக்கை சுற்றளவு தேவையில்லை; நீங்கள் ஏற்கனவே Signal சேவையுடன் இணைக்கப்பட்டுள்ளீர்கள்.";
+
+/* Table header for the 'censorship circumvention' section. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "தணிக்கை சுற்றறிக்கை";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_DEBUGLOG" = "பிழைத்திருத்த பதிவை இயக்கு";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "பிழைத்திருத்த பதிவைச் சமர்ப்பிக்கவும்";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_TITLE" = "மேம்படுத்தபட்ட";
+
+/* table cell label */
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "பிழை பதிவுகள்";
+
+/* The title for the theme section in the appearance settings. */
+"SETTINGS_APPEARANCE_THEME_TITLE" = "நிறவடிவமைப்பு";
+
+/* The title for the appearance settings. */
+"SETTINGS_APPEARANCE_TITLE" = "தோற்றம்";
+
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (இயல்புநிலை)";
+
+/* Label for the backup view in app settings. */
+"SETTINGS_BACKUP" = "காப்புப்பதிவு பயனர் தரவு";
+
+/* Label for 'backup now' button in the backup settings view. */
+"SETTINGS_BACKUP_BACKUP_NOW" = "இப்பொழது பாதுகாப்பிற்காக சேமித்து வை காப்புப்பதிவு பயனர் தரவு";
+
+/* Label for 'cancel backup' button in the backup settings view. */
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "காப்புப்பதிவு பயனர் தரவு ரத்துசெய்";
+
+/* Label for switch in settings that controls whether or not backup is enabled. */
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "காப்புப்பதிவு பயனர் தரவு இயக்கப்பட்டது";
+
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud நிலை";
+
+/* Indicates that the last backup restore failed. */
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "காப்புப்பதிவு பயனர் தரவு மீட்டெடுப்பு தோல்வியுற்றது";
+
+/* Indicates that app is not restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "செயலற்றதை மீட்டமை காப்புப்பதிவு பயனர் தரவு\n\n ";
+
+/* Indicates that app is restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "காப்புப்பதிவு பயனர் தரவு மீட்டெடுப்பு செயலில் உள்ளது";
+
+/* Indicates that the last backup restore succeeded. */
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "காப்புப்பதிவு பயனர் தரவு மீட்டெடுப்பு வெற்றி பெற்றது";
+
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PHASE" = "கட்டம்";
+
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PROGRESS" = "முன்னேற்றம்";
+
+/* Label for backup status row in the in the backup settings view. */
+"SETTINGS_BACKUP_STATUS" = "நிலைமை";
+
+/* Indicates that the last backup failed. */
+"SETTINGS_BACKUP_STATUS_FAILED" = "காப்புப்பதிவு பயனர் தரவு தோல்வியுற்றது";
+
+/* Indicates that app is not backing up. */
+"SETTINGS_BACKUP_STATUS_IDLE" = "காத்திருக்கிறது";
+
+/* Indicates that app is backing up. */
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "காப்புப்பிரதி நகல் எடுத்தல்";
+
+/* Indicates that the last backup succeeded. */
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "காப்புப்பதிவு பயனர் தரவு மீட்டெடுப்பு வெற்றி";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "தடுக்கப்பட்ட பயனரைச் சேர்க்கவும்";
+
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal லில் உங்களுக்கு எந்த தொடர்புகளும் இல்லை.";
+
+/* A label that indicates the user's search has no matching results. */
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "தேடல் முடிவுகள் இல்லை";
+
+/* Label for the block list section of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "தடுக்கப்பட்ட";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "எப்போதும் அழைப்புகளை சுற்ற செய்க  ";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "உங்கள் தொடர்புக்கு உங்கள் ஐபி முகவரியை வெளிப்படுத்துவதைத் தவிர்க்க Signal சேவையகம் மூலம் அனைத்து அழைப்புகளையும்  சுற்றசெய்யவும். இயக்குவது அழைப்பு தரத்தை குறைக்கும்.";
+
+/* No comment provided by engineer. */
+"SETTINGS_CLEAR_HISTORY" = "உரையாடல் வரலாற்றை அழிக்கவும்";
+
+/* No comment provided by engineer. */
+"SETTINGS_COPYRIGHT" = "பதிப்புரிமை Signal மெசஞ்சர்\n GPLv3 இன் கீழ் உரிமம் பெற்றது";
+
+/* No comment provided by engineer. */
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "கணக்கு நீக்குக";
+
+/* Label for 'delete data' button. */
+"SETTINGS_DELETE_DATA_BUTTON" = "எல்லா தரவையும் நீக்கு";
+
+/* Alert message before user confirms clearing history */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "எல்லா வரலாற்றையும் (செய்திகள், இணைப்புகள், அழைப்புகள் போன்றவை) நீக்க விரும்புகிறீர்களா? இந்த செயலை மாற்ற முடியாது.";
+
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "எல்லாவற்றையும் நீக்கு";
+
+/* No comment provided by engineer. */
+"SETTINGS_HELP_HEADER" = "உதவி";
+
+/* Section header */
+"SETTINGS_HISTORYLOG_TITLE" = "உரையாடல் வரலாற்றை அழிக்கவும்";
+
+/* No comment provided by engineer. */
+"SETTINGS_INFORMATION_HEADER" = "தகவல்";
+
+/* Settings table view cell label */
+"SETTINGS_INVITE_TITLE" = "உங்கள் நண்பர்களை அழைக்கவும்";
+
+/* content of tweet when inviting via twitter - please do not translate URL */
+"SETTINGS_INVITE_TWITTER_TEXT" = "@signalapp பயன்படுத்தி நீங்கள் என்னை அணுகலாம். இப்போது கிடைக்கும்: https://signal.org/download/";
+
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "செய்தி ஒலி";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கை";
+
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "இணைப்பு மாதிரிக்காட்சிகளை அனுப்பவும்";
+
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "முன்னோட்டங்கள் இம்குர், இன்ஸ்டாகிராம், Pinterest, ரெடிட் மற்றும் YouTube இணைப்புகளுக்கு துணைபுரிகின்றன.";
+
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "இணைப்பு மாதிரிக்காட்சிகள்";
+
+/* Title for settings activity */
+"SETTINGS_NAV_BAR_TITLE" = "அமைப்புகள்";
+
+/* table section footer */
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "உங்கள் தொலைபேசி பூட்டப்பட்டிருக்கும் போது அழைப்பு மற்றும் செய்தி அறிவிப்புகள் தோன்றும். இந்த அறிவிப்புகளில் காட்டப்பட்டுள்ளதை மட்டுப்படுத்த நீங்கள் விரும்பலாம்.";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "அறிவிப்பு உள்ளடக்கம்";
+
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "தொடர்பு Signal இல் இணைந்தது ";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "நிகழ்வுகள்";
+
+/* No comment provided by engineer. */
+"SETTINGS_NOTIFICATIONS" = "அறிவிப்புகள்";
+
+/* Footer for the 'PINs' section of the privacy settings. */
+"SETTINGS_PINS_FOOTER" = "உங்கள் பின் கூடுதல் பாதுகாப்பு அடுக்கைச் சேர்த்து உங்கள் கணக்கு காப்புப் பிரதி எடுக்கிறது. உங்கள் தொலைபேசி எண்ணை Signal லுடன் பதிவுசெய்யும்போது உங்களிடம் கேட்கப்படும். உங்கள் பின்னை மறந்துவிட்டால், உங்கள் கணக்கு 7 நாட்கள் பூட்டப்படும் .";
+
+/* Label for the 'pins' item of the privacy settings. */
+"SETTINGS_PINS_ITEM" = "உங்கள் பின்னை மாற்றவும்";
+
+/* Title for the 'PINs' section of the privacy settings. */
+"SETTINGS_PINS_TITLE" = "பின்";
+
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "அழைப்பாளரின் பெயர் & எண்ணைக் காட்டு";
+
+/* Settings table section footer. */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "IOS தொலைபேசி பயன்பாடு \"சமீபத்திய\" பட்டியலில் அழைப்புகளைக் காட்டு.";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "சமீபத்திய அழைப்புகளைக் காட்டு";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS அழைப்பு ஒருங்கிணைப்பு";
+
+/* Settings table view cell label */
+"SETTINGS_PRIVACY_TITLE" = "தனியுரிமை";
+
+/* Label for the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPT" = "ரசீதுகளைப் படியுங்கள்";
+
+/* An explanation of the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "செய்திகளைப் படிக்கும்போது பார்க்கவும் பகிரவும். இந்த அமைப்பு விருப்பமானது மற்றும் எல்லா உரையாடல்களுக்கும் பொருந்தும்.";
+
+/* Label for re-link button. */
+"SETTINGS_RELINK_BUTTON" = "மீண்டும் இணை";
+
+/* Label for re-registration button. */
+"SETTINGS_REREGISTER_BUTTON" = "மறு பதிவு";
+
+/* Label for the 'screen lock activity timeout' setting of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "திரை பூட்டு நேரம் முடிந்தது";
+
+/* Footer for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+
+/* Title for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "திரை பூட்டி";
+
+/* Label for the 'enable screen lock' switch of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "திரை பூட்டி";
+
+/* No comment provided by engineer. */
+"SETTINGS_SCREEN_SECURITY" = "திரை பாதுகாப்பை இயக்கு";
+
+/* No comment provided by engineer. */
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "செயலி பயன்பாடு மாற்றியில்  Signal மாதிரிக்காட்சிகள் தோன்றுவதைத் தடுக்கவும்.";
+
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS அழைப்பு ஒருங்கிணைப்பு உங்கள் பூட்டுத் திரையிலும் கணினியின் அழைப்பு வரலாற்றிலும் Signal அழைப்புகளைக் காட்டுகிறது. உங்கள் தொடர்பின் பெயர் மற்றும் எண்ணை நீங்கள் விருப்பமாகக் காட்டலாம். ICloud இயக்கப்பட்டிருந்தால், இந்த அழைப்பு வரலாறு ஆப்பிள் உடன் பகிரப்படும்.";
+
+/* Label for the notifications section of conversation settings view. */
+"SETTINGS_SECTION_NOTIFICATIONS" = "அறிவிப்புகள்";
+
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "ஒலிகள் ";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "அழைக்கிறது ";
+
+/* Section header */
+"SETTINGS_SECURITY_TITLE" = "திரை பாதுகாப்பு";
+
+/* No comment provided by engineer. */
+"SETTINGS_SUPPORT" = "ஆதரவு";
+
+/* Indicates that 'two factor auth' is disabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "முடக்கப்பட்டது";
+
+/* Indicates that 'two factor auth' is enabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "இயக்கப்பட்டது";
+
+/* Label for the 'two factor auth' item of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "பதிவு பூட்டு";
+
+/* Title for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "பதிவு பூட்டு";
+
+/* Label for the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS" = "தட்டச்சு குறிகாட்டிகள்";
+
+/* An explanation of the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "செய்திகள் தட்டச்சு செய்யும்போது பார்க்கவும் பகிரவும். இந்த அமைப்பு விருப்பமானது மற்றும் எல்லா உரையாடல்களுக்கும் பொருந்தும்.";
+
+/* Label for a link to more info about unidentified delivery. */
+"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "மேலும் அறிக";
+
+/* table section label */
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "சீல் செய்யப்பட்ட அனுப்புனர் ";
+
+/* switch label */
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "காட்சி குறிகாட்டிகள்";
+
+/* table section footer */
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "சீல் செய்யப்பட்ட அனுப்புநரைப் பயன்படுத்தி வழங்கப்பட்ட செய்திகளில் \"மேலும் தகவல்\" என்பதைத் தேர்ந்தெடுக்கும்போது நிலை ஐகானைக் காண்பி.";
+
+/* switch label */
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "யாரிடமிருந்தும் அனுமதி";
+
+/* table section footer */
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "தொடர்புகள் அல்லாதவர்களிடமிருந்தும், உங்கள் சுயவிவரத்தைப் பகிராத நபர்களிடமிருந்தும் உள்வரும் செய்திகளுக்கு சீல் அனுப்பியவரை இயக்கவும்.";
+
+/* No comment provided by engineer. */
+"SETTINGS_VERSION" = "பதிப்பு";
+
+/* action sheet item to open native mail app */
+"SHARE_ACTION_MAIL" = "அஞ்சல்";
+
+/* action sheet item to open native messages app */
+"SHARE_ACTION_MESSAGE" = "செய்தி";
+
+/* action sheet item */
+"SHARE_ACTION_TWEET" = "Twitter";
+
+/* alert body when sharing file failed because of untrusted/changed identity keys */
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "%@  உடன் உங்கள் பாதுகாப்பு எண் சமீபத்தில் மாற்றப்பட்டது. மீண்டும் அனுப்புவதற்கு முன்பு அதை முக்கிய பயன்பாட்டு செயலியில் சரிபார்க்க விரும்பலாம்.";
+
+/* Indicates that the share extension is still loading. */
+"SHARE_EXTENSION_LOADING" = "ஏற்றப்படுகிறது ...";
+
+/* Message indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "பதிவு செய்ய Signal பயன்பாடு தொடங்கவும்.";
+
+/* Title indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "பதிவு செய்யப்படவில்லை";
+
+/* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "புதுப்பிக்க அல்லது பதிவு செய்ய Signal பயன்பாடு  தொடங்கவும்.";
+
+/* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "தயாராக இல்லை";
+
+/* Alert title */
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "இணைப்பு அனுப்ப முடியவில்லை";
+
+/* Alert title */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "ஏற்றுகிறது ...";
+
+/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "இணைப்பு தயாரிக்க முடியவில்லை";
+
+/* Title for the 'share extension' view. */
+"SHARE_EXTENSION_VIEW_TITLE" = "Signal லுடன் பகிரவும்";
+
+/* Action sheet item */
+"SHOW_SAFETY_NUMBER_ACTION" = "பாதுகாப்பு எண்ணைக் காட்டு";
+
+/* notification action */
+"SHOW_THREAD_BUTTON_TITLE" = "உரையாடலைக் காட்டு";
+
+/* body sent to contacts when inviting to Install Signal */
+"SMS_INVITE_BODY" = "Signal லை நிறுவ நான் உங்களை அழைக்கிறேன்! இங்கே இணைப்பு:";
+
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "யாரும்";
+
+/* Preview text shown in notifications and conversation list for sticker messages. */
+"STICKER_MESSAGE_PREVIEW" = "ஸ்டிக்கர் செய்தி";
+
+/* Tooltip indicating that a sticker pack was installed. */
+"STICKER_PACK_INSTALLED_TOOLTIP" = "ஸ்டிக்கர் பேக் நிறுவப்பட்டுள்ளது";
+
+/* Label for a sticker that failed to download. */
+"STICKERS_FAILED_DOWNLOAD" = "ஓட்டி";
+
+/* Label for the 'install sticker pack' button. */
+"STICKERS_INSTALL_BUTTON" = "நிறுவு";
+
+/* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "சிக்னல் கலைஞர் தொடர்";
+
+/* Title for the 'available known stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "நீங்கள் பெற்ற ஸ்டிக்கர்கள்";
+
+/* Label indicating that one or more known sticker packs failed to load. */
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "சில ஸ்டிக்கர் பொதிகள் ஏற்றத் தவறிவிட்டன";
+
+/* Title for the 'installed stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "நிறுவப்பட்ட ஸ்டிக்கர்கள்";
+
+/* Label indicating that one or more known sticker packs is loading. */
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "ஏற்றுதல் ...";
+
+/* Label indicating that the user has no installed sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "ஸ்டிக்கர்கள் எதுவும் நிறுவப்படவில்லை";
+
+/* Label indicating that the user has no known sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "உள்வரும் செய்திகளின் ஸ்டிக்கர்கள் இங்கே தோன்றும்";
+
+/* Title for the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_TITLE" = "ஓட்டிகள்";
+
+/* Default title for sticker packs. */
+"STICKERS_PACK_DEFAULT_TITLE" = "ஸ்டிக்கர் பேக்";
+
+/* Title of the 'share sticker pack' view. */
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "ஸ்டிக்கர் பேக்கைப் பகிரவும்";
+
+/* The default title for the 'sticker pack' view. */
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "ஸ்டிக்கர் பேக்";
+
+/* Label indicating that the sticker pack failed to load. */
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "ஸ்டிக்கர் பேக் ஏற்ற முடியவில்லை";
+
+/* Label for the 'uninstall sticker pack' button. */
+"STICKERS_UNINSTALL_BUTTON" = "நீக்குதல்";
+
+/* Alert body after verifying privacy with {{other user's name}} */
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "உங்கள் பாதுகாப்பு எண்%@ உடன் பொருந்துகிறது . இந்த தொடர்பு  சரிபார்க்கப்பட்டதாக நீங்கள் குறிக்கலாம்.";
+
+/* No comment provided by engineer. */
+"SUCCESSFUL_VERIFICATION_TITLE" = "பாதுகாப்பு எண் பொருந்துகிறது !";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "பாதுகாப்பு எண்ணைச் சரிபார்க்கவும்";
+
+/* The number of members in a group. Embeds {{member count}} */
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu உறுப்பினர்கள்";
+
+/* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ மற்றும் %lu கூடுதல் குழுக்களின் உறுப்பினர்";
+
+/* Subtitle appearing at the top of the users 'note to self' conversation */
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+
+/* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ உறுப்பினர்";
+
+/* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@, %@ மற்றும் %@  இன் உறுப்பினர்";
+
+/* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ மற்றும் %@  இன் உறுப்பினர்";
+
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS" = "%@ நாட்கள்";
+
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@நாள் ";
+
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS" = "%@மணி நேரங்கள் ";
+
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@மணி நேரம் ";
+
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES" = "%@நிமிடங்கள் ";
+
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@நிமிடம்  ";
+
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS" = "%@விநாடிகள் ";
+
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@விநாடிகள் ";
+
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_DAY" = "%@நாள் ";
+
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_HOUR" = "%@மணி நேரம் ";
+
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@நிமிடம் ";
+
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_WEEK" = "%@வாரம் ";
+
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS" = "%@ வாரங்கள்";
+
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@வாரம்";
+
+/* Label for the cancel button in an alert or action sheet. */
+"TXT_CANCEL_TITLE" = "ரத்து";
+
+/* No comment provided by engineer. */
+"TXT_DELETE_TITLE" = "அழி";
+
+/* Pressing this button moves an archived thread from the archive back to the inbox */
+"UNARCHIVE_ACTION" = "காப்பகப்படுத்தாதே";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "உங்கள் தொடர்புகளில் பயனர் இல்லை. இந்த பயனரைத் தடுக்க விரும்புகிறீர்களா?";
+
+/* Displayed if for some reason we can't determine a contacts phone number *or* name */
+"UNKNOWN_CONTACT_NAME" = "தெரியாத தொடர்பு";
+
+/* Label for unknown countries. */
+"UNKNOWN_COUNTRY_NAME" = "தெரியாத நாடு";
+
+/* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "உங்கள் சாதனங்களில் ஒன்று புதிய Signal அம்சத்தைப் பயன்படுத்துவதால் இங்கு செயலாக்கவோ அல்லது காட்டவோ முடியாத செய்தியை அனுப்பியது.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ உங்களுக்கு ஒரு செய்தியை அனுப்பியது, இது புதிய Signal அம்சத்தைப் பயன்படுத்துவதால் செயலாக்கவோ அல்லது காட்டவோ முடியாது.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "புதிய Signal அம்சத்தைப் பயன்படுத்துவதால் செயலாக்கவோ அல்லது காட்டவோ முடியாத செய்தியை நீங்கள் பெற்றுள்ளீர்கள்.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Signal லை இப்போது புதுப்பிக்கவும்";
+
+/* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal லின் சமீபத்திய பதிப்பிற்கு புதுப்பிக்கப்பட்டது. உங்கள் சாதனத்தில் இந்த செய்தி வகையை இப்போது பெறலாம்.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "நீங்கள் Signal லின் புதுப்பித்த பதிப்பைப் பயன்படுத்துகிறீர்கள் என்று இந்த செய்தியை இப்போது மீண்டும் அனுப்ப %@ ஐக் கேட்கலாம்.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "நீங்கள் Signal லின் புதுப்பித்த பதிப்பைப் பயன்படுத்துகிறீர்கள் என்று இந்த செய்தியை இப்போது மீண்டும் அனுப்புமாறு அனுப்புநரிடம் கேட்கலாம்.";
+
+/* Indicates an unknown or unrecognizable value. */
+"UNKNOWN_VALUE" = "தெரியாத";
+
+/* button title for unlinking a device */
+"UNLINK_ACTION" = "இணைப்புநீக்கு";
+
+/* Alert message to confirm unlinking a device */
+"UNLINK_CONFIRMATION_ALERT_BODY" = "இந்த சாதனம் இணைக்கப்படாவிட்டால் செய்திகளை அனுப்பவோ பெறவோ முடியாது.";
+
+/* Alert title for confirming device deletion */
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%@\" இன் இணைப்பை நீக்கவா?";
+
+/* Label warning the user that they have been unlinked from their primary device. */
+"UNLINKED_WARNING" = "சாதனம் இனி இணைக்கப்படவில்லை. செய்தியைத் தொடர உங்கள் தொலைபேசியுடன் Signal லை மீண்டும் இணைக்கவும்.";
+
+/* Alert title when unlinking device fails */
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal லால் உங்கள் சாதனத்தை இணைக்க முடியவில்லை.";
+
+/* Label text in device manager for a device with no name */
+"UNNAMED_DEVICE" = "பெயரிடப்படாத சாதனம்";
+
+/* No comment provided by engineer. */
+"UNREGISTER_SIGNAL_FAIL" = "Signal லில் இருந்து பதிவுசெய்வதில் தோல்வி.";
+
+/* No comment provided by engineer. */
+"UNSUPPORTED_ATTACHMENT" = "ஆதரிக்கப்படாத இணைப்பு வகை பெறப்பட்டது.";
+
+/* No comment provided by engineer. */
+"UNSUPPORTED_FEATURE_ERROR" = "உங்கள் சாதனம் இந்த அம்சத்தை ஆதரிக்கவில்லை.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "குழு உறுப்பினர்களை நீக்க முடியாது. அவர்கள் வெளியேற வேண்டியிருக்கும், அல்லது இந்த உறுப்பினர் இல்லாமல் நீங்கள் ஒரு புதிய குழுவை உருவாக்கலாம்.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "ஒத்துழைக்கவில்லை";
+
+/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "உங்கள் பின்னை உருவாக்கவும்";
+
+/* Button to open a help document explaining more about why a PIN is required */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "பின்கள் பற்றி மேலும் அறிக";
+
+/* Body text for PINs migration splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "உங்கள் பதிவு பூட்டு இப்போது அதிகம் செய்கிறது. சாதனங்களை மாற்றும்போது பின்களுடன் உங்கள் தொடர்புகளை உங்களுடன் எடுத்துச் செல்லலாம்.";
+
+/* Header for PINs migration splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "பதிவு பூட்டு = பின்";
+
+/* Body text for PINs splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "உங்கள் கணக்கு இன்னும் கூடுதலான பாதுகாப்பைச் சேர்த்து, தொலைபேசிகளை மாற்றும்போது உங்கள் தொடர்புகளை உங்களுடன் எடுத்துச் செல்லுங்கள்.";
+
+/* Header for PINs splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "பின்'களை  அறிமுகப்படுத்துகிறது";
+
+/* Button to open a help document explaining more about why a PIN is required */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "நான் பின்னை உருவாக்க வேண்டுமா?";
+
+/* Body text for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "நீங்கள் ஸ்டிக்கர்களைப் பயன்படுத்தும்போது ஏன் வார்த்தைகளைப் பயன்படுத்த வேண்டும்? உங்கள் விசைப்பலகையில் இந்த ஐகானைத் தட்டவும்:";
+
+/* Header for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "ஸ்டிக்கர்களை அறிமுகப்படுத்துகிறது";
+
+/* Message for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal லுக்கு விரைவில் அல்லது பிறகு iOS 10 தேவைப்படும். அமைப்புகள் செயலியில் மேம்படுத்தவும் >> பொது >> மென்பொருள் புதுப்பிப்பு.";
+
+/* Title for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_TITLE" = "IOS ஐ மேம்படுத்தவும்";
+
+/* An explanation of how usernames work on the username view. */
+"USERNAME_DESCRIPTION" = "Signal லில் உள்ள பயனர்பெயர்கள் விருப்பமானது. பயனர்பெயரை உருவாக்க நீங்கள் தேர்வுசெய்தால், மற்ற Signal பயனர்கள் இந்த பயனர்பெயர் மூலம் உங்களைக் கண்டுபிடித்து, உங்கள் தொலைபேசி எண்ணைத் தெரியாமல் உங்களைத் தொடர்பு கொள்ள முடியும்.";
+
+/* Label for the username field in the username view. */
+"USERNAME_FIELD" = "பயனர்பெயர்";
+
+/* An error indicating that the supplied username contains disallowed characters. */
+"USERNAME_INVALID_CHARACTERS_ERROR" = "பயனர்பெயர்களில் a-z, 0-9 மற்றும் _ மட்டுமே இருக்கலாம்";
+
+/* A message indicating that username lookup failed. */
+"USERNAME_LOOKUP_ERROR" = "பயனர்பெயரைப் பார்க்கும்போது பிழை ஏற்பட்டது. பின்னர் மீண்டும் முயற்சிக்கவும்";
+
+/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
+"USERNAME_NOT_FOUND_FORMAT" = "%@ ஒரு Signal பயனர் அல்ல. முழுமையான பயனர்பெயரை உள்ளிட்டுள்ளீர்கள் என்பதை உறுதிப்படுத்தவும்.";
+
+/* A message indicating that the given username was not registered with signal. */
+"USERNAME_NOT_FOUND_TITLE" = "பயனர் கிடைக்கவில்லை";
+
+/* The placeholder for the username text entry in the username view. */
+"USERNAME_PLACEHOLDER" = "பயனர்பெயரை உள்ளிடவும்";
+
+/* A prefix appeneded to all usernames when displayed */
+"USERNAME_PREFIX" = "@";
+
+/* An error indicating that the supplied username cannot start with a number. */
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "பயனர்பெயர்கள் எண்ணுடன் தொடங்கக்கூடாது.";
+
+/* The title for the username view. */
+"USERNAME_TITLE" = "பயனர்பெயர்";
+
+/* An error indicating that the supplied username is too short. */
+"USERNAME_TOO_SHORT_ERROR" = "பயனர்பெயர்களில் குறைந்தது 4 எழுத்துக்கள் இருக்க வேண்டும்.";
+
+/* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ எடுக்கப்பட்டது.";
+
+/* Error moessage shown when a username update fails. */
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "பயனர்பெயர் புதுப்பிப்பு தோல்வியுற்றது.";
+
+/* error label near a field */
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "சாதனத்தின் பெயர் காலியாக இருக்க முடியாது";
+
+/* error label near a field */
+"VALIDATION_ERROR_TOO_LONG" = "சாதனத்தின் பெயர் மிக நீளமாக உள்ளது ";
+
+/* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "சரிபார்க்கப்படவில்லை என %@ஐ  குறித்தீர்கள்.";
+
+/* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "மற்றொரு சாதனத்தில்  %@ஐ சரிபார்க்கப்படவில்லை எனக் குறித்தீர்கள்.";
+
+/* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "சரிபார்க்கப்பட்டது  %@ எனக் குறித்தீர்கள்.";
+
+/* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "மற்றொரு சாதனத்தில் சரிபார்க்கப்பட்டது  %@ எனக் குறித்தீர்கள்.";
+
+/* Generic message indicating that verification state changed for a given user. */
+"VERIFICATION_STATE_CHANGE_GENERIC" = "சரிபார்ப்பு நிலை மாற்றப்பட்டது.";
+
+/* Label for button or row which allows users to verify the safety number of another user. */
+"VERIFY_PRIVACY" = "பாதுகாப்பு எண்ணைக் காண்க";
+
+/* Label for button or row which allows users to verify the safety numbers of multiple users. */
+"VERIFY_PRIVACY_MULTIPLE" = "பாதுகாப்பு எண்களை மதிப்பாய்வு செய்யவும்";
+
+/* Indicates how to cancel a voice message. */
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "ரத்து செய்ய ஸ்லைடு செய்யவும் ";
+
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "குரல் செய்தி";
+
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "குரல் செய்தியைப் பதிவுசெய்ய தட்டவும்.";
+
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "குரல் செய்தி";
+
+/* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop பில் முழுமையான அமைப்பு.";
+
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "காணாமல் போன செய்திகளை முடக்கியுள்ளீர்கள்.";
+
+/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "காணாமல் போன செய்தி நேரத்தை %@ ஆக அமைத்துள்ளீர்கள்.";

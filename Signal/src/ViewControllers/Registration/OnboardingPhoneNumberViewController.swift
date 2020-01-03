@@ -26,12 +26,13 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     private var isPhoneNumberInvalid = false
 
     override public func loadView() {
-        super.loadView()
+        view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
 
         populateDefaults()
 
         view.backgroundColor = Theme.backgroundColor
-        view.layoutMargins = .zero
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_PHONE_NUMBER_TITLE", comment: "Title of the 'onboarding phone number' view."))
         titleLabel.accessibilityIdentifier = "onboarding.phoneNumber." + "titleLabel"
@@ -40,7 +41,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
         let rowHeight: CGFloat = 40
 
-        countryNameLabel.textColor = Theme.primaryColor
+        countryNameLabel.textColor = Theme.primaryTextColor
         countryNameLabel.font = UIFont.ows_dynamicTypeBodyClamped
         countryNameLabel.setContentHuggingHorizontalLow()
         countryNameLabel.setCompressionResistanceHorizontalLow()
@@ -68,7 +69,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         _ = countryRow.addBottomStroke()
         countryRow.accessibilityIdentifier = "onboarding.phoneNumber." + "countryRow"
 
-        callingCodeLabel.textColor = Theme.primaryColor
+        callingCodeLabel.textColor = Theme.primaryTextColor
         callingCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped
         callingCodeLabel.setContentHuggingHorizontalHigh()
         callingCodeLabel.setCompressionResistanceHorizontalHigh()
@@ -81,14 +82,14 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         phoneNumberTextField.textAlignment = .left
         phoneNumberTextField.delegate = self
         phoneNumberTextField.keyboardType = .numberPad
-        phoneNumberTextField.textColor = Theme.primaryColor
+        phoneNumberTextField.textColor = Theme.primaryTextColor
         phoneNumberTextField.font = UIFont.ows_dynamicTypeBodyClamped
         phoneNumberTextField.setContentHuggingHorizontalLow()
         phoneNumberTextField.setCompressionResistanceHorizontalLow()
         phoneNumberTextField.accessibilityIdentifier = "onboarding.phoneNumber." + "phoneNumberTextField"
 
         phoneStrokeNormal = phoneNumberTextField.addBottomStroke()
-        phoneStrokeError = phoneNumberTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
+        phoneStrokeError = phoneNumberTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
 
         let phoneNumberRow = UIStackView(arrangedSubviews: [
             callingCodeLabel,
@@ -102,7 +103,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
         validationWarningLabel.text = NSLocalizedString("ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
                                                         comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view.")
-        validationWarningLabel.textColor = .ows_destructiveRed
+        validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         validationWarningLabel.autoSetDimension(.height, toSize: validationWarningLabel.font.lineHeight)
         validationWarningLabel.accessibilityIdentifier = "onboarding.phoneNumber." + "validationWarningLabel"
@@ -112,13 +113,16 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         validationWarningLabel.autoPinHeightToSuperview()
         validationWarningLabel.autoPinEdge(toSuperviewEdge: .trailing)
 
-        let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
-                                                                comment: "Label for the 'next' button."),
+        let nextButton = self.primaryButton(title: CommonStrings.nextButton,
                                            selector: #selector(nextPressed))
         nextButton.accessibilityIdentifier = "onboarding.phoneNumber." + "nextButton"
         self.nextButton = nextButton
+        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
+
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
+
+        let compressableBottomMargin = UIView.vStretchingSpacer(minHeight: 16, maxHeight: primaryLayoutMargins.bottom)
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -129,15 +133,16 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             UIView.spacer(withHeight: 8),
             validationWarningRow,
             bottomSpacer,
-            nextButton
+            primaryButtonView,
+            compressableBottomMargin
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        primaryView.addSubview(stackView)
+
+        // Because of the keyboard, vertical spacing can get pretty cramped,
+        // so we have custom spacer logic.
+        stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
 
         // Ensure whitespace is balanced, so inputs are vertically centered.
@@ -161,7 +166,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
         phoneNumberTextField.becomeFirstResponder()
 
-        if tsAccountManager.isReregistering() {
+        if tsAccountManager.isReregistering {
             // If re-registering, pre-populate the country (country code, calling code, country name)
             // and phone number state.
             guard let phoneNumberE164 = tsAccountManager.reregistrationPhoneNumber() else {
@@ -309,13 +314,13 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     // MARK: - Country Picker
 
     private func showCountryPicker() {
-        guard !tsAccountManager.isReregistering() else {
+        guard !tsAccountManager.isReregistering else {
             return
         }
 
         let countryCodeController = CountryCodeViewController()
         countryCodeController.countryCodeDelegate = self
-        countryCodeController.interfaceOrientationMask = .portrait
+        countryCodeController.interfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait
         let navigationController = OWSNavigationController(rootViewController: countryCodeController)
         self.present(navigationController, animated: true, completion: nil)
     }
@@ -329,7 +334,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                 isPhoneNumberInvalid = true
                 updateValidationWarnings()
 
-                OWSAlerts.showAlert(title:
+                OWSActionSheets.showActionSheet(title:
                     NSLocalizedString("REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE",
                                       comment: "Title of alert indicating that users needs to enter a phone number to register."),
                     message:
@@ -346,7 +351,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                 isPhoneNumberInvalid = true
                 updateValidationWarnings()
 
-                OWSAlerts.showAlert(title:
+                OWSActionSheets.showActionSheet(title:
                     NSLocalizedString("REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
                                       comment: "Title of alert indicating that users needs to enter a valid phone number to register."),
                     message:
@@ -357,20 +362,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         let e164PhoneNumber = localNumber.toE164()
 
         onboardingController.update(phoneNumber: OnboardingPhoneNumber(e164: e164PhoneNumber, userInput: phoneNumberText))
-
-        if UIDevice.current.isIPad {
-            OWSAlerts.showConfirmationAlert(title: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_TITLE",
-                                                                      comment: "alert title when registering an iPad"),
-                                            message: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BODY",
-                                                                        comment: "alert body when registering an iPad"),
-                                            proceedTitle: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BUTTON",
-                                                                             comment: "button text to proceed with registration when on an iPad"),
-                                            proceedAction: { (_) in
-                                                self.onboardingController.requestVerification(fromViewController: self, isSMS: true)
-            })
-        } else {
-            onboardingController.requestVerification(fromViewController: self, isSMS: true)
-        }
+        onboardingController.requestVerification(fromViewController: self, isSMS: true)
     }
 }
 

@@ -3,8 +3,8 @@
 //
 
 #import "AppDelegate.h"
+#import "ConversationListViewController.h"
 #import "DebugLogger.h"
-#import "HomeViewController.h"
 #import "MainAppContext.h"
 #import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
@@ -13,7 +13,6 @@
 #import "Pastelog.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
-#import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
 #import "YDBLegacyMigration.h"
 #import <Intents/Intents.h>
@@ -32,15 +31,13 @@
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
-#import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
-#import <SignalServiceKit/OWSFailedMessagesJob.h>
-#import <SignalServiceKit/OWSIncompleteCallsJob.h>
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StickerInfo.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
@@ -56,9 +53,26 @@ static NSString *const kURLHostAddStickersPrefix = @"addstickers";
 
 static NSTimeInterval launchStartedAt;
 
+typedef NS_ENUM(NSUInteger, LaunchFailure) {
+    LaunchFailure_None,
+    LaunchFailure_CouldNotLoadDatabase,
+    LaunchFailure_UnknownDatabaseVersion,
+};
+
+NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
+{
+    switch (launchFailure) {
+        case LaunchFailure_None:
+            return @"LaunchFailure_None";
+        case LaunchFailure_CouldNotLoadDatabase:
+            return @"LaunchFailure_CouldNotLoadDatabase";
+        case LaunchFailure_UnknownDatabaseVersion:
+            return @"LaunchFailure_UnknownDatabaseVersion";
+    }
+}
+
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
-@property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
 
@@ -149,17 +163,12 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.userNotificationActionHandler;
 }
 
-- (OWSLegacyNotificationActionHandler *)legacyNotificationActionHandler
-{
-    return AppEnvironment.shared.legacyNotificationActionHandler;
-}
-
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
 }
 
-- (id<OWSSyncManagerProtocol>)syncManager
+- (id<SyncManagerProtocol>)syncManager
 {
     OWSAssertDebug(SSKEnvironment.shared.syncManager);
 
@@ -169,6 +178,11 @@ static NSTimeInterval launchStartedAt;
 - (StorageCoordinator *)storageCoordinator
 {
     return SSKEnvironment.shared.storageCoordinator;
+}
+
+- (LaunchJobs *)launchJobs
+{
+    return Environment.shared.launchJobs;
 }
 
 #pragma mark -
@@ -228,17 +242,21 @@ static NSTimeInterval launchStartedAt;
 
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
     // but before we access YapDatabase, files on disk, or NSUserDefaults
-    NSError *error;
-    if (![YDBLegacyMigration ensureIsYDBReadyForAppExtensions:&error]) {
-        if (error != nil) {
-            [self showLaunchFailureUI:error];
-        }
+    NSError *_Nullable launchError = nil;
+    LaunchFailure launchFailure = LaunchFailure_None;
 
-        // If this method has failed; do nothing.
-        //
-        // ensureIsReadyForAppExtensions will show a failure mode UI that
-        // lets users report this error.
+    BOOL isYdbNotReady = ![YDBLegacyMigration ensureIsYDBReadyForAppExtensions:&launchError];
+    if (isYdbNotReady || launchError != nil) {
+        launchFailure = LaunchFailure_CouldNotLoadDatabase;
+    } else if (StorageCoordinator.hasInvalidDatabaseVersion) {
+        // Prevent:
+        // * Users who have used GRDB revert to using YDB.
+        // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
+        launchFailure = LaunchFailure_UnknownDatabaseVersion;
+    }
+    if (launchFailure != LaunchFailure_None) {
         OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");
+        [self showUIForLaunchFailure:launchFailure];
 
         return YES;
     }
@@ -279,7 +297,7 @@ static NSTimeInterval launchStartedAt;
 
     [UIUtil setupSignalAppearence];
 
-    UIWindow *mainWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    UIWindow *mainWindow = [OWSWindow new];
     self.window = mainWindow;
     CurrentAppContext().mainWindow = mainWindow;
     // Show LoadingViewController until the async database view registrations are complete.
@@ -320,6 +338,8 @@ static NSTimeInterval launchStartedAt;
                                                object:nil];
 
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
+
+    OWSLogInfo(@"launchOptions: %@.", launchOptions);
 
     [OWSAnalytics appLaunchDidBegin];
 
@@ -372,8 +392,10 @@ static NSTimeInterval launchStartedAt;
     exit(0);
 }
 
-- (void)showLaunchFailureUI:(NSError *)error
+- (void)showUIForLaunchFailure:(LaunchFailure)launchFailure
 {
+    OWSLogInfo(@"launchFailure: %@", NSStringForLaunchFailure(launchFailure));
+
     // Disable normal functioning of app.
     self.didAppLaunchFail = YES;
 
@@ -381,30 +403,47 @@ static NSTimeInterval launchStartedAt;
     [AppVersion sharedInstance];
     [self startupLogging];
 
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window = [OWSWindow new];
 
     // Show the launch screen
-    self.window.rootViewController =
-        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
+    UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Launch Screen"
+                                                                  bundle:nil] instantiateInitialViewController];
+    self.window.rootViewController = viewController;
 
     [self.window makeKeyAndVisible];
 
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_TITLE",
-                                                        @"Title for the 'app launch failed' alert.")
-                                            message:NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_MESSAGE",
-                                                        @"Message for the 'app launch failed' alert.")
-                                     preferredStyle:UIAlertControllerStyleAlert];
+    NSString *alertTitle;
+    NSString *alertMessage
+        = NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_MESSAGE", @"Message for the 'app launch failed' alert.");
+    switch (launchFailure) {
+        case LaunchFailure_CouldNotLoadDatabase:
+            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
+                @"Error indicating that the app could not launch because the database could not be loaded.");
+            break;
+        case LaunchFailure_UnknownDatabaseVersion:
+            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE",
+                @"Error indicating that the app could not launch without reverting unknown database migrations.");
+            alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE",
+                @"Error indicating that the app could not launch without reverting unknown database migrations.");
+            break;
+        default:
+            OWSFailDebug(@"Unknown launch failure.");
+            alertTitle
+                = NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_TITLE", @"Title for the 'app launch failed' alert.");
+            break;
+    }
 
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
-                                              style:UIAlertActionStyleDefault
-                                            handler:^(UIAlertAction *_Nonnull action) {
-                                                [Pastelog submitLogsWithCompletion:^{
-                                                    OWSFail(@"exiting after sharing debug logs.");
-                                                }];
-                                            }]];
-    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentAlert:alert];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:alertTitle message:alertMessage];
+
+    [actionSheet
+        addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
+                                                     style:ActionSheetActionStyleDefault
+                                                   handler:^(ActionSheetAction *_Nonnull action) {
+                                                       [Pastelog submitLogsWithCompletion:^{
+                                                           OWSFail(@"exiting after sharing debug logs.");
+                                                       }];
+                                                   }]];
+    [viewController presentActionSheet:actionSheet];
 }
 
 - (void)startupLogging
@@ -472,57 +511,38 @@ static NSTimeInterval launchStartedAt;
 #endif
 }
 
-- (void)application:(UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
     OWSAssertIsOnMainThread();
 
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        return;
-    }
-
-    OWSLogInfo(@"registered legacy notification settings");
-    [self.notificationPresenter didRegisterLegacyNotificationSettings];
+    return [self tryToOpenUrl:url];
 }
 
-- (BOOL)application:(UIApplication *)application
-              openURL:(NSURL *)url
-    sourceApplication:(NSString *)sourceApplication
-           annotation:(id)annotation
+- (BOOL)tryToOpenUrl:(NSURL *)url
 {
-    OWSAssertIsOnMainThread();
+    OWSAssertDebug(!self.didAppLaunchFail);
 
     if (self.didAppLaunchFail) {
         OWSFailDebug(@"app launch failed");
         return NO;
     }
 
-    if (!AppReadiness.isAppReady) {
-        OWSLogWarn(@"Ignoring openURL: app not ready.");
-        // We don't need to use [AppReadiness runNowOrWhenAppDidBecomeReady:];
-        // the only URLs we handle in Signal iOS at the moment are used
-        // for resuming the verification step of the registration flow.
-        return NO;
-    }
-
-    if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
+    if ([StickerPackInfo isStickerPackShareUrl:url]) {
+        StickerPackInfo *_Nullable stickerPackInfo = [StickerPackInfo parseStickerPackShareUrl:url];
+        if (stickerPackInfo == nil) {
+            OWSFailDebug(@"Could not parse sticker pack share URL: %@", url);
+            return NO;
+        }
+        return [self tryToShowStickerPackView:stickerPackInfo];
+    } else if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
-            id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
-            if ([signupController isKindOfClass:[OWSNavigationController class]]) {
-                OWSNavigationController *navController = (OWSNavigationController *)signupController;
-                UIViewController *controller = [navController.childViewControllers lastObject];
-                if ([controller isKindOfClass:[OnboardingVerificationViewController class]]) {
-                    OnboardingVerificationViewController *verificationView
-                        = (OnboardingVerificationViewController *)controller;
-                    NSString *verificationCode           = [url.path substringFromIndex:1];
-                    [verificationView setVerificationCodeAndTryToVerify:verificationCode];
-                    return YES;
-                } else {
-                    OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead",
-                        NSStringFromClass(controller.class));
-                }
+            if (!AppReadiness.isAppReady) {
+                OWSFailDebug(@"Ignoring URL; app is not ready.");
+                return NO;
             }
+            return [SignalApp.sharedApp receivedVerificationCode:[url.path substringFromIndex:1]];
         } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
             if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
                 return NO;
@@ -532,27 +552,15 @@ static NSTimeInterval launchStartedAt;
                 OWSFailDebug(@"Invalid URL: %@", url);
                 return NO;
             }
-            StickerPackViewController *packView =
-                [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-            UIViewController *rootViewController = self.window.rootViewController;
-            OWSAssertDebug([rootViewController isKindOfClass:[OWSNavigationController class]]);
-            if (rootViewController.presentedViewController) {
-                [rootViewController dismissViewControllerAnimated:NO
-                                                       completion:^{
-                                                           [rootViewController presentViewController:packView
-                                                                                            animated:NO
-                                                                                          completion:nil];
-                                                       }];
-            } else {
-                [rootViewController presentViewController:packView animated:NO completion:nil];
-            }
-            return YES;
+            return [self tryToShowStickerPackView:stickerPackInfo];
         } else {
-            OWSFailDebug(@"Application opened with an unknown URL action: %@", url.host);
+            OWSLogVerbose(@"Invalid URL: %@", url);
+            OWSFailDebug(@"Unknown URL host: %@", url.host);
         }
     } else {
-        OWSFailDebug(@"Application opened with an unknown URL scheme: %@", url.scheme);
+        OWSFailDebug(@"Unknown URL scheme: %@", url.scheme);
     }
+
     return NO;
 }
 
@@ -576,6 +584,36 @@ static NSTimeInterval launchStartedAt;
     return [StickerPackInfo parsePackIdHex:packIdHex packKeyHex:packKeyHex];
 }
 
+- (BOOL)tryToShowStickerPackView:(StickerPackInfo *)stickerPackInfo
+{
+    OWSAssertDebug(!self.didAppLaunchFail);
+
+    if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
+        OWSFailDebug(@"Ignoring sticker pack URL; stickers not enabled.");
+        return NO;
+    }
+
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (!self.tsAccountManager.isRegistered) {
+            OWSFailDebug(@"Ignoring sticker pack URL; not registered.");
+            return;
+        }
+
+        StickerPackViewController *packView =
+            [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+        UIViewController *rootViewController = self.window.rootViewController;
+        if (rootViewController.presentedViewController) {
+            [rootViewController dismissViewControllerAnimated:NO
+                                                   completion:^{
+                                                       [packView presentFrom:rootViewController animated:NO];
+                                                   }];
+        } else {
+            [packView presentFrom:rootViewController animated:NO];
+        }
+    }];
+    return YES;
+}
+
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     OWSAssertIsOnMainThread();
 
@@ -589,7 +627,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    [self ensureRootViewController];
+    [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self handleActivation];
@@ -649,13 +687,6 @@ static NSTimeInterval launchStartedAt;
 
                 [self enableBackgroundRefreshIfNecessary];
 
-                // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
-                // sent before the app exited should be marked as failures.
-                [[OWSFailedMessagesJob new] run];
-                // Mark all "incomplete" calls as missed, e.g. any incoming or outgoing calls that were not
-                // connected, failed or hung up before the app existed should be marked as missed.
-                [[OWSIncompleteCallsJob new] run];
-                [[OWSFailedAttachmentDownloadsJob new] run];
             });
         } else {
             OWSLogInfo(@"running post launch block for unregistered user.");
@@ -664,11 +695,6 @@ static NSTimeInterval launchStartedAt;
             [AppEnvironment.shared.notificationPresenter clearAllNotifications];
 
             [self.socketManager requestSocketOpen];
-
-            UITapGestureRecognizer *gesture =
-                [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class] action:@selector(submitLogs)];
-            gesture.numberOfTapsRequired = 8;
-            [self.window addGestureRecognizer:gesture];
         }
     }); // end dispatchOnce for first time we become active
 
@@ -708,9 +734,9 @@ static NSTimeInterval launchStartedAt;
                 }];
 
                 [frontmostViewController
-                    presentViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]
-                                 animated:YES
-                               completion:nil];
+                    presentFullScreenViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]
+                                           animated:YES
+                                         completion:nil];
             } else if ([OWS2FAManager sharedManager].isDueForReminder) {
                 UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
                 OWSAssertDebug(frontmostViewController);
@@ -720,6 +746,7 @@ static NSTimeInterval launchStartedAt;
                     reminderVC = [OWSPinReminderViewController new];
                 } else {
                     reminderVC = [OWS2FAReminderViewController wrappedInNavController];
+                    reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
                 }
 
                 if ([frontmostViewController isKindOfClass:[reminderVC class]]) {
@@ -774,16 +801,15 @@ static NSTimeInterval launchStartedAt;
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (![self.tsAccountManager isRegisteredAndReady]) {
-            UIAlertController *controller =
-                [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
-                                                    message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)
-                                             preferredStyle:UIAlertControllerStyleAlert];
+            ActionSheetController *controller = [[ActionSheetController alloc]
+                initWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
+                      message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)];
 
-            [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                           style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction *_Nonnull action){
+            [controller addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"OK", nil)
+                                                                     style:ActionSheetActionStyleDefault
+                                                                   handler:^(ActionSheetAction *_Nonnull action) {
 
-                                                         }]];
+                                                                   }]];
             UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
             [fromViewController presentViewController:controller
                                              animated:YES
@@ -793,7 +819,7 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [SignalApp.sharedApp.homeViewController showNewConversationView];
+        [SignalApp.sharedApp showNewConversationView];
 
         completionHandler(YES);
     }];
@@ -849,6 +875,11 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
+            if (!SSKFeatureFlags.calling) {
+                OWSLogInfo(@"Ignoring unsupported activity.");
+                return;
+            }
+
             SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
             if (!address.isValid) {
                 OWSLogWarn(@"ignoring attempt to initiate video call to unknown user.");
@@ -863,8 +894,8 @@ static NSTimeInterval launchStartedAt;
             // * It can be received if the user taps the "video" button for a contact in the
             //   contacts app.  If so, the correct response is to try to initiate a new call
             //   to that user - unless there already is another call in progress.
-            if (AppEnvironment.shared.callService.call != nil) {
-                if ([address isEqualToAddress:AppEnvironment.shared.callService.call.remoteAddress]) {
+            if (AppEnvironment.shared.callService.currentCall != nil) {
+                if ([address isEqualToAddress:AppEnvironment.shared.callService.currentCall.remoteAddress]) {
                     OWSLogWarn(@"trying to upgrade ongoing call to video.");
                     [AppEnvironment.shared.callService handleCallKitStartVideo];
                     return;
@@ -908,13 +939,18 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
+            if (!SSKFeatureFlags.calling) {
+                OWSLogInfo(@"Ignoring unsupported activity.");
+                return;
+            }
+
             SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
             if (!address.isValid) {
                 OWSLogWarn(@"ignoring attempt to initiate audio call to unknown user.");
                 return;
             }
 
-            if (AppEnvironment.shared.callService.call != nil) {
+            if (AppEnvironment.shared.callService.currentCall != nil) {
                 OWSLogWarn(@"ignoring INStartAudioCallIntent due to ongoing WebRTC call.");
                 return;
             }
@@ -957,13 +993,18 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
+            if (!SSKFeatureFlags.calling) {
+                OWSLogInfo(@"Ignoring unsupported activity.");
+                return;
+            }
+
             SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
             if (!address.isValid) {
                 OWSLogWarn(@"ignoring attempt to initiate call to unknown user.");
                 return;
             }
 
-            if (AppEnvironment.shared.callService.call != nil) {
+            if (AppEnvironment.shared.callService.currentCall != nil) {
                 OWSLogWarn(@"ignoring INStartCallIntent due to ongoing WebRTC call.");
                 return;
             }
@@ -973,6 +1014,12 @@ static NSTimeInterval launchStartedAt;
             [outboundCallInitiator initiateCallWithAddress:address];
         }];
         return YES;
+    } else if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        if (userActivity.webpageURL == nil) {
+            OWSFailDebug(@"Missing webpageURL.");
+            return NO;
+        }
+        return [self tryToOpenUrl:userActivity.webpageURL];
     } else {
         OWSLogWarn(@"userActivity: %@, but not yet supported.", userActivity.activityType);
     }
@@ -1028,15 +1075,21 @@ static NSTimeInterval launchStartedAt;
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
 {
+    if (self.didAppLaunchFail) {
+        return UIInterfaceOrientationMaskPortrait;
+    }
+
     if (self.hasCall) {
         OWSLogInfo(@"has call");
-        // The call-banner window is only suitable for portrait display
-        return UIInterfaceOrientationMaskPortrait;
+        // The call-banner window is only suitable for portrait display on iPhone
+        if (!UIDevice.currentDevice.isIPad) {
+            return UIInterfaceOrientationMaskPortrait;
+        }
     }
 
     UIViewController *_Nullable rootViewController = self.window.rootViewController;
     if (!rootViewController) {
-        return UIInterfaceOrientationMaskAllButUpsideDown;
+        return UIDevice.currentDevice.defaultSupportedOrienations;
     }
     return rootViewController.supportedInterfaceOrientations;
 }
@@ -1084,99 +1137,6 @@ static NSTimeInterval launchStartedAt;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             completionHandler(UIBackgroundFetchResultNewData);
         });
-    }];
-}
-
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        return;
-    }
-
-    OWSLogInfo(@"%@", notification);
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
-            OWSLogInfo(@"Ignoring action; app not ready.");
-            return;
-        }
-
-        [self.legacyNotificationActionHandler
-            handleNotificationResponseWithActionIdentifier:OWSLegacyNotificationActionHandler.kDefaultActionIdentifier
-                                              notification:notification
-                                              responseInfo:@{}
-                                         completionHandler:^{
-                                         }];
-    }];
-}
-
-- (void)application:(UIApplication *)application
-    handleActionWithIdentifier:(NSString *)identifier
-          forLocalNotification:(UILocalNotification *)notification
-             completionHandler:(void (^)())completionHandler
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        completionHandler();
-        return;
-    }
-
-    // The docs for handleActionWithIdentifier:... state:
-    // "You must call [completionHandler] at the end of your method.".
-    // Nonetheless, it is presumably safe to call the completion handler
-    // later, after this method returns.
-    //
-    // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
-            OWSLogInfo(@"Ignoring action; app not ready.");
-            completionHandler();
-            return;
-        }
-
-        [self.legacyNotificationActionHandler handleNotificationResponseWithActionIdentifier:identifier
-                                                                                notification:notification
-                                                                                responseInfo:@{}
-                                                                           completionHandler:completionHandler];
-    }];
-}
-
-- (void)application:(UIApplication *)application
-    handleActionWithIdentifier:(NSString *)identifier
-          forLocalNotification:(UILocalNotification *)notification
-              withResponseInfo:(NSDictionary *)responseInfo
-             completionHandler:(void (^)())completionHandler
-{
-    OWSLogInfo(@"handling action with identifier: %@", identifier);
-
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        completionHandler();
-        return;
-    }
-
-    // The docs for handleActionWithIdentifier:... state:
-    // "You must call [completionHandler] at the end of your method.".
-    // Nonetheless, it is presumably safe to call the completion handler
-    // later, after this method returns.
-    //
-    // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
-            OWSLogInfo(@"Ignoring action; app not ready.");
-            completionHandler();
-            return;
-        }
-
-        [self.legacyNotificationActionHandler handleNotificationResponseWithActionIdentifier:identifier
-                                                                                notification:notification
-                                                                                responseInfo:responseInfo
-                                                                           completionHandler:completionHandler];
     }];
 }
 
@@ -1230,11 +1190,20 @@ static NSTimeInterval launchStartedAt;
     if (!self.areVersionMigrationsComplete) {
         return;
     }
-    if (![OWSStorage isStorageReady]) {
+    if (![self.storageCoordinator isStorageReady]) {
         return;
     }
     if ([AppReadiness isAppReady]) {
         // Only mark the app as ready once.
+        return;
+    }
+    BOOL launchJobsAreComplete = [self.launchJobs ensureLaunchJobsWithCompletion:^{
+        // If launch jobs need to run, return and
+        // call checkIfAppIsReady again when they're complete.
+        [self checkIfAppIsReady];
+    }];
+    if (!launchJobsAreComplete) {
+        // Wait for launch jobs to complete.
         return;
     }
 
@@ -1275,7 +1244,8 @@ static NSTimeInterval launchStartedAt;
         [self.databaseStorage
             asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
                 [TSAttachment anyEnumerateWithTransaction:transaction
-                                                    block:^(TSAttachment *attachment, BOOL *stop){
+                                                  batched:YES
+                                                    block:^(TSAttachment *attachment, BOOL *stop) {
                                                         // no-op. It's sufficient to initWithCoder: each object.
                                                     }];
             }
@@ -1295,30 +1265,32 @@ static NSTimeInterval launchStartedAt;
     [OWSOrphanDataCleaner auditOnLaunchIfNecessary];
 #endif
 
-    [self.profileManager fetchLocalUsersProfile];
+    [self.profileManager fetchAndUpdateLocalUsersProfile];
     [self.readReceiptManager prepareCachedValues];
 
-    [self ensureRootViewController];
+    [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
 
     [self.messageManager startObserving];
 
     [self.udManager setup];
 
-    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
         [self.primaryStorage touchDbAsync];
     }
 
     // Every time the user upgrades to a new version:
     //
     // * Update account attributes.
-    // * Sync configuration.
+    // * Sync configuration to linked devices.
     if ([self.tsAccountManager isRegistered]) {
         AppVersion *appVersion = AppVersion.sharedInstance;
         if (appVersion.lastAppVersion.length > 0
             && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]) {
             [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 
-            [self.syncManager sendConfigurationSyncMessage];
+            if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+                [self.syncManager sendConfigurationSyncMessage];
+            }
         }
     }
 
@@ -1339,59 +1311,22 @@ static NSTimeInterval launchStartedAt;
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
         }];
+
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
-
         [self.disappearingMessagesJob startIfNecessary];
 
-        // TODO: This is probably superfluous and can be removed.
-        [[self.syncManager syncLocalContact] retainUntilComplete];
-
-        // For non-legacy users, read receipts are on by default.
-        [self.readReceiptManager setAreReadReceiptsEnabled:YES];
+        // TODO MULTIRING
+        // Currently, we only build the CallUIAdapter for the primary device, which we can't determine
+        // until *after* the user has registered. Once we create calling on all devices, we can
+        // create the callUIAdapter unconditionally, on all devices, and get rid of this.
+        [AppEnvironment.shared.callService createCallUIAdapter];
     }
 }
 
 - (void)registrationLockDidChange:(NSNotification *)notification
 {
     [self enableBackgroundRefreshIfNecessary];
-}
-
-- (void)ensureRootViewController
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"ensureRootViewController");
-
-    if (!AppReadiness.isAppReady || self.hasInitialRootViewController) {
-        return;
-    }
-    self.hasInitialRootViewController = YES;
-
-    NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
-    OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
-
-    UIViewController *rootViewController;
-    BOOL navigationBarHidden = NO;
-    if ([self.tsAccountManager isRegistered]) {
-        if (self.backup.hasPendingRestoreDecision) {
-            rootViewController = [BackupRestoreViewController new];
-        } else {
-            rootViewController = [HomeViewController new];
-        }
-    } else {
-        rootViewController = [[OnboardingController new] initialViewController];
-        navigationBarHidden = YES;
-    }
-    OWSAssertDebug(rootViewController);
-    OWSNavigationController *navigationController =
-        [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
-    navigationController.navigationBarHidden = navigationBarHidden;
-    self.window.rootViewController = navigationController;
-
-    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
-
-    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 #pragma mark - status bar touches

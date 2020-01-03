@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 // MARK: - Any*Transaction
 
@@ -140,6 +140,18 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
         case .grdbWrite(let grdbWrite):
             grdbWrite.addCompletion(queue: queue, block: block)
         }
+    }
+
+    private var threadUniqueIdsToIgnoreInteractionUpdates = Set<String>()
+
+    @objc
+    public func ignoreInteractionUpdates(forThreadUniqueId threadUniqueId: String) {
+        threadUniqueIdsToIgnoreInteractionUpdates.insert(threadUniqueId)
+    }
+
+    @objc
+    public func shouldIgnoreInteractionUpdates(forThreadUniqueId threadUniqueId: String) -> Bool {
+        return threadUniqueIdsToIgnoreInteractionUpdates.contains(threadUniqueId)
     }
 }
 

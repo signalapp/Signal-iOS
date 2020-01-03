@@ -10,7 +10,6 @@
 #import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
-#import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import <AVKit/AVKit.h>
@@ -32,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIScrollView *scrollView;
 @property (nonatomic) UIView *mediaView;
 @property (nonatomic) UIView *replacingView;
-@property (nonatomic) UIButton *shareButton;
 
 @property (nonatomic) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) id<ConversationViewItem> viewItem;
@@ -194,18 +192,18 @@ NS_ASSUME_NONNULL_BEGIN
             self.mediaView = animatedView;
         } else {
             self.mediaView = [UIView new];
-            self.mediaView.backgroundColor = Theme.offBackgroundColor;
+            self.mediaView.backgroundColor = Theme.washColor;
         }
     } else if (!self.image) {
         // Still loading thumbnail.
         self.mediaView = [UIView new];
-        self.mediaView.backgroundColor = Theme.offBackgroundColor;
+        self.mediaView.backgroundColor = Theme.washColor;
     } else if (self.isVideo) {
         if (self.attachmentStream.isValidVideo) {
             self.mediaView = [self buildVideoPlayerView];
         } else {
             self.mediaView = [UIView new];
-            self.mediaView.backgroundColor = Theme.offBackgroundColor;
+            self.mediaView.backgroundColor = Theme.washColor;
         }
     } else {
         // Present the static image using standard UIImageView
@@ -250,8 +248,9 @@ NS_ASSUME_NONNULL_BEGIN
         self.videoProgressBar = videoProgressBar;
         [self.view addSubview:videoProgressBar];
         [videoProgressBar autoPinWidthToSuperview];
-        [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:0];
+
         CGFloat kVideoProgressBarHeight = 44;
+        [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:kVideoProgressBarHeight];
         [videoProgressBar autoSetDimension:ALDimensionHeight toSize:kVideoProgressBarHeight];
 
         UIButton *playVideoButton = [UIButton new];

@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppReadiness.h"
 #import <SignalCoreKit/Threading.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -130,10 +131,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We invoke the _will become_ blocks before the _did become_ blocks.
     for (AppReadyBlock block in appWillBecomeReadyBlocks) {
-        block();
+        [BenchManager benchWithTitle:@"appWillBecomeReadyBlock" logIfLongerThan:0.01 logInProduction:YES block:block];
     }
     for (AppReadyBlock block in appDidBecomeReadyBlocks) {
-        block();
+        [BenchManager benchWithTitle:@"appDidBecomeReadyBlock" logIfLongerThan:0.01 logInProduction:YES block:block];
     }
 }
 

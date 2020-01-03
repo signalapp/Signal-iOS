@@ -36,7 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -45,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
            hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
                    hasBlockOffer:(BOOL)hasBlockOffer
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:beforeInteractionId:hasAddToContactsOffer:hasAddToProfileWhitelistOffer:hasBlockOffer:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:beforeInteractionId:hasAddToContactsOffer:hasAddToProfileWhitelistOffer:hasBlockOffer:));
 
 // clang-format on
 

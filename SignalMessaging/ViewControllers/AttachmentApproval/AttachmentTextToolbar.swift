@@ -179,7 +179,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         AssertIsOnMainThread()
 
         let isViewOnceMessagesEnabled = preferences.isViewOnceMessagesEnabled()
-        let imageName = isViewOnceMessagesEnabled ? "timer-24" : "timer-disabled-24"
+        let imageName = isViewOnceMessagesEnabled ? "view-once-24" : "view-infinite-24"
         viewOnceButton.setTemplateImageName(imageName, tintColor: Theme.darkThemePrimaryColor)
 
         viewOnceSpacer.isHidden = !isViewOnceEnabled

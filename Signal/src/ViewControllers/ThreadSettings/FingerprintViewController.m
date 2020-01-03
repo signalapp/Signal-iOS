@@ -6,7 +6,6 @@
 #import "FingerprintViewScanController.h"
 #import "OWSBezierPathView.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -107,10 +106,10 @@ typedef void (^CustomLayoutBlock)(void);
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
     if (!recipientIdentity) {
-        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
-                                          @"Title for alert explaining that a user cannot be verified.")
-                              message:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
-                                          @"Message for alert explaining that a user cannot be verified.")];
+        [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
+                                                      @"Title for alert explaining that a user cannot be verified.")
+                                          message:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
+                                                      @"Message for alert explaining that a user cannot be verified.")];
         return;
     }
 
@@ -118,7 +117,7 @@ typedef void (^CustomLayoutBlock)(void);
     [fingerprintViewController configureWithAddress:address];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:fingerprintViewController];
-    [viewController presentViewController:navigationController animated:YES completion:nil];
+    [viewController presentFormSheetViewController:navigationController animated:YES completion:nil];
 }
 
 - (instancetype)init
@@ -207,7 +206,7 @@ typedef void (^CustomLayoutBlock)(void);
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, verifyUnverifyButton);
 
     UIView *verifyUnverifyPillbox = [UIView new];
-    verifyUnverifyPillbox.backgroundColor = [UIColor ows_materialBlueColor];
+    verifyUnverifyPillbox.backgroundColor = UIColor.ows_signalBlueColor;
     verifyUnverifyPillbox.layer.cornerRadius = 3.f;
     verifyUnverifyPillbox.clipsToBounds = YES;
     [verifyUnverifyButton addSubview:verifyUnverifyPillbox];
@@ -217,7 +216,7 @@ typedef void (^CustomLayoutBlock)(void);
 
     UILabel *verifyUnverifyButtonLabel = [UILabel new];
     self.verifyUnverifyButtonLabel = verifyUnverifyButtonLabel;
-    verifyUnverifyButtonLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(14.f, 20.f)];
+    verifyUnverifyButtonLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 20.f)];
     verifyUnverifyButtonLabel.textColor = [UIColor whiteColor];
     verifyUnverifyButtonLabel.textAlignment = NSTextAlignmentCenter;
     [verifyUnverifyPillbox addSubview:verifyUnverifyButtonLabel];
@@ -242,7 +241,7 @@ typedef void (^CustomLayoutBlock)(void);
                 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
             }];
     learnMoreLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 16.f)];
-    learnMoreLabel.textColor = [UIColor ows_materialBlueColor];
+    learnMoreLabel.textColor = UIColor.ows_signalBlueColor;
     learnMoreLabel.textAlignment = NSTextAlignmentCenter;
     [learnMoreButton addSubview:learnMoreLabel];
     [learnMoreLabel autoPinWidthToSuperviewWithMargin:16.f];
@@ -255,7 +254,7 @@ typedef void (^CustomLayoutBlock)(void);
     UILabel *instructionsLabel = [UILabel new];
     instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
     instructionsLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 14.f)];
-    instructionsLabel.textColor = Theme.secondaryColor;
+    instructionsLabel.textColor = Theme.secondaryTextAndIconColor;
     instructionsLabel.textAlignment = NSTextAlignmentCenter;
     instructionsLabel.numberOfLines = 0;
     instructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -267,7 +266,8 @@ typedef void (^CustomLayoutBlock)(void);
     UILabel *fingerprintLabel = [UILabel new];
     fingerprintLabel.text = self.fingerprint.displayableText;
     fingerprintLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:ScaleFromIPhone5To7Plus(20.f, 23.f)];
-    fingerprintLabel.textColor = Theme.secondaryColor;
+    fingerprintLabel.textAlignment = NSTextAlignmentCenter;
+    fingerprintLabel.textColor = Theme.secondaryTextAndIconColor;
     fingerprintLabel.numberOfLines = 3;
     fingerprintLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     fingerprintLabel.adjustsFontSizeToFitWidth = YES;
@@ -299,7 +299,7 @@ typedef void (^CustomLayoutBlock)(void);
 
     OWSBezierPathView *fingerprintCircle = [OWSBezierPathView new];
     [fingerprintCircle setConfigureShapeLayerBlock:^(CAShapeLayer *layer, CGRect bounds) {
-        layer.fillColor = Theme.offBackgroundColor.CGColor;
+        layer.fillColor = Theme.washColor.CGColor;
         CGFloat size = MIN(bounds.size.width, bounds.size.height);
         CGRect circle = CGRectMake((bounds.size.width - size) * 0.5f, (bounds.size.height - size) * 0.5f, size, size);
         layer.path = [UIBezierPath bezierPathWithOvalInRect:circle].CGPath;
@@ -316,8 +316,8 @@ typedef void (^CustomLayoutBlock)(void);
 
     UILabel *scanLabel = [UILabel new];
     scanLabel.text = NSLocalizedString(@"PRIVACY_TAP_TO_SCAN", @"Button that shows the 'scan with camera' view.");
-    scanLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
-    scanLabel.textColor = Theme.secondaryColor;
+    scanLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+    scanLabel.textColor = Theme.secondaryTextAndIconColor;
     [scanLabel sizeToFit];
     [fingerprintView addSubview:scanLabel];
 
@@ -334,8 +334,8 @@ typedef void (^CustomLayoutBlock)(void);
     // Verification State
     UILabel *verificationStateLabel = [UILabel new];
     self.verificationStateLabel = verificationStateLabel;
-    verificationStateLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(16.f, 20.f)];
-    verificationStateLabel.textColor = Theme.secondaryColor;
+    verificationStateLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(16.f, 20.f)];
+    verificationStateLabel.textColor = Theme.secondaryTextAndIconColor;
     verificationStateLabel.textAlignment = NSTextAlignmentCenter;
     verificationStateLabel.numberOfLines = 0;
     verificationStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -438,6 +438,10 @@ typedef void (^CustomLayoutBlock)(void);
             completionHandler();
         }
     };
+
+    if (activityController.popoverPresentationController) {
+        activityController.popoverPresentationController.barButtonItem = self.shareButton;
+    }
 
     // This value was extracted by inspecting `activityType` in the activityController.completionHandler
     NSString *const iCloudActivityType = @"com.apple.CloudDocsUI.AddToiCloudDrive";
@@ -564,7 +568,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskPortrait;
+    return UIDevice.currentDevice.isIPad ? UIInterfaceOrientationMaskAll : UIInterfaceOrientationMaskPortrait;
 }
 
 @end

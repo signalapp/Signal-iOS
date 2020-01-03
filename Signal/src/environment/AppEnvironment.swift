@@ -55,29 +55,8 @@ import SignalMessaging
     @objc
     public var backup: OWSBackup
 
-    private var _legacyNotificationActionHandler: LegacyNotificationActionHandler
     @objc
-    public var legacyNotificationActionHandler: LegacyNotificationActionHandler {
-        get {
-            if #available(iOS 10, *) {
-                owsFailDebug("shouldn't user legacyNotificationActionHandler on modern iOS")
-            }
-            return _legacyNotificationActionHandler
-        }
-        set {
-            _legacyNotificationActionHandler = newValue
-        }
-    }
-
-    // Stored properties cannot be marked as `@available`, only classes and functions.
-    // Instead, store a private `Any` and wrap it with a public `@available` getter
-    private var _userNotificationActionHandler: Any?
-
-    @objc
-    @available(iOS 10.0, *)
-    public var userNotificationActionHandler: UserNotificationActionHandler {
-        return _userNotificationActionHandler as! UserNotificationActionHandler
-    }
+    public var userNotificationActionHandler: UserNotificationActionHandler
 
     @objc
     public var backupLazyRestore: BackupLazyRestore
@@ -94,10 +73,7 @@ import SignalMessaging
         self.broadcastMediaMessageJobQueue = BroadcastMediaMessageJobQueue()
         self.backup = OWSBackup()
         self.backupLazyRestore = BackupLazyRestore()
-        if #available(iOS 10.0, *) {
-            self._userNotificationActionHandler = UserNotificationActionHandler()
-        }
-        self._legacyNotificationActionHandler = LegacyNotificationActionHandler()
+        self.userNotificationActionHandler = UserNotificationActionHandler()
 
         super.init()
 
@@ -110,7 +86,15 @@ import SignalMessaging
 
     @objc
     public func setup() {
-        callService.createCallUIAdapter()
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            // For now, we can't create createCallUIAdapter until
+            // storage is ready, because the FeatureFlag.calling
+            // consults storage.
+
+            // TODO MULTIRING - once calling is enabled on all devices
+            // we can move this back to an inline call.
+            self.callService.createCallUIAdapter()
+        }
 
         // Hang certain singletons on SSKEnvironment too.
         SSKEnvironment.shared.notificationsManager = notificationPresenter

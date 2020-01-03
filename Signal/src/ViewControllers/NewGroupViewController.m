@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commonInit
 {
-    _groupId = [Randomness generateRandomBytes:kGroupIdLength];
+    _groupId = [TSGroupModel generateRandomGroupId];
 
     _messageSender = SSKEnvironment.shared.messageSender;
     _avatarViewHelper = [AvatarViewHelper new];
@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientPicker.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.recipientPicker.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     [self.recipientPicker.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
-    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.recipientPicker.view avoidNotch:NO];
+    [self.recipientPicker.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 }
 
 - (UIView *)firstSectionHeader
@@ -165,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
 
     UIImageView *cameraImageView = [UIImageView new];
-    [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
+    [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
     [threadInfoView addSubview:cameraImageView];
 
     [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
@@ -173,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
     cameraImageView.backgroundColor = Theme.backgroundColor;
     cameraImageView.layer.cornerRadius = 16;
     cameraImageView.layer.shadowColor =
-        [(Theme.isDarkThemeEnabled ? Theme.darkThemeOffBackgroundColor : Theme.primaryColor) CGColor];
+        [(Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : Theme.primaryTextColor) CGColor];
     cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
     cameraImageView.layer.shadowOpacity = 0.5;
     cameraImageView.layer.shadowRadius = 4;
@@ -184,20 +184,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateAvatarView];
 
-    [avatarView
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
+    [avatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                             action:@selector(avatarTouched:)]];
     avatarView.userInteractionEnabled = YES;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, avatarView);
 
     UITextField *groupNameTextField = [OWSTextField new];
     _groupNameTextField = groupNameTextField;
-    groupNameTextField.textColor = Theme.primaryColor;
+    groupNameTextField.textColor = Theme.primaryTextColor;
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
     groupNameTextField.attributedPlaceholder =
         [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT",
                                                        @"Placeholder text for group name field")
                                         attributes:@{
-                                            NSForegroundColorAttributeName : Theme.secondaryColor,
+                                            NSForegroundColorAttributeName : Theme.secondaryTextAndIconColor,
                                         }];
     groupNameTextField.delegate = self;
     [groupNameTextField addTarget:self
@@ -241,6 +241,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
+    if (self.navigationController.viewControllers.count == 1) {
+        self.navigationItem.leftBarButtonItem =
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                          target:self
+                                                          action:@selector(dismissPressed)];
+    }
+}
+
+- (void)dismissPressed
+{
+    [self.groupNameTextField resignFirstResponder];
+
+    if (!self.hasUnsavedChanges) {
+        // If user made no changes, dismiss.
+        [self dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
+
+    __weak NewGroupViewController *weakSelf = self;
+    [OWSActionSheets showPendingChangesActionSheetWithDiscardAction:^{
+        [weakSelf dismissViewControllerAnimated:YES completion:nil];
+    }];
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
@@ -259,22 +287,48 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.groupNameTextField acceptAutocorrectSuggestion];
 
-    TSGroupModel *model = [self makeGroup];
+    NSMutableArray<SignalServiceAddress *> *members = [[self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
+        OWSAssertDebug(recipient.address.isValid);
+        return recipient.address;
+    }] mutableCopy];
+    [members addObject:[self.recipientPicker.contactsViewHelper localAddress]];
 
-    __block TSGroupThread *thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-    }];
-    OWSAssertDebug(thread);
-    
-    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+    NSString *groupName = self.groupNameTextField.text;
 
+    [ModalActivityIndicatorViewController
+        presentFromViewController:self
+                        canCancel:NO
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      [GroupManager createGroupObjcWithMembers:members
+                          groupId:self.groupId
+                          name:groupName
+                          avatarImage:self.groupAvatar
+                          success:^(TSGroupThread *thread) {
+                              [self groupWasCreated:thread modalActivityIndicator:modalActivityIndicator];
+                          }
+                          failure:^(NSError *error) {
+                              OWSFailDebug(@"Error: %@", error);
+                              [modalActivityIndicator dismissWithCompletion:^{
+                                  [OWSActionSheets showErrorAlertWithMessage:
+                                                       NSLocalizedString(@"NEW_GROUP_CREATION_FAILED",
+                                                           @"Error indicating that a new group could not be created.")];
+                              }];
+                          }];
+                  }];
+}
+
+- (void)groupWasCreated:(TSGroupThread *)thread
+    modalActivityIndicator:(ModalActivityIndicatorViewController *)modalActivityIndicator
+{
     void (^successHandler)(void) = ^{
         OWSLogError(@"Group creation successful.");
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
-            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
+                [SignalApp.sharedApp presentConversationForThread:thread
+                                                           action:ConversationViewActionCompose
+                                                         animated:NO];
+            }];
         });
     };
 
@@ -292,57 +346,19 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
-            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
+                [SignalApp.sharedApp presentConversationForThread:thread
+                                                           action:ConversationViewActionCompose
+                                                         animated:NO];
+            }];
         });
     };
 
-    [ModalActivityIndicatorViewController
-        presentFromViewController:self
-                        canCancel:NO
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                             groupMetaMessage:TSGroupMetaMessageNew
-                                                                             expiresInSeconds:0];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
-                      [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
-
-                      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                          if (model.groupImage) {
-                              NSData *data = UIImagePNGRepresentation(model.groupImage);
-                              _Nullable id<DataSource> dataSource =
-                                  [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-                              // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
-                              // an error in the thread if group creation fails
-                              [self.messageSender sendTemporaryAttachment:dataSource
-                                                              contentType:OWSMimeTypeImagePng
-                                                                inMessage:message
-                                                                  success:successHandler
-                                                                  failure:failureHandler];
-                          } else {
-                              // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
-                              // an error in the thread if group creation fails
-                              [self.messageSender sendMessage:message.asPreparer
-                                                      success:successHandler
-                                                      failure:failureHandler];
-                          }
-                      });
-                  }];
-}
-
-- (TSGroupModel *)makeGroup
-{
-    NSString *groupName = [self.groupNameTextField.text ows_stripped];
-    NSMutableArray<SignalServiceAddress *> *recipientAddressess =
-        [[self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
-            OWSAssertDebug(recipient.address.isValid);
-            return recipient.address;
-        }] mutableCopy];
-    [recipientAddressess addObject:[self.recipientPicker.contactsViewHelper localAddress]];
-    return [[TSGroupModel alloc] initWithTitle:groupName
-                                       members:recipientAddressess
-                                         image:self.groupAvatar
-                                       groupId:self.groupId];
+        [GroupManager sendTemporaryNewGroupMessageObjcForThread:thread success:successHandler failure:failureHandler];
+    });
 }
 
 #pragma mark - Group Avatar
@@ -391,7 +407,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __weak NewGroupViewController *weakSelf = self;
-    [OWSAlerts showPendingChangesAlertWithDiscardAction:^{
+    [OWSActionSheets showPendingChangesActionSheetWithDiscardAction:^{
         [weakSelf.navigationController popViewControllerAnimated:YES];
     }];
 }

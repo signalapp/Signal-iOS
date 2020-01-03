@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [aliceIdentityKeyStore saveRemoteIdentity:bobIdentityKeyPair.publicKey
                                   recipientId:bobIdentifier
-                              protocolContext:nil];
+                              protocolContext:protocolContext];
     [aliceSessionStore storeSession:bobIdentifier
                            deviceId:1
                             session:aliceSessionRecord

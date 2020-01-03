@@ -116,6 +116,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [OWS2FAManager.keyValueStore removeValueForKey:kOWS2FAManager_PinCode transaction:transaction];
+        [OWSKeyBackupService clearKeysWithTransaction:transaction];
     }];
 
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
@@ -227,8 +228,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                 success:^(NSURLSessionDataTask *task, id responseObject) {
                     OWSAssertIsOnMainThread();
 
-                    [OWSKeyBackupService clearKeychain];
-
                     [self set2FANotEnabled];
 
                     if (success) {
@@ -297,6 +296,10 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (BOOL)isDueForReminder
 {
+    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+        return NO;
+    }
+
     if (!self.is2FAEnabled) {
         return NO;
     }
@@ -306,6 +309,10 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (BOOL)hasPending2FASetup
 {
+    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+        return NO;
+    }
+
     __block BOOL hasPendingPinExperienceUpgrade = NO;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         hasPendingPinExperienceUpgrade = [ExperienceUpgradeFinder.sharedManager

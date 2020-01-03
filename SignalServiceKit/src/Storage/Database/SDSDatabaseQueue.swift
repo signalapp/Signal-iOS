@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 protocol SDSDatabaseQueue {
     associatedtype ReadTransaction

@@ -52,7 +52,7 @@ public class ImageEditorView: UIView {
     private var pinchGestureRecognizer: ImageEditorPinchGestureRecognizer?
 
     @objc
-    public func configureSubviews() -> Bool {
+    public func configureSubviews() {
         canvasView.configureSubviews()
         self.addSubview(canvasView)
         canvasView.autoPinEdgesToSuperviewEdges()
@@ -78,8 +78,6 @@ public class ImageEditorView: UIView {
         // De-conflict the GRs.
         //        editorGestureRecognizer.require(toFail: tapGestureRecognizer)
         //        editorGestureRecognizer.require(toFail: pinchGestureRecognizer)
-
-        return true
     }
 
     // MARK: - Navigation Bar

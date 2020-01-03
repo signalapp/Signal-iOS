@@ -31,7 +31,6 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 @property (atomic, readwrite) UInt64 serverId;
 @property (atomic, readwrite, nullable) NSData *encryptionKey;
 @property (nonatomic, readonly) NSString *contentType;
-@property (atomic, readwrite) BOOL isDownloaded;
 @property (nonatomic) TSAttachmentType attachmentType;
 
 // Though now required, may incorrectly be 0 on legacy attachments.
@@ -40,6 +39,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 // Represents the "source" filename sent or received in the protos,
 // not the filename on disk.
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
+
+@property (nonatomic, readonly, nullable) NSString *blurHash;
 
 #pragma mark - Media Album
 
@@ -64,7 +65,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
-                  albumMessageId:(nullable NSString *)albumMessageId;
+                  albumMessageId:(nullable NSString *)albumMessageId
+                        blurHash:(nullable NSString *)blurHash;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded restoring attachments.
@@ -92,18 +94,18 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
-         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
+                        blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
-                    isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
-NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:));
 
 // clang-format on
 
@@ -122,6 +124,10 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 @property (nonatomic, readonly) BOOL isOversizeText;
 
 + (NSString *)emojiForMimeType:(NSString *)contentType;
+
+#pragma mark - Update With...
+
+- (void)updateWithBlurHash:(NSString *)blurHash transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

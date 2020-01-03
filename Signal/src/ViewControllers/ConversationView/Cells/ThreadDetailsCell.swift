@@ -49,8 +49,7 @@ public class ThreadDetailsCell: ConversationViewCell {
 
         avatarContainer.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: avatarBottomInset, trailing: 0)
 
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_bold()
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -58,7 +57,6 @@ public class ThreadDetailsCell: ConversationViewCell {
         titleLabel.setCompressionResistanceHigh()
 
         detailsLabel.font = .ows_dynamicTypeSubheadline
-        detailsLabel.textColor = Theme.secondaryColor
         detailsLabel.numberOfLines = 0
         detailsLabel.lineBreakMode = .byWordWrapping
         detailsLabel.textAlignment = .center
@@ -70,7 +68,6 @@ public class ThreadDetailsCell: ConversationViewCell {
         mutualGroupsLabel.autoPinEdgesToSuperviewMargins()
 
         mutualGroupsLabel.font = .ows_dynamicTypeSubheadline
-        mutualGroupsLabel.textColor = Theme.secondaryColor
         mutualGroupsLabel.numberOfLines = 0
         mutualGroupsLabel.lineBreakMode = .byWordWrapping
         mutualGroupsLabel.textAlignment = .center
@@ -98,6 +95,10 @@ public class ThreadDetailsCell: ConversationViewCell {
         configureTitleLabel()
         configureDetailsLabel()
         configureMutualGroupsLabel()
+
+        titleLabel.textColor = Theme.primaryTextColor
+        detailsLabel.textColor = Theme.secondaryTextAndIconColor
+        mutualGroupsLabel.textColor = Theme.secondaryTextAndIconColor
     }
 
     private func configureAvatarView() {
@@ -143,7 +144,11 @@ public class ThreadDetailsCell: ConversationViewCell {
         case let groupThread as TSGroupThread:
             title = groupThread.groupNameOrDefault
         case let contactThread as TSContactThread:
-            title = Environment.shared.contactsManager.displayName(for: contactThread.contactAddress)
+            if contactThread.isNoteToSelf {
+                title = MessageStrings.noteToSelf
+            } else {
+                title = Environment.shared.contactsManager.displayName(for: contactThread.contactAddress)
+            }
         default:
             return owsFailDebug("interaction incorrect thread type")
         }
@@ -161,15 +166,14 @@ public class ThreadDetailsCell: ConversationViewCell {
             return owsFailDebug("Missing viewItem")
         }
 
-        guard let threadDetails = viewItem.interaction as? ThreadDetailsInteraction else {
-            return owsFailDebug("Missing threadDetails")
-        }
-
         switch viewItem.thread {
         case let groupThread as TSGroupThread:
             let formatString = NSLocalizedString("THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT",
                                                  comment: "The number of members in a group. Embeds {{member count}}")
             details = String(format: formatString, groupThread.groupModel.groupMembers.count)
+        case let contactThread as TSContactThread where contactThread.isNoteToSelf:
+            details = NSLocalizedString("THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION",
+                                        comment: "Subtitle appearing at the top of the users 'note to self' conversation")
         case let contactThread as TSContactThread:
             let threadName = self.contactsManager.displayName(for: contactThread.contactAddress)
             if let phoneNumber = contactThread.contactAddress.phoneNumber, phoneNumber != threadName {
@@ -202,6 +206,10 @@ public class ThreadDetailsCell: ConversationViewCell {
 
         guard let viewItem = self.viewItem else {
             return owsFailDebug("Missing viewItem")
+        }
+
+        if let contactThread = viewItem.thread as? TSContactThread, contactThread.isNoteToSelf {
+            return
         }
 
         let mutualGroupNames = viewItem.mutualGroupNames ?? []
@@ -250,7 +258,7 @@ public class ThreadDetailsCell: ConversationViewCell {
                 return owsFailDebug("Unexpectedly tried to insert too many group names")
             }
 
-            let boldGroupName = NSAttributedString(string: groupName, attributes: [.font: UIFont.ows_dynamicTypeSubheadline.ows_semiBold()])
+            let boldGroupName = NSAttributedString(string: groupName, attributes: [.font: UIFont.ows_dynamicTypeSubheadline.ows_semibold()])
             mutableAttributedString.replaceCharacters(in: nextInsertionPoint, with: boldGroupName)
         }
 

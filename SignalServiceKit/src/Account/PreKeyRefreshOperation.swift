@@ -65,6 +65,7 @@ public class RefreshPreKeysOperation: OWSOperation {
 
                 TSPreKeyManager.clearPreKeyUpdateFailureCount()
                 TSPreKeyManager.clearSignedPreKeyRecords()
+                TSPreKeyManager.cullPreKeyRecords()
             }
         }.done {
             Logger.debug("done")

@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class HomeViewController;
+@class ConversationListViewController;
 @class SDSKeyValueStore;
 
 @interface ProfileViewController : OWSViewController

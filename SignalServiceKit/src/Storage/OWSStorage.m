@@ -27,7 +27,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const StorageIsReadyNotification = @"StorageIsReadyNotification";
 NSString *const OWSResetStorageNotification = @"OWSResetStorageNotification";
 
 static NSString *keychainService = @"TSKeyChainService";
@@ -54,6 +53,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
             OWSLogError(                                                                                               \
                 @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            OWSLogError(@"dataStoreForUI: %@.", NSStringForDataStore(StorageCoordinator.dataStoreForUI));              \
             switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
                 case StorageModeStrictnessFail:                                                                        \
                     OWSFail(@"Unexpected YDB read.");                                                                  \
@@ -79,6 +79,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
             OWSLogError(                                                                                               \
                 @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            OWSLogError(@"dataStoreForUI: %@.", NSStringForDataStore(StorageCoordinator.dataStoreForUI));              \
             switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
                 case StorageModeStrictnessFail:                                                                        \
                     OWSFail(@"Unexpected YDB write.");                                                                 \
@@ -174,8 +175,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 // Specifically, it causes YDB's "view version" checks to fail.
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
-    OWSAssertCanWriteYDB();
-    OWSAssertDebug(self.databaseStorage.canWriteToYdb);
+    if (!self.isCleanupConnection) {
+        OWSAssertCanWriteYDB();
+    }
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssertDebug(delegate);
     OWSAssertDebug(delegate.areAllRegistrationsComplete);
@@ -474,45 +476,23 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     OWSAbstractMethod();
 }
 
-+ (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock
++ (void)registerExtensionsWithCompletionBlock:(OWSStorageCompletionBlock)completionBlock
 {
     OWSAssertDebug(self.databaseStorage.canLoadYdb);
-    OWSAssertDebug(migrationBlock);
-
-    __block OWSBackgroundTask *_Nullable backgroundTask =
-        [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    OWSAssertDebug(completionBlock);
 
     [self.primaryStorage runSyncRegistrations];
 
     [self.primaryStorage runAsyncRegistrationsWithCompletion:^{
         OWSAssertDebug(self.isStorageReady);
 
-        [self postRegistrationCompleteNotification];
-
-        migrationBlock();
-
-        backgroundTask = nil;
+        completionBlock();
     }];
 }
 
 - (YapDatabaseConnection *)registrationConnection
 {
     return self.database.registrationConnection;
-}
-
-// Returns YES IFF all registrations are complete.
-+ (void)postRegistrationCompleteNotification
-{
-    OWSAssertDebug(self.isStorageReady);
-
-    OWSLogInfo(@"");
-
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:StorageIsReadyNotification
-                                                                 object:nil
-                                                               userInfo:nil];
-    });
 }
 
 + (BOOL)isStorageReady
@@ -794,6 +774,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath]];
     [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_SHM]];
     [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_WAL]];
+    // NOTE: It's NOT safe to delete OWSPrimaryStorage.legacyDatabaseDirPath
+    //       which is the app document dir.
+    [OWSFileSystem deleteContentsOfDirectory:OWSPrimaryStorage.sharedDataDatabaseDirPath];
 }
 
 - (void)closeStorageForTests
@@ -812,6 +795,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)resetAllStorage
 {
+    OWSLogInfo(@"");
+
     [[NSNotificationCenter defaultCenter] postNotificationName:OWSResetStorageNotification object:nil];
 
     // This might be redundant but in the spirit of thoroughness...
@@ -819,10 +804,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
     [self deleteDBKeys];
 
-    [OWSKeyBackupService clearKeychain];
-
     if (CurrentAppContext().isMainApp) {
-        [TSAttachmentStream deleteAttachments];
+        [TSAttachmentStream deleteAttachmentsFromDisk];
     }
 
     // TODO: Delete Profiles on Disk?
@@ -936,18 +919,14 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec inaccessible; not main app."];
         }
 
-        // At this point, either this is a new install so there's no existing password to retrieve
-        // or the keychain has become corrupt.  Either way, we want to get back to a
-        // "known good state" and behave like a new install.
+        // At this point, either:
+        //
+        // * This is a new install so there's no existing password to retrieve.
+        // * The keychain has become corrupt.
         BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (doesDBExist) {
-            OWSFailDebug(@"Could not load database metadata");
+            OWSFail(@"Could not load database metadata");
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
-        }
-
-        if (!CurrentAppContext().isRunningTests) {
-            // Try to reset app by deleting database.
-            [OWSStorage resetAllStorage];
         }
 
         keySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];

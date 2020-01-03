@@ -24,8 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
-#pragma mark -
-
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -122,14 +120,17 @@ NS_ASSUME_NONNULL_BEGIN
         validRecipient,
         TSAccountManager.localAddress,
     ] mutableCopy];
-    NSData *groupId = [Randomness generateRandomBytes:16];
-    TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:groupName
-                                                      members:recipientAddresses
-                                                        image:nil
-                                                      groupId:groupId];
-    TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:model];
 
-    [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+    [GroupManager createGroupObjcWithMembers:recipientAddresses
+        groupId:nil
+        name:groupName
+        avatarData:nil
+        success:^(TSGroupThread *thread) {
+            [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+        }
+        failure:^(NSError *error) {
+            OWSFailDebug(@"Error: %@", error);
+        }];
 }
 
 @end

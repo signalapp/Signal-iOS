@@ -13,6 +13,9 @@ import Foundation
     static public let backButton = NSLocalizedString("BACK_BUTTON", comment: "return to the previous screen")
 
     @objc
+    static public let continueButton = NSLocalizedString("BUTTON_CONTINUE", comment: "Label for 'continue' button.")
+
+    @objc
     static public let dismissButton = NSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Short text to dismiss current modal / actionsheet / screen")
 
     @objc
@@ -20,6 +23,9 @@ import Foundation
 
     @objc
     static public let doneButton = NSLocalizedString("BUTTON_DONE", comment: "Label for generic done button.")
+
+    @objc
+    static public let nextButton = NSLocalizedString("BUTTON_NEXT", comment: "Label for the 'next' button.")
 
     @objc
     static public let retryButton = NSLocalizedString("RETRY_BUTTON_TEXT", comment: "Generic text for button that retries whatever the last action was.")
@@ -32,6 +38,9 @@ import Foundation
 
     @objc
     static public let searchPlaceholder = NSLocalizedString("SEARCH_FIELD_PLACE_HOLDER_TEXT", comment: "placeholder text in an empty search field")
+
+    @objc
+    static public let mainPhoneNumberLabel = NSLocalizedString("PHONE_NUMBER_TYPE_MAIN", comment: "Label for 'Main' phone numbers.")
 }
 
 @objc
@@ -64,6 +73,12 @@ public class MessageStrings: NSObject {
 
     @objc
     static public let noteToSelf = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
+
+    @objc
+    static public let viewOnceViewPhoto = NSLocalizedString("PER_MESSAGE_EXPIRATION_VIEW_PHOTO", comment: "Label for view-once messages indicating that user can tap to view the message's contents.")
+
+    @objc
+    static public let viewOnceViewVideo = NSLocalizedString("PER_MESSAGE_EXPIRATION_VIEW_VIDEO", comment: "Label for view-once messages indicating that user can tap to view the message's contents.")
 }
 
 @objc
@@ -85,6 +100,9 @@ public class NotificationStrings: NSObject {
 
     @objc
     static public let failedToSendBody = NSLocalizedString("SEND_FAILED_NOTIFICATION_BODY", comment: "notification body")
+
+    @objc
+    static public let incomingReactionFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_BODY_FORMAT", comment: "notification body")
 }
 
 @objc public class CallStrings: NSObject {

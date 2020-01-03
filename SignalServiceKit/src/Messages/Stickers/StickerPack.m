@@ -100,7 +100,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                           author:(nullable NSString *)author
                            cover:(StickerPackItem *)cover
                      dateCreated:(NSDate *)dateCreated
@@ -109,7 +110,8 @@ NS_ASSUME_NONNULL_BEGIN
                            items:(NSArray<StickerPackItem *> *)items
                            title:(nullable NSString *)title
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;

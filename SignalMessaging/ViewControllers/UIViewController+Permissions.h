@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ows_askForMicrophonePermissions:(void (^)(BOOL granted))callback
     NS_SWIFT_NAME(ows_askForMicrophonePermissions(callback:));
 
+- (void)ows_showNoMicrophonePermissionActionSheet;
+
 @end
 
 NS_ASSUME_NONNULL_END

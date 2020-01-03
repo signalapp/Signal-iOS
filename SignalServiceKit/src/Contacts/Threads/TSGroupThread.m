@@ -23,29 +23,25 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
-isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-                 lastMessageDate:(nullable NSDate *)lastMessageDate
+                      isArchived:(BOOL)isArchived
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
-                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                       groupModel:(TSGroupModel *)groupModel
 {
-    self = [super initWithUniqueId:uniqueId
-                      archivalDate:archivalDate
-         archivedAsOfMessageSortId:archivedAsOfMessageSortId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
              conversationColorName:conversationColorName
                       creationDate:creationDate
-isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
-                   lastMessageDate:lastMessageDate
+                        isArchived:isArchived
+              lastInteractionRowId:lastInteractionRowId
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate
-                             rowId:rowId
              shouldThreadBeVisible:shouldThreadBeVisible];
 
     if (!self) {
@@ -65,7 +61,6 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 {
     OWSAssertDebug(groupModel);
     OWSAssertDebug(groupModel.groupId.length > 0);
-    OWSAssertDebug(groupModel.groupMembers.count > 0);
     for (SignalServiceAddress *address in groupModel.groupMembers) {
         OWSAssertDebug(address.isValid);
     }
@@ -88,10 +83,12 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     SignalServiceAddress *localAddress = TSAccountManager.localAddress;
     OWSAssertDebug(localAddress.isValid);
 
-    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:nil
-                                                           members:@[ localAddress ]
-                                                             image:nil
-                                                           groupId:groupId];
+    // GroupsV2 TODO: Move to group manager.
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithGroupId:groupId
+                                                                name:nil
+                                                          avatarData:nil
+                                                             members:@[ localAddress ]
+                                                       groupsVersion:GroupManager.defaultGroupsVersion];
 
     self = [self initWithGroupModel:groupModel];
     if (!self) {
@@ -101,9 +98,10 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return self;
 }
 
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
++ (nullable instancetype)getThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
+    OWSAssertDebug(transaction);
 
     NSString *uniqueId = [self threadIdFromGroupId:groupId];
     return [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
@@ -114,23 +112,11 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     OWSAssertDebug(groupId.length > 0);
     OWSAssertDebug(transaction);
 
-    NSString *uniqueId = [self threadIdFromGroupId:groupId];
-    TSGroupThread *thread = [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
+    TSGroupThread *thread = [self getThreadWithGroupId:groupId transaction:transaction];
     if (!thread) {
         thread = [[self alloc] initWithGroupId:groupId];
         [thread anyInsertWithTransaction:transaction];
     }
-    return thread;
-}
-
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
-{
-    OWSAssertDebug(groupId.length > 0);
-
-    __block TSGroupThread *thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        thread = [self getOrCreateThreadWithGroupId:groupId transaction:transaction];
-    }];
     return thread;
 }
 
@@ -148,18 +134,6 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
         thread = [[TSGroupThread alloc] initWithGroupModel:groupModel];
         [thread anyInsertWithTransaction:transaction];
     }
-    return thread;
-}
-
-+ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
-{
-    OWSAssertDebug(groupModel);
-    OWSAssertDebug(groupModel.groupId.length > 0);
-
-    __block TSGroupThread *thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        thread = [self getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-    }];
     return thread;
 }
 
@@ -202,6 +176,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
 
     [TSThread anyEnumerateWithTransaction:transaction
+                                  batched:YES
                                     block:^(TSThread *thread, BOOL *stop) {
                                         if ([thread isKindOfClass:[TSGroupThread class]]) {
                                             TSGroupThread *groupThread = (TSGroupThread *)thread;
@@ -277,7 +252,18 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
     [self anyUpdateGroupThreadWithTransaction:transaction
                                         block:^(TSGroupThread *thread) {
-                                            thread.groupModel.groupImage = [attachmentStream thumbnailImageSmallSync];
+                                            NSData *_Nullable attachmentData =
+                                                [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
+                                            if (attachmentData.length < 1) {
+                                                return;
+                                            }
+                                            if (thread.groupModel.groupAvatarData.length > 0 &&
+                                                [thread.groupModel.groupAvatarData isEqualToData:attachmentData]) {
+                                                // Avatar did not change.
+                                                return;
+                                            }
+                                            UIImage *_Nullable avatarImage = [attachmentStream thumbnailImageSmallSync];
+                                            [thread.groupModel setGroupAvatarDataWithImage:avatarImage];
                                         }];
 
     [transaction addCompletionWithBlock:^{

@@ -18,7 +18,11 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     // MARK: JobQueue
 
     public typealias DurableOperationType = SessionResetOperation
-    public let jobRecordLabel: String = "SessionReset"
+    @objc
+    public static let jobRecordLabel: String = "SessionReset"
+    public var jobRecordLabel: String {
+        return type(of: self).jobRecordLabel
+    }
     public static let maxRetries: UInt = 10
     public let requiresInternet: Bool = true
     public var runningOperations: [SessionResetOperation] = []

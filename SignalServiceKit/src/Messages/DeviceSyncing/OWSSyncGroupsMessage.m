@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (self.attachmentIds.count != 1) {
         OWSLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     SSKProtoAttachmentPointer *_Nullable attachmentProto =
-        [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
+        [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject transaction:transaction];
     if (!attachmentProto) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
@@ -67,6 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [TSGroupThread
         anyEnumerateWithTransaction:transaction
+                            batched:YES
                               block:^(TSThread *thread, BOOL *stop) {
                                   if (![thread isKindOfClass:[TSGroupThread class]]) {
                                       if (![thread isKindOfClass:[TSContactThread class]]) {

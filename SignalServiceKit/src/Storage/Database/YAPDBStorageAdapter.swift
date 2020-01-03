@@ -47,3 +47,19 @@ extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
         return YAPDBDatabaseQueue(databaseConnection: storage.newDatabaseConnection())
     }
 }
+
+// MARK: - Reporting
+
+extension YAPDBStorageAdapter {
+    var databaseFileSize: UInt64 {
+        return OWSPrimaryStorage.shared?.databaseFileSize() ?? 0
+    }
+
+    var databaseWALFileSize: UInt64 {
+        return OWSPrimaryStorage.shared?.databaseWALFileSize() ?? 0
+    }
+
+    var databaseSHMFileSize: UInt64 {
+        return OWSPrimaryStorage.shared?.databaseSHMFileSize() ?? 0
+    }
+}

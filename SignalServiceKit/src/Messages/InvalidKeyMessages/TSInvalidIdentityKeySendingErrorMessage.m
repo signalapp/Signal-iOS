@@ -39,7 +39,8 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -55,16 +56,15 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-       errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
                          timestamp:timestamp
@@ -80,9 +80,7 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
-         errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
                               read:read
                   recipientAddress:recipientAddress];

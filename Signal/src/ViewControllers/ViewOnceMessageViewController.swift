@@ -9,19 +9,18 @@ import UIKit
 class ViewOnceMessageViewController: OWSViewController {
 
     class Content {
+        enum ContentType {
+            case stillImage, animatedImage, video
+        }
+
         let messageId: String
         let filePath: String
-        // The content is an animated image (GIF or WEBP)
-        // if true, a still image otherwise.
-        // TODO: We could eventually support video.
-        let isAnimated: Bool
+        let type: ContentType
 
-        init(messageId: String,
-             filePath: String,
-             isAnimated: Bool) {
+        init(messageId: String, filePath: String, type: ContentType) {
             self.messageId = messageId
             self.filePath = filePath
-            self.isAnimated = isAnimated
+            self.type = type
         }
 
         deinit {
@@ -80,7 +79,7 @@ class ViewOnceMessageViewController: OWSViewController {
                                                                 }
 
                                                                 let view = ViewOnceMessageViewController(content: content)
-                                                                fromViewController.present(view, animated: true)
+                                                                fromViewController.presentFullScreen(view, animated: true)
                                                             })
                                                         }
         }
@@ -132,11 +131,14 @@ class ViewOnceMessageViewController: OWSViewController {
                 owsFailDebug("Missing content type.")
                     return
             }
-            let isAnimated: Bool
+
+            let viewOnceType: Content.ContentType
             if attachmentStream.isAnimated || contentType == OWSMimeTypeImageWebp {
-                isAnimated = true
+                viewOnceType = .animatedImage
             } else if attachmentStream.isImage {
-                isAnimated = false
+                viewOnceType = .stillImage
+            } else if attachmentStream.isVideo {
+                viewOnceType = .video
             } else {
                 owsFailDebug("Unexpected content type.")
                 return
@@ -214,9 +216,7 @@ class ViewOnceMessageViewController: OWSViewController {
                 return
             }
 
-            content = Content(messageId: messageId,
-                              filePath: tempFilePath,
-                              isAnimated: isAnimated)
+            content = Content(messageId: messageId, filePath: tempFilePath, type: viewOnceType)
         }
         return content
     }
@@ -227,8 +227,6 @@ class ViewOnceMessageViewController: OWSViewController {
         self.view = UIView()
         view.backgroundColor = UIColor.ows_black
 
-        self.modalPresentationStyle = .overFullScreen
-
         let contentView = UIView()
         view.addSubview(contentView)
         contentView.autoPinWidthToSuperview()
@@ -236,7 +234,7 @@ class ViewOnceMessageViewController: OWSViewController {
         contentView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
         let defaultMediaView = UIView()
-        defaultMediaView.backgroundColor = Theme.darkThemeOffBackgroundColor
+        defaultMediaView.backgroundColor = Theme.darkThemeWashColor
         let mediaView = buildMediaView() ?? defaultMediaView
 
         contentView.addSubview(mediaView)
@@ -272,7 +270,8 @@ class ViewOnceMessageViewController: OWSViewController {
     private func buildMediaView() -> UIView? {
         let filePath = content.filePath
 
-        if content.isAnimated {
+        switch content.type {
+        case .animatedImage:
             guard let image = YYImage(contentsOfFile: filePath) else {
                 owsFailDebug("Could not load attachment.")
                 return nil
@@ -293,7 +292,7 @@ class ViewOnceMessageViewController: OWSViewController {
             animatedImageView.layer.allowsEdgeAntialiasing = true
             animatedImageView.image = image
             return animatedImageView
-        } else {
+        case .stillImage:
             guard let image = UIImage(contentsOfFile: filePath) else {
                 owsFailDebug("Could not load attachment.")
                 return nil
@@ -315,8 +314,65 @@ class ViewOnceMessageViewController: OWSViewController {
             imageView.layer.allowsEdgeAntialiasing = true
             imageView.image = image
             return imageView
+        case .video:
+            let videoContainer = UIView()
+
+            let videoUrl = URL(fileURLWithPath: content.filePath)
+            let player = OWSVideoPlayer(url: videoUrl, shouldLoop: true)
+            self.videoPlayer = player
+            player.delegate = self
+
+            let playerView = VideoPlayerView()
+            playerView.player = player.avPlayer
+
+            videoContainer.addSubview(playerView)
+            playerView.autoPinEdgesToSuperviewEdges()
+
+            let label = UILabel()
+            label.textColor = Theme.darkThemePrimaryColor
+            label.font = UIFont.ows_dynamicTypeBody.ows_monospaced()
+            label.setShadow()
+
+            videoContainer.addSubview(label)
+            label.autoPinEdge(toSuperviewMargin: .top, withInset: 16)
+            label.autoPinEdge(toSuperviewMargin: .trailing, withInset: 16)
+
+            let formatter = DateComponentsFormatter()
+            formatter.unitsStyle = .positional
+            formatter.allowedUnits = [.minute, .second ]
+            formatter.zeroFormattingBehavior = [ .pad ]
+
+            let avPlayer = player.avPlayer
+            self.videoPlayerProgressObserver = avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.1, preferredTimescale: 100), queue: nil) { _ in
+
+                guard let item = avPlayer.currentItem else {
+                    owsFailDebug("item was unexpectedly nil")
+                    label.text = "0:00"
+                    return
+                }
+
+                let position = avPlayer.currentTime()
+                let duration: CMTime = item.asset.duration
+                let remainingTime = duration - position
+                let remainingSeconds = CMTimeGetSeconds(remainingTime)
+
+                guard let remainingString = formatter.string(from: remainingSeconds) else {
+                    owsFailDebug("unable to format time remaining")
+                    label.text = "0:00"
+                    return
+                }
+
+                label.text = remainingString
+            }
+
+            return videoContainer
         }
     }
+
+    // MARK: Video
+
+    var videoPlayerProgressObserver: Any?
+    var videoPlayer: OWSVideoPlayer?
 
     func setupDatabaseObservation() {
         databaseStorage.add(databaseStorageObserver: self)
@@ -327,20 +383,10 @@ class ViewOnceMessageViewController: OWSViewController {
                                                object: nil)
     }
 
-    public override var canBecomeFirstResponder: Bool {
-        return true
-    }
-
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        self.becomeFirstResponder()
-    }
-
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.becomeFirstResponder()
+        self.videoPlayer?.play()
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -354,7 +400,7 @@ class ViewOnceMessageViewController: OWSViewController {
     private func dismissIfRemoved() {
         AssertIsOnMainThread()
 
-        let shouldDismiss: Bool = databaseStorage.uiReadReturningResult { transaction in
+        let shouldDismiss: Bool = databaseStorage.uiread { transaction in
             let uniqueId = self.content.messageId
             guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
                 return true
@@ -419,5 +465,11 @@ extension ViewOnceMessageViewController: SDSDatabaseStorageObserver {
         AssertIsOnMainThread()
 
         dismissIfRemoved()
+    }
+}
+
+extension ViewOnceMessageViewController: OWSVideoPlayerDelegate {
+    func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
+        // no-op
     }
 }

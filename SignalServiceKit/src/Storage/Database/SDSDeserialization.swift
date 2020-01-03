@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import SignalCoreKit
 
 // This class can be used to convert database values to Swift values.
@@ -28,6 +28,19 @@ public class SDSDeserialization {
 
     public class func optionalData(_ value: Data?, name: String) -> Data? {
         return value
+    }
+
+    // MARK: - Date
+
+    public class func requiredDoubleAsDate(_ value: Double, name: String) -> Date {
+        return Date(timeIntervalSince1970: value)
+    }
+
+    public class func optionalDoubleAsDate(_ value: Double?, name: String) -> Date? {
+        guard let value = value else {
+            return nil
+        }
+        return requiredDoubleAsDate(value, name: name)
     }
 
     // MARK: - Numeric Primitive

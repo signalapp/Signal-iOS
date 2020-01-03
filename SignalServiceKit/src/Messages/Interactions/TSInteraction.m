@@ -130,13 +130,15 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;
@@ -229,11 +231,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return [NSDate ows_dateWithMillisecondsSince1970:self.receivedAtTimestamp];
 }
 
-- (void)setReceivedAtTimestamp:(uint64_t)value
-{
-    _receivedAtTimestamp = value;
-}
-
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other
 {
     OWSAssertDebug(other);
@@ -259,10 +256,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@ in thread: %@ timestamp: %lu",
-                     [super description],
-                     self.uniqueThreadId,
-                     (unsigned long)self.timestamp];
+    return [NSString
+        stringWithFormat:@"%@ in thread: %@ timestamp: %llu", [super description], self.uniqueThreadId, self.timestamp];
 }
 
 - (BOOL)isSpecialMessage
@@ -299,37 +294,26 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [self updateLastMessageWithTransaction:transaction];
-
-    [self touchThreadWithTransaction:transaction];
+    TSThread *fetchedThread = [self threadWithTransaction:transaction];
+    [fetchedThread updateWithInsertedMessage:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
-    [self updateLastMessageWithTransaction:transaction];
-
-    [self touchThreadWithTransaction:transaction];
-}
-
-- (void)touchThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self.databaseStorage touchThreadId:self.uniqueThreadId transaction:transaction];
-}
-
-- (void)updateLastMessageWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
     TSThread *fetchedThread = [self threadWithTransaction:transaction];
-
-    [fetchedThread updateWithLastMessage:self transaction:transaction];
+    [fetchedThread updateWithUpdatedMessage:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    [self touchThreadWithTransaction:transaction];
+    if (![transaction shouldIgnoreInteractionUpdatesForThreadUniqueId:self.uniqueThreadId]) {
+        TSThread *fetchedThread = [self threadWithTransaction:transaction];
+        [fetchedThread updateWithRemovedMessage:self transaction:transaction];
+    }
 }
 
 #pragma mark -
@@ -351,6 +335,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         self.sortId = 0;
     }
     [self ydb_saveWithTransaction:transaction];
+}
+
+// NOTE: This is only for use by the YDB-to-GRDB legacy migration.
+- (void)replaceSortId:(uint64_t)sortId {
+    _sortId = sortId;
 }
 
 @end

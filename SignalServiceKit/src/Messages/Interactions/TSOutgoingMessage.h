@@ -112,7 +112,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -128,7 +129,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
@@ -139,10 +139,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-    outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
               storedMessageState:(TSOutgoingMessageState)storedMessageState
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:storedMessageState:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientAddressStates:storedMessageState:));
 
 // clang-format on
 
@@ -171,6 +170,8 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
+- (void)removeTemporaryAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
 @property (nonatomic, readonly) TSOutgoingMessageState messageState;
 
 @property (nonatomic, readonly) BOOL wasDeliveredToAnyRecipient;
@@ -194,13 +195,16 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 /**
  * The data representation of this message, to be encrypted, before being sent.
  */
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient;
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+                                 thread:(TSThread *)thread
+                            transaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  * Intermediate protobuf representation
  * Subclasses can augment if they want to manipulate the data message before building.
  */
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder;
+- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
+                                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  * Should this message be synced to the users other registered devices? This is
@@ -250,8 +254,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // This method is used to forge the message state for fake messages.
 //
 // NOTE: This method should only be used by Debug UI, etc.
+#ifdef TESTABLE_BUILD
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
                        transaction:(SDSAnyWriteTransaction *)transaction;
+#endif
 
 // This method is used to record a failed send to all "sending" recipients.
 - (void)updateWithSendingError:(NSError *)error

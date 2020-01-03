@@ -4,7 +4,7 @@
 
 import XCTest
 @testable import SignalServiceKit
-import GRDBCipher
+import GRDB
 
 class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
@@ -31,10 +31,10 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     let localE164Identifier = "+13235551234"
     let localUUID = UUID()
 
-    let aliceE164Identifier = "+147153"
+    let aliceE164Identifier = "+14715355555"
     var aliceClient: SignalClient!
 
-    let bobE164Identifier = "+1808"
+    let bobE164Identifier = "+18083235555"
     var bobClient: SignalClient!
 
     let localClient = LocalSignalClient()
@@ -46,13 +46,14 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
 
+        // use the uiDatabase to be notified of DB writes so we can verify the expected
+        // changes occur
+        try! databaseStorage.grdbStorage.setupUIDatabase()
+
         // ensure local client has necessary "registered" state
         identityManager.generateNewIdentityKey()
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
-        // use the uiDatabase to be notified of DB writes so we can verify the expected
-        // changes occur
-        try! databaseStorage.grdbStorage.setupUIDatabase()
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)
         aliceClient = FakeSignalClient.generate(e164Identifier: aliceE164Identifier)
 
@@ -116,7 +117,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         }
         observer.appendSnapshotDelegate(snapshotDelegate)
 
-        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient)
+        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageReceiver.handleReceivedEnvelopeData(envelopeData)
@@ -173,7 +174,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         }
         observer.appendSnapshotDelegate(snapshotDelegate)
 
-        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient)
+        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageReceiver.handleReceivedEnvelopeData(envelopeData)
@@ -192,9 +193,19 @@ class DatabaseSnapshotBlockDelegate {
 }
 
 extension DatabaseSnapshotBlockDelegate: DatabaseSnapshotDelegate {
-    func databaseSnapshotSourceDidCommit(db: Database) {
+
+    // MARK: - Transaction Lifecycle
+
+    func snapshotTransactionDidChange(with event: DatabaseEvent) { /* no-op */ }
+
+    func snapshotTransactionDidCommit(db: Database) {
         block(db)
     }
+
+    func snapshotTransactionDidRollback(db: Database) { /* no-op */ }
+
+    // MARK: - Snapshot LifeCycle (Post Commit)
+
     func databaseSnapshotWillUpdate() { /* no-op */ }
     func databaseSnapshotDidUpdate() { /* no-op */ }
     func databaseSnapshotDidUpdateExternally() { /* no-op */ }

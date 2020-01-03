@@ -118,8 +118,8 @@ public class StickerTooltip: UIView {
         let label = UILabel()
         label.text = NSLocalizedString("STICKER_PACK_INSTALLED_TOOLTIP",
                                        comment: "Tooltip indicating that a sticker pack was installed.")
-        label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-        label.textColor = Theme.primaryColor
+        label.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        label.textColor = Theme.primaryTextColor
 
         let stackView = UIStackView(arrangedSubviews: [
             iconView,

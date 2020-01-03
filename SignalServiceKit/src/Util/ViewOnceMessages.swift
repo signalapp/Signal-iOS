@@ -164,12 +164,14 @@ public class ViewOnceMessages: NSObject {
             return
         }
         let messageIdTimestamp: UInt64 = message.timestamp
-        guard messageIdTimestamp > 0 else {
+        guard messageIdTimestamp > 0,
+        SDS.fitsInInt64(messageIdTimestamp) else {
             owsFailDebug("Invalid messageIdTimestamp.")
             return
         }
         let readTimestamp: UInt64 = envelope.timestamp
-        guard readTimestamp > 0 else {
+        guard readTimestamp > 0,
+            SDS.fitsInInt64(readTimestamp) else {
             owsFailDebug("Invalid readTimestamp.")
             return
         }
@@ -185,6 +187,11 @@ public class ViewOnceMessages: NSObject {
                                                      transaction: SDSAnyWriteTransaction) -> Bool {
         let messageSenderAddress = message.senderAddress
         let messageIdTimestamp: UInt64 = message.timestamp
+        guard messageIdTimestamp > 0,
+            SDS.fitsInInt64(messageIdTimestamp) else {
+                owsFailDebug("Invalid messageIdTimestamp.")
+                return false
+        }
 
         let filter = { (interaction: TSInteraction) -> Bool in
             guard interaction.timestamp == messageIdTimestamp else {

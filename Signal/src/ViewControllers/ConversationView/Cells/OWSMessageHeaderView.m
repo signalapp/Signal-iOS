@@ -6,7 +6,6 @@
 #import "ConversationViewItem.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSUnreadIndicator.h>
-#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
 
@@ -79,8 +78,8 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssertDebug(conversationStyle);
     OWSAssertDebug(viewItem.unreadIndicator || viewItem.shouldShowDate);
 
-    self.titleLabel.textColor = Theme.primaryColor;
-    self.subtitleLabel.textColor = Theme.primaryColor;
+    self.titleLabel.textColor = Theme.primaryTextColor;
+    self.subtitleLabel.textColor = Theme.primaryTextColor;
 
     [self configureLabelsWithViewItem:viewItem];
 
@@ -116,7 +115,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssertDebug(viewItem);
 
     if (viewItem.unreadIndicator) {
-        return Theme.secondaryColor;
+        return Theme.secondaryTextAndIconColor;
     } else {
         return Theme.hairlineColor;
     }
@@ -131,7 +130,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 
     // Update cell to reflect changes in dynamic text.
     if (viewItem.unreadIndicator) {
-        self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
+        self.titleLabel.font = UIFont.ows_dynamicTypeBody2Font.ows_semibold;
 
         NSString *title = NSLocalizedString(
             @"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.");
@@ -152,7 +151,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
                           @"changes."));
         }
     } else {
-        self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+        self.titleLabel.font = UIFont.ows_dynamicTypeBody2Font;
         self.titleLabel.text = dateString;
         self.subtitleLabel.text = nil;
     }

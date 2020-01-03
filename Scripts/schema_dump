@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+set -e
+
+BIN_NAME=$0
+
+function usage() {
+    echo "$BIN_NAME <path-to-database>"
+    echo "e.g. $BIN_NAME /Home/Users/foo/Library/Simulator/blah/database/signal.sqlite"
+}
+
+DB_PATH=$1
+if [ -z $DB_PATH ]
+then
+   usage
+   exit 1
+fi
+
+BASE_DIR=$(git rev-parse --show-toplevel)
+
+cd $BASE_DIR
+
+OUTPUT_FILE=SignalServiceKit/Resources/schema.sql
+
+Scripts/sqlclient $DB_PATH .schema | grep -v -e grdb_migrations -e sqlite_sequence | bundle exec anbt-sql-formatter > $OUTPUT_FILE
+
+if [ ${PIPESTATUS[0]} -eq 0 ]; then
+    echo "🌈 Successfully dumped schema to ${OUTPUT_FILE}"
+else
+    cat << EOS
+💥 Error while trying to dump the schema.
+
+If you see an error like "Error: SQL logic error" you most likely have the
+wrong passphrase configured  in Scripts/sqlclient 
+EOS
+
+fi

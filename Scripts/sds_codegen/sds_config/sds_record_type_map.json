@@ -23,9 +23,12 @@
     "OWSDevice": 33, 
     "OWSDisappearingConfigurationUpdateInfoMessage": 28, 
     "OWSDisappearingMessagesConfiguration": 39, 
+    "OWSIncomingContactSyncJobRecord": 61, 
+    "OWSIncomingGroupSyncJobRecord": 60, 
     "OWSLinkedDeviceReadReceipt": 36, 
     "OWSMessageContentJob": 15, 
     "OWSMessageDecryptJob": 8, 
+    "OWSReaction": 62, 
     "OWSRecipientIdentity": 38, 
     "OWSResaveCollectionDBMigration": 49, 
     "OWSSessionResetJobRecord": 52, 
@@ -57,5 +60,6 @@
     "TSOutgoingMessage": 21, 
     "TSRecipientReadReceipt": 12, 
     "TSThread": 2, 
-    "TSUnreadIndicatorInteraction": 4
+    "TSUnreadIndicatorInteraction": 4, 
+    "TestModel": 59
 }

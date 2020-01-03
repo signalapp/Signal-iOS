@@ -247,10 +247,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.thread disappearingMessagesDurationWithTransaction:transaction];
         configuration = [configuration copyAsEnabledWithDurationSeconds:10];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
     }];
 
     OWSMessageSender *messageSender = self.successfulMessageSender;
@@ -261,9 +258,15 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *messageStartedExpiration = [self expectationWithDescription:@"messageStartedExpiration"];
     [messageSender sendMessage:self.expiringMessage
         success:^() {
-            //FIXME remove sleep hack in favor of expiringMessage completion handler
-            sleep(2);
-            if (self.expiringMessage.expiresAt > 0) {
+            __block TSMessage *_Nullable reloadedMessage;
+            [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                reloadedMessage = [TSMessage anyFetchMessageWithUniqueId:self.expiringMessage.uniqueId
+                                                             transaction:transaction];
+            }];
+            if (reloadedMessage == nil) {
+                XCTFail(@"Couldn't reload message.");
+                return;
+            } else if (reloadedMessage.hasPerConversationExpirationStarted) {
                 [messageStartedExpiration fulfill];
             } else {
                 XCTFail(@"Message expiration was supposed to start.");
@@ -286,10 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.thread disappearingMessagesDurationWithTransaction:transaction];
         configuration = [configuration copyAsEnabledWithDurationSeconds:10];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
     }];
 
     OWSMessageSender *messageSender = self.successfulMessageSender;
@@ -475,19 +475,27 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSMessageSender *messageSender = self.successfulMessageSender;
 
-
-    NSData *groupIdData = [Cryptography generateRandomBytes:32];
     SignalRecipient *successfulRecipient =
         [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id" relay:nil];
     SignalRecipient *successfulRecipient2 =
         [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2" relay:nil];
 
-    TSGroupModel *groupModel =
-        [[TSGroupModel alloc] initWithTitle:@"group title"
-                                    members:[@[ successfulRecipient.address, successfulRecipient2.address ] mutableCopy]
-                                      image:nil
-                                    groupId:groupIdData];
-    TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel];
+    __block TSGroupThread *thread;
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSError *error;
+        thread = [GroupManager createGroupForTestsObjcWithTransaction:transaction
+                                                                             members:@[
+                                                                                       successfulRecipient.address,
+                                                                                       successfulRecipient2.address,
+                                                                                       ]
+                                                                 name:@"group title"
+                                                                          avatarData:nil
+                                                                               error:&error];
+        if (error != nil) {
+            OWSFailDebug(@"Error: %@", error);
+        }
+    }];
+        
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
                                                                      inThread:groupThread
                                                                   messageBody:@"We want punks in the palace."];

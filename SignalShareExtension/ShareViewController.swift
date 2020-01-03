@@ -26,8 +26,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         return OWSProfileManager.shared()
     }
 
-    private var syncManager: OWSSyncManagerProtocol {
-        return SSKEnvironment.shared.syncManager
+    private var storageCoordinator: StorageCoordinator {
+        return SSKEnvironment.shared.storageCoordinator
     }
 
     // MARK: -
@@ -106,6 +106,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         })
 
         let shareViewNavigationController = OWSNavigationController()
+        shareViewNavigationController.presentationController?.delegate = self
         self.shareViewNavigationController = shareViewNavigationController
 
         let loadViewController = SAELoadViewController(delegate: self)
@@ -192,18 +193,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // We don't need to use RTCInitializeSSL() in the SAE.
 
         if tsAccountManager.isRegistered {
-            // At this point, potentially lengthy DB locking migrations could be running.
-            // Avoid blocking app launch by putting all further possible DB access in async block
-            DispatchQueue.global().async { [weak self] in
-                guard let _ = self else { return }
-                Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localAddress))")
-
-                // We don't need to use OWSDisappearingMessagesJob in the SAE.
-
-                // We don't need to use OWSFailedMessagesJob in the SAE.
-
-                // We don't need to use OWSFailedAttachmentDownloadsJob in the SAE.
-            }
+            Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localAddress))")
         } else {
             Logger.info("running post launch block for unregistered user.")
 
@@ -256,13 +246,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         guard areVersionMigrationsComplete else {
             return
         }
-        guard OWSStorage.isStorageReady() else {
+        guard storageCoordinator.isStorageReady else {
             return
         }
         guard !AppReadiness.isAppReady() else {
             // Only mark the app as ready once.
             return
         }
+
+        // We don't need to use LaunchJobs in the SAE.
 
         Logger.debug("")
 
@@ -306,9 +298,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // We don't need to use ExperienceUpgradeFinder in the SAE.
 
             // We don't need to use OWSDisappearingMessagesJob in the SAE.
-
-            // TODO: This is probably superfluous and can be removed.
-            syncManager.syncLocalContact().retainUntilComplete()
         }
     }
 
@@ -344,7 +333,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         if !tsAccountManager.isRegistered {
             showNotRegisteredView()
         } else {
-            let localProfileExists = databaseStorage.readReturningResult { transaction in
+            let localProfileExists = databaseStorage.read { transaction in
                 return self.profileManager.localProfileExists(with: transaction)
             }
             if !localProfileExists {
@@ -520,7 +509,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
             guard let strongSelf = self else { return }
-            strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+            strongSelf.extensionContext!.cancelRequest(withError: ShareViewControllerError.obsoleteShare)
         }
     }
 
@@ -581,7 +570,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
                                                comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
-            OWSAlerts.showAlert(title: alertTitle,
+            OWSActionSheets.showActionSheet(title: alertTitle,
                                 message: error.localizedDescription,
                                 buttonTitle: CommonStrings.cancelButton) { _ in
                                     strongSelf.shareViewWasCancelled()
@@ -1043,6 +1032,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // If video file already existed on disk as an mp4, then the host app didn't need to
         // apply any conversion, so no need to relocate the app.
         return !itemProvider.registeredTypeIdentifiers.contains(kUTTypeMPEG4 as String)
+    }
+}
+
+extension ShareViewController: UIAdaptivePresentationControllerDelegate {
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        shareViewWasCancelled()
     }
 }
 

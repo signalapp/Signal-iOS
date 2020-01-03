@@ -15,6 +15,14 @@ class UsernameViewController: OWSViewController {
 
     // MARK: -
 
+    @objc
+    public var modalPresentation = false {
+        didSet {
+            guard isViewLoaded else { return }
+            owsFailDebug("modalPresentation may only be set before the view has loaded.")
+        }
+    }
+
     private static let minimumUsernameLength = 4
     private static let maximumUsernameLength: UInt = 26
 
@@ -35,6 +43,7 @@ class UsernameViewController: OWSViewController {
         case tooShort
         case invalidCharacters
         case inUse
+        case startsWithNumber
     }
     private var validationState: ValidationState = .valid {
         didSet { updateValidationError() }
@@ -47,10 +56,14 @@ class UsernameViewController: OWSViewController {
 
         title = NSLocalizedString("USERNAME_TITLE", comment: "The title for the username view.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
-                                                           style: .plain,
-                                                           target: self,
-                                                           action: #selector(didTapCancel))
+        if modalPresentation {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
+                                                               style: .plain,
+                                                               target: self,
+                                                               action: #selector(didTapCancel))
+        } else {
+            navigationItem.leftBarButtonItem = createOWSBackButton()
+        }
 
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -75,15 +88,15 @@ class UsernameViewController: OWSViewController {
 
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("USERNAME_FIELD", comment: "Label for the username field in the username view.")
-        titleLabel.textColor = Theme.primaryColor
-        titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
 
         usernameRow.addSubview(titleLabel)
         titleLabel.autoPinLeadingToSuperviewMargin()
         titleLabel.autoPinHeightToSuperviewMargins()
 
         usernameTextField.font = .ows_dynamicTypeBodyClamped
-        usernameTextField.textColor = Theme.primaryColor
+        usernameTextField.textColor = Theme.primaryTextColor
         usernameTextField.autocorrectionType = .no
         usernameTextField.autocapitalizationType = .none
         usernameTextField.placeholder = NSLocalizedString("USERNAME_PLACEHOLDER",
@@ -105,7 +118,7 @@ class UsernameViewController: OWSViewController {
         stackView.addArrangedSubview(errorRow)
         errorRow.isHidden = true
 
-        errorLabel.textColor = .ows_red
+        errorLabel.textColor = .ows_accentRed
         errorLabel.textAlignment = .center
         errorLabel.numberOfLines = 0
         errorLabel.lineBreakMode = .byWordWrapping
@@ -121,7 +134,7 @@ class UsernameViewController: OWSViewController {
         stackView.addArrangedSubview(infoRow)
 
         let infoLabel = UILabel()
-        infoLabel.textColor = Theme.secondaryColor
+        infoLabel.textColor = Theme.secondaryTextAndIconColor
         infoLabel.text = NSLocalizedString("USERNAME_DESCRIPTION", comment: "An explanation of how usernames work on the username view.")
         infoLabel.font = .ows_dynamicTypeCaption1Clamped
         infoLabel.numberOfLines = 0
@@ -161,6 +174,10 @@ class UsernameViewController: OWSViewController {
                                                            comment: "An error indicating that the supplied username is in use by another user. Embeds {{requested username}}.")
 
             errorLabel.text = String(format: unavailableErrorFormat, pendingUsername)
+        case .startsWithNumber:
+            errorRow.isHidden = false
+            errorLabel.text = NSLocalizedString("USERNAME_STARTS_WITH_NUMBER_ERROR",
+                                                comment: "An error indicating that the supplied username cannot start with a number.")
         }
     }
 
@@ -199,7 +216,7 @@ class UsernameViewController: OWSViewController {
                 owsFailDebug("Unexpected username update error \(error)")
 
                 modalView.dismiss {
-                    OWSAlerts.showErrorAlert(message: NSLocalizedString("USERNAME_VIEW_ERROR_UPDATE_FAILED",
+                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("USERNAME_VIEW_ERROR_UPDATE_FAILED",
                                                                         comment: "Error moessage shown when a username update fails."))
                 }
             }
@@ -224,22 +241,41 @@ class UsernameViewController: OWSViewController {
             return false
         }
 
+        let startsWithNumberRegex = try! NSRegularExpression(pattern: "^[0-9]+", options: [])
+        guard !startsWithNumberRegex.hasMatch(input: pendingUsername) else {
+            validationState = .startsWithNumber
+            return false
+        }
+
         return true
     }
 
     func usernameSavedOrCanceled() {
         usernameTextField.resignFirstResponder()
-        dismiss(animated: true, completion: nil)
+
+        if modalPresentation {
+            dismiss(animated: true, completion: nil)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
     }
 
     // MARK: -
+
+    @objc func backButtonPressed(_ sender: UIBarButtonItem) {
+        guard hasPendingChanges else {
+            return usernameSavedOrCanceled()
+        }
+
+        OWSActionSheets.showPendingChangesActionSheet { [weak self] in self?.usernameSavedOrCanceled() }
+    }
 
     @objc func didTapCancel() {
         guard hasPendingChanges else {
             return usernameSavedOrCanceled()
         }
 
-        OWSAlerts.showPendingChangesAlert { [weak self] in self?.usernameSavedOrCanceled() }
+        OWSActionSheets.showPendingChangesActionSheet { [weak self] in self?.usernameSavedOrCanceled() }
     }
 
     @objc func didTapSave() {

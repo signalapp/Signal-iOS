@@ -43,6 +43,9 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 + (BOOL)isGrdbReadyForAppExtensions;
 + (void)setIsGrdbReadyForAppExtensions;
 
++ (BOOL)isAudibleErrorLoggingEnabled;
++ (void)setIsAudibleErrorLoggingEnabled:(BOOL)value;
+
 + (BOOL)isLoggingEnabled;
 + (void)setIsLoggingEnabled:(BOOL)value;
 
@@ -66,7 +69,8 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (void)setHasGeneratedThumbnails:(BOOL)value;
 
 - (BOOL)shouldShowUnidentifiedDeliveryIndicators;
-- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value;
+- (void)setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage:(BOOL)value;
+- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)shouldNotifyOfNewAccountsWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(shouldNotifyOfNewAccounts(transaction:));

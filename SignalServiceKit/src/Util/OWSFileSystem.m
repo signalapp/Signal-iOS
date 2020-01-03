@@ -119,9 +119,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)cachesDirectoryPath
 {
-    NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    OWSAssertDebug(paths.count >= 1);
-    return paths[0];
+    static NSString *result;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        OWSAssert(paths.count >= 1);
+        result = paths[0];
+    });
+    return result;
 }
 
 + (nullable NSError *)renameFilePathUsingRandomExtension:(NSString *)oldFilePath

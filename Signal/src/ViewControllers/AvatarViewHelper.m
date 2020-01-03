@@ -9,7 +9,6 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
 
@@ -30,37 +29,37 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
 
-    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:self.delegate.avatarActionSheetTitle
-                                                                         message:nil
-                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
-    [actionSheet addAction:[OWSAlerts cancelAction]];
+    ActionSheetController *actionSheet =
+        [[ActionSheetController alloc] initWithTitle:self.delegate.avatarActionSheetTitle message:nil];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    UIAlertAction *takePictureAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [self takePicture];
-                }];
+    ActionSheetAction *takePictureAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *_Nonnull action) {
+                  [self takePicture];
+              }];
     [actionSheet addAction:takePictureAction];
 
-    UIAlertAction *choosePictureAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [self chooseFromLibrary];
-                }];
+    ActionSheetAction *choosePictureAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *_Nonnull action) {
+                  [self chooseFromLibrary];
+              }];
     [actionSheet addAction:choosePictureAction];
 
     if (self.delegate.hasClearAvatarAction) {
-        UIAlertAction *clearAction = [UIAlertAction actionWithTitle:self.delegate.clearAvatarActionLabel
-                                                              style:UIAlertActionStyleDefault
-                                                            handler:^(UIAlertAction *_Nonnull action) {
-                                                                [self.delegate clearAvatar];
-                                                            }];
+        ActionSheetAction *clearAction =
+            [[ActionSheetAction alloc] initWithTitle:self.delegate.clearAvatarActionLabel
+                                               style:ActionSheetActionStyleDefault
+                                             handler:^(ActionSheetAction *_Nonnull action) {
+                                                 [self.delegate clearAvatar];
+                                             }];
         [actionSheet addAction:clearAction];
     }
 
-    [self.delegate.fromViewController presentAlert:actionSheet];
+    [self.delegate.fromViewController presentActionSheet:actionSheet];
 }
 
 - (void)takePicture

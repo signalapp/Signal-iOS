@@ -50,16 +50,14 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
         XCTAssertEqual(1, TSThread.anyFetchAll(databaseStorage: storage).count)
 
-        let groupId = Randomness.generateRandomBytes(Int32(kGroupIdLength))
-        let groupModel = TSGroupModel(title: "Test Group",
-                                      members: [contactAddress],
-                                      image: nil,
-                                      groupId: groupId)
-        let groupThread = TSGroupThread(groupModel: groupModel)
-
+        var groupThread: TSGroupThread!
         storage.write { transaction in
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
-            groupThread.anyInsert(transaction: transaction)
+
+            groupThread = try! GroupManager.createGroupForTests(transaction: transaction,
+                                                                members: [contactAddress],
+                                                                name: "Test Group")
+
             XCTAssertEqual(2, TSThread.anyFetchAll(transaction: transaction).count)
         }
 

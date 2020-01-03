@@ -9,23 +9,23 @@ syntax = "proto2";
 // iOS - package name determines class prefix
 package StorageServiceProtos;
 
-message Contact {
+message StorageItem {
   // @required
   optional bytes key   = 1;  // Randomly generated 16-byte value
   // @required
   optional bytes value = 2;  // Encrypted serialized bytes
 }
 
-message Contacts {
-  repeated Contact contacts = 1; // Corresponds to the requested
-                                 // contact keys that were found
-}
-
-message ContactsManifest {
+message StorageManifest {
   // @required
   optional uint64 version = 1; // Monotonically increasing value
   // @required
   optional bytes  value   = 2; // Encrypted serialized bytes
+}
+
+message StorageItems {
+  repeated StorageItem items = 1; // Corresponds to the requested
+                                  // keys that were found
 }
 
 message ReadOperation {
@@ -33,9 +33,20 @@ message ReadOperation {
 }
 
 message WriteOperation {
-  optional ContactsManifest manifest      = 1;
-  repeated Contact          insertContact = 2;
-  repeated bytes            deleteKey     = 3;
+  optional StorageManifest manifest   = 1;
+  repeated StorageItem     insertItem = 2;
+  repeated bytes           deleteKey  = 3;
+}
+
+message StorageRecord {
+  enum Type {
+    UNKNOWN = 0;
+    CONTACT = 1;
+  }
+
+  // @required
+  optional uint32        type    = 1;
+  optional ContactRecord contact = 2;
 }
 
 message ContactRecord {
@@ -51,19 +62,18 @@ message ContactRecord {
   }
 
   message Profile {
-    optional string name   = 1;
-    optional bytes  key    = 2;
-    optional bytes  avatar = 3;
+    optional string name     = 1;
+    optional bytes  key      = 2;
+    optional string username = 3;
   }
 
-  // @required
-  optional bytes    key         = 1;
-  optional string   serviceUuid = 2;
-  optional string   serviceE164 = 3;
-  optional Profile  profile     = 4;
-  optional Identity identity    = 5;
-  optional bool     blocked     = 6;
-  optional bool     whitelisted = 7;
+  optional string   serviceUuid = 1;
+  optional string   serviceE164 = 2;
+  optional Profile  profile     = 3;
+  optional Identity identity    = 4;
+  optional bool     blocked     = 5;
+  optional bool     whitelisted = 6;
+  optional string   nickname    = 7;
 }
 
 message ManifestRecord {

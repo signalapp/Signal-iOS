@@ -47,8 +47,10 @@ class MessageDetailViewController: OWSViewController {
     var scrollView: UIScrollView!
     var contentView: UIView?
 
-    var attachment: TSAttachment?
-    var attachmentStream: TSAttachmentStream?
+    var attachments: [TSAttachment]?
+    var attachmentStreams: [TSAttachmentStream]? {
+        return attachments?.flatMap { $0 as? TSAttachmentStream }
+    }
     var messageBody: String?
 
     lazy var shouldShowUD: Bool = {
@@ -103,7 +105,8 @@ class MessageDetailViewController: OWSViewController {
             owsFailDebug("unexpected error")
         }
 
-        self.conversationStyle.viewWidth = view.width()
+        // We use the navigation controller's width here as ours may not be calculated yet.
+        self.conversationStyle.viewWidth = navigationController?.view.width() ?? view.width()
 
         self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
                                                       comment: "Title for the 'message metadata' view.")
@@ -121,6 +124,7 @@ class MessageDetailViewController: OWSViewController {
         super.viewWillTransition(to: size, with: coordinator)
 
         self.conversationStyle.viewWidth = size.width
+        updateMessageViewLayout()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -152,10 +156,6 @@ class MessageDetailViewController: OWSViewController {
                 scrollView.setContentOffset(offset, animated: false)
             }
         }
-    }
-
-    override public var canBecomeFirstResponder: Bool {
-        return true
     }
 
     // MARK: - Create Views
@@ -190,10 +190,16 @@ class MessageDetailViewController: OWSViewController {
             footer.autoPinWidthToSuperview(withMargin: 0)
             footer.autoPinEdge(.top, to: .bottom, of: scrollView)
             footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+            footer.tintColor = Theme.primaryIconColor
 
             footer.items = [
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
+                UIBarButtonItem(
+                    image: Theme.iconImage(.messageActionShare),
+                    style: .plain,
+                    target: self,
+                    action: #selector(shareButtonPressed)
+                ),
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
             ]
         } else {
@@ -332,7 +338,7 @@ class MessageDetailViewController: OWSViewController {
             if self.shouldShowUD, incomingMessage.wasReceivedByUD {
                 let icon = #imageLiteral(resourceName: "ic_secret_sender_indicator").withRenderingMode(.alwaysTemplate)
                 let iconView = UIImageView(image: icon)
-                iconView.tintColor = Theme.secondaryColor
+                iconView.tintColor = Theme.secondaryTextAndIconColor
                 iconView.setContentHuggingHigh()
                 sentRow.addArrangedSubview(iconView)
                 // keep the icon close to the label.
@@ -435,28 +441,8 @@ class MessageDetailViewController: OWSViewController {
         return rows
     }
 
-    private func fetchAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
-        // TODO: Support multi-image messages.
-        guard let attachmentId = message.attachmentIds.first else {
-            return nil
-        }
-
-        guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
-            Logger.warn("Missing attachment. Was it deleted?")
-            return nil
-        }
-
-        return attachment
-    }
-
     var hasMediaAttachment: Bool {
-        guard let attachment = self.attachment else {
-            return false
-        }
-
-        guard attachment.contentType != OWSMimeTypeOversizeTextMessage else {
-            // to the user, oversized text attachments should behave
-            // just like regular text messages.
+        guard let attachmentStreams = self.attachmentStreams, !attachmentStreams.isEmpty else {
             return false
         }
 
@@ -472,7 +458,7 @@ class MessageDetailViewController: OWSViewController {
 
         var rows = [UIView]()
 
-        if let attachment = self.attachment {
+        if self.attachments?.count == 1, let attachment = self.attachments?.first {
             if let sourceFilename = attachment.sourceFilename {
                 rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
                                                              comment: "Label for the original filename of any attachment in the 'message metadata' view."),
@@ -500,10 +486,10 @@ class MessageDetailViewController: OWSViewController {
 
     private func buildUDAccessoryView(text: String) -> UIView {
         let label = UILabel()
-        label.textColor = Theme.secondaryColor
+        label.textColor = Theme.secondaryTextAndIconColor
         label.text = text
         label.textAlignment = .right
-        label.font = UIFont.ows_mediumFont(withSize: 13)
+        label.font = UIFont.ows_semiboldFont(withSize: 13)
 
         let image = #imageLiteral(resourceName: "ic_secret_sender_indicator").withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: image)
@@ -518,8 +504,8 @@ class MessageDetailViewController: OWSViewController {
 
     private func nameLabel(text: String) -> UILabel {
         let label = UILabel()
-        label.textColor = Theme.primaryColor
-        label.font = UIFont.ows_mediumFont(withSize: 14)
+        label.textColor = Theme.primaryTextColor
+        label.font = UIFont.ows_semiboldFont(withSize: 14)
         label.text = text
         label.setContentHuggingHorizontalHigh()
         return label
@@ -527,7 +513,7 @@ class MessageDetailViewController: OWSViewController {
 
     private func valueLabel(text: String) -> UILabel {
         let label = UILabel()
-        label.textColor = Theme.primaryColor
+        label.textColor = Theme.primaryTextColor
         label.font = UIFont.ows_regularFont(withSize: 14)
         label.text = text
         label.setContentHuggingHorizontalLow()
@@ -545,7 +531,7 @@ class MessageDetailViewController: OWSViewController {
 
         if subtitle.count > 0 {
             let subtitleLabel = self.valueLabel(text: subtitle)
-            subtitleLabel.textColor = Theme.secondaryColor
+            subtitleLabel.textColor = Theme.secondaryTextAndIconColor
             hStackView.addArrangedSubview(subtitleLabel)
         }
 
@@ -554,12 +540,12 @@ class MessageDetailViewController: OWSViewController {
 
     // MARK: - Actions
 
-    @objc func shareButtonPressed() {
-        guard let attachmentStream = attachmentStream else {
-            Logger.error("Share button should only be shown with attachment, but no attachment found.")
+    @objc func shareButtonPressed(_ sender: UIBarButtonItem) {
+        guard let attachmentStreams = attachmentStreams, !attachmentStreams.isEmpty else {
+            Logger.error("Share button should only be shown with attachments, but no attachments found.")
             return
         }
-        AttachmentSharing.showShareUI(forAttachment: attachmentStream)
+        AttachmentSharing.showShareUI(forAttachments: attachmentStreams, sender: sender)
     }
 
     // MARK: - Actions
@@ -580,8 +566,7 @@ class MessageDetailViewController: OWSViewController {
                 throw DetailViewError.messageWasDeleted
             }
             self.message = newMessage
-            self.attachment = self.fetchAttachment(transaction: transaction)
-            self.attachmentStream = self.attachment as? TSAttachmentStream
+            self.attachments = newMessage.mediaAttachments(with: transaction)
         }
     }
 
@@ -666,20 +651,23 @@ class MessageDetailViewController: OWSViewController {
 extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
 
     func didTapImageViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let galleryVC = MediaGalleryNavigationController.showingDetailView(thread: thread,
-                                                                           mediaAttachment: attachmentStream,
-                                                                           options: [])
-
-        galleryVC.mediaGallery.addDataSourceDelegate(self)
-        present(galleryVC, animated: true)
+        let mediaPageVC = MediaPageViewController(
+            initialMediaAttachment: attachmentStream,
+            thread: thread,
+            showingSingleMessage: true
+        )
+        mediaPageVC.mediaGallery.addDelegate(self)
+        present(mediaPageVC, animated: true)
     }
 
     func didTapVideoViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let galleryVC = MediaGalleryNavigationController.showingDetailView(thread: thread,
-                                                                           mediaAttachment: attachmentStream,
-                                                                           options: [])
-        galleryVC.mediaGallery.addDataSourceDelegate(self)
-        present(galleryVC, animated: true)
+        let mediaPageVC = MediaPageViewController(
+            initialMediaAttachment: attachmentStream,
+            thread: thread,
+            showingSingleMessage: true
+        )
+        mediaPageVC.mediaGallery.addDelegate(self)
+        present(mediaPageVC, animated: true)
     }
 
     func didTapContactShare(_ viewItem: ConversationViewItem) {
@@ -709,7 +697,7 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
         }
 
         let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
-        present(packView, animated: true)
+        packView.present(from: self, animated: true)
     }
 
     func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
@@ -734,9 +722,9 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
     func didTapPdf(for viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
 
-        let pdfView = PdfViewController(attachmentStream: attachmentStream)
+        let pdfView = PdfViewController(viewItem: viewItem, attachmentStream: attachmentStream)
         let navigationController = OWSNavigationController(rootViewController: pdfView)
-        present(navigationController, animated: true)
+        presentFullScreen(navigationController, animated: true)
     }
 
     func didTapTruncatedTextMessage(_ conversationItem: ConversationViewItem) {
@@ -791,9 +779,9 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
     }
 }
 
-extension MessageDetailViewController: MediaGalleryDataSourceDelegate {
+extension MessageDetailViewController: MediaGalleryDelegate {
 
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
+    func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.info("")
 
         guard (items.map({ $0.message }) == [self.message]) else {
@@ -805,7 +793,7 @@ extension MessageDetailViewController: MediaGalleryDataSourceDelegate {
         self.wasDeleted = true
     }
 
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath]) {
+    func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath]) {
         self.dismiss(animated: true) {
             self.navigationController?.popViewController(animated: true)
         }
@@ -815,7 +803,7 @@ extension MessageDetailViewController: MediaGalleryDataSourceDelegate {
 extension MessageDetailViewController: OWSMessageStickerViewDelegate {
     public func showStickerPack(_ stickerPackInfo: StickerPackInfo) {
         let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
-        present(packView, animated: true)
+        packView.present(from: self, animated: true)
     }
 }
 
@@ -908,8 +896,7 @@ extension MessageDetailViewController: SDSDatabaseStorageObserver {
     func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
         AssertIsOnMainThread()
 
-        let uniqueId = self.message.uniqueId
-        guard change.didUpdate(interactionId: uniqueId) else {
+        guard change.didUpdate(interaction: self.message) else {
             return
         }
 

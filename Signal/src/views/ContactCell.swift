@@ -72,16 +72,16 @@ class ContactCell: UITableViewCell {
 
     func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool, contactsManager: OWSContactsManager) {
 
-        OWSTableItem.configureCell(self)
-
         self.contact = contact
         self.showsWhenSelected = showsWhenSelected
 
-        self.titleLabel.textColor = Theme.primaryColor
-        self.subtitleLabel.textColor = Theme.secondaryColor
+        if let cnContactId = contact.cnContactId,
+            let cnContact = contactsManager.cnContact(withId: cnContactId) {
+            titleLabel.attributedText = cnContact.formattedFullName(font: titleLabel.font)
+        } else {
+            titleLabel.text = contact.fullName
+        }
 
-        let cnContact = contactsManager.cnContact(withId: contact.cnContactId)
-        titleLabel.attributedText = cnContact?.formattedFullName(font: titleLabel.font)
         updateSubtitle(subtitleType: subtitleType, contact: contact)
 
         if let contactImage = contactsManager.avatarImage(forCNContactId: contact.cnContactId) {
@@ -124,6 +124,15 @@ class ContactCell: UITableViewCell {
                 self.subtitleLabel.text = NSLocalizedString("CONTACT_PICKER_NO_EMAILS_AVAILABLE", comment: "table cell subtitle when contact card has no email")
             }
         }
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        titleLabel.textColor = Theme.primaryTextColor
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+
+        OWSTableItem.configureCell(self)
     }
 }
 

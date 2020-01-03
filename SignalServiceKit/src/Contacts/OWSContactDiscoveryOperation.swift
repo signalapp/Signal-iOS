@@ -90,7 +90,7 @@ public class LegacyContactDiscoveryOperation: OWSOperation {
 
     // Called at most one time.
     override public func didSucceed() {
-        guard !IsUsingProductionService() else {
+        guard !TSConstants.isUsingProductionService else {
             // comparison disabled in prod for now
             return
         }

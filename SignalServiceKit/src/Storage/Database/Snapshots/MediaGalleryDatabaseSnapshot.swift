@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 @objc
 public protocol MediaGalleryDatabaseSnapshotDelegate: AnyObject {
@@ -28,27 +28,27 @@ public class MediaGalleryDatabaseObserver: NSObject {
 
     private typealias RowId = Int64
 
-    private var _pendingChanges: Set<RowId> = Set()
-    private var pendingChanges: Set<RowId> {
+    private var _pendingDeletes: Set<RowId> = Set()
+    private var pendingDeletes: Set<RowId> {
         get {
             AssertIsOnUIDatabaseObserverSerialQueue()
-            return _pendingChanges
+            return _pendingDeletes
         }
         set {
             AssertIsOnUIDatabaseObserverSerialQueue()
-            _pendingChanges = newValue
+            _pendingDeletes = newValue
         }
     }
 
-    private var _committedChanges: Set<RowId>?
-    private var committedChanges: Set<RowId>? {
+    private var _committedDeletes: Set<RowId>?
+    private var committedDeletes: Set<RowId>? {
         get {
             AssertIsOnMainThread()
-            return _committedChanges
+            return _committedDeletes
         }
         set {
             AssertIsOnMainThread()
-            _committedChanges = newValue
+            _committedDeletes = newValue
         }
     }
 
@@ -65,91 +65,47 @@ public class MediaGalleryDatabaseObserver: NSObject {
     }
 }
 
-extension MediaGalleryDatabaseObserver: TransactionObserver {
-
-    public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
-        switch eventKind {
-        case .delete(tableName: let tableName):
-            return tableName == AttachmentRecord.databaseTableName
-        default:
-            return false
-        }
-    }
-
-    public func databaseDidChange(with event: DatabaseEvent) {
-        Logger.verbose("")
-        assert(event.tableName == AttachmentRecord.databaseTableName)
-        UIDatabaseObserver.serializedSync {
-            _ = pendingChanges.insert(event.rowID)
-        }
-    }
-
-    public func databaseDidCommit(_ db: Database) {
-        // no - op
-
-        // Although this class is a TransactionObserver, it is also a delegate
-        // (DatabaseSnapshotDelegate) of another TransactionObserver, the UIDatabaseObserver.
-        //
-        // We use our own TransactionObserver methods to collect details about the changes,
-        // but we wait for the UIDatabaseObserver's TransactionObserver methods to inform our own
-        // delegate of these details in sync with when the UI DB Snapshot is updated
-        // (via DatabaseSnapshotDelegate).
-    }
-
-    public func databaseDidRollback(_ db: Database) {
-        owsFailDebug("we should verify this works if we ever start to use rollbacks")
-        UIDatabaseObserver.serializedSync {
-            pendingChanges = Set()
-        }
-    }
-}
-
 extension MediaGalleryDatabaseObserver: DatabaseSnapshotDelegate {
 
-    private func attachmentIds(forRowIds rowIds: Set<RowId>, transaction: GRDBReadTransaction) throws -> Set<String> {
-        guard rowIds.count > 0 else {
-            return Set()
+    // MARK: - Transaction Lifecycle
+
+    public func snapshotTransactionDidChange(with event: DatabaseEvent) {
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        if event.kind == .delete && event.tableName == AttachmentRecord.databaseTableName {
+            _ = pendingDeletes.insert(event.rowID)
         }
-
-        let commaSeparatedRowIds = rowIds.map { String($0) }.joined(separator: ", ")
-        let rowIdsSQL = "(\(commaSeparatedRowIds))"
-
-        let sql = """
-            SELECT \(attachmentColumn: .uniqueId)
-            FROM \(AttachmentRecord.databaseTableName)
-            WHERE rowid IN \(rowIdsSQL)
-        """
-
-        let uniqueIds = try String.fetchAll(transaction.database, sql: sql)
-        return Set(uniqueIds)
     }
 
-    public func databaseSnapshotSourceDidCommit(db: Database) {
+    public func snapshotTransactionDidCommit(db: Database) {
         AssertIsOnUIDatabaseObserverSerialQueue()
-        let pendingChanges = self.pendingChanges
-        self.pendingChanges = Set()
+        let pendingDeletes = self.pendingDeletes
+        self.pendingDeletes = Set()
 
         DispatchQueue.main.async {
-            self.committedChanges = pendingChanges
+            self.committedDeletes = pendingDeletes
         }
     }
 
-    var databaseStorage: GRDBDatabaseStorageAdapter {
-        return SDSDatabaseStorage.shared.grdbStorage
+    public func snapshotTransactionDidRollback(db: Database) {
+        owsFailDebug("we should verify this works if we ever start to use rollbacks")
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        pendingDeletes = Set()
     }
+
+    // MARK: - Snapshot LifeCycle (Post Commit)
 
     public func databaseSnapshotWillUpdate() {
         AssertIsOnMainThread()
 
         do {
-            guard let committedChanges = self.committedChanges else {
-                throw OWSErrorMakeAssertionError("committedChanges were unexpectedly nil")
+            guard let committedDeletes = self.committedDeletes else {
+                throw OWSErrorMakeAssertionError("committedDeletes were unexpectedly nil")
             }
-            self.committedChanges = nil
+            self.committedDeletes = nil
 
             assert(self.deletedAttachmentIds == nil)
             try databaseStorage.uiReadThrows { transaction in
-                self.deletedAttachmentIds = try self.attachmentIds(forRowIds: committedChanges, transaction: transaction)
+                self.deletedAttachmentIds = try self.attachmentIds(forRowIds: committedDeletes, transaction: transaction)
             }
             for delegate in snapshotDelegates {
                 delegate.mediaGalleryDatabaseSnapshotWillUpdate()
@@ -187,5 +143,29 @@ extension MediaGalleryDatabaseObserver: DatabaseSnapshotDelegate {
         for delegate in snapshotDelegates {
             delegate.mediaGalleryDatabaseSnapshotDidUpdateExternally()
         }
+    }
+
+    // MARK: - Private Helpers
+
+    private var databaseStorage: GRDBDatabaseStorageAdapter {
+        return SDSDatabaseStorage.shared.grdbStorage
+    }
+
+    private func attachmentIds(forRowIds rowIds: Set<RowId>, transaction: GRDBReadTransaction) throws -> Set<String> {
+        guard rowIds.count > 0 else {
+            return Set()
+        }
+
+        let commaSeparatedRowIds = rowIds.map { String($0) }.joined(separator: ", ")
+        let rowIdsSQL = "(\(commaSeparatedRowIds))"
+
+        let sql = """
+        SELECT \(attachmentColumn: .uniqueId)
+        FROM \(AttachmentRecord.databaseTableName)
+        WHERE rowid IN \(rowIdsSQL)
+        """
+
+        let uniqueIds = try String.fetchAll(transaction.database, sql: sql)
+        return Set(uniqueIds)
     }
 }

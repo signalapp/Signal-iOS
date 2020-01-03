@@ -4,8 +4,11 @@
 
 #import <SignalServiceKit/SSKEnvironment.h>
 
+@class LaunchJobs;
 @class OWSAudioSession;
 @class OWSContactsManager;
+@class OWSIncomingContactSyncJobQueue;
+@class OWSIncomingGroupSyncJobQueue;
 @class OWSPreferences;
 @class OWSSounds;
 @class OWSWindowManager;
@@ -25,6 +28,9 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
+         incomingContactSyncJobQueue:(OWSIncomingContactSyncJobQueue *)incomingContactSyncJobQueue
+           incomingGroupSyncJobQueue:(OWSIncomingGroupSyncJobQueue *)incomingGroupSyncJobQueue
+                          launchJobs:(LaunchJobs *)launchJobs
                          preferences:(OWSPreferences *)preferences
           proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
                               sounds:(OWSSounds *)sounds
@@ -32,6 +38,9 @@
 
 @property (nonatomic, readonly) OWSAudioSession *audioSession;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue;
+@property (nonatomic, readonly) OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue;
+@property (nonatomic, readonly) LaunchJobs *launchJobs;
 @property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManager;
 @property (nonatomic, readonly) OWSPreferences *preferences;
 @property (nonatomic, readonly) OWSSounds *sounds;

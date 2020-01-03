@@ -72,7 +72,7 @@ import SignalMessaging
         frontmostViewController.ows_askForMicrophonePermissions { granted in
             guard granted == true else {
                 Logger.warn("aborting due to missing microphone permissions.")
-                OWSAlerts.showNoMicrophonePermissionAlert()
+                frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
                 return
             }
             callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: isVideo)

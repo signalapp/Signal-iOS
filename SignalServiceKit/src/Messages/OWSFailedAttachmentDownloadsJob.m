@@ -64,7 +64,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
     }
 }
 
-- (void)run
+- (void)runSync
 {
     __block uint count = 0;
     [self.databaseStorage

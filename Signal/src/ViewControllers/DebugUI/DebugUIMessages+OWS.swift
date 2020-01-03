@@ -77,25 +77,13 @@ public extension DebugUIMessages {
         assert(FeatureFlags.allowUUIDOnlyContacts)
 
         let uuidMembers = (0...3).map { _ in CommonGenerator.address(hasPhoneNumber: false) }
-
         let members = uuidMembers + [TSAccountManager.localAddress!]
-
         let groupName = "UUID Group"
-        let groupId = Randomness.generateRandomBytes(kGroupIdLength)
-        let groupModel = TSGroupModel(
-            title: groupName,
-            members: members,
-            image: nil,
-            groupId: groupId
-        )
 
-        databaseStorage.write { transaction in
-            let thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction)
-            let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
-            message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""), transaction: transaction)
-            SSKEnvironment.shared.messageSenderJobQueue.add(message: message.asPreparer,
-                                                            transaction: transaction)
-        }
+        GroupManager.createGroup(members: members, name: groupName)
+        .then(on: .global()) { thread in
+            return GroupManager.sendDurableNewGroupMessage(forThread: thread)
+        }.retainUntilComplete()
     }
 }
 

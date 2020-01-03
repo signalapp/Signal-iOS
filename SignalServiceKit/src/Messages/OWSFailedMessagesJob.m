@@ -70,7 +70,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
     }
 }
 
-- (void)run
+- (void)runSync
 {
     __block uint count = 0;
 

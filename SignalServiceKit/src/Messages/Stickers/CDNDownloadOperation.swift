@@ -139,7 +139,7 @@ class CDNDownloadOperation: OWSOperation {
                                                         return
                                                     }
                                                     if let error = error {
-                                                        owsFailDebug("Download failed: \(error)")
+                                                        Logger.warn("Download failed: \(error)")
                                                         let errorCopy = error as NSError
                                                         errorCopy.isRetryable = !errorCopy.hasFatalResponseCode()
                                                         return resolver.reject(errorCopy)

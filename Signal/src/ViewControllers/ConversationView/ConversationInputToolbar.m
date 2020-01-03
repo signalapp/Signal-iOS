@@ -8,7 +8,6 @@
 #import "OWSContactsManager.h"
 #import "OWSMath.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
@@ -34,6 +33,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 const CGFloat kMinTextViewHeight = 38;
 const CGFloat kMinToolbarItemHeight = 44;
 const CGFloat kMaxTextViewHeight = 98;
+const CGFloat kMaxIPadTextViewHeight = 142;
 
 #pragma mark -
 
@@ -169,8 +169,21 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.layoutMargins = UIEdgeInsetsZero;
 
+    // When presenting or dismissing the keyboard, there may be a slight
+    // gap between the keyboard and the bottom of the input bar during
+    // the animation. Extend the background below the toolbar's bounds
+    // by this much to mask that extra space.
+    CGFloat backgroundExtension = 100;
+
     if (UIAccessibilityIsReduceTransparencyEnabled()) {
         self.backgroundColor = Theme.toolbarBackgroundColor;
+
+        UIView *extendedBackground = [UIView new];
+        extendedBackground.backgroundColor = Theme.toolbarBackgroundColor;
+        [self addSubview:extendedBackground];
+        [extendedBackground autoPinWidthToSuperview];
+        [extendedBackground autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self];
+        [extendedBackground autoSetDimension:ALDimensionHeight toSize:backgroundExtension];
     } else {
         CGFloat alpha = OWSNavigationBar.backgroundBlurMutingFactor;
         self.backgroundColor = [Theme.toolbarBackgroundColor colorWithAlphaComponent:alpha];
@@ -178,7 +191,9 @@ const CGFloat kMaxTextViewHeight = 98;
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:Theme.barBlurEffect];
         blurEffectView.layer.zPosition = -1;
         [self addSubview:blurEffectView];
-        [blurEffectView autoPinEdgesToSuperviewEdges];
+        [blurEffectView autoPinWidthToSuperview];
+        [blurEffectView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        [blurEffectView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:-backgroundExtension];
     }
 
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
@@ -201,7 +216,8 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.cameraButton addTarget:self
                           action:@selector(cameraButtonPressed)
                 forControlEvents:UIControlEventTouchUpInside];
-    [self.cameraButton setTemplateImageName:@"camera-outline-24" tintColor:Theme.navbarIconColor];
+    UIImage *cameraIcon = [Theme iconImage:ThemeIconCameraButton];
+    [self.cameraButton setTemplateImage:cameraIcon tintColor:Theme.primaryIconColor];
     [self.cameraButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _cameraButton);
 
@@ -213,11 +229,9 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.attachmentButton addTarget:self
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
-    [self.attachmentButton setTemplateImageName:@"plus-24" tintColor:Theme.navbarIconColor];
-    [self.attachmentButton
-        setImage:[UIImage imageNamed:[@"x-box-filled-28-"
-                                         stringByAppendingString:Theme.isDarkThemeEnabled ? @"dark" : @"light"]]
-        forState:UIControlStateSelected];
+    [self.attachmentButton setTemplateImageName:@"plus-24" tintColor:Theme.primaryIconColor];
+    NSString *selectedImageName = [Theme iconName:ThemeIconAttachmentButtonSelected];
+    [self.attachmentButton setImage:[UIImage imageNamed:selectedImageName] forState:UIControlStateSelected];
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(55, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
@@ -231,14 +245,16 @@ const CGFloat kMaxTextViewHeight = 98;
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.voiceMemoButton.accessibilityLabel = NSLocalizedString(@"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
         @"accessibility label for the button which records voice memos");
-    [self.voiceMemoButton setTemplateImageName:@"mic-outline-24" tintColor:Theme.navbarIconColor];
+    UIImage *micIcon = [Theme iconImage:ThemeIconMicButton];
+    [self.voiceMemoButton setTemplateImage:micIcon tintColor:Theme.primaryIconColor];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     _stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.stickerButton.accessibilityLabel = NSLocalizedString(@"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL",
         @"accessibility label for the button which shows the sticker picker");
-    [self.stickerButton setTemplateImageName:@"sticker-smiley-outline-24" tintColor:Theme.navbarIconColor];
+    UIImage *stickerIcon = [Theme iconImage:ThemeIconStickerButton];
+    [self.stickerButton setTemplateImage:stickerIcon tintColor:Theme.primaryIconColor];
     [self.stickerButton addTarget:self
                            action:@selector(stickerButtonPressed)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -604,7 +620,9 @@ const CGFloat kMaxTextViewHeight = 98;
         }
     };
 
-    BOOL hasTextInput = self.inputTextView.trimmedText.length > 0;
+    // NOTE: We use untrimmedText, so that the sticker button disappears
+    //       even if the user just enters whitespace.
+    BOOL hasTextInput = self.inputTextView.untrimmedText.length > 0;
     ensureViewHiddenState(self.attachmentButton, NO);
     if (hasTextInput) {
         ensureViewHiddenState(self.cameraButton, YES);
@@ -631,7 +649,7 @@ const CGFloat kMaxTextViewHeight = 98;
         if (!hideStickerButton) {
             self.stickerButton.imageView.tintColor
                 = (self.desiredKeyboardType == KeyboardType_Sticker ? UIColor.ows_signalBlueColor
-                                                                    : Theme.navbarIconColor);
+                                                                    : Theme.primaryIconColor);
         }
 
         self.attachmentButton.selected = self.desiredKeyboardType == KeyboardType_Attachment;
@@ -816,8 +834,8 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.voiceMemoContentView autoPinEdgesToSuperviewMargins];
 
     self.recordingLabel = [UILabel new];
-    self.recordingLabel.textColor = [UIColor ows_destructiveRedColor];
-    self.recordingLabel.font = [UIFont ows_mediumFontWithSize:14.f];
+    self.recordingLabel.textColor = UIColor.ows_accentRedColor;
+    self.recordingLabel.font = [UIFont ows_semiboldFontWithSize:14.f];
     [self.voiceMemoContentView addSubview:self.recordingLabel];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _recordingLabel);
 
@@ -834,7 +852,7 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSAssertDebug(icon);
     UIImageView *imageView =
         [[UIImageView alloc] initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-    imageView.tintColor = [UIColor ows_destructiveRedColor];
+    imageView.tintColor = UIColor.ows_accentRedColor;
     [imageView setContentHuggingHigh];
     [self.voiceMemoContentView addSubview:imageView];
 
@@ -847,7 +865,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -855,7 +873,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -863,15 +881,15 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:NSLocalizedString(@"VOICE_MESSAGE_CANCEL_INSTRUCTIONS",
                                                       @"Indicates how to cancel a voice message.")
                                        attributes:@{
-                                           NSFontAttributeName : [UIFont ows_mediumFontWithSize:cancelFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSFontAttributeName : [UIFont ows_semiboldFontWithSize:cancelFontSize],
+                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                        }]];
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -879,7 +897,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     UILabel *cancelLabel = [UILabel new];
@@ -890,7 +908,7 @@ const CGFloat kMaxTextViewHeight = 98;
     const CGFloat kRedCircleSize = 100.f;
     UIView *redCircleView = [[OWSCircleView alloc] initWithDiameter:kRedCircleSize];
     self.voiceMemoRedRecordingCircle = redCircleView;
-    redCircleView.backgroundColor = [UIColor ows_destructiveRedColor];
+    redCircleView.backgroundColor = UIColor.ows_accentRedColor;
     [self.voiceMemoContentView addSubview:redCircleView];
     [redCircleView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
     [redCircleView autoAlignAxis:ALAxisVertical toSameAxisOfView:self.voiceMemoButton];
@@ -1022,7 +1040,7 @@ const CGFloat kMaxTextViewHeight = 98;
         [weakSelf.inputToolbarDelegate voiceMemoGestureDidCancel];
     }];
     [cancelButton setTitle:CommonStrings.cancelButton forState:UIControlStateNormal];
-    [cancelButton setTitleColor:UIColor.ows_destructiveRedColor forState:UIControlStateNormal];
+    [cancelButton setTitleColor:UIColor.ows_accentRedColor forState:UIControlStateNormal];
     cancelButton.alpha = 0;
     cancelButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, cancelButton);
@@ -1195,7 +1213,36 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 }
 
+- (void)showStickerKeyboard
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.desiredKeyboardType != KeyboardType_Sticker) {
+        [self toggleKeyboardType:KeyboardType_Sticker];
+    }
+}
+
+- (void)showAttachmentKeyboard
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.desiredKeyboardType != KeyboardType_Attachment) {
+        [self toggleKeyboardType:KeyboardType_Attachment];
+    }
+}
+
 #pragma mark - ConversationTextViewToolbarDelegate
+
+- (void)setBounds:(CGRect)bounds
+{
+    CGFloat oldHeight = self.bounds.size.height;
+
+    [super setBounds:bounds];
+
+    if (oldHeight != bounds.size.height) {
+        [self.inputToolbarDelegate updateToolbarHeight];
+    }
+}
 
 - (void)textViewDidChange:(UITextView *)textView
 {
@@ -1221,7 +1268,9 @@ const CGFloat kMaxTextViewHeight = 98;
     // `textView.contentSize` isn't accurate when restoring a multiline draft, so we compute it here.
     textView.contentSize = contentSize;
 
-    CGFloat newHeight = CGFloatClamp(contentSize.height, kMinTextViewHeight, kMaxTextViewHeight);
+    CGFloat newHeight = CGFloatClamp(contentSize.height,
+        kMinTextViewHeight,
+        UIDevice.currentDevice.isIPad ? kMaxIPadTextViewHeight : kMaxTextViewHeight);
 
     if (newHeight != self.textViewHeight) {
         self.textViewHeight = newHeight;

@@ -96,7 +96,8 @@ public class OWS106EnsureProfileComplete: YDBDatabaseMigration {
             }
 
             return firstly {
-                ProfileFetcherJob().getProfile(address: localAddress)
+                return ProfileFetcherJob.fetchAndUpdateProfilePromise(address: localAddress,
+                                                                      ignoreThrottling: true)
             }.done { _ in
                 Logger.info("verified recipient profile is in good shape: \(localAddress)")
             }.recover { error -> Promise<Void> in

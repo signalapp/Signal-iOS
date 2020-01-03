@@ -43,7 +43,8 @@ public class MessageFetcherJob: NSObject {
         Logger.debug("")
 
         guard tsAccountManager.isRegisteredAndReady else {
-            owsFailDebug("isRegisteredAndReady was unexpectedly false")
+            assert(AppReadiness.isAppReady())
+            Logger.warn("not registered")
             return Promise.value(())
         }
 
@@ -140,7 +141,7 @@ public class MessageFetcherJob: NSObject {
             let params = ParamParser(dictionary: messageDict)
 
             let typeInt: Int32 = try params.required(key: "type")
-            guard let type: SSKProtoEnvelope.SSKProtoEnvelopeType = SSKProtoEnvelope.SSKProtoEnvelopeType(rawValue: typeInt) else {
+            guard let type: SSKProtoEnvelopeType = SSKProtoEnvelopeType(rawValue: typeInt) else {
                 Logger.error("`type` was invalid: \(typeInt)")
                 throw ParamParser.ParseError.invalidFormat("type")
             }

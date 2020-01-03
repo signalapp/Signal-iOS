@@ -11,29 +11,152 @@ public enum ProvisioningProtoError: Error {
     case invalidProtobuf(description: String)
 }
 
+// MARK: - ProvisioningProtoProvisioningUuid
+
+@objc
+public class ProvisioningProtoProvisioningUuid: NSObject {
+
+    // MARK: - ProvisioningProtoProvisioningUuidBuilder
+
+    @objc
+    public class func builder(uuid: String) -> ProvisioningProtoProvisioningUuidBuilder {
+        return ProvisioningProtoProvisioningUuidBuilder(uuid: uuid)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> ProvisioningProtoProvisioningUuidBuilder {
+        let builder = ProvisioningProtoProvisioningUuidBuilder(uuid: uuid)
+        return builder
+    }
+
+    @objc
+    public class ProvisioningProtoProvisioningUuidBuilder: NSObject {
+
+        private var proto = ProvisioningProtos_ProvisioningUuid()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(uuid: String) {
+            super.init()
+
+            setUuid(uuid)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.uuid = valueParam
+        }
+
+        public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
+        }
+
+        @objc
+        public func build() throws -> ProvisioningProtoProvisioningUuid {
+            return try ProvisioningProtoProvisioningUuid.parseProto(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try ProvisioningProtoProvisioningUuid.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: ProvisioningProtos_ProvisioningUuid
+
+    @objc
+    public let uuid: String
+
+    private init(proto: ProvisioningProtos_ProvisioningUuid,
+                 uuid: String) {
+        self.proto = proto
+        self.uuid = uuid
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> ProvisioningProtoProvisioningUuid {
+        let proto = try ProvisioningProtos_ProvisioningUuid(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: ProvisioningProtos_ProvisioningUuid) throws -> ProvisioningProtoProvisioningUuid {
+        guard proto.hasUuid else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: uuid")
+        }
+        let uuid = proto.uuid
+
+        // MARK: - Begin Validation Logic for ProvisioningProtoProvisioningUuid -
+
+        // MARK: - End Validation Logic for ProvisioningProtoProvisioningUuid -
+
+        let result = ProvisioningProtoProvisioningUuid(proto: proto,
+                                                       uuid: uuid)
+        return result
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension ProvisioningProtoProvisioningUuid {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension ProvisioningProtoProvisioningUuid.ProvisioningProtoProvisioningUuidBuilder {
+    @objc
+    public func buildIgnoringErrors() -> ProvisioningProtoProvisioningUuid? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - ProvisioningProtoProvisionEnvelope
 
-@objc public class ProvisioningProtoProvisionEnvelope: NSObject {
+@objc
+public class ProvisioningProtoProvisionEnvelope: NSObject {
 
     // MARK: - ProvisioningProtoProvisionEnvelopeBuilder
 
-    @objc public class func builder(publicKey: Data, body: Data) -> ProvisioningProtoProvisionEnvelopeBuilder {
+    @objc
+    public class func builder(publicKey: Data, body: Data) -> ProvisioningProtoProvisionEnvelopeBuilder {
         return ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> ProvisioningProtoProvisionEnvelopeBuilder {
+    @objc
+    public func asBuilder() -> ProvisioningProtoProvisionEnvelopeBuilder {
         let builder = ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
         return builder
     }
 
-    @objc public class ProvisioningProtoProvisionEnvelopeBuilder: NSObject {
+    @objc
+    public class ProvisioningProtoProvisionEnvelopeBuilder: NSObject {
 
         private var proto = ProvisioningProtos_ProvisionEnvelope()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
-        @objc fileprivate init(publicKey: Data, body: Data) {
+        @objc
+        fileprivate init(publicKey: Data, body: Data) {
             super.init()
 
             setPublicKey(publicKey)
@@ -62,20 +185,24 @@ public enum ProvisioningProtoError: Error {
             proto.body = valueParam
         }
 
-        @objc public func build() throws -> ProvisioningProtoProvisionEnvelope {
+        @objc
+        public func build() throws -> ProvisioningProtoProvisionEnvelope {
             return try ProvisioningProtoProvisionEnvelope.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try ProvisioningProtoProvisionEnvelope.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: ProvisioningProtos_ProvisionEnvelope
 
-    @objc public let publicKey: Data
+    @objc
+    public let publicKey: Data
 
-    @objc public let body: Data
+    @objc
+    public let body: Data
 
     private init(proto: ProvisioningProtos_ProvisionEnvelope,
                  publicKey: Data,
@@ -90,7 +217,8 @@ public enum ProvisioningProtoError: Error {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> ProvisioningProtoProvisionEnvelope {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> ProvisioningProtoProvisionEnvelope {
         let proto = try ProvisioningProtos_ProvisionEnvelope(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -116,7 +244,8 @@ public enum ProvisioningProtoError: Error {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -124,13 +253,15 @@ public enum ProvisioningProtoError: Error {
 #if DEBUG
 
 extension ProvisioningProtoProvisionEnvelope {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeBuilder {
-    @objc public func buildIgnoringErrors() -> ProvisioningProtoProvisionEnvelope? {
+    @objc
+    public func buildIgnoringErrors() -> ProvisioningProtoProvisionEnvelope? {
         return try! self.build()
     }
 }
@@ -139,41 +270,54 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 
 // MARK: - ProvisioningProtoProvisionMessage
 
-@objc public class ProvisioningProtoProvisionMessage: NSObject {
+@objc
+public class ProvisioningProtoProvisionMessage: NSObject {
 
     // MARK: - ProvisioningProtoProvisionMessageBuilder
 
-    @objc public class func builder(identityKeyPublic: Data, identityKeyPrivate: Data, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) -> ProvisioningProtoProvisionMessageBuilder {
-        return ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, provisioningCode: provisioningCode, userAgent: userAgent, profileKey: profileKey, readReceipts: readReceipts)
+    @objc
+    public class func builder(identityKeyPublic: Data, identityKeyPrivate: Data, provisioningCode: String, profileKey: Data) -> ProvisioningProtoProvisionMessageBuilder {
+        return ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> ProvisioningProtoProvisionMessageBuilder {
-        let builder = ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, provisioningCode: provisioningCode, userAgent: userAgent, profileKey: profileKey, readReceipts: readReceipts)
+    @objc
+    public func asBuilder() -> ProvisioningProtoProvisionMessageBuilder {
+        let builder = ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
         if let _value = number {
             builder.setNumber(_value)
         }
         if let _value = uuid {
             builder.setUuid(_value)
         }
+        if let _value = userAgent {
+            builder.setUserAgent(_value)
+        }
+        if hasReadReceipts {
+            builder.setReadReceipts(readReceipts)
+        }
+        if hasProvisioningVersion {
+            builder.setProvisioningVersion(provisioningVersion)
+        }
         return builder
     }
 
-    @objc public class ProvisioningProtoProvisionMessageBuilder: NSObject {
+    @objc
+    public class ProvisioningProtoProvisionMessageBuilder: NSObject {
 
         private var proto = ProvisioningProtos_ProvisionMessage()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
-        @objc fileprivate init(identityKeyPublic: Data, identityKeyPrivate: Data, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) {
+        @objc
+        fileprivate init(identityKeyPublic: Data, identityKeyPrivate: Data, provisioningCode: String, profileKey: Data) {
             super.init()
 
             setIdentityKeyPublic(identityKeyPublic)
             setIdentityKeyPrivate(identityKeyPrivate)
             setProvisioningCode(provisioningCode)
-            setUserAgent(userAgent)
             setProfileKey(profileKey)
-            setReadReceipts(readReceipts)
         }
 
         @objc
@@ -258,63 +402,100 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
             proto.readReceipts = valueParam
         }
 
-        @objc public func build() throws -> ProvisioningProtoProvisionMessage {
+        @objc
+        public func setProvisioningVersion(_ valueParam: UInt32) {
+            proto.provisioningVersion = valueParam
+        }
+
+        @objc
+        public func build() throws -> ProvisioningProtoProvisionMessage {
             return try ProvisioningProtoProvisionMessage.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try ProvisioningProtoProvisionMessage.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: ProvisioningProtos_ProvisionMessage
 
-    @objc public let identityKeyPublic: Data
+    @objc
+    public let identityKeyPublic: Data
 
-    @objc public let identityKeyPrivate: Data
+    @objc
+    public let identityKeyPrivate: Data
 
-    @objc public let provisioningCode: String
+    @objc
+    public let provisioningCode: String
 
-    @objc public let userAgent: String
+    @objc
+    public let profileKey: Data
 
-    @objc public let profileKey: Data
-
-    @objc public let readReceipts: Bool
-
-    @objc public var number: String? {
-        guard proto.hasNumber else {
+    @objc
+    public var number: String? {
+        guard hasNumber else {
             return nil
         }
         return proto.number
     }
-    @objc public var hasNumber: Bool {
+    @objc
+    public var hasNumber: Bool {
         return proto.hasNumber
     }
 
-    @objc public var uuid: String? {
-        guard proto.hasUuid else {
+    @objc
+    public var uuid: String? {
+        guard hasUuid else {
             return nil
         }
         return proto.uuid
     }
-    @objc public var hasUuid: Bool {
+    @objc
+    public var hasUuid: Bool {
         return proto.hasUuid
+    }
+
+    @objc
+    public var userAgent: String? {
+        guard hasUserAgent else {
+            return nil
+        }
+        return proto.userAgent
+    }
+    @objc
+    public var hasUserAgent: Bool {
+        return proto.hasUserAgent
+    }
+
+    @objc
+    public var readReceipts: Bool {
+        return proto.readReceipts
+    }
+    @objc
+    public var hasReadReceipts: Bool {
+        return proto.hasReadReceipts
+    }
+
+    @objc
+    public var provisioningVersion: UInt32 {
+        return proto.provisioningVersion
+    }
+    @objc
+    public var hasProvisioningVersion: Bool {
+        return proto.hasProvisioningVersion
     }
 
     private init(proto: ProvisioningProtos_ProvisionMessage,
                  identityKeyPublic: Data,
                  identityKeyPrivate: Data,
                  provisioningCode: String,
-                 userAgent: String,
-                 profileKey: Data,
-                 readReceipts: Bool) {
+                 profileKey: Data) {
         self.proto = proto
         self.identityKeyPublic = identityKeyPublic
         self.identityKeyPrivate = identityKeyPrivate
         self.provisioningCode = provisioningCode
-        self.userAgent = userAgent
         self.profileKey = profileKey
-        self.readReceipts = readReceipts
     }
 
     @objc
@@ -322,7 +503,8 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> ProvisioningProtoProvisionMessage {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> ProvisioningProtoProvisionMessage {
         let proto = try ProvisioningProtos_ProvisionMessage(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -343,20 +525,10 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
         }
         let provisioningCode = proto.provisioningCode
 
-        guard proto.hasUserAgent else {
-            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: userAgent")
-        }
-        let userAgent = proto.userAgent
-
         guard proto.hasProfileKey else {
             throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: profileKey")
         }
         let profileKey = proto.profileKey
-
-        guard proto.hasReadReceipts else {
-            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: readReceipts")
-        }
-        let readReceipts = proto.readReceipts
 
         // MARK: - Begin Validation Logic for ProvisioningProtoProvisionMessage -
 
@@ -366,13 +538,12 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
                                                        identityKeyPublic: identityKeyPublic,
                                                        identityKeyPrivate: identityKeyPrivate,
                                                        provisioningCode: provisioningCode,
-                                                       userAgent: userAgent,
-                                                       profileKey: profileKey,
-                                                       readReceipts: readReceipts)
+                                                       profileKey: profileKey)
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -380,13 +551,15 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 #if DEBUG
 
 extension ProvisioningProtoProvisionMessage {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension ProvisioningProtoProvisionMessage.ProvisioningProtoProvisionMessageBuilder {
-    @objc public func buildIgnoringErrors() -> ProvisioningProtoProvisionMessage? {
+    @objc
+    public func buildIgnoringErrors() -> ProvisioningProtoProvisionMessage? {
         return try! self.build()
     }
 }

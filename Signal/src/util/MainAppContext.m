@@ -21,6 +21,8 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 // POST GRDB TODO: Remove this
 @property (nonatomic) NSUUID *disposableDatabaseUUID;
 
+@property (nonatomic, readonly) UIApplicationState mainApplicationStateOnLaunch;
+
 @end
 
 #pragma mark -
@@ -44,6 +46,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
     _appLaunchTime = [NSDate new];
     _disposableDatabaseUUID = [NSUUID UUID];
+    _mainApplicationStateOnLaunch = [UIApplication sharedApplication].applicationState;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)
@@ -111,7 +114,14 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
     OWSLogInfo(@"");
 
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
+    [BenchManager benchWithTitle:@"Slow post WillEnterForeground"
+                 logIfLongerThan:0.01
+                 logInProduction:YES
+                           block:^{
+                               [NSNotificationCenter.defaultCenter
+                                   postNotificationName:OWSApplicationWillEnterForegroundNotification
+                                                 object:nil];
+                           }];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
@@ -123,7 +133,14 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     OWSLogInfo(@"");
     [DDLog flushLog];
 
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidEnterBackgroundNotification object:nil];
+    [BenchManager benchWithTitle:@"Slow post DidEnterBackground"
+                 logIfLongerThan:0.01
+                 logInProduction:YES
+                           block:^{
+                               [NSNotificationCenter.defaultCenter
+                                   postNotificationName:OWSApplicationDidEnterBackgroundNotification
+                                                 object:nil];
+                           }];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -135,7 +152,14 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     OWSLogInfo(@"");
     [DDLog flushLog];
 
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
+    [BenchManager benchWithTitle:@"Slow post WillResignActive"
+                 logIfLongerThan:0.01
+                 logInProduction:YES
+                           block:^{
+                               [NSNotificationCenter.defaultCenter
+                                   postNotificationName:OWSApplicationWillResignActiveNotification
+                                                 object:nil];
+                           }];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
@@ -146,7 +170,14 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
     OWSLogInfo(@"");
 
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
+    [BenchManager benchWithTitle:@"Slow post DidBecomeActive"
+                 logIfLongerThan:0.01
+                 logInProduction:YES
+                           block:^{
+                               [NSNotificationCenter.defaultCenter
+                                   postNotificationName:OWSApplicationDidBecomeActiveNotification
+                                                 object:nil];
+                           }];
 
     [self runAppActiveBlocks];
 }
@@ -213,16 +244,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     [UIApplication.sharedApplication endBackgroundTask:backgroundTaskIdentifier];
 }
 
-- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjectsDescription:(NSString *)blockingObjectsDescription
 {
     if (UIApplication.sharedApplication.isIdleTimerDisabled != shouldBeBlocking) {
         if (shouldBeBlocking) {
-            NSMutableString *logString =
-                [NSMutableString stringWithFormat:@"Blocking sleep because of: %@", blockingObjects.firstObject];
-            if (blockingObjects.count > 1) {
-                [logString appendString:[NSString stringWithFormat:@"(and %lu others)", blockingObjects.count - 1]];
-            }
-            OWSLogInfo(@"%@", logString);
+            OWSLogInfo(@"Blocking sleep because of: %@", blockingObjectsDescription);
         } else {
             OWSLogInfo(@"Unblocking Sleep.");
         }
@@ -240,17 +266,17 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
 }
 
-- (nullable UIAlertAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
+- (nullable ActionSheetAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
 {
-    return [UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
-                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"system_settings")
-                                    style:UIAlertActionStyleDefault
-                                  handler:^(UIAlertAction *_Nonnull action) {
-                                      [UIApplication.sharedApplication openSystemSettings];
-                                      if (completion != nil) {
-                                          completion();
-                                      }
-                                  }];
+    return [[ActionSheetAction alloc] initWithTitle:CommonStrings.openSettingsButton
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"system_settings")
+                                              style:ActionSheetActionStyleDefault
+                                            handler:^(ActionSheetAction *_Nonnull action) {
+                                                [UIApplication.sharedApplication openSystemSettings];
+                                                if (completion != nil) {
+                                                    completion();
+                                                }
+                                            }];
 }
 
 - (BOOL)isRunningTests
@@ -280,8 +306,14 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return _buildTime;
 }
 
+- (CGRect)frame
+{
+    return UIApplication.sharedApplication.keyWindow.frame;
+}
+
 - (UIInterfaceOrientation)interfaceOrientation
 {
+    OWSAssertIsOnMainThread();
     return [UIApplication sharedApplication].statusBarOrientation;
 }
 

@@ -46,6 +46,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: - View Lifecycle
 
+    override var prefersStatusBarHidden: Bool {
+        guard !OWSWindowManager.shared.hasCall else {
+            return false
+        }
+
+        return true
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -67,11 +75,18 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // quickly toggle between the Capture and the Picker VC's, we use the same custom "X"
         // icon here rather than the system "stop" icon so that the spacing matches exactly.
         // Otherwise there's a noticable shift in the icon placement.
-        let cancelImage = UIImage(imageLiteralResourceName: "ic_x_with_shadow")
-        let cancelButton = UIBarButtonItem(image: cancelImage, style: .plain, target: self, action: #selector(didPressCancel))
+        if UIDevice.current.isIPad {
+            let cancelButton = OWSButton.shadowedCancelButton { [weak self] in
+                self?.didPressCancel()
+            }
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
+        } else {
+            let cancelImage = UIImage(imageLiteralResourceName: "ic_x_with_shadow")
+            let cancelButton = UIBarButtonItem(image: cancelImage, style: .plain, target: self, action: #selector(didPressCancel))
 
-        cancelButton.tintColor = .ows_gray05
-        navigationItem.leftBarButtonItem = cancelButton
+            cancelButton.tintColor = .ows_gray05
+            navigationItem.leftBarButtonItem = cancelButton
+        }
 
         let titleView = TitleView()
         titleView.delegate = self
@@ -253,27 +268,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         BenchEventComplete(eventId: "Show-Media-Library")
 
-        // Since we're presenting *over* the ConversationVC, we need to `becomeFirstResponder`.
-        //
-        // Otherwise, the `ConversationVC.inputAccessoryView` will appear over top of us whenever
-        // OWSWindowManager window juggling executes `[rootWindow makeKeyAndVisible]`.
-        //
-        // We don't need to do this when pushing VCs onto the SignalsNavigationController - only when
-        // presenting directly from ConversationVC.
-        _ = self.becomeFirstResponder()
-
         DispatchQueue.main.async {
             // pre-layout collectionPicker for snappier response
             self.collectionPickerController.view.layoutIfNeeded()
         }
-    }
-
-    // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
-    // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
-    // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
-    override public var canBecomeFirstResponder: Bool {
-        Logger.debug("")
-        return true
     }
 
     // MARK: 
@@ -331,7 +329,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - Actions
 
     @objc
-    func didPressCancel(sender: UIBarButtonItem) {
+    func didPressCancel() {
         self.delegate?.imagePickerDidCancel(self)
     }
 
@@ -358,12 +356,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         } else {
             containerWidth = self.view.frame.size.width
         }
-
-        let kItemsPerPortraitRow = 4
-        let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        let approxItemWidth = screenWidth / CGFloat(kItemsPerPortraitRow)
-
-        let itemCount = round(containerWidth / approxItemWidth)
+        let minItemWidth: CGFloat = 100
+        let itemCount = floor(containerWidth / minItemWidth)
         let interSpaceWidth = (itemCount - 1) * type(of: self).kInterItemSpacing
 
         let availableWidth = containerWidth - interSpaceWidth
@@ -626,7 +620,7 @@ class TitleView: UIView {
         stackView.autoPinEdgesToSuperviewEdges()
 
         label.textColor = .ows_gray05
-        label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        label.font = UIFont.ows_dynamicTypeBody.ows_semibold()
 
         iconView.tintColor = .ows_gray05
         iconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)

@@ -21,6 +21,8 @@ public class FindByPhoneNumberViewController: OWSViewController {
     let phoneNumberTextField = OWSTextField()
     let exampleLabel = UILabel()
     let button = OWSFlatButton()
+    let countryRowTitleLabel = UILabel()
+    let phoneNumberRowTitleLabel = UILabel()
 
     @objc
     init(delegate: FindByPhoneNumberDelegate, buttonText: String?, requiresRegisteredNumber: Bool) {
@@ -40,8 +42,6 @@ public class FindByPhoneNumberViewController: OWSViewController {
         title = NSLocalizedString("NEW_NONCONTACT_CONVERSATION_VIEW_TITLE",
                                   comment: "Title for the 'new non-contact conversation' view.")
 
-        view.backgroundColor = Theme.backgroundColor
-
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.isLayoutMarginsRelativeArrangement = true
@@ -57,18 +57,20 @@ public class FindByPhoneNumberViewController: OWSViewController {
         countryRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCountryRow)))
         stackView.addArrangedSubview(countryRow)
 
-        let countryRowTitleLabel = UILabel()
         countryRowTitleLabel.text = NSLocalizedString("REGISTRATION_DEFAULT_COUNTRY_NAME", comment: "Label for the country code field")
-        countryRowTitleLabel.textColor = Theme.primaryColor
-        countryRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        countryRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        countryRowTitleLabel.accessibilityIdentifier =
+            UIView.accessibilityIdentifier(in: self, name: "countryRowTitleLabel")
 
         countryRow.addSubview(countryRowTitleLabel)
         countryRowTitleLabel.autoPinLeadingToSuperviewMargin()
         countryRowTitleLabel.autoPinHeightToSuperviewMargins()
 
-        countryCodeLabel.textColor = .ows_materialBlue
-        countryCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        countryCodeLabel.textColor = .ows_signalBlue
+        countryCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         countryCodeLabel.textAlignment = .right
+        countryCodeLabel.accessibilityIdentifier =
+            UIView.accessibilityIdentifier(in: self, name: "countryCodeLabel")
 
         countryRow.addSubview(countryCodeLabel)
         countryCodeLabel.autoPinLeading(toTrailingEdgeOf: countryRowTitleLabel, offset: 10)
@@ -80,22 +82,25 @@ public class FindByPhoneNumberViewController: OWSViewController {
         let phoneNumberRow = UIView.container()
         stackView.addArrangedSubview(phoneNumberRow)
 
-        let phoneNumberRowTitleLabel = UILabel()
         phoneNumberRowTitleLabel.text = NSLocalizedString("REGISTRATION_PHONENUMBER_BUTTON",
                                                           comment: "Label for the phone number textfield")
-        phoneNumberRowTitleLabel.textColor = Theme.primaryColor
-        phoneNumberRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        phoneNumberRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        phoneNumberRowTitleLabel.accessibilityIdentifier =
+            UIView.accessibilityIdentifier(in: self, name: "phoneNumberRowTitleLabel")
 
         phoneNumberRow.addSubview(phoneNumberRowTitleLabel)
         phoneNumberRowTitleLabel.autoPinLeadingToSuperviewMargin()
         phoneNumberRowTitleLabel.autoPinHeightToSuperviewMargins()
 
         phoneNumberTextField.font = .ows_dynamicTypeBodyClamped
-        phoneNumberTextField.textColor = .ows_materialBlue
+        phoneNumberTextField.textColor = .ows_signalBlue
         phoneNumberTextField.autocorrectionType = .no
         phoneNumberTextField.autocapitalizationType = .none
         phoneNumberTextField.placeholder = NSLocalizedString("REGISTRATION_ENTERNUMBER_DEFAULT_TEXT",
                                                              comment: "Placeholder text for the phone number textfield")
+        phoneNumberTextField.accessibilityIdentifier =
+            UIView.accessibilityIdentifier(in: self, name: "phoneNumberTextField")
+
         phoneNumberTextField.textAlignment = .right
         phoneNumberTextField.delegate = self
         phoneNumberTextField.returnKeyType = .done
@@ -111,7 +116,6 @@ public class FindByPhoneNumberViewController: OWSViewController {
         stackView.addArrangedSubview(exampleLabel)
 
         exampleLabel.font = .ows_dynamicTypeFootnoteClamped
-        exampleLabel.textColor = Theme.secondaryColor
         exampleLabel.textAlignment = .right
 
         populateDefaultCountryCode()
@@ -126,9 +130,20 @@ public class FindByPhoneNumberViewController: OWSViewController {
         button.useDefaultCornerRadius()
         button.autoSetDimension(.height, toSize: buttonHeight)
         button.setTitle(title: buttonTitle, font: OWSFlatButton.fontForHeight(buttonHeight), titleColor: .white)
-        button.setBackgroundColors(upColor: .ows_signalBrandBlue)
+        button.setBackgroundColors(upColor: .ows_signalBlue)
         button.addTarget(target: self, selector: #selector(tryToSelectPhoneNumber))
         button.setEnabled(false)
+        button.accessibilityIdentifier =
+            UIView.accessibilityIdentifier(in: self, name: "button")
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        view.backgroundColor = Theme.backgroundColor
+        countryRowTitleLabel.textColor = Theme.primaryTextColor
+        phoneNumberRowTitleLabel.textColor = Theme.primaryTextColor
+        exampleLabel.textColor = Theme.secondaryTextAndIconColor
     }
 
     func updateButtonState() {
@@ -179,7 +194,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
 
                     modal.dismiss {
                         guard let recipient = recipients.first else {
-                            return OWSAlerts.showErrorAlert(message: OWSErrorMakeNoSuchSignalRecipientError().localizedDescription)
+                            return OWSActionSheets.showErrorAlert(message: OWSErrorMakeNoSuchSignalRecipientError().localizedDescription)
                         }
 
                         self.delegate?.findByPhoneNumber(self, didSelectAddress: recipient.address)
@@ -189,7 +204,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
                     guard !modal.wasCancelled else { return }
 
                     modal.dismiss {
-                        OWSAlerts.showErrorAlert(message: error.localizedDescription)
+                        OWSActionSheets.showErrorAlert(message: error.localizedDescription)
                     }
                 })
             }
@@ -209,7 +224,7 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
     @objc func didTapCountryRow() {
         let countryCodeController = CountryCodeViewController()
         countryCodeController.countryCodeDelegate = self
-        present(OWSNavigationController(rootViewController: countryCodeController), animated: true)
+        presentFormSheet(OWSNavigationController(rootViewController: countryCodeController), animated: true)
     }
 
     func populateDefaultCountryCode() {

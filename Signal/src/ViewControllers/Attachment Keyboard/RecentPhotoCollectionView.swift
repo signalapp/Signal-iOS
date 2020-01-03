@@ -12,7 +12,8 @@ protocol RecentPhotosDelegate: class {
 }
 
 class RecentPhotosCollectionView: UICollectionView {
-    let maxRecentPhotos = 48
+    let maxRecentPhotos = 96
+    let spaceBetweenRows: CGFloat = 6
 
     var isReadyForPhotoLibraryAccess: Bool {
         return recentPhotosDelegate?.isMediaLibraryAccessGranted == true
@@ -77,6 +78,7 @@ class RecentPhotosCollectionView: UICollectionView {
 
         collectionViewFlowLayout.scrollDirection = .horizontal
         collectionViewFlowLayout.minimumLineSpacing = 6
+        collectionViewFlowLayout.minimumInteritemSpacing = spaceBetweenRows
 
         updateLayout()
     }
@@ -122,7 +124,7 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate {
         }.ensure { [weak self] in
             self?.fetchingAttachmentIndex = nil
         }.catch { _ in
-            OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
         }.retainUntilComplete()
     }
 }
@@ -200,7 +202,7 @@ class RecentPhotoCell: UICollectionViewCell {
         get { return imageView.image }
         set {
             imageView.image = newValue
-            imageView.backgroundColor = newValue == nil ? Theme.offBackgroundColor : .clear
+            imageView.backgroundColor = newValue == nil ? Theme.washColor : .clear
         }
     }
 

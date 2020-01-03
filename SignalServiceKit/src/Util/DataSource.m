@@ -35,11 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSURL *_Nullable fileUrl = self.cachedFileUrl;
     if (fileUrl != nil) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSError *error;
-            BOOL success = [[NSFileManager defaultManager] removeItemAtURL:fileUrl error:&error];
-            if (!success || error != nil) {
-                OWSCFailDebug(@"DataSourceValue could not delete file: %@, %@", fileUrl, error);
-            }
+            [OWSFileSystem deleteFileIfExists:fileUrl.path];
         });
     }
 }
@@ -54,6 +50,12 @@ NS_ASSUME_NONNULL_BEGIN
     _data = data;
     _fileExtension = fileExtension;
     _isConsumed = NO;
+
+    // Ensure that value is backed by file on disk.
+    __weak DataSourceValue *weakValue = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [weakValue dataUrl];
+    });
 
     return self;
 }
@@ -179,7 +181,12 @@ NS_ASSUME_NONNULL_BEGIN
                                        OWSAssertDebug(self->_cachedFileUrl != nil);
                                    }
 
-                                   NSURL *srcUrl = self.dataUrl;
+                                   NSURL *_Nullable srcUrl = self.dataUrl;
+                                   if (srcUrl == nil) {
+                                       *error = OWSErrorMakeAssertionError(@"Missing data URL.");
+                                       success = NO;
+                                       return;
+                                   }
                                    self.isConsumed = YES;
                                    success = [NSFileManager.defaultManager moveItemAtURL:srcUrl
                                                                                    toURL:dstUrl

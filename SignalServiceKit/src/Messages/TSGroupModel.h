@@ -11,23 +11,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const int32_t kGroupIdLength;
 
+typedef NS_CLOSED_ENUM(NSUInteger, GroupsVersion) { GroupsVersionV1 = 0, GroupsVersionV2 };
+
 @interface TSGroupModel : MTLModel
 
 @property (nonatomic) NSArray<SignalServiceAddress *> *groupMembers;
+@property (nonatomic) NSArray<SignalServiceAddress *> *externalGroupMembers;
 @property (nullable, readonly, nonatomic) NSString *groupName;
 @property (readonly, nonatomic) NSData *groupId;
 
 #if TARGET_OS_IOS
-@property (nullable, nonatomic, strong) UIImage *groupImage;
+@property (nullable, nonatomic, readonly) UIImage *groupAvatarImage;
+// This data should always be in PNG format.
+@property (nullable, nonatomic) NSData *groupAvatarData;
 
-- (instancetype)initWithTitle:(nullable NSString *)title
-                      members:(NSArray<SignalServiceAddress *> *)members
-                        image:(nullable UIImage *)image
-                      groupId:(NSData *)groupId;
+@property (nonatomic) GroupsVersion groupsVersion;
+
+- (void)setGroupAvatarDataWithImage:(nullable UIImage *)image;
+
++ (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image;
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithGroupId:(NSData *)groupId
-                   groupMembers:(NSArray<SignalServiceAddress *> *)groupMembers
-                      groupName:(nullable NSString *)groupName;
+                           name:(nullable NSString *)name
+                     avatarData:(nullable NSData *)avatarData
+                        members:(NSArray<SignalServiceAddress *> *)members
+                  groupsVersion:(GroupsVersion)groupsVersion NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;
@@ -35,6 +48,8 @@ extern const int32_t kGroupIdLength;
 #endif
 
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
+
++ (NSData *)generateRandomGroupId;
 
 @end
 

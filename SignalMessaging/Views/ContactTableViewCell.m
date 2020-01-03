@@ -5,7 +5,6 @@
 #import "ContactTableViewCell.h"
 #import "ContactCellView.h"
 #import "OWSTableViewController.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalServiceKit/SignalAccount.h>

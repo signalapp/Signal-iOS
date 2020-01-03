@@ -52,7 +52,12 @@ class AttachmentFormatPickerView: UICollectionView {
         guard photoCapture == nil else { return }
 
         let photoCapture = PhotoCapture()
+        photoCapture.delegate = self
         self.photoCapture = photoCapture
+
+        // Force the preview view to load, otherwise it might
+        // load on the background thread while starting the session
+        _ = photoCapture.previewView
 
         photoCapture.startVideoCapture().done { [weak self] in
             self?.reloadData()
@@ -111,6 +116,62 @@ extension AttachmentFormatPickerView: UICollectionViewDelegate {
     }
 }
 
+extension AttachmentFormatPickerView: PhotoCaptureDelegate {
+    func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCaptureDidBeginMovie(_ photoCapture: PhotoCapture) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCaptureDidCompleteMovie(_ photoCapture: PhotoCapture) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCaptureDidCancelMovie(_ photoCapture: PhotoCapture) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool {
+        owsFailDebug("\(#function) should never be called")
+        return false
+    }
+
+    func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    var zoomScaleReferenceHeight: CGFloat? {
+        owsFailDebug("\(#function) should never be called")
+        return nil
+    }
+
+    func photoCapture(_ photoCapture: PhotoCapture, didChangeOrientation orientation: AVCaptureVideoOrientation) {
+        photoCapture.updateVideoPreviewConnection(toOrientation: orientation)
+    }
+
+    func beginCaptureButtonAnimation(_ duration: TimeInterval) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func endCaptureButtonAnimation(_ duration: TimeInterval) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusingAtPoint focusPoint: CGPoint) {
+        // no-op
+    }
+}
+
 // MARK: - UICollectionViewDataSource
 
 extension AttachmentFormatPickerView: UICollectionViewDataSource {
@@ -162,7 +223,7 @@ class AttachmentFormatCell: UICollectionViewCell {
         imageView.autoSetDimensions(to: CGSize(width: 32, height: 32))
         imageView.contentMode = .scaleAspectFit
 
-        label.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_semiBold()
+        label.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold()
         label.textColor = Theme.attachmentKeyboardItemImageColor
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
@@ -200,26 +261,26 @@ class AttachmentFormatCell: UICollectionViewCell {
         switch type {
         case .camera:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_CAMERA", comment: "A button to open the camera from the Attachment Keyboard")
-            imageName = "camera-outline-32"
+            imageName = Theme.iconName(.attachmentCamera)
         case .contact:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_CONTACT", comment: "A button to select a contact from the Attachment Keyboard")
-            imageName = "contact-outline-32"
+            imageName = Theme.iconName(.attachmentContact)
         case .file:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_FILE", comment: "A button to select a file from the Attachment Keyboard")
-            imageName = "file-outline-32"
+            imageName = Theme.iconName(.attachmentFile)
         case .gif:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_GIF", comment: "A button to select a GIF from the Attachment Keyboard")
-            imageName = "gif-outline-32"
+            imageName = Theme.iconName(.attachmentGif)
         case .location:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_LOCATION", comment: "A button to select a location from the Attachment Keyboard")
-            imageName = "location-outline-32"
+            imageName = Theme.iconName(.attachmentLocation)
         }
 
         // The light theme images come with a background baked in, so we don't tint them.
         if Theme.isDarkThemeEnabled {
             imageView.setTemplateImageName(imageName, tintColor: Theme.attachmentKeyboardItemImageColor)
         } else {
-            imageView.setImage(imageName: imageName + "-with-background")
+            imageView.setImage(imageName: imageName)
         }
 
         label.text = text

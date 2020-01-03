@@ -128,7 +128,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -144,7 +145,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
@@ -155,11 +155,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-    outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
               storedMessageState:(TSOutgoingMessageState)storedMessageState
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
                          timestamp:timestamp
@@ -175,7 +175,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion
       storedShouldStartExpireTimer:storedShouldStartExpireTimer];
 
     if (!self) {
@@ -191,7 +190,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     _legacyMessageState = legacyMessageState;
     _legacyWasDelivered = legacyWasDelivered;
     _mostRecentFailureText = mostRecentFailureText;
-    _outgoingMessageSchemaVersion = outgoingMessageSchemaVersion;
     _recipientAddressStates = recipientAddressStates;
     _storedMessageState = storedMessageState;
 
@@ -498,42 +496,36 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return self;
 }
 
-- (void)dealloc
-{
-    [self removeTemporaryAttachments];
-}
-
 // Each message has the responsibility for eagerly cleaning up its attachments.
 // Normally this is done in [TSMessage removeWithTransaction], but that doesn't
 // apply for "transient", unsaved messages (i.e. shouldBeSaved == NO).  These
-// messages should clean up their attachments upon deallocation.
-- (void)removeTemporaryAttachments
+// messages need to be cleaned up explicitly.
+- (void)removeTemporaryAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     if (self.shouldBeSaved) {
         // Message is not transient; no need to clean up attachments.
+        OWSFailDebug(@"Message is not transient.");
         return;
     }
     if (!AppReadiness.isAppReady) {
         // We don't want or need to do this clean up while registering extensions,
         // migrating, etc.
+        OWSFailDebug(@"App is not ready.");
         return;
     }
     NSArray<NSString *> *_Nullable attachmentIds = self.attachmentIds;
     if (attachmentIds.count < 1) {
         return;
     }
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        for (NSString *attachmentId in attachmentIds) {
-            // We need to fetch each attachment, since [TSAttachment removeWithTransaction:] does important work.
-            TSAttachment *_Nullable attachment =
-                [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
-            if (!attachment) {
-                OWSLogError(@"Couldn't load interaction's attachment for deletion.");
-                continue;
-            }
-            [attachment anyRemoveWithTransaction:transaction];
-        };
-    }];
+    for (NSString *attachmentId in attachmentIds) {
+        // We need to fetch each attachment, since [TSAttachment removeWithTransaction:] does important work.
+        TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
+        if (!attachment) {
+            OWSLogError(@"Couldn't load interaction's attachment for deletion.");
+            continue;
+        }
+        [attachment anyRemoveWithTransaction:transaction];
+    };
 }
 
 #pragma mark -
@@ -630,33 +622,26 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+// This method will be called after every insert and update, so it needs
+// to be cheap.
+- (BOOL)shouldStartExpireTimer
 {
+    if (self.hasPerConversationExpirationStarted) {
+        // Expiration already started.
+        return YES;
+    } else if (!self.hasPerConversationExpiration) {
+        return NO;
+    } else if (!super.shouldStartExpireTimer) {
+        return NO;
+    }
+
     // It's not clear if we should wait until _all_ recipients have reached "sent or later"
     // (which could never occur if one group member is unregistered) or only wait until
     // the first recipient has reached "sent or later" (which could cause partially delivered
     // messages to expire).  For now, we'll do the latter.
     //
     // TODO: Revisit this decision.
-
-    if (!self.hasPerConversationExpiration) {
-        return NO;
-    } else if (self.messageState == TSOutgoingMessageStateSent) {
-        return YES;
-    } else {
-        if (self.expireStartedAt > 0) {
-            // Our initial migration to populate the recipient state map was incomplete. It's since been
-            // addressed, but it's possible there are edge cases where a previously sent message would
-            // no longer be considered sent.
-            // So here we take extra care not to stop any expiration that had previously started.
-            // This can also happen under normal cirumstances with an outgoing group message.
-            OWSLogWarn(@"expiration previously started");
-
-            return YES;
-        }
-        
-        return NO;
-    }
+    return self.messageState == TSOutgoingMessageStateSent;
 }
 
 - (BOOL)isSilent
@@ -1032,6 +1017,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return result;
 }
 
+#ifdef TESTABLE_BUILD
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
                        transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -1059,23 +1045,24 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                 }
                                             }];
 }
+#endif
 
 #pragma mark -
 
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
+- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
+                                                          transaction:(SDSAnyReadTransaction *)transaction
 {
-    TSThread *thread = self.threadWithSneakyTransaction;
     OWSAssertDebug(thread);
 
     SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessage builder];
     [builder setTimestamp:self.timestamp];
-    
-    NSUInteger requiredProtocolVersion = SSKProtos.initialProtocolVersion;
+
+    NSUInteger requiredProtocolVersion = SSKProtoDataMessageProtocolVersionInitial;
 
     if (self.isViewOnceMessage) {
         if (SSKFeatureFlags.viewOnceSending) {
             [builder setIsViewOnce:YES];
-            requiredProtocolVersion = SSKProtos.viewOnceMessagesProtocolVersion;
+            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionViewOnceVideo;
         } else {
             OWSFailDebug(@"Feature flag not set.");
         }
@@ -1117,10 +1104,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:gThread.groupModel.groupId];
         [groupBuilder setType:groupMessageType];
         if (groupMessageType == SSKProtoGroupContextTypeUpdate) {
-            if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
+            if (gThread.groupModel.groupAvatarData != nil && self.attachmentIds.count == 1) {
                 attachmentWasGroupAvatar = YES;
                 SSKProtoAttachmentPointer *_Nullable attachmentProto =
-                    [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
+                    [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject
+                                                      transaction:transaction];
                 if (!attachmentProto) {
                     OWSFailDebug(@"could not build protobuf.");
                     return nil;
@@ -1171,7 +1159,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         NSMutableArray *attachments = [NSMutableArray new];
         for (NSString *attachmentId in self.attachmentIds) {
             SSKProtoAttachmentPointer *_Nullable attachmentProto =
-                [TSAttachmentStream buildProtoForAttachmentId:attachmentId];
+                [TSAttachmentStream buildProtoForAttachmentId:attachmentId transaction:transaction];
             if (!attachmentProto) {
                 OWSFailDebug(@"could not build protobuf.");
                 return nil;
@@ -1182,7 +1170,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 
     // Quoted Reply
-    SSKProtoDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;
+    SSKProtoDataMessageQuoteBuilder *_Nullable quotedMessageBuilder =
+        [self quotedMessageBuilderWithTransaction:transaction];
     if (quotedMessageBuilder) {
         NSError *error;
         SSKProtoDataMessageQuote *_Nullable quoteProto = [quotedMessageBuilder buildAndReturnError:&error];
@@ -1195,8 +1184,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // Contact Share
     if (self.contactShare) {
-        SSKProtoDataMessageContact *_Nullable contactProto =
-            [OWSContacts protoForContact:self.contactShare];
+        SSKProtoDataMessageContact *_Nullable contactProto = [OWSContacts protoForContact:self.contactShare
+                                                                              transaction:transaction];
         if (contactProto) {
             [builder addContact:contactProto];
         } else {
@@ -1213,7 +1202,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
         if (self.linkPreview.imageAttachmentId) {
             SSKProtoAttachmentPointer *_Nullable attachmentProto =
-                [TSAttachmentStream buildProtoForAttachmentId:self.linkPreview.imageAttachmentId];
+                [TSAttachmentStream buildProtoForAttachmentId:self.linkPreview.imageAttachmentId
+                                                  transaction:transaction];
             if (!attachmentProto) {
                 OWSFailDebug(@"Could not build link preview image protobuf.");
             } else {
@@ -1233,7 +1223,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     // Sticker
     if (self.messageSticker) {
         SSKProtoAttachmentPointer *_Nullable attachmentProto =
-            [TSAttachmentStream buildProtoForAttachmentId:self.messageSticker.attachmentId];
+            [TSAttachmentStream buildProtoForAttachmentId:self.messageSticker.attachmentId transaction:transaction];
         if (!attachmentProto) {
             OWSFailDebug(@"Could not build sticker attachment protobuf.");
         } else {
@@ -1256,7 +1246,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return builder;
 }
 
-- (nullable SSKProtoDataMessageQuoteBuilder *)quotedMessageBuilder
+- (nullable SSKProtoDataMessageQuoteBuilder *)quotedMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (!self.quotedMessage) {
         return nil;
@@ -1286,7 +1276,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             quotedAttachmentBuilder.fileName = attachment.sourceFilename;
             if (attachment.thumbnailAttachmentStreamId) {
                 quotedAttachmentBuilder.thumbnail =
-                    [TSAttachmentStream buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId];
+                    [TSAttachmentStream buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId
+                                                      transaction:transaction];
             }
 
             NSError *error;
@@ -1311,21 +1302,21 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
 - (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address
+                                            thread:(TSThread *)thread
+                                       transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(self.threadWithSneakyTransaction);
-    SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
+    OWSAssertDebug(thread);
+    OWSAssertDebug([thread.uniqueId isEqualToString:self.uniqueThreadId]);
+    SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilderWithThread:thread transaction:transaction];
     if (!builder) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
 
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSThread *thread = [self threadWithTransaction:transaction];
-        [ProtoUtils addLocalProfileKeyIfNecessary:thread
-                                          address:address
-                               dataMessageBuilder:builder
-                                      transaction:transaction];
-    }];
+    [ProtoUtils addLocalProfileKeyIfNecessary:thread
+                                      address:address
+                           dataMessageBuilder:builder
+                                  transaction:transaction];
 
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
@@ -1337,9 +1328,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+                                 thread:(TSThread *)thread
+                            transaction:(SDSAnyReadTransaction *)transaction
 {
     NSError *error;
-    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.address];
+    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.address
+                                                                 thread:thread
+                                                            transaction:transaction];
     if (error || !dataMessage) {
         OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;

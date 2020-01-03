@@ -62,6 +62,13 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (UIApplicationState)mainApplicationStateOnLaunch
+{
+    OWSFailDebug(@"Not main app.");
+
+    return UIApplicationStateInactive;
+}
+
 - (BOOL)isRTL
 {
     return NO;
@@ -96,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 }
 
-- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjectsDescription:(NSString *)blockingObjectsDescription
 {
 }
 
@@ -125,6 +132,11 @@ NS_ASSUME_NONNULL_BEGIN
         _buildTime = [NSDate new];
     }
     return _buildTime;
+}
+
+- (CGRect)frame
+{
+    return CGRectZero;
 }
 
 - (UIInterfaceOrientation)interfaceOrientation

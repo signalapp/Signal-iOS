@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 @objc
 public extension OWSMessageDecryptJobFinder {
@@ -72,7 +72,7 @@ public extension OWSMessageDecryptJobFinder {
         owsFailDebug("We should be using SSKMessageDecryptJobQueue instead of this method.")
 
         let sql = """
-        SELECT *
+        SELECT uniqueId
         FROM \(MessageDecryptJobRecord.databaseTableName)
         ORDER BY \(messageDecryptJobColumn: .createdAt)
         """

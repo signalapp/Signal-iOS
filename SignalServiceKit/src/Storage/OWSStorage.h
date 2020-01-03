@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const StorageIsReadyNotification;
-
 @class YapDatabaseExtension;
 
 @protocol OWSDatabaseConnectionDelegate <NSObject>
@@ -21,6 +19,7 @@ extern NSString *const StorageIsReadyNotification;
 @interface OWSDatabaseConnection : YapDatabaseConnection
 
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
+@property (atomic) BOOL isCleanupConnection;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabase:(YapDatabase *)database
@@ -44,7 +43,7 @@ extern NSString *const StorageIsReadyNotification;
 
 #pragma mark -
 
-typedef void (^OWSStorageMigrationBlock)(void);
+typedef void (^OWSStorageCompletionBlock)(void);
 
 @interface OWSStorage : NSObject
 
@@ -57,8 +56,8 @@ typedef void (^OWSStorageMigrationBlock)(void);
 // This object can be used to filter database notifications.
 @property (nonatomic, readonly, nullable) id dbNotificationObject;
 
-// migrationBlock will be invoked _off_ the main thread.
-+ (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock;
+// completionBlock will be invoked _off_ the main thread.
++ (void)registerExtensionsWithCompletionBlock:(OWSStorageCompletionBlock)completionBlock;
 
 #ifdef DEBUG
 - (void)closeStorageForTests;
@@ -107,6 +106,11 @@ typedef void (^OWSStorageMigrationBlock)(void);
 + (void)removeLegacyPassphrase;
 
 + (void)storeDatabaseCipherKeySpec:(NSData *)cipherKeySpecData;
+
+#pragma mark - Reset
+
++ (void)deleteDatabaseFiles;
++ (void)deleteDBKeys;
 
 @end
 

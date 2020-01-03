@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupJob.h"
@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -46,6 +47,15 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 @implementation OWSBackupJob
 
+#pragma mark - Dependencies
+
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
+#pragma mark -
+
 - (instancetype)initWithDelegate:(id<OWSBackupJobDelegate>)delegate recipientId:(NSString *)recipientId
 {
     self = [super init];
@@ -55,7 +65,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     }
 
     OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug([OWSStorage isStorageReady]);
+    OWSAssertDebug([self.storageCoordinator isStorageReady]);
 
     self.delegate = delegate;
     self.recipientId = recipientId;
@@ -295,8 +305,12 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
             return nil;
         }
         // uncompressedDataLength is an optional field.
-        if (uncompressedDataLength && ![uncompressedDataLength isKindOfClass:[NSNumber class]]) {
+        if (uncompressedDataLength != nil && ![uncompressedDataLength isKindOfClass:[NSNumber class]]) {
             OWSFailDebug(@"manifest has invalid uncompressedDataLength: %@.", uncompressedDataLength);
+            return nil;
+        }
+        if (uncompressedDataLength != nil && ![SDS fitsInInt64WithNSNumber:uncompressedDataLength]) {
+            OWSFailDebug(@"Invalid export item.");
             return nil;
         }
 

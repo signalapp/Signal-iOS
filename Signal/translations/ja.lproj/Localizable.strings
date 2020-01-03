@@ -50,6 +50,9 @@
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "この人にプロフィール情報を公開しますか？";
 
+/* generic button text to acknowledge that the corresponding text was read. */
+"ALERT_ACTION_ACKNOWLEDGE" = "分かりました";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "削除";
 
@@ -74,6 +77,15 @@
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "エラー";
 
+/* Error indicating that the app could not launch because the database could not be loaded. */
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "データベースを読み込めませんでした";
+
+/* Error indicating that the app could not launch without reverting unknown database migrations. */
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "最新バージョンのSignalにアップグレードしてください";
+
+/* Error indicating that the app could not launch without reverting unknown database migrations. */
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "データベースのバージョンが不明です。";
+
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "プロフィール名を入力してください";
 
@@ -88,6 +100,15 @@
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "アップデートする";
+
+/* Name indicating that the dark theme is enabled. */
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "ダーク";
+
+/* Name indicating that the light theme is enabled. */
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "ライト";
+
+/* Name indicating that the system theme is enabled. */
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "システム";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -106,6 +127,9 @@
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "キャプション";
+
+/* Error that outgoing attachments could not be exported. */
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "添付ファイルをエクスポートできませんでした。";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "保存に失敗しました";
@@ -159,7 +183,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "添付ファイルの中身が空です";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "添付メディアの選択";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "カメラ";
@@ -326,6 +350,9 @@
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "ブロックされたユーザは、あなたにメッセージや通話を発信することができなくなります。";
 
+/* browse files option from file sharing menu */
+"BROWSE_FILES_BUTTON" = "閲覧";
+
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "続ける";
 
@@ -476,6 +503,12 @@
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "クリップボードと比較する";
 
+/* Accessibility hint describing what you can do with the compose button */
+"COMPOSE_BUTTON_HINT" = "会話を始めるSignalユーザを選択または検索します。";
+
+/* Accessibility label from compose button. */
+"COMPOSE_BUTTON_LABEL" = "作成する";
+
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "連絡先";
 
@@ -497,6 +530,12 @@
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "本当にアカウントを削除しますか？";
 
+/* No comment provided by engineer. */
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "この端末上のメッセージをすべて消去し、アプリケーションをリセットします。電話番号を使ってリンクし直すことができますが、削除されたメッセージは復元できません。処理が済むとアプリが終了します。";
+
+/* No comment provided by engineer. */
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "本当にすべてのデータを削除しますか？";
+
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "このグループとの会話が出来なくなりますがよろしいでしょうか。";
 
@@ -504,7 +543,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "離脱してよろしいですか？";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "端末を追加します";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "端末をリンク";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@は端末の再設定・変更をした可能性があります。プライバシーを保証するためにこの相手に対する安全番号を確認してください。";
@@ -640,6 +679,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "既存の連絡先に加える";
+
+/* button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "連絡先に追加";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "このグループをブロックする";
@@ -870,9 +912,6 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "コピー";
 
-/* No comment provided by engineer. */
-"EDIT_TXT" = "編集";
-
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "こんにちは\n\n私は最近、携帯電話での会話・チャットに「シグナル（Signal）」というアプリを使っています。このアプリを使うと会話内容が他人に傍受されません。あなたもインストールしてみませんか？\n\nSignalはiPhoneでもAndroidでも使えます。こちらからインストールできます: %@\n\nSignalは、普通のメッセージアプリと同じように使えます。写真や動画も送れますし、電話もできますし、３人以上でのチャットもできます。一番いいところは、通信内容が他人から傍受されないことです。Signalの開発者でさえ傍受できない仕組みになっており、非常に安全です。\n\nSignalの開発者であるOpen Whisper Systemsについての詳細はここをご覧ください: %@";
 
@@ -931,10 +970,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "通話に失敗しました";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "Signalの最新機能は、このバージョンのiOSでは対応しません。OSのアップデートをしてください。";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "連絡先リストのアクセスに失敗しました";
+
+/* Error indicating that 'save video' failed. */
+"ERROR_COULD_NOT_SAVE_VIDEO" = "動画を保存できませんでした。";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "メッセージの送信に失敗しました";
@@ -1005,6 +1047,12 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "安全番号が変わっています";
 
+/* Error indicating a send failure due to a delinked application. */
+"ERROR_SENDING_DELINKED" = "この端末はもはやリンクされていません。メッセージを送受信するには、リンクし直してください。";
+
+/* Error indicating a send failure due to a deregistered application. */
+"ERROR_SENDING_DEREGISTERED" = "この端末はもはや登録されていません。メッセージを送受信するには、再登録してください。";
+
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "このバージョンのSignalは期限切れです。アップデートしてください。";
 
@@ -1043,6 +1091,12 @@
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "グループ作成を完了する";
+
+/* Label and title for 'contact forwarding' views. */
+"FORWARD_CONTACT" = "連絡先の転送";
+
+/* Label and title for 'message forwarding' views. */
+"FORWARD_MESSAGE" = "メッセージの転送";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "この会話にはメディアがありません。";
@@ -1098,9 +1152,6 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@がグループを離れました";
 
-/* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "連絡先を追加";
-
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "通話";
 
@@ -1117,10 +1168,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "要確認";
 
 /* Button label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "メッセージ送信";
-
-/* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "連絡先情報";
+"GROUP_MEMBERS_SEND_MESSAGE" = "メッセージ";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "タイトルが「%@」に変更されました";
@@ -1158,10 +1206,10 @@
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "「%@」について何も見つかりませんでした";
 
-/* Title for the home view's 'archive' mode. */
+/* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "アーカイブ";
 
-/* Title for the home view's default mode. */
+/* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
@@ -1188,7 +1236,7 @@
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "この会話は保存されます。新しいメッセージが届いた場合だけ受信箱に表示されます。";
 
-/* Message shown in the home view when the inbox is empty. */
+/* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "友達にメッセージを送って始めましょう！";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
@@ -1205,6 +1253,9 @@
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "安全番号の変更があったので受信できませんでした。";
+
+/* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
+"INFO_MESSAGE_SYNCED_THREAD" = "携帯電話とiPadでメッセージを同期できます。\nセキュリティのため、会話記録はリンク先端末に転送されません。";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ はSignal上にいます";
@@ -1242,6 +1293,48 @@
 /* Slider label when disappearing messages is off */
 "KEEP_MESSAGES_FOREVER" = "メッセージは消えません";
 
+/* A keyboard command to open the current conversation's all media view. */
+"KEY_COMMAND_ALL_MEDIA" = "すべてのメディア";
+
+/* A keyboard command to archive the current coversation. */
+"KEY_COMMAND_ARCHIVE" = "会話をアーカイブする";
+
+/* A keyboard command to open the current conversation's attachment picker. */
+"KEY_COMMAND_ATTACHMENTS" = "添付ファイルを表示";
+
+/* A keyboard command to open the current conversation's settings. */
+"KEY_COMMAND_CONVERSATION_INFO" = "会話情報";
+
+/* A keyboard command to focus the current conversation's input field. */
+"KEY_COMMAND_FOCUS_COMPOSER" = "入力バーにフォーカス";
+
+/* A keyboard command to open the current conversations GIF picker. */
+"KEY_COMMAND_GIF_SEARCH" = "GIF検索";
+
+/* A keyboard command to present the new group dialog. */
+"KEY_COMMAND_NEW_GROUP" = "新しいグループ";
+
+/* A keyboard command to present the new message dialog. */
+"KEY_COMMAND_NEW_MESSAGE" = "新しいメッセージ";
+
+/* A keyboard command to jump to the next conversation in the list. */
+"KEY_COMMAND_NEXT_CONVERSATION" = "次の会話";
+
+/* A keyboard command to jump to the previous conversation in the list. */
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "以前の会話";
+
+/* A keyboard command to begin a search on the conversation list. */
+"KEY_COMMAND_SEARCH" = "検索";
+
+/* A keyboard command to present the application settings dialog. */
+"KEY_COMMAND_SETTINGS" = "設定";
+
+/* A keyboard command to open the current conversation's sticker picker. */
+"KEY_COMMAND_STICKERS" = "ステッカーを表示";
+
+/* A keyboard command to unarchive the current coversation. */
+"KEY_COMMAND_UNARCHIVE" = "会話のアーカイブを解除";
+
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "離脱";
 
@@ -1252,13 +1345,13 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "このQRコードは無効です。リンクしたい端末のQRコードをスキャンしましたか？";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "端末の追加に失敗";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "端末のリンクに失敗";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "この端末は、あなたのグループと通話相手、会話、メッセージにアクセスできます。";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "この端末を追加しますか？";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "この端末をリンクしますか？";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "再試行";
@@ -1270,19 +1363,22 @@
 "LINK_NEW_DEVICE_SUBTITLE" = "QRコードを読み取る";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "新しい端末を追加";
+"LINK_NEW_DEVICE_TITLE" = "新しい端末をリンク";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "リンクプレビュー";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "追加される端末";
+"LINKED_DEVICES_TITLE" = "リンク済み端末";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "端末の追加に失敗";
+"LINKING_DEVICE_FAILED_TITLE" = "端末のリンクに失敗";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "メンバー";
+
+/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ （あなた）";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "名前か住所で検索";
@@ -1311,9 +1407,6 @@
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "メッセージを削除";
 
-/* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ - %@";
-
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -1324,31 +1417,25 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "今月";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "メディアをコピー";
-
-/* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "メッセージ内容をコピー";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "このメッセージの消去";
 
-/* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "この端末上のメッセージだけが消去されます。";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "詳細";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "このメッセージを転送";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "このメッセージに返信";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "メディアを保存";
+"MESSAGE_ACTION_SHARE_MEDIA" = "共有";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "メッセージ";
-
-/* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "宛先:";
 
 /* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "新しいメッセージ";
@@ -1494,12 +1581,10 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "不在着信";
 
-/* Alert body
-   Alert body when camera is not authorized */
+/* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Signalで動画通話ができるように、iOSの設定でカメラのアクセスを設定できます。";
 
-/* Alert title
-   Alert title when camera is not authorized */
+/* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "カメラへのアクセスが必要です";
 
 /* Alert body indicating the user has denied location permissios */
@@ -1515,10 +1600,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "この機能を使うためには、Signalに写真のアクセスを許可する必要があります。";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "これ以上のデバイスは追加できません。";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "これ以上の端末はリンクできません。";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "リンクできる端末の数が最大限度に達しています。デバイスを削除してください。";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "リンクできる端末の数が最大限度に達しています。端末を削除してください。";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "消音にすると通知が行われなくなります。";
@@ -1538,6 +1623,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTING" = "接続しています";
 
+/* Error indicating that this device is no longer linked. */
+"NETWORK_STATUS_DELINKED" = "リンクされていません";
+
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "登録されていません";
 
@@ -1553,8 +1641,14 @@
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "グループのアイコン画像を設定";
 
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "新しいグループを作成";
+
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "作成";
+
+/* Error indicating that a new group could not be created. */
+"NEW_GROUP_CREATION_FAILED" = "新しいグループを作成できませんでした。";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "新しいグループ";
@@ -1589,6 +1683,12 @@
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "連絡先を電話番号で検索";
 
+/* Explanation of how to see a conversation. */
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "チャットを始めるには連絡先かグループを選択してください";
+
+/* Title welcoming to the app */
+"NO_SELECTED_CONVERSATION_TITLE" = "Signalにようこそ";
+
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "新しいメッセージ:";
 
@@ -1602,7 +1702,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%@の再起動中にメッセージが届いたかもしれません";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Appleのプッシュ通信仕様の既知のバグのため，メッセージのプレビューが表示されるのはメッセージの取得が送信後30秒以内に行われたときのみとなります。この結果Appアイコンのバッジが不正確になる場合があります。\n";
+"NOTIFICATIONS_FOOTER_WARNING" = "「既読」「返信」「折り返す」を含む";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "名前もメッセージも無し";
@@ -1614,7 +1714,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "サウンド";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "名前とメッセージ";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "名前、内容、アクション";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "名前のみ";
@@ -1661,17 +1761,38 @@
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "メッセージに「人間っぽさ」を加える";
 
+/* button indicating that the user will register their ipad */
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPadを登録";
+
+/* button indicating that the user will link their phone */
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "iPhoneをリンク";
+
+/* explanation to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "「iPadを登録」をタップすると、Signalの新しいアカウントを作るか、お持ちのアカウントをiPadにリンクするできます。この結果、同じ番号で現在登録されている端末のSignalが無効化されます。";
+
+/* explanation to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "「iPhoneをリンク」をタップすると、あなたのiPhoneをお持ちのアカウントに接続します。一般的には、通話などの機能が制限されるため、電話をリンクすることはお勧めできません。";
+
+/* header text indicating to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "このiPadを登録する";
+
+/* header text indicating to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "このiPhoneをリンク";
+
+/* warning to the user that registering an ipad is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "このiPadを登録すると、同じ電話番号で登録されている他の端末でSignalを使用できなくなります。";
+
+/* warning to the user that linking a phone is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "あなたのiPhoneをリンクすることは、機能が制限されるため、お勧めできません。";
+
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "パーミッションを有効化する";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "情報は常に安全に送信されます";
-
-/* Label for the 'not now' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "あとで";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "通知機能は、メッセージが届いたり、会話記録の更新を知らせます。";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signalがメッセージの受信時間（相手）を知らせる";
+"ONBOARDING_PERMISSIONS_TITLE" = "メッセージの取得";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "あなたの電話番号を入力してください";
@@ -1760,14 +1881,23 @@
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "受信中にエラー";
 
-/* Notification for incoming disappearing photo. */
-"PER_MESSAGE_EXPIRATION_NOTIFICATION" = "写真が消去されます";
+/* inbox cell and notification text for an already viewed view-once media message. */
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "メディアメッセージ";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "写真";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "メディア";
+
+/* inbox cell and notification text for a view-once photo. */
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "写真が消去されます";
+
+/* inbox cell and notification text for a view-once video. */
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "消える動画";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "写真を見る";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "写真";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "動画";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "閲覧済み";
@@ -2015,6 +2145,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "動画";
 
+/* notification body */
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ があなたのメッセージに反応";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "暗証番号を忘れた";
 
@@ -2062,15 +2195,6 @@
 
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "アカウントを有効化するには，お送りしたコードの確認を行ってください。";
-
-/* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "登録を行うと，この電話番号で登録中の他の端末でSignalが使用できなくなります。";
-
-/* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "このiPadを登録する";
-
-/* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Signalのアカウントをお持ちですか？";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "サポートされていない形式の電話番号です。サポートに連絡してください。";
@@ -2201,6 +2325,51 @@
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "メッセージ";
 
+/* alert title */
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "リンクコードが取得できません";
+
+/* alert message for outdated linking device */
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "あなたの他の端末が、Signalの古いバージョンを使用しているため、iPadのQRコードをスキャンできません。最新のバージョンをインストールしてください。";
+
+/* alert title for outdated linking device */
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "アプリを更新してください";
+
+/* alert title */
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "端末をリンクできませんでした";
+
+/* header text when this device is being added as a secondary */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "この端末の名前を選択";
+
+/* label text */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "この名前は「リンク済み端末」に表示されます";
+
+/* text field placeholder */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "名前を選択";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "リンク作業を終了";
+
+/* header text before the user can link this device */
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "このiPadをリンクさせるため、携帯電話のSignalを立ち上げてください。";
+
+/* Link explaining what to do when trying to link a device before having a primary device. */
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "私の端末にはSignalがありません...";
+
+/* alert body */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "App StoreからSignalをインストールし、登録をしてください。そのアカウントにiPadをリンクできます。";
+
+/* alert title */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Signalのインストール";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "携帯電話のSingnalで、あなたのアイコン（左上）をタップし、「リンク済み端末」の「新しい端末をリンク」から、このQRコードを撮影してください。";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "iPadのリンクに関するヘルプはここ";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "QRコードをスキャン";
+
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "安全なセッションがリセットされました。";
 
@@ -2224,9 +2393,6 @@
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "あなたは友人にSignalを薦めました。";
-
-/* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "メディアを破棄しますか？";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "メディアを破棄します";
@@ -2283,7 +2449,13 @@
 "SETTINGS_ADVANCED_TITLE" = "詳細設定";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "エラーログを見る";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "エラーログ";
+
+/* The title for the theme section in the appearance settings. */
+"SETTINGS_APPEARANCE_THEME_TITLE" = "テーマ";
+
+/* The title for the appearance settings. */
+"SETTINGS_APPEARANCE_TITLE" = "デザイン設定";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@（デフォルト）";
@@ -2450,6 +2622,9 @@
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "メッセージが既読かどうかを確認・共有します。この選択はすべての会話に適用されます。";
 
+/* Label for re-link button. */
+"SETTINGS_RELINK_BUTTON" = "再リンク";
+
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "再登録";
 
@@ -2457,7 +2632,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "画面ロックまでの時間";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Touch IDや，Face ID，パスワードで画面ロックを解除します。画面がロック中でも電話に出たり通知を受け取ることはできます。ロック中に表示させる情報はSignalの通知設定で変更できます。";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Touch IDやFace ID、パスワードで画面ロックを解除します。画面がロック中でも電話に出たり、通知を受け取ることができます。ロック中に表示させる情報はSignalの通知設定で変更できます。";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "画面ロック";
@@ -2579,7 +2754,7 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "音声なし";
 
-/* Preview text shown in notifications and home view for sticker messages. */
+/* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "ステッカーメッセージ";
 
 /* Tooltip indicating that a sticker pack was installed. */
@@ -2618,9 +2793,6 @@
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "ステッカーパック";
 
-/* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "ステッカーパックのインストールに失敗しました。";
-
 /* Title of the 'share sticker pack' view. */
 "STICKERS_PACK_SHARE_VIEW_TITLE" = "ステッカーパックの共有";
 
@@ -2634,7 +2806,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "アンインストール";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@に対する安全番号と一致しました。この相手は確認済みにできます。";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@に対する安全番号と一致しました。この相手は「確認済み」にできます。";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "安全番号が一致しました";
@@ -2647,6 +2819,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@, %lu グループのメンバー";
+
+/* Subtitle appearing at the top of the users 'note to self' conversation */
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "この会話に自分用のノートを追加できます。リンクした別の端末にも同期します。";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ のメンバー";
@@ -2750,8 +2925,11 @@
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "「%@」の追加を解除しますか？";
 
+/* Label warning the user that they have been unlinked from their primary device. */
+"UNLINKED_WARNING" = "この端末はもはやリンクされていません。メッセージを送受信するには、Signlaをリンクし直してください。";
+
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "端末の追加を解除できませんでした";
+"UNLINKING_FAILED_ALERT_TITLE" = "端末のリンクを解除できませんでした";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "無名のデバイス";
@@ -2763,7 +2941,7 @@
 "UNSUPPORTED_ATTACHMENT" = "サポートされていない種類の添付ファイルを受信しました";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "このデバイスでは対応されていない機能です。";
+"UNSUPPORTED_FEATURE_ERROR" = "この端末では対応されていない機能です。";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "グループのメンバーは削除できません。本人が離脱するか，グループを新たに作成してください。";
@@ -2828,6 +3006,9 @@
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
+/* An error indicating that the supplied username cannot start with a number. */
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "ユーザ名の頭文字は数字にできません。";
+
 /* The title for the username view. */
 "USERNAME_TITLE" = "ユーザー名";
 
@@ -2840,17 +3021,23 @@
 /* Error moessage shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "ユーザー名の更新に失敗しました";
 
+/* error label near a field */
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "端末名は必須です";
+
+/* error label near a field */
+"VALIDATION_ERROR_TOO_LONG" = "端末名が長すぎます";
+
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@を未確認にしました";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@を「未確認」にしました";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "%@は別端末で未確認にしました";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "別の端末で %@を「未確認」にしました";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@を確認済みにしました";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@を「確認済み」にしました";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "%@は別端末で確認済みにしました";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "別の端末で %@を「確認済み」にしました";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "認証状態が変わりました";

@@ -498,8 +498,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
                                                                                  byteCount:(UInt32)imageData.length
                                                                             sourceFilename:nil
                                                                                    caption:nil
-                                                                            albumMessageId:nil
-                                                                         shouldAlwaysPad:NO];
+                                                                            albumMessageId:nil];
 
     NSError *error;
     BOOL success = [attachmentStream writeData:imageData error:&error];
@@ -770,6 +769,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 #pragma mark - Proto Serialization
 
 + (nullable SSKProtoDataMessageContact *)protoForContact:(OWSContact *)contact
+                                             transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(contact);
 
@@ -899,7 +899,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     if (contact.avatarAttachmentId) {
         SSKProtoAttachmentPointer *_Nullable attachmentProto =
-            [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
+            [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId transaction:transaction];
         if (!attachmentProto) {
             OWSLogError(@"could not build protobuf: %@", error);
         } else {

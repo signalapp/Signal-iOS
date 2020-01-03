@@ -18,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
  * recipientId is nil when building "sent" sync messages for messages
  * sent to groups.
  */
-- (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address;
+- (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address
+                                            thread:(TSThread *)thread
+                                       transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 
@@ -27,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSOutgoingSentMessageTranscript ()
 
 @property (nonatomic, readonly) TSOutgoingMessage *message;
+
+@property (nonatomic, readonly) TSThread *messageThread;
 
 // sentRecipientAddress is the recipient of message, for contact thread messages.
 // It is used to identify the thread/conversation to desktop.
@@ -57,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _message = message;
+    _messageThread = messageThread;
     _isRecipientUpdate = isRecipientUpdate;
 
     if ([messageThread isKindOfClass:[TSContactThread class]]) {
@@ -83,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
     [sentBuilder setTimestamp:self.timestamp];
@@ -99,8 +104,21 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSAssertDebug(SSKFeatureFlags.viewOnceSending);
         [dataBuilder setIsViewOnce:YES];
-        [dataBuilder setRequiredProtocolVersion:(uint32_t)SSKProtos.viewOnceMessagesProtocolVersion];
+        [dataBuilder setRequiredProtocolVersion:(uint32_t)SSKProtoDataMessageProtocolVersionViewOnceVideo];
 
+        if (self.messageThread.isGroupThread) {
+            TSGroupThread *groupThread = (TSGroupThread *)self.messageThread;
+            SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId];
+            [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
+            NSError *error;
+            SSKProtoGroupContext *_Nullable groupContextProto = [groupBuilder buildAndReturnError:&error];
+            if (error || !groupContextProto) {
+                OWSFailDebug(@"could not build protobuf: %@.", error);
+                return nil;
+            }
+            [dataBuilder setGroup:groupContextProto];
+        }
+        
         NSError *error;
         dataMessage = [dataBuilder buildAndReturnError:&error];
         if (error || !dataMessage) {
@@ -108,7 +126,9 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
     } else {
-        dataMessage = [self.message buildDataMessage:self.sentRecipientAddress];
+        dataMessage = [self.message buildDataMessage:self.sentRecipientAddress
+                                              thread:self.messageThread
+                                         transaction:transaction];
     }
 
     if (!dataMessage) {

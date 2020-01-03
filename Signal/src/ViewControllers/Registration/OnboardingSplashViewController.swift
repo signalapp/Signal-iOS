@@ -9,11 +9,35 @@ import SafariServices
 @objc
 public class OnboardingSplashViewController: OnboardingBaseViewController {
 
+    let modeSwitchButton = UIButton()
+
+    override var primaryLayoutMargins: UIEdgeInsets {
+        var defaultMargins = super.primaryLayoutMargins
+        // we want the hero image a bit closer to the top than most
+        // onboarding content
+        defaultMargins.top = 16
+        return defaultMargins
+    }
+
     override public func loadView() {
-        super.loadView()
+        view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
+
+        view.addSubview(modeSwitchButton)
+        modeSwitchButton.setTemplateImageName(
+            onboardingController.defaultOnboardingMode == .registering ? "link-24" : "link-broken-24",
+            tintColor: .ows_gray25
+        )
+        modeSwitchButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+        modeSwitchButton.autoPinEdge(toSuperviewMargin: .trailing)
+        modeSwitchButton.autoPinEdge(toSuperviewMargin: .top)
+        modeSwitchButton.addTarget(self, action: #selector(didTapModeSwitch), for: .touchUpInside)
+        modeSwitchButton.accessibilityIdentifier = "onboarding.splash.modeSwitch"
+
+        modeSwitchButton.isHidden = !UIDevice.current.isIPad && !FeatureFlags.linkedPhones
 
         view.backgroundColor = Theme.backgroundColor
-        view.layoutMargins = .zero
 
         let heroImage = UIImage(named: "onboarding_splash_hero")
         let heroImageView = UIImageView(image: heroImage)
@@ -25,14 +49,13 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         heroImageView.accessibilityIdentifier = "onboarding.splash." + "heroImageView"
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_SPLASH_TITLE", comment: "Title of the 'onboarding splash' view."))
-        view.addSubview(titleLabel)
-        titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
+        primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
                                                   comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view.")
-        explanationLabel.textColor = .ows_materialBlue
+        explanationLabel.textColor = .ows_signalBlue
         explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
@@ -41,11 +64,10 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
         explanationLabel.accessibilityIdentifier = "onboarding.splash." + "explanationLabel"
 
-        let continueButton = self.button(title: NSLocalizedString("BUTTON_CONTINUE",
-                                                                 comment: "Label for 'continue' button."),
+        let continueButton = self.primaryButton(title: CommonStrings.continueButton,
                                                     selector: #selector(continuePressed))
-        view.addSubview(continueButton)
         continueButton.accessibilityIdentifier = "onboarding.splash." + "continueButton"
+        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton)
 
         let stackView = UIStackView(arrangedSubviews: [
             heroImageView,
@@ -54,19 +76,22 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
             UIView.spacer(withHeight: 92),
             explanationLabel,
             UIView.spacer(withHeight: 24),
-            continueButton
+            primaryButtonView
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+
+        primaryView.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewMargins()
     }
 
-     // MARK: - Events
+    // MARK: - Events
+
+    @objc func didTapModeSwitch() {
+        Logger.info("")
+
+        onboardingController.onboardingSplashRequestedModeSwitch(viewController: self)
+    }
 
     @objc func explanationLabelTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {

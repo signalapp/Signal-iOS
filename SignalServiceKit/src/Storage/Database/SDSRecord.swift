@@ -3,9 +3,10 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 public protocol SDSRecord: Codable, FetchableRecord, PersistableRecord {
+    var delegate: SDSRecordDelegate? { get set }
     var id: Int64? { get set }
     var uniqueId: String { get }
     var tableMetadata: SDSTableMetadata { get }
@@ -34,6 +35,10 @@ public extension SDSRecord {
     func sdsSave(saveMode: SDSSaveMode,
                  transaction: GRDBWriteTransaction) {
         do {
+            // GRDB TODO: the record has an id property, but we can't use it here
+            //            until we modify the upsert logic.
+            //            grdbIdByUniqueId() verifies that the model hasn't been
+            //            deleted from the db.
             if let grdbId: Int64 = grdbIdByUniqueId(transaction: transaction) {
 
                 if saveMode == .insert {
@@ -51,8 +56,7 @@ public extension SDSRecord {
                 try self.insert(transaction.database)
             }
         } catch {
-            // TODO:
-            owsFail("Write failed: \(error)")
+            owsFail("Write failed: \(error.grdbErrorForLogging)")
         }
     }
 
@@ -70,8 +74,7 @@ public extension SDSRecord {
             statement.unsafeSetArguments(arguments)
             try statement.execute()
         } catch {
-            // TODO:
-            owsFail("Write failed: \(error)")
+            owsFail("Write failed: \(error.grdbErrorForLogging)")
         }
     }
 }

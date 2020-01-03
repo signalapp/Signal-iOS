@@ -50,6 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - override TSOutgoingMessage
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+                                 thread:(TSThread *)thread
+                            transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
 

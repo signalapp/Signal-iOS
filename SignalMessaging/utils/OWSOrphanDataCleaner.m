@@ -11,6 +11,10 @@
 #import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
+#import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/OWSReaction.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
@@ -35,6 +39,7 @@ NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleane
 @property (nonatomic) NSSet<NSString *> *interactionIds;
 @property (nonatomic) NSSet<NSString *> *attachmentIds;
 @property (nonatomic) NSSet<NSString *> *filePaths;
+@property (nonatomic) NSSet<NSString *> *reactionIds;
 
 @end
 
@@ -299,6 +304,27 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [allOnDiskFilePaths unionSet:allStickerFilePaths];
     [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
 
+    // This should be redundant, but this will future-proof us against
+    // ever accidentally removing the YDB or GRDB databases during
+    // orphan clean up.
+    NSString *grdbDirectoryPath = [SDSDatabaseStorage grdbDatabaseDirUrl].path;
+    NSString *ydbDirectoryPath = [OWSPrimaryStorage sharedDataDatabaseDirPath];
+    NSMutableSet<NSString *> *databaseFilePaths = [NSMutableSet new];
+    for (NSString *filePath in allOnDiskFilePaths) {
+        if ([filePath hasPrefix:grdbDirectoryPath] || [filePath hasPrefix:ydbDirectoryPath]) {
+            OWSLogInfo(@"Protecting database file: %@", filePath);
+            [databaseFilePaths addObject:filePath];
+        }
+    }
+    [allOnDiskFilePaths minusSet:databaseFilePaths];
+    OWSLogVerbose(
+        @"grdbDirectoryPath: %@ (%d)", grdbDirectoryPath, [OWSFileSystem fileOrFolderExistsAtPath:grdbDirectoryPath]);
+    OWSLogVerbose(
+        @"ydbDirectoryPath: %@ (%d)", ydbDirectoryPath, [OWSFileSystem fileOrFolderExistsAtPath:ydbDirectoryPath]);
+    OWSLogVerbose(@"databaseFilePaths: %lu", (unsigned long)databaseFilePaths.count);
+
+    OWSLogVerbose(@"allOnDiskFilePaths: %lu", (unsigned long)allOnDiskFilePaths.count);
+
     __block NSSet<NSString *> *profileAvatarFilePaths;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         profileAvatarFilePaths = [OWSProfileManager allProfileAvatarFilePathsWithTransaction:transaction];
@@ -320,16 +346,20 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     __block int attachmentStreamCount = 0;
     NSMutableSet<NSString *> *allAttachmentFilePaths = [NSMutableSet new];
     NSMutableSet<NSString *> *allAttachmentIds = [NSMutableSet new];
+    // Reactions
+    NSMutableSet<NSString *> *allReactionIds = [NSMutableSet new];
     // Threads
     __block NSSet *threadIds;
     // Messages
     NSMutableSet<NSString *> *orphanInteractionIds = [NSMutableSet new];
     NSMutableSet<NSString *> *allMessageAttachmentIds = [NSMutableSet new];
+    NSMutableSet<NSString *> *allMessageReactionIds = [NSMutableSet new];
     // Stickers
     NSMutableSet<NSString *> *activeStickerFilePaths = [NSMutableSet new];
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         [TSAttachmentStream
             anyEnumerateWithTransaction:transaction
+                                batched:YES
                                   block:^(TSAttachment *attachment, BOOL *stop) {
                                       if (!self.isMainAppAndActive) {
                                           shouldAbort = YES;
@@ -350,8 +380,28 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                           OWSFailDebug(@"attachment has no file path.");
                                       }
 
-                                      [allAttachmentFilePaths addObjectsFromArray:attachmentStream.allThumbnailPaths];
+                                      [allAttachmentFilePaths
+                                          addObjectsFromArray:attachmentStream.allSecondaryFilePaths];
                                   }];
+
+        if (shouldAbort) {
+            return;
+        }
+
+        [OWSReaction
+         anyEnumerateWithTransaction:transaction
+         batched:YES
+         block:^(OWSReaction *reaction, BOOL *stop) {
+             if (!self.isMainAppAndActive) {
+                 shouldAbort = YES;
+                 *stop = YES;
+                 return;
+             }
+             if (![reaction isKindOfClass:[OWSReaction class]]) {
+                 return;
+             }
+             [allReactionIds addObject:reaction.uniqueId];
+         }];
 
         if (shouldAbort) {
             return;
@@ -360,6 +410,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         threadIds = [NSSet setWithArray:[TSThread anyAllUniqueIdsWithTransaction:transaction]];
 
         [TSInteraction anyEnumerateWithTransaction:transaction
+                                           batched:YES
                                              block:^(TSInteraction *interaction, BOOL *stop) {
                                                  if (!self.isMainAppAndActive) {
                                                      shouldAbort = YES;
@@ -377,6 +428,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
                                                  TSMessage *message = (TSMessage *)interaction;
                                                  [allMessageAttachmentIds addObjectsFromArray:message.allAttachmentIds];
+
+                                                 NSArray<NSString *> *_Nullable messageReactionIds = [message allReactionIdsWithTransaction:transaction];
+                                                 if (messageReactionIds) {
+                                                     [allMessageReactionIds addObjectsFromArray:messageReactionIds];
+                                                 }
                                              }];
 
         if (shouldAbort) {
@@ -399,17 +455,45 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                                            addObjectsFromArray:message.allAttachmentIds];
                                                    }];
 
-        [SSKJobRecord
-            anyEnumerateWithTransaction:transaction
-                                  block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
-                                      if (![jobRecord isKindOfClass:OWSBroadcastMediaMessageJobRecord.class]) {
-                                          return;
-                                      }
-                                      OWSBroadcastMediaMessageJobRecord *broadcastJobRecord
-                                          = (OWSBroadcastMediaMessageJobRecord *)jobRecord;
-                                      [allMessageAttachmentIds
-                                          addObjectsFromArray:broadcastJobRecord.attachmentIdMap.allKeys];
-                                  }];
+        [[JobRecordFinderObjC new]
+            enumerateJobRecordsWithLabel:OWSBroadcastMediaMessageJobRecord.defaultLabel
+                             transaction:transaction
+                                   block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
+                                       if (![jobRecord isKindOfClass:OWSBroadcastMediaMessageJobRecord.class]) {
+                                           OWSFailDebug(@"unexpected jobRecord: %@", jobRecord);
+                                           return;
+                                       }
+                                       OWSBroadcastMediaMessageJobRecord *broadcastJobRecord
+                                           = (OWSBroadcastMediaMessageJobRecord *)jobRecord;
+                                       [allMessageAttachmentIds
+                                           addObjectsFromArray:broadcastJobRecord.attachmentIdMap.allKeys];
+                                   }];
+
+        [[JobRecordFinderObjC new]
+            enumerateJobRecordsWithLabel:OWSIncomingGroupSyncJobRecord.defaultLabel
+                             transaction:transaction
+                                   block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
+                                       if (![jobRecord isKindOfClass:OWSIncomingGroupSyncJobRecord.class]) {
+                                           OWSFailDebug(@"unexpected jobRecord: %@", jobRecord);
+                                           return;
+                                       }
+                                       OWSIncomingGroupSyncJobRecord *groupSyncJobRecord
+                                           = (OWSIncomingGroupSyncJobRecord *)jobRecord;
+                                       [allMessageAttachmentIds addObject:groupSyncJobRecord.attachmentId];
+                                   }];
+
+        [[JobRecordFinderObjC new]
+            enumerateJobRecordsWithLabel:OWSIncomingContactSyncJobRecord.defaultLabel
+                             transaction:transaction
+                                   block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
+                                       if (![jobRecord isKindOfClass:OWSIncomingContactSyncJobRecord.class]) {
+                                           OWSFailDebug(@"unexpected jobRecord: %@", jobRecord);
+                                           return;
+                                       }
+                                       OWSIncomingContactSyncJobRecord *contactSyncJobRecord
+                                           = (OWSIncomingContactSyncJobRecord *)jobRecord;
+                                       [allMessageAttachmentIds addObject:contactSyncJobRecord.attachmentId];
+                                   }];
 
         if (shouldAbort) {
             return;
@@ -452,10 +536,19 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSLogDebug(@"missing attachmentIds: %zu", missingAttachmentIds.count);
     OWSLogDebug(@"orphan interactions: %zu", orphanInteractionIds.count);
 
+    NSMutableSet<NSString *> *orphanReactionIds = [allReactionIds mutableCopy];
+    [orphanReactionIds minusSet:allMessageReactionIds];
+    NSMutableSet<NSString *> *missingReactionIds = [allMessageReactionIds mutableCopy];
+    [missingReactionIds minusSet:allReactionIds];
+
+    OWSLogDebug(@"orphan reactionIds: %zu", orphanReactionIds.count);
+    OWSLogDebug(@"missing reactionIds: %zu", missingReactionIds.count);
+
     OWSOrphanData *result = [OWSOrphanData new];
     result.interactionIds = [orphanInteractionIds copy];
     result.attachmentIds = [orphanAttachmentIds copy];
     result.filePaths = [orphanFilePaths copy];
+    result.reactionIds = [orphanReactionIds copy];
     return result;
 }
 
@@ -545,6 +638,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         OWSLogVerbose(@"Ignoring audit orphan data in tests.");
         return;
     }
+    if (SSKFeatureFlags.suppressBackgroundActivity) {
+        // Don't clean up.
+        return;
+    }
+
     OWSLogInfo(@"");
 
     // Orphan cleanup has two risks:
@@ -724,6 +822,34 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             [attachmentStream anyRemoveWithTransaction:transaction];
         }
         OWSLogInfo(@"Deleted orphan attachments: %zu", attachmentsRemoved);
+
+        NSUInteger reactionsRemoved = 0;
+        for (NSString *reactionId in orphanData.reactionIds) {
+            if (!self.isMainAppAndActive) {
+                shouldAbort = YES;
+                return;
+            }
+            OWSReaction *_Nullable reaction =
+                [OWSReaction anyFetchWithUniqueId:reactionId transaction:transaction];
+            if (!reaction) {
+                // This could just be a race condition, but it should be very unlikely.
+                OWSLogWarn(@"Could not load reaction: %@", reactionId);
+                continue;
+            }
+            // Don't delete reactions which were created in the last N minutes.
+            NSDate *creationDate = [NSDate ows_dateWithMillisecondsSince1970:reaction.sentAtTimestamp];
+            if ([creationDate isAfterDate:thresholdDate]) {
+                OWSLogInfo(@"Skipping orphan reaction due to age: %f", fabs(creationDate.timeIntervalSinceNow));
+                continue;
+            }
+            OWSLogInfo(@"Removing orphan reaction: %@", reaction.uniqueId);
+            reactionsRemoved++;
+            if (!shouldRemoveOrphans) {
+                continue;
+            }
+            [reaction anyRemoveWithTransaction:transaction];
+        }
+        OWSLogInfo(@"Deleted orphan reactions: %zu", reactionsRemoved);
     }];
 
     if (shouldAbort) {

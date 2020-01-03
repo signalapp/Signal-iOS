@@ -27,10 +27,10 @@ private class StickerPackActionButton: UIView {
         let actionIconSize: CGFloat = 20
         let actionCircleSize: CGFloat = 32
         let actionCircleView = CircleView(diameter: actionCircleSize)
-        actionCircleView.backgroundColor = Theme.offBackgroundColor
+        actionCircleView.backgroundColor = Theme.washColor
         let actionIcon = UIImage(named: actionIconName)?.withRenderingMode(.alwaysTemplate)
         let actionIconView = UIImageView(image: actionIcon)
-        actionIconView.tintColor = Theme.secondaryColor
+        actionIconView.tintColor = Theme.secondaryTextAndIconColor
         actionCircleView.addSubview(actionIconView)
         actionIconView.autoCenterInSuperview()
         actionIconView.autoSetDimensions(to: CGSize(width: actionIconSize, height: actionIconSize))
@@ -125,8 +125,29 @@ public class ManageStickersViewController: OWSTableViewController {
             }
         }
         updateMapWithOldSources(&oldInstalledSources, installedStickerPackSources)
-        updateMapWithOldSources(&oldInstalledSources, availableBuiltInStickerPackSources)
+        updateMapWithOldSources(&oldTransientSources, availableBuiltInStickerPackSources)
         updateMapWithOldSources(&oldTransientSources, knownStickerPackSources)
+
+        var installedStickerPacks = [StickerPack]()
+        var availableBuiltInStickerPacks = [StickerPack]()
+        var availableKnownStickerPacks = [KnownStickerPack]()
+        self.databaseStorage.read { (transaction) in
+            let allPacks = StickerManager.allStickerPacks(transaction: transaction)
+            let allPackInfos = allPacks.map { $0.info }
+
+            // Only show packs with installed covers.
+            let packsWithCovers = allPacks.filter {
+                StickerManager.isStickerInstalled(stickerInfo: $0.coverInfo,
+                                                  transaction: transaction)
+            }
+            // Sort sticker packs by "date saved, descending" so that we feature
+            // packs that the user has just learned about.
+            installedStickerPacks = packsWithCovers.filter { $0.isInstalled }
+            availableBuiltInStickerPacks = packsWithCovers.filter { !$0.isInstalled && StickerManager.isDefaultStickerPack($0.info) }
+            let allKnownStickerPacks = StickerManager.allKnownStickerPacks(transaction: transaction)
+            availableKnownStickerPacks = allKnownStickerPacks.filter { !allPackInfos.contains($0.info) }
+        }
+
         let installedSource = { (info: StickerPackInfo) -> StickerPackDataSource in
             if let source = oldInstalledSources[info] {
                 return source
@@ -145,37 +166,20 @@ public class ManageStickersViewController: OWSTableViewController {
             source.add(delegate: self)
             return source
         }
-
-        self.databaseStorage.read { (transaction) in
-            let allPacks = StickerManager.allStickerPacks(transaction: transaction)
-            let allPackInfos = allPacks.map { $0.info }
-
-            // Only show packs with installed covers.
-            let packsWithCovers = allPacks.filter {
-                StickerManager.isStickerInstalled(stickerInfo: $0.coverInfo,
-                                                  transaction: transaction)
-            }
-            // Sort sticker packs by "date saved, descending" so that we feature
-            // packs that the user has just learned about.
-            let installedStickerPacks = packsWithCovers.filter { $0.isInstalled }
-            let availableBuiltInStickerPacks = packsWithCovers.filter { !$0.isInstalled && StickerManager.isDefaultStickerPack($0.info) }
-            self.installedStickerPackSources = installedStickerPacks.sorted {
-                $0.dateCreated > $1.dateCreated
-                }.map { installedSource($0.info) }
-            let sortAvailablePacks = { (pack0: StickerPack, pack1: StickerPack) -> Bool in
-                return pack0.dateCreated > pack1.dateCreated
-            }
-            self.availableBuiltInStickerPackSources = availableBuiltInStickerPacks.sorted(by: sortAvailablePacks)
-            .map { installedSource($0.info) }
-
-            let sortKnownPacks = { (pack0: KnownStickerPack, pack1: KnownStickerPack) -> Bool in
-                return pack0.dateCreated > pack1.dateCreated
-            }
-            let allKnownStickerPacks = StickerManager.allKnownStickerPacks(transaction: transaction)
-            let availableKnownStickerPacks = allKnownStickerPacks.filter { !allPackInfos.contains($0.info) }
-            self.knownStickerPackSources = availableKnownStickerPacks.sorted(by: sortKnownPacks)
-                .map { transientSource($0.info) }
+        let sortAvailablePacks = { (pack0: StickerPack, pack1: StickerPack) -> Bool in
+            return pack0.dateCreated > pack1.dateCreated
         }
+        let sortKnownPacks = { (pack0: KnownStickerPack, pack1: KnownStickerPack) -> Bool in
+            return pack0.dateCreated > pack1.dateCreated
+        }
+
+        self.installedStickerPackSources = installedStickerPacks.sorted {
+            $0.dateCreated > $1.dateCreated
+            }.map { installedSource($0.info) }
+        self.availableBuiltInStickerPackSources = availableBuiltInStickerPacks.sorted(by: sortAvailablePacks)
+            .map { transientSource($0.info) }
+        self.knownStickerPackSources = availableKnownStickerPacks.sorted(by: sortKnownPacks)
+            .map { transientSource($0.info) }
 
         updateTableContents()
     }
@@ -242,7 +246,7 @@ public class ManageStickersViewController: OWSTableViewController {
             guard source.getStickerPack() == nil else {
                 // Already loaded.
                 loadedKnownStickerPackSources.append(source)
-                return
+                continue
             }
             guard let info = source.info else {
                 owsFailDebug("Known source missing info.")
@@ -296,7 +300,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
     private func buildTableCell(availableStickerPack dataSource: StickerPackDataSource) -> UITableViewCell {
         if let stickerPack = dataSource.getStickerPack() {
-            let actionIconName = "download-filled-24"
+            let actionIconName = Theme.iconName(.messageActionSave)
             return buildTableCell(dataSource: dataSource,
                                   actionIconName: actionIconName) { [weak self] in
                                     self?.install(stickerPack: stickerPack)
@@ -343,8 +347,8 @@ public class ManageStickersViewController: OWSTableViewController {
         }
         let titleLabel = UILabel()
         titleLabel.text = title
-        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.lineBreakMode = .byTruncatingTail
 
         let textStack = UIStackView(arrangedSubviews: [
@@ -363,7 +367,7 @@ public class ManageStickersViewController: OWSTableViewController {
         var authorViews = [UIView]()
         if isDefaultStickerPack {
             let builtInPackView = UIImageView()
-            builtInPackView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBrandBlue)
+            builtInPackView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBlue)
             builtInPackView.setCompressionResistanceHigh()
             builtInPackView.setContentHuggingHigh()
             authorViews.append(builtInPackView)
@@ -373,8 +377,8 @@ public class ManageStickersViewController: OWSTableViewController {
             authorName.count > 0 {
             let authorLabel = UILabel()
             authorLabel.text = authorName
-            authorLabel.font = isDefaultStickerPack ? UIFont.ows_dynamicTypeCaption1.ows_mediumWeight() : UIFont.ows_dynamicTypeCaption1
-            authorLabel.textColor = isDefaultStickerPack ? UIColor.ows_signalBlue : Theme.secondaryColor
+            authorLabel.font = isDefaultStickerPack ? UIFont.ows_dynamicTypeCaption1.ows_semibold() : UIFont.ows_dynamicTypeCaption1
+            authorLabel.textColor = isDefaultStickerPack ? UIColor.ows_signalBlue : Theme.secondaryTextAndIconColor
             authorLabel.lineBreakMode = .byTruncatingTail
             authorViews.append(authorLabel)
         }
@@ -403,7 +407,7 @@ public class ManageStickersViewController: OWSTableViewController {
         stack.spacing = 12
 
         cell.contentView.addSubview(stack)
-        stack.ows_autoPinToSuperviewMargins()
+        stack.autoPinEdgesToSuperviewMargins()
 
         return cell
     }
@@ -443,7 +447,7 @@ public class ManageStickersViewController: OWSTableViewController {
         let cell = OWSTableItem.newCell()
 
         let bubbleView = UIView()
-        bubbleView.backgroundColor = Theme.offBackgroundColor
+        bubbleView.backgroundColor = Theme.washColor
         bubbleView.layer.cornerRadius = 8
         bubbleView.setCompressionResistanceLow()
         bubbleView.setContentHuggingLow()
@@ -453,7 +457,7 @@ public class ManageStickersViewController: OWSTableViewController {
         let label = UILabel()
         label.text = labelText
         label.font = UIFont.ows_dynamicTypeCaption1
-        label.textColor = Theme.secondaryColor
+        label.textColor = Theme.secondaryTextAndIconColor
         label.textAlignment = .center
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
@@ -478,7 +482,7 @@ public class ManageStickersViewController: OWSTableViewController {
         Logger.verbose("")
 
         let packView = StickerPackViewController(stickerPackInfo: packInfo)
-        present(packView, animated: true)
+        packView.present(from: self, animated: true)
     }
 
     private func share(packInfo: StickerPackInfo) {
@@ -494,9 +498,21 @@ public class ManageStickersViewController: OWSTableViewController {
 
         Logger.verbose("")
 
-        databaseStorage.write { (transaction) in
-            StickerManager.installStickerPack(stickerPack: stickerPack,
-                                              transaction: transaction)
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: false,
+                                                     presentationDelay: 0) { modal in
+
+                                                        self.databaseStorage.write { (transaction) in
+                                                            StickerManager.installStickerPack(stickerPack: stickerPack,
+                                                                                              wasLocallyInitiated: true,
+                                                                                              transaction: transaction)
+                                                        }
+
+                                                        DispatchQueue.main.async {
+                                                            modal.dismiss {
+                                                                // Do nothing.
+                                                            }
+                                                        }
         }
     }
 

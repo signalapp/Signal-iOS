@@ -493,6 +493,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.unsavedAttachmentExports = [NSMutableArray new];
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         [TSThread anyEnumerateWithTransaction:transaction
+                                      batched:YES
                                         block:^(TSThread *object, BOOL *stop) {
                                             NSString *collection = TSThread.collection;
                                             SignalIOSProtoBackupSnapshotBackupEntityType entityType
@@ -517,6 +518,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         [TSAttachment
             anyEnumerateWithTransaction:transaction
+                                batched:YES
                                   block:^(TSAttachment *object, BOOL *stop) {
                                       NSString *collection = TSAttachment.collection;
                                       SignalIOSProtoBackupSnapshotBackupEntityType entityType
@@ -571,6 +573,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Interactions refer to threads and attachments, so copy after them.
         [TSInteraction
             anyEnumerateWithTransaction:transaction
+                                batched:YES
                                   block:^(TSInteraction *object, BOOL *stop) {
                                       NSString *collection = TSInteraction.collection;
                                       SignalIOSProtoBackupSnapshotBackupEntityType entityType
@@ -819,6 +822,10 @@ NS_ASSUME_NONNULL_BEGIN
                 exportItem.encryptedItem = attachmentExport.encryptedItem;
                 exportItem.recordName = recordName;
                 exportItem.attachmentExport = attachmentExport;
+                if (![SDS fitsInInt64WithNSNumber:exportItem.uncompressedDataLength]) {
+                    OWSFailDebug(@"Invalid export item.");
+                    continue;
+                }
                 [self.savedAttachmentItems addObject:exportItem];
 
                 // Immediately save the record metadata to facilitate export resume.

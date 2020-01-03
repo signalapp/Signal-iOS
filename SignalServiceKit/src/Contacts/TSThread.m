@@ -15,6 +15,7 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -42,16 +43,10 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 @interface TSThread ()
 
 @property (nonatomic, nullable) NSDate *creationDate;
-@property (nonatomic) NSString *conversationColorName;
-@property (nonatomic, nullable) NSNumber *archivedAsOfMessageSortId;
+@property (nonatomic) BOOL isArchived;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
-
-// DEPRECATED - not used since migrating to sortId
-// but keeping these properties around to ease any pain in the back-forth
-// migration while testing. Eventually we can safely delete these as they aren't used anywhere.
-@property (nonatomic, nullable) NSDate *lastMessageDate DEPRECATED_ATTRIBUTE;
-@property (nonatomic, nullable) NSDate *archivalDate DEPRECATED_ATTRIBUTE;
+@property (nonatomic) int64_t lastInteractionRowId;
 
 @end
 
@@ -102,33 +97,29 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
-isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-                 lastMessageDate:(nullable NSDate *)lastMessageDate
+                      isArchived:(BOOL)isArchived
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
-                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;
     }
 
-    _archivalDate = archivalDate;
-    _archivedAsOfMessageSortId = archivedAsOfMessageSortId;
     _conversationColorName = conversationColorName;
     _creationDate = creationDate;
-    _isArchivedByLegacyTimestampForSorting = isArchivedByLegacyTimestampForSorting;
-    _lastMessageDate = lastMessageDate;
+    _isArchived = isArchived;
+    _lastInteractionRowId = lastInteractionRowId;
     _messageDraft = messageDraft;
     _mutedUntilDate = mutedUntilDate;
-    _rowId = rowId;
     _shouldThreadBeVisible = shouldThreadBeVisible;
 
     return self;
@@ -182,6 +173,11 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     _isArchivedByLegacyTimestampForSorting =
         [self.class legacyIsArchivedWithLastMessageDate:lastMessageDate archivalDate:archivalDate];
 
+    if ([coder decodeObjectForKey:@"archivedAsOfMessageSortId"] != nil) {
+        OWSAssertDebug(!_isArchived);
+        _isArchived = YES;
+    }
+
     return self;
 }
 
@@ -189,13 +185,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    BOOL isLocalThread = NO;
-    if ([self isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)self;
-        OWSAssertDebug(contactThread.contactAddress != nil);
-        isLocalThread = contactThread.contactAddress.isLocalAddress;
-    }
-    if (!isLocalThread && ![SSKPreferences hasSavedThreadWithTransaction:transaction]) {
+    if (self.shouldThreadBeVisible && ![SSKPreferences hasSavedThreadWithTransaction:transaction]) {
         [SSKPreferences setHasSavedThread:YES transaction:transaction];
     }
 }
@@ -226,6 +216,8 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
         OWSFailDebug(@"Error during enumeration: %@", error);
     }
 
+    [transaction ignoreInteractionUpdatesForThreadUniqueId:self.uniqueId];
+    
     for (NSString *interactionId in interactionIds) {
         // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
         TSInteraction *_Nullable interaction =
@@ -428,20 +420,87 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return YES;
 }
 
-- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(lastMessage);
-    OWSAssertDebug(transaction);
+    [self updateWithMessage:message wasMessageInserted:YES transaction:transaction];
+}
 
-    if (![self.class shouldInteractionAppearInInbox:lastMessage]) {
+- (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self updateWithMessage:message wasMessageInserted:NO transaction:transaction];
+}
+
+- (int64_t)messageSortIdForMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (transaction.transitional_yapWriteTransaction) {
+        return message.sortId;
+    } else {
+        if (message.grdbId == nil) {
+            OWSFailDebug(@"Missing messageSortId.");
+        } else if (message.grdbId.unsignedLongLongValue == 0) {
+            OWSFailDebug(@"Invalid messageSortId.");
+        } else {
+            return message.grdbId.longLongValue;
+        }
+    }
+    return 0;
+}
+
+- (void)updateWithMessage:(TSInteraction *)message
+       wasMessageInserted:(BOOL)wasMessageInserted
+              transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(message != nil);
+    OWSAssertDebug(transaction != nil);
+
+    if (![self.class shouldInteractionAppearInInbox:message]) {
         return;
     }
 
-    if (!self.shouldThreadBeVisible) {
-        [self anyUpdateWithTransaction:transaction
-                                 block:^(TSThread *thread) {
-                                     thread.shouldThreadBeVisible = YES;
-                                 }];
+    int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
+    BOOL needsToMarkAsVisible = !self.shouldThreadBeVisible;
+
+    BOOL needsToClearArchived = self.isArchived && wasMessageInserted;
+
+    // Don't clear archived during migrations.
+    if (!CurrentAppContext().isRunningTests && !AppReadiness.isAppReady) {
+        needsToClearArchived = NO;
+    }
+
+    // Don't clear archived during thread import
+    if ([message isKindOfClass:TSInfoMessage.class]
+        && ((TSInfoMessage *)message).messageType == TSInfoMessageSyncedThread) {
+        needsToClearArchived = NO;
+    }
+
+    BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
+    if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId) {
+        self.shouldThreadBeVisible = YES;
+        self.lastInteractionRowId = MAX(self.lastInteractionRowId, messageSortId);
+        if (needsToClearArchived) {
+            self.isArchived = NO;
+        }
+        [self anyOverwritingUpdateWithTransaction:transaction];
+    } else {
+        [self.databaseStorage touchThread:self transaction:transaction];
+    }
+}
+
+- (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(message != nil);
+    OWSAssertDebug(transaction != nil);
+
+    if (![self.class shouldInteractionAppearInInbox:message]) {
+        return;
+    }
+
+    int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
+    BOOL needsToUpdateLastInteractionRowId = messageSortId == self.lastInteractionRowId;
+    if (needsToUpdateLastInteractionRowId) {
+        TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
+        self.lastInteractionRowId = latestInteraction ? latestInteraction.sortId : 0;
+        [self anyOverwritingUpdateWithTransaction:transaction];
     } else {
         [self.databaseStorage touchThread:self transaction:transaction];
     }
@@ -479,17 +538,6 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 
 #pragma mark - Archival
 
-- (BOOL)isArchivedWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    if (!self.archivedAsOfMessageSortId) {
-        return NO;
-    }
-
-    TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
-    uint64_t latestSortIdForInbox = latestInteraction ? latestInteraction.sortId : 0;
-    return self.archivedAsOfMessageSortId.unsignedLongLongValue >= latestSortIdForInbox;
-}
-
 + (BOOL)legacyIsArchivedWithLastMessageDate:(nullable NSDate *)lastMessageDate
                                archivalDate:(nullable NSDate *)archivalDate
 {
@@ -508,8 +556,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
-                                 uint64_t latestId = [InteractionFinder mostRecentSortIdWithTransaction:transaction];
-                                 thread.archivedAsOfMessageSortId = @(latestId);
+                                 thread.isArchived = YES;
                              }];
 
     [self markAllAsReadWithTransaction:transaction];
@@ -519,7 +566,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
-                                 thread.archivedAsOfMessageSortId = nil;
+                                 thread.isArchived = NO;
                              }];
 }
 

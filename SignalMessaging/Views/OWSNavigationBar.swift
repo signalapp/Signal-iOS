@@ -31,7 +31,7 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public var fullWidth: CGFloat {
-        return UIScreen.main.bounds.size.width
+        return superview?.frame.width ?? CurrentAppContext().frame.width
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -75,7 +75,11 @@ public class OWSNavigationBar: UINavigationBar {
             return
         }
 
-        if UIAccessibility.isReduceTransparencyEnabled {
+        if currentStyle == .secondaryBar {
+            let color = Theme.secondaryBackgroundColor
+            let backgroundImage = UIImage(color: color)
+            self.setBackgroundImage(backgroundImage, for: .default)
+        } else if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
             let color = Theme.navbarBackgroundColor
             let backgroundImage = UIImage(color: color)
@@ -177,7 +181,7 @@ public class OWSNavigationBar: UINavigationBar {
     }
 
     public override func sizeThatFits(_ size: CGSize) -> CGSize {
-        guard OWSWindowManager.shared().hasCall() else {
+        guard OWSWindowManager.shared.hasCall else {
             return super.sizeThatFits(size)
         }
 
@@ -203,7 +207,7 @@ public class OWSNavigationBar: UINavigationBar {
             super.layoutSubviews()
             return
         }
-        guard OWSWindowManager.shared().hasCall() else {
+        guard OWSWindowManager.shared.hasCall else {
             super.layoutSubviews()
             return
         }
@@ -213,10 +217,10 @@ public class OWSNavigationBar: UINavigationBar {
             return
         }
 
+        super.layoutSubviews()
+
         self.frame = CGRect(x: 0, y: callBannerHeight, width: fullWidth, height: navbarWithoutStatusHeight)
         self.bounds = CGRect(x: 0, y: 0, width: fullWidth, height: navbarWithoutStatusHeight)
-
-        super.layoutSubviews()
 
         // This is only necessary on iOS11, which has some private views within that lay outside of the navbar.
         // They aren't actually visible behind the call status bar, but they looks strange during present/dismiss
@@ -234,12 +238,14 @@ public class OWSNavigationBar: UINavigationBar {
     // MARK: Override Theme
 
     @objc
-    public enum NavigationBarThemeOverride: Int {
-        case clear, alwaysDark, removeOverride
+    public enum NavigationBarStyle: Int {
+        case clear, alwaysDark, `default`, secondaryBar
     }
 
+    private var currentStyle: NavigationBarStyle?
+
     @objc
-    public func overrideTheme(type: NavigationBarThemeOverride) {
+    public func switchToStyle(_ style: NavigationBarStyle) {
         let applyDarkThemeOverride = {
             self.barStyle = .black
             self.titleTextAttributes = [NSAttributedString.Key.foregroundColor: Theme.darkThemePrimaryColor]
@@ -249,9 +255,9 @@ public class OWSNavigationBar: UINavigationBar {
 
         let removeDarkThemeOverride = {
             self.barStyle = Theme.barStyle
-            self.titleTextAttributes = [NSAttributedString.Key.foregroundColor: Theme.primaryColor]
+            self.titleTextAttributes = [NSAttributedString.Key.foregroundColor: Theme.primaryTextColor]
             self.barTintColor = Theme.backgroundColor.withAlphaComponent(0.6)
-            self.tintColor = Theme.primaryColor
+            self.tintColor = Theme.primaryTextColor
         }
 
         let applyTransparentBarOverride = {
@@ -272,19 +278,40 @@ public class OWSNavigationBar: UINavigationBar {
             self.shadowImage = nil
         }
 
-        switch type {
+        let applySecondaryBarOverride = {
+            self.blurEffectView?.isHidden = true
+            self.shadowImage = UIImage()
+        }
+
+        let removeSecondaryBarOverride = {
+            self.blurEffectView?.isHidden = false
+            self.shadowImage = nil
+        }
+
+        currentStyle = style
+
+        switch style {
         case .clear:
             respectsTheme = false
+            removeSecondaryBarOverride()
             applyDarkThemeOverride()
             applyTransparentBarOverride()
         case .alwaysDark:
             respectsTheme = false
-            applyDarkThemeOverride()
+            removeSecondaryBarOverride()
             removeTransparentBarOverride()
-        case .removeOverride:
+            applyDarkThemeOverride()
+        case .default:
             respectsTheme = true
             removeDarkThemeOverride()
             removeTransparentBarOverride()
+            removeSecondaryBarOverride()
+            applyTheme()
+        case .secondaryBar:
+            respectsTheme = true
+            removeDarkThemeOverride()
+            removeTransparentBarOverride()
+            applySecondaryBarOverride()
             applyTheme()
         }
     }

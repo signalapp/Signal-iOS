@@ -30,13 +30,13 @@ class ViewOnceMessagesTest: SSKBaseTestSwift {
     func test_expiration() {
 
         let messageCount = { () -> Int in
-            return self.databaseStorage.readReturningResult { transaction in
+            return self.databaseStorage.read { transaction in
                 return TSInteraction.anyFetchAll(transaction: transaction).count
             }
         }
         let latestCopy = { (message: TSMessage) -> TSMessage in
             let uniqueId = message.uniqueId
-            return self.databaseStorage.readReturningResult { transaction in
+            return self.databaseStorage.read { transaction in
                 return TSMessage.anyFetch(uniqueId: uniqueId, transaction: transaction) as! TSMessage
             }
         }

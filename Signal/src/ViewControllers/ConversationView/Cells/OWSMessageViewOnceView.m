@@ -10,10 +10,15 @@
 #import "OWSLabel.h"
 #import "OWSMessageFooterView.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_ENUM(NSUInteger, ViewOnceMessageType) {
+    ViewOnceMessageType_Unknown = 0,
+    ViewOnceMessageType_Photo,
+    ViewOnceMessageType_Video,
+};
 
 @interface OWSMessageViewOnceView ()
 
@@ -40,13 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSMessageViewOnceView
-
-#pragma mark - Dependencies
-
-- (OWSAttachmentDownloads *)attachmentDownloads
-{
-    return SSKEnvironment.shared.attachmentDownloads;
-}
 
 #pragma mark -
 
@@ -82,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.senderNameContainer = [UIView new];
     self.senderNameContainer.layoutMargins = UIEdgeInsetsMake(0, 0, self.senderNameBottomSpacing, 0);
     [self.senderNameContainer addSubview:self.senderNameLabel];
-    [self.senderNameLabel ows_autoPinToSuperviewMargins];
+    [self.senderNameLabel autoPinEdgesToSuperviewMargins];
 
     self.iconView = [UIImageView new];
     [self.iconView setContentHuggingHigh];
@@ -260,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
         case ViewOnceMessageState_IncomingFailed:
             return pendingColor;
         case ViewOnceMessageState_IncomingAvailable:
-            return Theme.offBackgroundColor;
+            return Theme.washColor;
         case ViewOnceMessageState_OutgoingFailed:
             return pendingColor;
         case ViewOnceMessageState_OutgoingSending:
@@ -299,7 +297,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Invalid value.");
             // Fall through.
         case ViewOnceMessageState_IncomingExpired:
-            return Theme.offBackgroundColor;
+            return Theme.washColor;
         case ViewOnceMessageState_IncomingDownloading:
             return nil;
         case ViewOnceMessageState_IncomingFailed:
@@ -312,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
         case ViewOnceMessageState_OutgoingSentExpired:
             return nil;
         case ViewOnceMessageState_IncomingInvalidContent:
-            return UIColor.ows_destructiveRedColor;
+            return UIColor.ows_accentRedColor;
     }
 }
 
@@ -337,7 +335,7 @@ NS_ASSUME_NONNULL_BEGIN
         case ViewOnceMessageState_OutgoingSentExpired:
             return ConversationStyle.bubbleTextColorOutgoing;
         case ViewOnceMessageState_IncomingInvalidContent:
-            return Theme.secondaryColor;
+            return Theme.secondaryTextAndIconColor;
     }
 }
 
@@ -362,7 +360,7 @@ NS_ASSUME_NONNULL_BEGIN
         case ViewOnceMessageState_OutgoingSentExpired:
             return ConversationStyle.bubbleTextColorOutgoing;
         case ViewOnceMessageState_IncomingInvalidContent:
-            return Theme.secondaryColor;
+            return Theme.secondaryTextAndIconColor;
     }
 }
 
@@ -406,6 +404,27 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
+- (ViewOnceMessageType)viewOnceMessageType
+{
+    if (self.viewItem.attachmentStream == nil) {
+        // The attachment doesn't exist for outgoing
+        // messages so we'd need to store the content type if
+        // we wanted to distinguish between photo and video
+
+        // For incoming messages viewed messages, it doesn't matter
+        // because we show generic "View" text, regardless of the
+        // content type
+        return ViewOnceMessageType_Unknown;
+    }
+
+    if (self.viewItem.attachmentStream.isVideo) {
+        return ViewOnceMessageType_Video;
+    } else {
+        OWSAssertDebug(self.viewItem.attachmentStream.isImage || self.viewItem.attachmentStream.isAnimated);
+        return ViewOnceMessageType_Photo;
+    }
+}
+
 #pragma mark - Subviews
 
 - (void)configureLabel
@@ -413,7 +432,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.label);
 
     self.label.textColor = self.textColor;
-    self.label.font = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+    self.label.font = UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
     self.label.numberOfLines = 1;
     self.label.lineBreakMode = NSLineBreakByTruncatingTail;
     [self.label setContentHuggingHorizontalLow];
@@ -436,9 +455,18 @@ NS_ASSUME_NONNULL_BEGIN
             self.label.text = CommonStrings.retryButton;
             break;
         case ViewOnceMessageState_IncomingAvailable:
-            self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW",
-                @"Label for view-once messages indicating that "
-                @"user can tap to view the message's contents.");
+            switch (self.viewOnceMessageType) {
+                case ViewOnceMessageType_Photo:
+                    self.label.text = MessageStrings.viewOnceViewPhoto;
+                    break;
+                case ViewOnceMessageType_Video:
+                    self.label.text = MessageStrings.viewOnceViewVideo;
+                    break;
+                case ViewOnceMessageType_Unknown:
+                    OWSFailDebug(@"unexpected viewOnceMessageType for IncomingFailed.");
+                    self.label.text = MessageStrings.viewOnceViewPhoto;
+                    break;
+            }
             break;
         case ViewOnceMessageState_OutgoingFailed:
             self.label.text = CommonStrings.retryButton;
@@ -455,7 +483,7 @@ NS_ASSUME_NONNULL_BEGIN
                 @"PER_MESSAGE_EXPIRATION_INVALID_CONTENT", @"Label for view-once messages that have invalid content.");
             // Reconfigure label for this state only.
             self.label.font = UIFont.ows_dynamicTypeSubheadlineFont;
-            self.label.textColor = Theme.secondaryColor;
+            self.label.textColor = Theme.secondaryTextAndIconColor;
             self.label.numberOfLines = 0;
             self.label.lineBreakMode = NSLineBreakByWordWrapping;
             break;

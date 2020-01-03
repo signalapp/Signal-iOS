@@ -3,6 +3,7 @@
 //
 
 #import "OWSSyncConfigurationMessage.h"
+#import <SignalServiceKit/OWSProvisioningMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -42,13 +43,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction;
 {
     SSKProtoSyncMessageConfigurationBuilder *configurationBuilder = [SSKProtoSyncMessageConfiguration builder];
     configurationBuilder.readReceipts = self.areReadReceiptsEnabled;
     configurationBuilder.unidentifiedDeliveryIndicators = self.showUnidentifiedDeliveryIndicators;
     configurationBuilder.typingIndicators = self.showTypingIndicators;
     configurationBuilder.linkPreviews = self.sendLinkPreviews;
+    configurationBuilder.provisioningVersion = OWSProvisioningVersion;
 
     NSError *error;
     SSKProtoSyncMessageConfiguration *_Nullable configurationProto = [configurationBuilder buildAndReturnError:&error];

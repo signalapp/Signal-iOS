@@ -5,7 +5,6 @@
 #import "DomainFrontingCountryViewController.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Theme.h>

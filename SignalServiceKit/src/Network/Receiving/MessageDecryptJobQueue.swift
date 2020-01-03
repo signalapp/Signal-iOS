@@ -39,6 +39,7 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
     // MARK: JobQueue
 
     public typealias DurableOperationType = SSKMessageDecryptOperation
+    @objc
     public static let jobRecordLabel: String = "SSKMessageDecrypt"
     public static let maxRetries: UInt = 1
     public let requiresInternet: Bool = false
@@ -86,6 +87,14 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
     public func operationQueue(jobRecord: SSKMessageDecryptJobRecord) -> OperationQueue {
         return defaultQueue
     }
+}
+
+enum SSKMessageDecryptOperationError: Error {
+    case unspecifiedError
+}
+
+extension SSKMessageDecryptOperationError: OperationError {
+    var isRetryable: Bool { return false }
 }
 
 public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
@@ -150,8 +159,8 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
                                                 }
             },
                                              failureBlock: {
-                                                // TODO error API's should return specific error
-                                                self.reportError(OWSAssertionError("unknown error"))
+                                                // TODO: failureBlock should propagate specific error.
+                                                self.reportError(SSKMessageDecryptOperationError.unspecifiedError)
                                             })
         } catch {
             reportError(withUndefinedRetry: error)

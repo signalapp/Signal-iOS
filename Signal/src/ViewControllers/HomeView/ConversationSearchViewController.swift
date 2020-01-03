@@ -44,6 +44,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             updateSeparators()
         }
     }
+    private var lastSearchText: String?
 
     var searcher: FullTextSearcher {
         return FullTextSearcher.shared
@@ -73,7 +74,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         tableView.separatorColor = Theme.cellSeparatorColor
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
-        tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.cellReuseIdentifier())
+        tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.cellReuseIdentifier())
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier())
 
         databaseStorage.add(databaseStorageObserver: self)
@@ -219,7 +220,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             cell.configure(searchText: searchText)
             return cell
         case .conversations:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -243,7 +244,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             cell.configure(withRecipientAddress: searchResult.signalAccount.recipientAddress)
             return cell
         case .messages:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -263,13 +264,13 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 }
 
                 // Note that we only use the snippet for message results,
-                // not conversation results.  HomeViewCell will generate
+                // not conversation results. CoversationListCell will generate
                 // a snippet for conversations that reflects the latest
                 // contents.
                 if let messageSnippet = searchResult.snippet {
                     overrideSnippet = NSAttributedString(string: messageSnippet,
                                                          attributes: [
-                                                            NSAttributedString.Key.foregroundColor: Theme.secondaryColor
+                                                            NSAttributedString.Key.foregroundColor: Theme.secondaryTextAndIconColor
                     ])
                 } else {
                     owsFailDebug("message search result is missing message snippet")
@@ -302,13 +303,13 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
 
         let label = UILabel()
-        label.textColor = Theme.secondaryColor
+        label.textColor = Theme.secondaryTextAndIconColor
         label.text = title
-        label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        label.font = UIFont.ows_dynamicTypeBody.ows_semibold()
         label.tag = section
 
         let wrapper = UIView()
-        wrapper.backgroundColor = Theme.offBackgroundColor
+        wrapper.backgroundColor = Theme.washColor
         wrapper.addSubview(label)
         label.autoPinEdgesToSuperviewMargins()
 
@@ -384,12 +385,21 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
     }
 
-    private func updateSearchResults(searchText: String) {
-        guard searchText.stripped.count > 0 else {
-            self.searchResultSet = HomeScreenSearchResultSet.empty
-            self.tableView.reloadData()
+    private func updateSearchResults(searchText rawSearchText: String) {
+
+        let searchText = rawSearchText.stripped
+        guard searchText.count > 0 else {
+            searchResultSet = HomeScreenSearchResultSet.empty
+            lastSearchText = nil
+            tableView.reloadData()
             return
         }
+        guard lastSearchText != searchText else {
+            // Ignoring redundant search.
+            return
+        }
+
+        lastSearchText = searchText
 
         var searchResults: HomeScreenSearchResultSet?
         self.databaseStorage.asyncRead(block: {[weak self] transaction in
@@ -402,6 +412,10 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
                                                 guard let results = searchResults else {
                                                     owsFailDebug("searchResults was unexpectedly nil")
+                                                    return
+                                                }
+                                                guard strongSelf.lastSearchText == searchText else {
+                                                    // Discard results from stale search.
                                                     return
                                                 }
 
@@ -459,7 +473,7 @@ class EmptySearchResultCell: UITableViewCell {
         let messageText: String = NSString(format: format as NSString, searchText) as String
         self.messageLabel.text = messageText
 
-        messageLabel.textColor = Theme.primaryColor
+        messageLabel.textColor = Theme.primaryTextColor
         messageLabel.font = UIFont.ows_dynamicTypeBody
     }
 }

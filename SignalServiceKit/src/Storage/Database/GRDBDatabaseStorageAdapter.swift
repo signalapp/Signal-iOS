@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
@@ -20,8 +20,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     // MARK: -
 
+    static func databaseDirUrl(baseDir: URL) -> URL {
+        return baseDir.appendingPathComponent("grdb", isDirectory: true)
+    }
+
     static func databaseFileUrl(baseDir: URL) -> URL {
-        let databaseDir = baseDir.appendingPathComponent("grdb_database", isDirectory: true)
+        let databaseDir = databaseDirUrl(baseDir: baseDir)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
         return databaseDir.appendingPathComponent("signal.sqlite", isDirectory: false)
     }
@@ -43,10 +47,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
         super.init()
 
-        // Schema migrations are currently simple and fast. If they grow to become long-running,
-        // we'll want to ensure that it doesn't block app launch to avoid 0x8badfood.
-        try migrator.migrate(pool)
-
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             BenchEventStart(title: "GRDB Setup", eventId: "GRDB Setup")
             defer { BenchEventComplete(eventId: "GRDB Setup") }
@@ -67,239 +67,31 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         pool.add(function: function)
     }
 
-    static var tables: [SDSTableMetadata] {
-        return [
-            // Key-Value Stores
-            SDSKeyValueStore.table,
-
-            // Models
-            TSThread.table,
-            TSInteraction.table,
-            StickerPack.table,
-            InstalledSticker.table,
-            KnownStickerPack.table,
-            TSAttachment.table,
-            SSKJobRecord.table,
-            OWSMessageContentJob.table,
-            OWSRecipientIdentity.table,
-            ExperienceUpgrade.table,
-            OWSDisappearingMessagesConfiguration.table,
-            SignalRecipient.table,
-            SignalAccount.table,
-            OWSUserProfile.table,
-            TSRecipientReadReceipt.table,
-            OWSLinkedDeviceReadReceipt.table,
-            OWSDevice.table,
-            OWSContactQuery.table
-            // NOTE: We don't include OWSMessageDecryptJob,
-            // since we should never use it with GRDB.
-        ]
-    }
-
-    lazy var migrator: DatabaseMigrator = {
-        var migrator = DatabaseMigrator()
-        migrator.registerMigration("create initial schema") { db in
-            for table in GRDBDatabaseStorageAdapter.tables {
-                try table.createTable(database: db)
-            }
-
-            try db.create(index: "index_interactions_on_threadUniqueId_and_id",
-                          on: InteractionRecord.databaseTableName,
-                          columns: [
-                            InteractionRecord.columnName(.threadUniqueId),
-                            InteractionRecord.columnName(.id)
-                ])
-
-            // Durable Job Queue
-
-            try db.create(index: "index_jobs_on_label_and_id",
-                          on: JobRecordRecord.databaseTableName,
-                          columns: [JobRecordRecord.columnName(.label),
-                                    JobRecordRecord.columnName(.id)])
-
-            try db.create(index: "index_jobs_on_status_and_label_and_id",
-                          on: JobRecordRecord.databaseTableName,
-                          columns: [JobRecordRecord.columnName(.label),
-                                    JobRecordRecord.columnName(.status),
-                                    JobRecordRecord.columnName(.id)])
-
-            try db.create(index: "index_jobs_on_uniqueId",
-                          on: JobRecordRecord.databaseTableName,
-                          columns: [JobRecordRecord.columnName(.uniqueId)])
-
-            // View Once
-            try db.create(index: "index_interactions_on_view_once",
-                          on: InteractionRecord.databaseTableName,
-                          columns: [
-                            InteractionRecord.columnName(.isViewOnceMessage),
-                            InteractionRecord.columnName(.isViewOnceComplete)
-                ])
-            try db.create(index: "index_key_value_store_on_collection_and_key",
-                          on: SDSKeyValueStore.table.tableName,
-                          columns: [
-                            SDSKeyValueStore.collectionColumn.columnName,
-                            SDSKeyValueStore.keyColumn.columnName
-                ])
-            try db.create(index: "index_interactions_on_recordType_and_threadUniqueId_and_errorType",
-                          on: InteractionRecord.databaseTableName,
-                          columns: [
-                            InteractionRecord.columnName(.recordType),
-                            InteractionRecord.columnName(.threadUniqueId),
-                            InteractionRecord.columnName(.errorType)
-                ])
-
-            try db.create(index: "index_message_content_job_on_uniqueId",
-                          on: MessageContentJobRecord.databaseTableName,
-                          columns: [
-                            MessageContentJobRecord.columnName(.uniqueId)
-                ])
-
-            // Media Gallery Indices
-            try db.create(index: "index_attachments_on_albumMessageId",
-                          on: AttachmentRecord.databaseTableName,
-                          columns: [AttachmentRecord.columnName(.albumMessageId),
-                                    AttachmentRecord.columnName(.recordType)])
-
-            try db.create(index: "index_attachments_on_uniqueId",
-                          on: AttachmentRecord.databaseTableName,
-                          columns: [
-                            AttachmentRecord.columnName(.uniqueId)
-                ])
-
-            try db.create(index: "index_interactions_on_uniqueId_and_threadUniqueId",
-                          on: InteractionRecord.databaseTableName,
-                          columns: [
-                            InteractionRecord.columnName(.threadUniqueId),
-                            InteractionRecord.columnName(.uniqueId)
-                ])
-
-            // Signal Account Indices
-            try db.create(
-                index: "index_signal_accounts_on_recipientPhoneNumber",
-                on: SignalAccountRecord.databaseTableName,
-                columns: [SignalAccountRecord.columnName(.recipientPhoneNumber)]
-            )
-
-            try db.create(
-                index: "index_signal_accounts_on_recipientUUID",
-                on: SignalAccountRecord.databaseTableName,
-                columns: [SignalAccountRecord.columnName(.recipientUUID)]
-            )
-
-            // Signal Recipient Indices
-            try db.create(
-                index: "index_signal_recipients_on_recipientPhoneNumber",
-                on: SignalRecipientRecord.databaseTableName,
-                columns: [SignalRecipientRecord.columnName(.recipientPhoneNumber)]
-            )
-
-            try db.create(
-                index: "index_signal_recipients_on_recipientUUID",
-                on: SignalRecipientRecord.databaseTableName,
-                columns: [SignalRecipientRecord.columnName(.recipientUUID)]
-            )
-
-            // Thread Indices
-            try db.create(
-                index: "index_thread_on_contactPhoneNumber",
-                on: ThreadRecord.databaseTableName,
-                columns: [ThreadRecord.columnName(.contactPhoneNumber)]
-            )
-
-            try db.create(
-                index: "index_tsthread_on_contactUUID",
-                on: ThreadRecord.databaseTableName,
-                columns: [ThreadRecord.columnName(.contactUUID)]
-            )
-
-            // User Profile
-            try db.create(
-                index: "index_user_profiles_on_recipientPhoneNumber",
-                on: UserProfileRecord.databaseTableName,
-                columns: [UserProfileRecord.columnName(.recipientPhoneNumber)]
-            )
-
-            try db.create(
-                index: "index_user_profiles_on_recipientUUID",
-                on: UserProfileRecord.databaseTableName,
-                columns: [UserProfileRecord.columnName(.recipientUUID)]
-            )
-
-            try db.create(
-                index: "index_user_profiles_on_username",
-                on: UserProfileRecord.databaseTableName,
-                columns: [UserProfileRecord.columnName(.username)]
-            )
-
-            // Linked Device Read Receipts
-            try db.create(
-                index: "index_linkedDeviceReadReceipt_on_senderPhoneNumberAndTimestamp",
-                on: LinkedDeviceReadReceiptRecord.databaseTableName,
-                columns: [LinkedDeviceReadReceiptRecord.columnName(.senderPhoneNumber), LinkedDeviceReadReceiptRecord.columnName(.messageIdTimestamp)]
-            )
-
-            try db.create(
-                index: "index_linkedDeviceReadReceipt_on_senderUUIDAndTimestamp",
-                on: LinkedDeviceReadReceiptRecord.databaseTableName,
-                columns: [LinkedDeviceReadReceiptRecord.columnName(.senderUUID), LinkedDeviceReadReceiptRecord.columnName(.messageIdTimestamp)]
-            )
-
-            // Interaction Finder
-            try db.create(index: "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID",
-                          on: InteractionRecord.databaseTableName,
-                          columns: [
-                            InteractionRecord.columnName(.timestamp),
-                            InteractionRecord.columnName(.sourceDeviceId),
-                            InteractionRecord.columnName(.authorUUID)
-                ])
-
-            try db.create(index: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber",
-                          on: InteractionRecord.databaseTableName,
-                          columns: [
-                            InteractionRecord.columnName(.timestamp),
-                            InteractionRecord.columnName(.sourceDeviceId),
-                            InteractionRecord.columnName(.authorPhoneNumber)
-                ])
-            try db.create(index: "index_interactions_on_threadUniqueId_and_read",
-                          on: InteractionRecord.databaseTableName,
-                          columns: [
-                            InteractionRecord.columnName(.threadUniqueId),
-                            InteractionRecord.columnName(.read)
-                ])
-
-            // Disappearing Messages
-            try db.create(index: "index_interactions_on_expiresInSeconds_and_expiresAt",
-                          on: InteractionRecord.databaseTableName,
-                          columns: [
-                            InteractionRecord.columnName(.expiresAt),
-                            InteractionRecord.columnName(.expiresInSeconds)
-                ])
-            try db.create(index: "index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt",
-                          on: InteractionRecord.databaseTableName,
-                          columns: [
-                            InteractionRecord.columnName(.expiresAt),
-                            InteractionRecord.columnName(.storedShouldStartExpireTimer),
-                            InteractionRecord.columnName(.threadUniqueId)
-                ])
-
-            // ContactQuery
-            try db.create(index: "index_contact_queries_on_lastQueried",
-                          on: ContactQueryRecord.databaseTableName,
-                          columns: [
-                            ContactQueryRecord.columnName(.lastQueried)
-                ])
-
-            // Backup
-            try db.create(index: "index_attachments_on_lazyRestoreFragmentId",
-                          on: AttachmentRecord.databaseTableName,
-                          columns: [
-                            AttachmentRecord.columnName(.lazyRestoreFragmentId)
-                ])
-
-            try GRDBFullTextSearchFinder.createTables(database: db)
-        }
-        return migrator
-    }()
+    static let tables: [SDSTableMetadata] = [
+        // Models
+        TSThread.table,
+        TSInteraction.table,
+        StickerPack.table,
+        InstalledSticker.table,
+        KnownStickerPack.table,
+        TSAttachment.table,
+        SSKJobRecord.table,
+        OWSMessageContentJob.table,
+        OWSRecipientIdentity.table,
+        ExperienceUpgrade.table,
+        OWSDisappearingMessagesConfiguration.table,
+        SignalRecipient.table,
+        SignalAccount.table,
+        OWSUserProfile.table,
+        TSRecipientReadReceipt.table,
+        OWSLinkedDeviceReadReceipt.table,
+        OWSDevice.table,
+        OWSContactQuery.table,
+        TestModel.table,
+        OWSReaction.table
+        // NOTE: We don't include OWSMessageDecryptJob,
+        // since we should never use it with GRDB.
+    ]
 
     // MARK: - Database Snapshot
 
@@ -311,7 +103,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     public private(set) var uiDatabaseObserver: UIDatabaseObserver?
 
     @objc
-    public private(set) var homeViewDatabaseObserver: HomeViewDatabaseObserver?
+    public private(set) var conversationListDatabaseObserver: ConversationListDatabaseObserver?
 
     @objc
     public private(set) var conversationViewDatabaseObserver: ConversationViewDatabaseObserver?
@@ -330,12 +122,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         let uiDatabaseObserver = try UIDatabaseObserver(pool: pool)
         self.uiDatabaseObserver = uiDatabaseObserver
 
-        // HomeViewDatabaseObserver is built on top of UIDatabaseObserver
+        // ConversationListDatabaseObserver is built on top of UIDatabaseObserver
         // but includes the details necessary for rendering collection view
         // batch updates.
-        let homeViewDatabaseObserver = HomeViewDatabaseObserver()
-        self.homeViewDatabaseObserver = homeViewDatabaseObserver
-        uiDatabaseObserver.appendSnapshotDelegate(homeViewDatabaseObserver)
+        let conversationListDatabaseObserver = ConversationListDatabaseObserver()
+        self.conversationListDatabaseObserver = conversationListDatabaseObserver
+        uiDatabaseObserver.appendSnapshotDelegate(conversationListDatabaseObserver)
 
         // ConversationViewDatabaseObserver is built on top of UIDatabaseObserver
         // but includes the details necessary for rendering collection view
@@ -356,10 +148,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         uiDatabaseObserver.appendSnapshotDelegate(genericDatabaseObserver)
 
         try pool.write { db in
-            db.add(transactionObserver: homeViewDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
-            db.add(transactionObserver: conversationViewDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
-            db.add(transactionObserver: mediaGalleryDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
-            db.add(transactionObserver: genericDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
+            db.add(transactionObserver: uiDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
         }
 
         SDSDatabaseStorage.shared.observation.set(grdbStorage: self)
@@ -370,7 +159,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // are notified when things change, but are not given any specific details
         // about the changes.
         self.uiDatabaseObserver = nil
-        self.homeViewDatabaseObserver = nil
+        self.conversationListDatabaseObserver = nil
         self.conversationViewDatabaseObserver = nil
         self.mediaGalleryDatabaseObserver = nil
         self.genericDatabaseObserver = nil
@@ -415,7 +204,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // a push notification, we won't be able to access the keychain to
         // process that notification, so we should just terminate by throwing
         // an uncaught exception.
-        var errorDescription = "CipherKeySpec inaccessible. New install or no unlock since device restart?"
+        var errorDescription = "CipherKeySpec inaccessible. New install, migration or no unlock since device restart?"
         if CurrentAppContext().isMainApp {
             let applicationState = CurrentAppContext().reportedApplicationState
             errorDescription += ", ApplicationState: \(NSStringForUIApplicationState(applicationState))"
@@ -434,18 +223,15 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             throw OWSAssertionError("CipherKeySpec inaccessible; not main app.")
         }
 
-        // At this point, either this is a new install so there's no existing password to retrieve
-        // or the keychain has become corrupt.  Either way, we want to get back to a
-        // "known good state" and behave like a new install.
+        // At this point, either:
+        //
+        // * This is a new install so there's no existing password to retrieve.
+        // * The keychain has become corrupt.
+        // * We are about to do a ydb-to-grdb migration.
         let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
         let doesDBExist = FileManager.default.fileExists(atPath: databaseUrl.path)
         if doesDBExist {
-            owsFailDebug("Could not load database metadata")
-        }
-
-        if !CurrentAppContext().isRunningTests {
-            // Try to reset app by deleting database.
-            resetAllStorage(baseDir: baseDir)
+            owsFail("Could not load database metadata")
         }
 
         keyspec.generateAndStore()
@@ -453,21 +239,16 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     @objc
     public static func resetAllStorage(baseDir: URL) {
+        Logger.info("")
+
         // This might be redundant but in the spirit of thoroughness...
 
         GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: baseDir)
 
         deleteDBKeys()
 
-        guard FeatureFlags.storageMode != .ydb else {
-            owsFailDebug("Unexpected GRDB storage usage.")
-            return
-        }
-
-        KeyBackupService.clearKeychain()
-
         if (CurrentAppContext().isMainApp) {
-            TSAttachmentStream.deleteAttachments()
+            TSAttachmentStream.deleteAttachmentsFromDisk()
         }
 
         // TODO: Delete Profiles on Disk?
@@ -487,9 +268,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     private func assertCanRead() {
         if !databaseStorage.canReadFromGrdb {
-            Logger.error("storageMode: \(FeatureFlags.storageMode).")
+            Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
             Logger.error(
                 "StorageCoordinatorState: \(NSStringFromStorageCoordinatorState(storageCoordinator.state)).")
+            Logger.error(
+                "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI)).")
 
             switch FeatureFlags.storageModeStrictness {
             case .fail:
@@ -513,7 +296,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
     }
 
-    public func readReturningResultThrows<T>(block: @escaping (GRDBReadTransaction) throws -> T) throws -> T {
+    public func readThrows<T>(block: @escaping (GRDBReadTransaction) throws -> T) throws -> T {
         assertCanRead()
         AssertIsOnMainThread()
         return try pool.read { database in
@@ -547,9 +330,11 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     @objc
     public func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
         if !databaseStorage.canWriteToGrdb {
-            Logger.error("storageMode: \(FeatureFlags.storageMode).")
+            Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
             Logger.error(
                 "StorageCoordinatorState: \(NSStringFromStorageCoordinatorState(storageCoordinator.state)).")
+            Logger.error(
+                "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI)).")
 
             switch FeatureFlags.storageModeStrictness {
             case .fail:
@@ -583,36 +368,79 @@ private struct GRDBStorage {
     private let dbURL: URL
     private let configuration: Configuration
 
+    // "Busy Timeout" is a thread local so that we can temporarily
+    // use a short timeout for checkpoints without interfering with
+    // other threads' database usage.
+    private static let maxBusyTimeoutMsKey: String = "maxBusyTimeoutMsKey"
+    private static var maxBusyTimeoutMs: UInt? {
+        get {
+            guard let value = Thread.current.threadDictionary[maxBusyTimeoutMsKey] as? UInt else {
+                return nil
+            }
+            return value
+        }
+        set {
+            Thread.current.threadDictionary[maxBusyTimeoutMsKey] = newValue
+        }
+    }
+
+    fileprivate static func useShortBusyTimeout() {
+        maxBusyTimeoutMs = 50
+    }
+    fileprivate static func useInfiniteBusyTimeout() {
+        maxBusyTimeoutMs = nil
+    }
+
     init(dbURL: URL, keyspec: GRDBKeySpecSource) throws {
         self.dbURL = dbURL
 
         var configuration = Configuration()
         configuration.readonly = false
         configuration.foreignKeysEnabled = true // Default is already true
-        configuration.trace = {
+        configuration.trace = { logString in
             if SDSDatabaseStorage.shouldLogDBQueries {
-                print($0)  // Prints all SQL statements
+                func filter(_ input: String) -> String {
+                    var result = input
+
+                    while let matchRange = result.range(of: "x'[0-9a-f\n]*'", options: .regularExpression) {
+                        let charCount = input.distance(from: matchRange.lowerBound, to: matchRange.upperBound)
+                        let byteCount = Int64(charCount) / 2
+                        let formattedByteCount = ByteCountFormatter.string(fromByteCount: byteCount, countStyle: .memory)
+                        result = result.replacingCharacters(in: matchRange, with: "x'<\(formattedByteCount)>'")
+                    }
+
+                    return result
+                }
+                Logger.info(filter(logString))
             }
         }
         configuration.label = "Modern (GRDB) Storage"      // Useful when your app opens multiple databases
         configuration.maximumReaderCount = 10   // The default is 5
         configuration.busyMode = .callback({ (retryCount: Int) -> Bool in
-            // sleep 50 milliseconds
-            let millis = 50
+            // sleep N milliseconds
+            let millis = 25
             usleep(useconds_t(millis * 1000))
 
             Logger.verbose("retryCount: \(retryCount)")
-            let accumulatedWait = millis * (retryCount + 1)
-            if accumulatedWait > 0, (accumulatedWait % 250) == 0 {
-                Logger.warn("Database busy for \(accumulatedWait)ms")
+            let accumulatedWaitMs = millis * (retryCount + 1)
+            if accumulatedWaitMs > 0, (accumulatedWaitMs % 250) == 0 {
+                Logger.warn("Database busy for \(accumulatedWaitMs)ms")
+            }
+
+            if let maxBusyTimeoutMs = GRDBStorage.maxBusyTimeoutMs,
+                accumulatedWaitMs > maxBusyTimeoutMs {
+                Logger.warn("Aborting busy retry.")
+                return false
             }
 
             return true
         })
-        configuration.passphraseBlock = { try keyspec.fetchString() }
         configuration.prepareDatabase = { (db: Database) in
+            let keyspec = try keyspec.fetchString()
+            try db.execute(sql: "PRAGMA key = \"\(keyspec)\"")
             try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
         }
+        configuration.defaultTransactionKind = .immediate
         self.configuration = configuration
 
         pool = try DatabasePool(path: dbURL.path, configuration: configuration)
@@ -678,38 +506,6 @@ private struct GRDBKeySpecSource {
 
 // MARK: -
 
-@objc
-public extension SDSDatabaseStorage {
-    var databaseFileSize: UInt64 {
-        switch dataStoreForReporting {
-        case .grdb:
-            return grdbStorage.databaseFileSize
-        case .ydb:
-            return OWSPrimaryStorage.shared?.databaseFileSize() ?? 0
-        }
-    }
-
-    var databaseWALFileSize: UInt64 {
-        switch dataStoreForReporting {
-        case .grdb:
-            return grdbStorage.databaseWALFileSize
-        case .ydb:
-            return OWSPrimaryStorage.shared?.databaseWALFileSize() ?? 0
-        }
-    }
-
-    var databaseSHMFileSize: UInt64 {
-        switch dataStoreForReporting {
-        case .grdb:
-            return grdbStorage.databaseSHMFileSize
-        case .ydb:
-            return OWSPrimaryStorage.shared?.databaseSHMFileSize() ?? 0
-        }
-    }
-}
-
-// MARK: -
-
 extension GRDBDatabaseStorageAdapter {
     var databaseFilePath: String {
         return databaseUrl.path
@@ -756,5 +552,83 @@ extension GRDBDatabaseStorageAdapter {
             return 0
         }
         return fileSize.uint64Value
+    }
+}
+
+// MARK: - Checkpoints
+
+public struct GrdbTruncationResult {
+    let walSizePages: Int32
+    let pagesCheckpointed: Int32
+}
+
+extension GRDBDatabaseStorageAdapter {
+    @objc
+    public func syncTruncatingCheckpoint() throws {
+        Logger.info("running truncating checkpoint.")
+
+        SDSDatabaseStorage.shared.logFileSizes()
+
+        let result = try GRDBDatabaseStorageAdapter.checkpoint(pool: pool, mode: .truncate)
+
+        Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed)")
+
+        SDSDatabaseStorage.shared.logFileSizes()
+    }
+
+    public static func checkpoint(pool: DatabasePool, mode: Database.CheckpointMode) throws -> GrdbTruncationResult {
+
+        // Use a short busy timeout when checkpointing the WAL.
+        // Another process may be active; we don't want to block for long.
+        //
+        // NOTE: This isn't necessary for .passive checkpoints; they never
+        //       block.
+        defer {
+            // Restore the default busy behavior.
+            GRDBStorage.useInfiniteBusyTimeout()
+        }
+        GRDBStorage.useShortBusyTimeout()
+
+        var walSizePages: Int32 = 0
+        var pagesCheckpointed: Int32 = 0
+        try Bench(title: "Slow checkpoint: \(mode)", logIfLongerThan: 0.01, logInProduction: true) {
+            try pool.writeWithoutTransaction { db in
+                let code = sqlite3_wal_checkpoint_v2(db.sqliteConnection, nil, mode.rawValue, &walSizePages, &pagesCheckpointed)
+                switch code {
+                case SQLITE_OK:
+                    if mode != .passive {
+                        Logger.info("Checkpoint \(mode) succeeded.")
+                    }
+                    break
+                case SQLITE_BUSY:
+                    // Busy is not an error.
+                    Logger.info("Checkpoint \(mode) failed due to busy.")
+                    break
+                default:
+                    throw OWSAssertionError("checkpoint sql error with code: \(code)")
+                }
+            }
+        }
+        return GrdbTruncationResult(walSizePages: walSizePages, pagesCheckpointed: pagesCheckpointed)
+    }
+}
+
+// MARK: -
+
+public extension Error {
+    var grdbErrorForLogging: Error {
+        // If not a GRDB error, return unmodified.
+        guard let grdbError = self as? GRDB.DatabaseError else {
+            return self
+        }
+        // DatabaseError.description includes the arguments.
+        Logger.verbose("grdbError: \(grdbError))")
+        // DatabaseError.description does not include the extendedResultCode.
+        Logger.verbose("resultCode: \(grdbError.resultCode), extendedResultCode: \(grdbError.extendedResultCode), message: \(String(describing: grdbError.message)), sql: \(String(describing: grdbError.sql))")
+        let error = GRDB.DatabaseError(resultCode: grdbError.extendedResultCode,
+                                       message: grdbError.message,
+                                       sql: nil,
+                                       arguments: nil)
+        return error
     }
 }

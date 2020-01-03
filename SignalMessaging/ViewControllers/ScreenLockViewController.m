@@ -3,7 +3,6 @@
 //
 
 #import "ScreenLockViewController.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -37,7 +36,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 {
     [super loadView];
 
-    self.view.backgroundColor = UIColor.ows_materialBlueColor;
+    self.view.backgroundColor = UIColor.ows_signalBlueColor;
 
     UIView *edgesView = [UIView containerView];
     [self.view addSubview:edgesView];
@@ -51,18 +50,12 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [edgesView addSubview:imageView];
     [imageView autoHCenterInSuperview];
 
-    const CGSize screenSize = UIScreen.mainScreen.bounds.size;
-    const CGFloat shortScreenDimension = MIN(screenSize.width, screenSize.height);
-    const CGFloat imageSize = (CGFloat)round(shortScreenDimension / 3.f);
-    [imageView autoSetDimension:ALDimensionWidth toSize:imageSize];
-    [imageView autoSetDimension:ALDimensionHeight toSize:imageSize];
-
     const CGFloat kButtonHeight = 40.f;
     OWSFlatButton *button =
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
                                            @"Label for button on lock screen that lets users unlock Signal.")
                                   font:[OWSFlatButton fontForHeight:kButtonHeight]
-                            titleColor:[UIColor ows_materialBlueColor]
+                            titleColor:UIColor.ows_signalBlueColor
                        backgroundColor:[UIColor whiteColor]
                                 target:self
                               selector:@selector(showUnlockUI)];
@@ -142,16 +135,11 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [self.delegate unlockButtonWasTapped];
 }
 
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
 #pragma mark - Orientation
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskAllButUpsideDown;
+    return UIDevice.currentDevice.defaultSupportedOrienations;
 }
 
 @end

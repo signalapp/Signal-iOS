@@ -1,0 +1,3070 @@
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ఇప్పుడు కాదు";
+
+/* Action sheet item */
+"ACCEPT_NEW_IDENTITY_ACTION" = "క్రొత్త భద్రతా సంఖ్యను అంగీకరించండి";
+
+/* Accessibility label for attachment. */
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "అటాచ్మెంట్";
+
+/* Accessibility label for audio. */
+"ACCESSIBILITY_LABEL_AUDIO" = "ఆడియో";
+
+/* Accessibility label for contact. */
+"ACCESSIBILITY_LABEL_CONTACT" = "పరిచయం";
+
+/* Accessibility label for media. */
+"ACCESSIBILITY_LABEL_MEDIA" = "మీడియా";
+
+/* Accessibility label for message. */
+"ACCESSIBILITY_LABEL_MESSAGE" = "సందేశం";
+
+/* Accessibility label for messages sent by you. */
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "మీరు";
+
+/* Accessibility label for stickers. */
+"ACCESSIBILITY_LABEL_STICKER" = "స్టికర్";
+
+/* Label for 'audio call' button in contact view. */
+"ACTION_AUDIO_CALL" = "Signal కాల్ ";
+
+/* Label for 'invite' button in contact view. */
+"ACTION_INVITE" = "Signal కు ఆహ్వానించండి";
+
+/* Label for 'send message' button in contact view.
+   Label for button that lets you send a message to a contact. */
+"ACTION_SEND_MESSAGE" = "సందేశము పంపుము";
+
+/* Label for 'share contact' button. */
+"ACTION_SHARE_CONTACT" = "పరిచయాన్ని పంచుకోండి";
+
+/* Label for 'video call' button in contact view. */
+"ACTION_VIDEO_CALL" = "విడియో కాల్";
+
+/* Message shown in conversation view that offers to share your profile with a group. */
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "మీరు ఈ సమూహంతో మీ ప్రొఫైల్‌ను భాగస్వామ్యం చేయాలనుకుంటున్నారా?";
+
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"ADD_TO_CONTACTS_OFFER" = "మీరు ఈ వినియోగదారుని మీ పరిచయాలకు జోడించాలనుకుంటున్నారా?";
+
+/* Message shown in conversation view that offers to share your profile with a user. */
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "మీరు మీ ప్రొఫైల్‌ను ఈ వినియోగదారుతో భాగస్వామ్యం చేయాలనుకుంటున్నారా?";
+
+/* generic button text to acknowledge that the corresponding text was read. */
+"ALERT_ACTION_ACKNOWLEDGE" = "దొరికింది";
+
+/* The label for the 'discard' button in alerts and action sheets. */
+"ALERT_DISCARD_BUTTON" = "తీసివేయు";
+
+/* The label for the 'don't save' button in action sheets. */
+"ALERT_DONT_SAVE" = "సేవ్ చేయవద్దు";
+
+/* No comment provided by engineer. */
+"ALERT_ERROR_TITLE" = "లోపం";
+
+/* The label for the 'save' button in action sheets. */
+"ALERT_SAVE" = "భద్రపరుచు";
+
+/* notification action */
+"ANSWER_CALL_BUTTON_TITLE" = "సమాధానం";
+
+/* notification body */
+"APN_Message" = "కొత్త సందేశం";
+
+/* Message for the 'app launch failed' alert. */
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ప్రారంభించబడలేదు. దయచేసి డీబగ్ లాగ్‌ను support@signal.org కు పంపండి, తద్వారా మేము ఈ సమస్యను పరిష్కరించుటాము.";
+
+/* Title for the 'app launch failed' alert. */
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "లోపం";
+
+/* Error indicating that the app could not launch because the database could not be loaded. */
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "దత్తాంశమూల లోడ్ కాలేదు";
+
+/* Error indicating that the app could not launch without reverting unknown database migrations. */
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "దయచేసి Signal యొక్క తాజా సంస్కరణకు అభివృద్ధిచేయండి.";
+
+/* Error indicating that the app could not launch without reverting unknown database migrations. */
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "తెలియని దత్తాంశమూల వెర్షన్.";
+
+/* Text prompting user to edit their profile name. */
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "మీ పేరు రాయండి";
+
+/* Label for the 'dismiss' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "ఇప్పుడు కాదు";
+
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "%@ వెర్షన్ ఇప్పుడు యాప్ స్టోర్‌లో అందుబాటులో ఉంది.";
+
+/* Title for the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_TITLE" = "Signal యొక్క క్రొత్త సంస్కరణ అందుబాటులో ఉంది";
+
+/* Label for the 'update' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "నవీకరణ ";
+
+/* Name indicating that the dark theme is enabled. */
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "గుప్తమైన";
+
+/* Name indicating that the light theme is enabled. */
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "లైటు";
+
+/* Name indicating that the system theme is enabled. */
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "వ్యవస్థ";
+
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
+/* Pressing this button moves a thread from the inbox to the archive */
+"ARCHIVE_ACTION" = "భద్రపరచు";
+
+/* No comment provided by engineer. */
+"ATTACHMENT" = "జోడింపు";
+
+/* One-line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "శీర్షిక పరిమితి చేరుకుంది.";
+
+/* placeholder text for an empty captioning field */
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "శీర్షికను జోడించండి...";
+
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "శీర్షిక";
+
+/* Error that outgoing attachments could not be exported. */
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "అటాచ్మెంట్ ఎగుమతి చేయడంలో విఫలమైంది";
+
+/* alert text when Signal was unable to save a copy of the attachment to the system photo library */
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "భద్రపరచడంలో విఫలమైంది.";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ఫైల్ రకం: %@";
+
+/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "పరిమాణం: %@";
+
+/* toast alert shown after user taps the 'save' button */
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "భద్రపరచడం";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "పంపు";
+
+/* Generic filename for an attachment with no known name */
+"ATTACHMENT_DEFAULT_FILENAME" = "అటాచ్మెంట్";
+
+/* Status label when an attachment download has failed. */
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "డౌన్ లోడ్ విఫలం. మరోసారి ప్రయత్నిచేందుకు తట్టండి.";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "అటాచ్మెంట్ పంపడంలో లోపం";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "చిత్రాన్ని మార్చడం సాధ్యం కాలేదు.";
+
+/* Attachment error message for video attachments which could not be converted to MP4 */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "వీడియోను క్రమము సాధ్యం కాలేదు.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "చిత్రాన్ని అన్వయించడం సాధ్యం కాలేదు.";
+
+/* Attachment error message for image attachments in which metadata could not be removed */
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "చిత్రం నుండి మితాసమాచారం తొలగించడం సాధ్యం కాలేదు.";
+
+/* Attachment error message for image attachments which could not be resized */
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "చిత్రం పరిమాణాన్ని మార్చడం సాధ్యం కాలేదు.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "జోడింపు చాలా పెద్దది.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "జోడింపులో చెల్లని విషయం ఉంది.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "జోడింపు చెల్లని ఫైల్ ఆకృతిని కలిగి ఉంది.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "జోడింపు ఖాళీగా ఉంది.";
+
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "పంపడానికి మీడియాను ఎంచుకోండి";
+
+/* A button to open the camera from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_CAMERA" = "కెమెరా";
+
+/* A button to select a contact from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_CONTACT" = "పరిచయం";
+
+/* A button to select a file from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_FILE" = "ఫైల్";
+
+/* A button to select a GIF from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_GIF" = "గిఫ్";
+
+/* A button to select a location from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_LOCATION" = "స్థానం";
+
+/* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "మీ చిత్రలను ఇక్కడ పంపించడానికి సెట్టింగ్‌లలో ప్రాప్యతను ఇవ్వండి.";
+
+/* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "మీరు చిత్రాలను తీసిన తర్వాత, మీరు మీ ఇటీవలిను ఇక్కడ పంపగలరు.";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "అటాచ్మెంట్";
+
+/* Alert title when picking a document fails for an unknown reason */
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "పత్రాన్ని ఎన్నుకోవడంలో విఫలమైంది.";
+
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "దయచేసి ఈ పంక్తి లేదా దర్శని యొక్క సంక్షేపిత కవిలెను సృష్టించండి మరియు బదులుగా పంపించడానికి ప్రయత్నించండి.";
+
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "మద్దతు లేని పంక్తి";
+
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "వాయిస్ సందేశం";
+
+/* A string indicating that an audio message is playing. */
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ఆడియో సందేశం";
+
+/* action sheet button title to enable built in speaker during a call */
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "స్పీకర్";
+
+/* return to the previous screen */
+"BACK_BUTTON" = "తిరిగి";
+
+/* Error indicating the backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "ప్రత్యామ్నాయ సమాచారని  ఎగుమతి చేయలేము.";
+
+/* Error indicating that the app received an invalid response from CloudKit. */
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "సేవా ప్రతిస్పందన చెల్లదు";
+
+/* Indicates that the cloud is being cleaned up. */
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "ప్రత్యామ్నాయను  శుభ్రపరుస్తుంది";
+
+/* Indicates that the backup export is being configured. */
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "ప్రత్యామ్నాయను  ప్రారంభిస్తోంది";
+
+/* Indicates that the database data is being exported. */
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "సమాచారని  ఎగుమతి చేస్తోంది";
+
+/* Indicates that the backup export data is being exported. */
+"BACKUP_EXPORT_PHASE_EXPORT" = "ప్రత్యామ్నాయను  ఎగుమతి చేస్తోంది";
+
+/* Indicates that the backup export data is being uploaded. */
+"BACKUP_EXPORT_PHASE_UPLOAD" = "ప్రత్యామ్నాయను  అప్‌లోడ్ చేస్తోంది";
+
+/* Error indicating the backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "ప్రత్యామ్నాయ దిగుమతి కాలేదు.";
+
+/* Indicates that the backup import is being configured. */
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "ప్రత్యామ్నాయను  కాన్ఫిగర్ చేస్తోంది";
+
+/* Indicates that the backup import data is being downloaded. */
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "ప్రత్యామ్నాయ సమాచారని  డౌన్‌లోడ్ చేస్తోంది";
+
+/* Indicates that the backup import data is being finalized. */
+"BACKUP_IMPORT_PHASE_FINALIZING" = "ప్రత్యామ్నాయ ఖరారు చేస్తోంది";
+
+/* Indicates that the backup import data is being imported. */
+"BACKUP_IMPORT_PHASE_IMPORT" = "ప్రత్యామ్నాయ దిగుమతి చేస్తోంది.";
+
+/* Indicates that the backup database is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "దత్తాంశమూల పునరుద్ధరిస్తోంది";
+
+/* Indicates that the backup import data is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "పంక్తిలను  పునరుద్ధరిస్తోంది";
+
+/* Label for the backup restore decision section. */
+"BACKUP_RESTORE_DECISION_TITLE" = "ప్రత్యామ్నాయ అందుబాటులో ఉంది";
+
+/* Label for the backup restore description. */
+"BACKUP_RESTORE_DESCRIPTION" = "ప్రత్యామ్నాయ పునరుద్ధరిస్తోంది";
+
+/* Label for the backup restore progress. */
+"BACKUP_RESTORE_PROGRESS" = "పురోగతి";
+
+/* Label for the backup restore status. */
+"BACKUP_RESTORE_STATUS" = "స్థితి";
+
+/* Error shown when backup fails due to an unexpected error. */
+"BACKUP_UNEXPECTED_ERROR" = "ఊహించని ప్రత్యామ్నాయ లోపం";
+
+/* An explanation of the consequences of blocking a group. */
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "మీరు ఇకపై ఈ సమూహాం  నుండి సందేశాలు లేదా నవీకరణలను స్వీకరించరు.";
+
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "నిరోధించు";
+
+/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" సమూహాన్ని బ్లాక్ చేసి వదిలేయాలా?";
+
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ ని నిరోధించాల?";
+
+/* Section header for groups that have been blocked */
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "నిరోధించిన సమూహాలు ";
+
+/* Section header for users that have been blocked */
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "నిరోధించిన వినియోగదారులు";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "అనుమతించు";
+
+/* Action sheet body when confirming you want to unblock a group */
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "ఇప్పటికే ఉన్న సభ్యులు మళ్ళీ సమూహానికి  మిమ్మల్ని జోడించగలరు.";
+
+/* Action sheet title when confirming you want to unblock a group. */
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "ఈ సమూహాన్ని అన్‌బ్లాక్ చేయాలా?";
+
+/* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "అనుమతించు %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "నిరోధించు";
+
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ బ్లాక్ చేయబడింది.";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "వినియోగదారు నిరోధించబడింది";
+
+/* The title of the 'group blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "సమూహం నిరోధించబడింది";
+
+/* The message of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "మిమ్మల్ని మీరు నిరోధించలేరు.";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "లోపం";
+
+/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ అన్‌బ్లాక్ చేయబడింది.";
+
+/* Alert body after unblocking a group. */
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "ఇప్పటికే ఉన్న సభ్యులు ఇప్పుడు మిమ్మల్ని మళ్ళీ గుంపుకు చేర్చవచ్చు.";
+
+/* Action sheet that will block an unknown user. */
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "నిరోధించు";
+
+/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ ని నిరోధించాల?";
+
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "నిరోధించిన వినియోగదారులు మీకు కాల్ చేయలేరు లేదా మీకు సందేశాలు పంపలేరు.";
+
+/* browse files option from file sharing menu */
+"BROWSE_FILES_BUTTON" = "బ్రౌజ్";
+
+/* Label for 'continue' button. */
+"BUTTON_CONTINUE" = "కొనసాగించు";
+
+/* Label for generic done button. */
+"BUTTON_DONE" = "పూర్తి";
+
+/* Label for the 'next' button. */
+"BUTTON_NEXT" = "తరువాత";
+
+/* Label for the 'okay' button. */
+"BUTTON_OKAY" = "సరే";
+
+/* Button text to enable batch selection mode */
+"BUTTON_SELECT" = "ఎంచుకోండి";
+
+/* Label for the 'submit' button. */
+"BUTTON_SUBMIT" = "సమర్పించండి";
+
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "మళ్ళీ కాల్ చేయండీ";
+
+/* Alert message when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal లో కాల్స్ చేయడానికి మరియు వాయిస్ సందేశాలను రికార్డ్ చేయడానికి మీరు iOS సెట్టింగ్‌ల అనువర్తనంలో మైక్రోఫోన్ ప్రాప్యతను ప్రారంభించవచ్చు.";
+
+/* Alert title when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_TITLE" = "మైక్రోఫోన్ యాక్సెస్ అవసరం";
+
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "క్రొత్తగా వచ్చిన కాల్";
+
+/* Accessibility label for placing call button */
+"CALL_LABEL" = "కాల్";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "కాల్ చేసిన వ్యక్తి యొక్క భద్రతా సంఖ్య మారినందున కాల్ తప్పిపోయింది.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "తప్పిన కాల్";
+
+/* Call setup status label after outgoing call times out */
+"CALL_SCREEN_STATUS_NO_ANSWER" = "జవాబు లేదు";
+
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
+/* Label for call button for alert offering to call a user. */
+"CALL_USER_ALERT_CALL_BUTTON" = "కాల్";
+
+/* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "మీరు %@ కు కాల్ చేయాలనుకుంటున్నారా?";
+
+/* Title for alert offering to call a user. */
+"CALL_USER_ALERT_TITLE" = "కాల్?";
+
+/* Accessibility label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "క్రొత్తగా వచ్చిన కాల్ అంగీకరించండి";
+
+/* Accessibility label for selection the audio source */
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "ఆడియో";
+
+/* Accessibility label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "క్రొత్తగా వచ్చిన కాల్‌ను తిరస్కరించండి";
+
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "మీ వీడియోను ప్రారంభించడానికి ఇక్కడ నొక్కండి";
+
+/* Accessibility label for hang up call */
+"CALL_VIEW_HANGUP_LABEL" = "కాల్ ముగించండి";
+
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "నిశబ్ధం";
+
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "మీ లాక్ స్క్రీన్ నుండి క్రొత్తగా వచ్చిన కాల్‌లకు సమాధానం ఇవ్వడానికి మీరు మీ Signal గోప్యతా సెట్టింగ్‌లలో iOS కాల్ ఇంటిగ్రేషన్‌ను ప్రారంభించవచ్చు.";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "క్రొత్తగా వచ్చిన కాల్‌ల కోసం పేరు మరియు ఫోన్ నంబర్‌ను చూడటానికి మీరు మీ Signal గోప్యతా సెట్టింగ్‌లలో iOS కాల్ ఇంటిగ్రేషన్‌ను ప్రారంభించవచ్చు.";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "ఇప్పుడు కాదు";
+
+/* Label for button that shows the privacy settings. */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "గోప్యతా సెట్టింగ్‌లను చూపించు";
+
+/* Accessibility label to toggle front- vs. rear-facing camera */
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "కెమెరా దిశను మార్చండి";
+
+/* Accessibility label to switch to audio only */
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "ఆడియో కాల్‌కు మారండి";
+
+/* Accessibility label to switch to video call */
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "వీడియో కాల్‌కు మారండి";
+
+/* Label for the 'return to call' banner. */
+"CALL_WINDOW_RETURN_TO_CALL" = " తిరిగి కాల్‌కు రావడానికి తాకండి";
+
+/* notification action */
+"CALLBACK_BUTTON_TITLE" = "తిరిగి కాల్ చేయండి";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal వినియోగదారుడు ";
+
+/* Accessibility hint describing what you can do with the camera button */
+"CAMERA_BUTTON_HINT" = "చిత్రాన్ని తీసి ఆపై పంపండి";
+
+/* Accessibility label for camera button. */
+"CAMERA_BUTTON_LABEL" = "కెమెరా";
+
+/* Message for alert explaining that a user cannot be verified. */
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "మీరు వారితో సందేశాలను మార్పిడి చేసే వరకు ఈ వినియోగదారుని ధృవీకరించలేరు.";
+
+/* Title for alert explaining that a user cannot be verified. */
+"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "లోపం";
+
+/* Title for the 'censorship circumvention country' view. */
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "దేశాన్ని ఎంచుకోండి";
+
+/* The label for the 'do not restore backup' button. */
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "పునరుద్ధరించవద్దు";
+
+/* Message for alert shown when the app failed to check for an existing backup. */
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "పునరుద్ధరించగల ప్రత్యామ్నాయ ఉందా అని నిర్ణయించలేకపోయాము.";
+
+/* Title for alert shown when the app failed to check for an existing backup. */
+"CHECK_FOR_BACKUP_FAILED_TITLE" = "లోపం";
+
+/* The label for the 'restore backup' button. */
+"CHECK_FOR_BACKUP_RESTORE" = "పునరుద్ధరించు";
+
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal మీ iCloud ఖాతా స్థితిని నిర్ణయించలేదు. మీ Signal డేటాను ప్రత్యామ్నాయ చేయడానికి iOS సెట్టింగ్‌ల అనువర్తనంలో మీ iCloud ఖాతాకు సైన్ ఇన్ చేయండి.";
+
+/* Error indicating that user does not have an iCloud account. */
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "ఐక్లౌడ్ ఖాతా లేదు. మీ Signal డేటాను ప్రత్యామ్నాయ చేయడానికి iOS సెట్టింగ్‌ల అనువర్తనంలో మీ iCloud ఖాతాకు సైన్ ఇన్ చేయండి.";
+
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "ప్రత్యామ్నాయల కోసం మీ iCloud ఖాతాను యాక్సెస్ చేయడానికి Signal తిరస్కరించబడింది. మీ Signal డేటాను ప్రత్యామ్నాయ చేయడానికి iOS సెట్టింగుల అనువర్తనంలో మీ iCloud ఖాతాకు Signal యాక్సెస్ ఇవ్వండి.";
+
+/* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
+"COLOR_PICKER_DEMO_MESSAGE_1" = "ఈ సంభాషణలో అవుట్గోయింగ్ సందేశాల రంగును ఎంచుకోండి.";
+
+/* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
+"COLOR_PICKER_DEMO_MESSAGE_2" = "మీరు ఎంచుకున్న రంగును మీరు మాత్రమే చూస్తారు.";
+
+/* Modal Sheet title when picking a conversation color. */
+"COLOR_PICKER_SHEET_TITLE" = "సంభాషణ రంగు";
+
+/* Activity Sheet label */
+"COMPARE_SAFETY_NUMBER_ACTION" = " తాత్కాలికంగా  భద్రపరుచు ప్రదేశముతో పోల్చండి";
+
+/* Accessibility hint describing what you can do with the compose button */
+"COMPOSE_BUTTON_HINT" = "సంభాషణను ప్రారంభించడానికి Signal వినియోగదారుని ఎంచుకోండి లేదా శోధించండి.";
+
+/* Accessibility label from compose button. */
+"COMPOSE_BUTTON_LABEL" = "జాబు";
+
+/* Table section header for contact listing when composing a new message */
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "పరిచయాలు ";
+
+/* Table section header for group listing when composing a new message */
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "సమూహాలు";
+
+/* Table section header for phone number search when composing a new message */
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "ఫోన్ నంబర్ శోధన";
+
+/* Table section header for username search when composing a new message */
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "వినియోగదారు పేరు శోధన";
+
+/* Multi-line label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "మీ పరిచయాలలో Signal వినియోగదారులు ఎవరో చూడటానికి మీరు iOS సెట్టింగుల అనువర్తనంలో పరిచయాల ప్రాప్యతను ప్రారంభించవచ్చు.";
+
+/* No comment provided by engineer. */
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "ఇది మీ సందేశాలను తొలగించడం ద్వారా మరియు సర్వర్‌తో మిమ్మల్ని నమోదు చేయకుండా అనువర్తనాన్ని రీసెట్ చేస్తుంది. ఈ ప్రక్రియ పూర్తయిన తర్వాత అనువర్తనం మూసివేయబడుతుంది.";
+
+/* No comment provided by engineer. */
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "మీరు ఖచ్చితంగా మీ ఖాతాను తొలగించాలనుకుంటున్నారా?";
+
+/* No comment provided by engineer. */
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "ఈ పరికరం నుండి మీ అన్ని సందేశాలను తొలగించడం ద్వారా ఇది అనువర్తనాన్ని రీసెట్ చేస్తుంది. మీరు ఎప్పుడైనా మీ ఫోన్‌తో మళ్లీ లింక్ చేయవచ్చు, కానీ అది తొలగించిన సందేశాలను పునరుద్ధరించదు. ఈ ప్రక్రియ పూర్తయిన తర్వాత అనువర్తనం మూసివేయబడుతుంది.";
+
+/* No comment provided by engineer. */
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "మీరు ఖచ్చితంగా అన్ని డేటాను తొలగించాలనుకుంటున్నారా?";
+
+/* Alert body */
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "మీరు ఇకపై ఈ సమూహాంలో సందేశాలను పంపలేరు లేదా స్వీకరించలేరు.";
+
+/* Alert title */
+"CONFIRM_LEAVE_GROUP_TITLE" = "మీరు నిజంగా బయలుదేరాలనుకుంటున్నారా?";
+
+/* Button text */
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "కొత్త పరికరాన్ని అనుసంధానించు";
+
+/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ పరికరాలను తిరిగి ఇన్‌స్టాల్ చేసి ఉండవచ్చు లేదా మార్చవచ్చు. గోప్యతను నిర్ధారించడానికి వారితో మీ భద్రతా సంఖ్యను ధృవీకరించండి.";
+
+/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "%@ తో భద్రతా సంఖ్య మార్చబడింది";
+
+/* No comment provided by engineer. */
+"CONFIRMATION_TITLE" = "నిర్ధారించండి";
+
+/* Label for a contact's postal address. */
+"CONTACT_ADDRESS" = "చిరునామా";
+
+/* An indicator that a contact or group has been blocked. */
+"CONTACT_CELL_IS_BLOCKED" = "నిరోధించిన\n ";
+
+/* An indicator that a contact is no longer verified. */
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "తనిఖీ చెయ్యబడలేదు";
+
+/* No comment provided by engineer. */
+"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "నమోదు చేయని సంఖ్య";
+
+/* Label for the 'edit name' button in the contact share approval view. */
+"CONTACT_EDIT_NAME_BUTTON" = "సరిచేయు";
+
+/* Label for a contact's email address. */
+"CONTACT_EMAIL" = "ఇమెయిల్";
+
+/* Label for the 'city' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_CITY" = "నగరం";
+
+/* Label for the 'country' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_COUNTRY" = "దేశం";
+
+/* Label for the 'neighborhood' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "పరిసరం";
+
+/* Label for the 'pobox' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. బాక్స్";
+
+/* Label for the 'postcode' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "పోస్టల్ కోడ్";
+
+/* Label for the 'region' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_REGION" = "ప్రాంతం";
+
+/* Label for the 'street' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_STREET" = "వీధి";
+
+/* Label for the 'family name' field of a contact. */
+"CONTACT_FIELD_FAMILY_NAME" = "ఇంటి పేరు";
+
+/* Label for the 'given name' field of a contact. */
+"CONTACT_FIELD_GIVEN_NAME" = "ఇచ్చిన పేరు";
+
+/* Label for the 'middle name' field of a contact. */
+"CONTACT_FIELD_MIDDLE_NAME" = "మధ్య పేరు";
+
+/* Label for the 'name prefix' field of a contact. */
+"CONTACT_FIELD_NAME_PREFIX" = "ఉపసర్గ";
+
+/* Label for the 'name suffix' field of a contact. */
+"CONTACT_FIELD_NAME_SUFFIX" = "ప్రత్యయం";
+
+/* Label for the 'organization' field of a contact. */
+"CONTACT_FIELD_ORGANIZATION" = "సంస్థ";
+
+/* Label for a contact's phone number. */
+"CONTACT_PHONE" = "ఫోన్";
+
+/* table cell subtitle when contact card has no email */
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "ఇమెయిల్ అందుబాటులో లేదు.";
+
+/* table cell subtitle when contact card has no known phone number */
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "ఫోన్ నంబర్ అందుబాటులో లేదు.";
+
+/* navbar title for contact picker when sharing a contact */
+"CONTACT_PICKER_TITLE" = "పరిచయాన్ని ఎంచుకోండి";
+
+/* Title for the 'Approve contact share' view. */
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "పరిచయాన్ని పంచుకోండి";
+
+/* Title for the 'edit contact share name' view. */
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "పేరును సవరించండి";
+
+/* Error indicating that an invalid contact cannot be shared. */
+"CONTACT_SHARE_INVALID_CONTACT" = "చెల్లని పరిచయం.";
+
+/* Error indicating that at least one contact field must be selected before sharing a contact. */
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "సంప్రదింపు ఫీల్డ్‌లు ఎంచుకోబడలేదు.";
+
+/* Label for 'open address in maps app' button in contact view. */
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "పటంలో తెరవండి";
+
+/* Label for 'open email in email app' button in contact view. */
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "ఈ మెయిల్ పంపించండి";
+
+/* Indicates that a contact has no name. */
+"CONTACT_WITHOUT_NAME" = "పేరులేని పరిచయం";
+
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "దీన్ని రద్దు చేయలేము.";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "సందేశాలను తొలగించాలా?";
+
+/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "మీరు %@ కంటే ఎక్కువ సంభాషణలను ఎంచుకోలేరు.";
+
+/* table section header for section containing groups */
+"CONVERSATION_PICKER_SECTION_GROUPS" = "సమూహాలు";
+
+/* table section header for section containing recent conversations */
+"CONVERSATION_PICKER_SECTION_RECENTS" = "ఇటీవలి మాటామంతీ";
+
+/* table section header for section containing contacts */
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "ప్రజలు";
+
+/* navbar header */
+"CONVERSATION_PICKER_TITLE" = "గ్రహీతలను ఎంచుకోండి";
+
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "మ్యాచ్‌లు లేవు";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 మ్యాచ్";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d మ్యాచ్‌ల్లో %d";
+
+/* title for conversation settings screen */
+"CONVERSATION_SETTINGS" = " సంభాషణ అమరికలు ";
+
+/* Label for 'new contact' button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "ఇప్పటికే ఉన్న పరిచయానికి జోడించండి";
+
+/* button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "సిస్టమ్ పరిచయాలకు జోడించండి";
+
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "ఈ సమూహాన్ని బ్లాక్ చేయాలా";
+
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "ఈ వినియోగదారుని బ్లాక్ చేయండి";
+
+/* Navbar title when viewing settings for a 1-on-1 thread */
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "సంప్రదింపు సమాచారం";
+
+/* Label for table cell which leads to picking a new conversation color */
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "సంభాషణ రంగు";
+
+/* Navbar title when viewing settings for a group thread */
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "సమూహ సమాచారం";
+
+/* Title of the 'mute this thread' action sheet. */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "నిశబ్ధం";
+
+/* label for 'mute thread' cell in conversation settings */
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "నిశబ్ధం";
+
+/* Indicates that the current thread is not muted. */
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "మ్యూట్ చేయలేదు";
+
+/* Label for button to mute a thread for a day. */
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "ఒక రోజు మ్యూట్ చేయండి";
+
+/* Label for button to mute a thread for a hour. */
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "ఒక గంట మ్యూట్ చేయండి";
+
+/* Label for button to mute a thread for a minute. */
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "ఒక నిమిషం మ్యూట్ చేయండి";
+
+/* Label for button to mute a thread for a week. */
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "ఒక వారం మ్యూట్ చేయండి";
+
+/* Label for button to mute a thread for a year. */
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "ఒక సంవత్సరం మ్యూట్ చేయండి";
+
+/* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "వరకు %@";
+
+/* Label for 'new contact' button in conversation settings view. */
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "క్రొత్త పరిచయాన్ని సృష్టించండి";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "సంభాషణను శోధించండి";
+
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "మార్చడానికి నొక్కండి";
+
+/* Label for button to unmute a thread. */
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "మ్యూట్ తీసివేయి";
+
+/* Indicates that user is in the system contacts list. */
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "ఈ వినియోగదారు మీ పరిచయాలలో ఉన్నారు";
+
+/* Indicates that user's profile has been shared with a group. */
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "ఈ సమూహాం  మీ రూపంని చూడగలదు.";
+
+/* Indicates that user's profile has been shared with a user. */
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "ఈ వినియోగదారు మీ రూపంను చూడగలరు.";
+
+/* Button to confirm that user wants to share their profile with a user or group. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "రూపంను భాగస్వామ్యం చేయండి";
+
+/* Action that shares user profile with a group. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "మీ రూపంను భాగస్వామ్యం చేయండి";
+
+/* Action that shares user profile with a user. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "మీ రూపంను భాగస్వామ్యం చేయండి";
+
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "పరిచయాలకు జోడించు";
+
+/* Message shown in conversation view that offers to share your profile with a user. */
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "ఈ వినియోగదారుతో మీ రూపంను భాగస్వామ్యం చేయండి";
+
+/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "ఈ వినియోగదారు మీ పరిచయాలలో లేరు.";
+
+/* Indicates that the app is loading more messages in this conversation. */
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "మరిన్ని సందేశాలను లోడ్ చేస్తోంది…";
+
+/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "మరిన్ని కోసం తాకండి";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "ఈ వినియోగదారుని బ్లాక్ చేయండి";
+
+/* ActionSheet title */
+"CORRUPTED_SESSION_DESCRIPTION" = "మీ సెషన్‌ను రీసెట్ చేయడం వలన భవిష్యత్తులో సందేశాలను %@ నుండి స్వీకరించడానికి మిమ్మల్ని అనుమతిస్తుంది, అయితే ఇది ఇప్పటికే పాడైన సందేశాలను తిరిగి పొందదు.";
+
+/* No comment provided by engineer. */
+"COUNTRYCODE_SELECT_TITLE" = "దేశ కోడ్‌ను ఎంచుకోండి";
+
+/* Title for the 'crop/scale image' dialog. */
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "తరలించు మరియు కొలుచు";
+
+/* Subtitle shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.";
+
+/* Title shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_TITLE" = "దత్తాంశమూలను ఆప్టిమైజ్ చేస్తుంది";
+
+/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_FORMAT" = "%@ గం క్రితం ";
+
+/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_FORMAT" = "%@  ని క్రితం ";
+
+/* The present; the current time. */
+"DATE_NOW" = "ఇప్పుడు";
+
+/* The current day. */
+"DATE_TODAY" = "నేడు";
+
+/* The day before today. */
+"DATE_YESTERDAY" = "నిన్న";
+
+/* Error indicating that the debug logs could not be copied. */
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "లాగ్‌లను అనుకరించ లేకపోయింది.";
+
+/* Error indicating that the debug logs could not be packaged. */
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "లాగ్‌లను ప్యాకేజీ చేయలేకపోయింది.";
+
+/* Error indicating that a debug log could not be uploaded. */
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "లాగ్‌లను అప్‌లోడ్ చేయలేదు.";
+
+/* Message of the debug log alert. */
+"DEBUG_LOG_ALERT_MESSAGE" = "మీ డీబగ్ లాగ్‌కు లింక్‌తో మీరు ఏమి చేయాలనుకుంటున్నారు?";
+
+/* Error indicating that no debug logs could be found. */
+"DEBUG_LOG_ALERT_NO_LOGS" = "సంఘటన లేకళిలు  ఏవీ కనుగొనబడలేదు.";
+
+/* Label for the 'Open a Bug Report' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "బగ్ నివేదికను తెరవండి";
+
+/* Label for the 'copy link' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "లింక్ను కాపీ చేయండి";
+
+/* Label for the 'email debug log' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "ఇమెయిల్ మద్దతు";
+
+/* Label for the 'send to self' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "స్వతః కు పంపు ";
+
+/* Label for the 'Share' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "పంచుకోండి";
+
+/* Title of the alert shown for failures while uploading debug logs.
+   Title of the debug log alert. */
+"DEBUG_LOG_ALERT_TITLE" = "మరో దశ";
+
+/* Error indicating that the app could not launch the Email app. */
+"DEBUG_LOG_COULD_NOT_EMAIL" = "ఇమెయిల్ అనువర్తనాన్ని తెరవడం సాధ్యం కాలేదు.";
+
+/* Message of the alert before redirecting to GitHub Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "సారాంశం లింక్ మీ తాత్కాలికంగా భద్రపరుచు ప్రదేశములో నకలు చేయబడింది. మీరు GitHub ఇష్యూ జాబితాకు మళ్ళించబడతారు.";
+
+/* Title of the alert before redirecting to GitHub Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub కొత్త చిరునామాకు మళ్లింపు";
+
+/* Label for button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "ఈ ఫోన్ నంబర్‌ను తిరిగి నమోదు చేయండి";
+
+/* Label warning the user that they have been de-registered. */
+"DEREGISTRATION_WARNING" = "పరికరం ఇకపై నమోదు కాలేదు. మీ ఫోన్ నంబర్ వేరే పరికరంలో Signal తో నమోదు చేయబడదిండి. తిరిగి నమోదు చేయడానికి నొక్కండి.";
+
+/* {{Short Date}} when device last communicated with Signal Server. */
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "చివరి క్రియాశీల: %@";
+
+/* {{Short Date}} when device was linked. */
+"DEVICE_LINKED_AT_LABEL" = "సంబంధించిన: %@";
+
+/* Alert title that can occur when viewing device manager. */
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "పరికర జాబితాను నవీకరించడంలో విఫలమైంది.";
+
+/* table cell label in conversation settings */
+"DISAPPEARING_MESSAGES" = "అదృశ్యమవుతున్న  సందేశాలు";
+
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ఈ సంభాషణలోని సందేశాలు %@ తర్వాత కనిపించవు";
+
+/* subheading in conversation settings */
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "ప్రారంభించినప్పుడు, ఈ సంభాషణలో పంపిన మరియు స్వీకరించిన సందేశాలు చూసిన తర్వాత అవి అదృశ్యమవుతాయి.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "ప్రస్తుతం సందేశాలు %@ తర్వాత అదృశ్యమవుతాయి";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "అదృశ్యమవుతున్న సందేశాలు అమరికలు ";
+
+/* Short text to dismiss current modal / actionsheet / screen */
+"DISMISS_BUTTON_TEXT" = "రద్దుచేసే";
+
+/* Section title for the 'domain fronting country' view. */
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "ప్రదర్శన వంచన నిషేధం స్థానం";
+
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "మీరు iOS అమరికల అనువర్తనంలో ప్రాప్యతను ప్రారంభించవచ్చు.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "సంప్రదింపు సమాచారాన్ని సవరించడానికి Signal సంప్రదింపు ప్రాప్యత అవసరం";
+
+/* table cell label in conversation settings */
+"EDIT_GROUP_ACTION" = "సమూహాన్ని సవరించండి";
+
+/* a title for the contacts section of the 'new/update group' view. */
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "పరిచయాలు ";
+
+/* The navbar title for the 'update group' view. */
+"EDIT_GROUP_DEFAULT_TITLE" = "సమూహాన్ని సవరించండి";
+
+/* An indicator that a user is a new member of the group. */
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "చేర్చబడింది";
+
+/* The title for the 'update group' button. */
+"EDIT_GROUP_UPDATE_BUTTON" = "నవీకరణ ";
+
+/* The alert message if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "మీరు ఈ సమూహాం లో చేసిన మార్పులను సేవ్ చేయాలనుకుంటున్నారా?";
+
+/* The alert title if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "సేవ్ చేయని మార్పులు";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "నకలు";
+
+/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
+"EMAIL_INVITE_BODY" = "ఆహా,\n\nఇటీవల నేను నా iPhone లోని సంభాషణలను వ్యక్తిగతంగా ఉంచడానికి Signal ని ఉపయోగిస్తున్నాను. మీరు దీన్ని కూడా ఇన్‌స్టాల్ చేయాలని నేను కోరుకుంటున్నాను, కాబట్టి మీరు మరియు నేను మాత్రమే మా సందేశాలను చదవగలము లేదా మా కాల్‌లను వినగలము.\n\niPhones మరియు Android కోసం Signal అందుబాటులో ఉంది. ఇక్కడ పొందండి: %@\n\nSignal మీ ప్రస్తుత సందేశ అనువర్తనం వలె పనిచేస్తుంది. మేము చిత్రాలు మరియు వీడియోలను పంపవచ్చు, కాల్‌లు చేయవచ్చు మరియు సమూహ చాట్‌లను ప్రారంభించవచ్చు. మంచి భాగం ఏమిటంటే, ఇంకెవరూ వీటిని చూడలేరు, Signal తయారుచేసే వ్యక్తులు కూడా చూడలేరు!\n\nOpen Whisper Systems, Signal తయారుచేసే వ్యక్తులు గురించి మీరు ఇక్కడ మరింత చదవవచ్చు: %@";
+
+/* subject of email sent to contacts when inviting to install Signal */
+"EMAIL_INVITE_SUBJECT" = "మనం Signal కు మారుదాం";
+
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "మీ పరిచయాలలో ఎవరికీ Signal లేదు.";
+
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "మీరు ఎందుకు ఒకరిని ఆహ్వానించరు?";
+
+/* Indicates that user should confirm their 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "మీ పిన్ను నిర్ధారించండి.";
+
+/* Error indicating that attempt to disable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "నమోదు లాక్‌ని నిలిపివేయడం సాధ్యం కాలేదు.";
+
+/* Error indicating that attempt to enable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "రిజిస్ట్రేషన్ లాక్‌ని ప్రారంభించలేదు.";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "అచేతనించు";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "ప్రారంభించు";
+
+/* Label for the 'next' button in the 'enable two factor auth' views. */
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "తరువాత";
+
+/* Error indicating that the entered 'two-factor auth PINs' do not match. */
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "పిన్ సరిపోలలేదు.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too long. */
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "పిన్ 20 అంకెలు మించకూడదు.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too short. */
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "పిన్ కనీసం 4 అంకెలు ఉండాలి.";
+
+/* Indicates that user should select a 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "రిజిస్ట్రేషన్ లాక్ పిన్ను నమోదు చేయండి. మీరు ఈ ఫోన్ నంబర్‌ను తదుపరిసారి Signal తో నమోదు చేసినప్పుడు ఈ పిన్ ఎంటర్ చేయమని అడుగుతారు.";
+
+/* Indicates that user has 'two factor auth pin' disabled. */
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "పెరిగిన భద్రత కోసం, ఈ ఫోన్ నంబర్‌ను Signal తో మళ్లీ నమోదు చేయడానికి అవసరమైన రిజిస్ట్రేషన్ లాక్ పిన్‌ను ప్రారంభించండి.";
+
+/* Indicates that user has 'two factor auth pin' enabled. */
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "నమోదు లాక్ ప్రారంభించబడింది. మీ ఫోన్ నంబర్‌ను Signal తో మళ్లీ నమోదు చేసేటప్పుడు మీరు మీ పిన్‌ను నమోదు చేయాలి.";
+
+/* Title for the 'enable two factor auth PIN' views. */
+"ENABLE_2FA_VIEW_TITLE" = "నమోదు లాక్";
+
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "పనిలో ఉన్నారు ";
+
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "కాల్ విఫలమైంది.";
+
+/* Label indicating that this OS version is no longer supported. */
+"END_OF_LIFE_OS_WARNING" = "iOS యొక్క ఈ సంస్కరణలో తాజా Signal లక్షణాలు పనిచేయవు. భవిష్యత్ Signal నవీకరణలను స్వీకరించడానికి దయచేసి ఈ పరికరాన్ని అభివృద్ధి చేయండి.";
+
+/* Error indicating that the phone's contacts could not be retrieved. */
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "పరిచయాలను యాక్సెస్ చేయలేకపోయింది.";
+
+/* Error indicating that 'save video' failed. */
+"ERROR_COULD_NOT_SAVE_VIDEO" = "వీడియోను సేవ్ చేయలేకపోయింది.";
+
+/* Generic notice when message failed to send. */
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "సందేశం పంపడంలో విఫలమైంది.";
+
+/* Error message indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "పాత తొలిములా దత్తాంశాలు కారణంగా పంపడం సాధ్యం కాలేదు.";
+
+/* Error message indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "మీరు వారిని ప్రతిబంధకం చేసినందున సందేశం పంపించడం విఫలమైంది.";
+
+/* Generic error used whenever Signal can't contact the server */
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal ఇంటర్నెట్‌కు కనెక్ట్ కాలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.";
+
+/* Error indicating that an outgoing message had no valid recipients. */
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "చెల్లుబాటు అయ్యే గ్రహీతల కొరత కారణంగా సందేశ పంపడం విఫలమైంది.";
+
+/* Error indicating that a socket request failed. */
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "నెట్‌వర్క్ అభ్యర్థన విఫలమైంది.";
+
+/* Error indicating that a socket request timed out. */
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "నెట్‌వర్క్ అభ్యర్థన సమయం ముగిసింది.";
+
+/* Error indicating that a socket response failed. */
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "సేవ నుండి చెల్లని ప్రతిస్పందన.";
+
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "ఈ పరికరం ఇకపై మీ ఫోన్ నంబర్‌తో నమోదు చేయబడదు. దయచేసి Signal ను మళ్లీ ఇన్‌స్టాల్ చేయండి.";
+
+/* Generic server error */
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "సర్వర్ లోపం. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.";
+
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "తెలియని లోపం సంభవించింది.";
+
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "పరిచయం Signal వినియోగదారు కాదు.";
+
+/* Error message indicating that attachment download(s) failed. */
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "అటాచ్మెంట్ డౌన్‌లోడ్ విఫలమైంది.";
+
+/* Error message when unable to receive an attachment because the sending client is too old. */
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "అటాచ్మెంట్ వైఫల్యం: Signal యొక్క తాజా సంస్కరణకు నవీకరించిన తర్వాత వారి సందేశాన్ని మళ్ళీ పంపమని ఈ పరిచయాన్ని అడగండి.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "నకిలీ సందేశం అందుకుంది.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "గ్రహీత కీ చెల్లదు.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_MESSAGE" = "స్వీకరించిన సందేశం సమకాలీకరించబడలేదు.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_VERSION" = "ఈ సంస్కరణకు అనుకూలంగా లేని సందేశాన్ని అందుకున్నారు.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_NO_SESSION" = "పరిచయం కోసం అందుబాటులో సెషన్ లేదు.";
+
+/* Shown when signal users safety numbers changed */
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "భద్రతా సంఖ్య మార్చబడింది";
+
+/* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@ తో మీ భద్రత సంఖ్య మార్చబడింది.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "తెలియని లోపం సంభవించింది.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "భద్రతా సంఖ్య మార్చబడింది";
+
+/* Error indicating a send failure due to a delinked application. */
+"ERROR_SENDING_DELINKED" = "మీ పరికరం ఇకపై లింక్ చేయబడలేదు. మరిన్ని సందేశాలను పంపడానికి దయచేసి తిరిగి లింక్ చేయండి.";
+
+/* Error indicating a send failure due to a deregistered application. */
+"ERROR_SENDING_DEREGISTERED" = "మీ పరికరం ఇకపై నమోదు చేయబడలేదు. దయచేసి మరిన్ని సందేశాలను పంపడానికి తిరిగి నమోదు చేయండి.";
+
+/* Error indicating a send failure due to an expired application. */
+"ERROR_SENDING_EXPIRED" = "మీ Signal వెర్షన్ గడువు ముగిసింది. దయచేసి మరిన్ని సందేశాలను పంపడానికి నవీకరించండి.";
+
+/* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
+"ERROR_UNREGISTERED_USER_FORMAT" = "నమోదుకాని వినియోగదారు: %@";
+
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "ఇప్పుడు కాదు";
+
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "పదా  వెళ్దాము";
+
+/* Label notifying the user that the app has expired. */
+"EXPIRATION_ERROR" = "మీ Signal వెర్షన్ గడువు ముగిసింది! సందేశాలు ఇకపై విజయవంతంగా పంపబడవు. ఇటీవలి సంస్కరణకు నవీకరించడానికి నొక్కండి.";
+
+/* Label warning the user that the app will expire soon. */
+"EXPIRATION_WARNING_SOON" = "మీ Signal వెర్షన్ %d రోజుల్లో ముగుస్తుంది. ఇటీవలి సంస్కరణకు నవీకరించడానికి నొక్కండి.";
+
+/* Label warning the user that the app will expire today. */
+"EXPIRATION_WARNING_TODAY" = "మీ Signal వెర్షన్ను యొక్క  గడువు నేటితో తీరిపోయింది. ఇటీవల వెర్షన్ కు  నవీకరించడానికి నొక్కండి.";
+
+/* action sheet header when re-sending message which failed because of too many attempts */
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "ఈ పరిచయంతో చాలా వైఫల్యాలు. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.";
+
+/* action sheet header when re-sending message which failed because of untrusted identity keys */
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%@ తో మీ భద్రతా సంఖ్య ఇటీవల మార్చబడింది. ఈ సందేశాన్ని మళ్ళీ పంపే ముందు మీరు ధృవీకరించాలనుకోవచ్చు.";
+
+/* alert title */
+"FAILED_VERIFICATION_TITLE" = "భద్రతా సంఖ్యను ధృవీకరించడంలో విఫలమైంది!";
+
+/* Button that marks user as verified after a successful fingerprint scan. */
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "ధృవీకరించినట్లు గుర్తించండి";
+
+/* No comment provided by engineer. */
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "సెషన్‌ను రీసెట్ చేయండి";
+
+/* Accessibility label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "సమూహాన్ని సృష్టించడం ముగించండి";
+
+/* Label and title for 'contact forwarding' views. */
+"FORWARD_CONTACT" = "ఫార్వర్డ్ కాంటాక్ట్";
+
+/* Label and title for 'message forwarding' views. */
+"FORWARD_MESSAGE" = "ఫార్వర్డ్ సందేశం";
+
+/* Label indicating media gallery is empty */
+"GALLERY_TILES_EMPTY_GALLERY" = "ఈ సంభాషణలో మీకు మీడియా లేదు";
+
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "క్రొత్త మీడియాను లోడ్ చేస్తోంది…";
+
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "పాత మీడియాను లోడ్ చేస్తోంది…";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "అటాచ్మెంట్";
+
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "అభ్యర్థించిన GIF ని పొందడంలో విఫలమైంది. దయచేసి మీరు ఆన్‌లైన్‌లో ఉన్నారని ధృవీకరించండి.";
+
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "తెలియని లోపం సంభవించింది.";
+
+/* Shown when selected GIF couldn't be fetched */
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "GIF ని ఎంచుకోవడం సాధ్యం కాలేదు";
+
+/* Alert message shown when user tries to search for GIFs without entering any search terms. */
+"GIF_PICKER_VIEW_MISSING_QUERY" = "దయచేసి మీ శోధనను నమోదు చేయండి.";
+
+/* Title for the 'GIF picker' dialog. */
+"GIF_PICKER_VIEW_TITLE" = "GIF శోధన";
+
+/* Indicates that an error occurred while searching. */
+"GIF_VIEW_SEARCH_ERROR" = "లోపం. మరోసారి ప్రయత్నిచేందుకు తట్టండి.";
+
+/* Indicates that the user's search had no results. */
+"GIF_VIEW_SEARCH_NO_RESULTS" = "ఫలితాలు లేవు.";
+
+/* Placeholder text for the search field in GIF view */
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "మీ శోధనను నమోదు చేయండి";
+
+/* No comment provided by engineer. */
+"GROUP_AVATAR_CHANGED" = "అవతార్ మార్చబడింది.";
+
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "సమూహం సృష్టించబడింది.";
+
+/* Message shown in conversation view that indicates there were issues with group creation. */
+"GROUP_CREATION_FAILED" = "సభ్యులందరినీ సమూహానికి చేర్చలేరు. మరోసారి ప్రయత్నిచేందుకు తట్టండి.";
+
+/* Conversation settings table section title */
+"GROUP_MANAGEMENT_SECTION" = "సమూహ నిర్వహణ";
+
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@ సమూహంలొ చేరారు.";
+
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ సమూహం వదిలి వెళ్లారు";
+
+/* Button label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "కాల్";
+
+/* Label for the button that clears all verification errors in the 'group members' view. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "అందరికీ ధృవీకరణను క్లియర్ చేయండి";
+
+/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "ఇది చివరిగా ధృవీకరించబడినప్పటి నుండి భద్రతా సంఖ్యలు మారిన అన్ని సమూహ సభ్యుల ధృవీకరణను క్లియర్ చేస్తుంది.";
+
+/* Title for the 'members' section of the 'group members' view. */
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = " సభ్యులు";
+
+/* Title for the 'no longer verified' section of the 'group members' view. */
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "ధృవీకరించబడినట్లుగా ఎక్కువ కాలం గుర్తించబడలేదు";
+
+/* Button label for the 'send message to group member' button */
+"GROUP_MEMBERS_SEND_MESSAGE" = "సందేశం";
+
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "శీర్షిక ఇప్పుడు '%@'.";
+
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "సమూహం నవీకరించబడింది";
+
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "మీరు సమూహన్ని విడిచిపెట్టారు";
+
+/* Label for 'archived conversations' button. */
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "భద్రపరిచిన సంభాషణలు";
+
+/* Table cell subtitle label for a conversation the user has blocked. */
+"HOME_VIEW_BLOCKED_CONVERSATION" = "నిరోధించిన\n ";
+
+/* Placeholder text for search bar which filters conversations. */
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "వెతకండి";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "మీ పరిచయాలు కొన్ని ఇప్పటికే %@ తో సహా Signal లో ఉన్నాయి";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "మీ పరిచయాలు కొన్ని ఇప్పటికే %@ మరియు %@ తో సహా Signal లో ఉన్నాయి";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "మీ పరిచయాలు కొన్ని ఇప్పటికే %@, %@ మరియు %@ తో సహా Signal లో ఉన్నాయి";
+
+/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "మీ మొదటి సంభాషణను ఇక్కడ ప్రారంభించండి.";
+
+/* Table cell subtitle label for a conversation the user has not accepted. */
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "సందేశ అభ్యర్థన";
+
+/* Format string when search returns no results. Embeds {{search term}} */
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "'%@' కోసం ఫలితాలు కనుగొనబడలేదు";
+
+/* Title for the conversation list's 'archive' mode. */
+"HOME_VIEW_TITLE_ARCHIVE" = "భద్రపరచు";
+
+/* Title for the conversation list's default mode. */
+"HOME_VIEW_TITLE_INBOX" = "Signal";
+
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "మీరు %@ అంశాల కంటే ఎక్కువ భాగస్వామ్యం చేయలేరు.";
+
+/* alert title */
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "జోడింపును ఎంచుకోవడంలో విఫలమైంది.";
+
+/* Call setup status label */
+"IN_CALL_CONNECTING" = "కలుస్తుంది...";
+
+/* Call setup status label */
+"IN_CALL_RECONNECTING" = "కనెక్ట్ చేస్తోంది ...";
+
+/* Call setup status label */
+"IN_CALL_RINGING" = "మోగుతున్నది...";
+
+/* Call setup status label */
+"IN_CALL_SECURING" = "సమాధానం. సురక్షితంగా ...";
+
+/* Call setup status label */
+"IN_CALL_TERMINATED" = "కాల్ ముగిసింది.";
+
+/* Label reminding the user that they are in archive mode. */
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "ఈ సంభాషణలు భద్రపర్చబడ్డాయి మరియు క్రొత్త సందేశాలు వస్తే మాత్రమే ఇన్‌బాక్స్‌లో కనిపిస్తాయి.";
+
+/* Message shown in the conversation list when the inbox is empty. */
+"INBOX_VIEW_EMPTY_INBOX" = "మీ ఇన్‌బాక్స్‌కు ఏదైనా వ్రాయడానికి ఇవ్వండి. స్నేహితుడికి సందేశం పంపడం ద్వారా ప్రారంభించండి.";
+
+/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "మీ Signal సంభాషణ జాబితాలో సంప్రదింపు పేర్లను చూడటానికి మీరు iOS సెట్టింగ్‌ల అనువర్తనంలో పరిచయాల ప్రాప్యతను ప్రారంభించవచ్చు.";
+
+/* info message text in conversation view */
+"INCOMING_CALL" = "క్రొత్తగా వచ్చిన కాల్";
+
+/* info message recorded in conversation history when local user declined a call */
+"INCOMING_DECLINED_CALL" = "మీరు కాల్ తిరస్కరించారు";
+
+/* info message text in conversation view */
+"INCOMING_INCOMPLETE_CALL" = "క్రొత్తగా వచ్చిన కాల్";
+
+/* info message text shown in conversation view */
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "వారి భద్రతా సంఖ్య మారినందున కాల్ తప్పిపోయింది.";
+
+/* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
+"INFO_MESSAGE_SYNCED_THREAD" = "మీరు మీ ఫోన్ లేదా ఐప్యాడ్ నుండి సమకాలీకరించిన సందేశాలను పంపవచ్చు లేదా స్వీకరించవచ్చు. \nమీ భద్రత కోసం, సంభాషణ చరిత్ర కొత్త లింక్ చేసిన పరికరాలకు బదిలీ చేయబడదు.";
+
+/* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal లో ఉంది!";
+
+/* accessibility label for the button which shows the sticker picker */
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "స్టిక్కర్లు";
+
+/* accessibility label for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "వాయిస్ సందేశం";
+
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "చెల్లని ఆడియో ఫైల్.";
+
+/* Alert body when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Signal లో చేరడానికి మీ స్నేహితులను ఆహ్వానించడానికి మీరు iOS సెట్టింగ్‌ల అనువర్తనంలో పరిచయాల ప్రాప్యతను ప్రారంభించవచ్చు.";
+
+/* Alert title when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "సంప్రదింపు ప్రాప్యతను అనుమతించండి";
+
+/* Label for the cell that presents the 'invite contacts' workflow. */
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "స్నేహితులను Signal కు ఆహ్వానించండి";
+
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "వెతకండి";
+
+/* Navbar title */
+"INVITE_FRIENDS_PICKER_TITLE" = "స్నేహితులను ఆహ్వానించండి";
+
+/* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "ఒకే సమయంలో బహుళ వినియోగదారులను ఆహ్వానించడం సమూహ సందేశాన్ని ప్రారంభిస్తుంది మరియు గ్రహీతలు ఒకరినొకరు చూడగలుగుతారు.";
+
+/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
+"KEEP_MESSAGES_DURATION" = "%@ తర్వాత సందేశాలు అదృశ్యమవుతాయి.";
+
+/* Slider label when disappearing messages is off */
+"KEEP_MESSAGES_FOREVER" = "సందేశాలు కనిపిస్తాయి ";
+
+/* A keyboard command to open the current conversation's all media view. */
+"KEY_COMMAND_ALL_MEDIA" = "ఆల్ మీడియాకు వెళ్లండి";
+
+/* A keyboard command to archive the current coversation. */
+"KEY_COMMAND_ARCHIVE" = "సంభాషను భద్రపరుచు ";
+
+/* A keyboard command to open the current conversation's attachment picker. */
+"KEY_COMMAND_ATTACHMENTS" = "జోడింపులను చూపించు";
+
+/* A keyboard command to open the current conversation's settings. */
+"KEY_COMMAND_CONVERSATION_INFO" = "సంభాషణ సమాచారానికి వెళ్లండి";
+
+/* A keyboard command to focus the current conversation's input field. */
+"KEY_COMMAND_FOCUS_COMPOSER" = "ఇన్‌పుట్ బార్‌పై దృష్టి పెట్టండి";
+
+/* A keyboard command to open the current conversations GIF picker. */
+"KEY_COMMAND_GIF_SEARCH" = "GIF శోధనకు వెళ్లండి";
+
+/* A keyboard command to present the new group dialog. */
+"KEY_COMMAND_NEW_GROUP" = "కొత్త సమూహం";
+
+/* A keyboard command to present the new message dialog. */
+"KEY_COMMAND_NEW_MESSAGE" = "కొత్త సందేశం";
+
+/* A keyboard command to jump to the next conversation in the list. */
+"KEY_COMMAND_NEXT_CONVERSATION" = "తదుపరి సంభాషణకు వెళ్లండి";
+
+/* A keyboard command to jump to the previous conversation in the list. */
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "మునుపటి సంభాషణకు వెళ్లండి";
+
+/* A keyboard command to begin a search on the conversation list. */
+"KEY_COMMAND_SEARCH" = "వెతకండి";
+
+/* A keyboard command to present the application settings dialog. */
+"KEY_COMMAND_SETTINGS" = "అమరికలు";
+
+/* A keyboard command to open the current conversation's sticker picker. */
+"KEY_COMMAND_STICKERS" = "స్టిక్కర్లను చూపించు";
+
+/* A keyboard command to unarchive the current coversation. */
+"KEY_COMMAND_UNARCHIVE" = "సంభాషణను బయటపెట్టు ";
+
+/* Confirmation button within contextual alert */
+"LEAVE_BUTTON_TITLE" = "వదిలి";
+
+/* table cell label in conversation settings */
+"LEAVE_GROUP_ACTION" = "సమూహాన్ని వదులు";
+
+/* report an invalid linking code */
+"LINK_DEVICE_INVALID_CODE_BODY" = "ఈ QR కోడ్ చెల్లదు. దయచేసి మీరు లింక్ చేయదలిచిన పరికరంలో ప్రదర్శించబడే QR కోడ్‌ను స్కాన్ చేస్తున్నారని నిర్ధారించుకోండి.";
+
+/* report an invalid linking code */
+"LINK_DEVICE_INVALID_CODE_TITLE" = "పరికరాన్ని లింక్ చేయడం విఫలమైంది";
+
+/* confirm the users intent to link a new device */
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "ఈ పరికరం మీ సమూహాలను మరియు పరిచయాలను చూడగలదు, మీ సంభాషణలను యాక్సెస్ చేయగలదు మరియు మీ పేరు మీద సందేశాలను పంపగలదు.";
+
+/* confirm the users intent to link a new device */
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "ఈ పరికరం లింక్ చేయాలా?";
+
+/* attempt another linking */
+"LINK_DEVICE_RESTART" = "మళ్ళీ ప్రయత్నించు";
+
+/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "మీరు లింక్ చేయదలిచిన పరికరంలో ప్రదర్శించబడే QR కోడ్‌ను స్కాన్ చేయండి.";
+
+/* Subheading for 'Link New Device' navigation */
+"LINK_NEW_DEVICE_SUBTITLE" = "QR కోడ్‌ను స్కాన్ చేయండి";
+
+/* Navigation title when scanning QR code to add new device. */
+"LINK_NEW_DEVICE_TITLE" = "కొత్త పరికరాన్ని అనుసంధానించు";
+
+/* Label for link previews with an unknown host. */
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "లింక్ పూర్వప్రదర్శన";
+
+/* Menu item and navbar title for the device manager */
+"LINKED_DEVICES_TITLE" = "పరికరాలు అనుసంధానించు ";
+
+/* Alert Title */
+"LINKING_DEVICE_FAILED_TITLE" = "పరికరాన్ని లింక్ చేయడం విఫలమైంది";
+
+/* table cell label in conversation settings */
+"LIST_GROUP_MEMBERS_ACTION" = "సమూహ సభ్యులు";
+
+/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+
+/* A string indicating that the user can search for a location */
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "పేరు లేదా చిరునామా ద్వారా శోధించండి";
+
+/* The title for the location picker view */
+"LOCATION_PICKER_TITLE" = "స్థానాన్ని ఎంచుకోండి";
+
+/* No comment provided by engineer. */
+"LOGGING_SECTION" = "లాగింగ్";
+
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "సందేశం";
+
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "అన్ని మీడియా";
+
+/* media picker option to take photo or video */
+"MEDIA_FROM_CAMERA_BUTTON" = "కెమెరా";
+
+/* media picker option to choose from library */
+"MEDIA_FROM_LIBRARY_BUTTON" = "ఫోటో లైబ్రరీ";
+
+/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%d సందేశాలను తొలగించండి";
+
+/* Confirmation button text to delete selected media message from the gallery */
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "సందేశాన్ని తొలగించు";
+
+/* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
+
+/* Short sender label for media sent by you */
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "మీరు";
+
+/* Section header in media gallery collection view */
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "ఈ నెల";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_TEXT" = "సందేశ వచనాన్ని కాపీ చేయండి";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DELETE_MESSAGE" = "ఈ సందేశాన్ని తొలగించండి";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DETAILS" = "మరింత సమాచారం";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "ఈ సందేశాన్ని ఫార్వార్డ్ చేయండి";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_REPLY" = "ఈ సందేశానికి ప్రత్యుత్తరం ఇవ్వండి";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+
+/* Title for the 'message approval' dialog. */
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "సందేశం";
+
+/* Title for the compose view. */
+"MESSAGE_COMPOSEVIEW_TITLE" = "కొత్త సందేశం";
+
+/* Label for file size of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "పంక్తి పరిమాణం";
+
+/* Label for the MIME type of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME రకం";
+
+/* Status label for messages which are delivered. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "పంపిణి ఐనది";
+
+/* Status label for messages which are failed. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "విఫలమైంది";
+
+/* Status label for messages which are read. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "చదవండి";
+
+/* Status label for messages which are sending. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "పంపుతోంది";
+
+/* Status label for messages which are sent. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "పంపిన";
+
+/* Status label for messages which were skipped. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "దాటవేయబడింది";
+
+/* Status label for messages which are uploading. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "అప్లోడ్";
+
+/* Label for messages without a body or attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "సందేశానికి కంటెంట్ లేదా అటాచ్మెంట్ లేదు.";
+
+/* Label for the 'received date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "అందుకున్న";
+
+/* Label for the 'sender' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENDER" = "పంపినవారు";
+
+/* Label for the 'sent date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "పంపిన";
+
+/* Label for the original filename of any attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "పంక్తిపేరు";
+
+/* Title for the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_TITLE" = "సందేశం";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "అంగీకరించండి";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "నిరోధించు";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "తొలగించండి";
+
+/* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%@ తో మీ సంభాషణను కొనసాగించడానికి మీరు మీ రూపంను తప్పక పంచుకోవాలి.";
+
+/* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "%@ తో మీ సంభాషణను కొనసాగించడానికి మీరు మీ రూపంను తప్పక పంచుకోవాలి.";
+
+/* A button used to learn more about why you must share your profile. */
+"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "ఇంకా నేర్చుకో";
+
+/* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "మీరు %@ సందేశాన్ని పంపించాలనుకుంటున్నారా? మీరు అంగీకరించే వరకు మీరు వారి సందేశాలను చూశారని వారికి తెలియదు.";
+
+/* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "మీరు %@ సమూహంలో చేరాలనుకుంటున్నారా? మీరు అంగీకరించే వరకు మీరు వారి సందేశాలను చూశారని వారికి తెలియదు.";
+
+/* A button used to share your profile with an existing thread. */
+"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "రూపంను భాగస్వామ్యం చేయండి";
+
+/* message status for message delivered to their recipient. */
+"MESSAGE_STATUS_DELIVERED" = "పంపిణి ఐనది";
+
+/* message status while message is downloading. */
+"MESSAGE_STATUS_DOWNLOADING" = "దిగుమతి అవుతోంది";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED" = "పంపడం విఫలమైంది.";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "విఫలమైంది";
+
+/* status message for read messages */
+"MESSAGE_STATUS_READ" = "చదవండి";
+
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "దాటవేయబడింది";
+
+/* Label indicating that a message failed to send. */
+"MESSAGE_STATUS_SEND_FAILED" = "పంపడం విఫలమైంది";
+
+/* message status while message is sending. */
+"MESSAGE_STATUS_SENDING" = "పంపుతోంది ...";
+
+/* status message for sent messages */
+"MESSAGE_STATUS_SENT" = "పంపిన";
+
+/* status message while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "అప్లోడ్";
+
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "కొత్త సందేశం";
+
+/* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ధృవీకరించబడినట్లుగా గుర్తించబడలేదు. ఎంపికల కోసం నొక్కండి.";
+
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "మీరు ఈ వినియోగదారుని బ్లాక్ చేసారు";
+
+/* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ధృవీకరించబడినట్లుగా గుర్తించబడలేదు. ఎంపికల కోసం నొక్కండి.";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "మీరు ఈ గుంపులో 1 సభ్యుడిని నిరోధించారు";
+
+/* Indicates that this group conversation has been blocked. */
+"MESSAGES_VIEW_GROUP_BLOCKED" = "మీరు ఈ గుంపును బ్లాక్ చేసారు";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "మీరు ఈ గుంపులోని %@ సభ్యులను బ్లాక్ చేసారు";
+
+/* Indicates that more than one member of this group conversation is no longer verified. */
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "ఈ గుంపులో ఒకటి కంటే ఎక్కువ సభ్యులు ధృవీకరించబడినట్లుగా గుర్తించబడలేదు. ఎంపికల కోసం నొక్కండి.";
+
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "సెట్టింగ్‌ల కోసం ఇక్కడ నొక్కండి";
+
+/* Indicator that separates read from unread messages. */
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "కొత్త సందేశాలు";
+
+/* Messages that indicates that there are more unseen messages. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "మరింత చదవని సందేశాలు ఉన్నాయి.";
+
+/* Messages that indicates that there are more unseen messages including safety number changes. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "మరింత చదవని సందేశాలు ఉన్నాయి (భద్రతా సంఖ్య మార్పులతో సహా).";
+
+/* info message text in conversation view */
+"MISSED_CALL" = "తప్పిన కాల్";
+
+/* Alert body */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal లో వీడియో కాల్స్ చేయడానికి మీరు iOS సెట్టింగ్‌ల అనువర్తనంలో కెమెరా ప్రాప్యతను ప్రారంభించవచ్చు.";
+
+/* Alert title */
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal మీ కెమెరాను యాక్సెస్ చేయాలి.";
+
+/* Alert body indicating the user has denied location permissios */
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "మీరు iOS సెట్టింగ్‌ల అనువర్తనంలో ఈ అనుమతిని ప్రారంభించవచ్చు.";
+
+/* Alert title indicating the user has denied location permissios */
+"MISSING_LOCATION_PERMISSION_TITLE" = "ఈ లక్షణం కోసం Signal కు మీ స్థానానికి ప్రాప్యత అవసరం.";
+
+/* Alert body when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "మీరు iOS సెట్టింగ్‌ల అనువర్తనంలో ఈ అనుమతిని ప్రారంభించవచ్చు.";
+
+/* Alert title when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "ఈ లక్షణం కోసం Signal కు మీ ఫోటోలకు ప్రాప్యత అవసరం.";
+
+/* alert title: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_DESC" = "మీరు మరిన్ని పరికరాలను లింక్ చేయలేరు.";
+
+/* alert body: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "మీరు ప్రస్తుతం మీ ఖాతాతో లింక్ చేయగల గరిష్ట పరికరాలను చేరుకున్నారు. దయచేసి పరికరాన్ని తీసివేసి, మళ్లీ ప్రయత్నించండి.";
+
+/* An explanation of the consequences of muting a thread. */
+"MUTE_BEHAVIOR_EXPLANATION" = "మ్యూట్ చేసిన సంభాషణల కోసం మీకు నోటిఫికేషన్‌లు అందవు.";
+
+/* A button to skip a view. */
+"NAVIGATION_ITEM_SKIP_BUTTON" = "దాటవేయి";
+
+/* No comment provided by engineer. */
+"NETWORK_ERROR_RECOVERY" = "దయచేసి మీరు ఆన్‌లైన్‌లో ఉన్నారో లేదో తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.";
+
+/* Indicates to the user that censorship circumvention has been activated. */
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "ప్రదర్శన వంచన నిషేధం: ఆన్";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_CONNECTED" = "కలిసింది";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_CONNECTING" = "కలుస్తుంది   ";
+
+/* Error indicating that this device is no longer linked. */
+"NETWORK_STATUS_DELINKED" = "ఇక పై లింక్ చేయబడలేదు";
+
+/* Error indicating that this device is no longer registered. */
+"NETWORK_STATUS_DEREGISTERED" = "నమోదు చేయబడలేదు";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_HEADER" = "నెట్‌వర్క్ స్థితి";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_OFFLINE" = "ఆఫ్లైన్";
+
+/* A label the cell that lets you add a new member to a group. */
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ఫోన్ నంబర్ ద్వారా కనుగొనండి";
+
+/* Action Sheet title prompting the user for a group avatar */
+"NEW_GROUP_ADD_PHOTO_ACTION" = "సమూహ ఫోటోను సెట్ చేయండి";
+
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "క్రొత్త సమూహాన్ని సృష్టించండి";
+
+/* The title for the 'create group' button. */
+"NEW_GROUP_CREATE_BUTTON" = "సృష్టించు";
+
+/* Error indicating that a new group could not be created. */
+"NEW_GROUP_CREATION_FAILED" = "క్రొత్త సమూహాన్ని సృష్టించడం సాధ్యం కాలేదు.";
+
+/* Used in place of the group name when a group has not yet been named. */
+"NEW_GROUP_DEFAULT_TITLE" = "కొత్త సమూహం";
+
+/* An indicator that a user is a member of the new group. */
+"NEW_GROUP_MEMBER_LABEL" = "సభ్యుడు";
+
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ నుండి %@";
+
+/* Placeholder text for group name field */
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "ఈ సమూహం మాటామంతికి  పేరు పెట్టండి";
+
+/* a title for the selected section of the 'recipient picker' view. */
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "ఇతర వినియోగదారులు";
+
+/* The alert message if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "మీరు ఈ మార్పులను విస్మరించాలనుకుంటున్నారా?";
+
+/* The alert title if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "సేవ్ చేయని మార్పులు";
+
+/* No comment provided by engineer. */
+"new_message" = "కొత్త సందేశం";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "వెతకండి";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "వినియోగదారుని కనుగొనండి";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ఫోన్ నంబర్ ద్వారా పరిచయాలను కనుగొనండి";
+
+/* Explanation of how to see a conversation. */
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "చాటింగ్ ప్రారంభించడానికి పరిచయం లేదా సమూహాన్ని ఎంచుకోండి.";
+
+/* Title welcoming to the app */
+"NO_SELECTED_CONVERSATION_TITLE" = "Signal కి స్వాగతం!";
+
+/* A string prompting the user to send a new mesaage to a user */
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "....కు కొత్త సందేశం";
+
+/* A string asking the user if they'd like to invite a number to signal via SMS. */
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "వినియోగదారు కనుగొనబడలేదు. SMS ద్వారా ఆహ్వానించాలా?";
+
+/* Label for 1:1 conversation with yourself. */
+"NOTE_TO_SELF" = "స్వీయ గమనిక";
+
+/* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "మీ %@  పునఃప్రారంభించేటప్పుడు మీకు సందేశాలు వచ్చాయి.";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_FOOTER_WARNING" = "చర్యలలో “చదివినట్లుగా గుర్తించండి,” “ప్రత్యుత్తరం ఇవ్వండి” మరియు “తిరిగి కాల్ చేయండి.”";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "పేరు లేదా కంటెంట్ లేదు";
+
+/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "అనువర్తనం తెరిచినప్పుడు ప్లే చేయండి";
+
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "శబ్దాలు ";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "పేరు, కంటెంట్ మరియు చర్యలు";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "పేరు మాత్రమే ";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SHOW" = "కనబర్చు";
+
+/* No comment provided by engineer. */
+"OK" = "అలాగే";
+
+/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "తప్పు పిన్. ప్రయత్నాలు అయిపోయాయి.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_1" = "ఈ ఫోన్ నంబర్ రిజిస్ట్రేషన్ లాక్ సమర్థత కలిగి వుంది. దయచేసి రిజిస్ట్రేషన్ లాక్ పిన్ను నమోదు చేయండి.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_2" = " మీ ఫోన్‌కు చివరి దశలో పంపిన స్వయంచాలక ధృవీకరణ కోడ్ మరియు మీ రిజిస్ట్రేషన్ లాక్ పిన్ వేరుగా ఉంతాయి.";
+
+/* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "పిన్ను మరచిపోయారా?";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN" = "తప్పయిన పిన్";
+
+/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "తప్పు పిన్. %lu ప్రయత్నాలు మిగిలి ఉన్నాయి.";
+
+/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "తప్పు పిన్. 1 ప్రయత్నం మిగిలి ఉంది.";
+
+/* Title of the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_TITLE" = "నమోదు లాక్";
+
+/* Explanation of the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "మీ గోప్యత మరియు మీ ఖాతా యొక్క భద్రతను రక్షించడానికి, మేము దీన్ని 7 రోజులు లాక్ చేసాము.\n\n7 రోజుల నిష్క్రియాత్మకత తరువాత, మీరు మీ పిన్ అవసరం లేకుండా ఈ ఫోన్ నంబర్‌ను తిరిగి నమోదు చేయగలరు. కానీ అన్ని కంటెంట్ తుడిచివేయబడుతుంది.";
+
+/* Label for the 'learn more' link in the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "లాక్ చేసిన ఖాతాల గురించి మరింత తెలుసుకోండి";
+
+/* Title of the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "ఖాతా లాక్ చేయబడింది";
+
+/* Title of the 'onboarding Captcha' view. */
+"ONBOARDING_CAPTCHA_TITLE" = "మీ సందేశాలకు మానవత్వం యొక్క స్పర్శను జోడించండి";
+
+/* button indicating that the user will register their ipad */
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "ఐప్యాడ్ నమోదు";
+
+/* button indicating that the user will link their phone */
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "ఐఫోన్ లింక్ చేయండి";
+
+/* explanation to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "“రిజిస్టర్ ఐప్యాడ్” నొక్కడం ద్వారా మీరు సరికొత్త Signal ఖాతాను సృష్టించడానికి లేదా ఇప్పటికే ఉన్న ఖాతాను ఈ ఐప్యాడ్‌కు తరలించడానికి అనుమతిస్తుంది. ఇది ప్రస్తుతం అదే ఫోన్ నంబర్‌తో నమోదు చేయబడిన ఇతర పరికరంలో Signal ను నిలిపివేస్తుంది.";
+
+/* explanation to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "“లింక్ ఐఫోన్” నొక్కడం వల్ల మీ ఫోన్‌ను ఇప్పటికే ఉన్న ఖాతాకు కనెక్ట్ చేయడానికి మిమ్మల్ని అనుమతిస్తుంది. మీ ఫోన్‌ను లింక్ చేయడం సాధారణంగా సిఫారసు చేయబడదు మరియు కాల్ చేయడం వంటి కొన్ని కార్యాచరణలను పరిమితం చేస్తుంది.";
+
+/* header text indicating to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "ఈ iPad ను నమోదు చేయండి";
+
+/* header text indicating to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "ఈ ఐఫోన్‌ను లింక్ చేయండి";
+
+/* warning to the user that registering an ipad is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "ఈ ఐప్యాడ్‌ను నమోదు చేయడం వల్ల ప్రస్తుతం అదే ఫోన్ నంబర్‌తో నమోదు చేయబడిన ఇతర పరికరాల్లో Signal నిలిపివేయబడుతుంది.";
+
+/* warning to the user that linking a phone is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "మీ ఐఫోన్‌ను లింక్ చేయడం సిఫారసు చేయబడలేదు మరియు కోర్ కార్యాచరణను పరిమితం చేస్తుంది.";
+
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "అనుమతులను ప్రారంభించండి";
+
+/* Explanation in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "సందేశాలు వచ్చినప్పుడు మరియు క్రొత్త సంభాషణ కార్యాచరణ గురించి నవీకరణలను స్వీకరించినప్పుడు నోటిఫికేషన్‌లు తెలియబరుస్తాయి.";
+
+/* Title of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_TITLE" = "సందేశాన్ని పొందండి";
+
+/* Title of the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_TITLE" = "ప్రారంభించడానికి మీ ఫోన్ నంబర్‌ను నమోదు చేయండి";
+
+/* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "చెల్లని సంఖ్య";
+
+/* Title of the 'onboarding PIN' view. */
+"ONBOARDING_PIN_EXPLANATION" = "మీ ఖాతా కోసం మీరు సృష్టించిన పిన్‌ను నమోదు చేయండి. ఇది మీ SMS ధృవీకరణ కోడ్‌కు భిన్నంగా ఉంటుంది.";
+
+/* Title of the 'onboarding PIN' view. */
+"ONBOARDING_PIN_TITLE" = "మీ పిన్ను నమోదు చేయండి";
+
+/* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "నిబంధనలు & గోప్యతా విధానం";
+
+/* Title of the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TITLE" = "మీతో గోప్యతను తీసుకోండి.\nప్రతి సందేశంలో మీరే ఉండండి.";
+
+/* Label for the link that lets users change their phone number in the onboarding views. */
+"ONBOARDING_VERIFICATION_BACK_LINK" = "తప్పు సంఖ్య?";
+
+/* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "నాకు కోడ్ రాలేదు (%@ లో లభిస్తుంది)";
+
+/* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Signal మద్దతును సంప్రదించండి";
+
+/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "ఈ కోడ్ తప్పు";
+
+/* Label for link that can be used when the original code did not arrive. */
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "నాకు కోడ్ రాలేదు";
+
+/* Message for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "దయచేసి మీకు సెల్యులార్ సేవ ఉందని మరియు SMS సందేశాలను అందుకోగలరని నిర్ధారించుకోండి.";
+
+/* Title for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "కోడ్ లేదు?";
+
+/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "మళ్ళీ పంపు కోడ్";
+
+/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "బదులుగా నాకు కాల్ చేయండి";
+
+/* Label for link that can be used when the resent code did not arrive. */
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "ఇప్పటికీ కోడ్ లేదా?";
+
+/* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "మేము పంపిన కోడ్‌ను నమోదు చేయండి %@";
+
+/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "మేము %@ కు కోడ్‌ను ఆగ్రహిస్తాము";
+
+/* Button text which opens the settings app */
+"OPEN_SETTINGS_BUTTON" = "అమరికలు";
+
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ అదృశ్యమైన సందేశాలను నిలిపివేసింది.";
+
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ అదృశ్యమైన సందేశ సమయాన్ని%@ కు సెట్ చేయండి.";
+
+/* Label warning the user that the Signal service may be down. */
+"OUTAGE_WARNING" = "Signal సాంకేతిక సమస్యలను ఎదుర్కొంటోంది. వీలైనంత త్వరగా సేవని పునరుద్ధరించడానికి మేము కృషి చేస్తున్నాము.";
+
+/* info message text in conversation view */
+"OUTGOING_CALL" = "అవుట్గోయింగ్ కాల్";
+
+/* info message text in conversation view */
+"OUTGOING_INCOMPLETE_CALL" = "అవుట్గోయింగ్ కాల్";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "సమాధానం లేని అవుట్గోయింగ్ కాల్";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
+
+/* Error indicating that a PDF could not be displayed. */
+"PDF_VIEW_COULD_NOT_RENDER" = "PDF ప్రదర్శించబడలేదు";
+
+/* Navbar title for for PDF view. */
+"PDF_VIEW_TITLE" = "PDF";
+
+/* Label for view-once messages that have invalid content. */
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "ఇన్‌కమింగ్ సందేశాన్ని నిర్వహించడంలో లోపం";
+
+/* inbox cell and notification text for an already viewed view-once media message. */
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "మీడియా సందేశం";
+
+/* Label for outgoing view-once messages. */
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "మీడియా";
+
+/* inbox cell and notification text for a view-once photo. */
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "అదృశ్యమవుతున్న  చిత్రం";
+
+/* inbox cell and notification text for a view-once video. */
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "అదృశ్యమవుతున్న వీడియో";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "ఫోటో";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "వీడియో";
+
+/* Label for view-once messages indicating that the local user has viewed the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEWED" = "వీక్షించినవి";
+
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "ఉదాహరణ: %@";
+
+/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
+
+/* Label for 'Home' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME" = "హోమ్";
+
+/* Label for 'HomeFAX' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME_FAX" = "హోమ్ ఫ్యాక్స్";
+
+/* Label for 'iPhone' phone numbers. */
+"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
+
+/* Label for 'Main' phone numbers. */
+"PHONE_NUMBER_TYPE_MAIN" = "ప్రధాన";
+
+/* Label for 'Mobile' phone numbers. */
+"PHONE_NUMBER_TYPE_MOBILE" = "చరవాణి ";
+
+/* Label for 'Other' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER" = "ఇతర";
+
+/* Label for 'Other FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "ఇతర ఫ్యాక్స్";
+
+/* Label for 'Pager' phone numbers. */
+"PHONE_NUMBER_TYPE_PAGER" = "పేజర్";
+
+/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
+"PHONE_NUMBER_TYPE_UNKNOWN" = "తెలియని";
+
+/* Label for 'Work' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK" = "పని";
+
+/* Label for 'Work FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK_FAX" = "పని ఫ్యాక్స్";
+
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "చిత్రాన్ని తీయడం సాధ్యం కాలేదు.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "చిత్రాన్ని తీయడం సాధ్యం కాలేదు.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "కెమెరాను కాన్ఫిగర్ చేయడంలో విఫలమైంది.";
+
+/* label for system photo collections which have no name. */
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "పేరులేని ఆల్బమ్";
+
+/* The bold portion of the explanation in the 'pin creation' view. */
+"PIN_CREATION_BOLD_EXPLANATION" = "మీ పిన్‌ను తిరిగి పొందటానికి మార్గం లేదు, కాబట్టి దీన్ని గుర్తుంచుకోండి.";
+
+/* Title of the 'pin creation' recreation view. */
+"PIN_CREATION_CHANGING_TITLE" = "మీ పిన్ మార్చండి";
+
+/* The explanation of confirmation in the 'pin creation' view. */
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "మీ పిన్ను నిర్ధారించండి.";
+
+/* The explanation in the 'pin creation' view. */
+"PIN_CREATION_EXPLANATION" = "మీ పిన్ అదనపు భద్రతా పొరను జోడిస్తుంది మరియు మీ ఖాతాను ప్రత్యామ్నాయ చేస్తుంది.";
+
+/* Label indicating that the attempted PIN does not match the first PIN */
+"PIN_CREATION_MISMATCH_ERROR" = "పిన్‌లు సరిపోలడం లేదు. మళ్ళీ ప్రయత్నించండి.";
+
+/* The placeholder when confirming a pin in the 'pin creation' view. */
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "పిన్‌ను తిరిగి నమోదు చేయండి";
+
+/* The placeholder when creating a pin in the 'pin creation' view. */
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "పిన్ తప్పనిసరిగా 4+ అంకెలు ఉండాలి";
+
+/* The bold portion of the re-creation explanation in the 'pin creation' view. */
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "మీరు లాగ్ అవుట్ అయినప్పుడు, మీ పిన్‌ను తిరిగి పొందటానికి మార్గం లేదు.";
+
+/* The re-creation explanation in the 'pin creation' view. */
+"PIN_CREATION_RECREATION_EXPLANATION" = "మీరు ఇప్పటికీ లాగిన్ అయినందున, మీరు క్రొత్త పిన్ను సృష్టించవచ్చు.";
+
+/* Title of the 'pin creation' recreation view. */
+"PIN_CREATION_RECREATION_TITLE" = "క్రొత్త పిన్ను సృష్టించండి";
+
+/* Title of the 'pin creation' view. */
+"PIN_CREATION_TITLE" = "మీ పిన్ను సృష్టించండి";
+
+/* Label indicating that the attempted PIN is too long */
+"PIN_CREATION_TOO_LONG_ERROR" = "పిన్ తప్పనిసరిగా 20 అంకెలు మించకూడదు.";
+
+/* Label indicating that the attempted PIN is too short */
+"PIN_CREATION_TOO_SHORT_ERROR" = "పిన్ కనీసం 4 అంకెలు ఉండాలి.";
+
+/* The explanation for the 'pin reminder' dialog. */
+"PIN_REMINDER_EXPLANATION" = "మీ పిన్‌ను గుర్తుంచుకోవడంలో మీకు సహాయపడటానికి, మేము దీన్ని క్రమానుగతంగా నమోదు చేయమని అడుగుతాము. మేము కాలక్రమేణా తక్కువ అడుగుతాము.";
+
+/* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
+"PIN_REMINDER_FORGOT_PIN" = "పిన్ను మరచిపోయారా?";
+
+/* Label indicating that the attempted PIN does not match the user's PIN */
+"PIN_REMINDER_MISMATCH_ERROR" = "చెల్లని పిన్, మళ్ళీ ప్రయత్నించండి.";
+
+/* The title for the 'pin reminder' dialog. */
+"PIN_REMINDER_TITLE" = "మీ Signal పిన్ను నమోదు చేయండి";
+
+/* Label indicating that the attempted PIN is too short */
+"PIN_REMINDER_TOO_SHORT_ERROR" = "పిన్ కనీసం 4 అంకెలు ఉండాలి.";
+
+/* Accessibility label for button to start media playback */
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "మీడియాను ప్లే చేయండి";
+
+/* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "మీరు ధృవీకరించినట్లు %@ గుర్తు పెట్టలేదు.";
+
+/* Badge indicating that the user is verified. */
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "నిర్థారించబడింది";
+
+/* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ ధృవీకరించబడింది.";
+
+/* Label for a link to more information about safety numbers and verification. */
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "ఇంకా నేర్చుకో";
+
+/* Button that shows the 'scan with camera' view. */
+"PRIVACY_TAP_TO_SCAN" = "స్కాన్ చేయడానికి నొక్కండి";
+
+/* Button that lets user mark another user's identity as unverified. */
+"PRIVACY_UNVERIFY_BUTTON" = "ధృవీకరణను క్లియర్ చేయండి";
+
+/* Alert body when verifying with {{contact name}} */
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "ఇది %@ తో మీ భద్రతా నంబర్ లాగా లేదు. మీరు సరైన పరిచయాన్ని ధృవీకరిస్తున్నారా?";
+
+/* Alert body */
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "మీ తాత్కాలికంగా భద్రపరుచు ప్రదేశములోని సంఖ్య ఈ సంభాషణకు సరైన భద్రతా సంఖ్య వలె కనిపించడం లేదు.";
+
+/* Alert body for user error */
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal మీ తాత్కాలికంగా భద్రపరుచు ప్రదేశములో భద్రతా సంఖ్యను కనుగొనలేకపోయింది. మీరు సరిగ్గా కాపీ చేశారా?";
+
+/* Alert body when verifying with {{contact name}} */
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "ప్రతి జత Signal వినియోగదారులు ప్రత్యేకమైన భద్రతా సంఖ్యను పంచుకుంటారు. %@ *మీ* విభిన్న భద్రతా సంఖ్యను ప్రదర్శించే రెండుసార్లు తనిఖీ చేయండి.";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "మీరు Signal యొక్క పాత సంస్కరణను నడుపుతున్నారు. మీరు ధృవీకరించడానికి ముందు మీరు నవీకరించాలి.";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "మీ భాగస్వామి Signal యొక్క పాత సంస్కరణను నడుపుతున్నారు. మీరు ధృవీకరించడానికి ముందు అవి నవీకరించబడాలి.";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "స్కాన్ చేసిన కోడ్ భద్రతా సంఖ్య వలె కనిపించడం లేదు. మీరు ఇద్దరూ Signal యొక్క నవీనమైన సంస్కరణలో ఉన్నారా?";
+
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "మీ ఎండ్-టు-ఎండ్ గుప్తీకరణ యొక్క భద్రతను %@ మీరు ధృవీకరించాలనుకుంటే, పై సంఖ్యలను వాటి పరికరంలోని సంఖ్యలతో పోల్చండి.\n\nప్రత్యామ్నాయంగా, మీరు వారి ఫోన్‌లో కోడ్‌ను స్కాన్ చేయవచ్చు లేదా మీ కోడ్‌ను స్కాన్ చేయమని వారిని అడగవచ్చు.";
+
+/* Navbar title */
+"PRIVACY_VERIFICATION_TITLE" = "భద్రత సంఖ్యను ధృవీకరించండి";
+
+/* Button that lets user mark another user's identity as verified. */
+"PRIVACY_VERIFY_BUTTON" = "ధృవీకరించినట్లు గుర్తించండి";
+
+/* No comment provided by engineer. */
+"PROCEED_BUTTON" = "కొనసాగండి";
+
+/* Action Sheet title prompting the user for a profile avatar */
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "రూపం యొక్క అవతారని సెట్ చేయండి";
+
+/* Label for action that clear's the user's profile avatar */
+"PROFILE_VIEW_CLEAR_AVATAR" = "అవతార్ క్లియర్";
+
+/* A string indicating that the user can create a username on the profile view. */
+"PROFILE_VIEW_CREATE_USERNAME" = "వినియోగదారు పేరుని సృష్టించండి";
+
+/* Error message shown when user tries to update profile with a profile name that is too long. */
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "మీ రూపం యొక్క పేరు చాలా పొడవుగా ఉంది.";
+
+/* Error message shown when a profile update fails. */
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "రూపం నవీకరణ విఫలమైంది.";
+
+/* Default text for the profile name field of the profile view. */
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "మీ పేరు రాయండి";
+
+/* Description of the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "మీరు క్రొత్త సంభాషణలను ప్రారంభించినప్పుడు మరియు మీరు ఇతర వినియోగదారులు మరియు సమూహాలతో భాగస్వామ్యం చేసినప్పుడు మీ Signal రూపం మీ పరిచయాలకు కనిపిస్తుంది.";
+
+/* Link to more information about the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "మరింత తెలుసుకోవడానికి ఇక్కడ నొక్కండి.";
+
+/* Label for the profile name field of the profile view. */
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "ఖాతాదారుని పేరు";
+
+/* Button to save the profile view in the profile view. */
+"PROFILE_VIEW_SAVE_BUTTON" = "భద్రపరుచు";
+
+/* Title for the profile view. */
+"PROFILE_VIEW_TITLE" = "రూపం";
+
+/* Label for the username field of the profile view. */
+"PROFILE_VIEW_USERNAME_FIELD" = "వినియోగదారుడు ";
+
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "చదివినట్లుగా గుర్తించు";
+
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "స్పంధించు";
+
+/* Title of alert shown when push tokens sync job succeeds. */
+"PUSH_REGISTER_SUCCESS" = "సాగిపోవు ప్రకటనలు కోసం విజయవంతంగా తిరిగి నమోదు చేయబడింది.";
+
+/* Used in table section header and alert view title contexts */
+"PUSH_REGISTER_TITLE" = "సాగిపోవు ప్రకటనలు";
+
+/* No comment provided by engineer. */
+"QUESTIONMARK_PUNCTUATION" = "?";
+
+/* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "ప్రత్యుత్తరం %@";
+
+/* message header label when someone else is quoting you */
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "మీకు ప్రత్యుత్తరం ఇస్తున్నారు";
+
+/* message header label when quoting yourself */
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "మీరే ప్రత్యుత్తరం ఇస్తున్నారు";
+
+/* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "అసలు సందేశం కనుగొనబడలేదు";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "అసలు సందేశం అందుబాటులో లేదు";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "అసలు సందేశం కనుగొనబడలేదు";
+
+/* Indicates this message is a quoted reply to an attachment of unknown type. */
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "అటాచ్మెంట్";
+
+/* Indicates this message is a quoted reply to an audio file. */
+"QUOTED_REPLY_TYPE_AUDIO" = "ఆడియో";
+
+/* Indicates this message is a quoted reply to animated GIF file. */
+"QUOTED_REPLY_TYPE_GIF" = "గిఫ్";
+
+/* Indicates this message is a quoted reply to an image file. */
+"QUOTED_REPLY_TYPE_IMAGE" = "చిత్రం";
+
+/* Indicates this message is a quoted reply to a video file. */
+"QUOTED_REPLY_TYPE_VIDEO" = "వీడియో";
+
+/* notification body */
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+
+/* Label for 'I forgot my PIN' link in the 2FA registration view. */
+"REGISTER_2FA_FORGOT_PIN" = "నేను పిన్ను మరచిపోయాను.";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "మీ గోప్యత మరియు భద్రత కోసం, మీ పిన్‌ను తిరిగి పొందటానికి మార్గం లేదు. మీకు మీ పిన్ గుర్తులేకపోతే, 7 రోజుల నిష్క్రియాత్మకత తర్వాత మీరు SMS తో తిరిగి ధృవీకరించవచ్చు. ఈ సందర్భంలో, మీ ఖాతా తుడిచివేయబడుతుంది మరియు మొత్తం కంటెంట్ తొలగించబడుతుంది.";
+
+/* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "పిన్ను మరచిపోయారా?";
+
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "మీకు %lu ప్రయత్నం మిగిలి ఉంది. మీ ప్రయత్నాలు అయిపోతే మీ ఖాతా లాక్ అవుతుంది. 7 రోజుల నిష్క్రియాత్మకత తరువాత, మీరు మీ పిన్ లేకుండా తిరిగి నమోదు చేసుకోవచ్చు. మీ ఖాతా తుడిచివేయబడుతుంది మరియు మొత్తం కంటెంట్ తొలగించబడుతుంది.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "మీకు 1 ప్రయత్నం మిగిలి ఉంది. మీ ప్రయత్నాలు అయిపోతే మీ ఖాతా లాక్ అవుతుంది. 7 రోజుల నిష్క్రియాత్మకత తరువాత, మీరు మీ పిన్ లేకుండా తిరిగి నమోదు చేసుకోవచ్చు. మీ ఖాతా తుడిచివేయబడుతుంది మరియు మొత్తం కంటెంట్ తొలగించబడుతుంది.";
+
+/* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "తప్పయిన పిన్";
+
+/* Label for 'submit' button in the 2FA registration view. */
+"REGISTER_2FA_SUBMIT_BUTTON" = "సమర్పించండి";
+
+/* No comment provided by engineer. */
+"REGISTER_CONTACTS_WELCOME" = "స్వాగతం!";
+
+/* No comment provided by engineer. */
+"REGISTER_FAILED_TRY_AGAIN" = "మళ్ళీ ప్రయత్నించండి";
+
+/* No comment provided by engineer. */
+"REGISTER_RATE_LIMITING_BODY" = "మీరు చాలా తరచుగా ప్రయత్నించారు. మళ్ళీ ప్రయత్నించడానికి ముందు దయచేసి ఒక నిమిషం వేచి ఉండండి.";
+
+/* No comment provided by engineer. */
+"REGISTER_RATE_LIMITING_ERROR" = "మీరు చాలా తరచుగా ప్రయత్నించారు. మళ్ళీ ప్రయత్నించడానికి ముందు దయచేసి ఒక నిమిషం వేచి ఉండండి.";
+
+/* Title of alert shown when push tokens sync job fails. */
+"REGISTRATION_BODY" = "పుష్ నోటిఫికేషన్‌ల కోసం తిరిగి నమోదు చేయడంలో విఫలమైంది.";
+
+/* Label for the country code field */
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "దేశం కోడ్";
+
+/* Placeholder text for the phone number textfield */
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "సంఖ్యను నమోదు చేయండి";
+
+/* No comment provided by engineer. */
+"REGISTRATION_ERROR" = "నమోదు లోపం";
+
+/* alert body during registration */
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "మేము మీకు పంపిన కోడ్‌ను మీరు ధృవీకరించే వరకు మేము మీ ఖాతాను సక్రియం చేయలేము.";
+
+/* No comment provided by engineer. */
+"REGISTRATION_NON_VALID_NUMBER" = "ఈ ఫోన్ నంబర్ ఆకృతికి మద్దతు లేదు, దయచేసి మద్దతును సంప్రదించండి.";
+
+/* Label for the phone number textfield */
+"REGISTRATION_PHONENUMBER_BUTTON" = "ఫోను నంబరు";
+
+/* No comment provided by engineer. */
+"REGISTRATION_RESTRICTED_MESSAGE" = "మీరు సందేశం పంపే ముందు నమోదు చేసుకోవాలి.";
+
+/* Alert view title */
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "ధృవీకరణ విఫలమైంది!";
+
+/* Error message indicating that registration failed due to a missing or incorrect verification code. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "మీరు సమర్పించిన సంఖ్యలు మేము పంపిన వాటికి సరిపోలడం లేదు. రెండుసార్లు తనిఖీ చేయాలనుకుంటున్నారా?";
+
+/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "చెల్లని నమోదు లాక్ పిన్";
+
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "నమోదు చేయడానికి దయచేసి చెల్లుబాటు అయ్యే ఫోన్ నంబర్‌ను నమోదు చేయండి.";
+
+/* Title of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "చెల్లని ఫోన్ నంబర్";
+
+/* Message of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "నమోదు చేయడానికి దయచేసి ఫోన్ నంబర్‌ను ఆరంబించండి.";
+
+/* Title of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "ఫోన్ నంబర్ లేదు";
+
+/* notification action */
+"REJECT_CALL_BUTTON_TITLE" = "తిరస్కరించు";
+
+/* No comment provided by engineer. */
+"RELAY_REGISTERED_ERROR_RECOVERY" = "మీరు నమోదు చేయడానికి ప్రయత్నిస్తున్న ఫోన్ నంబర్ ఇప్పటికే మరొక సర్వర్‌లో నమోదు చేయబడింది, దయచేసి అక్కడి నుండి అం-రిజిస్టర్ చేసి మళ్ళీ ప్రయత్నించండి.";
+
+/* Body text for when user is periodically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY" = "మీ ఫోన్ నంబర్ కోసం నమోదు లాక్ ప్రారంభించబడింది. మీ రిజిస్ట్రేషన్ లాక్ పిన్ను గుర్తుంచుకోవడంలో మీకు సహాయం చేయడానికి, Signal దీనిని క్రమం తప్పకుండా ధృవీకరించమని అడుగుతుంది.";
+
+/* Body header for when user is periodically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "జ్ఞాపిక:";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "నమోదు లాక్ అనధికార నమోదు ప్రయత్నాల నుండి మీ ఫోన్ నంబర్ను రక్షించడంలో సహాయపడుతుంది. మీ Signal గోప్యతా సెట్టింగ్ల్లో ఎప్పుడైనా ఈ లక్షణం నిలిపివేయబడుతుంది";
+
+/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
+"REMINDER_2FA_NAV_TITLE" = "మీ రిజిస్ట్రేషన్ లాక్ పిన్ను నమోదు చేయండి";
+
+/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "మీరు మీ గోప్యతా సెట్టింగ్‌లలో క్రొత్త పిన్‌ని సెట్ చేయవచ్చు.";
+
+/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "అది సరైన పిన్ కాదు.";
+
+/* No comment provided by engineer. */
+"REREGISTER_FOR_PUSH" = "పుష్ నోటిఫికేషన్ల కోసం తిరిగి నమోదు చేయండి";
+
+/* Generic text for button that retries whatever the last action was. */
+"RETRY_BUTTON_TEXT" = "మళ్ళీ ప్రయత్నించు";
+
+/* button title to confirm adding a recipient to a group when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "ఏమైనప్పటికీ సమూహానికి జోడించండి";
+
+/* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "ఏమైనా కాల్ చేయండి";
+
+/* button title to confirm sending to a recipient whose safety number recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "ఏదేమైనా పంపు";
+
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "మన Signal భద్రత సంఖ్య:\n%@";
+
+/* Action sheet heading */
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@ తో మీ భద్రతా సంఖ్య మార్చబడింది. మీరు దాన్ని ధృవీకరించాలనుకోవచ్చు.";
+
+/* label presented once scanning (camera) view is visible. */
+"SCAN_CODE_INSTRUCTIONS" = "మీ సంప్రదింపు పరికరంలో QR కోడ్‌ను స్కాన్ చేయండి.";
+
+/* Title for the 'scan QR code' view. */
+"SCAN_QR_CODE_VIEW_TITLE" = "QR కోడ్‌ను స్కాన్ చేయండి";
+
+/* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "తక్షణ";
+
+/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "ప్రామాణీకరణను యాక్సెస్ చేయడం సాధ్యం కాలేదు.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "ప్రామాణీకరణ విఫలమైంది.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "ప్రామాణీకరణ ప్రయత్నాలు చాలా విఫలమయ్యాయి. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "స్క్రీన్ లాక్‌ని ఉపయోగించడానికి మీరు మీ iOS సెట్టింగ్‌లలో పాస్‌కోడ్‌ను ప్రారంభించాలి.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "స్క్రీన్ లాక్‌ని ఉపయోగించడానికి మీరు మీ iOS సెట్టింగ్‌లలో పాస్‌కోడ్‌ను ప్రారంభించాలి.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "స్క్రీన్ లాక్‌ని ఉపయోగించడానికి మీరు మీ iOS సెట్టింగ్‌లలో పాస్‌కోడ్‌ను ప్రారంభించాలి.";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Signal తెరవడానికి ప్రామాణీకరించండి.";
+
+/* Title for alert indicating that screen lock could not be unlocked. */
+"SCREEN_LOCK_UNLOCK_FAILED" = "ప్రామాణీకరణ విఫలమైంది.";
+
+/* Label for button on lock screen that lets users unlock Signal. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "అన్లాక్ Signal";
+
+/* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "పేరు, వినియోగదారు పేరు లేదా సంఖ్య";
+
+/* Placeholder text indicating the user can search for contacts by name or phone number. */
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "పేరు లేదా సంఖ్య ద్వారా శోధించండి";
+
+/* placeholder text in an empty search field */
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "వెతకండి";
+
+/* section header for search results that match a contact who doesn't have an existing conversation */
+"SEARCH_SECTION_CONTACTS" = "ఇతర పరిచయాలు";
+
+/* section header for search results that match existing conversations (either group or contact conversations) */
+"SEARCH_SECTION_CONVERSATIONS" = "సంభాషణలు";
+
+/* section header for search results that match a message in a conversation */
+"SEARCH_SECTION_MESSAGES" = "సందేశాలు";
+
+/* alert title */
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "లింకింగ్ కోడ్‌ను పొందడం సాధ్యం కాలేదు";
+
+/* alert message for outdated linking device */
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "మీ ఇతర పరికరం ఐప్యాడ్ క్యూఆర్ కోడ్‌లను స్కాన్ చేయడానికి మద్దతు ఇవ్వని Signal యొక్క లెగసీ వెర్షన్‌ను రన్ చేస్తోంది. దయచేసి తాజా Signal విడుదలను ఇన్‌స్టాల్ చేసి, మళ్లీ ప్రయత్నించండి.";
+
+/* alert title for outdated linking device */
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "స్కానింగ్ పరికరాన్ని నవీకరించండి";
+
+/* alert title */
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "మీ పరికరాన్ని లింక్ చేయడంలో విఫలమైంది";
+
+/* header text when this device is being added as a secondary */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "ఈ పరికరం కోసం పేరును ఎంచుకోండి";
+
+/* label text */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "మీరు ఈ పేరును \"లింక్డ్ డివైజెస్\" క్రింద చూస్తారు.";
+
+/* text field placeholder */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "పేరును ఎంచుకోండి";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "లింకింగ్ ముగించు";
+
+/* header text before the user can link this device */
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "ఈ iPad ను మీ ఖాతాకు లింక్ చేయడానికి మీ ఫోన్‌లో Signal  ప్రారంభించండి";
+
+/* Link explaining what to do when trying to link a device before having a primary device. */
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "నా ఫోన్‌లో Signal లేదు ...";
+
+/* alert body */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "మీ ఫోన్‌లోని యాప్ స్టోర్‌కు వెళ్లి, Signal ను ఇన్‌స్టాల్ చేయండి, రిజిస్ట్రేషన్ ప్రాసెస్‌ను పూర్తి చేయండి, ఆపై మీరు మీ iPad ను అదే ఖాతాకు లింక్ చేయవచ్చు.";
+
+/* alert title */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "మీ ఫోన్‌లో Signal ను ఇన్‌స్టాల్ చేయండి";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "మీ ఫోన్‌లో Signal సెట్టింగులను తెరవడానికి మీ ప్రొఫైల్ చిత్రంపై నొక్కండి. మీ ఫోన్‌తో ఈ కోడ్‌ను స్కాన్ చేయడానికి \"లింక్డ్ పరికరాలు\" మరియు \"క్రొత్త పరికరాన్ని లింక్ చేయండి\":";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "మీ iPad ను ఇక్కడ లింక్ చేయడంలో సహాయం పొందండి";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "మీ ఫోన్‌తో QR కోడ్‌ను స్కాన్ చేయండి";
+
+/* No comment provided by engineer. */
+"SECURE_SESSION_RESET" = "సురక్షిత సెషన్ రీసెట్ చేయబడింది.";
+
+/* Table section header for conversations you haven't recently used. */
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "ఇతర పరిచయాలు";
+
+/* Table section header for recently active conversations */
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "ఇటీవలి మాటామంతీ";
+
+/* No comment provided by engineer. */
+"SEND_AGAIN_BUTTON" = "మరల పంపు";
+
+/* Label for the button to send a message */
+"SEND_BUTTON_TITLE" = "పంపు";
+
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "మీ సందేశం పంపడంలో విఫలమైంది.";
+
+/* Alert body after invite failed */
+"SEND_INVITE_FAILURE" = "ఆహ్వానం పంపడం విఫలమైంది, దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.";
+
+/* Alert body after invite succeeded */
+"SEND_INVITE_SUCCESS" = "Signal ఉపయోగించమని మీరు మీ స్నేహితుడిని ఆహ్వానించారు!";
+
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "మీడియాను విస్మరించండి";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "కెమెరాకు తిరిగి వెళ్ళు";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "మీడియా లైబ్రరీకి తిరిగి వెళ్ళు";
+
+/* No comment provided by engineer. */
+"SEND_SMS_CONFIRM_TITLE" = "అసురక్షిత SMS ద్వారా స్నేహితుడిని ఆహ్వానించాలా?";
+
+/* No comment provided by engineer. */
+"SEND_SMS_INVITE_TITLE" = "మీరు ఈ క్రింది నంబర్‌ను Signal కు ఆహ్వానించాలనుకుంటున్నారా:";
+
+/* Navbar title */
+"SETTINGS_ABOUT" = "గురించి";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "నిరోధించు";
+
+/* Label for the  'manual censorship circumvention' switch. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "ప్రదర్శన వంచన నిషేధం";
+
+/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "స్థానం: %@";
+
+/* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "ప్రారంభించబడితే, Signal ప్రదర్శన నిషేధం తప్పించుకోవడానికి ప్రయత్నిస్తుంది. మీరు Signal నిషేధించ చేయబడిన ప్రదేశంలో ఉంటే తప్ప ఈ లక్షణాన్ని ప్రారంభించవద్దు.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "మీ ఖాతా ఫోన్ నంబర్ ఆధారంగా ప్రదర్శన వంచన నిషేధం సక్రియం చేయబడింది.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "మీరు మానవీయంగా ప్రదర్శన వంచన నిషేధం చుట్టుకొలతను  నిలిపివేశారు.";
+
+/* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "ఇంటర్నెట్‌కు కనెక్ట్ అయినప్పుడు మాత్రమే ప్రదర్శన వంచన నిషేధం సక్రియం అవుతుంది.";
+
+/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "ప్రదర్శన వంచన నిషేధం అవసరం లేదు; మీరు ఇప్పటికే Signal సేవకు కనెక్ట్ అయ్యారు.";
+
+/* Table header for the 'censorship circumvention' section. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "ప్రదర్శన వంచన నిషేధం";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_DEBUGLOG" = "డీబగ్ లాగ్‌ను ప్రారంభించండి";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "డీబగ్ లాగ్ను సమర్పించండి";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_TITLE" = "ఆధునిక";
+
+/* table cell label */
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "పొరపాటు సంఘటన లేకరి";
+
+/* The title for the theme section in the appearance settings. */
+"SETTINGS_APPEARANCE_THEME_TITLE" = "థీమ్";
+
+/* The title for the appearance settings. */
+"SETTINGS_APPEARANCE_TITLE" = "స్వరూపం";
+
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (అప్రమేయం)";
+
+/* Label for the backup view in app settings. */
+"SETTINGS_BACKUP" = "ప్రత్యామ్నాయ";
+
+/* Label for 'backup now' button in the backup settings view. */
+"SETTINGS_BACKUP_BACKUP_NOW" = "భద్రపరచు";
+
+/* Label for 'cancel backup' button in the backup settings view. */
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "ప్రత్యామ్నాయను రద్దు చేయండి";
+
+/* Label for switch in settings that controls whether or not backup is enabled. */
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "ప్రత్యామ్నాయ ప్రారంభించబడింది";
+
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud స్థితి";
+
+/* Indicates that the last backup restore failed. */
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "ప్రత్యామ్నాయ పునరుద్ధరణ విఫలమైంది";
+
+/* Indicates that app is not restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "ప్రత్యామ్నాయ నిష్క్రియ పునరుద్ధరణ";
+
+/* Indicates that app is restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "ప్రత్యామ్నాయ పునరుద్ధరణ పురోగతిలో ఉంది";
+
+/* Indicates that the last backup restore succeeded. */
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "ప్రత్యామ్నాయ పునరుద్ధరణ విజయవంతమైంది";
+
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PHASE" = "దశ";
+
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PROGRESS" = "పురోగతి";
+
+/* Label for backup status row in the in the backup settings view. */
+"SETTINGS_BACKUP_STATUS" = "స్థితి";
+
+/* Indicates that the last backup failed. */
+"SETTINGS_BACKUP_STATUS_FAILED" = "ప్రత్యామ్నాయ విఫలమైంది";
+
+/* Indicates that app is not backing up. */
+"SETTINGS_BACKUP_STATUS_IDLE" = "వేచి";
+
+/* Indicates that app is backing up. */
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "ప్రత్యామ్నాయ";
+
+/* Indicates that the last backup succeeded. */
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "ప్రత్యామ్నాయ విజయవంతమైంది";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "నిరోధించిన వినియోగదారుని జోడించండి";
+
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal లో మీకు పరిచయాలు లేవు.";
+
+/* A label that indicates the user's search has no matching results. */
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "శోధన ఫలితాలు లేవు";
+
+/* Label for the block list section of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "నిరోధించిన\n ";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "ఎల్లప్పుడూ ముందుకు పోవు పిలుపు";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "మీ పరిచయం మీ IP చిరునామా బహిర్గతం నివారించేందుకు Signal సర్వర్ ద్వారా అన్ని కాల్స్ ప్రసారం. సమర్ధించే కాల్ నాణ్యత తగ్గిస్తుంది.";
+
+/* No comment provided by engineer. */
+"SETTINGS_CLEAR_HISTORY" = "సంభాషణ చరిత్రను క్లియర్ చేయండి";
+
+/* No comment provided by engineer. */
+"SETTINGS_COPYRIGHT" = "రచనాస్వామ్యం Signal Messenger\nGPLv3  క్రింద అనుమతిపత్రము";
+
+/* No comment provided by engineer. */
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "ఖాతాను తొలగించండి";
+
+/* Label for 'delete data' button. */
+"SETTINGS_DELETE_DATA_BUTTON" = "సమాచార మొత్తని తొలగించండి";
+
+/* Alert message before user confirms clearing history */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "మీరు ఖచ్చితంగా అన్ని చరిత్రలను (సందేశాలు, జోడింపులు, కాల్‌లు మొదలైనవి) తొలగించాలనుకుంటున్నారా? ఈ చర్య తిరిగి మార్చబడదు.";
+
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ప్రతిదీ తొలగించండి";
+
+/* No comment provided by engineer. */
+"SETTINGS_HELP_HEADER" = "సహాయం";
+
+/* Section header */
+"SETTINGS_HISTORYLOG_TITLE" = "సంభాషణ చరిత్రను క్లియర్ చేయండి";
+
+/* No comment provided by engineer. */
+"SETTINGS_INFORMATION_HEADER" = "సమాచారం";
+
+/* Settings table view cell label */
+"SETTINGS_INVITE_TITLE" = "మీ స్నేహితులను ఆహ్వానించండి!";
+
+/* content of tweet when inviting via twitter - please do not translate URL */
+"SETTINGS_INVITE_TWITTER_TEXT" = "మీరు @signalapp ఉపయోగించి నన్ను చేరుకోవచ్చు. ఇప్పుడే పొందండి: https://signal.org/download/";
+
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "సందేశ ధ్వని";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "నిబంధనలు & గోప్యతా విధానం";
+
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "లింక్ పూర్వప్రదర్శనను పంపండి";
+
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Imgur, Instagram, Pinterest, Reddit మరియు YouTube లింక్‌లకు పూర్వప్రదర్శనలు మద్దతు ఇస్తున్నాయి";
+
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "లింక్ పూర్వప్రదర్శన";
+
+/* Title for settings activity */
+"SETTINGS_NAV_BAR_TITLE" = "అమరికలు";
+
+/* table section footer */
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "మీ ఫోన్ లాక్ చేయబడినప్పుడు కాల్ మరియు సందేశ నోటిఫికేషన్‌లు కనిపిస్తాయి. మీరు ఈ నోటిఫికేషన్లలో చూపిన వాటిని పరిమితం చేయాలనుకోవచ్చు.";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "ప్రకటనల ధ్వని";
+
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "పరిచయం Signal లొ చేరారు";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "సంఘటనలు";
+
+/* No comment provided by engineer. */
+"SETTINGS_NOTIFICATIONS" = "ప్రకటనలు";
+
+/* Footer for the 'PINs' section of the privacy settings. */
+"SETTINGS_PINS_FOOTER" = "మీ పిన్ అదనపు భద్రతా పొరను జోడిస్తుంది మరియు మీ ఖాతాను ప్రత్యామ్నాయ చేస్తుంది. మల్లి మీరు మీ ఫోన్ నెంబర్ Signal తో నమోదు చేసినప్పుడు మిమల్ని ఆ పిన్ అడుగుతుంది. మీరు మీ పిన్‌ను మరచిపోతే, మీరు 7 రోజులు మీ ఖాతా నుండి లాక్ చేయబడతారు.";
+
+/* Label for the 'pins' item of the privacy settings. */
+"SETTINGS_PINS_ITEM" = "మీ పిన్ మార్చండి";
+
+/* Title for the 'PINs' section of the privacy settings. */
+"SETTINGS_PINS_TITLE" = "పిన్";
+
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "కాలర్ పేరు & సంఖ్యను చూపించు";
+
+/* Settings table section footer. */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS ఫోన్ అనువర్తనంలో \"రీసెంట్స్\" జాబితాలో కాల్‌లను చూపించు.";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "క్రొత్తగా వచ్చిన కాల్స్ చూపించు";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS కాల్ ఇంటిగ్రేషన్";
+
+/* Settings table view cell label */
+"SETTINGS_PRIVACY_TITLE" = "గోప్యత";
+
+/* Label for the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPT" = "చదివిన రసీదులు";
+
+/* An explanation of the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "సందేశాలు చదివినప్పుడు చూడండి మరియు భాగస్వామ్యం చేయండి. ఈ సెట్టింగ్ ఐచ్ఛికం మరియు అన్ని సంభాషణలకు వర్తిస్తుంది.";
+
+/* Label for re-link button. */
+"SETTINGS_RELINK_BUTTON" = "తిరిగి లింక్ చేయండి";
+
+/* Label for re-registration button. */
+"SETTINGS_REREGISTER_BUTTON" = "మల్లి నమోదుచేయుత ";
+
+/* Label for the 'screen lock activity timeout' setting of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "స్క్రీన్ లాక్ సమయం ముగిసింది";
+
+/* Footer for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Touch ID, Face ID లేదా మీ iOS డివైస్ పాస్‌కోడ్ ఉపయోగించి Signal స్క్రీన్‌ను అన్‌లాక్ చేయండి. స్క్రీన్ లాక్ ప్రారంభించబడినప్పుడు మీరు ఇన్‌కమింగ్ కాల్‌లకు సమాధానం ఇవ్వవచ్చు మరియు సందేశ నోటిఫికేషన్‌లను స్వీకరించవచ్చు. Signal యొక్క నోటిఫికేషన్ సెట్టింగులు ప్రదర్శించబడే సమాచారాన్ని అనుకూలీకరించడానికి మిమ్మల్ని అనుమతిస్తాయి.";
+
+/* Title for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "స్క్రీన్ తాళం";
+
+/* Label for the 'enable screen lock' switch of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "స్క్రీన్ తాళం";
+
+/* No comment provided by engineer. */
+"SETTINGS_SCREEN_SECURITY" = "స్క్రీన్ భద్రతను ప్రారంభించండి";
+
+/* No comment provided by engineer. */
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "అనువర్తన స్విచ్చర్‌లో Signal పూర్వప్రదర్శన కనిపించకుండా నిరోధించండి.";
+
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS కాల్ ఇంటిగ్రేషన్ మీ లాక్ స్క్రీన్‌లో మరియు సిస్టమ్ కాల్ చరిత్రలో Signal కాల్‌లను చూపుతుంది. మీరు ఐచ్ఛికంగా మీ పరిచయం పేరు మరియు సంఖ్యను చూపవచ్చు. iCloud ప్రారంభించబడితే, ఈ కాల్ చరిత్ర Apple తో భాగస్వామ్యం చేయబడుతుంది.";
+
+/* Label for the notifications section of conversation settings view. */
+"SETTINGS_SECTION_NOTIFICATIONS" = "ప్రకటనలు";
+
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "శబ్దాలు ";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "కాలింగ్";
+
+/* Section header */
+"SETTINGS_SECURITY_TITLE" = "స్క్రీన్ భద్రత";
+
+/* No comment provided by engineer. */
+"SETTINGS_SUPPORT" = "మద్దతు";
+
+/* Indicates that 'two factor auth' is disabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "అచేతనం అయింది";
+
+/* Indicates that 'two factor auth' is enabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "చేతనం అయింది";
+
+/* Label for the 'two factor auth' item of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "నమోదు లాక్";
+
+/* Title for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "నమోదు లాక్";
+
+/* Label for the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS" = "టైపింగ్ సూచికలు";
+
+/* An explanation of the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "సందేశాలు టైప్ చేస్తున్నప్పుడు చూడండి మరియు భాగస్వామ్యం చేయండి. ఈ సెట్టింగ్ ఐచ్ఛికం మరియు అన్ని సంభాషణలకు వర్తిస్తుంది.";
+
+/* Label for a link to more info about unidentified delivery. */
+"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "ఇంకా నేర్చుకో";
+
+/* table section label */
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "ముద్రవేసిన ప్రేషకుడు";
+
+/* switch label */
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "ప్రదర్శన సూచికలు";
+
+/* table section footer */
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "ముద్రవేసిన ప్రేషకుడు ఉపయోగించి పంపిన సందేశాలపై \"మరింత సమాచారం\" ఎంచుకున్నప్పుడు స్థితి చిహ్నాన్ని చూపండి.";
+
+/* switch label */
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "ఎవరి నుండి అయినా అనుమతించు";
+
+/* table section footer */
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "మీరు మీ రూపం భాగస్వామ్యం చేయని పరిచయాలు మరియు వ్యక్తుల నుండి ఇన్కమింగ్ సందేశాల కోసం మూసివేసిన పంపేవారిని ప్రారంభించండి.";
+
+/* No comment provided by engineer. */
+"SETTINGS_VERSION" = "వివరణము";
+
+/* action sheet item to open native mail app */
+"SHARE_ACTION_MAIL" = "Mail";
+
+/* action sheet item to open native messages app */
+"SHARE_ACTION_MESSAGE" = "సందేశం";
+
+/* action sheet item */
+"SHARE_ACTION_TWEET" = "Twitter";
+
+/* alert body when sharing file failed because of untrusted/changed identity keys */
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "%@ తో మీ భద్రతా సంఖ్య ఇటీవల మార్చబడింది. తిరిగి పంపే ముందు మీరు దీన్ని ప్రధాన అనువర్తనంలో ధృవీకరించాలనుకోవచ్చు.";
+
+/* Indicates that the share extension is still loading. */
+"SHARE_EXTENSION_LOADING" = "లోడ్...";
+
+/* Message indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "నమోదు చేయడానికి Signal అనువర్తనాన్ని ప్రారంభించండి.";
+
+/* Title indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "నమోదు కాలేదు";
+
+/* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "నవీకరించడానికి లేదా నమోదు చేయడానికి Signal అనువర్తనాన్ని ప్రారంభించండి.";
+
+/* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "సిద్ధంగా లేదు";
+
+/* Alert title */
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "అటాచ్మెంట్ పంపడం సాధ్యం కాలేదు";
+
+/* Alert title */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "అప్లోడ్";
+
+/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "జోడింపును సిద్ధం చేయడం సాధ్యం కాలేదు";
+
+/* Title for the 'share extension' view. */
+"SHARE_EXTENSION_VIEW_TITLE" = "Signal కు భాగస్వామ్యం చేయండి";
+
+/* Action sheet item */
+"SHOW_SAFETY_NUMBER_ACTION" = "భద్రతా సంఖ్యను చూపించు";
+
+/* notification action */
+"SHOW_THREAD_BUTTON_TITLE" = "సంభాషణను చూపించు";
+
+/* body sent to contacts when inviting to Install Signal */
+"SMS_INVITE_BODY" = "Signal ను ఇన్‌స్టాల్ చేయడానికి నేను మిమ్మల్ని ఆహ్వానిస్తున్నాను! లింక్ ఇక్కడ ఉంది:";
+
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "ఏదీ కాదు";
+
+/* Preview text shown in notifications and conversation list for sticker messages. */
+"STICKER_MESSAGE_PREVIEW" = "స్టిక్కర్ సందేశం";
+
+/* Tooltip indicating that a sticker pack was installed. */
+"STICKER_PACK_INSTALLED_TOOLTIP" = "స్టిక్కర్ ప్యాక్ వ్యవస్థాపించబడింది";
+
+/* Label for a sticker that failed to download. */
+"STICKERS_FAILED_DOWNLOAD" = "స్టికర్";
+
+/* Label for the 'install sticker pack' button. */
+"STICKERS_INSTALL_BUTTON" = "వ్యవస్థాపన";
+
+/* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Singal కళాకారుడు సిరీస్";
+
+/* Title for the 'available known stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "మీరు అందుకున్న స్టిక్కర్లు";
+
+/* Label indicating that one or more known sticker packs failed to load. */
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "కొన్ని స్టిక్కర్ ప్యాక్‌లు లోడ్ చేయడంలో విఫలమయ్యాయి";
+
+/* Title for the 'installed stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "ఇన్‌స్టాల్ చేసిన స్టిక్కర్లు";
+
+/* Label indicating that one or more known sticker packs is loading. */
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "లోడ్...";
+
+/* Label indicating that the user has no installed sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "స్టిక్కర్లు వ్యవస్థాపించబడలేదు";
+
+/* Label indicating that the user has no known sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "ఇన్కమింగ్ సందేశాల నుండి స్టిక్కర్లు ఇక్కడ కనిపిస్తాయి";
+
+/* Title for the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_TITLE" = "స్టిక్కర్లు";
+
+/* Default title for sticker packs. */
+"STICKERS_PACK_DEFAULT_TITLE" = "స్టిక్కర్ ప్యాక్";
+
+/* Title of the 'share sticker pack' view. */
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "స్టిక్కర్ ప్యాక్‌ను భాగస్వామ్యం చేయండి";
+
+/* The default title for the 'sticker pack' view. */
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "స్టిక్కర్ ప్యాక్";
+
+/* Label indicating that the sticker pack failed to load. */
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "స్టిక్కర్ ప్యాక్ లోడ్ చేయడంలో విఫలమైంది";
+
+/* Label for the 'uninstall sticker pack' button. */
+"STICKERS_UNINSTALL_BUTTON" = "అన్ఇన్స్టాల్";
+
+/* Alert body after verifying privacy with {{other user's name}} */
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ సరిపోలికలతో మీ భద్రతా సంఖ్య. మీరు ఈ పరిచయాన్ని ధృవీకరించినట్లుగా గుర్తించవచ్చు.";
+
+/* No comment provided by engineer. */
+"SUCCESSFUL_VERIFICATION_TITLE" = "భద్రతా సంఖ్య సరిపోలికలు!";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "భద్రత సంఖ్యను ధృవీకరించండి";
+
+/* The number of members in a group. Embeds {{member count}} */
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu సభ్యులు";
+
+/* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ మరియు %lu అదనపు సమూహాల సభ్యుడు";
+
+/* Subtitle appearing at the top of the users 'note to self' conversation */
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+
+/* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ సభ్యుడు";
+
+/* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@, %@ మరియు %@ సభ్యుడు";
+
+/* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ మరియు %@ సభ్యుడు";
+
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS" = "%@ రోజులు";
+
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ రో";
+
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS" = "%@ గంటలు";
+
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@గం";
+
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES" = "%@ నిముషాలు ";
+
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ ని";
+
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS" = "%@ సెకన్లు";
+
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ సె";
+
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_DAY" = "%@ రోజు";
+
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ గంట";
+
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ నిమిషం";
+
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ వారం";
+
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS" = "%@ వారం";
+
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ వా";
+
+/* Label for the cancel button in an alert or action sheet. */
+"TXT_CANCEL_TITLE" = "రద్దు";
+
+/* No comment provided by engineer. */
+"TXT_DELETE_TITLE" = "తొలగించండి";
+
+/* Pressing this button moves an archived thread from the archive back to the inbox */
+"UNARCHIVE_ACTION" = "బయటపెట్టు";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "వినియోగదారు మీ పరిచయాలలో లేరు. మీరు ఈ వినియోగదారుని బ్లాక్ చేయాలనుకుంటున్నారా?";
+
+/* Displayed if for some reason we can't determine a contacts phone number *or* name */
+"UNKNOWN_CONTACT_NAME" = "తెలియని పరిచయం";
+
+/* Label for unknown countries. */
+"UNKNOWN_COUNTRY_NAME" = "తెలియని దేశం";
+
+/* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "మీ పరికరాల్లో ఒకటి క్రొత్త Signal లక్షణాన్ని ఉపయోగిస్తున్నందున ప్రాసెస్ చేయలేని లేదా ప్రదర్శించలేని సందేశాన్ని పంపింది.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ మీకు క్రొత్త Signal లక్షణాన్ని ఉపయోగిస్తున్నందున ప్రాసెస్ చేయలేని లేదా ప్రదర్శించలేని సందేశాన్ని పంపింది.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "క్రొత్త Signal లక్షణాన్ని ఉపయోగిస్తున్నందున మీరు ప్రాసెస్ చేయలేని లేదా ప్రదర్శించలేని సందేశాన్ని అందుకున్నారు.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Signal ను ఇప్పుడు నవీకరించండి";
+
+/* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal యొక్క తాజా సంస్కరణకు నవీకరించబడింది. మీరు ఇప్పుడు మీ పరికరంలో ఈ సందేశ రకాన్ని స్వీకరించవచ్చు.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "మీరు Signal యొక్క నవీనమైన సంస్కరణను ఉపయోగిస్తున్నందున ఈ సందేశాన్ని తిరిగి పంపమని మీరు %@ అడగవచ్చు.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "మీరు Signal యొక్క నవీనమైన సంస్కరణను ఉపయోగిస్తున్నారని ఈ సందేశాన్ని తిరిగి పంపమని మీరు పంపినవారిని అడగవచ్చు.";
+
+/* Indicates an unknown or unrecognizable value. */
+"UNKNOWN_VALUE" = "తెలియని";
+
+/* button title for unlinking a device */
+"UNLINK_ACTION" = "లింక్ తొలగించు";
+
+/* Alert message to confirm unlinking a device */
+"UNLINK_CONFIRMATION_ALERT_BODY" = "ఈ పరికరం లింక్ చేయకపోతే సందేశాలను పంపడం లేదా స్వీకరించడం సాధ్యం కాదు.";
+
+/* Alert title for confirming device deletion */
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "లింక్ తొలగించు \"%@\"?";
+
+/* Label warning the user that they have been unlinked from their primary device. */
+"UNLINKED_WARNING" = "పరికరం ఇకపై లింక్ చేయబడలేదు. సందేశాన్ని కొనసాగించడానికి మీ ఫోన్‌తో Signal ను తిరిగి లింక్ చేయండి.";
+
+/* Alert title when unlinking device fails */
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal మీ పరికరాన్ని అన్‌లింక్ చేయలేకపోయింది.";
+
+/* Label text in device manager for a device with no name */
+"UNNAMED_DEVICE" = "పేరులేని పరికరం";
+
+/* No comment provided by engineer. */
+"UNREGISTER_SIGNAL_FAIL" = "Signal నుండి అంరెజిస్టర్ చేయడంలో విఫలమైంది.";
+
+/* No comment provided by engineer. */
+"UNSUPPORTED_ATTACHMENT" = "మద్దతు లేని అటాచ్మెంట్ రకాన్ని స్వీకరించారు.";
+
+/* No comment provided by engineer. */
+"UNSUPPORTED_FEATURE_ERROR" = "మీ పరికరం ఈ లక్షణానికి మద్దతు ఇవ్వదు.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "మీరు సమూహ సభ్యులను తొలగించలేరు. వారు సమూహాన్ని వదిలేయాల్సి ఉంటుంది, లేదా మీరు ఈ సభ్యుడు లేకుండా క్రొత్త సమూహాన్ని సృష్టించవచ్చు.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "మద్దతు ఇవ్వ లేదు";
+
+/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "మీ పిన్ను సృష్టించండి";
+
+/* Button to open a help document explaining more about why a PIN is required */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "పిన్‌ల గురించి మరింత తెలుసుకోండి";
+
+/* Body text for PINs migration splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "మీ రిజిస్ట్రేషన్ లాక్ ఇప్పుడు మరింత చేస్తుంది. మీరు పరికరాలను మార్చినప్పుడు పిన్‌లతో మీ పరిచయాలను మీతో తీసుకెళ్లవచ్చు.";
+
+/* Header for PINs migration splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "నమోదు లాక్  = పిన్";
+
+/* Body text for PINs splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "మీ ఖాతాకు మరింత భద్రతను జోడించండి మరియు మీరు ఫోన్‌లను మార్చినప్పుడు మీ పరిచయాలను మీతో తీసుకెళ్లండి.";
+
+/* Header for PINs splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "పిన్‌లను పరిచయం చేస్తోంది";
+
+/* Button to open a help document explaining more about why a PIN is required */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "నేను పిన్ సృష్టించాలా?";
+
+/* Body text for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "స్టిక్కెర్లు వుందగా పదాలు ఎందుకు? కీబోర్డ్‌లో ఈ చిహ్నాన్ని నొక్కండి:";
+
+/* Header for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "స్టిక్కర్లను పరిచయం చేస్తున్నాము";
+
+/* Message for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal కు త్వరలో iOS 10 లేదా తరువాత అవసరం. దయచేసి సెట్టింగ్‌ల అనువర్తనంలో అప్‌గ్రేడ్ చేయండి >> సాధారణ >> సాఫ్ట్‌వేర్ నవీకరణ.";
+
+/* Title for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_TITLE" = "iOS ను అప్‌గ్రేడ్ చేయండి";
+
+/* An explanation of how usernames work on the username view. */
+"USERNAME_DESCRIPTION" = "Signal లోని వినియోగదారు పేర్లు ఐచ్ఛికం. మీరు వినియోగదారు పేరును సృష్టించాలని ఎంచుకుంటే ఇతర Signal వినియోగదారులు ఈ వినియోగదారు పేరు ద్వారా మిమ్మల్ని కనుగొని, మీ ఫోన్ నంబర్ తెలియకుండానే మిమ్మల్ని సంప్రదించగలరు.";
+
+/* Label for the username field in the username view. */
+"USERNAME_FIELD" = "వినియోగదారుడు ";
+
+/* An error indicating that the supplied username contains disallowed characters. */
+"USERNAME_INVALID_CHARACTERS_ERROR" = "వినియోగదారు పేర్లు a-z, 0-9 మరియు _ మాత్రమే కలిగి ఉండవచ్చు";
+
+/* A message indicating that username lookup failed. */
+"USERNAME_LOOKUP_ERROR" = "వినియోగదారు పేరును చూస్తున్నప్పుడు లోపం సంభవించింది. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.";
+
+/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
+"USERNAME_NOT_FOUND_FORMAT" = "%@ Signal యూజర్ కాదు. మీరు పూర్తి వినియోగదారు పేరును నమోదు చేశారని నిర్ధారించుకోండి.";
+
+/* A message indicating that the given username was not registered with signal. */
+"USERNAME_NOT_FOUND_TITLE" = "వినియోగదారుడు కనపడలేదు";
+
+/* The placeholder for the username text entry in the username view. */
+"USERNAME_PLACEHOLDER" = "వినియోగదారు పేరును నమోదు చేయండి";
+
+/* A prefix appeneded to all usernames when displayed */
+"USERNAME_PREFIX" = "@";
+
+/* An error indicating that the supplied username cannot start with a number. */
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "వినియోగదారు పేర్లు సంఖ్యతో ప్రారంభం కాకపోవచ్చు.";
+
+/* The title for the username view. */
+"USERNAME_TITLE" = "వినియోగదారుడు ";
+
+/* An error indicating that the supplied username is too short. */
+"USERNAME_TOO_SHORT_ERROR" = "వినియోగదారు పేర్లలో కనీసం 4 అక్షరాలు ఉండాలి.";
+
+/* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ తీసుకోబడింది.";
+
+/* Error moessage shown when a username update fails. */
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "వినియోగదారు పేరు నవీకరణ విఫలమైంది.";
+
+/* error label near a field */
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "పరికర పేరు ఖాళీగా ఉండకూడదు";
+
+/* error label near a field */
+"VALIDATION_ERROR_TOO_LONG" = "పరికర పేరు చాలా పెద్దది";
+
+/* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "ధృవీకరించబడనట్లు మీరు %@ అని గుర్తు పెట్టారు.";
+
+/* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "మరొక పరికరంలో ధృవీకరించబడనట్లు మీరు %@ అని గుర్తు పెట్టారు.";
+
+/* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "మీరు ధృవీకరించినట్లుగా %@ గుర్తు పెట్టారు";
+
+/* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "మీరు మరొక పరికరంలో ధృవీకరించినట్లు %@ అని గుర్తు పెట్టారు.";
+
+/* Generic message indicating that verification state changed for a given user. */
+"VERIFICATION_STATE_CHANGE_GENERIC" = "ధృవీకరణ స్థితి మార్చబడింది.";
+
+/* Label for button or row which allows users to verify the safety number of another user. */
+"VERIFY_PRIVACY" = "భద్రతా సంఖ్యను వీక్షించండి";
+
+/* Label for button or row which allows users to verify the safety numbers of multiple users. */
+"VERIFY_PRIVACY_MULTIPLE" = "భద్రతా సంఖ్యలను సమీక్షించండి";
+
+/* Indicates how to cancel a voice message. */
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "రద్దు చేయడానికి స్లయిడ్ చేయండి";
+
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "వాయిస్ సందేశం";
+
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "మాటతో కూడిన సందేశాన్ని రికార్డు చేయుటకు తడుతూనే ఉంచండి.";
+
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "వాయిస్ సందేశం";
+
+/* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop యొక్క పూర్తి స్థాపన ";
+
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "మీరు అదృశ్యమవుతున్న సందేశాలను నిలిపివేసారు";
+
+/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "మీరు అదృశ్యమవుతున్న సందేశ టైంను %@ కు సెట్ చేసారు ";

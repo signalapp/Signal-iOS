@@ -68,7 +68,7 @@ public class StickerHorizontalListViewItemRecents: NSObject, StickerHorizontalLi
 
     public var view: UIView {
         let imageView = UIImageView()
-        imageView.setTemplateImageName("recent-outline-24", tintColor: Theme.secondaryColor)
+        imageView.setTemplateImageName("recent-outline-24", tintColor: Theme.secondaryTextAndIconColor)
         return imageView
     }
 

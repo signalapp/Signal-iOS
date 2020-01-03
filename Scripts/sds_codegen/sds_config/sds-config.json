@@ -9,24 +9,48 @@
 		"TSAttachmentStream.cachedImageHeight": "Double",
 		"TSAttachmentStream.isValidImageCached": "Bool",
 		"TSAttachmentStream.isValidVideoCached": "Bool",
-		"OWSBackupFragment.uncompressedDataLength": "UInt64"
+		"OWSBackupFragment.uncompressedDataLength": "UInt64",
+		"TestModel.nsNumberValueUsingInt64": "Int64",
+		"TestModel.nsNumberValueUsingUInt64": "UInt64"
 	},
 	"properties_to_ignore": [
+		"TSYapDatabaseObject.grdbId",
+		"SignalRecipient.recipientSchemaVersion",
 		"OWSDynamicOutgoingMessage.block",
 		"OWSDisappearingMessagesConfiguration.originalDictionaryValue",
-		"OWSDisappearingMessagesConfiguration.newRecord"
+		"OWSDisappearingMessagesConfiguration.newRecord",
+		"TSAttachment.attachmentSchemaVersion",
+		"TSAttachmentStream.cachedAudioWaveform",
+		"TSThread.isArchivedByLegacyTimestampForSorting",
+		"TSContactThread.contactThreadSchemaVersion",
+		"OWSContactOffersInteraction.beforeInteractionId",
+		"TSCall.callSchemaVersion",
+		"TSErrorMessage.errorMessageSchemaVersion",
+		"OWSContactOffersInteraction.hasAddToContactsOffer",
+		"OWSContactOffersInteraction.hasAddToProfileWhitelistOffer",
+		"OWSContactOffersInteraction.hasBlockOffer",
+		"TSMessage.schemaVersion",
+		"TSIncomingMessage.incomingMessageSchemaVersion",
+		"TSInfoMessage.infoMessageSchemaVersion",
+		"TSOutgoingMessage.outgoingMessageSchemaVersion",
+		"OWSUnknownProtocolVersionMessage.unknownProtocolVersionMessageSchemaVersion",
+		"OWSRecipientIdentity.recipientIdentitySchemaVersion",
+		"SignalAccount.accountSchemaVersion",
+		"OWSUserProfile.userProfileSchemaVersion",
+		"TSRecipientReadReceipt.recipientReadReceiptSchemaVersion",
+		"OWSLinkedDeviceReadReceipt.linkedDeviceReadReceiptSchemaVersion"
 	],
 	"custom_property_column_sources": {
 		"TSInteraction.sortId": "id",
-		"SSKJobRecord.sortId": "id",
-		"TSThread.rowId": "id"
+		"SSKJobRecord.sortId": "id"
 	},
 	"class_to_skip_serialization": [
 		"OWSOutgoingSyncMessage",
+		"OWSOutgoingReactionMessage",
 		"OWSEndSessionMessage",
 		"OWSDynamicOutgoingMessage",
 		"OWSDisappearingMessagesConfigurationMessage",
-		"OWSSyncGroupsRequestMessage",
+		"OWSGroupInfoRequestMessage",
 		"OWSProfileKeyMessage",
 		"OWSOutgoingNullMessage",
 		"OWSOutgoingCallMessage",

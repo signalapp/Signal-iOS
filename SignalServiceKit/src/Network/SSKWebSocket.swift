@@ -10,6 +10,19 @@ public enum SSKWebSocketState: UInt {
     case open, connecting, disconnected
 }
 
+extension SSKWebSocketState: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .open:
+            return "SSKWebSocketState.open"
+        case .connecting:
+            return "SSKWebSocketState.connecting"
+        case .disconnected:
+            return "SSKWebSocketState.disconnected"
+        }
+    }
+}
+
 @objc
 public class SSKWebSocketError: NSObject, CustomNSError {
 
@@ -35,6 +48,10 @@ public class SSKWebSocketError: NSObject, CustomNSError {
     public static let kStatusCodeKey = "SSKWebSocketErrorStatusCode"
 
     let underlyingError: Starscream.WSError
+
+    public override var description: String {
+        return "SSKWebSocketError - underlyingError: \(underlyingError)"
+    }
 }
 
 @objc
@@ -52,11 +69,14 @@ public protocol SSKWebSocket {
     @objc
     func disconnect()
 
-    @objc(writeData:error:)
-    func write(data: Data) throws
+    @objc(writeData:)
+    func write(data: Data)
 
     @objc
-    func writePing() throws
+    func writePing()
+
+    @objc(sendResponseForRequest:status:message:error:)
+    func sendResponse(for request: WebSocketProtoWebSocketRequestMessage, status: UInt32, message: String) throws
 }
 
 @objc
@@ -65,9 +85,7 @@ public protocol SSKWebSocketDelegate: class {
 
     func websocketDidDisconnect(socket: SSKWebSocket, error: Error?)
 
-    func websocketDidReceiveData(socket: SSKWebSocket, data: Data)
-
-    @objc optional func websocketDidReceiveMessage(socket: SSKWebSocket, text: String)
+    func websocket(_ socket: SSKWebSocket, didReceiveMessage message: WebSocketProtoWebSocketMessage)
 }
 
 @objc
@@ -125,12 +143,27 @@ class SSKWebSocketImpl: SSKWebSocket {
         socket.disconnect()
     }
 
-    func write(data: Data) throws {
+    func write(data: Data) {
         socket.write(data: data)
     }
 
-    func writePing() throws {
+    func writePing() {
         socket.write(ping: Data())
+    }
+
+    func sendResponse(for request: WebSocketProtoWebSocketRequestMessage, status: UInt32, message: String) throws {
+        let responseBuilder = WebSocketProtoWebSocketResponseMessage.builder(requestID: request.requestID,
+                                                                             status: status)
+        responseBuilder.setMessage(message)
+        let response = try responseBuilder.build()
+
+        let messageBuilder = WebSocketProtoWebSocketMessage.builder()
+        messageBuilder.setType(.response)
+        messageBuilder.setResponse(response)
+
+        let messageData = try messageBuilder.buildSerializedData()
+
+        socket.write(data: messageData)
     }
 }
 
@@ -160,13 +193,16 @@ extension SSKWebSocketImpl: WebSocketDelegate {
     }
 
     func websocketDidReceiveMessage(socket: WebSocketClient, text: String) {
-        if let websocketDidReceiveMessage = self.delegate?.websocketDidReceiveMessage {
-            websocketDidReceiveMessage(self, text)
-        }
+        owsFailDebug("We only expect binary frames.")
     }
 
     func websocketDidReceiveData(socket: WebSocketClient, data: Data) {
-        delegate?.websocketDidReceiveData(socket: self, data: data)
+        do {
+            let message = try WebSocketProtoWebSocketMessage.parseData(data)
+            delegate?.websocket(self, didReceiveMessage: message)
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
     }
 }
 

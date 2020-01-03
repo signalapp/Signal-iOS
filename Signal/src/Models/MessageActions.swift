@@ -8,67 +8,70 @@ import Foundation
 protocol MessageActionsDelegate: class {
     func messageActionsShowDetailsForItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsReplyToItem(_ conversationViewItem: ConversationViewItem)
+    func messageActionsForwardItem(_ conversationViewItem: ConversationViewItem)
 }
 
+// MARK: -
+
 struct MessageActionBuilder {
-    static func reply(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_reply"),
-                          title: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
-                          subtitle: nil,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"),
-                          block: { [weak delegate] (_) in
-                            delegate?.messageActionsReplyToItem(conversationViewItem)
+    static func reply(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        let image = Theme.iconImage(.messageActionReply)
+        return MessageAction(image: image,
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"),
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsReplyToItem(conversationViewItem)
 
         })
     }
 
-    static func copyText(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_copy"),
-                          title: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
-                          subtitle: nil,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_text"),
-                          block: { (_) in
-                            conversationViewItem.copyTextAction()
+    static func copyText(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        let image = Theme.iconImage(.messageActionCopy)
+        return MessageAction(image: image,
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_text"),
+                             block: { (_) in
+                                conversationViewItem.copyTextAction()
         })
     }
 
-    static func showDetails(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_info"),
-                          title: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
-                          subtitle: nil,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_details"),
-                          block: { [weak delegate] (_) in
-                            delegate?.messageActionsShowDetailsForItem(conversationViewItem)
+    static func showDetails(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        let image = Theme.iconImage(.info)
+        return MessageAction(image: image,
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_details"),
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsShowDetailsForItem(conversationViewItem)
         })
     }
 
-    static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_trash"),
-                          title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
-                          subtitle: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE", comment: "Action sheet button subtitle"),
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
-                          block: { (_) in
-                            conversationViewItem.deleteAction()
+    static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        let image = Theme.iconImage(.messageActionDelete)
+        return MessageAction(image: image,
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
+                             block: { (_) in
+                                conversationViewItem.deleteAction()
         })
     }
 
-    static func copyMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_copy"),
-                          title: NSLocalizedString("MESSAGE_ACTION_COPY_MEDIA", comment: "Action sheet button title"),
-                          subtitle: nil,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_media"),
-                          block: { (_) in
-                            conversationViewItem.copyMediaAction()
+    static func shareMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        let image = Theme.iconImage(.messageActionShare)
+        return MessageAction(image: image,
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_SHARE_MEDIA", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "share_media"),
+                             block: { sender in
+                                conversationViewItem.shareMediaAction(sender)
         })
     }
 
-    static func saveMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "download-filled-24.png"),
-                          title: NSLocalizedString("MESSAGE_ACTION_SAVE_MEDIA", comment: "Action sheet button title"),
-                          subtitle: nil,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "save_media"),
-                          block: { (_) in
-                            conversationViewItem.saveMediaAction()
+    static func forwardMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        let image = Theme.iconImage(.messageActionForward)
+        return MessageAction(image: image,
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_FORWARD_MESSAGE", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "forward_message"),
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsForwardItem(conversationViewItem)
         })
     }
 }
@@ -77,78 +80,86 @@ struct MessageActionBuilder {
 class ConversationViewItemActions: NSObject {
 
     @objc
-    class func textActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
-        var actions: [MenuAction] = []
+    class func textActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
+        var actions: [MessageAction] = []
 
-        if shouldAllowReply {
-            let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
-            actions.append(replyAction)
-        }
+        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(showDetailsAction)
+
+        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(deleteAction)
 
         if conversationViewItem.hasBodyTextActionContent {
             let copyTextAction = MessageActionBuilder.copyText(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(copyTextAction)
         }
 
-        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(deleteAction)
+        if shouldAllowReply {
+            let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(replyAction)
+        }
 
-        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(showDetailsAction)
+        if conversationViewItem.canForwardMessage() {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
+        }
 
         return actions
     }
 
     @objc
-    class func mediaActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
-        var actions: [MenuAction] = []
+    class func mediaActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
+        var actions: [MessageAction] = []
 
-        if shouldAllowReply {
-            let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
-            actions.append(replyAction)
-        }
+        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(showDetailsAction)
+
+        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(deleteAction)
 
         if conversationViewItem.hasMediaActionContent {
-            if conversationViewItem.canCopyMedia() {
-                let copyMediaAction = MessageActionBuilder.copyMedia(conversationViewItem: conversationViewItem, delegate: delegate)
+            if conversationViewItem.canShareMedia() {
+                let copyMediaAction = MessageActionBuilder.shareMedia(conversationViewItem: conversationViewItem, delegate: delegate)
                 actions.append(copyMediaAction)
             }
-            if conversationViewItem.canSaveMedia() {
-                let saveMediaAction = MessageActionBuilder.saveMedia(conversationViewItem: conversationViewItem, delegate: delegate)
-                actions.append(saveMediaAction)
-            }
         }
-
-        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(deleteAction)
-
-        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(showDetailsAction)
-
-        return actions
-    }
-
-    @objc
-    class func quotedMessageActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
-        var actions: [MenuAction] = []
 
         if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
         }
 
-        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(deleteAction)
-
-        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(showDetailsAction)
+        if conversationViewItem.canForwardMessage() {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
+        }
 
         return actions
     }
 
     @objc
-    class func infoMessageActions(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> [MenuAction] {
+    class func quotedMessageActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
+        var actions: [MessageAction] = []
+
+        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(showDetailsAction)
+
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        return [deleteAction ]
+        actions.append(deleteAction)
+
+        if shouldAllowReply {
+            let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(replyAction)
+        }
+
+        if conversationViewItem.canForwardMessage() {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
+        }
+
+        return actions
+    }
+
+    @objc
+    class func infoMessageActions(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> [MessageAction] {
+        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+        return [deleteAction]
     }
 }

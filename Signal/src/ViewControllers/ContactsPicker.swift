@@ -39,24 +39,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         return Environment.shared.contactsManager
     }
 
-    // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
-    // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
-    // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
-    override public var canBecomeFirstResponder: Bool {
-        Logger.debug("")
-        return true
-    }
-
-    override public func becomeFirstResponder() -> Bool {
-        Logger.debug("")
-        return super.becomeFirstResponder()
-    }
-
-    override public func resignFirstResponder() -> Bool {
-        Logger.debug("")
-        return super.resignFirstResponder()
-    }
-
     private let collation = UILocalizedIndexedCollation.current()
     public var collationForTests: UILocalizedIndexedCollation {
         get {
@@ -96,7 +78,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         self.view = UIView()
         let tableView = UITableView()
         self.tableView = tableView
-        self.tableView.separatorColor = Theme.cellSeparatorColor
 
         view.addSubview(tableView)
         tableView.autoPinEdge(toSuperviewEdge: .top)
@@ -117,9 +98,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     override open func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = Theme.backgroundColor
-        self.tableView.backgroundColor = Theme.backgroundColor
-
         searchBar.placeholder = NSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
 
         // Auto size cells for dynamic type
@@ -137,6 +115,14 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         updateSearchResults(searchText: "")
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: UIContentSizeCategory.didChangeNotification, object: nil)
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        view.backgroundColor = Theme.backgroundColor
+        tableView.backgroundColor = Theme.backgroundColor
+        tableView.separatorColor = Theme.cellSeparatorColor
     }
 
     @objc
@@ -172,11 +158,11 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 let title = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE", comment: "Alert title when contacts disabled while trying to invite contacts to signal")
                 let body = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY", comment: "Alert body when contacts disabled while trying to invite contacts to signal")
 
-                let alert = UIAlertController(title: title, message: body, preferredStyle: .alert)
+                let alert = ActionSheetController(title: title, message: body)
 
                 let dismissText = CommonStrings.cancelButton
 
-                let cancelAction = UIAlertAction(title: dismissText, style: .cancel, handler: {  _ in
+                let cancelAction = ActionSheetAction(title: dismissText, style: .cancel, handler: {  _ in
                     let error = NSError(domain: "contactsPickerErrorDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "No Contacts Access"])
                     self.contactsPickerDelegate?.contactsPicker(self, contactFetchDidFail: error)
                     errorHandler(error)
@@ -184,12 +170,12 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 alert.addAction(cancelAction)
 
                 let settingsText = CommonStrings.openSettingsButton
-                let openSettingsAction = UIAlertAction(title: settingsText, style: .default, handler: { (_) in
+                let openSettingsAction = ActionSheetAction(title: settingsText, style: .default, handler: { (_) in
                     UIApplication.shared.openSystemSettings()
                 })
                 alert.addAction(openSettingsAction)
 
-                self.presentAlert(alert)
+                self.presentActionSheet(alert)
 
             case CNAuthorizationStatus.notDetermined:
                 //This case means the user is prompted for the first time for allowing contacts
@@ -331,6 +317,10 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         }
     }
 
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        searchBar.resignFirstResponder()
+    }
+
     // MARK: - Button Actions
 
     @objc func onTouchCancelButton() {
@@ -344,6 +334,10 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     // MARK: - Search Actions
     open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         updateSearchResults(searchText: searchText)
+    }
+
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 
     open func updateSearchResults(searchText: String) {

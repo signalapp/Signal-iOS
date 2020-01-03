@@ -58,6 +58,13 @@ NS_ASSUME_NONNULL_BEGIN
     self.profileKeys[address] = key;
 }
 
+- (void)setProfileName:(nullable NSString *)profileName
+            forAddress:(SignalServiceAddress *)address
+           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -79,17 +86,22 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientWhitelist addObject:address];
 }
 
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
+{
+    [self.recipientWhitelist removeObject:address];
+}
+
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId
 {
     [self.threadWhitelist addObject:groupId.hexadecimalString];
 }
 
-- (void)fetchLocalUsersProfile
+- (void)fetchAndUpdateLocalUsersProfile
 {
     // Do nothing.
 }
 
-- (void)fetchProfileForAddress:(nonnull SignalServiceAddress *)address
+- (void)updateProfileForAddress:(nonnull SignalServiceAddress *)address
 {
     // Do nothing.
 }

@@ -31,7 +31,6 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 
 @property (nonatomic) TSAttachmentPointerType pointerType;
 @property (atomic) TSAttachmentPointerState state;
-@property (nullable, atomic) NSString *mostRecentFailureLocalizedText;
 
 // Though now required, `digest` may be null for pre-existing records or from
 // messages received from other clients
@@ -75,7 +74,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType
-                       mediaSize:(CGSize)mediaSize NS_DESIGNATED_INITIALIZER;
+                       mediaSize:(CGSize)mediaSize
+                        blurHash:(nullable NSString *)blurHash NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream NS_DESIGNATED_INITIALIZER;
 
@@ -85,24 +85,23 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
-         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
+                        blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
-                    isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
-  mostRecentFailureLocalizedText:(nullable NSString *)mostRecentFailureLocalizedText
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
-NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:digest:lazyRestoreFragmentId:mediaSize:mostRecentFailureLocalizedText:pointerType:state:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
 
 // clang-format on
 

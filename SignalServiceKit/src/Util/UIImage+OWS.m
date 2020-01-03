@@ -3,6 +3,7 @@
 //
 
 #import "UIImage+OWS.h"
+#import "NSData+Image.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -39,32 +40,51 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints
 {
-    CGSize originalSize = self.size;
+    // Use points.
+    return [self resizedWithOriginalSize:self.size maxDimension:maxDimensionPoints isPixels:NO];
+}
+
+- (nullable UIImage *)resizedWithMaxDimensionPixels:(CGFloat)maxDimensionPixels
+{
+    // Use pixels.
+    return [self resizedWithOriginalSize:self.pixelSize maxDimension:maxDimensionPixels isPixels:YES];
+}
+
+// Original size and maxDimension should both be in the same units,
+// either points or pixels.
+- (nullable UIImage *)resizedWithOriginalSize:(CGSize)originalSize
+                                 maxDimension:(CGFloat)maxDimension
+                                     isPixels:(BOOL)isPixels
+{
     if (originalSize.width < 1 || originalSize.height < 1) {
         OWSLogError(@"Invalid original size: %@", NSStringFromCGSize(originalSize));
         return nil;
     }
 
-    CGFloat maxOriginalDimensionPoints = MAX(originalSize.width, originalSize.height);
-    if (maxOriginalDimensionPoints < maxDimensionPoints) {
+    CGFloat maxOriginalDimension = MAX(originalSize.width, originalSize.height);
+    if (maxOriginalDimension < maxDimension) {
         // Don't bother scaling an image that is already smaller than the max dimension.
         return self;
     }
 
     CGSize thumbnailSize = CGSizeZero;
     if (originalSize.width > originalSize.height) {
-        thumbnailSize.width = maxDimensionPoints;
-        thumbnailSize.height = round(maxDimensionPoints * originalSize.height / originalSize.width);
+        thumbnailSize.width = maxDimension;
+        thumbnailSize.height = round(maxDimension * originalSize.height / originalSize.width);
     } else {
-        thumbnailSize.width = round(maxDimensionPoints * originalSize.width / originalSize.height);
-        thumbnailSize.height = maxDimensionPoints;
+        thumbnailSize.width = round(maxDimension * originalSize.width / originalSize.height);
+        thumbnailSize.height = maxDimension;
     }
     if (thumbnailSize.width < 1 || thumbnailSize.height < 1) {
         OWSLogError(@"Invalid thumbnail size: %@", NSStringFromCGSize(thumbnailSize));
         return nil;
     }
 
-    UIGraphicsBeginImageContext(CGSizeMake(thumbnailSize.width, thumbnailSize.height));
+    if (isPixels) {
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(thumbnailSize.width, thumbnailSize.height), NO, 1.0);
+    } else {
+        UIGraphicsBeginImageContext(CGSizeMake(thumbnailSize.width, thumbnailSize.height));
+    }
     CGContextRef _Nullable context = UIGraphicsGetCurrentContext();
     if (context == NULL) {
         OWSLogError(@"Couldn't create context.");
@@ -235,6 +255,57 @@ NS_ASSUME_NONNULL_BEGIN
     UIGraphicsEndImageContext();
 
     return image;
+}
+
++ (nullable NSData *)validJpegDataFromAvatarData:(NSData *)avatarData
+{
+    ImageData *imageData = [avatarData imageDataWithPath:nil mimeType:nil];
+    if (!imageData.isValid) {
+        return nil;
+    }
+
+    // TODO: We might want to raise this value if we ever want to render large contact avatars
+    // on linked devices (e.g. in a call view).  If so, we should also modify `avatarDataForCNContact`
+    // to _not_ use `thumbnailImageData`.  This would make contact syncs much more expensive, however.
+    const CGFloat kMaxAvatarDimensionPixels = 600;
+    if (imageData.imageFormat == ImageFormat_Jpeg && imageData.pixelSize.width <= kMaxAvatarDimensionPixels
+        && imageData.pixelSize.height <= kMaxAvatarDimensionPixels) {
+        return avatarData;
+    }
+
+    UIImage *_Nullable avatarImage = [UIImage imageWithData:avatarData];
+    if (avatarImage == nil) {
+        OWSFailDebug(@"Could not load avatar.");
+        return nil;
+    }
+    if (avatarImage.pixelWidth > kMaxAvatarDimensionPixels || avatarImage.pixelHeight > kMaxAvatarDimensionPixels) {
+        avatarImage = [avatarImage resizedWithMaxDimensionPixels:kMaxAvatarDimensionPixels];
+        if (avatarImage == nil) {
+            OWSFailDebug(@"Could not resize avatar.");
+            return nil;
+        }
+    }
+
+    NSData *jpegData = UIImageJPEGRepresentation(avatarImage, 0.9);
+    OWSLogVerbose(@"Converted avatar to JPEG: %lu -> %lu, %@ %@.",
+        (unsigned long)avatarData.length,
+        (unsigned long)jpegData.length,
+        NSStringForImageFormat(imageData.imageFormat),
+        NSStringFromCGSize(imageData.pixelSize));
+
+    return jpegData;
+}
+
+- (size_t)pixelWidth {
+    return CGImageGetWidth(self.CGImage);
+}
+
+- (size_t)pixelHeight {
+    return CGImageGetHeight(self.CGImage);
+}
+
+- (CGSize)pixelSize {
+    return CGSizeMake(self.pixelWidth, self.pixelHeight);
 }
 
 @end

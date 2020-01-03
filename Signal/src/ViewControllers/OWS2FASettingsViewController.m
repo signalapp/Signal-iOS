@@ -9,7 +9,6 @@
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/SignalMessaging.h>
-#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/OWS2FAManager.h>
@@ -120,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UILabel *)createLabelWithText:(NSString *)text
 {
     UILabel *label = [UILabel new];
-    label.textColor = [Theme primaryColor];
+    label.textColor = Theme.primaryTextColor;
     label.text = text;
     label.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
     label.numberOfLines = 0;
@@ -133,8 +132,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createPinTextfield
 {
     self.pinTextfield = [OWSTextField new];
-    self.pinTextfield.textColor = [Theme primaryColor];
-    self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
+    self.pinTextfield.textColor = Theme.primaryTextColor;
+    self.pinTextfield.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
     self.pinTextfield.keyboardType = UIKeyboardTypeNumberPad;
     self.pinTextfield.delegate = self;
@@ -228,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.errorLabel = [UILabel new];
     self.errorLabel.font = UIFont.ows_dynamicTypeCaption1ClampedFont;
     self.errorLabel.textAlignment = NSTextAlignmentCenter;
-    self.errorLabel.textColor = UIColor.ows_redColor;
+    self.errorLabel.textColor = UIColor.ows_accentRedColor;
     self.errorLabel.numberOfLines = 0;
     self.errorLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
@@ -385,10 +384,10 @@ NS_ASSUME_NONNULL_BEGIN
                               [modalActivityIndicator dismissWithCompletion:^{
                                   [weakSelf updateTableContents];
 
-                                  [OWSAlerts showErrorAlertWithMessage:
-                                                 NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA",
-                                                     @"Error indicating that attempt to disable 'two-factor "
-                                                     @"auth' failed.")];
+                                  [OWSActionSheets showErrorAlertWithMessage:
+                                                       NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA",
+                                                           @"Error indicating that attempt to disable 'two-factor "
+                                                           @"auth' failed.")];
                               }];
                           }];
                   }];
@@ -421,10 +420,10 @@ NS_ASSUME_NONNULL_BEGIN
 
                                   [weakSelf updateTableContents];
 
-                                  [OWSAlerts showErrorAlertWithMessage:
-                                                 NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
-                                                     @"Error indicating that attempt to enable 'two-factor "
-                                                     @"auth' failed.")];
+                                  [OWSActionSheets showErrorAlertWithMessage:
+                                                       NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
+                                                           @"Error indicating that attempt to enable 'two-factor "
+                                                           @"auth' failed.")];
                               }];
                           }];
                   }];

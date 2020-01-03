@@ -11,6 +11,19 @@ public extension UIEdgeInsets {
                   bottom: bottom,
                   right: CurrentAppContext().isRTL ? leading : trailing)
     }
+
+    func plus(_ inset: CGFloat) -> UIEdgeInsets {
+        var newInsets = self
+        newInsets.top += inset
+        newInsets.bottom += inset
+        newInsets.left += inset
+        newInsets.right += inset
+        return newInsets
+    }
+
+    func minus(_ inset: CGFloat) -> UIEdgeInsets {
+        return plus(-inset)
+    }
 }
 
 // MARK: -
@@ -87,6 +100,12 @@ public extension UIView {
         return view
     }
 
+    class func spacer(matchingHeightOf matchView: UIView, withMultiplier multiplier: CGFloat) -> UIView {
+        let spacer = UIView()
+        spacer.autoMatch(.height, to: .height, of: matchView, withMultiplier: multiplier)
+        return spacer
+    }
+
     class func hStretchingSpacer() -> UIView {
         let view = UIView()
         view.setContentHuggingHorizontalLow()
@@ -94,10 +113,21 @@ public extension UIView {
         return view
     }
 
-    class func vStretchingSpacer() -> UIView {
+    @nonobjc
+    class func vStretchingSpacer(minHeight: CGFloat? = nil, maxHeight: CGFloat? = nil) -> UIView {
         let view = UIView()
         view.setContentHuggingVerticalLow()
         view.setCompressionResistanceVerticalLow()
+
+        if let minHeight = minHeight {
+            view.autoSetDimension(.height, toSize: minHeight, relation: .greaterThanOrEqual)
+        }
+        if let maxHeight = maxHeight {
+            NSLayoutConstraint.autoSetPriority(.defaultLow) {
+                view.autoSetDimension(.height, toSize: maxHeight)
+            }
+        }
+
         return view
     }
 
@@ -117,6 +147,11 @@ public extension UIView {
         constraints.append(subview.autoPin(toAspectRatio: aspectRatio))
         constraints.append(subview.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
         constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
+        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultHigh) {
+            constraints.append(subview.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .equal))
+            constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .equal))
+        }
+
         return constraints
     }
 
@@ -144,26 +179,37 @@ public extension UIView {
 
 @objc
 public extension UIViewController {
-    func presentAlert(_ alert: UIAlertController) {
-        self.presentAlert(alert, animated: true)
+    func presentActionSheet(_ alert: ActionSheetController) {
+        self.presentActionSheet(alert, animated: true)
     }
 
-    func presentAlert(_ alert: UIAlertController, animated: Bool) {
-        self.present(alert,
-                     animated: animated,
-                     completion: {
-                        alert.applyAccessibilityIdentifiers()
-        })
+    func presentActionSheet(_ alert: ActionSheetController, animated: Bool) {
+        self.present(alert, animated: animated)
     }
 
-    func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
+    func presentActionSheet(_ alert: ActionSheetController, completion: @escaping (() -> Void)) {
         self.present(alert,
                      animated: true,
-                     completion: {
-                        alert.applyAccessibilityIdentifiers()
+                     completion: completion)
+    }
 
-                        completion()
-        })
+    /// A convenience function to present a modal view full screen, not using
+    /// the default card style added in iOS 13.
+    @objc(presentFullScreenViewController:animated:completion:)
+    func presentFullScreen(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+        viewControllerToPresent.modalPresentationStyle = .fullScreen
+        present(viewControllerToPresent, animated: animated, completion: completion)
+    }
+
+    @objc(presentFormSheetViewController:animated:completion:)
+    func presentFormSheet(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+        // Presenting form sheet on iPhone should always use the default presentation style.
+        // We get this for free, except on phones with the regular width size class (big phones
+        // in landscape, XR, XS Max, 8+, etc.)
+        if UIDevice.current.isIPad {
+            viewControllerToPresent.modalPresentationStyle = .formSheet
+        }
+        present(viewControllerToPresent, animated: animated, completion: completion)
     }
 }
 
@@ -202,8 +248,41 @@ public extension CGFloat {
 
 // MARK: -
 
+public extension Double {
+    func clamp(_ minValue: Double, _ maxValue: Double) -> Double {
+        return max(minValue, min(maxValue, self))
+    }
+
+    func clamp01() -> Double {
+        return clamp(0, 1)
+    }
+
+    // Linear interpolation
+    func lerp(_ minValue: Double, _ maxValue: Double) -> Double {
+        return (minValue * (1 - self)) + (maxValue * self)
+    }
+
+    // Inverse linear interpolation
+    func inverseLerp(_ minValue: Double, _ maxValue: Double, shouldClamp: Bool = false) -> Double {
+        let value = (self - minValue) / (maxValue - minValue)
+        return (shouldClamp ? value.clamp01() : value)
+    }
+}
+
+// MARK: -
+
 public extension Int {
     func clamp(_ minValue: Int, _ maxValue: Int) -> Int {
+        assert(minValue <= maxValue)
+
+        return Swift.max(minValue, Swift.min(maxValue, self))
+    }
+}
+
+// MARK: -
+
+public extension UInt {
+    func clamp(_ minValue: UInt, _ maxValue: UInt) -> UInt {
         assert(minValue <= maxValue)
 
         return Swift.max(minValue, Swift.min(maxValue, self))
@@ -263,6 +342,16 @@ public extension CGPoint {
         return sqrt(x * x + y * y)
     }
 
+    @inlinable
+    func distance(_ other: CGPoint) -> CGFloat {
+        return sqrt(pow(x - other.x, 2) + pow(y - other.y, 2))
+    }
+
+    @inlinable
+    func within(_ delta: CGFloat, of other: CGPoint) -> Bool {
+        return distance(other) <= delta
+    }
+
     static let unit: CGPoint = CGPoint(x: 1.0, y: 1.0)
 
     static let unitMidpoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
@@ -304,6 +393,10 @@ public extension CGSize {
 
     var ceil: CGSize {
         return CGSizeCeil(self)
+    }
+
+    var abs: CGSize {
+        return CGSize(width: Swift.abs(width), height: Swift.abs(height))
     }
 
     init(square: CGFloat) {
@@ -491,8 +584,11 @@ public extension UIImageView {
 @objc
 public extension UISearchBar {
     var textField: UITextField? {
-        // TODO: iOS 13 – a public accessor for this textField as been added in iOS 13,
-        // once we start building with that SDK switch to using it for 13+
+        // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
+        #if swift(>=5.1)
+        if #available(iOS 13, *) { return searchTextField }
+        #endif
+
         guard let textField = self.value(forKey: "_searchField") as? UITextField else {
             owsFailDebug("Couldn't find UITextField.")
             return nil
@@ -519,21 +615,6 @@ public extension UITextField {
     func acceptAutocorrectSuggestion() {
         inputDelegate?.selectionWillChange(self)
         inputDelegate?.selectionDidChange(self)
-    }
-}
-
-@objc
-public extension UIView {
-    var findFirstResponder: UIView? {
-        guard !isFirstResponder else { return self }
-
-        for subview in subviews {
-            if let firstResponder = subview.findFirstResponder {
-                return firstResponder
-            }
-        }
-
-        return nil
     }
 }
 

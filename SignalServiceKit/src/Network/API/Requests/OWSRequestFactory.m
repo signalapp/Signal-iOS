@@ -5,6 +5,7 @@
 #import "OWSRequestFactory.h"
 #import "OWS2FAManager.h"
 #import "OWSDevice.h"
+#import "OWSIdentityManager.h"
 #import "ProfileManagerProtocol.h"
 #import "RemoteAttestation.h"
 #import "SSKEnvironment.h"
@@ -20,6 +21,8 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 @implementation OWSRequestFactory
 
@@ -43,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (id<OWSUDManager>)udManager
 {
     return SSKEnvironment.shared.udManager;
+}
+
++ (OWSIdentityManager *)identityManager
+{
+    return SSKEnvironment.shared.identityManager;
 }
 
 #pragma mark -
@@ -236,8 +244,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *authKey = self.tsAccountManager.storedServerAuthToken;
     OWSAssertDebug(authKey.length > 0);
     NSString *_Nullable pin = [self.ows2FAManager pinCode];
+    NSString *_Nullable deviceName = self.tsAccountManager.storedDeviceName;
 
-    NSDictionary<NSString *, id> *accountAttributes = [self accountAttributesWithPin:pin authKey:authKey];
+    NSDictionary<NSString *, id> *accountAttributes = [self accountAttributesWithAuthKey:authKey
+                                                                                     pin:pin
+                                                                              deviceName:deviceName];
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureAttributesAPI]
                               method:@"PUT"
@@ -338,10 +349,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (TSRequest *)verifyCodeRequestWithVerificationCode:(NSString *)verificationCode
-                                           forNumber:(NSString *)phoneNumber
-                                                 pin:(nullable NSString *)pin
-                                             authKey:(NSString *)authKey
++ (TSRequest *)verifyPrimaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
+                                                  phoneNumber:(NSString *)phoneNumber
+                                                      authKey:(NSString *)authKey
+                                                          pin:(nullable NSString *)pin
 {
     OWSAssertDebug(verificationCode.length > 0);
     OWSAssertDebug(phoneNumber.length > 0);
@@ -349,9 +360,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *path = [NSString stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode];
 
-    NSMutableDictionary<NSString *, id> *accountAttributes =
-        [[self accountAttributesWithPin:pin authKey:authKey] mutableCopy];
-    [accountAttributes removeObjectForKey:@"AuthKey"];
+    NSMutableDictionary<NSString *, id> *accountAttributes = [[self accountAttributesWithAuthKey:authKey
+                                                                                             pin:pin
+                                                                                      deviceName:nil] mutableCopy];
+    [accountAttributes removeObjectForKey:OWSRequestKey_AuthKey];
 
     TSRequest *request =
         [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:accountAttributes];
@@ -361,8 +373,34 @@ NS_ASSUME_NONNULL_BEGIN
     return request;
 }
 
-+ (NSDictionary<NSString *, id> *)accountAttributesWithPin:(nullable NSString *)pin
-                                                   authKey:(NSString *)authKey
++ (TSRequest *)verifySecondaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
+                                                    phoneNumber:(NSString *)phoneNumber
+                                                        authKey:(NSString *)authKey
+                                                     deviceName:(NSString *)deviceName
+{
+    OWSAssertDebug(verificationCode.length > 0);
+    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(authKey.length > 0);
+    OWSAssertDebug(deviceName.length > 0);
+
+    NSString *path = [NSString stringWithFormat:@"v1/devices/%@", verificationCode];
+
+    NSMutableDictionary<NSString *, id> *accountAttributes =
+        [[self accountAttributesWithAuthKey:authKey pin:nil deviceName:deviceName] mutableCopy];
+    [accountAttributes removeObjectForKey:OWSRequestKey_AuthKey];
+
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
+                                            method:@"PUT"
+                                        parameters:accountAttributes];
+    // The "verify code" request handles auth differently.
+    request.authUsername = phoneNumber;
+    request.authPassword = authKey;
+    return request;
+}
+
++ (NSDictionary<NSString *, id> *)accountAttributesWithAuthKey:(NSString *)authKey
+                                                           pin:(nullable NSString *)pin
+                                                    deviceName:(nullable NSString *)deviceName
 {
     OWSAssertDebug(authKey.length > 0);
     uint32_t registrationId = [self.tsAccountManager getOrGenerateRegistrationId];
@@ -380,7 +418,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We no longer include the signalingKey.
     NSMutableDictionary *accountAttributes = [@{
-        @"AuthKey" : authKey,
+        OWSRequestKey_AuthKey : authKey,
         @"voice" : @(YES), // all Signal-iOS clients support voice
         @"video" : @(YES), // all Signal-iOS clients support WebRTC-based voice and video calls.
         @"fetchesMessages" : @(isManualMessageFetchEnabled), // devices that don't support push must tell the server
@@ -395,6 +433,24 @@ NS_ASSUME_NONNULL_BEGIN
         accountAttributes[@"registrationLock"] = registrationLockToken;
     } else if (pin.length > 0) {
         accountAttributes[@"pin"] = pin;
+    }
+
+    if (deviceName.length > 0) {
+        NSError *error;
+        ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
+        OWSAssert(identityKeyPair);
+        NSData *_Nullable encryptedDeviceName = [DeviceNames encryptDeviceNameWithPlaintext:deviceName
+                                                                            identityKeyPair:identityKeyPair
+                                                                                      error:&error];
+        if (encryptedDeviceName != nil) {
+            accountAttributes[@"name"] = encryptedDeviceName.base64EncodedString;
+        } else {
+            OWSFailDebug(@"failure: %@", error);
+        }
+    }
+
+    if (SSKFeatureFlags.uuidCapabilities) {
+        accountAttributes[@"capabilities"] = @{ @"uuid" : @(YES) };
     }
 
     return [accountAttributes copy];
@@ -504,12 +560,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (service) {
         case RemoteAttestationServiceContactDiscovery:
-            request.customHost = contactDiscoveryURL;
-            request.customCensorshipCircumventionPrefix = contactDiscoveryCensorshipPrefix;
+            request.customHost = TSConstants.contactDiscoveryURL;
+            request.customCensorshipCircumventionPrefix = TSConstants.contactDiscoveryCensorshipPrefix;
             break;
         case RemoteAttestationServiceKeyBackup:
-            request.customHost = keyBackupURL;
-            request.customCensorshipCircumventionPrefix = keyBackupCensorshipPrefix;
+            request.customHost = TSConstants.keyBackupURL;
+            request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
             break;
     }
 
@@ -562,8 +618,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     request.authUsername = authUsername;
     request.authPassword = authPassword;
-    request.customHost = contactDiscoveryURL;
-    request.customCensorshipCircumventionPrefix = contactDiscoveryCensorshipPrefix;
+    request.customHost = TSConstants.contactDiscoveryURL;
+    request.customCensorshipCircumventionPrefix = TSConstants.contactDiscoveryCensorshipPrefix;
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
@@ -601,19 +657,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - KBS
 
-+ (TSRequest *)kbsEnclaveNonceRequestWithEnclaveName:(NSString *)enclaveName
++ (TSRequest *)kbsEnclaveTokenRequestWithEnclaveName:(NSString *)enclaveName
                                         authUsername:(NSString *)authUsername
                                         authPassword:(NSString *)authPassword
                                              cookies:(NSArray<NSHTTPCookie *> *)cookies
 {
-    NSString *path = [NSString stringWithFormat:@"v1/nonce/%@", enclaveName];
+    NSString *path = [NSString stringWithFormat:@"v1/token/%@", enclaveName];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 
     request.authUsername = authUsername;
     request.authPassword = authPassword;
-    request.customHost = keyBackupURL;
-    request.customCensorshipCircumventionPrefix = keyBackupCensorshipPrefix;
+    request.customHost = TSConstants.keyBackupURL;
+    request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
@@ -649,8 +705,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     request.authUsername = authUsername;
     request.authPassword = authPassword;
-    request.customHost = keyBackupURL;
-    request.customCensorshipCircumventionPrefix = keyBackupCensorshipPrefix;
+    request.customHost = TSConstants.keyBackupURL;
+    request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.

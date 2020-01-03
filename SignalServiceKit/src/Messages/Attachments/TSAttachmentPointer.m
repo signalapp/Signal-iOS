@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
                   albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType
                        mediaSize:(CGSize)mediaSize
+                        blurHash:(nullable NSString *)blurHash
 {
     self = [super initWithServerId:serverId
                      encryptionKey:key
@@ -67,7 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
                        contentType:contentType
                     sourceFilename:sourceFilename
                            caption:caption
-                    albumMessageId:albumMessageId];
+                    albumMessageId:albumMessageId
+                          blurHash:blurHash];
     if (!self) {
         return self;
     }
@@ -108,33 +110,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
-         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
+                        blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
-                    isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
-  mostRecentFailureLocalizedText:(nullable NSString *)mostRecentFailureLocalizedText
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                     albumMessageId:albumMessageId
-           attachmentSchemaVersion:attachmentSchemaVersion
                     attachmentType:attachmentType
+                          blurHash:blurHash
                          byteCount:byteCount
                            caption:caption
                        contentType:contentType
                      encryptionKey:encryptionKey
-                      isDownloaded:isDownloaded
                           serverId:serverId
                     sourceFilename:sourceFilename];
 
@@ -145,7 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
     _digest = digest;
     _lazyRestoreFragmentId = lazyRestoreFragmentId;
     _mediaSize = mediaSize;
-    _mostRecentFailureLocalizedText = mostRecentFailureLocalizedText;
     _pointerType = pointerType;
     _state = state;
 
@@ -208,7 +208,21 @@ NS_ASSUME_NONNULL_BEGIN
         mediaSize = CGSizeMake(attachmentProto.width, attachmentProto.height);
     }
 
-    TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
+    UInt64 serverId = attachmentProto.id;
+    if (![SDS fitsInInt64:serverId]) {
+        OWSFailDebug(@"Invalid server id.");
+        return nil;
+    }
+
+    NSString *_Nullable blurHash;
+    if (contentType.length > 0 && [MIMETypeUtil isVisualMedia:contentType] && attachmentProto.hasBlurHash) {
+        blurHash = attachmentProto.blurHash;
+        if (![BlurHash isValidBlurHash:blurHash]) {
+            blurHash = nil;
+        }
+    }
+
+    TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:serverId
                                                                              key:attachmentProto.key
                                                                           digest:digest
                                                                        byteCount:attachmentProto.size
@@ -217,7 +231,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          caption:caption
                                                                   albumMessageId:albumMessageId
                                                                   attachmentType:attachmentType
-                                                                       mediaSize:mediaSize];
+                                                                       mediaSize:mediaSize
+                                                                        blurHash:blurHash];
     return pointer;
 }
 

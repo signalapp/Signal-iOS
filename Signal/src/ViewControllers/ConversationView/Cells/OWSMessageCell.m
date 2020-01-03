@@ -24,11 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageViewOnceView *messageViewOnceView;
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
+@property (nonatomic) ReactionBubblesView *reactionBubblesView;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
-@property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
+@property (nonatomic) UITapGestureRecognizer *messageViewTapGestureRecognizer;
+@property (nonatomic) UITapGestureRecognizer *contentViewTapGestureRecognizer;
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer;
 @property (nonatomic) UIView *swipeableContentView;
 @property (nonatomic) UIImageView *swipeToReplyImageView;
 @property (nonatomic) CGFloat swipeableContentViewInitialX;
@@ -47,13 +50,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        [self commontInit];
+        [self commonInit];
     }
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     // Ensure only called once.
     OWSAssertDebug(!self.messageBubbleView);
@@ -75,19 +78,28 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.contentView.userInteractionEnabled = YES;
 
-    self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                        action:@selector(handleTapGesture:)];
-    self.tapGestureRecognizer.delegate = self;
+    self.messageViewTapGestureRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMessageViewTapGesture:)];
+    self.messageViewTapGestureRecognizer.delegate = self;
 
-    UILongPressGestureRecognizer *longPress =
+    self.longPressGestureRecognizer =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
-    [self.contentView addGestureRecognizer:longPress];
+    [self.contentView addGestureRecognizer:self.longPressGestureRecognizer];
 
     self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self
                                                                           action:@selector(handlePanGesture:)];
     self.panGestureRecognizer.delegate = self;
     [self.contentView addGestureRecognizer:self.panGestureRecognizer];
-    [self.tapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
+    [self.messageViewTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
+
+    self.contentViewTapGestureRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleContentViewTapGesture:)];
+    self.contentViewTapGestureRecognizer.delegate = self;
+    [self.contentView addGestureRecognizer:self.contentViewTapGestureRecognizer];
+    [self.contentViewTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
+    [self.contentViewTapGestureRecognizer requireGestureRecognizerToFail:self.messageViewTapGestureRecognizer];
+
+    self.reactionBubblesView = [ReactionBubblesView new];
 
     [self setupSwipeContainer];
 }
@@ -174,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
     [messageView loadContent];
     [self.contentView addSubview:messageView];
     [messageView autoPinBottomToSuperviewMarginWithInset:0];
-    [messageView addGestureRecognizer:self.tapGestureRecognizer];
+    [messageView addGestureRecognizer:self.messageViewTapGestureRecognizer];
 
     if (self.viewItem.hasCellHeader) {
         CGFloat headerHeight =
@@ -207,7 +219,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.sendFailureBadgeView = [UIImageView new];
             self.sendFailureBadgeView.image =
                 [self.sendFailureBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            self.sendFailureBadgeView.tintColor = [UIColor ows_destructiveRedColor];
+            self.sendFailureBadgeView.tintColor = UIColor.ows_accentRedColor;
             [self.contentView addSubview:self.sendFailureBadgeView];
 
             CGFloat sendFailureBadgeBottomMargin
@@ -247,6 +259,29 @@ NS_ASSUME_NONNULL_BEGIN
             // would be).
             [messageView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
             [messageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView],
+        ]];
+    }
+
+    if ([self updateReactionsView]) {
+        if (self.isIncoming) {
+            [self.viewConstraints addObject:[self.reactionBubblesView autoPinEdge:ALEdgeLeading
+                                                                           toEdge:ALEdgeTrailing
+                                                                           ofView:messageView
+                                                                       withOffset:-8]];
+        } else {
+            [self.viewConstraints addObject:[self.reactionBubblesView autoPinEdge:ALEdgeTrailing
+                                                                           toEdge:ALEdgeLeading
+                                                                           ofView:messageView
+                                                                       withOffset:8]];
+        }
+
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.reactionBubblesView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:messageView],
+            [self.reactionBubblesView autoPinEdge:ALEdgeBottom
+                                           toEdge:ALEdgeBottom
+                                           ofView:messageView
+                                       withOffset:0
+                                         relation:NSLayoutRelationLessThanOrEqual]
         ]];
     }
 
@@ -324,7 +359,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)avatarSize
 {
-    return 36.f;
+    return 28.f;
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
@@ -354,6 +389,25 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self updateAvatarView];
+}
+
+#pragma mark - Reactions
+
+// Returns true IFF we should display reactions bubbles
+- (BOOL)updateReactionsView
+{
+    if (!SSKFeatureFlags.reactionReceive) {
+        return NO;
+    }
+
+    if (!self.viewItem.reactionState.hasReactions) {
+        return NO;
+    }
+
+    [self.reactionBubblesView configureWith:self.viewItem.reactionState];
+    [self.messageView addSubview:self.reactionBubblesView];
+
+    return YES;
 }
 
 #pragma mark - Measurement
@@ -413,6 +467,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.avatarView.image = nil;
     [self.avatarView removeFromSuperview];
 
+    [self.reactionBubblesView removeFromSuperview];
+
     [self.sendFailureBadgeView removeFromSuperview];
     self.sendFailureBadgeView = nil;
 
@@ -438,7 +494,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gesture recognizers
 
-- (void)handleTapGesture:(UITapGestureRecognizer *)sender
+- (void)handleMessageViewTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);
 
@@ -465,44 +521,69 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageView handleTapGesture:sender];
 }
 
+- (void)handleContentViewTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.delegate);
+
+    if ([self isGestureInReactions:sender]) {
+        [self.delegate conversationCell:self didTapReactions:self.viewItem];
+        return;
+    } else if ([self isGestureInAvatar:sender]) {
+        [self.delegate conversationCell:self didTapAvatar:self.viewItem];
+        return;
+    }
+
+    OWSFailDebug(@"Received unexpected gesture");
+}
+
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);
 
-    if (sender.state != UIGestureRecognizerStateBegan) {
-        return;
-    }
+    switch (sender.state) {
+        case UIGestureRecognizerStateBegan:
+            if ([self isGestureInCellHeader:sender]) {
+                return;
+            }
 
-    if ([self isGestureInCellHeader:sender]) {
-        return;
-    }
-
-    BOOL shouldAllowReply = [self shouldAllowReply];
-    CGPoint locationInMessageBubble = [sender locationInView:self.messageView];
-    switch ([self.messageView gestureLocationForLocation:locationInMessageBubble]) {
-        case OWSMessageGestureLocation_Default:
-        case OWSMessageGestureLocation_OversizeText:
-        case OWSMessageGestureLocation_LinkPreview: {
-            [self.delegate conversationCell:self
-                           shouldAllowReply:shouldAllowReply
-                   didLongpressTextViewItem:self.viewItem];
+            BOOL shouldAllowReply = [self shouldAllowReply];
+            CGPoint locationInMessageBubble = [sender locationInView:self.messageView];
+            switch ([self.messageView gestureLocationForLocation:locationInMessageBubble]) {
+                case OWSMessageGestureLocation_Default:
+                case OWSMessageGestureLocation_OversizeText:
+                case OWSMessageGestureLocation_LinkPreview: {
+                    [self.delegate conversationCell:self
+                                   shouldAllowReply:shouldAllowReply
+                           didLongpressTextViewItem:self.viewItem];
+                    break;
+                }
+                case OWSMessageGestureLocation_Media: {
+                    [self.delegate conversationCell:self
+                                   shouldAllowReply:shouldAllowReply
+                          didLongpressMediaViewItem:self.viewItem];
+                    break;
+                }
+                case OWSMessageGestureLocation_QuotedReply: {
+                    [self.delegate conversationCell:self
+                                   shouldAllowReply:shouldAllowReply
+                          didLongpressQuoteViewItem:self.viewItem];
+                    break;
+                }
+                case OWSMessageGestureLocation_Sticker:
+                    OWSAssertDebug(self.viewItem.stickerInfo != nil);
+                    [self.delegate conversationCell:self didLongpressSticker:self.viewItem];
+                    break;
+            }
             break;
-        }
-        case OWSMessageGestureLocation_Media: {
-            [self.delegate conversationCell:self
-                           shouldAllowReply:shouldAllowReply
-                  didLongpressMediaViewItem:self.viewItem];
+        case UIGestureRecognizerStateEnded:
+            [self.delegate conversationCell:self didEndLongpress:self.viewItem];
             break;
-        }
-        case OWSMessageGestureLocation_QuotedReply: {
-            [self.delegate conversationCell:self
-                           shouldAllowReply:shouldAllowReply
-                  didLongpressQuoteViewItem:self.viewItem];
+        case UIGestureRecognizerStateChanged:
+            [self.delegate conversationCell:self didChangeLongpress:self.viewItem];
             break;
-        }
-        case OWSMessageGestureLocation_Sticker:
-            OWSAssertDebug(self.viewItem.stickerInfo != nil);
-            [self.delegate conversationCell:self didLongpressSticker:self.viewItem];
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStatePossible:
             break;
     }
 }
@@ -529,6 +610,35 @@ NS_ASSUME_NONNULL_BEGIN
     return location.y <= headerBottom.y;
 }
 
+- (BOOL)isGestureInAvatar:(UIGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.viewItem);
+
+    if (!self.viewItem.shouldShowSenderAvatar) {
+        return NO;
+    }
+
+    if (!self.viewItem.isGroupThread) {
+        OWSFailDebug(@"not a group thread.");
+        return NO;
+    }
+
+    CGPoint tapPoint = [sender locationInView:self];
+    return CGRectContainsPoint(self.avatarView.frame, tapPoint);
+}
+
+- (BOOL)isGestureInReactions:(UIGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.viewItem);
+
+    if (!self.viewItem.reactionState.hasReactions) {
+        return NO;
+    }
+
+    CGPoint tapPoint = [sender locationInView:self.messageView];
+    return CGRectContainsPoint(self.reactionBubblesView.frame, tapPoint);
+}
+
 # pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
@@ -538,8 +648,11 @@ NS_ASSUME_NONNULL_BEGIN
         // to avoid conflicts with the conversation view scroll view.
         CGPoint velocity = [self.panGestureRecognizer velocityInView:self];
         return fabs(velocity.x) > fabs(velocity.y);
-    } else if (gestureRecognizer == self.tapGestureRecognizer) {
-        return [self.messageView willHandleTapGesture:self.tapGestureRecognizer];
+    } else if (gestureRecognizer == self.messageViewTapGestureRecognizer) {
+        return [self.messageView willHandleTapGesture:self.messageViewTapGestureRecognizer];
+    } else if (gestureRecognizer == self.contentViewTapGestureRecognizer) {
+        return [self isGestureInAvatar:self.contentViewTapGestureRecognizer] ||
+            [self isGestureInReactions:self.contentViewTapGestureRecognizer];
     }
 
     return YES;

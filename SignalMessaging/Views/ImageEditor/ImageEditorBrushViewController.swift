@@ -116,15 +116,10 @@ public class ImageEditorBrushViewController: OWSViewController {
 
     @objc
     public override var prefersStatusBarHidden: Bool {
-        guard !OWSWindowManager.shared().hasCall() else {
+        guard !OWSWindowManager.shared.hasCall else {
             return false
         }
 
-        return true
-    }
-
-    @objc
-    override public var canBecomeFirstResponder: Bool {
         return true
     }
 

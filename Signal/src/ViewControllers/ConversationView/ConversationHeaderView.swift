@@ -32,6 +32,7 @@ public class ConversationHeaderView: UIStackView {
         }
         set {
             self.titleIconView.image = newValue
+            self.titleIconView.tintColor = Theme.secondaryTextAndIconColor
             self.titleIconView.isHidden = newValue == nil
         }
     }
@@ -57,7 +58,7 @@ public class ConversationHeaderView: UIStackView {
     }
 
     @objc
-    public let titlePrimaryFont: UIFont =  UIFont.ows_boldFont(withSize: 17)
+    public let titlePrimaryFont: UIFont =  UIFont.ows_semiboldFont(withSize: 17)
     @objc
     public let titleSecondaryFont: UIFont =  UIFont.ows_regularFont(withSize: 9)
     @objc
@@ -83,7 +84,6 @@ public class ConversationHeaderView: UIStackView {
         titleLabel.setContentHuggingHigh()
 
         titleIconView = UIImageView()
-        titleIconView.tintColor = Theme.secondaryColor
         titleIconView.contentMode = .scaleAspectFit
         titleIconView.setCompressionResistanceHigh()
 

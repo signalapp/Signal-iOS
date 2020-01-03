@@ -80,6 +80,22 @@ public class OnboardingController: NSObject {
     }
 
     // MARK: -
+    public enum OnboardingMode {
+        case provisioning
+        case registering
+    }
+
+    public let defaultOnboardingMode: OnboardingMode = UIDevice.current.isIPad ? .provisioning : .registering
+    private var onboardingModeOverride: OnboardingMode?
+
+    public var onboardingMode: OnboardingMode {
+        return onboardingModeOverride ?? defaultOnboardingMode
+    }
+    public var isOnboardingModeOverriden: Bool {
+        return onboardingMode != defaultOnboardingMode
+    }
+
+    // MARK: -
 
     @objc
     public override init() {
@@ -89,11 +105,11 @@ public class OnboardingController: NSObject {
     // MARK: - Factory Methods
 
     @objc
-    public func initialViewController() -> UIViewController {
-        AssertIsOnMainThread()
+    private(set) lazy var initialViewController = OnboardingSplashViewController(onboardingController: self)
 
-        let view = OnboardingSplashViewController(onboardingController: self)
-        return view
+    @objc
+    var currentViewController: UIViewController? {
+        return initialViewController.navigationController?.topViewController
     }
 
     // MARK: - Transitions
@@ -103,8 +119,43 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
+        onboardingModeOverride = nil
+
         let view = OnboardingPermissionsViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(view, animated: true)
+    }
+
+    public func onboardingSplashRequestedModeSwitch(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        let view = OnboardingModeSwitchConfirmationViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(view, animated: true)
+    }
+
+    public func toggleModeSwitch(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        if isOnboardingModeOverriden {
+            onboardingModeOverride = nil
+            viewController.navigationController?.popToRootViewController(animated: true)
+        } else {
+            let newMode: OnboardingMode
+            switch defaultOnboardingMode {
+            case .provisioning:
+                newMode = .registering
+            case .registering:
+                newMode = .provisioning
+            }
+
+            onboardingModeOverride = newMode
+
+            let view = OnboardingPermissionsViewController(onboardingController: self)
+            viewController.navigationController?.pushViewController(view, animated: true)
+        }
     }
 
     public func onboardingPermissionsWasSkipped(viewController: UIViewController) {
@@ -112,7 +163,12 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        pushPhoneNumberView(viewController: viewController)
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
+
+        pushStartDeviceRegistrationView(onto: navigationController)
     }
 
     public func onboardingPermissionsDidComplete(viewController: UIViewController) {
@@ -120,14 +176,25 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        pushPhoneNumberView(viewController: viewController)
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
+
+        pushStartDeviceRegistrationView(onto: navigationController)
     }
 
-    private func pushPhoneNumberView(viewController: UIViewController) {
+    private func pushStartDeviceRegistrationView(onto navigationController: UINavigationController) {
         AssertIsOnMainThread()
 
-        let view = OnboardingPhoneNumberViewController(onboardingController: self)
-        viewController.navigationController?.pushViewController(view, animated: true)
+        if onboardingMode == .provisioning {
+            let provisioningController = ProvisioningController(onboardingController: self)
+            let prepViewController = SecondaryLinkingPrepViewController(provisioningController: provisioningController)
+            navigationController.pushViewController(prepViewController, animated: true)
+        } else {
+            let view = OnboardingPhoneNumberViewController(onboardingController: self)
+            navigationController.pushViewController(view, animated: true)
+        }
     }
 
     public func requestingVerificationDidSucceed(viewController: UIViewController) {
@@ -170,15 +237,19 @@ public class OnboardingController: NSObject {
         // At this point, the user has been prompted for contact access
         // and has valid service credentials.
         // We start the contact fetch/intersection now so that by the time
-        // they get to HomeView we can show meaningful contact in the suggested
-        // contact bubble.
+        // they get to conversation list we can show meaningful contact in
+        // the suggested contact bubble.
         contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
-        if tsAccountManager.isReregistering() {
+        if tsAccountManager.isReregistering {
             showProfileView(fromView: view)
         } else {
             checkCanImportBackup(fromView: view)
         }
+    }
+
+    public func linkingDidComplete(from viewController: UIViewController) {
+        showConversationSplitView(view: viewController)
     }
 
     private func showProfileView(fromView view: UIViewController) {
@@ -233,20 +304,19 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        let alert = UIAlertController(title: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_TITLE",
+        let alert = ActionSheetController(title: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_TITLE",
                                                                comment: "Title for alert shown when the app failed to check for an existing backup."),
                                       message: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_MESSAGE",
-                                                                 comment: "Message for alert shown when the app failed to check for an existing backup."),
-                                      preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("REGISTER_FAILED_TRY_AGAIN", comment: ""),
+                                                                 comment: "Message for alert shown when the app failed to check for an existing backup."))
+        alert.addAction(ActionSheetAction(title: NSLocalizedString("REGISTER_FAILED_TRY_AGAIN", comment: ""),
                                       style: .default) { (_) in
                                         self.checkCanImportBackup(fromView: view)
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("CHECK_FOR_BACKUP_DO_NOT_RESTORE", comment: "The label for the 'do not restore backup' button."),
+        alert.addAction(ActionSheetAction(title: NSLocalizedString("CHECK_FOR_BACKUP_DO_NOT_RESTORE", comment: "The label for the 'do not restore backup' button."),
                                       style: .destructive) { (_) in
                                         self.showProfileView(fromView: view)
         })
-        view.presentAlert(alert)
+        view.presentActionSheet(alert)
     }
 
     public func onboardingDidRequire2FAPin(viewController: UIViewController) {
@@ -274,7 +344,7 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        showHomeView(view: view)
+        showConversationSplitView(view: view)
     }
 
     @objc
@@ -283,10 +353,10 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        showHomeView(view: view)
+        showConversationSplitView(view: view)
     }
 
-    private func showHomeView(view: UIViewController) {
+    private func showConversationSplitView(view: UIViewController) {
         AssertIsOnMainThread()
 
         guard let navigationController = view.navigationController else {
@@ -299,10 +369,10 @@ public class OnboardingController: NSObject {
         let isModal = navigationController.presentingViewController != nil
         if isModal {
             view.dismiss(animated: true, completion: {
-                SignalApp.shared().showHomeView()
+                SignalApp.shared().showConversationSplitView()
             })
         } else {
-            SignalApp.shared().showHomeView()
+            SignalApp.shared().showConversationSplitView()
         }
     }
 
@@ -454,7 +524,7 @@ public class OnboardingController: NSObject {
         case let networkManagerError as NetworkManagerError:
             switch networkManagerError.statusCode {
             case 400:
-                OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
+                OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                     message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
                 return
             default:
@@ -467,7 +537,7 @@ public class OnboardingController: NSObject {
 
         let nsError = error as NSError
         owsFailDebug("unexpected error: \(nsError)")
-        OWSAlerts.showAlert(title: nsError.localizedDescription,
+        OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
                             message: nsError.localizedRecoverySuggestion)
     }
 
@@ -576,7 +646,7 @@ public class OnboardingController: NSObject {
 
             // Since we were told we need 2fa, clear out any stored KBS keys so we can
             // do a fresh verification.
-            KeyBackupService.clearKeychain()
+            SDSDatabaseStorage.shared.write { KeyBackupService.clearKeys(transaction: $0) }
 
             completion(.invalid2FAPin)
 
@@ -588,7 +658,7 @@ public class OnboardingController: NSObject {
             }
 
             Logger.verbose("error: \(error.domain) \(error.code)")
-            OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
                                 message: error.localizedDescription,
                                 fromViewController: fromViewController)
         }

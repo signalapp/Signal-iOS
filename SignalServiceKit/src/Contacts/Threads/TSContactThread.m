@@ -49,32 +49,27 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
-isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-                 lastMessageDate:(nullable NSDate *)lastMessageDate
+                      isArchived:(BOOL)isArchived
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
-                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
               contactPhoneNumber:(nullable NSString *)contactPhoneNumber
-      contactThreadSchemaVersion:(NSUInteger)contactThreadSchemaVersion
                      contactUUID:(nullable NSString *)contactUUID
               hasDismissedOffers:(BOOL)hasDismissedOffers
 {
-    self = [super initWithUniqueId:uniqueId
-                      archivalDate:archivalDate
-         archivedAsOfMessageSortId:archivedAsOfMessageSortId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
              conversationColorName:conversationColorName
                       creationDate:creationDate
-isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
-                   lastMessageDate:lastMessageDate
+                        isArchived:isArchived
+              lastInteractionRowId:lastInteractionRowId
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate
-                             rowId:rowId
              shouldThreadBeVisible:shouldThreadBeVisible];
 
     if (!self) {
@@ -82,7 +77,6 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     }
 
     _contactPhoneNumber = contactPhoneNumber;
-    _contactThreadSchemaVersion = contactThreadSchemaVersion;
     _contactUUID = contactUUID;
     _hasDismissedOffers = hasDismissedOffers;
 

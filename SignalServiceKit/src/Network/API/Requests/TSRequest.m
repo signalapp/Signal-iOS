@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.shouldHaveAuthorizationHeaders);
 
     @synchronized(self) {
-        NSString *_Nullable result = (_authUsername ?: TSAccountManager.localAddress.serviceIdentifier);
+        NSString *_Nullable result = (_authUsername ?: self.tsAccountManager.storedServerUsername);
         OWSAssertDebug(result.length > 0);
         return result;
     }

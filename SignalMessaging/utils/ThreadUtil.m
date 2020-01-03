@@ -3,7 +3,6 @@
 //
 
 #import "ThreadUtil.h"
-#import "OWSContactsManager.h"
 #import "OWSQuotedReplyModel.h"
 #import "OWSUnreadIndicator.h"
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -12,7 +11,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
@@ -64,10 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMessage,
-    NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos,
-    SDSAnyWriteTransaction *writeTransaction);
-
 @implementation ThreadUtil
 
 #pragma mark - Dependencies
@@ -85,11 +79,6 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 + (OWSProfileManager *)profileManager
 {
     return SSKEnvironment.shared.profileManager;
-}
-
-+ (OWSContactsManager *)contactsManager
-{
-    return Environment.shared.contactsManager;
 }
 
 + (TSAccountManager *)tsAccountManager
@@ -202,33 +191,13 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return message;
 }
 
-+ (TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread
++ (TSOutgoingMessage *)enqueueMessageWithInstalledSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(stickerInfo);
-    OWSAssertDebug(thread);
+    OWSAssertDebug(stickerInfo != nil);
+    OWSAssertDebug(thread != nil);
 
-    __block OWSDisappearingMessagesConfiguration *configuration;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
-    }];
-
-    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:nil
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:expiresInSeconds
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                  isViewOnceMessage:NO];
+    TSOutgoingMessage *message = [self buildOutgoingMessageForSticker:stickerInfo thread:thread];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Load the sticker data async.
@@ -242,25 +211,82 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
             OWSFailDebug(@"Couldn't load sticker data.");
             return;
         }
-        MessageStickerDraft *stickerDraft =
-            [[MessageStickerDraft alloc] initWithInfo:stickerInfo stickerData:stickerData];
+        MessageStickerDraft *stickerDraft = [[MessageStickerDraft alloc] initWithInfo:stickerInfo
+                                                                          stickerData:stickerData];
 
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            MessageSticker *_Nullable messageSticker =
-                [self messageStickerForStickerDraft:stickerDraft transaction:transaction];
-            if (!messageSticker) {
-                OWSFailDebug(@"Couldn't send sticker.");
-                return;
-            }
-
-            [message anyInsertWithTransaction:transaction];
-            [message updateWithMessageSticker:messageSticker transaction:transaction];
-
-            [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-        }];
+        [self enqueueMessage:message stickerDraft:stickerDraft thread:thread];
     });
 
     return message;
+}
+
++ (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerInfo *)stickerInfo
+                                                stickerData:(NSData *)stickerData
+                                                   inThread:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(stickerInfo != nil);
+    OWSAssertDebug(stickerData.length > 0);
+    OWSAssertDebug(thread != nil);
+
+    TSOutgoingMessage *message = [self buildOutgoingMessageForSticker:stickerInfo thread:thread];
+
+    MessageStickerDraft *stickerDraft = [[MessageStickerDraft alloc] initWithInfo:stickerInfo stickerData:stickerData];
+
+    [self enqueueMessage:message stickerDraft:stickerDraft thread:thread];
+
+    return message;
+}
+
++ (TSOutgoingMessage *)buildOutgoingMessageForSticker:(StickerInfo *)stickerInfo thread:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(stickerInfo != nil);
+    OWSAssertDebug(thread != nil);
+
+    __block OWSDisappearingMessagesConfiguration *configuration;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
+    }];
+
+    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+
+    return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                              inThread:thread
+                                                           messageBody:nil
+                                                         attachmentIds:[NSMutableArray new]
+                                                      expiresInSeconds:expiresInSeconds
+                                                       expireStartedAt:0
+                                                        isVoiceMessage:NO
+                                                      groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                         quotedMessage:nil
+                                                          contactShare:nil
+                                                           linkPreview:nil
+                                                        messageSticker:nil
+                                                     isViewOnceMessage:NO];
+}
+
++ (void)enqueueMessage:(TSOutgoingMessage *)message
+          stickerDraft:(MessageStickerDraft *)stickerDraft
+                thread:(TSThread *)thread
+{
+    OWSAssertDebug(message != nil);
+    OWSAssertDebug(stickerDraft != nil);
+    OWSAssertDebug(thread != nil);
+
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        MessageSticker *_Nullable messageSticker = [self messageStickerForStickerDraft:stickerDraft
+                                                                           transaction:transaction];
+        if (!messageSticker) {
+            OWSFailDebug(@"Couldn't send sticker.");
+            return;
+        }
+
+        [message anyInsertWithTransaction:transaction];
+        [message updateWithMessageSticker:messageSticker transaction:transaction];
+
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+    }];
 }
 
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread
@@ -402,8 +428,6 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 #pragma mark - Dynamic Interactions
 
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
-                                                  contactsManager:(OWSContactsManager *)contactsManager
-                                                  blockingManager:(OWSBlockingManager *)blockingManager
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                               lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
                                                    focusMessageId:(nullable NSString *)focusMessageId
@@ -411,38 +435,10 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
-    OWSAssertDebug(contactsManager);
-    OWSAssertDebug(blockingManager);
     OWSAssertDebug(maxRangeSize > 0);
     OWSAssertDebug(transaction);
 
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
-
-    // Find any "dynamic" interactions and safety number changes.
-    //
-    // We use different views for performance reasons.
-    NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
-    NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
-    // POSTYDB TODO: Make separate finder methods to find these messages.
-    [interactionFinder
-        enumerateSpecialMessagesWithTransaction:transaction
-                                          block:^(TSInteraction *interaction, BOOL *stop) {
-                                              if ([interaction
-                                                      isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                                                  TSInvalidIdentityKeyErrorMessage *errorMessage
-                                                      = (TSInvalidIdentityKeyErrorMessage *)interaction;
-                                                  [blockingSafetyNumberChanges addObject:errorMessage];
-                                              } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-                                                  TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-                                                  OWSAssertDebug(errorMessage.errorType
-                                                      == TSErrorMessageNonBlockingIdentityChange);
-                                                  [nonBlockingSafetyNumberChanges addObject:errorMessage];
-                                              } else {
-                                                  OWSFailDebug(
-                                                      @"Unexpected dynamic interaction type: %@", [interaction class]);
-                                              }
-                                          }];
 
     // Determine if there are "unread" messages in this conversation.
     // If we've been passed a firstUnseenInteractionTimestampParameter,
@@ -451,24 +447,71 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     // have been marked as read.
     //
     // IFF this variable is non-null, there are unseen messages in the thread.
-    NSNumber *_Nullable firstUnseenSortId = nil;
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    __block NSNumber *_Nullable firstUnseenSortId = nil;
     if (lastUnreadIndicator) {
         firstUnseenSortId = @(lastUnreadIndicator.firstUnseenSortId);
     } else {
         NSError *error;
-        __block TSInteraction *_Nullable firstUnseenInteraction;
         [interactionFinder enumerateUnseenInteractionsWithTransaction:transaction
                                                                 error:&error
                                                                 block:^(TSInteraction *interaction, BOOL *stop) {
-                                                                    firstUnseenInteraction = interaction;
+                                                                    firstUnseenSortId = @(interaction.sortId);
                                                                     *stop = YES;
                                                                 }];
         if (error != nil) {
             OWSFailDebug(@"Error: %@", error);
         }
-        if (firstUnseenInteraction) {
-            firstUnseenSortId = @(firstUnseenInteraction.sortId);
-        }
+    }
+
+    // Find any "dynamic" interactions and safety number changes.
+    //
+    // We use different views for performance reasons.
+    NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
+    NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
+    if (firstUnseenSortId != nil) {
+        [interactionFinder
+            enumerateBlockingSafetyNumberChangesWithTransaction:transaction
+                                                          block:^(TSInteraction *interaction, BOOL *stop) {
+                                                              if (interaction.sortId
+                                                                  < firstUnseenSortId.unsignedLongLongValue) {
+                                                                  // We only care about unseen safety number changes.
+                                                                  return;
+                                                              }
+                                                              if (![interaction
+                                                                      isKindOfClass:[TSInvalidIdentityKeyErrorMessage
+                                                                                        class]]) {
+                                                                  OWSFailDebug(
+                                                                      @"Unexpected dynamic interaction type: %@",
+                                                                      [interaction class]);
+                                                                  return;
+                                                              }
+                                                              TSInvalidIdentityKeyErrorMessage *errorMessage
+                                                                  = (TSInvalidIdentityKeyErrorMessage *)interaction;
+                                                              [blockingSafetyNumberChanges addObject:errorMessage];
+                                                          }];
+        [interactionFinder
+            enumerateNonBlockingSafetyNumberChangesWithTransaction:transaction
+                                                             block:^(TSInteraction *interaction, BOOL *stop) {
+                                                                 if (interaction.sortId
+                                                                     < firstUnseenSortId.unsignedLongLongValue) {
+                                                                     // We only care about unseen safety number changes.
+                                                                     return;
+                                                                 }
+                                                                 if (![interaction
+                                                                         isKindOfClass:[TSErrorMessage class]]) {
+                                                                     OWSFailDebug(
+                                                                         @"Unexpected dynamic interaction type: %@",
+                                                                         [interaction class]);
+                                                                     return;
+                                                                 }
+                                                                 TSErrorMessage *errorMessage
+                                                                     = (TSErrorMessage *)interaction;
+                                                                 OWSAssertDebug(errorMessage.errorType
+                                                                     == TSErrorMessageNonBlockingIdentityChange);
+                                                                 [nonBlockingSafetyNumberChanges
+                                                                     addObject:errorMessage];
+                                                             }];
     }
 
     [self ensureUnreadIndicator:result
@@ -656,8 +699,12 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         [TSInteraction anyRemoveAllWithInstantationWithTransaction:transaction];
         [TSAttachment anyRemoveAllWithInstantationWithTransaction:transaction];
         [SignalRecipient anyRemoveAllWithInstantationWithTransaction:transaction];
+
+        // Deleting attachments above should be enough to remove any gallery items, but
+        // we redunantly clean up *all* gallery items to be safe.
+        [AnyMediaGalleryFinder didRemoveAllContentWithTransaction:transaction];
     }];
-    [TSAttachmentStream deleteAttachments];
+    [TSAttachmentStream deleteAttachmentsFromDisk];
 }
 
 #pragma mark - Find Content
@@ -737,22 +784,6 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     BOOL hasSentMessages = [self existsOutgoingMessage:thread transaction:transaction];
 
     if (hasSentMessages && !SSKFeatureFlags.phoneNumberPrivacy) {
-        return NO;
-    }
-
-    BOOL isThreadSystemContact = NO;
-    if ([thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        // we want to check if the thread belongs to a system contact whether or not the thread's
-        // user is still active signal account.
-        isThreadSystemContact = [self.contactsManager isSystemContactWithAddress:contactThread.contactAddress];
-    }
-
-    // If this thread is a conversation with a system contact, add them to the profile
-    // whitelist immediately and do not show the request dialog. People in your system
-    // contacts get to bypass the message request flow.
-    if (isThreadSystemContact) {
-        [self.profileManager addThreadToProfileWhitelist:thread];
         return NO;
     }
 

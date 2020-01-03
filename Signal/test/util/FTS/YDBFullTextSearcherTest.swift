@@ -9,6 +9,10 @@ import XCTest
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
 class YDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
+    func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
+        return self.displayName(for: signalAccount.recipientAddress)
+    }
+
     func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         return self.displayName(for: address)
     }
@@ -95,6 +99,7 @@ class YDBFullTextSearcherTest: SignalBaseTest {
     override func setUp() {
         super.setUp()
 
+        // POST GRDB TODO - Remove
         guard let primaryStorage = primaryStorage else {
             XCTFail("Missing primaryStorage.")
             return
@@ -106,12 +111,14 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         SSKEnvironment.shared.contactsManager = YDBFullTextSearcherContactsManager()
 
         self.yapWrite { transaction in
-            let bookModel = TSGroupModel(title: "Book Club", members: [aliceRecipient, bobRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
-            let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction.asAnyWrite)
+            let bookClubGroupThread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
+                                                                            members: [aliceRecipient, bobRecipient],
+                                                                            name: "Book Club")
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyRead)
 
-            let snackModel = TSGroupModel(title: "Snack Club", members: [aliceRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
-            let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction.asAnyWrite)
+            let snackClubGroupThread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
+                                                                             members: [aliceRecipient],
+                                                                             name: "Snack Club")
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyRead)
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction.asAnyWrite)
@@ -187,17 +194,17 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         // Exact match
         threads = searchConversations(searchText: aliceRecipient.phoneNumber!)
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         // Partial match
         threads = searchConversations(searchText: "+123456")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         // Prefixes
         threads = searchConversations(searchText: "12345678900")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "49")
         XCTAssertEqual(1, threads.count)
@@ -205,19 +212,19 @@ class YDBFullTextSearcherTest: SignalBaseTest {
 
         threads = searchConversations(searchText: "1-234-56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "123456")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "1.234.56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "1 234 56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
     }
 
     func testSearchContactByNumberWithoutCountryCode() {
@@ -225,11 +232,11 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         // Phone Number formatting should be forgiving
         threads = searchConversations(searchText: "234.56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "234 56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
     }
 
     func testSearchConversationByContactByName() {
@@ -237,7 +244,7 @@ class YDBFullTextSearcherTest: SignalBaseTest {
 
         threads = searchConversations(searchText: "Alice")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "Bob")
         XCTAssertEqual(1, threads.count)
@@ -331,8 +338,9 @@ class YDBFullTextSearcherTest: SignalBaseTest {
 
         Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
             self.yapWrite { transaction in
-                let groupModel = TSGroupModel(title: "Perf", members: [aliceRecipient, bobRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
-                let thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction.asAnyWrite)
+                let thread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
+                                                                   members: [aliceRecipient, bobRecipient],
+                                                                   name: "Perf")
 
                 TSOutgoingMessage(in: thread, messageBody: string1, attachmentId: nil).anyInsert(transaction: transaction.asAnyWrite)
 

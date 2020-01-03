@@ -38,8 +38,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     public func present(isAnimated: Bool, completion: (() -> Void)?) {
         let actions = [messageAction(), mailAction(), tweetAction()].compactMap { $0 }
         if actions.count > 1 {
-            let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-            actionSheetController.addAction(OWSAlerts.dismissAction)
+            let actionSheetController = ActionSheetController(title: nil, message: nil)
+            actionSheetController.addAction(OWSActionSheets.dismissAction)
             for action in actions {
                 actionSheetController.addAction(action)
             }
@@ -53,20 +53,45 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
     }
 
+    func pushViewController(_ vc: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+        guard let presentingViewController = presentingViewController,
+            let presentingNavController = presentingViewController.navigationController else {
+                return owsFailDebug("presenting view controller missing")
+        }
+
+        presentingNavController.pushViewController(vc, animated: animated, completion: completion)
+    }
+
+    func popToPresentingViewController(animated: Bool, completion: (() -> Void)? = nil) {
+        guard var presentingViewController = presentingViewController,
+            let presentingNavController = presentingViewController.navigationController else {
+            return owsFailDebug("presenting view controller missing")
+        }
+
+        // The presenting view contrtoller may not directly be in the nav stack
+        // (like with the compose flow). So make sure we referenve the top view
+        // controller.
+        if let parentViewController = presentingViewController.parent, parentViewController != presentingNavController {
+            presentingViewController = parentViewController
+        }
+
+        presentingNavController.popToViewController(presentingViewController, animated: animated, completion: completion)
+    }
+
     // MARK: Twitter
 
     private func canTweet() -> Bool {
         return SLComposeViewController.isAvailable(forServiceType: SLServiceTypeTwitter)
     }
 
-    private func tweetAction() -> UIAlertAction? {
+    private func tweetAction() -> ActionSheetAction? {
         guard canTweet()  else {
             Logger.info("Twitter not supported.")
             return nil
         }
 
         let tweetTitle = NSLocalizedString("SHARE_ACTION_TWEET", comment: "action sheet item")
-        return UIAlertAction(title: tweetTitle, style: .default) { [weak self] _ in
+        return ActionSheetAction(title: tweetTitle, style: .default) { [weak self] _ in
             Logger.debug("Chose tweet")
             self?.presentInviteViaTwitterFlow()
         }
@@ -84,7 +109,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         let tweetUrl = URL(string: installUrl)
         twitterViewController.add(tweetUrl)
         twitterViewController.add(#imageLiteral(resourceName: "twitter_sharing_image"))
-        presentingViewController?.present(twitterViewController, animated: true, completion: nil)
+
+        presentingViewController?.present(twitterViewController, animated: true)
     }
 
     // MARK: ContactsPickerDelegate
@@ -94,7 +120,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
         guard let inviteChannel = channel else {
             Logger.error("unexpected nil channel after returning from contact picker.")
-            presentingViewController?.dismiss(animated: true)
+            popToPresentingViewController(animated: true)
             return
         }
 
@@ -129,31 +155,31 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
         Logger.error("with error: \(error)")
-        presentingViewController?.dismiss(animated: true) {
-            OWSAlerts.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_FETCH_CONTACTS", comment: "Error indicating that the phone's contacts could not be retrieved."))
+        popToPresentingViewController(animated: true) {
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_FETCH_CONTACTS", comment: "Error indicating that the phone's contacts could not be retrieved."))
         }
     }
 
     func contactsPickerDidCancel(_: ContactsPicker) {
         Logger.debug("")
-        presentingViewController?.dismiss(animated: true)
+        popToPresentingViewController(animated: true)
     }
 
     func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact) {
         owsFailDebug("InviteFlow only supports multi-select")
-        presentingViewController?.dismiss(animated: true)
+        popToPresentingViewController(animated: true)
     }
 
     // MARK: SMS
 
-    private func messageAction() -> UIAlertAction? {
+    private func messageAction() -> ActionSheetAction? {
         guard MFMessageComposeViewController.canSendText() else {
             Logger.info("Device cannot send text")
             return nil
         }
 
         let messageTitle = NSLocalizedString("SHARE_ACTION_MESSAGE", comment: "action sheet item to open native messages app")
-        return UIAlertAction(title: messageTitle, style: .default) { [weak self] _ in
+        return ActionSheetAction(title: messageTitle, style: .default) { [weak self] _ in
             Logger.debug("Chose message.")
             self?.presentInviteViaSMSFlow()
         }
@@ -164,24 +190,23 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .phoneNumber)
         picker.contactsPickerDelegate = self
         picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-        let navigationController = OWSNavigationController(rootViewController: picker)
-        presentingViewController?.present(navigationController, animated: true)
+
+        pushViewController(picker, animated: true)
     }
 
     public func dismissAndSendSMSTo(phoneNumbers: [String]) {
-        presentingViewController?.dismiss(animated: true) {
+        popToPresentingViewController(animated: true) {
             if phoneNumbers.count > 1 {
-                let warning = UIAlertController(title: nil,
+                let warning = ActionSheetController(title: nil,
                                                 message: NSLocalizedString("INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT",
-                                                                                       comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."),
-                                                preferredStyle: .alert)
-                warning.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_CONTINUE",
-                                                                         comment: "Label for 'continue' button."),
+                                                                           comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."))
+                warning.addAction(ActionSheetAction(title: CommonStrings.continueButton,
                                                 style: .default, handler: { [weak self] _ in
-                    self?.sendSMSTo(phoneNumbers: phoneNumbers)
+                                                    self?.sendSMSTo(phoneNumbers: phoneNumbers)
                 }))
-                warning.addAction(OWSAlerts.cancelAction)
-                self.presentingViewController?.presentAlert(warning)
+                warning.addAction(OWSActionSheets.cancelAction)
+
+                self.presentingViewController?.presentActionSheet(warning)
             } else {
                 self.sendSMSTo(phoneNumbers: phoneNumbers)
             }
@@ -205,8 +230,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         presentingViewController?.dismiss(animated: true) {
             switch result {
             case .failed:
-                let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"), preferredStyle: .alert)
-                warning.addAction(OWSAlerts.dismissAction)
+                let warning = ActionSheetController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"))
+                warning.addAction(OWSActionSheets.dismissAction)
                 self.presentingViewController?.present(warning, animated: true, completion: nil)
             case .sent:
                 Logger.debug("user successfully invited their friends via SMS.")
@@ -220,14 +245,14 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     // MARK: Mail
 
-    private func mailAction() -> UIAlertAction? {
+    private func mailAction() -> ActionSheetAction? {
         guard MFMailComposeViewController.canSendMail() else {
             Logger.info("Device cannot send mail")
             return nil
         }
 
         let mailActionTitle = NSLocalizedString("SHARE_ACTION_MAIL", comment: "action sheet item to open native mail app")
-        return UIAlertAction(title: mailActionTitle, style: .default) { [weak self] _ in
+        return ActionSheetAction(title: mailActionTitle, style: .default) { [weak self] _ in
             Logger.debug("Chose mail.")
             self?.presentInviteViaMailFlow()
         }
@@ -239,8 +264,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .email)
         picker.contactsPickerDelegate = self
         picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-        let navigationController = OWSNavigationController(rootViewController: picker)
-        presentingViewController?.present(navigationController, animated: true)
+
+        pushViewController(picker, animated: true)
     }
 
     private func sendMailTo(emails recipientEmails: [String]) {
@@ -254,7 +279,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         mailComposeViewController.setSubject(subject)
         mailComposeViewController.setMessageBody(body, isHTML: false)
 
-        presentingViewController?.dismiss(animated: true) {
+        popToPresentingViewController(animated: true) {
             self.presentingViewController?.present(mailComposeViewController, animated: true)
         }
     }
@@ -265,8 +290,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         presentingViewController?.dismiss(animated: true) {
             switch result {
             case .failed:
-                let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"), preferredStyle: .alert)
-                warning.addAction(OWSAlerts.dismissAction)
+                let warning = ActionSheetController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"))
+                warning.addAction(OWSActionSheets.dismissAction)
                 self.presentingViewController?.present(warning, animated: true, completion: nil)
             case .sent:
                 Logger.debug("user successfully invited their friends via mail.")

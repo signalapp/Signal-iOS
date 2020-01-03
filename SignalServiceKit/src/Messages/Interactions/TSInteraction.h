@@ -45,12 +45,13 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:));
 
 // clang-format on
 
@@ -73,12 +74,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 @property (nonatomic, readonly) TSThread *threadWithSneakyTransaction;
 
 - (TSThread *)threadWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(thread(transaction:));
-
-/**
- * When an interaction is updated, it often affects the UI for it's containing thread. Touching it's thread will notify
- * any observers so they can redraw any related UI.
- */
-- (void)touchThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark Utility Method
 
@@ -107,6 +102,9 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // NOTE: This is only for use by a legacy migration.
 - (void)ydb_saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
     NS_SWIFT_NAME(ydb_saveNextSortId(transaction:));
+
+// NOTE: This is only for use by the YDB-to-GRDB legacy migration.
+- (void)replaceSortId:(uint64_t)sortId;
 
 @end
 

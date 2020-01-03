@@ -20,16 +20,21 @@ NS_ASSUME_NONNULL_BEGIN
                forAddress:(SignalServiceAddress *)address
               transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)setProfileName:(nullable NSString *)profileName
+            forAddress:(SignalServiceAddress *)address
+           transaction:(SDSAnyWriteTransaction *)transaction;
+
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
 
-- (void)fetchLocalUsersProfile;
+- (void)fetchAndUpdateLocalUsersProfile;
 
-- (void)fetchProfileForAddress:(SignalServiceAddress *)address;
+- (void)updateProfileForAddress:(SignalServiceAddress *)address;
 
 - (void)warmCaches;
 

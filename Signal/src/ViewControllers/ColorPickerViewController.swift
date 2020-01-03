@@ -62,7 +62,7 @@ class ColorView: UIView {
         let cellHeight: CGFloat = ScaleFromIPhone5(60)
         selectedRing.autoSetDimensions(to: CGSize(width: cellHeight, height: cellHeight))
 
-        selectedRing.layer.borderColor = Theme.secondaryColor.cgColor
+        selectedRing.layer.borderColor = Theme.secondaryTextAndIconColor.cgColor
         selectedRing.layer.borderWidth = 2
         selectedRing.autoPinEdgesToSuperviewEdges()
         selectedRing.isHidden = true
@@ -212,8 +212,8 @@ class ColorPickerView: UIView, ColorViewDelegate {
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("COLOR_PICKER_SHEET_TITLE", comment: "Modal Sheet title when picking a conversation color.")
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        titleLabel.textColor = Theme.primaryTextColor
 
         headerView.addSubview(titleLabel)
         titleLabel.ows_autoPinToSuperviewMargins()
@@ -346,7 +346,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var isFirstInCluster: Bool = true
     var isLastInCluster: Bool = true
     var unreadIndicator: OWSUnreadIndicator?
-    var lastAudioMessageView: OWSAudioMessageView?
+    var lastAudioMessageView: AudioMessageView?
     var audioDurationSeconds: CGFloat = 0
     var audioProgressSeconds: CGFloat = 0
     var messageCellType: OWSMessageCellType = .textOnlyMessage
@@ -364,7 +364,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var hasBodyTextActionContent: Bool = false
     var hasMediaActionContent: Bool = false
     var mediaAlbumItems: [ConversationMediaAlbumItem]?
-    var hasCachedLayoutState: Bool = false
+    var needsUpdate: Bool = false
     var linkPreview: OWSLinkPreview?
     var linkPreviewAttachment: TSAttachment?
     var stickerInfo: StickerInfo?
@@ -372,6 +372,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var isFailedSticker: Bool = false
     var viewOnceMessageState: ViewOnceMessageState = .incomingExpired
     var mutualGroupNames: [String]?
+    var reactionState: InteractionReactionState?
 
     init(interaction: TSInteraction, thread: TSThread) {
         self.interaction = interaction
@@ -399,7 +400,11 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return
     }
 
-    func copyMediaAction() {
+    func clearNeedsUpdate() {
+        owsFailDebug("unexpected invocation")
+    }
+
+    func shareMediaAction(_ sender: Any?) {
         owsFailDebug("unexpected invocation")
         return
     }
@@ -409,17 +414,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return
     }
 
-    func shareMediaAction() {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
-    func shareTextAction() {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
-    func saveMediaAction() {
+    func forwardMessageAction(delegate: MessageActionsDelegate) {
         owsFailDebug("unexpected invocation")
         return
     }
@@ -429,25 +424,17 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return
     }
 
-    func canCopyMedia() -> Bool {
+    func canShareMedia() -> Bool {
         owsFailDebug("unexpected invocation")
         return false
     }
 
-    func canSaveMedia() -> Bool {
+    func canForwardMessage() -> Bool {
         owsFailDebug("unexpected invocation")
         return false
     }
 
-    func audioPlaybackState() -> AudioPlaybackState {
-        owsFailDebug("unexpected invocation")
-        return AudioPlaybackState.paused
-    }
-
-    func setAudioPlaybackState(_ state: AudioPlaybackState) {
-        owsFailDebug("unexpected invocation")
-        return
-    }
+    var audioPlaybackState: AudioPlaybackState = .paused
 
     func setAudioProgress(_ progress: CGFloat, duration: CGFloat) {
         owsFailDebug("unexpected invocation")

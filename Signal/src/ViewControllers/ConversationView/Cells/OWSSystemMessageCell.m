@@ -6,7 +6,6 @@
 #import "ConversationViewItem.h"
 #import "OWSMessageHeaderView.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
@@ -106,7 +105,7 @@ typedef void (^SystemMessageActionBlock)(void);
     contentStackView.alignment = UIStackViewAlignmentCenter;
 
     self.button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.button setTitleColor:[UIColor ows_darkSkyBlueColor] forState:UIControlStateNormal];
+    [self.button setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.button.layer.cornerRadius = 4.f;
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -194,7 +193,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
     if (self.action) {
         [self.button setTitle:self.action.title forState:UIControlStateNormal];
-        UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+        UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
         self.button.titleLabel.font = buttonFont;
         self.button.hidden = NO;
         self.button.accessibilityIdentifier = self.action.accessibilityIdentifier;
@@ -240,14 +239,14 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (UIColor *)textColor
 {
-    return Theme.secondaryColor;
+    return Theme.secondaryTextAndIconColor;
 }
 
 - (UIColor *)iconColorForInteraction:(TSInteraction *)interaction
 {
     // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
     // are less dark for balance.
-    return Theme.secondaryColor;
+    return Theme.secondaryTextAndIconColor;
 }
 
 - (nullable UIImage *)iconForInteraction:(TSInteraction *)interaction
@@ -297,9 +296,8 @@ typedef void (^SystemMessageActionBlock)(void);
                 } else {
                     OWSFailDebug(@"unexpected interaction type: %@", interaction.class);
                 }
-                result = (areDisappearingMessagesEnabled
-                        ? [UIImage imageNamed:@"system_message_disappearing_messages"]
-                        : [UIImage imageNamed:@"system_message_disappearing_messages_disabled"]);
+                result = (areDisappearingMessagesEnabled ? [Theme iconImage:ThemeIconSettingsTimer]
+                                                         : [Theme iconImage:ThemeIconSettingsTimerDisabled]);
                 break;
             }
             case TSInfoMessageVerificationStateChange:
@@ -316,9 +314,12 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageUserJoinedSignal:
                 result = [UIImage imageNamed:@"emoji-heart-filled-28"];
                 break;
+            case TSInfoMessageSyncedThread:
+                result = [Theme iconImage:ThemeIconInfo];
+                break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
-        result = [UIImage imageNamed:@"system_message_call"];
+        result = [Theme iconImage:ThemeIconPhone];
     } else {
         OWSFailDebug(@"Unknown interaction type: %@", [interaction class]);
         return nil;
@@ -538,6 +539,8 @@ typedef void (^SystemMessageActionBlock)(void);
                                   }
                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")];
         case TSInfoMessageUserJoinedSignal:
+            return nil;
+        case TSInfoMessageSyncedThread:
             return nil;
     }
 

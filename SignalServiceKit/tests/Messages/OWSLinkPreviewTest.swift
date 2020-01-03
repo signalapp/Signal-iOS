@@ -466,8 +466,8 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 let content = try! self.linkPreviewManager.parse(linkData: linkData)
                 XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.title, "Recipes")
-                XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/76/ae/9d/76ae9d3056dbcb295924fdd5db6951c6.jpg")
+                XCTAssertEqual(content.title, "2232 Best Recipes images in 2019 | Food recipes, Food, Food drink")
+                XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/51/a0/b5/51a0b59e4980fdcddec7c3d322cc148f.jpg")
 
                 expectation.fulfill()
             }.catch { (error) in

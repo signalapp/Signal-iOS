@@ -43,7 +43,7 @@ public func BenchAsync(title: String, block: (@escaping () -> Void) -> Void) {
 ///        }
 ///    }
 ///
-public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval = 0, block: () throws -> T) rethrows -> T {
+public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval = 0, logInProduction: Bool = false, block: () throws -> T) rethrows -> T {
     let startTime = CACurrentMediaTime()
 
     let value = try block()
@@ -52,7 +52,12 @@ public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval 
 
     if timeElapsed > intervalLimit {
         let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-        Logger.debug("[Bench] title: \(title), duration: \(formattedTime)")
+        let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
+        if logInProduction {
+            Logger.info(logMessage)
+        } else {
+            Logger.debug(logMessage)
+        }
     }
 
     return value
@@ -91,9 +96,10 @@ public protocol MemorySampler {
 ///
 public func Bench(title: String,
                   memorySamplerRatio: Float,
+                  logInProduction: Bool = false,
                   block: (MemorySampler) throws -> Void) rethrows {
     let memoryBencher = MemoryBencher(title: title, sampleRatio: memorySamplerRatio)
-    try Bench(title: title) {
+    try Bench(title: title, logInProduction: logInProduction) {
         try block(memoryBencher)
         memoryBencher.complete()
     }
@@ -116,20 +122,24 @@ public func Bench(title: String,
 ///
 ///    [BenchManager startEventWithTitle:"message sending" eventId:message.id]
 ///    ...
-///    [BenchManager completeEventWithEventId:eventId:message.id]
+///    [BenchManager completeEventWithEventId:message.id]
 public func BenchEventStart(title: String, eventId: BenchmarkEventId) {
     BenchAsync(title: title) { finish in
-        runningEvents[eventId] = Event(title: title, eventId: eventId, completion: finish)
+        eventQueue.sync {
+            runningEvents[eventId] = Event(title: title, eventId: eventId, completion: finish)
+        }
     }
 }
 
 public func BenchEventComplete(eventId: BenchmarkEventId) {
-    guard let event = runningEvents.removeValue(forKey: eventId) else {
-        Logger.debug("no active event with id: \(eventId)")
-        return
-    }
+    eventQueue.sync {
+        guard let event = runningEvents.removeValue(forKey: eventId) else {
+            Logger.debug("no active event with id: \(eventId)")
+            return
+        }
 
-    event.completion()
+        event.completion()
+    }
 }
 
 public typealias BenchmarkEventId = String
@@ -141,6 +151,7 @@ private struct Event {
 }
 
 private var runningEvents: [BenchmarkEventId: Event] = [:]
+private let eventQueue = DispatchQueue(label: "org.signal.bench")
 
 @objc
 public class BenchManager: NSObject {
@@ -163,6 +174,11 @@ public class BenchManager: NSObject {
     @objc
     public class func bench(title: String, block: () -> Void) {
         Bench(title: title, block: block)
+    }
+
+    @objc
+    public class func bench(title: String, logIfLongerThan intervalLimit: TimeInterval, logInProduction: Bool, block: () -> Void) {
+        Bench(title: title, logIfLongerThan: intervalLimit, logInProduction: logInProduction, block: block)
     }
 }
 

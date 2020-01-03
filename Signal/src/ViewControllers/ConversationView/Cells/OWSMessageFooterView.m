@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *timestampLabel;
 @property (nonatomic) UIImageView *statusIndicatorImageView;
 @property (nonatomic) OWSMessageTimerView *messageTimerView;
+@property (nonatomic) UIStackView *contentStack;
 
 @end
 
@@ -36,28 +37,20 @@ NS_ASSUME_NONNULL_BEGIN
     // Ensure only called once.
     OWSAssertDebug(!self.timestampLabel);
 
-    self.layoutMargins = UIEdgeInsetsZero;
-
-    self.axis = UILayoutConstraintAxisHorizontal;
-    self.alignment = UIStackViewAlignmentCenter;
-    self.distribution = UIStackViewDistributionEqualSpacing;
-
-    UIStackView *leftStackView = [UIStackView new];
-    leftStackView.axis = UILayoutConstraintAxisHorizontal;
-    leftStackView.spacing = self.hSpacing;
-    leftStackView.alignment = UIStackViewAlignmentCenter;
-    [self addArrangedSubview:leftStackView];
-    [leftStackView setContentHuggingHigh];
-
     self.timestampLabel = [OWSLabel new];
-    [leftStackView addArrangedSubview:self.timestampLabel];
-
+    self.timestampLabel.textAlignment = self.textAlignmentUnnatural;
     self.messageTimerView = [OWSMessageTimerView new];
-    [self.messageTimerView setContentHuggingHigh];
-    [leftStackView addArrangedSubview:self.messageTimerView];
-
     self.statusIndicatorImageView = [UIImageView new];
-    [self addArrangedSubview:self.statusIndicatorImageView];
+
+    UIStackView *contentStack = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ self.timestampLabel, self.messageTimerView, self.statusIndicatorImageView ]];
+    self.contentStack = contentStack;
+    contentStack.axis = UILayoutConstraintAxisHorizontal;
+    contentStack.alignment = UIStackViewAlignmentCenter;
+    contentStack.spacing = self.hSpacing;
+
+    [self addArrangedSubview:[UIView hStretchingSpacer]];
+    [self addArrangedSubview:self.contentStack];
 
     self.userInteractionEnabled = NO;
 }
@@ -69,8 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)hSpacing
 {
-    // TODO: Review constant.
-    return 8.f;
+    return 4;
 }
 
 - (CGFloat)maxImageWidth
@@ -100,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (isOverlayingMedia) {
         textColor = [UIColor whiteColor];
     } else if (isOutsideBubble) {
-        textColor = Theme.secondaryColor;
+        textColor = Theme.secondaryTextAndIconColor;
     } else {
         textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:isIncoming];
     }
@@ -147,10 +139,10 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
 
-        if (statusIndicatorImage) {
-            [self showStatusIndicatorWithIcon:statusIndicatorImage textColor:textColor];
-        } else {
+        if (statusIndicatorImage == nil) {
             [self hideStatusIndicator];
+        } else {
+            [self showStatusIndicatorWithIcon:statusIndicatorImage textColor:textColor];
         }
     } else {
         [self hideStatusIndicator];
@@ -163,21 +155,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(icon.size.width <= self.maxImageWidth);
     self.statusIndicatorImageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     self.statusIndicatorImageView.tintColor = textColor;
-    [self.statusIndicatorImageView setContentHuggingHigh];
-    self.spacing = self.hSpacing;
+    self.statusIndicatorImageView.hidden = NO;
 }
 
 - (void)hideStatusIndicator
 {
-    // If there's no status indicator, we want the other
-    // footer contents to "cling to the leading edge".
-    // Instead of hiding the status indicator view,
-    // we clear its contents and let it stretch to fill
-    // the available space.
-    self.statusIndicatorImageView.image = nil;
-    [self.statusIndicatorImageView setContentHuggingLow];
-    self.spacing = 0;
-    self.accessibilityLabel = nil;
+    self.statusIndicatorImageView.hidden = YES;
 }
 
 - (void)animateSpinningIcon
@@ -239,13 +222,15 @@ NS_ASSUME_NONNULL_BEGIN
     result.width = timestampLabelWidth;
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         if (![self isFailedOutgoingMessage:viewItem]) {
-            result.width += (self.maxImageWidth + self.hSpacing);
+            result.width += self.maxImageWidth;
         }
     }
 
     if (viewItem.hasPerConversationExpiration) {
-        result.width += ([OWSMessageTimerView measureSize].width + self.hSpacing);
+        result.width += [OWSMessageTimerView measureSize].width;
     }
+
+    result.width += MAX(0, (self.contentStack.arrangedSubviews.count - 1) * self.contentStack.spacing);
 
     return CGSizeCeil(result);
 }

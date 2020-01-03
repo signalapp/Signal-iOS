@@ -98,7 +98,7 @@ public class ConversationMediaView: UIView {
 
         super.init(frame: .zero)
 
-        backgroundColor = Theme.offBackgroundColor
+        backgroundColor = Theme.washColor
         clipsToBounds = true
 
         createContents()
@@ -121,6 +121,7 @@ public class ConversationMediaView: UIView {
         AssertIsOnMainThread()
 
         guard let attachmentStream = attachment as? TSAttachmentStream else {
+            tryToConfigureForBlurHash(attachment: attachment)
             addDownloadProgressIfNecessary()
             return
         }
@@ -185,6 +186,59 @@ public class ConversationMediaView: UIView {
         return true
     }
 
+    private func tryToConfigureForBlurHash(attachment: TSAttachment) {
+        guard let pointer = attachment as? TSAttachmentPointer else {
+            owsFailDebug("Invalid attachment.")
+            return
+        }
+        guard let blurHash = pointer.blurHash,
+            blurHash.count > 0 else {
+                return
+        }
+        let cacheKey = blurHash
+        let stillImageView = UIImageView()
+        // We need to specify a contentMode since the size of the image
+        // might not match the aspect ratio of the view.
+        stillImageView.contentMode = .scaleAspectFill
+        // Use trilinear filters for better scaling quality at
+        // some performance cost.
+        stillImageView.layer.minificationFilter = .trilinear
+        stillImageView.layer.magnificationFilter = .trilinear
+        stillImageView.backgroundColor = Theme.washColor
+        addSubview(stillImageView)
+        stillImageView.autoPinEdgesToSuperviewEdges()
+        loadBlock = { [weak self] in
+            AssertIsOnMainThread()
+
+            if stillImageView.image != nil {
+                owsFailDebug("Unexpectedly already loaded.")
+                return
+            }
+            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
+                guard let image = BlurHash.image(for: blurHash) else {
+                    Logger.warn("Missing image for blurHash.")
+                    return nil
+                }
+                return image
+            },
+                                 applyMediaBlock: { (media) in
+                                    AssertIsOnMainThread()
+
+                                    guard let image = media as? UIImage else {
+                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
+                                        return
+                                    }
+                                    stillImageView.image = image
+            },
+                                 cacheKey: cacheKey)
+        }
+        unloadBlock = {
+            AssertIsOnMainThread()
+
+            stillImageView.image = nil
+        }
+    }
+
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
         let animatedImageView = YYAnimatedImageView()
@@ -195,7 +249,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         animatedImageView.layer.minificationFilter = .trilinear
         animatedImageView.layer.magnificationFilter = .trilinear
-        animatedImageView.backgroundColor = Theme.offBackgroundColor
+        animatedImageView.backgroundColor = Theme.washColor
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(animatedImageView)
@@ -251,7 +305,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Theme.offBackgroundColor
+        stillImageView.backgroundColor = Theme.washColor
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(stillImageView)
@@ -303,7 +357,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Theme.offBackgroundColor
+        stillImageView.backgroundColor = Theme.washColor
 
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
@@ -380,7 +434,7 @@ public class ConversationMediaView: UIView {
             return
         }
         let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
-        iconView.tintColor = Theme.primaryColor.withAlphaComponent(0.6)
+        iconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
         addSubview(iconView)
         iconView.autoCenterInSuperview()
     }

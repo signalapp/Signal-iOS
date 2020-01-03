@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import SignalServiceKit
 
 @objc
@@ -117,6 +117,8 @@ extension YDBToGRDBMigration {
     func run() throws {
         Logger.info("")
 
+        let startDate = Date()
+
         // We migrate the data store contents in phases
         // or batches.  Each "group" defines the data to
         // migrate in a given batch.
@@ -141,12 +143,64 @@ extension YDBToGRDBMigration {
             }
         ]
 
+        GRDBSchemaMigrator().runSchemaMigrations()
+
         try self.migrate(migratorGroups: migratorGroups)
+
+        try storage.write { transaction in
+            do {
+                try createInitialGalleryRecords(transaction: transaction)
+            } catch {
+                owsFail("error: \(error)")
+            }
+        }
+
+        removeYdb()
+
+        let migrationDuration = abs(startDate.timeIntervalSinceNow)
+        Logger.info("Migration duration: \(OWSFormat.formatDurationSeconds(Int(migrationDuration))) (\(migrationDuration))")
+    }
+
+    func removeYdb() {
+        guard FeatureFlags.storageMode != .grdbThrowawayIfMigrating else {
+            return
+        }
+
+        // Don't set this flag for "throwaway" migrations.
+        //
+        // It's critical that we do this _before_ deleting the YDB contents,
+        // since the GRDB database is considered disposable until this flag
+        // is set if there are YDB files.
+        SSKPreferences.setIsYdbMigrated(true)
+
+        guard !FeatureFlags.preserveYdb else {
+            return
+        }
+
+        guard let primaryStorage = primaryStorage else {
+            owsFail("Missing primaryStorage.")
+        }
+        let ydbReadConnection = primaryStorage.newDatabaseConnection()
+        if let owsDatabaseConnection = ydbReadConnection as? OWSDatabaseConnection {
+            // Bless this connection to make YDB writes despite migration
+            // being complete.
+            owsDatabaseConnection.isCleanupConnection = true
+        } else {
+            owsFailDebug("Unexpected connection type.")
+        }
+        ydbReadConnection.readWrite { ydbTransaction in
+            // Note: we deliberately _DO NOT_ deserialize the
+            // models as we delete them from YDB. That would
+            // have undesired side effects, e.g. deleting
+            // attachments on disk.
+            ydbTransaction.removeAllObjectsInAllCollections()
+        }
+
+        OWSStorage.deleteDBKeys()
+        OWSStorage.deleteDatabaseFiles()
     }
 
     func migrate(migratorGroups: [GRDBMigratorGroup]) throws {
-        assert(OWSStorage.isStorageReady())
-
         Logger.info("")
 
         // We can't nest ydbTransactions in GRDB and vice-versa
@@ -162,11 +216,20 @@ extension YDBToGRDBMigration {
             owsFail("Missing primaryStorage.")
         }
         let ydbReadConnection = primaryStorage.newDatabaseConnection()
+        ydbReadConnection.ignoreQueues = true
         ydbReadConnection.beginLongLivedReadTransaction()
+
+        UIDatabaseObserver.serializedSync {
+            UIDatabaseObserver.skipTouchObservations = true
+        }
 
         for migratorGroup in migratorGroups {
             try migrate(migratorGroup: migratorGroup,
                         ydbReadConnection: ydbReadConnection)
+        }
+
+        UIDatabaseObserver.serializedSync {
+            UIDatabaseObserver.skipTouchObservations = false
         }
     }
 
@@ -177,72 +240,75 @@ extension YDBToGRDBMigration {
         // Logging queries is helpful for normal debugging, but expensive during a migration
         SDSDatabaseStorage.shouldLogDBQueries = false
 
-        try storage.write { grdbTransaction in
-            // Instantiate the migrators.
-            var migrators = [GRDBMigrator]()
-            ydbReadConnection.read { ydbTransaction in
-                migrators += migratorGroup.migrators(ydbTransaction: ydbTransaction)
-            }
-
+        try ydbReadConnection.read { ydbTransaction in
+            let migrators = migratorGroup.migrators(ydbTransaction: ydbTransaction)
             // Migrate migrators.
             for migrator in migrators {
-                try! migrator.migrate(grdbTransaction: grdbTransaction)
+                try autoreleasepool {
+                    try self.storage.write { grdbTransaction in
+                        try! migrator.migrate(grdbTransaction: grdbTransaction)
+                    }
+                }
             }
         }
 
-        SDSDatabaseStorage.shouldLogDBQueries = true
+        SDSDatabaseStorage.shouldLogDBQueries = FeatureFlags.logSQLQueries
     }
 
     private func allKeyValueMigrators(ydbTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
         var result: [GRDBMigrator] = [
-            GRDBKeyValueStoreMigrator<PreKeyRecord>(label: "preKey Store", keyStore: preKeyStore.keyStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.3),
-            GRDBKeyValueStoreMigrator<Any>(label: "preKey Metadata", keyStore: preKeyStore.metadataStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.3),
+            GRDBKeyValueStoreMigrator<PreKeyRecord>(label: "preKey Store", keyStore: preKeyStore.keyStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "preKey Metadata", keyStore: preKeyStore.metadataStore, ydbTransaction: ydbTransaction),
 
-            GRDBKeyValueStoreMigrator<SignedPreKeyRecord>(label: "signedPreKey Store", keyStore: signedPreKeyStore.keyStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.3),
-            GRDBKeyValueStoreMigrator<Any>(label: "signedPreKey Metadata", keyStore: signedPreKeyStore.metadataStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.3),
+            GRDBKeyValueStoreMigrator<SignedPreKeyRecord>(label: "signedPreKey Store", keyStore: signedPreKeyStore.keyStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "signedPreKey Metadata", keyStore: signedPreKeyStore.metadataStore, ydbTransaction: ydbTransaction),
 
-            GRDBKeyValueStoreMigrator<ECKeyPair>(label: "ownIdentity", keyStore: identityManager.ownIdentityKeyValueStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
+            GRDBKeyValueStoreMigrator<ECKeyPair>(label: "ownIdentity", keyStore: identityManager.ownIdentityKeyValueStore, ydbTransaction: ydbTransaction),
 
-            GRDBKeyValueStoreMigrator<[Int: SessionRecord]>(label: "sessionStore", keyStore: sessionStore.keyValueStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
+            GRDBKeyValueStoreMigrator<[Int: SessionRecord]>(label: "sessionStore", keyStore: sessionStore.keyValueStore, ydbTransaction: ydbTransaction),
 
-            GRDBKeyValueStoreMigrator<String>(label: "queuedVerificationStateSyncMessages", keyStore: identityManager.queuedVerificationStateSyncMessagesKeyValueStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.3),
+            GRDBKeyValueStoreMigrator<String>(label: "queuedVerificationStateSyncMessages", keyStore: identityManager.queuedVerificationStateSyncMessagesKeyValueStore, ydbTransaction: ydbTransaction),
 
-            GRDBKeyValueStoreMigrator<Any>(label: "tsAccountManager", keyStore: tsAccountManager.keyValueStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.3),
+            GRDBKeyValueStoreMigrator<Any>(label: "tsAccountManager", keyStore: tsAccountManager.keyValueStore, ydbTransaction: ydbTransaction),
 
-            GRDBKeyValueStoreMigrator<Any>(label: "AppPreferences", keyStore: AppPreferences.store, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-            GRDBKeyValueStoreMigrator<Any>(label: "SSKPreferences", keyStore: SSKPreferences.store, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-            GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.store", keyStore: StickerManager.store, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-            GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.emojiMapStore", keyStore: StickerManager.emojiMapStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-            GRDBKeyValueStoreMigrator<Any>(label: "preferences", keyStore: environment.preferences.keyValueStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
+            GRDBKeyValueStoreMigrator<Any>(label: "AppPreferences", keyStore: AppPreferences.store, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "SSKPreferences", keyStore: SSKPreferences.store, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.store", keyStore: StickerManager.store, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.emojiMapStore", keyStore: StickerManager.emojiMapStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "preferences", keyStore: environment.preferences.keyValueStore, ydbTransaction: ydbTransaction),
 
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSOrphanDataCleaner", keyStore: OWSOrphanDataCleaner.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-            GRDBKeyValueStoreMigrator<Any>(label: "contactsManager", keyStore: contactsManager.keyValueStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSDeviceManager", keyStore: OWSDeviceManager.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSReadReceiptManager", keyStore: OWSReadReceiptManager.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWS2FAManager", keyStore: OWS2FAManager.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSBlockingManager", keyStore: OWSBlockingManager.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "typingIndicators", keyStore: typingIndicators.keyValueStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "udManager.keyValueStore", keyStore: udManager.keyValueStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "udManager.phoneNumberAccessStore", keyStore: udManager.phoneNumberAccessStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "udManager.uuidAccessStore", keyStore: udManager.uuidAccessStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.phoneNumber", keyStore: CallKitIdStore.phoneNumber(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.uuid", keyStore: CallKitIdStore.uuidStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "signalService", keyStore: signalService.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSStorageServiceOperation", keyStore: StorageServiceOperation.keyValueStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSOrphanDataCleaner", keyStore: OWSOrphanDataCleaner.keyValueStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "contactsManager", keyStore: contactsManager.keyValueStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSDeviceManager", keyStore: OWSDeviceManager.keyValueStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSReadReceiptManager", keyStore: OWSReadReceiptManager.keyValueStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWS2FAManager", keyStore: OWS2FAManager.keyValueStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSBlockingManager", keyStore: OWSBlockingManager.keyValueStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "typingIndicators", keyStore: typingIndicators.keyValueStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "udManager.keyValueStore", keyStore: udManager.keyValueStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "udManager.phoneNumberAccessStore", keyStore: udManager.phoneNumberAccessStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "udManager.uuidAccessStore", keyStore: udManager.uuidAccessStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.phoneNumber", keyStore: CallKitIdStore.phoneNumber(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.uuid", keyStore: CallKitIdStore.uuidStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "signalService", keyStore: signalService.keyValueStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSStorageServiceOperation", keyStore: StorageServiceOperation.keyValueStore, ydbTransaction: ydbTransaction),
 
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSDatabaseMigration", keyStore: OWSDatabaseMigration.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedPhoneNumbersStore", keyStore: profileManager.whitelistedPhoneNumbersStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedUUIDsStore", keyStore: profileManager.whitelistedUUIDsStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedGroupsStore", keyStore: profileManager.whitelistedGroupsStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSSounds", keyStore: OWSSounds.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "Theme", keyStore: Theme.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSSyncManager", keyStore: OWSSyncManager.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSOutgoingReceiptManager.deliveryReceiptStore", keyStore: OWSOutgoingReceiptManager.deliveryReceiptStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSOutgoingReceiptManager.readReceiptStore", keyStore: OWSOutgoingReceiptManager.readReceiptStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1)
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSDatabaseMigration", keyStore: OWSDatabaseMigration.keyValueStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedPhoneNumbersStore", keyStore: profileManager.whitelistedPhoneNumbersStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedUUIDsStore", keyStore: profileManager.whitelistedUUIDsStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedGroupsStore", keyStore: profileManager.whitelistedGroupsStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSScreenLock.keyValueStore", keyStore: OWSScreenLock.shared.keyValueStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSSounds", keyStore: OWSSounds.keyValueStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "Theme", keyStore: Theme.keyValueStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSSyncManager", keyStore: OWSSyncManager.keyValueStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSOutgoingReceiptManager.deliveryReceiptStore", keyStore: OWSOutgoingReceiptManager.deliveryReceiptStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSOutgoingReceiptManager.readReceiptStore", keyStore: OWSOutgoingReceiptManager.readReceiptStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "KeyBackupService.keyValueStore", keyStore: KeyBackupService.keyValueStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "KeyBackupService.tokenStore", keyStore: KeyBackupService.tokenStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "StorageServiceOperation", keyStore: StorageServiceOperation.keyValueStore, ydbTransaction: ydbTransaction)
         ]
 
         for (label, keyStore) in YDBToGRDBMigration.otherKeyStores {
-            result.append(GRDBKeyValueStoreMigrator<Any>(label: label, keyStore: keyStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1))
+            result.append(GRDBKeyValueStoreMigrator<Any>(label: label, keyStore: keyStore, ydbTransaction: ydbTransaction))
         }
 
         return result
@@ -251,22 +317,23 @@ extension YDBToGRDBMigration {
     private func allUnorderedRecordMigrators(ydbTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
         // TODO: We need to test all of these migrations.
         return [
-            GRDBUnorderedRecordMigrator<TSAttachment>(label: "attachments", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.003),
-            GRDBUnorderedRecordMigrator<OWSMessageContentJob>(label: "contentJob", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.05),
-            GRDBUnorderedRecordMigrator<OWSRecipientIdentity>(label: "recipientIdentities", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.02),
-            GRDBUnorderedRecordMigrator<TSThread>(label: "threads", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<ExperienceUpgrade>(label: "ExperienceUpgrade", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<StickerPack>(label: "StickerPack", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<InstalledSticker>(label: "InstalledSticker", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<KnownStickerPack>(label: "KnownStickerPack", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<OWSBackupFragment>(label: "OWSBackupFragment", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<SignalRecipient>(label: "SignalRecipient", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<OWSDisappearingMessagesConfiguration>(label: "OWSDisappearingMessagesConfiguration", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<SignalAccount>(label: "SignalAccount", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<OWSLinkedDeviceReadReceipt>(label: "OWSLinkedDeviceReadReceipt", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<OWSDevice>(label: "OWSDevice", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.02),
-            GRDBUnorderedRecordMigrator<TSRecipientReadReceipt>(label: "TSRecipientReadReceipt", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2)
+            GRDBUnorderedRecordMigrator<TSAttachment>(label: "TSAttachment", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<OWSMessageContentJob>(label: "OWSMessageContentJob", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<OWSRecipientIdentity>(label: "OWSRecipientIdentity", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<TSThread>(label: "TSThread", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<ExperienceUpgrade>(label: "ExperienceUpgrade", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<StickerPack>(label: "StickerPack", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<InstalledSticker>(label: "InstalledSticker", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<KnownStickerPack>(label: "KnownStickerPack", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<OWSBackupFragment>(label: "OWSBackupFragment", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<SignalRecipient>(label: "SignalRecipient", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<OWSDisappearingMessagesConfiguration>(label: "OWSDisappearingMessagesConfiguration", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<SignalAccount>(label: "SignalAccount", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<OWSLinkedDeviceReadReceipt>(label: "OWSLinkedDeviceReadReceipt", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<OWSDevice>(label: "OWSDevice", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<TSRecipientReadReceipt>(label: "TSRecipientReadReceipt", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<OWSReaction>(label: "OWSReaction", ydbTransaction: ydbTransaction)
         ]
     }
 }
@@ -276,10 +343,6 @@ extension YDBToGRDBMigration {
 private class LegacyObjectFinder<T> {
     let collection: String
 
-    // HACK: normally we don't want to retain transactions, as it allows them to escape their
-    // closure. This is a work around since YapDB transactions want to be on their own sync queue
-    // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
-    // one DB inside a GRDB transaction on another DB is currently not possible.
     let transaction: YapDatabaseReadTransaction
 
     init(collection: String, transaction: YapDatabaseReadTransaction) {
@@ -287,23 +350,26 @@ private class LegacyObjectFinder<T> {
         self.transaction = transaction
     }
 
+    public var count: UInt {
+        return transaction.numberOfKeys(inCollection: collection)
+    }
+
     public func enumerateLegacyKeysAndObjects(block: @escaping (String, T) throws -> Void ) throws {
+        var knownCollectionKeys = Set<String>()
         try transaction.enumerateKeysAndObjects(inCollection: collection) { (collectionKey: String, collectionObj: Any, _: UnsafeMutablePointer<ObjCBool>) throws -> Void in
             guard let legacyObj = collectionObj as? T else {
                 owsFailDebug("unexpected collectionObj: \(type(of: collectionObj)) collectionKey: \(collectionKey)")
                 return
             }
-            try block(collectionKey, legacyObj)
-        }
-    }
 
-    public func enumerateLegacyObjects(block: @escaping (T) throws -> Void ) throws {
-        try transaction.enumerateKeysAndObjects(inCollection: collection) { (_: String, collectionObj: Any, _: UnsafeMutablePointer<ObjCBool>) throws -> Void in
-            guard let legacyObj = collectionObj as? T else {
-                owsFailDebug("unexpected collectionObj: \(type(of: collectionObj))")
+            // Ignore duplicates in YDB enumerations.
+            guard !knownCollectionKeys.contains(collectionKey) else {
+                owsFailDebug("Ignoring duplicate collectionKey: \(collectionKey)")
                 return
             }
-            try block(legacyObj)
+            knownCollectionKeys.insert(collectionKey)
+
+            try block(collectionKey, legacyObj)
         }
     }
 }
@@ -330,57 +396,39 @@ private class LegacyUnorderedFinder<RecordType>: LegacyObjectFinder<RecordType> 
 // MARK: -
 
 private class LegacyInteractionFinder {
-    let extensionName = TSMessageDatabaseViewExtensionName
-
-    // HACK: normally we don't want to retain transactions, as it allows them to escape their
-    // closure. This is a work around since YapDB transactions want to be on their own sync queue
-    // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
-    // one DB inside a GRDB transaction on another DB is currently not possible.
-    let ext: YapDatabaseAutoViewTransaction?
+    let transaction: YapDatabaseReadTransaction
 
     init(transaction: YapDatabaseReadTransaction) {
-        self.ext = transaction.safeAutoViewTransaction(extensionName)
+        self.transaction = transaction
     }
 
-    func ext(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseAutoViewTransaction? {
-        return transaction.safeAutoViewTransaction(extensionName)
+    public var count: UInt {
+        let collection = TSInteraction.collection()
+        return transaction.numberOfKeys(inCollection: collection)
     }
 
-    public func enumerateInteractions(transaction: YapDatabaseReadTransaction, block: @escaping (TSInteraction) throws -> Void ) throws {
-        try enumerateInteractions(transaction: ext(transaction), block: block)
-    }
-
-    public func enumerateInteractions(block: @escaping (TSInteraction) throws -> Void) throws {
-        try enumerateInteractions(transaction: ext, block: block)
-    }
-
-    func enumerateInteractions(transaction: YapDatabaseAutoViewTransaction?, block: @escaping (TSInteraction) throws -> Void) throws {
-        guard let transaction = transaction else {
-            owsFailDebug("Missing transaction.")
-            return
+    // We need to enumerate in ascending order of sort id.
+    public func enumerateLegacyKeysAndObjects(block: @escaping (String, TSInteraction) -> Void ) throws {
+        guard let view = transaction.safeAutoViewTransaction(TSInteractionsBySortIdDatabaseViewExtensionName) else {
+            owsFail("Missing interaction view.")
         }
-        var errorToRaise: Error?
-        transaction.enumerateGroups { groupId, stopPtr in
-            autoreleasepool {
-                transaction.enumerateKeysAndObjects(inGroup: groupId) { (_, _, object, _, stopPtr) in
-                    do {
-                        guard let interaction = object as? TSInteraction else {
-                            owsFailDebug("unexpected object: \(type(of: object))")
-                            return
-                        }
+        var knownUniqueIds = Set<String>()
+        view.safe_enumerateKeysAndObjects(inGroup: TSInteractionsBySortIdGroup,
+                                          extensionName: TSInteractionsBySortIdDatabaseViewExtensionName) { (_, _, object, _, _) in
+                                            guard let interaction = object as? TSInteraction else {
+                                                owsFailDebug("unexpected interaction: \(type(of: object))")
+                                                return
+                                            }
 
-                        try block(interaction)
-                    } catch {
-                        owsFailDebug("error: \(error)")
-                        errorToRaise = error
-                        stopPtr.pointee = true
-                    }
-                }
-            }
-        }
+                                            // Ignore duplicates in YDB enumerations.
+                                            let uniqueId = interaction.uniqueId
+                                            guard !knownUniqueIds.contains(uniqueId) else {
+                                                owsFailDebug("Ignoring duplicate uniqueId: \(uniqueId)")
+                                                return
+                                            }
+                                            knownUniqueIds.insert(uniqueId)
 
-        if let errorToRaise = errorToRaise {
-            throw errorToRaise
+                                            block(uniqueId, interaction)
         }
     }
 }
@@ -391,14 +439,25 @@ private class LegacyJobRecordFinder {
 
     let extensionName = YAPDBJobRecordFinder.dbExtensionName
 
-    // HACK: normally we don't want to retain transactions, as it allows them to escape their
-    // closure. This is a work around since YapDB transactions want to be on their own sync queue
-    // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
-    // one DB inside a GRDB transaction on another DB is currently not possible.
     var ext: YapDatabaseSecondaryIndexTransaction?
 
     init(transaction: YapDatabaseReadTransaction) {
         self.ext = transaction.safeSecondaryIndexTransaction(extensionName)
+    }
+
+    public var count: UInt {
+        guard let ext = ext else {
+            owsFailDebug("Missing view transcation.")
+            return 0
+        }
+        var count: UInt = 0
+        ext.getNumberOfRows(&count, matching: query)
+        return count
+    }
+
+    private var query: YapDatabaseQuery {
+        let queryFormat = String(format: "ORDER BY %@", "sortId")
+        return YapDatabaseQuery(string: queryFormat, parameters: [])
     }
 
     public func enumerateJobRecords(block: @escaping (SSKJobRecord) throws -> Void) throws {
@@ -410,9 +469,6 @@ private class LegacyJobRecordFinder {
             owsFailDebug("Missing ext.")
             return
         }
-
-        let queryFormat = String(format: "ORDER BY %@", "sortId")
-        let query = YapDatabaseQuery(string: queryFormat, parameters: [])
 
         var errorToRaise: Error?
 
@@ -446,23 +502,27 @@ private class LegacyDecryptJobFinder {
         ydbTransaction = transaction
     }
 
-    func enumerateJobRecords(block: @escaping (OWSMessageDecryptJob) throws -> Void) throws {
-        try autoreleasepool {
-            var errorToRaise: Error?
-            let legacyFinder = OWSMessageDecryptJobFinder()
-            try legacyFinder.enumerateJobs(transaction: ydbTransaction.asAnyRead) { (job, stop) in
-                do {
-                    try block(job)
-                } catch {
-                    owsFailDebug("error: \(error)")
-                    errorToRaise = error
-                    stop.pointee = true
-                }
-            }
+    var count: UInt {
 
-            if let errorToRaise = errorToRaise {
-                throw errorToRaise
+        let legacyFinder = OWSMessageDecryptJobFinder()
+        return legacyFinder.queuedJobCount(with: ydbTransaction.asAnyRead)
+    }
+
+    func enumerateJobRecords(block: @escaping (OWSMessageDecryptJob) throws -> Void) throws {
+        var errorToRaise: Error?
+        let legacyFinder = OWSMessageDecryptJobFinder()
+        try legacyFinder.enumerateJobs(transaction: ydbTransaction.asAnyRead) { (job, stop) in
+            do {
+                try block(job)
+            } catch {
+                owsFailDebug("error: \(error)")
+                errorToRaise = error
+                stop.pointee = true
             }
+        }
+
+        if let errorToRaise = errorToRaise {
+            throw errorToRaise
         }
     }
 }
@@ -471,24 +531,47 @@ private class LegacyDecryptJobFinder {
 
 @objc
 public protocol GRDBMigrator {
+    var label: String { get }
+
+    var count: UInt { get }
+
     func migrate(grdbTransaction: GRDBWriteTransaction) throws
+}
+
+extension GRDBMigrator {
+    func memorySamplerRatio(count: UInt) -> Float {
+        // Sample no more than N times for a given migration.
+        let maxSampleCount: Float = 100
+
+        let count = Float(self.count)
+        guard count > maxSampleCount else {
+            return 1
+        }
+        return maxSampleCount / count
+    }
 }
 
 // MARK: -
 
-public class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
-    private let label: String
+public class GRDBKeyValueStoreMigrator<T>: GRDBMigrator {
+    public let label: String
+    private let keyStore: SDSKeyValueStore
     private let finder: LegacyKeyValueFinder<T>
-    private let memorySamplerRatio: Float
 
-    init(label: String, keyStore: SDSKeyValueStore, ydbTransaction: YapDatabaseReadTransaction, memorySamplerRatio: Float) {
-        self.label = label
+    init(label: String, keyStore: SDSKeyValueStore, ydbTransaction: YapDatabaseReadTransaction) {
+        self.label = "Migrate \(label)"
+        self.keyStore = keyStore
         self.finder = LegacyKeyValueFinder(store: keyStore, transaction: ydbTransaction)
-        self.memorySamplerRatio = memorySamplerRatio
+    }
+
+    public var count: UInt {
+        return finder.count
     }
 
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
-        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
+        let count = self.count
+        Logger.info("\(label): \(count)")
+        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
                 recordCount += 1
@@ -499,33 +582,37 @@ public class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
                 }
                 memorySampler.sample()
             }
-            Logger.info("completed with recordCount: \(recordCount)")
+            Logger.info("Completed with recordCount: \(recordCount)")
         }
     }
 }
 
 // MARK: -
 
-public class GRDBUnorderedRecordMigrator<T> : GRDBMigrator where T: SDSModel {
-    private let label: String
+public class GRDBUnorderedRecordMigrator<T>: GRDBMigrator where T: SDSModel {
+    public let label: String
     private let finder: LegacyUnorderedFinder<T>
-    private let memorySamplerRatio: Float
 
-    init(label: String, ydbTransaction: YapDatabaseReadTransaction, memorySamplerRatio: Float) {
-        self.label = label
+    init(label: String, ydbTransaction: YapDatabaseReadTransaction) {
+        self.label = "Migrate \(label)"
         self.finder = LegacyUnorderedFinder(transaction: ydbTransaction)
-        self.memorySamplerRatio = memorySamplerRatio
+    }
+
+    public var count: UInt {
+        return finder.count
     }
 
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
-        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
+        let count = self.count
+        Logger.info("\(label): \(count)")
+        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
-            try finder.enumerateLegacyObjects { legacyRecord in
+            try finder.enumerateLegacyKeysAndObjects { (_, legacyRecord) in
                 recordCount += 1
                 legacyRecord.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 memorySampler.sample()
             }
-            Logger.info("completed with recordCount: \(recordCount)")
+            Logger.info("Completed with recordCount: \(recordCount)")
         }
     }
 }
@@ -533,21 +620,29 @@ public class GRDBUnorderedRecordMigrator<T> : GRDBMigrator where T: SDSModel {
 // MARK: -
 
 public class GRDBJobRecordMigrator: GRDBMigrator {
+    public let label: String
     private let finder: LegacyJobRecordFinder
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
+        self.label = "Migrate SSKJobRecord"
         self.finder = LegacyJobRecordFinder(transaction: ydbTransaction)
     }
 
+    public var count: UInt {
+        return finder.count
+    }
+
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
-        try Bench(title: "Migrate SSKJobRecord", memorySamplerRatio: 0.02) { memorySampler in
+        let count = self.count
+        Logger.info("\(label): \(count)")
+        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
             try finder.enumerateJobRecords { legacyRecord in
                 recordCount += 1
                 legacyRecord.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 memorySampler.sample()
             }
-            Logger.info("completed with recordCount: \(recordCount)")
+            Logger.info("Completed with recordCount: \(recordCount)")
         }
     }
 }
@@ -555,24 +650,55 @@ public class GRDBJobRecordMigrator: GRDBMigrator {
 // MARK: -
 
 public class GRDBInteractionMigrator: GRDBMigrator {
+    public let label: String
     private let finder: LegacyInteractionFinder
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
+        self.label = "Migrate Interactions"
         self.finder = LegacyInteractionFinder(transaction: ydbTransaction)
     }
 
+    public var count: UInt {
+        return finder.count
+    }
+
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
-        try Bench(title: "Migrate Interactions", memorySamplerRatio: 0.001) { memorySampler in
+        let count = self.count
+        Logger.info("\(label): \(count)")
+        var prevSortId: UInt64?
+        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
-            try finder.enumerateInteractions { legacyInteraction in
-                legacyInteraction.anyInsert(transaction: grdbTransaction.asAnyWrite)
-                recordCount += 1
-                if (recordCount % 500 == 0) {
-                    Logger.debug("saved \(recordCount) interactions")
+            // This must enumerate the interactions in ascending order of sort id.
+            try finder.enumerateLegacyKeysAndObjects { (_, interaction) in
+
+                // Ensure all interactions have valid, monotonically increasing sort ids.
+                let minSortId: UInt64
+                if let previousSortId = prevSortId {
+                    minSortId = previousSortId + 1
+                } else {
+                    minSortId = 1
                 }
+                let sortId: UInt64
+                if interaction.sortId >= minSortId {
+                    // Interaction already has valid sort id.
+                    sortId = interaction.sortId
+                } else {
+                    if interaction.sortId > 0 {
+                        owsFailDebug("Replacing invalid sort id: \(interaction.sortId) -> \(minSortId)")
+                    } else {
+                        owsFailDebug("Setting missing sort id: \(minSortId)")
+                    }
+                    // NOTE: "replaced" sort ids will not be written to YDB.
+                    interaction.replaceSortId(minSortId)
+                    sortId = minSortId
+                }
+                prevSortId = sortId
+
+                interaction.anyInsert(transaction: grdbTransaction.asAnyWrite)
+                recordCount += 1
                 memorySampler.sample()
             }
-            Logger.info("completed with recordCount: \(recordCount)")
+            Logger.info("Completed with recordCount: \(recordCount)")
         }
     }
 }
@@ -580,25 +706,30 @@ public class GRDBInteractionMigrator: GRDBMigrator {
 // MARK: -
 
 public class GRDBDecryptJobMigrator: GRDBMigrator {
+    public let label: String
     private let finder: LegacyDecryptJobFinder
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
+        self.label = "Migrate Jobs"
         self.finder = LegacyDecryptJobFinder(transaction: ydbTransaction)
     }
 
+    public var count: UInt {
+        return finder.count
+    }
+
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
-        try Bench(title: "Migrate decrypt jobs", memorySamplerRatio: 0.001) { memorySampler in
+        let count = self.count
+        Logger.info("\(label): \(count)")
+        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
             try finder.enumerateJobRecords { legacyJob in
                 let newJob = SSKMessageDecryptJobRecord(envelopeData: legacyJob.envelopeData, label: SSKMessageDecryptJobQueue.jobRecordLabel)
                 newJob.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 recordCount += 1
-                if (recordCount % 500 == 0) {
-                    Logger.debug("saved \(recordCount) decrypt jobs")
-                }
                 memorySampler.sample()
             }
-            Logger.info("completed with recordCount: \(recordCount)")
+            Logger.info("Completed with recordCount: \(recordCount)")
         }
     }
 }

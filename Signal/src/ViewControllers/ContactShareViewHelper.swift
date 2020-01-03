@@ -77,7 +77,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
         guard MFMessageComposeViewController.canSendText() else {
             Logger.info("Device cannot send text")
-            OWSAlerts.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
             return
         }
         let phoneNumbers = contactShare.e164PhoneNumbers()
@@ -94,36 +94,36 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     func showAddToContacts(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let actionSheet = ActionSheetController(title: nil, message: nil)
 
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
                                                                      comment: "Label for 'new contact' button in conversation settings view."),
                                             style: .default) { _ in
                                                 self.didPressCreateNewContact(contactShare: contactShare, fromViewController: fromViewController)
         })
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
                                                                      comment: "Label for 'new contact' button in conversation settings view."),
                                             style: .default) { _ in
                                                 self.didPressAddToExistingContact(contactShare: contactShare, fromViewController: fromViewController)
         })
-        actionSheet.addAction(OWSAlerts.cancelAction)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
 
-        fromViewController.presentAlert(actionSheet)
+        fromViewController.presentActionSheet(actionSheet)
     }
 
     private func showPhoneNumberPicker(phoneNumbers: [String], fromViewController: UIViewController, completion :@escaping ((String) -> Void)) {
 
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let actionSheet = ActionSheetController(title: nil, message: nil)
 
         for phoneNumber in phoneNumbers {
-            actionSheet.addAction(UIAlertAction(title: PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber),
+            actionSheet.addAction(ActionSheetAction(title: PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber),
                                                           style: .default) { _ in
                                                             completion(phoneNumber)
             })
         }
-        actionSheet.addAction(OWSAlerts.cancelAction)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
 
-        fromViewController.presentAlert(actionSheet)
+        fromViewController.presentActionSheet(actionSheet)
     }
 
     func didPressCreateNewContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {

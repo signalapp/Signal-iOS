@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UIImageView *cameraImageView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
-@property (nonatomic, nullable) UIImage *groupAvatar;
+@property (nonatomic, nullable) NSData *groupAvatarData;
 @property (nonatomic, nullable) NSSet<PickedRecipient *> *previousMemberRecipients;
 @property (nonatomic) NSMutableSet<PickedRecipient *> *memberRecipients;
 
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientPicker.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.recipientPicker.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     [self.recipientPicker.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
-    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.recipientPicker.view avoidNotch:NO];
+    [self.recipientPicker.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 }
 
 - (void)setHasUnsavedChanges:(BOOL)hasUnsavedChanges
@@ -190,10 +190,10 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
-    _groupAvatar = self.thread.groupModel.groupImage;
+    _groupAvatarData = self.thread.groupModel.groupAvatarData;
 
     UIImageView *cameraImageView = [UIImageView new];
-    [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
+    [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
     [threadInfoView addSubview:cameraImageView];
 
     [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
@@ -201,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
     cameraImageView.backgroundColor = Theme.backgroundColor;
     cameraImageView.layer.cornerRadius = 16;
     cameraImageView.layer.shadowColor =
-        [(Theme.isDarkThemeEnabled ? Theme.darkThemeOffBackgroundColor : Theme.primaryColor) CGColor];
+        [(Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : Theme.primaryTextColor) CGColor];
     cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
     cameraImageView.layer.shadowOpacity = 0.5;
     cameraImageView.layer.shadowRadius = 4;
@@ -215,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
     UITextField *groupNameTextField = [OWSTextField new];
     _groupNameTextField = groupNameTextField;
     self.groupNameTextField.text = [self.thread.groupModel.groupName ows_stripped];
-    groupNameTextField.textColor = [Theme primaryColor];
+    groupNameTextField.textColor = Theme.primaryTextColor;
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
     groupNameTextField.placeholder
         = NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT", @"Placeholder text for group name field");
@@ -281,11 +281,12 @@ NS_ASSUME_NONNULL_BEGIN
         return recipient.address;
     }];
 
-    NSString *groupName = [self.groupNameTextField.text ows_stripped];
-    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
-                                                           members:newMembersList
-                                                             image:self.groupAvatar
-                                                           groupId:self.thread.groupModel.groupId];
+    // GroupsV2 TODO: Use GroupManager.
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithGroupId:self.thread.groupModel.groupId
+                                                                name:self.groupNameTextField.text
+                                                          avatarData:self.groupAvatarData
+                                                             members:newMembersList
+                                                       groupsVersion:self.thread.groupModel.groupsVersion];
     [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
 }
 
@@ -298,11 +299,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarViewHelper showChangeAvatarUI];
 }
 
-- (void)setGroupAvatar:(nullable UIImage *)groupAvatar
+- (void)setGroupAvatarData:(nullable NSData *)groupAvatarData
 {
     OWSAssertIsOnMainThread();
 
-    _groupAvatar = groupAvatar;
+    _groupAvatarData = groupAvatarData;
 
     self.hasUnsavedChanges = YES;
 
@@ -311,7 +312,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAvatarView
 {
-    UIImage *_Nullable groupAvatar = self.groupAvatar;
+    UIImage *_Nullable groupAvatar;
+    if (self.groupAvatarData.length > 0) {
+        groupAvatar = [UIImage imageWithData:self.groupAvatarData];
+    }
     self.cameraImageView.hidden = groupAvatar != nil;
 
     if (!groupAvatar) {
@@ -333,33 +337,32 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    UIAlertController *alert = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
-                                     @"The alert title if user tries to exit update group view without saving changes.")
-                         message:
-                             NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
-                                 @"The alert message if user tries to exit update group view without saving changes.")
-                  preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
-                                                        @"The label for the 'save' button in action sheets.")
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"save")
-                                              style:UIAlertActionStyleDefault
-                                            handler:^(UIAlertAction *action) {
-                                                OWSAssertDebug(self.conversationSettingsViewDelegate);
+    ActionSheetController *alert = [[ActionSheetController alloc]
+        initWithTitle:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
+                          @"The alert title if user tries to exit update group view without saving changes.")
+              message:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
+                          @"The alert message if user tries to exit update group view without saving changes.")];
+    [alert addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"ALERT_SAVE",
+                                                                  @"The label for the 'save' button in action sheets.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"save")
+                                                        style:ActionSheetActionStyleDefault
+                                                      handler:^(ActionSheetAction *action) {
+                                                          OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-                                                [self updateGroup];
+                                                          [self updateGroup];
 
-                                                [self.conversationSettingsViewDelegate
-                                                    popAllConversationSettingsViewsWithCompletion:nil];
-                                            }]];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
-                                                        @"The label for the 'don't save' button in action sheets.")
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dont_save")
-                                              style:UIAlertActionStyleDestructive
-                                            handler:^(UIAlertAction *action) {
-                                                [self.navigationController popViewControllerAnimated:YES];
-                                            }]];
-    [self presentAlert:alert];
+                                                          [self.conversationSettingsViewDelegate
+                                                              popAllConversationSettingsViewsWithCompletion:nil];
+                                                      }]];
+    [alert addAction:[[ActionSheetAction alloc]
+                                   initWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
+                                                     @"The label for the 'don't save' button in action sheets.")
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dont_save")
+                                           style:ActionSheetActionStyleDestructive
+                                         handler:^(ActionSheetAction *action) {
+                                             [self.navigationController popViewControllerAnimated:YES];
+                                         }]];
+    [self presentActionSheet:alert];
 }
 
 - (void)updateGroupPressed
@@ -397,7 +400,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(image);
 
-    self.groupAvatar = image;
+    self.groupAvatarData = [TSGroupModel dataForGroupAvatar:image];
 }
 
 - (UIViewController *)fromViewController
@@ -422,11 +425,12 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isCurrentMember = [self.memberRecipients containsObject:recipient];
     BOOL isBlocked = [self.recipientPicker.contactsViewHelper isSignalServiceAddressBlocked:recipient.address];
     if (isPreviousMember) {
-        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
-                                          @"Title for alert indicating that group members can't be removed.")
-                              message:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
-                                          @"Title for alert indicating that group members can't "
-                                          @"be removed.")];
+        [OWSActionSheets
+            showActionSheetWithTitle:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
+                                         @"Title for alert indicating that group members can't be removed.")
+                             message:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
+                                         @"Title for alert indicating that group members can't "
+                                         @"be removed.")];
     } else if (isCurrentMember) {
         [self removeRecipient:recipient];
     } else if (isBlocked) {

@@ -14,7 +14,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     private let pinTextField = UITextField()
 
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
-    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
+    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
     private let validationWarningLabel = UILabel()
 
     enum PinAttemptState {
@@ -39,10 +39,12 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     }
 
     override public func loadView() {
-        super.loadView()
+        view = UIView()
+
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
 
         view.backgroundColor = Theme.backgroundColor
-        view.layoutMargins = .zero
 
         let titleText: String
         let explanationText: String
@@ -68,7 +70,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTextField.delegate = self
         pinTextField.isSecureTextEntry = true
         pinTextField.keyboardType = .numberPad
-        pinTextField.textColor = Theme.primaryColor
+        pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
@@ -78,7 +80,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTextField.autoSetDimension(.height, toSize: 40)
         pinTextField.accessibilityIdentifier = "onboarding.2fa.pinTextField"
 
-        validationWarningLabel.textColor = .ows_destructiveRed
+        validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "onboarding.2fa.validationWarningLabel"
         validationWarningLabel.numberOfLines = 0
@@ -106,13 +108,14 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
 
-        let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
-                                                              comment: "Label for the 'next' button."),
+        let nextButton = self.primaryButton(title: CommonStrings.nextButton,
                                      selector: #selector(nextPressed))
         nextButton.accessibilityIdentifier = "onboarding.2fa." + "nextButton"
+        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
+        let compressableBottomMargin = UIView.vStretchingSpacer(minHeight: 16, maxHeight: primaryLayoutMargins.bottom)
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -121,15 +124,16 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             topSpacer,
             pinStackRow,
             bottomSpacer,
-            nextButton
+            primaryButtonView,
+            compressableBottomMargin
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        primaryView.addSubview(stackView)
+
+        // Because of the keyboard, vertical spacing can get pretty cramped,
+        // so we have custom spacer logic.
+        stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
 
         // Ensure whitespace is balanced, so inputs are vertically centered.
@@ -149,7 +153,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     @objc func forgotPinLinkTapped() {
         Logger.info("")
 
-        OWSAlerts.showAlert(
+        OWSActionSheets.showActionSheet(
             title: NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
                                      comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'."),
             message: NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE",
@@ -252,7 +256,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
                                                       comment: "Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'.")
                 }
 
-                OWSAlerts.showAlert(
+                OWSActionSheets.showActionSheet(
                     title: NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_TITLE",
                                              comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'."),
                     message: String(format: formatMessage, remaining)

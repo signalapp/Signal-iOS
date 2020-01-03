@@ -81,6 +81,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"Recording transcript in thread: %@ timestamp: %llu", transcript.thread.uniqueId, transcript.timestamp);
 
+    if (![SDS fitsInInt64:transcript.timestamp]) {
+        OWSFailDebug(@"Invalid timestamp.");
+        return;
+    }
+
     if (transcript.isEndSessionMessage) {
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientAddress);
         [self.sessionStore deleteAllSessionsForAddress:transcript.recipientAddress transaction:transaction];
@@ -156,7 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
 
-            OWSLogDebug(@"downloading attachments for transcript: %lu", (unsigned long)transcript.timestamp);
+            OWSLogDebug(@"downloading attachments for transcript: %llu", transcript.timestamp);
 
             [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
                 message:outgoingMessage
@@ -174,9 +179,8 @@ NS_ASSUME_NONNULL_BEGIN
                     }];
                 }
                 failure:^(NSError *error) {
-                    OWSLogWarn(@"failed to fetch thumbnail for transcript: %lu with error: %@",
-                        (unsigned long)transcript.timestamp,
-                        error);
+                    OWSLogWarn(
+                        @"failed to fetch thumbnail for transcript: %llu with error: %@", transcript.timestamp, error);
                 }];
         }
     }
@@ -195,7 +199,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (!outgoingMessage.hasRenderableContent) {
+    if (!outgoingMessage.hasRenderableContent && !outgoingMessage.isViewOnceMessage) {
         OWSFailDebug(@"Ignoring message transcript for empty message.");
         return;
     }
@@ -205,6 +209,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                        nonUdRecipientAddresses:transcript.nonUdRecipientAddresses
                                                                   isSentUpdate:NO
                                                                    transaction:transaction];
+    // The insert and update methods above may start expiration for this message, but
+    // transcript.expirationStartedAt may be earlier, so we need to pass that to
+    // the OWSDisappearingMessagesJob in case it needs to back-date the expiration.
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:outgoingMessage
                                                      expirationStartedAt:transcript.expirationStartedAt
                                                              transaction:transaction];
@@ -240,6 +247,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSFailDebug(@"Unknown protocol version: %@", transcript.requiredProtocolVersion);
 
+    if (![SDS fitsInInt64:transcript.timestamp]) {
+        OWSFailDebug(@"Invalid timestamp.");
+        return;
+    }
+
     TSInteraction *message =
         [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:transcript.timestamp
                                                              thread:transcript.thread
@@ -269,6 +281,10 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = transcript.timestamp;
     if (timestamp < 1) {
         OWSFailDebug(@"'recipient update' transcript has invalid timestamp.");
+        return;
+    }
+    if (![SDS fitsInInt64:timestamp]) {
+        OWSFailDebug(@"Invalid timestamp.");
         return;
     }
 

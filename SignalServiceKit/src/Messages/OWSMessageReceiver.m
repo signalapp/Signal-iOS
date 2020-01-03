@@ -49,11 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;
@@ -129,7 +131,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (OWSMessageDecryptJob *_Nullable)nextJob
 {
     // POST GRDB TODO: Remove this queue & finder entirely.
-    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
+    if (StorageCoordinator.dataStoreForUI != DataStoreYdb) {
         OWSLogWarn(@"Not processing queue; obsolete.");
         return nil;
     }
@@ -377,6 +379,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     AssertOnDispatchQueue(self.serialQueue);
 
+    if (SSKFeatureFlags.suppressBackgroundActivity) {
+        // Don't process queues.
+        return;
+    }
+
     OWSMessageDecryptJob *_Nullable job = [self.finder nextJob];
     if (!job) {
         self.isDrainingQueue = NO;
@@ -505,6 +512,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return SSKEnvironment.shared.messageDecryptJobQueue;
 }
 
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 #pragma mark - class methods
 
 + (NSString *)databaseExtensionName
@@ -542,12 +554,12 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Unexpectedly large message.");
     }
 
-    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
-        // We *could* use this processing Queue for Yap *and* GRDB
-        [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData];
-    } else {
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
         [self.yapProcessingQueue enqueueEnvelopeData:envelopeData];
         [self.yapProcessingQueue drainQueue];
+    } else {
+        // We *could* use this processing Queue for Yap *and* GRDB
+        [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData];
     }
 }
 

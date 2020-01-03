@@ -134,6 +134,9 @@ public extension JobQueue {
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
+            guard self.isSetup else {
+                return
+            }
             DispatchQueue.global().async {
                 self.workStep()
             }
@@ -142,6 +145,11 @@ public extension JobQueue {
 
     func workStep() {
         Logger.debug("")
+
+        guard !FeatureFlags.suppressBackgroundActivity else {
+            // Don't process queues.
+            return
+        }
 
         guard isSetup else {
             if !CurrentAppContext().isRunningTests {
@@ -191,9 +199,13 @@ public extension JobQueue {
     }
 
     func restartOldJobs() {
+        guard !FeatureFlags.suppressBackgroundActivity else {
+            // Don't process queues.
+            return
+        }
         databaseStorage.write { transaction in
             let runningRecords = self.finder.allRecords(label: self.jobRecordLabel, status: .running, transaction: transaction)
-            Logger.info("marking old `running` JobRecords as ready: \(runningRecords.count)")
+            Logger.info("marking old `running` \(self.jobRecordLabel) JobRecords as ready: \(runningRecords.count)")
             for jobRecord in runningRecords {
                 do {
                     try jobRecord.saveRunningAsReady(transaction: transaction)
@@ -220,25 +232,30 @@ public extension JobQueue {
             owsFailDebug("already ready already")
             return
         }
-        self.restartOldJobs()
 
-        if self.requiresInternet {
-            NotificationCenter.default.addObserver(forName: .reachabilityChanged,
-                                                   object: self.reachabilityManager.observationContext,
-                                                   queue: nil) { _ in
-
-                                                    if self.reachabilityManager.isReachable {
-                                                        Logger.verbose("isReachable: true")
-                                                        self.becameReachable()
-                                                    } else {
-                                                        Logger.verbose("isReachable: false")
-                                                    }
+        DispatchQueue.global().async(.promise) {
+            self.restartOldJobs()
+        }.done { [weak self] in
+            guard let self = self else {
+                return
             }
-        }
+            if self.requiresInternet {
+                NotificationCenter.default.addObserver(forName: .reachabilityChanged,
+                                                       object: self.reachabilityManager.observationContext,
+                                                       queue: nil) { _ in
 
-        self.isSetup = true
+                                                        if self.reachabilityManager.isReachable {
+                                                            Logger.verbose("isReachable: true")
+                                                            self.becameReachable()
+                                                        } else {
+                                                            Logger.verbose("isReachable: false")
+                                                        }
+                }
+            }
 
-        self.startWorkWhenAppIsReady()
+            self.isSetup = true
+            self.startWorkWhenAppIsReady()
+        }.retainUntilComplete()
     }
 
     func remainingRetries(durableOperation: DurableOperationType) -> UInt {
@@ -318,6 +335,21 @@ extension JobRecordFinder {
             result.append(jobRecord)
         }
         return result
+    }
+}
+
+@objc
+public class JobRecordFinderObjC: NSObject {
+    private let jobRecordFinder = AnyJobRecordFinder<SSKJobRecord>()
+
+    @objc
+    public func enumerateJobRecords(label: String, transaction: SDSAnyReadTransaction, block: @escaping (SSKJobRecord, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        jobRecordFinder.enumerateJobRecords(label: label, transaction: transaction, block: block)
+    }
+
+    @objc
+    public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: SDSAnyReadTransaction, block: @escaping (SSKJobRecord, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        jobRecordFinder.enumerateJobRecords(label: label, status: status, transaction: transaction, block: block)
     }
 }
 

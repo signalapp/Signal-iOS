@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class Contact;
 @class ContactsViewHelper;
+@class SDSAnyReadTransaction;
 @class SignalAccount;
 @class TSThread;
 
@@ -21,15 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@protocol ContactEditingDelegate <CNContactViewControllerDelegate>
-
-- (void)didFinishEditingContact;
-
-@end
-
 #pragma mark -
 
 @class CNContact;
+@class CNContactViewController;
 @class OWSBlockingManager;
 @class OWSContactsManager;
 @class OWSProfileManager;
@@ -70,20 +66,19 @@ NS_ASSUME_NONNULL_BEGIN
 // NOTE: This method uses a transaction.
 - (SignalServiceAddress *)localAddress;
 
-- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText;
+- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
+                                                     transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)warmNonSignalContactsCacheAsync;
 - (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;
 
-- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
-                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                               editImmediately:(BOOL)shouldEditImmediately;
+- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                                      editImmediately:(BOOL)shouldEditImmediately;
 
 // This method can be used to edit existing contacts.
-- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
-                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                               editImmediately:(BOOL)shouldEditImmediately
-                        addToExistingCnContact:(CNContact *_Nullable)cnContact;
+- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                                      editImmediately:(BOOL)shouldEditImmediately
+                                               addToExistingCnContact:(CNContact *_Nullable)existingContact;
 
 + (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 

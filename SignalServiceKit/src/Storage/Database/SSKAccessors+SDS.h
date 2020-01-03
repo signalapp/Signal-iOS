@@ -10,19 +10,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSThread (SDS)
 
-@property (nonatomic, nullable, readonly) NSNumber *archivedAsOfMessageSortId;
 @property (nonatomic, copy, nullable, readonly) NSString *messageDraft;
-
-@property (nonatomic, nullable, readonly) NSDate *lastMessageDate DEPRECATED_ATTRIBUTE;
-@property (nonatomic, nullable, readonly) NSDate *archivalDate DEPRECATED_ATTRIBUTE;
 
 @end
 
 #pragma mark -
 
 @interface TSMessage (SDS)
-
-@property (nonatomic, readonly) NSUInteger schemaVersion;
 
 // This property is only intended to be used by GRDB queries.
 @property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
@@ -33,8 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSInfoMessage (SDS)
 
-@property (nonatomic, readonly) NSUInteger infoMessageSchemaVersion;
-
 @property (nonatomic, getter=wasRead) BOOL read;
 
 @end
@@ -44,8 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSErrorMessage (SDS)
 
 @property (nonatomic, getter=wasRead) BOOL read;
-
-@property (nonatomic, readonly) NSUInteger errorMessageSchemaVersion;
 
 @end
 
@@ -58,7 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL hasLegacyMessageState;
 @property (atomic, readonly)
     NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates;
-@property (nonatomic, readonly) NSUInteger outgoingMessageSchemaVersion;
 @property (nonatomic, readonly) TSOutgoingMessageState storedMessageState;
 
 @end
@@ -80,8 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, getter=wasRead) BOOL read;
 
-@property (nonatomic, readonly) NSUInteger callSchemaVersion;
-
 @end
 
 #pragma mark -
@@ -89,15 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSIncomingMessage (SDS)
 
 @property (nonatomic, getter=wasRead) BOOL read;
-@property (nonatomic, readonly) NSUInteger incomingMessageSchemaVersion;
-
-@end
-
-#pragma mark -
-
-@interface TSAttachment (SDS)
-
-@property (nonatomic, readonly) NSUInteger attachmentSchemaVersion;
 
 @end
 
@@ -157,27 +135,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface SignalAccount (SDS)
-
-@property (nonatomic, readonly) NSUInteger accountSchemaVersion;
-
-@end
-
-#pragma mark -
-
-@interface SignalRecipient (SDS)
-
-@property (nonatomic, readonly) NSUInteger recipientSchemaVersion;
-
-@end
-
-#pragma mark -
-
 @interface TSContactThread (SDS)
 
 @property (nonatomic, nullable, readonly) NSString *contactPhoneNumber;
 @property (nonatomic, nullable, readonly) NSString *contactUUID;
-@property (nonatomic, readonly) NSUInteger contactThreadSchemaVersion;
 
 @end
 
@@ -185,7 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSUserProfile (SDS)
 
-@property (atomic, readonly) NSUInteger userProfileSchemaVersion;
 @property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
 @property (atomic, nullable, readonly) NSString *recipientUUID;
 
@@ -197,42 +157,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable, readonly) NSString *senderPhoneNumber;
 @property (nonatomic, nullable, readonly) NSString *senderUUID;
-@property (nonatomic, readonly) NSUInteger linkedDeviceReadReceiptSchemaVersion;
 
 @end
 
 #pragma mark -
 
-@interface OWSRecipientIdentity (SDS)
+@interface OWSReaction (SDS)
 
-@property (nonatomic, readonly) NSUInteger recipientIdentitySchemaVersion;
-
-@end
-
-#pragma mark -
-
-@interface TSGroupModel (SDS)
-
-@property (nonatomic, readonly) NSUInteger groupModelSchemaVersion;
+@property (nonatomic, readonly, nullable) NSString *reactorE164;
+@property (nonatomic, readonly, nullable) NSString *reactorUUID;
 
 @end
-
-#pragma mark -
-
-@interface TSRecipientReadReceipt (SDS)
-
-@property (nonatomic, readonly) NSUInteger recipientReadReceiptSchemaVersion;
-
-@end
-
-#pragma mark -
-
-@interface OWSUnknownProtocolVersionMessage (SDS)
-
-@property (nonatomic, readonly) NSUInteger unknownProtocolVersionMessageSchemaVersion;
-
-@end
-
-#pragma mark -
 
 NS_ASSUME_NONNULL_END

@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import SignalCoreKit
 
 // TODO: We need to revise this.
@@ -30,6 +30,9 @@ public class SDSColumnMetadata: NSObject {
     @objc
     public let isOptional: Bool
 
+    @objc
+    public let isUnique: Bool
+
     // If true, this column isn't needed for deserialization and can be skipped in SELECT statements.
     @objc
     public let skipSelect: Bool
@@ -38,10 +41,11 @@ public class SDSColumnMetadata: NSObject {
     public let columnIndex: Int32
 
     @objc
-    public init(columnName: String, columnType: SDSColumnType, isOptional: Bool = false, skipSelect: Bool = false, columnIndex: Int32 = 0) {
+    public init(columnName: String, columnType: SDSColumnType, isOptional: Bool = false, isUnique: Bool = false, skipSelect: Bool = false, columnIndex: Int32 = 0) {
         self.columnName = columnName
         self.columnType = columnType
         self.isOptional = isOptional
+        self.isUnique = isUnique
         self.skipSelect = skipSelect
         self.columnIndex = columnIndex
     }
@@ -83,47 +87,5 @@ public class SDSTableMetadata: NSObject {
 
     public var columnNames: [String] {
         return columns.map { $0.columnName }
-    }
-
-    // MARK: - Table Creation
-
-    public var hasValidTableName: Bool {
-        // Only allow a-z, 0-9, and underscore
-        let regex = try! NSRegularExpression(pattern: "^[a-zA-Z0-9_]+$", options: [])
-        return regex.hasMatch(input: tableName)
-    }
-
-    public func createTable(database: Database) throws {
-        if !hasValidTableName {
-            owsFail("Invalid table name: \(tableName)")
-        }
-
-        try database.create(table: tableName) { (table) in
-            for columnMetadata in self.columns {
-                let column: ColumnDefinition
-                switch columnMetadata.columnType {
-                case .primaryKey:
-                    column = table.autoIncrementedPrimaryKey(columnMetadata.columnName)
-                case .unicodeString:
-                    column = table.column(columnMetadata.columnName, .text)
-                case .blob:
-                    column = table.column(columnMetadata.columnName, .blob)
-                case .bool:
-                    column = table.column(columnMetadata.columnName, .boolean)
-                case .int:
-                    column = table.column(columnMetadata.columnName, .integer)
-                case .int64:
-                    // GRDB TODO: What's the right column type here?
-                    column = table.column(columnMetadata.columnName, .integer)
-                case .double:
-                    // GRDB TODO: What's the right column type here?
-                    column = table.column(columnMetadata.columnName, .double)
-                }
-
-                if !columnMetadata.isOptional {
-                    column.notNull()
-                }
-            }
-        }
     }
 }

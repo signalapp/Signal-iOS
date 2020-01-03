@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .production
+let build: FeatureBuild = .production
 
 // MARK: -
 
@@ -26,14 +26,18 @@ let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .production
 public enum StorageMode: Int {
     // Only use YDB.  This should be used in production until we ship
     // the YDB-to-GRDB migration.
-    case ydb
+    case ydbForAll
     // Use GRDB, migrating if possible on every launch.
     // If no YDB database exists, a throwaway db is not used.
     //
     // Supercedes grdbMigratesFreshDBEveryLaunch.
     case grdbThrowawayIfMigrating
+    // Use GRDB under certain conditions.
+    case grdbForAlreadyMigrated
+    case grdbForLegacyUsersOnly
+    case grdbForNewUsersOnly
     // Use GRDB, migrating once if necessary.
-    case grdb
+    case grdbForAll
     // These modes can be used while running tests.
     // They are more permissive than the release modes.
     //
@@ -48,19 +52,22 @@ public enum StorageMode: Int {
 extension StorageMode: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .ydb:
-            return ".ydb"
+        case .ydbForAll:
+            return ".ydbForAll"
         case .grdbThrowawayIfMigrating:
             return ".grdbThrowawayIfMigrating"
-        case .grdb:
-            return ".grdb"
+        case .grdbForAlreadyMigrated:
+            return ".grdbForAlreadyMigrated"
+        case .grdbForLegacyUsersOnly:
+            return ".grdbForLegacyUsersOnly"
+        case .grdbForNewUsersOnly:
+            return ".grdbForNewUsersOnly"
+        case .grdbForAll:
+            return ".grdbForAll"
         case .ydbTests:
             return ".ydbTests"
         case .grdbTests:
             return ".grdbTests"
-        default:
-            owsFailDebug("unexpected StorageMode: \(self)")
-            return ".unknown"
         }
     }
 }
@@ -90,9 +97,10 @@ public class FeatureFlags: NSObject {
     @objc
     public static var storageMode: StorageMode {
         if CurrentAppContext().isRunningTests {
-            return .ydbTests
+            // We should be running the tests using both .ydbTests or .grdbTests.
+            return .grdbTests
         } else {
-            return .ydb
+            return .grdbForAll
         }
     }
 
@@ -104,6 +112,22 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
+    public static var preserveYdb: Bool {
+        return false
+    }
+
+    @objc
+    public static let uuidCapabilities = !isUsingProductionService
+
+    @objc
+    public static var canRevertToYDB: Bool {
+        // Only developers should be allowed to use YDB after migrating to GRDB.
+        // We don't want to let QA, public beta or production users risk
+        // data loss.
+        return build == .dev
+    }
+
+    @objc
     public static var audibleErrorLogging = build.includes(.internalPreview)
 
     @objc
@@ -112,19 +136,16 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let shouldPadAllOutgoingAttachments = false
-
-    @objc
     public static let stickerReceive = true
 
     // Don't consult this flag directly; instead consult
     // StickerManager.isStickerSendEnabled.  Sticker sending is
     // auto-enabled once the user receives any sticker content.
     @objc
-    public static let stickerSend = build.includes(.qa)
+    public static let stickerSend = true
 
     @objc
-    public static let stickerSharing = build.includes(.qa)
+    public static let stickerSharing = true
 
     @objc
     public static let stickerAutoEnable = true
@@ -153,12 +174,12 @@ public class FeatureFlags: NSObject {
     public static let onlyModernNotificationClearance = build.includes(.beta)
 
     @objc
-    public static let registrationLockV2 = !IsUsingProductionService() && build.includes(.dev)
+    public static let registrationLockV2 = build.includes(.dev)
 
     @objc
     public static var allowUUIDOnlyContacts: Bool {
         // TODO UUID: Remove production check once this rolls out to prod service
-        if OWSIsDebugBuild() && !IsUsingProductionService() {
+        if OWSIsDebugBuild() && !isUsingProductionService {
             return true
         } else {
             return false
@@ -169,13 +190,13 @@ public class FeatureFlags: NSObject {
     public static var pinsForEveryone = build.includes(.dev)
 
     @objc
-    public static let useOnlyModernContactDiscovery = !IsUsingProductionService() && build.includes(.dev)
+    public static let useOnlyModernContactDiscovery = !isUsingProductionService && build.includes(.dev)
 
     @objc
     public static let phoneNumberPrivacy = false
 
     @objc
-    public static let socialGraphOnServer = registrationLockV2 && !IsUsingProductionService() && build.includes(.dev)
+    public static let socialGraphOnServer = registrationLockV2 && build.includes(.dev)
 
     @objc
     public static let cameraFirstCaptureFlow = true
@@ -184,11 +205,42 @@ public class FeatureFlags: NSObject {
     public static let complainAboutSlowDBWrites = true
 
     @objc
-    public static let usernames = !IsUsingProductionService() && build.includes(.dev)
+    public static let usernames = allowUUIDOnlyContacts && build.includes(.dev)
 
     @objc
-    public static let messageRequest = build.includes(.qa)
+    public static let messageRequest = build.includes(.dev) && socialGraphOnServer
 
     @objc
-    public static let profileDisplayChanges = build.includes(.qa)
+    public static let profileDisplayChanges = build.includes(.dev)
+
+    // This can be used to shut down various background operations.
+    @objc
+    public static let suppressBackgroundActivity = false
+
+    @objc
+    public static let verboseAboutView = build.includes(.qa)
+
+    @objc
+    public static let logSQLQueries = build.includes(.dev)
+
+    @objc
+    public static var calling: Bool {
+        // TODO MULTIRING
+        return TSAccountManager.sharedInstance().isRegisteredPrimaryDevice
+    }
+
+    @objc
+    public static let tryToCreateGroupsV2 = false
+
+    @objc
+    public static let linkedPhones = build.includes(.internalPreview)
+
+    @objc
+    public static let reactionReceive = true
+
+    @objc
+    public static let reactionSend = build.includes(.qa)
+
+    @objc
+    public static let isUsingProductionService = true
 }

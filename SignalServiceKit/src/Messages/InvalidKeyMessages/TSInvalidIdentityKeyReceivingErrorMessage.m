@@ -32,7 +32,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
     SSKProtoEnvelope *_Nullable _envelope;
 }
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 // We no longer create these messages, but they might exist on legacy clients so it's useful to be able to
 // create them with the debug UI
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -77,7 +77,8 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -93,16 +94,15 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-       errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
                          timestamp:timestamp
@@ -118,9 +118,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
-         errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
                               read:read
                   recipientAddress:recipientAddress];

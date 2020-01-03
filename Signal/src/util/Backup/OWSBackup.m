@@ -880,6 +880,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         [OWSBackupFragment anyEnumerateWithTransaction:transaction
+                                               batched:YES
                                                  block:^(OWSBackupFragment *fragment, BOOL *stop) {
                                                      OWSLogVerbose(@"fragment: %@, %@, %lu, %@, %@, %@, %@",
                                                          fragment.uniqueId,

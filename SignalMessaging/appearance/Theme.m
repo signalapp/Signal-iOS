@@ -3,8 +3,8 @@
 //
 
 #import "Theme.h"
-#import "UIColor+OWS.h"
 #import "UIUtil.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -12,12 +12,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const ThemeDidChangeNotification = @"ThemeDidChangeNotification";
 
-NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
-
+NSString *const ThemeKeyLegacyThemeEnabled = @"ThemeKeyThemeEnabled";
+NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 @interface Theme ()
 
 @property (nonatomic) NSNumber *isDarkThemeEnabledNumber;
+@property (nonatomic) NSNumber *cachedCurrentThemeNumber;
 
 @end
 
@@ -28,6 +29,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
+}
+
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
 }
 
 #pragma mark -
@@ -44,11 +50,37 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     static dispatch_once_t onceToken;
     static Theme *instance;
     dispatch_once(&onceToken, ^{
-        instance = [Theme new];
+        instance = [[self alloc] initDefault];
     });
 
     return instance;
 }
+
+- (instancetype)initDefault
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    OWSSingletonAssert();
+
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [self notifyIfDarkThemeEnabled];
+    }];
+
+    return self;
+}
+
+- (void)notifyIfDarkThemeEnabled
+{
+    if (self.isDarkThemeEnabled) {
+        [self themeDidChange];
+    }
+}
+
+#pragma mark -
 
 + (BOOL)isDarkThemeEnabled
 {
@@ -59,37 +91,152 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 {
     OWSAssertIsOnMainThread();
 
-    if (!CurrentAppContext().isMainApp) {
-        // Ignore theme in app extensions.
+    if (!self.storageCoordinator.isStorageReady) {
+        // Don't cache this value until it reflects the data store.
         return NO;
     }
 
     if (self.isDarkThemeEnabledNumber == nil) {
-        __block BOOL isDarkThemeEnabled;
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            isDarkThemeEnabled =
-                [Theme.keyValueStore getBool:ThemeKeyThemeEnabled defaultValue:NO transaction:transaction];
-        }];
+        BOOL isDarkThemeEnabled;
+
+        if (!CurrentAppContext().isMainApp) {
+            // Always respect the system theme in extensions
+            isDarkThemeEnabled = self.isSystemDarkThemeEnabled;
+        } else {
+            switch ([self getOrFetchCurrentTheme]) {
+                case ThemeMode_System:
+                    isDarkThemeEnabled = self.isSystemDarkThemeEnabled;
+                    break;
+                case ThemeMode_Dark:
+                    isDarkThemeEnabled = YES;
+                    break;
+                case ThemeMode_Light:
+                    isDarkThemeEnabled = NO;
+                    break;
+            }
+        }
+
         self.isDarkThemeEnabledNumber = @(isDarkThemeEnabled);
     }
 
     return self.isDarkThemeEnabledNumber.boolValue;
 }
 
-+ (void)setIsDarkThemeEnabled:(BOOL)value
++ (ThemeMode)getOrFetchCurrentTheme
 {
-    return [self.sharedInstance setIsDarkThemeEnabled:value];
+    return [self.sharedInstance getOrFetchCurrentTheme];
 }
 
-- (void)setIsDarkThemeEnabled:(BOOL)value
+- (ThemeMode)getOrFetchCurrentTheme
+{
+    if (self.cachedCurrentThemeNumber) {
+        return self.cachedCurrentThemeNumber.unsignedIntegerValue;
+    }
+
+    if (!self.storageCoordinator.isStorageReady) {
+        return ThemeMode_Light;
+    }
+
+    __block ThemeMode currentMode;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        BOOL hasDefinedMode = [Theme.keyValueStore hasValueForKey:ThemeKeyCurrentMode transaction:transaction];
+        if (!hasDefinedMode) {
+            // If the theme has not yet been defined, check if the user ever manually changed
+            // themes in a legacy app version. If so, preserve their selection. Otherwise,
+            // default to matching the system theme.
+            if (![Theme.keyValueStore hasValueForKey:ThemeKeyLegacyThemeEnabled transaction:transaction]) {
+                currentMode = ThemeMode_System;
+            } else {
+                BOOL isLegacyModeDark = [Theme.keyValueStore getBool:ThemeKeyLegacyThemeEnabled
+                                                        defaultValue:NO
+                                                         transaction:transaction];
+                currentMode = isLegacyModeDark ? ThemeMode_Dark : ThemeMode_Light;
+            }
+        } else {
+            currentMode = [Theme.keyValueStore getUInt:ThemeKeyCurrentMode
+                                          defaultValue:ThemeMode_System
+                                           transaction:transaction];
+        }
+    }];
+
+    self.cachedCurrentThemeNumber = @(currentMode);
+    return currentMode;
+}
+
++ (void)setCurrentTheme:(ThemeMode)mode
+{
+    [self.sharedInstance setCurrentTheme:mode];
+}
+
+- (void)setCurrentTheme:(ThemeMode)mode
 {
     OWSAssertIsOnMainThread();
 
-    self.isDarkThemeEnabledNumber = @(value);
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [Theme.keyValueStore setBool:value key:ThemeKeyThemeEnabled transaction:transaction];
+        [Theme.keyValueStore setUInt:mode key:ThemeKeyCurrentMode transaction:transaction];
     }];
 
+    NSNumber *previousMode = self.isDarkThemeEnabledNumber;
+
+    switch (mode) {
+        case ThemeMode_Light:
+            self.isDarkThemeEnabledNumber = @(NO);
+            break;
+        case ThemeMode_Dark:
+            self.isDarkThemeEnabledNumber = @(YES);
+            break;
+        case ThemeMode_System:
+            self.isDarkThemeEnabledNumber = @(self.isSystemDarkThemeEnabled);
+            break;
+    }
+
+    self.cachedCurrentThemeNumber = @(mode);
+
+    if (![previousMode isEqual:self.isDarkThemeEnabledNumber]) {
+        [self themeDidChange];
+    }
+}
+
+- (BOOL)isSystemDarkThemeEnabled
+{
+    // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
+#ifdef __IPHONE_13_0
+    if (@available(iOS 13, *)) {
+        return UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+    } else {
+        return NO;
+    }
+#else
+    return NO;
+#endif
+}
+
+#pragma mark -
+
++ (void)systemThemeChanged
+{
+    [self.sharedInstance systemThemeChanged];
+}
+
+- (void)systemThemeChanged
+{
+    // Do nothing, since we haven't setup the theme yet.
+    if (self.isDarkThemeEnabledNumber == nil) {
+        return;
+    }
+
+    // Theme can only be changed externally when in system mode.
+    if ([self getOrFetchCurrentTheme] != ThemeMode_System) {
+        return;
+    }
+
+    // The system theme has changed since the user was last in the app.
+    self.isDarkThemeEnabledNumber = @(self.isSystemDarkThemeEnabled);
+    [self themeDidChange];
+}
+
+- (void)themeDidChange
+{
     [UIUtil setupSignalAppearence];
 
     [UIView performWithoutAnimation:^{
@@ -97,32 +244,44 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     }];
 }
 
+#pragma mark -
+
 + (UIColor *)backgroundColor
 {
     return (Theme.isDarkThemeEnabled ? Theme.darkThemeBackgroundColor : UIColor.ows_whiteColor);
 }
 
-+ (UIColor *)darkThemeOffBackgroundColor
++ (UIColor *)secondaryBackgroundColor
 {
-    return [UIColor colorWithWhite:0.2f alpha:1.f];
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_gray02Color);
 }
 
-+ (UIColor *)offBackgroundColor
++ (UIColor *)washColor
 {
-    return (Theme.isDarkThemeEnabled ? self.darkThemeOffBackgroundColor : UIColor.ows_gray05Color);
+    return (Theme.isDarkThemeEnabled ? self.darkThemeWashColor : UIColor.ows_gray05Color);
 }
 
-+ (UIColor *)primaryColor
++ (UIColor *)darkThemeWashColor
+{
+    return UIColor.ows_gray75Color;
+}
+
++ (UIColor *)primaryTextColor
 {
     return (Theme.isDarkThemeEnabled ? Theme.darkThemePrimaryColor : UIColor.ows_gray90Color);
 }
 
-+ (UIColor *)secondaryColor
++ (UIColor *)primaryIconColor
 {
-    return (Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryColor : UIColor.ows_gray60Color);
+    return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarIconColor : UIColor.ows_gray75Color);
 }
 
-+ (UIColor *)darkThemeSecondaryColor
++ (UIColor *)secondaryTextAndIconColor
+{
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : UIColor.ows_gray60Color);
+}
+
++ (UIColor *)darkThemeSecondaryTextAndIconColor
 {
     return UIColor.ows_gray25Color;
 }
@@ -144,12 +303,22 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)hairlineColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray25Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray15Color);
 }
 
 + (UIColor *)outlineColor
 {
     return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray15Color;
+}
+
++ (UIColor *)reactionBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_whiteColor;
+}
+
++ (UIColor *)backdropColor
+{
+    return UIColor.ows_blackAlpha40Color;
 }
 
 #pragma mark - Global App Colors
@@ -164,19 +333,14 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return UIColor.ows_blackColor;
 }
 
-+ (UIColor *)navbarIconColor
-{
-    return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarIconColor : UIColor.ows_gray60Color);
-}
-
 + (UIColor *)darkThemeNavbarIconColor
 {
-    return UIColor.ows_gray25Color;
+    return UIColor.ows_gray15Color;
 }
 
 + (UIColor *)navbarTitleColor
 {
-    return Theme.primaryColor;
+    return Theme.primaryTextColor;
 }
 
 + (UIColor *)toolbarBackgroundColor
@@ -186,7 +350,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)conversationInputBackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ?  UIColor.ows_gray75Color : [UIColor colorWithRGBHex:0xefefef]);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray05Color);
 }
 
 + (UIColor *)attachmentKeyboardItemBackgroundColor
@@ -211,7 +375,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)cursorColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_materialBlueColor;
+    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_signalBlueColor;
 }
 
 + (UIColor *)darkThemeBackgroundColor
@@ -269,7 +433,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)searchFieldBackgroundColor
 {
-    return Theme.offBackgroundColor;
+    return Theme.washColor;
 }
 
 #pragma mark -

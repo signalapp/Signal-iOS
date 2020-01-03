@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import SignalCoreKit
 
 // TODO: Perhaps we should replace all of these with assertionError.

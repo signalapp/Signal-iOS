@@ -52,6 +52,11 @@ public class StickerKeyboard: CustomKeyboard {
                                                selector: #selector(stickersOrPacksDidChange),
                                                name: StickerManager.stickersOrPacksDidChange,
                                                object: nil)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardFrameDidChange),
+                                               name: UIResponder.keyboardDidChangeFrameNotification,
+                                               object: nil)
     }
 
     required public init(coder: NSCoder) {
@@ -85,6 +90,8 @@ public class StickerKeyboard: CustomKeyboard {
     }
 
     private func reloadStickers() {
+        let oldStickerPacks = stickerPacks
+
         databaseStorage.read { (transaction) in
             self.stickerPacks = StickerManager.installedStickerPacks(transaction: transaction).sorted {
                 $0.dateCreated > $1.dateCreated
@@ -108,12 +115,18 @@ public class StickerKeyboard: CustomKeyboard {
         packsCollectionView.items = items
 
         guard stickerPacks.count > 0 else {
-            selectedStickerPack = nil
+            _ = resignFirstResponder()
             return
         }
 
-        // Update paging to reflect any potentially new ordering of sticker packs
-        selectedPackChanged(oldSelectedPack: nil)
+        guard oldStickerPacks != stickerPacks else { return }
+
+        // If the selected pack was uninstalled, select the first pack.
+        if let selectedStickerPack = selectedStickerPack, !stickerPacks.contains(selectedStickerPack) {
+            self.selectedStickerPack = stickerPacks.first
+        }
+
+        resetStickerPages()
     }
 
     private static let packCoverSize: CGFloat = 32
@@ -152,7 +165,7 @@ public class StickerKeyboard: CustomKeyboard {
     }
 
     private func buildHeaderButton(_ imageName: String, block: @escaping () -> Void) -> UIView {
-        let button = OWSButton(imageName: imageName, tintColor: Theme.secondaryColor, block: block)
+        let button = OWSButton(imageName: imageName, tintColor: Theme.secondaryTextAndIconColor, block: block)
         button.setContentHuggingHigh()
         button.setCompressionResistanceHigh()
         return button
@@ -173,9 +186,7 @@ public class StickerKeyboard: CustomKeyboard {
         updateHeaderView()
     }
 
-    public override func orientationDidChange() {
-        super.orientationDidChange()
-
+    @objc func keyboardFrameDidChange() {
         Logger.verbose("")
 
         updatePageConstraints(ignoreScrollingState: true)
@@ -208,7 +219,7 @@ public class StickerKeyboard: CustomKeyboard {
 
     // MARK: - Paging
 
-    /// This array always includes three collection views, where the indeces represent:
+    /// This array always includes three collection views, where the indices represent:
     /// 0 - Previous Page
     /// 1 - Current Page
     /// 2 - Next Page
@@ -353,6 +364,18 @@ public class StickerKeyboard: CustomKeyboard {
         updatePageConstraints()
 
         // Update the selected pack in the top bar.
+        packsCollectionView.updateSelections()
+    }
+
+    private func resetStickerPages() {
+        currentPageCollectionView.showInstalledPackOrRecents(stickerPack: selectedStickerPack)
+        previousPageCollectionView.showInstalledPackOrRecents(stickerPack: previousPageStickerPack)
+        nextPageCollectionView.showInstalledPackOrRecents(stickerPack: nextPageStickerPack)
+
+        pendingPageChangeUpdates = nil
+
+        updatePageConstraints()
+
         packsCollectionView.updateSelections()
     }
 

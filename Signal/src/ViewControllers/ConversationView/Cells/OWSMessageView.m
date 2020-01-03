@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)senderNameFont
 {
-    return UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+    return UIFont.ows_dynamicTypeCaption1Font.ows_semibold;
 }
 
 + (NSDictionary *)senderNamePrimaryAttributes

@@ -6,9 +6,9 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
-#import <SignalServiceKit/OWSSyncManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -45,8 +45,17 @@ NSString *const OWSPreferencesKeyShouldNotifyOfNewAccountKey = @"OWSPreferencesK
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsYdbReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKey_IsGrdbReadyForAppExtensions = @"IsGrdbReadyForAppExtensions";
+NSString *const OWSPreferencesKey_IsAudibleErrorLoggingEnabled = @"IsAudibleErrorLoggingEnabled";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
 NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKeyIsViewOnceMessagesEnabled";
+
+@interface OWSPreferences ()
+
+@property (atomic, nullable) NSNumber *notificationPreviewTypeCache;
+
+@end
+
+#pragma mark -
 
 @implementation OWSPreferences
 
@@ -167,7 +176,7 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
 
 + (BOOL)isReadyForAppExtensions
 {
-    if (SSKFeatureFlags.storageMode == StorageModeGrdb && !self.isGrdbReadyForAppExtensions) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb && !self.isGrdbReadyForAppExtensions) {
         return NO;
     }
     return self.isYdbReadyForAppExtensions;
@@ -191,6 +200,25 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
 + (void)setIsGrdbReadyForAppExtensions
 {
     [self setAppUserDefaultsFlagWithKey:OWSPreferencesKey_IsGrdbReadyForAppExtensions];
+}
+
++ (BOOL)isAudibleErrorLoggingEnabled
+{
+    NSNumber *_Nullable persistedValue =
+        [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKey_IsAudibleErrorLoggingEnabled];
+
+    if (persistedValue == nil) {
+        // default
+        return NO;
+    }
+
+    return persistedValue.boolValue;
+}
+
++ (void)setIsAudibleErrorLoggingEnabled:(BOOL)value
+{
+    [NSUserDefaults.appUserDefaults setObject:@(value) forKey:OWSPreferencesKey_IsAudibleErrorLoggingEnabled];
+    [NSUserDefaults.appUserDefaults synchronize];
 }
 
 + (BOOL)appUserDefaultsFlagWithKey:(NSString *)key
@@ -280,11 +308,16 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
     return [self boolForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators defaultValue:NO];
 }
 
-- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value
+- (void)setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage:(BOOL)value
 {
     [self setBool:value forKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators];
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+}
+
+- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.keyValueStore setBool:value key:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators transaction:transaction];
 }
 
 - (BOOL)shouldNotifyOfNewAccountsWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -477,12 +510,21 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
 - (void)setNotificationPreviewType:(NotificationType)value
 {
     [self setUInt:(NSUInteger)value forKey:OWSPreferencesKeyNotificationPreviewType];
+
+    self.notificationPreviewTypeCache = @(value);
 }
 
 - (NotificationType)notificationPreviewType
 {
-    return (NotificationType)
-        [self uintForKey:OWSPreferencesKeyNotificationPreviewType defaultValue:(NSUInteger)NotificationNamePreview];
+    NSNumber *_Nullable cachedValue = self.notificationPreviewTypeCache;
+    if (cachedValue != nil) {
+        return (NotificationType)cachedValue.unsignedIntegerValue;
+    }
+
+    NotificationType result = (NotificationType)[self uintForKey:OWSPreferencesKeyNotificationPreviewType
+                                                    defaultValue:(NSUInteger)NotificationNamePreview];
+    self.notificationPreviewTypeCache = @(result);
+    return result;
 }
 
 - (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType

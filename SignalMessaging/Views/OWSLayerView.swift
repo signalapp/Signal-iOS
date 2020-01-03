@@ -7,6 +7,9 @@ import Foundation
 @objc
 public class OWSLayerView: UIView {
     @objc
+    public var shouldAnimate = true
+
+    @objc
     public var layoutCallback: ((UIView) -> Void)
 
     @objc
@@ -30,19 +33,36 @@ public class OWSLayerView: UIView {
 
     public override var bounds: CGRect {
         didSet {
-            layoutCallback(self)
+            if oldValue != bounds {
+                layoutCallback(self)
+            }
         }
     }
 
     public override var frame: CGRect {
         didSet {
-            layoutCallback(self)
+            if oldValue != frame {
+                layoutCallback(self)
+            }
         }
     }
 
     public override var center: CGPoint {
         didSet {
+            if oldValue != center {
+                layoutCallback(self)
+            }
+        }
+    }
+
+    public func updateContent() {
+        if shouldAnimate {
             layoutCallback(self)
+        } else {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            layoutCallback(self)
+            CATransaction.commit()
         }
     }
 }

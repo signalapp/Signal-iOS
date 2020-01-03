@@ -78,10 +78,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     weak var localCaptureSession: AVCaptureSession?
     weak var remoteVideoTrack: RTCVideoTrack?
 
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     var shouldRemoteVideoControlsBeHidden = false {
         didSet {
             updateCallUI(callState: call.state)
@@ -178,14 +174,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         ensureProximityMonitoring()
 
         updateCallUI(callState: call.state)
-
-        self.becomeFirstResponder()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        self.becomeFirstResponder()
     }
 
     override func loadView() {
@@ -223,7 +211,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
+        return UIDevice.current.isIPad ? .all : .portrait
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -352,7 +340,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                                                                               comment: "Label for button that shows the privacy settings."),
                                                       font: OWSFlatButton.fontForHeight(buttonHeight),
                                                       titleColor: UIColor.white,
-                                                      backgroundColor: UIColor.ows_signalBrandBlue,
+                                                      backgroundColor: UIColor.ows_signalBlue,
                                                       target: self,
                                                       selector: #selector(didPressShowCallSettings))
         viewStack.addSubview(callSettingsButton)
@@ -364,7 +352,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                                                                         comment: "Label for button that dismiss the call view's settings nag."),
                                                 font: OWSFlatButton.fontForHeight(buttonHeight),
                                                 titleColor: UIColor.white,
-                                                backgroundColor: UIColor.ows_signalBrandBlue,
+                                                backgroundColor: UIColor.ows_signalBlue,
                                                 target: self,
                                                 selector: #selector(didPressDismissNag))
         viewStack.addSubview(notNowButton)
@@ -453,23 +441,21 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func presentAudioSourcePicker() {
         AssertIsOnMainThread()
 
-        let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let actionSheetController = ActionSheetController(title: nil, message: nil)
 
-        let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel, handler: nil)
+        let dismissAction = ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel)
         actionSheetController.addAction(dismissAction)
 
         let currentAudioSource = callUIAdapter.audioService.currentAudioSource(call: self.call)
         for audioSource in self.appropriateAudioSources {
-            let routeAudioAction = UIAlertAction(title: audioSource.localizedName, style: .default) { _ in
+            let routeAudioAction = ActionSheetAction(title: audioSource.localizedName, style: .default) { _ in
                 self.callUIAdapter.setAudioSource(call: self.call, audioSource: audioSource)
             }
 
-            // HACK: private API to create checkmark for active audio source.
-            routeAudioAction.setValue(currentAudioSource == audioSource, forKey: "checked")
-
-            // TODO: pick some icons. Leaving out for MVP
-            // HACK: private API to add image to actionsheet
-            // routeAudioAction.setValue(audioSource.image, forKey: "image")
+            // create checkmark for active audio source.
+            if currentAudioSource == audioSource {
+                routeAudioAction.trailingIcon = .checkCircle
+            }
 
             actionSheetController.addAction(routeAudioAction)
         }
@@ -477,7 +463,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // Note: It's critical that we present from this view and
         // not the "frontmost view controller" since this view may
         // reside on a separate window.
-        presentAlert(actionSheetController)
+        presentActionSheet(actionSheetController)
     }
 
     func updateAvatarImage() {
@@ -961,7 +947,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         dismissIfPossible(shouldDelay: false, ignoreNag: true, completion: {
             // Find the frontmost presented UIViewController from which to present the
             // settings views.
-            let fromViewController = UIApplication.shared.findFrontmostViewController(ignoringAlerts: true)
+            let fromViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts
             assert(fromViewController != nil)
 
             // Construct the "settings" view & push the "privacy settings" view.
@@ -996,7 +982,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     @objc func didTapLeaveCall(sender: UIButton) {
-        OWSWindowManager.shared().leaveCallView()
+        OWSWindowManager.shared.leaveCallView()
     }
 
     // MARK: - CallObserver
@@ -1181,7 +1167,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     internal func dismissImmediately(completion: (() -> Void)?) {
         if CallViewController.kShowCallViewOnSeparateWindow {
-            OWSWindowManager.shared().endCall(self)
+            OWSWindowManager.shared.endCall(self)
             completion?()
         } else {
             self.dismiss(animated: true, completion: completion)

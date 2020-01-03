@@ -4,7 +4,7 @@
 
 import Foundation
 
-#if DEBUG
+#if TESTABLE_BUILD
 /// A helper for tests which can initializes Signal Protocol sessions
 /// and then encrypt and decrypt messages for those sessions.
 public struct TestProtocolRunner {
@@ -171,6 +171,7 @@ public struct LocalSignalClient: SignalClient {
     }
 }
 
+var envelopeId: UInt64 = 0
 public struct FakeService {
     public let localClient: LocalSignalClient
     public let runner: TestProtocolRunner
@@ -184,13 +185,13 @@ public struct FakeService {
         return SDSDatabaseStorage.shared
     }
 
-    public func envelopeBuilder(fromSenderClient senderClient: SignalClient) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
-        let now = NSDate.ows_millisecondTimeStamp()
-        let builder = SSKProtoEnvelope.builder(timestamp: now)
+    public func envelopeBuilder(fromSenderClient senderClient: SignalClient, bodyText: String? = nil) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
+        envelopeId += 1
+        let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
         builder.setType(.ciphertext)
         builder.setSourceDevice(senderClient.deviceId)
 
-        let content = try buildEncryptedContentData(fromSenderClient: senderClient)
+        let content = try buildEncryptedContentData(fromSenderClient: senderClient, bodyText: bodyText)
         builder.setContent(content)
 
         // builder.setServerTimestamp(serverTimestamp)
@@ -199,9 +200,9 @@ public struct FakeService {
         return builder
     }
 
-    public func buildEncryptedContentData(fromSenderClient senderClient: SignalClient) throws -> Data {
-        let plaintext = try buildContentData()
-        let cipherMessage: CipherMessage = databaseStorage.writeReturningResult { transaction in
+    public func buildEncryptedContentData(fromSenderClient senderClient: SignalClient, bodyText: String?) throws -> Data {
+        let plaintext = try buildContentData(bodyText: bodyText)
+        let cipherMessage: CipherMessage = databaseStorage.write { transaction in
             return try! self.runner.encrypt(plaintext: plaintext,
                                             senderClient: senderClient,
                                             recipientAccountId: self.localClient.accountId(transaction: transaction),
@@ -212,10 +213,13 @@ public struct FakeService {
         return cipherMessage.serialized()
     }
 
-    public func buildContentData() throws -> Data {
-        let messageText = "Those who stands for nothing will fall for anything"
+    public func buildContentData(bodyText: String?) throws -> Data {
         let dataMessageBuilder = SSKProtoDataMessage.builder()
-        dataMessageBuilder.setBody(messageText)
+        if let bodyText = bodyText {
+            dataMessageBuilder.setBody(bodyText)
+        } else {
+            dataMessageBuilder.setBody(CommonGenerator.paragraph)
+        }
 
         let contentBuilder = SSKProtoContent.builder()
         contentBuilder.setDataMessage(try dataMessageBuilder.build())

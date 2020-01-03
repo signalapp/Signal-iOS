@@ -222,18 +222,32 @@ message DataMessage {
     optional AttachmentPointer data = 4;
   }
 
+  message Reaction {
+    // @required
+    optional string emoji      = 1;
+    // @required
+    optional bool   remove     = 2;
+    optional string authorE164 = 3;
+    optional string authorUuid = 4;
+    // @required
+    optional uint64 timestamp  = 5;
+  }
+
   enum ProtocolVersion {
     option allow_alias = true;
 
-    INITIAL = 0;
-    MESSAGE_TIMERS = 1;
-    VIEW_ONCE = 2;
-    CURRENT = 2;
+    INITIAL         = 0;
+    MESSAGE_TIMERS  = 1;
+    VIEW_ONCE       = 2;
+    VIEW_ONCE_VIDEO = 3;
+    REACTIONS       = 4; 
+    CURRENT         = 4;
   }
 
   optional string            body                    =  1;
   repeated AttachmentPointer attachments             =  2;
   optional GroupContext      group                   =  3;
+  optional GroupContextV2    groupV2                 = 15;
   optional uint32            flags                   =  4;
   optional uint32            expireTimer             =  5;
   optional bytes             profileKey              =  6;
@@ -244,6 +258,7 @@ message DataMessage {
   optional Sticker           sticker                 = 11;
   optional uint32            requiredProtocolVersion = 12;
   optional bool              isViewOnce              = 14;
+  optional Reaction          reaction                = 16;
 }
 
 message NullMessage {
@@ -314,6 +329,7 @@ message SyncMessage {
       GROUPS        = 2;
       BLOCKED       = 3;
       CONFIGURATION = 4;
+      KEYS          = 5;
     }
 
     optional Type type = 1;
@@ -327,10 +343,11 @@ message SyncMessage {
   }
 
   message Configuration {
-    optional bool readReceipts                   = 1;
-    optional bool unidentifiedDeliveryIndicators = 2;
-    optional bool typingIndicators               = 3;
-    optional bool linkPreviews                   = 4;
+    optional bool   readReceipts                   = 1;
+    optional bool   unidentifiedDeliveryIndicators = 2;
+    optional bool   typingIndicators               = 3;
+    optional bool   linkPreviews                   = 4;
+    optional uint32 provisioningVersion            = 5;
   }
 
   message StickerPackOperation {
@@ -352,6 +369,20 @@ message SyncMessage {
       optional uint64 timestamp  = 2;
   }
 
+  message FetchLatest {
+    enum Type {
+      UNKNOWN          = 0;
+      LOCAL_PROFILE    = 1;
+      STORAGE_MANIFEST = 2;
+    }
+
+    optional Type type = 1;
+  }
+
+  message Keys {
+    optional bytes storageService = 1;
+  }
+
   optional Sent                 sent                 =  1;
   optional Contacts             contacts             =  2;
   optional Groups               groups               =  3;
@@ -363,6 +394,8 @@ message SyncMessage {
   optional bytes                padding              =  8;
   repeated StickerPackOperation stickerPackOperation = 10;
   optional ViewOnceOpen         viewOnceOpen         = 11;
+  optional FetchLatest          fetchLatest          = 12;
+  optional Keys                 keys                 = 13;
 }
 
 message AttachmentPointer {
@@ -382,6 +415,7 @@ message AttachmentPointer {
   optional uint32  width       = 9;
   optional uint32  height      = 10;
   optional string  caption     = 11;
+  optional string  blurHash    = 12;
 }
 
 message GroupContext {
@@ -409,6 +443,12 @@ message GroupContext {
   repeated Member            members     = 6;
 }
 
+message GroupContextV2 {
+  optional bytes  masterKey   = 1;
+  optional uint32 revision    = 2;
+  optional bytes  groupChange = 3;
+}
+
 message ContactDetails {
   message Avatar {
     optional string contentType = 1;
@@ -424,6 +464,8 @@ message ContactDetails {
   optional bytes    profileKey  = 6;
   optional bool     blocked     = 7;
   optional uint32   expireTimer = 8;
+  optional uint32   inboxPosition = 10;
+  optional bool archived = 11;
 }
 
 message GroupDetails {
@@ -450,6 +492,8 @@ message GroupDetails {
   optional string color       = 7;
   optional bool   blocked     = 8;
   repeated Member members     = 9;
+  optional uint32 inboxPosition = 10;
+  optional bool archived = 11;
 }
 
 message Pack {

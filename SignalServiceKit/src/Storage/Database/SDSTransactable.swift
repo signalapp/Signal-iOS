@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import PromiseKit
 
 // A base class for SDSDatabaseStorage and SDSAnyDatabaseQueue.
@@ -60,14 +60,14 @@ public extension SDSTransactable {
 public extension SDSTransactable {
     @objc
     func writePromise(_ block: @escaping (SDSAnyWriteTransaction) -> Void) -> AnyPromise {
-        return AnyPromise(writePromise(block) as Promise<Void>)
+        return AnyPromise(write(.promise, block) as Promise<Void>)
     }
 
-    func writePromise(_ block: @escaping (SDSAnyWriteTransaction) -> Void) -> Promise<Void> {
+    func write<T>(_: PMKNamespacer, _ block: @escaping (SDSAnyWriteTransaction) -> T) -> Promise<T> {
         return Promise { resolver in
-            self.asyncWrite(block: block,
-                            completionQueue: .global(),
-                            completion: { resolver.fulfill(()) })
+            DispatchQueue.global().async {
+                resolver.fulfill(self.write(block: block))
+            }
         }
     }
 }
@@ -75,7 +75,7 @@ public extension SDSTransactable {
 // MARK: - Value Methods
 
 public extension SDSTransactable {
-    public func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
+    func read<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
         var value: T!
         read { (transaction) in
             value = block(transaction)
@@ -83,7 +83,7 @@ public extension SDSTransactable {
         return value
     }
 
-    public func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) throws -> T) throws -> T {
+    func read<T>(block: @escaping (SDSAnyReadTransaction) throws -> T) throws -> T {
         var value: T!
         var thrown: Error?
         read { (transaction) in
@@ -95,16 +95,32 @@ public extension SDSTransactable {
         }
 
         if let error = thrown {
-            throw error
+            throw error.grdbErrorForLogging
         }
 
         return value
     }
 
-    public func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
+    func write<T>(block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
         var value: T!
         write { (transaction) in
             value = block(transaction)
+        }
+        return value
+    }
+
+    func write<T>(block: @escaping (SDSAnyWriteTransaction) throws -> T) throws -> T {
+        var value: T!
+        var thrown: Error?
+        write { (transaction) in
+            do {
+                value = try block(transaction)
+            } catch {
+                thrown = error
+            }
+        }
+        if let error = thrown {
+            throw error.grdbErrorForLogging
         }
         return value
     }

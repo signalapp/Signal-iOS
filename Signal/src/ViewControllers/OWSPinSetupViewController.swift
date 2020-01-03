@@ -10,7 +10,7 @@ public class PinSetupViewController: OWSViewController {
     private let pinTextField = UITextField()
 
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
-    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
+    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
     private let validationWarningLabel = UILabel()
 
     enum Mode {
@@ -47,6 +47,7 @@ public class PinSetupViewController: OWSViewController {
     private let completionHandler: () -> Void
 
     init(mode: Mode, initialMode: Mode? = nil, completionHandler: @escaping () -> Void) {
+        assert(TSAccountManager.sharedInstance().isRegisteredPrimaryDevice)
         self.mode = mode
         self.initialMode = initialMode ?? mode
         self.completionHandler = completionHandler
@@ -127,7 +128,7 @@ public class PinSetupViewController: OWSViewController {
             let topButton = UIButton()
             let topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
 
-            topButton.setTemplateImage(topButtonImage, tintColor: Theme.secondaryColor)
+            topButton.setTemplateImage(topButtonImage, tintColor: Theme.secondaryTextAndIconColor)
             topButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
             topButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
 
@@ -139,8 +140,8 @@ public class PinSetupViewController: OWSViewController {
             // Title
 
             let label = UILabel()
-            label.textColor = Theme.primaryColor
-            label.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semiBold()
+            label.textColor = Theme.primaryTextColor
+            label.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semibold()
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
             label.textAlignment = .center
@@ -172,7 +173,7 @@ public class PinSetupViewController: OWSViewController {
         // Explanation
 
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Theme.secondaryColor
+        explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
 
         let placeholderText: String
@@ -185,7 +186,7 @@ public class PinSetupViewController: OWSViewController {
             let explanationBoldText = NSLocalizedString("PIN_CREATION_BOLD_EXPLANATION",
                                                         comment: "The bold portion of the explanation in the 'pin creation' view.")
 
-            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
+            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold()])
 
             explanationLabel.attributedText = attributedExplanation
 
@@ -197,7 +198,7 @@ public class PinSetupViewController: OWSViewController {
             let explanationBoldText = NSLocalizedString("PIN_CREATION_RECREATION_BOLD_EXPLANATION",
                                                         comment: "The bold portion of the re-creation explanation in the 'pin creation' view.")
 
-            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
+            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold()])
 
             explanationLabel.attributedText = attributedExplanation
 
@@ -218,7 +219,7 @@ public class PinSetupViewController: OWSViewController {
 
         pinTextField.delegate = self
         pinTextField.keyboardType = .numberPad
-        pinTextField.textColor = Theme.primaryColor
+        pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
@@ -229,7 +230,7 @@ public class PinSetupViewController: OWSViewController {
         pinTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [.foregroundColor: Theme.placeholderColor])
         pinTextField.accessibilityIdentifier = "pinCreation.pinTextField"
 
-        validationWarningLabel.textColor = .ows_destructiveRed
+        validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "pinCreation.validationWarningLabel"
 
@@ -248,19 +249,19 @@ public class PinSetupViewController: OWSViewController {
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
 
-        let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         let buttonHeight = OWSFlatButton.heightForFont(font)
         let nextButton = OWSFlatButton.button(
-            title: NSLocalizedString("BUTTON_NEXT",
-                                     comment: "Label for the 'next' button."),
+            title: CommonStrings.nextButton,
             font: font,
             titleColor: .white,
-            backgroundColor: .ows_materialBlue,
+            backgroundColor: .ows_signalBlue,
             target: self,
             selector: #selector(nextPressed)
         )
         nextButton.autoSetDimension(.height, toSize: buttonHeight)
         nextButton.accessibilityIdentifier = "pinCreation.nextButton"
+        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -271,7 +272,7 @@ public class PinSetupViewController: OWSViewController {
             pinStackRow,
             bottomSpacer,
             UIView.spacer(withHeight: 10),
-            nextButton
+            primaryButtonView
         ]
 
         if let topRow = topRow {
@@ -388,7 +389,7 @@ public class PinSetupViewController: OWSViewController {
                 OWS2FAManager.shared().disable2FA(success: nil, failure: nil)
 
                 modalVC.dismiss {
-                    OWSAlerts.showErrorAlert(message: NSLocalizedString("ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA", comment: "Error indicating that attempt to enable 'two-factor auth' failed."))
+                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA", comment: "Error indicating that attempt to enable 'two-factor auth' failed."))
                 }
             })
         }

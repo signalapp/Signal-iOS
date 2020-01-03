@@ -27,10 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                      emojiString:(nullable NSString *)emojiString
                             info:(StickerInfo *)info
-NS_SWIFT_NAME(init(uniqueId:emojiString:info:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:emojiString:info:));
 
 // clang-format on
 

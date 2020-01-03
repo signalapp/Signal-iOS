@@ -182,7 +182,7 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     OWSAssertDebug(transaction);
 
-    if (!message.hasPerConversationExpiration) {
+    if (!message.shouldStartExpireTimer) {
         return;
     }
 
@@ -238,10 +238,7 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSLogInfo(@"becoming consistent with disappearing message configuration: %@",
         disappearingMessagesConfiguration.dictionaryValue);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
     // MJK TODO - should be safe to remove this senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
@@ -284,6 +281,15 @@ void AssertIsOnDisappearingMessagesQueue()
         [self runLoop];
     });
 }
+
+#ifdef TESTABLE_BUILD
+- (void)syncPassForTests
+{
+    dispatch_sync(OWSDisappearingMessagesJob.serialQueue, ^{
+        [self runLoop];
+    });
+}
+#endif
 
 - (NSDateFormatter *)dateFormatter
 {
@@ -398,7 +404,7 @@ void AssertIsOnDisappearingMessagesQueue()
     NSMutableArray<NSString *> *messageIds = [NSMutableArray new];
     [self.disappearingMessagesFinder
         enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *message, BOOL *stop) {
-            OWSFailDebug(@"starting old timer for message timestamp: %lu", (unsigned long)message.timestamp);
+            OWSFailDebug(@"starting old timer for message timestamp: %llu", message.timestamp);
 
             [messageIds addObject:message.uniqueId];
         }

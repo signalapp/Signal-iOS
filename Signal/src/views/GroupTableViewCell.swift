@@ -27,9 +27,9 @@ import SignalServiceKit
 
         // Font config
         nameLabel.font = .ows_dynamicTypeBody
-        nameLabel.textColor = Theme.primaryColor
+        nameLabel.textColor = Theme.primaryTextColor
         subtitleLabel.font = UIFont.ows_regularFont(withSize: 11.0)
-        subtitleLabel.textColor = Theme.secondaryColor
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
 
         // Layout
 
@@ -49,7 +49,7 @@ import SignalServiceKit
         columns.autoPinEdgesToSuperviewMargins()
 
         // Accessory Label
-        accessoryLabel.font = .ows_mediumFont(withSize: 13)
+        accessoryLabel.font = .ows_semiboldFont(withSize: 13)
         accessoryLabel.textColor = Theme.middleGrayColor
         accessoryLabel.textAlignment = .right
         accessoryLabel.isHidden = true

@@ -7,6 +7,7 @@
 #import "NSTimer+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSError.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,7 +49,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)dealloc
 {
-    OWSLogDebug(@"in dealloc");
+    OWSLogDebug(@"[%@]", self.class);
 }
 
 #pragma mark - Subclass Overrides
@@ -115,10 +116,17 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 #pragma mark - NSOperation overrides
 
+- (NSString *)eventId
+{
+    return [NSString stringWithFormat:@"operation-%p", self];
+}
+
 // Do not override this method in a subclass instead, override `run`
 - (void)main
 {
-    OWSLogDebug(@"started.");
+    OWSLogDebug(@"[%@] started: %@", self.class, self.eventId);
+    [BenchManager startEventWithTitle:[NSString stringWithFormat:@"%@-%p", self.class, self]
+                              eventId:self.eventId];
     NSError *_Nullable preconditionError = [self checkForPreconditionError];
     if (preconditionError) {
         [self failOperationWithError:preconditionError];
@@ -155,7 +163,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // These methods are not intended to be subclassed
 - (void)reportSuccess
 {
-    OWSLogDebug(@"succeeded.");
+    OWSLogDebug(@"[%@] succeeded", self.class);
     [self didSucceed];
     [self markAsComplete];
 }
@@ -163,7 +171,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // These methods are not intended to be subclassed
 - (void)reportCancelled
 {
-    OWSLogDebug(@"cancelled.");
+    OWSLogDebug(@"[%@] cancelled", self.class);
     [self didCancel];
     [self markAsComplete];
 }
@@ -226,7 +234,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)failOperationWithError:(NSError *)error
 {
-    OWSLogDebug(@"failed terminally.");
+    OWSLogDebug(@"[%@] failed terminally", self.class);
     self.failingError = error;
 
     [self didFailWithError:error];
@@ -267,6 +275,8 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
     [self didChangeValueForKey:OWSOperationKeyIsExecuting];
     [self didChangeValueForKey:OWSOperationKeyIsFinished];
+
+    [BenchManager completeEventWithEventId:self.eventId];
 }
 
 @end

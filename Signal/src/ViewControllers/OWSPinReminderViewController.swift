@@ -13,7 +13,7 @@ public class PinReminderViewController: OWSViewController {
     private let pinTextField = UITextField()
 
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
-    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
+    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
     private let validationWarningLabel = UILabel()
 
     enum ValidationState {
@@ -73,8 +73,8 @@ public class PinReminderViewController: OWSViewController {
         // Title
 
         let titleLabel = UILabel()
-        titleLabel.textColor = Theme.primaryColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle3Clamped.ows_semiBold()
+        titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.font = UIFont.ows_dynamicTypeTitle3Clamped.ows_semibold()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -86,7 +86,7 @@ public class PinReminderViewController: OWSViewController {
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.textColor = Theme.secondaryColor
+        explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
         explanationLabel.accessibilityIdentifier = "pinReminder.explanationLabel"
         explanationLabel.text = NSLocalizedString("PIN_REMINDER_EXPLANATION", comment: "The explanation for the 'pin reminder' dialog.")
@@ -95,7 +95,7 @@ public class PinReminderViewController: OWSViewController {
 
         pinTextField.delegate = self
         pinTextField.keyboardType = .numberPad
-        pinTextField.textColor = Theme.primaryColor
+        pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
@@ -105,7 +105,7 @@ public class PinReminderViewController: OWSViewController {
         pinTextField.autoSetDimension(.height, toSize: 40)
         pinTextField.accessibilityIdentifier = "pinReminder.pinTextField"
 
-        validationWarningLabel.textColor = .ows_destructiveRed
+        validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "pinReminder.validationWarningLabel"
 
@@ -124,14 +124,14 @@ public class PinReminderViewController: OWSViewController {
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
 
-        let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         let buttonHeight = OWSFlatButton.heightForFont(font)
         let submitButton = OWSFlatButton.button(
             title: NSLocalizedString("BUTTON_SUBMIT",
                                      comment: "Label for the 'submit' button."),
             font: font,
             titleColor: .white,
-            backgroundColor: .ows_materialBlue,
+            backgroundColor: .ows_signalBlue,
             target: self,
             selector: #selector(submitPressed)
         )
@@ -141,7 +141,7 @@ public class PinReminderViewController: OWSViewController {
         // Secondary button
         let forgotButton = UIButton()
         forgotButton.setTitle(NSLocalizedString("PIN_REMINDER_FORGOT_PIN", comment: "Text asking if the user forgot their pin for the 'pin reminder' dialog."), for: .normal)
-        forgotButton.setTitleColor(.ows_materialBlue, for: .normal)
+        forgotButton.setTitleColor(.ows_signalBlue, for: .normal)
         forgotButton.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
         forgotButton.addTarget(self, action: #selector(forgotPressed), for: .touchUpInside)
         forgotButton.accessibilityIdentifier = "pinReminder.forgotButton"

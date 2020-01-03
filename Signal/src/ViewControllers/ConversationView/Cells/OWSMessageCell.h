@@ -6,6 +6,7 @@
 
 @class OWSMessageBubbleView;
 @class OWSMessageStickerView;
+@class OWSMessageView;
 @class OWSMessageViewOnceView;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,9 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic, readonly) OWSMessageStickerView *messageStickerView;
 @property (nonatomic, readonly) OWSMessageViewOnceView *messageViewOnceView;
+@property (nonatomic, readonly) OWSMessageView *messageView;
 
-@property (nonatomic, readonly) UITapGestureRecognizer *tapGestureRecognizer;
+@property (nonatomic, readonly) UITapGestureRecognizer *messageViewTapGestureRecognizer;
+@property (nonatomic, readonly) UITapGestureRecognizer *contentViewTapGestureRecognizer;
 @property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
 + (NSString *)cellReuseIdentifier;
 

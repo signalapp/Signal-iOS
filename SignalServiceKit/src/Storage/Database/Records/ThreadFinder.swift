@@ -3,38 +3,61 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 public protocol ThreadFinder {
     associatedtype ReadTransaction
 
     func visibleThreadCount(isArchived: Bool, transaction: ReadTransaction) throws -> UInt
     func enumerateVisibleThreads(isArchived: Bool, transaction: ReadTransaction, block: @escaping (TSThread) -> Void) throws
+    func sortIndex(thread: TSThread, transaction: ReadTransaction) throws -> UInt?
 }
 
-public class AnyThreadFinder: ThreadFinder {
+@objc
+public class AnyThreadFinder: NSObject, ThreadFinder {
     public typealias ReadTransaction = SDSAnyReadTransaction
 
     let grdbAdapter: GRDBThreadFinder = GRDBThreadFinder()
     let yapAdapter: YAPDBThreadFinder = YAPDBThreadFinder()
 
-    public init() { }
-
     public func visibleThreadCount(isArchived: Bool, transaction: SDSAnyReadTransaction) throws -> UInt {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
-            return try grdbAdapter.visibleThreadCount(isArchived: isArchived, transaction: grdb.database)
+            return try grdbAdapter.visibleThreadCount(isArchived: isArchived, transaction: grdb)
         case .yapRead(let yap):
             return yapAdapter.visibleThreadCount(isArchived: isArchived, transaction: yap)
         }
     }
 
+    @objc
     public func enumerateVisibleThreads(isArchived: Bool, transaction: SDSAnyReadTransaction, block: @escaping (TSThread) -> Void) throws {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
-            try grdbAdapter.enumerateVisibleThreads(isArchived: isArchived, transaction: grdb.database, block: block)
+            try grdbAdapter.enumerateVisibleThreads(isArchived: isArchived, transaction: grdb, block: block)
         case .yapRead(let yap):
             yapAdapter.enumerateVisibleThreads(isArchived: isArchived, transaction: yap, block: block)
+        }
+    }
+
+    @objc
+    public func sortIndexObjc(thread: TSThread, transaction: ReadTransaction) -> NSNumber? {
+        do {
+            guard let value = try sortIndex(thread: thread, transaction: transaction) else {
+                return nil
+            }
+            return NSNumber(value: value)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return nil
+        }
+    }
+
+    public func sortIndex(thread: TSThread, transaction: SDSAnyReadTransaction) throws -> UInt? {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdb):
+            return try grdbAdapter.sortIndex(thread: thread, transaction: grdb)
+        case .yapRead(let yap):
+            return yapAdapter.sortIndex(thread: thread, transaction: yap)
         }
     }
 }
@@ -64,6 +87,36 @@ struct YAPDBThreadFinder: ThreadFinder {
         }
     }
 
+    func sortIndex(thread: TSThread, transaction: YapDatabaseReadTransaction) -> UInt? {
+        guard let view = ext(transaction) else {
+            owsFailDebug("view was unexpectedly nil")
+            return nil
+        }
+
+        var index: UInt = 0
+        var group: NSString?
+        let wasFound = view.getGroup(&group,
+                                     index: &index,
+                                     forKey: thread.uniqueId,
+                                     inCollection: TSThread.collection())
+        if wasFound, let group = group {
+            let numberOfItems = view.numberOfItems(inGroup: group as String)
+            guard numberOfItems > 0 else {
+                owsFailDebug("numberOfItems <= 0")
+                return nil
+            }
+            // since in yap our Inbox uses reversed sorting, our index must be reversed
+            let reverseIndex = (Int(numberOfItems) - 1) - Int(index)
+            guard reverseIndex >= 0 else {
+                owsFailDebug("reverseIndex was < 0")
+                return nil
+            }
+            return UInt(reverseIndex)
+        } else {
+            return nil
+        }
+    }
+
     // MARK: -
 
     private static let extensionName: String = TSThreadDatabaseViewExtensionName
@@ -78,67 +131,60 @@ struct YAPDBThreadFinder: ThreadFinder {
 }
 
 struct GRDBThreadFinder: ThreadFinder {
-    typealias ReadTransaction = Database
+
+    typealias ReadTransaction = GRDBReadTransaction
 
     static let cn = ThreadRecord.columnName
 
-    func visibleThreadCount(isArchived: Bool, transaction: Database) throws -> UInt {
-        guard let count = try UInt.fetchOne(transaction, sql: """
+    func visibleThreadCount(isArchived: Bool, transaction: GRDBReadTransaction) throws -> UInt {
+        let sql = """
             SELECT COUNT(*)
-            FROM (
-                SELECT
-                    \( threadColumn: .shouldThreadBeVisible),
-                    CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
-                        WHEN 1 THEN 1
-                        ELSE 0
-                    END isArchived
-                FROM \(ThreadRecord.databaseTableName)
-                LEFT JOIN (
-                    SELECT
-                        MAX(\(interactionColumn: .id)) as maxInteractionId,
-                        \(interactionColumn: .threadUniqueId)
-                    FROM \(InteractionRecord.databaseTableName)
-                    GROUP BY \(interactionColumn: .threadUniqueId)
-                ) latestInteractions
-                ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
-            )
-            WHERE isArchived = ?
-            AND \(threadColumn: .shouldThreadBeVisible) = 1
-            """,
-            arguments: [isArchived]) else {
-                owsFailDebug("count was unexpectedly nil")
-                return 0
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+            AND \(threadColumn: .isArchived) = ?
+        """
+        let arguments: StatementArguments = [isArchived]
+
+        guard let count = try UInt.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            owsFailDebug("count was unexpectedly nil")
+            return 0
         }
 
         return count
     }
 
-    func enumerateVisibleThreads(isArchived: Bool, transaction: Database, block: @escaping (TSThread) -> Void) throws {
-        try ThreadRecord.fetchCursor(transaction, sql: """
+    func enumerateVisibleThreads(isArchived: Bool, transaction: GRDBReadTransaction, block: @escaping (TSThread) -> Void) throws {
+        let sql = """
             SELECT *
-            FROM (
-                SELECT
-                    \(ThreadRecord.databaseTableName).*,
-                    CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
-                        WHEN 1 THEN 1
-                        ELSE 0
-                    END isArchived
-                FROM \(ThreadRecord.databaseTableName)
-                LEFT JOIN (
-                    SELECT
-                        MAX(\(interactionColumn: .id)) as maxInteractionId,
-                        \(interactionColumn: .threadUniqueId)
-                    FROM \(InteractionRecord.databaseTableName)
-                    GROUP BY \(interactionColumn: .threadUniqueId)
-                ) latestInteractions
-                ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
-                ORDER BY maxInteractionId DESC
-            )
-            WHERE isArchived = ?
-            AND \( threadColumn: .shouldThreadBeVisible) = 1
-            """,
-            arguments: [isArchived]).forEach { threadRecord in
-                block(try TSThread.fromRecord(threadRecord))
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+            AND \(threadColumn: .isArchived) = ?
+            ORDER BY \(threadColumn: .lastInteractionRowId) DESC
+            """
+        let arguments: StatementArguments = [isArchived]
+
+        try ThreadRecord.fetchCursor(transaction.database, sql: sql, arguments: arguments).forEach { threadRecord in
+            block(try TSThread.fromRecord(threadRecord))
         }
+    }
+
+    func sortIndex(thread: TSThread, transaction: GRDBReadTransaction) throws -> UInt? {
+        let sql = """
+        SELECT sortIndex
+        FROM (
+            SELECT
+                (ROW_NUMBER() OVER (ORDER BY \(threadColumn: .lastInteractionRowId) DESC) - 1) as sortIndex,
+                \(threadColumn: .id)
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+        )
+        WHERE \(threadColumn: .id) = ?
+        """
+        guard let grdbId = thread.grdbId, grdbId.intValue > 0 else {
+            throw OWSAssertionError("grdbId was unexpectedly nil")
+        }
+
+        let arguments: StatementArguments = [grdbId.intValue]
+        return try UInt.fetchOne(transaction.database, sql: sql, arguments: arguments)
     }
 }

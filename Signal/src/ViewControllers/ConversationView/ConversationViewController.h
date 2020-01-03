@@ -33,6 +33,16 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 - (void)peekSetup;
 - (void)popped;
 
+#pragma mark - Keyboard Shortcuts
+
+- (void)showConversationSettings;
+- (void)focusInputToolbar;
+- (void)openAllMedia;
+- (void)openStickerKeyboard;
+- (void)openAttachmentKeyboard;
+- (void)openGifSearch;
+- (void)dismissMessageActionsAnimated:(BOOL)animated;
+
 @end
 
 #pragma mark - Internal Methods. Used in extensions
@@ -46,6 +56,8 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
+@property (nonatomic, readonly) BOOL isViewVisible;
+@property (nonatomic, readonly) BOOL isPresentingMessageActions;
 
 @end
 

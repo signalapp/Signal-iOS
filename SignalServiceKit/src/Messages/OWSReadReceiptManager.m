@@ -78,19 +78,19 @@ NSUInteger const TSRecipientReadReceiptSchemaVersion = 1;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     recipientMap:(NSDictionary<SignalServiceAddress *,NSNumber *> *)recipientMap
-recipientReadReceiptSchemaVersion:(NSUInteger)recipientReadReceiptSchemaVersion
                    sentTimestamp:(uint64_t)sentTimestamp
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;
     }
 
     _recipientMap = recipientMap;
-    _recipientReadReceiptSchemaVersion = recipientReadReceiptSchemaVersion;
     _sentTimestamp = sentTimestamp;
 
     return self;
@@ -272,6 +272,11 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)process
 {
+    if (SSKFeatureFlags.suppressBackgroundActivity) {
+        // Don't process queues.
+        return;
+    }
+
     @synchronized(self)
     {
         OWSLogVerbose(@"Processing read receipts.");
@@ -501,6 +506,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             OWSFailDebug(@"messageIdTimestamp was unexpectedly 0");
             continue;
         }
+        if (![SDS fitsInInt64:messageIdTimestamp]) {
+            OWSFailDebug(@"Invalid messageIdTimestamp.");
+            continue;
+        }
 
         NSError *error;
         NSArray<TSIncomingMessage *> *messages = (NSArray<TSIncomingMessage *> *)[InteractionFinder
@@ -656,18 +665,23 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     return [self.areReadReceiptsEnabledCached boolValue];
 }
 
-- (void)setAreReadReceiptsEnabled:(BOOL)value
+- (void)setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration:(BOOL)value
 {
     OWSLogInfo(@"setAreReadReceiptsEnabled: %d.", value);
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [OWSReadReceiptManager.keyValueStore setBool:value
-                                                 key:OWSReadReceiptManagerAreReadReceiptsEnabled
-                                         transaction:transaction];
+        [self setAreReadReceiptsEnabled:value transaction:transaction];
     }];
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+}
 
+
+- (void)setAreReadReceiptsEnabled:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [OWSReadReceiptManager.keyValueStore setBool:value
+                                             key:OWSReadReceiptManagerAreReadReceiptsEnabled
+                                     transaction:transaction];
     self.areReadReceiptsEnabledCached = @(value);
 }
 

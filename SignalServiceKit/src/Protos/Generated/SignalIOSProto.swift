@@ -11,51 +11,55 @@ public enum SignalIOSProtoError: Error {
     case invalidProtobuf(description: String)
 }
 
+// MARK: - SignalIOSProtoBackupSnapshotBackupEntityType
+
+@objc
+public enum SignalIOSProtoBackupSnapshotBackupEntityType: Int32 {
+    case unknown = 0
+    case migration = 1
+    case thread = 2
+    case interaction = 3
+    case attachment = 4
+    case misc = 5
+}
+
+private func SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(_ value: IOSProtos_BackupSnapshot.BackupEntity.TypeEnum) -> SignalIOSProtoBackupSnapshotBackupEntityType {
+    switch value {
+    case .unknown: return .unknown
+    case .migration: return .migration
+    case .thread: return .thread
+    case .interaction: return .interaction
+    case .attachment: return .attachment
+    case .misc: return .misc
+    }
+}
+
+private func SignalIOSProtoBackupSnapshotBackupEntityTypeUnwrap(_ value: SignalIOSProtoBackupSnapshotBackupEntityType) -> IOSProtos_BackupSnapshot.BackupEntity.TypeEnum {
+    switch value {
+    case .unknown: return .unknown
+    case .migration: return .migration
+    case .thread: return .thread
+    case .interaction: return .interaction
+    case .attachment: return .attachment
+    case .misc: return .misc
+    }
+}
+
 // MARK: - SignalIOSProtoBackupSnapshotBackupEntity
 
-@objc public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
-
-    // MARK: - SignalIOSProtoBackupSnapshotBackupEntityType
-
-    @objc public enum SignalIOSProtoBackupSnapshotBackupEntityType: Int32 {
-        case unknown = 0
-        case migration = 1
-        case thread = 2
-        case interaction = 3
-        case attachment = 4
-        case misc = 5
-    }
-
-    private class func SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(_ value: IOSProtos_BackupSnapshot.BackupEntity.TypeEnum) -> SignalIOSProtoBackupSnapshotBackupEntityType {
-        switch value {
-        case .unknown: return .unknown
-        case .migration: return .migration
-        case .thread: return .thread
-        case .interaction: return .interaction
-        case .attachment: return .attachment
-        case .misc: return .misc
-        }
-    }
-
-    private class func SignalIOSProtoBackupSnapshotBackupEntityTypeUnwrap(_ value: SignalIOSProtoBackupSnapshotBackupEntityType) -> IOSProtos_BackupSnapshot.BackupEntity.TypeEnum {
-        switch value {
-        case .unknown: return .unknown
-        case .migration: return .migration
-        case .thread: return .thread
-        case .interaction: return .interaction
-        case .attachment: return .attachment
-        case .misc: return .misc
-        }
-    }
+@objc
+public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
 
     // MARK: - SignalIOSProtoBackupSnapshotBackupEntityBuilder
 
-    @objc public class func builder(entityData: Data, collection: String, key: String) -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
+    @objc
+    public class func builder(entityData: Data, collection: String, key: String) -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
         return SignalIOSProtoBackupSnapshotBackupEntityBuilder(entityData: entityData, collection: collection, key: key)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
+    @objc
+    public func asBuilder() -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
         let builder = SignalIOSProtoBackupSnapshotBackupEntityBuilder(entityData: entityData, collection: collection, key: key)
         if let _value = type {
             builder.setType(_value)
@@ -63,13 +67,16 @@ public enum SignalIOSProtoError: Error {
         return builder
     }
 
-    @objc public class SignalIOSProtoBackupSnapshotBackupEntityBuilder: NSObject {
+    @objc
+    public class SignalIOSProtoBackupSnapshotBackupEntityBuilder: NSObject {
 
         private var proto = IOSProtos_BackupSnapshot.BackupEntity()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
-        @objc fileprivate init(entityData: Data, collection: String, key: String) {
+        @objc
+        fileprivate init(entityData: Data, collection: String, key: String) {
             super.init()
 
             setEntityData(entityData)
@@ -115,38 +122,45 @@ public enum SignalIOSProtoError: Error {
             proto.key = valueParam
         }
 
-        @objc public func build() throws -> SignalIOSProtoBackupSnapshotBackupEntity {
+        @objc
+        public func build() throws -> SignalIOSProtoBackupSnapshotBackupEntity {
             return try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: IOSProtos_BackupSnapshot.BackupEntity
 
-    @objc public let entityData: Data
+    @objc
+    public let entityData: Data
 
-    @objc public let collection: String
+    @objc
+    public let collection: String
 
-    @objc public let key: String
+    @objc
+    public let key: String
 
     public var type: SignalIOSProtoBackupSnapshotBackupEntityType? {
-        guard proto.hasType else {
+        guard hasType else {
             return nil
         }
-        return SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
+        return SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
     }
     // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var unwrappedType: SignalIOSProtoBackupSnapshotBackupEntityType {
+    @objc
+    public var unwrappedType: SignalIOSProtoBackupSnapshotBackupEntityType {
         if !hasType {
             // TODO: We could make this a crashing assert.
             owsFailDebug("Unsafe unwrap of missing optional: BackupEntity.type.")
         }
-        return SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
+        return SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
     }
-    @objc public var hasType: Bool {
+    @objc
+    public var hasType: Bool {
         return proto.hasType
     }
 
@@ -165,7 +179,8 @@ public enum SignalIOSProtoError: Error {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SignalIOSProtoBackupSnapshotBackupEntity {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> SignalIOSProtoBackupSnapshotBackupEntity {
         let proto = try IOSProtos_BackupSnapshot.BackupEntity(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -197,7 +212,8 @@ public enum SignalIOSProtoError: Error {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -205,13 +221,15 @@ public enum SignalIOSProtoError: Error {
 #if DEBUG
 
 extension SignalIOSProtoBackupSnapshotBackupEntity {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityBuilder {
-    @objc public func buildIgnoringErrors() -> SignalIOSProtoBackupSnapshotBackupEntity? {
+    @objc
+    public func buildIgnoringErrors() -> SignalIOSProtoBackupSnapshotBackupEntity? {
         return try! self.build()
     }
 }
@@ -220,49 +238,59 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
 
 // MARK: - SignalIOSProtoBackupSnapshot
 
-@objc public class SignalIOSProtoBackupSnapshot: NSObject {
+@objc
+public class SignalIOSProtoBackupSnapshot: NSObject {
 
     // MARK: - SignalIOSProtoBackupSnapshotBuilder
 
-    @objc public class func builder() -> SignalIOSProtoBackupSnapshotBuilder {
+    @objc
+    public class func builder() -> SignalIOSProtoBackupSnapshotBuilder {
         return SignalIOSProtoBackupSnapshotBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SignalIOSProtoBackupSnapshotBuilder {
+    @objc
+    public func asBuilder() -> SignalIOSProtoBackupSnapshotBuilder {
         let builder = SignalIOSProtoBackupSnapshotBuilder()
         builder.setEntity(entity)
         return builder
     }
 
-    @objc public class SignalIOSProtoBackupSnapshotBuilder: NSObject {
+    @objc
+    public class SignalIOSProtoBackupSnapshotBuilder: NSObject {
 
         private var proto = IOSProtos_BackupSnapshot()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
-        @objc public func addEntity(_ valueParam: SignalIOSProtoBackupSnapshotBackupEntity) {
+        @objc
+        public func addEntity(_ valueParam: SignalIOSProtoBackupSnapshotBackupEntity) {
             var items = proto.entity
             items.append(valueParam.proto)
             proto.entity = items
         }
 
-        @objc public func setEntity(_ wrappedItems: [SignalIOSProtoBackupSnapshotBackupEntity]) {
+        @objc
+        public func setEntity(_ wrappedItems: [SignalIOSProtoBackupSnapshotBackupEntity]) {
             proto.entity = wrappedItems.map { $0.proto }
         }
 
-        @objc public func build() throws -> SignalIOSProtoBackupSnapshot {
+        @objc
+        public func build() throws -> SignalIOSProtoBackupSnapshot {
             return try SignalIOSProtoBackupSnapshot.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try SignalIOSProtoBackupSnapshot.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: IOSProtos_BackupSnapshot
 
-    @objc public let entity: [SignalIOSProtoBackupSnapshotBackupEntity]
+    @objc
+    public let entity: [SignalIOSProtoBackupSnapshotBackupEntity]
 
     private init(proto: IOSProtos_BackupSnapshot,
                  entity: [SignalIOSProtoBackupSnapshotBackupEntity]) {
@@ -275,7 +303,8 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SignalIOSProtoBackupSnapshot {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> SignalIOSProtoBackupSnapshot {
         let proto = try IOSProtos_BackupSnapshot(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -293,7 +322,8 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -301,13 +331,15 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
 #if DEBUG
 
 extension SignalIOSProtoBackupSnapshot {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
-    @objc public func buildIgnoringErrors() -> SignalIOSProtoBackupSnapshot? {
+    @objc
+    public func buildIgnoringErrors() -> SignalIOSProtoBackupSnapshot? {
         return try! self.build()
     }
 }
@@ -316,27 +348,33 @@ extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
 
 // MARK: - SignalIOSProtoDeviceName
 
-@objc public class SignalIOSProtoDeviceName: NSObject {
+@objc
+public class SignalIOSProtoDeviceName: NSObject {
 
     // MARK: - SignalIOSProtoDeviceNameBuilder
 
-    @objc public class func builder(ephemeralPublic: Data, syntheticIv: Data, ciphertext: Data) -> SignalIOSProtoDeviceNameBuilder {
+    @objc
+    public class func builder(ephemeralPublic: Data, syntheticIv: Data, ciphertext: Data) -> SignalIOSProtoDeviceNameBuilder {
         return SignalIOSProtoDeviceNameBuilder(ephemeralPublic: ephemeralPublic, syntheticIv: syntheticIv, ciphertext: ciphertext)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SignalIOSProtoDeviceNameBuilder {
+    @objc
+    public func asBuilder() -> SignalIOSProtoDeviceNameBuilder {
         let builder = SignalIOSProtoDeviceNameBuilder(ephemeralPublic: ephemeralPublic, syntheticIv: syntheticIv, ciphertext: ciphertext)
         return builder
     }
 
-    @objc public class SignalIOSProtoDeviceNameBuilder: NSObject {
+    @objc
+    public class SignalIOSProtoDeviceNameBuilder: NSObject {
 
         private var proto = IOSProtos_DeviceName()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
-        @objc fileprivate init(ephemeralPublic: Data, syntheticIv: Data, ciphertext: Data) {
+        @objc
+        fileprivate init(ephemeralPublic: Data, syntheticIv: Data, ciphertext: Data) {
             super.init()
 
             setEphemeralPublic(ephemeralPublic)
@@ -377,22 +415,27 @@ extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
             proto.ciphertext = valueParam
         }
 
-        @objc public func build() throws -> SignalIOSProtoDeviceName {
+        @objc
+        public func build() throws -> SignalIOSProtoDeviceName {
             return try SignalIOSProtoDeviceName.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try SignalIOSProtoDeviceName.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: IOSProtos_DeviceName
 
-    @objc public let ephemeralPublic: Data
+    @objc
+    public let ephemeralPublic: Data
 
-    @objc public let syntheticIv: Data
+    @objc
+    public let syntheticIv: Data
 
-    @objc public let ciphertext: Data
+    @objc
+    public let ciphertext: Data
 
     private init(proto: IOSProtos_DeviceName,
                  ephemeralPublic: Data,
@@ -409,7 +452,8 @@ extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SignalIOSProtoDeviceName {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> SignalIOSProtoDeviceName {
         let proto = try IOSProtos_DeviceName(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -441,7 +485,8 @@ extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -449,13 +494,15 @@ extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
 #if DEBUG
 
 extension SignalIOSProtoDeviceName {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension SignalIOSProtoDeviceName.SignalIOSProtoDeviceNameBuilder {
-    @objc public func buildIgnoringErrors() -> SignalIOSProtoDeviceName? {
+    @objc
+    public func buildIgnoringErrors() -> SignalIOSProtoDeviceName? {
         return try! self.build()
     }
 }

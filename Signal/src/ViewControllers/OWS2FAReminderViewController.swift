@@ -95,7 +95,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         Logger.info("")
         let alertBody = NSLocalizedString("REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE",
                                           comment: "Alert message explaining what happens if you forget your 'two-factor auth pin'")
-        OWSAlerts.showAlert(title: nil, message: alertBody)
+        OWSActionSheets.showActionSheet(title: nil, message: alertBody)
     }
 
     // MARK: Helpers
@@ -137,7 +137,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
                                           comment: "Alert title after wrong guess for 'two-factor auth pin' reminder activity")
         let alertBody = NSLocalizedString("REMINDER_2FA_WRONG_PIN_ALERT_BODY",
                                           comment: "Alert body after wrong guess for 'two-factor auth pin' reminder activity")
-        OWSAlerts.showAlert(title: alertTitle, message: alertBody)
+        OWSActionSheets.showActionSheet(title: alertTitle, message: alertBody)
         self.pinEntryView.clearText()
     }
 }

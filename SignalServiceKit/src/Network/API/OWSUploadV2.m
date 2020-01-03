@@ -325,13 +325,10 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
         return nil;
     }
 
-    BOOL shouldPad = SSKFeatureFlags.shouldPadAllOutgoingAttachments || self.attachmentStream.shouldAlwaysPad;
-
-    NSData *_Nullable encryptedAttachmentData =
-        [Cryptography encryptAttachmentData:attachmentData
-                                  shouldPad:shouldPad
-                                     outKey:&encryptionKey
-                                  outDigest:&digest];
+    NSData *_Nullable encryptedAttachmentData = [Cryptography encryptAttachmentData:attachmentData
+                                                                          shouldPad:YES
+                                                                             outKey:&encryptionKey
+                                                                          outDigest:&digest];
     if (!encryptedAttachmentData) {
         OWSFailDebug(@"could not encrypt attachment data.");
         return nil;
@@ -455,7 +452,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                 OWSAssertDebug(uploadData.length > 0);
                 [formData appendPartWithFormData:uploadData name:@"file"];
 
-                OWSLogVerbose(@"constructed body");
+                OWSLogVerbose(@"constructed %@ body", [NSByteCountFormatter stringFromByteCount:uploadData.length countStyle:NSByteCountFormatterCountStyleFile]);
             }
             progress:^(NSProgress *progress) {
                 OWSLogVerbose(@"Upload progress: %.2f%%", progress.fractionCompleted * 100);

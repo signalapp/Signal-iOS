@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, OWSMessageCellType) {
+typedef NS_CLOSED_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_Unknown,
     OWSMessageCellType_TextOnlyMessage,
     OWSMessageCellType_Audio,
@@ -37,10 +37,11 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageState) {
 
 NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
+@class AudioMessageView;
 @class ContactShareViewModel;
 @class ConversationViewCell;
 @class DisplayableText;
-@class OWSAudioMessageView;
+@class InteractionReactionState;
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
@@ -53,6 +54,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @class TSGroupThread;
 @class TSInteraction;
 @class TSThread;
+
+@protocol MessageActionsDelegate;
 
 @interface ConversationMediaAlbumItem : NSObject
 
@@ -114,11 +117,15 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 - (void)clearCachedLayoutState;
 
-@property (nonatomic, readonly) BOOL hasCachedLayoutState;
+#pragma mark - Needs Update
+
+@property (nonatomic, readonly) BOOL needsUpdate;
+
+- (void)clearNeedsUpdate;
 
 #pragma mark - Audio Playback
 
-@property (nonatomic, weak) OWSAudioMessageView *lastAudioMessageView;
+@property (nonatomic, weak) AudioMessageView *lastAudioMessageView;
 
 @property (nonatomic, readonly) CGFloat audioDurationSeconds;
 @property (nonatomic, readonly) CGFloat audioProgressSeconds;
@@ -160,19 +167,19 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 // NOTE: This property is only set for conversation thread details
 @property (nonatomic, readonly, nullable) NSArray<NSString *> *mutualGroupNames;
 
+@property (nonatomic, readonly, nullable) InteractionReactionState *reactionState;
+
 #pragma mark - MessageActions
 
 @property (nonatomic, readonly) BOOL hasBodyTextActionContent;
 @property (nonatomic, readonly) BOOL hasMediaActionContent;
 
-- (void)copyMediaAction;
+- (void)shareMediaAction:(nullable id)sender;
 - (void)copyTextAction;
-- (void)shareMediaAction;
-- (void)saveMediaAction;
 - (void)deleteAction;
 
-- (BOOL)canCopyMedia;
-- (BOOL)canSaveMedia;
+- (BOOL)canShareMedia;
+- (BOOL)canForwardMessage;
 
 // For view items that correspond to interactions, this is the interaction's unique id.
 // For other view views (like the typing indicator), this is a unique, stable string.

@@ -70,9 +70,9 @@ class ReminderView: UIView {
             iconColor = UIColor.ows_gray60
         case .explanation:
             // TODO: Theme, review with design.
-            self.backgroundColor = Theme.offBackgroundColor
-            textColor = Theme.primaryColor
-            iconColor = Theme.secondaryColor
+            self.backgroundColor = Theme.washColor
+            textColor = Theme.primaryTextColor
+            iconColor = Theme.secondaryTextAndIconColor
         }
         self.clipsToBounds = true
 
@@ -86,7 +86,7 @@ class ReminderView: UIView {
 
         self.addSubview(container)
         container.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
-        container.ows_autoPinToSuperviewEdges()
+        container.autoPinEdgesToSuperviewEdges()
 
         // Label
         label.font = UIFont.ows_dynamicTypeSubheadline

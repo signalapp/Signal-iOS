@@ -60,12 +60,17 @@ class AttachmentKeyboard: CustomKeyboard {
 
         contentView.addSubview(mainStackView)
         mainStackView.autoPinWidthToSuperview()
-        mainStackView.autoPinEdge(toSuperviewEdge: .top)
+        mainStackView.autoPinEdge(toSuperviewEdge: .top, withInset: UIDevice.current.isIPad ? 8 : 0)
         mainStackView.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
 
         setupRecentPhotos()
         setupGalleryButton()
         setupFormatPicker()
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardFrameDidChange),
+                                               name: UIResponder.keyboardDidChangeFrameNotification,
+                                               object: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -155,16 +160,25 @@ class AttachmentKeyboard: CustomKeyboard {
         attachmentFormatPickerView.stopCameraPreview()
     }
 
-    override func orientationDidChange() {
-        super.orientationDidChange()
-
+    @objc func keyboardFrameDidChange() {
         updateItemSizes()
     }
 
     func updateItemSizes() {
         // The items should always expand to fit the height of their collection view.
-        // We'll always just have one row of items.
-        recentPhotosCollectionView.itemSize = CGSize(square: recentPhotosCollectionView.height())
+
+        // If we have space we will show two rows of recent photos (e.g. iPad in landscape).
+        if recentPhotosCollectionView.height() > 250 {
+            recentPhotosCollectionView.itemSize = CGSize(square:
+                (recentPhotosCollectionView.height() - recentPhotosCollectionView.spaceBetweenRows) / 2
+            )
+
+        // Otherwise, assume the recent photos take up the full height of the collection view.
+        } else {
+            recentPhotosCollectionView.itemSize = CGSize(square: recentPhotosCollectionView.height())
+        }
+
+        // There is only ever one row for the attachment format picker.
         attachmentFormatPickerView.itemSize = CGSize(square: attachmentFormatPickerView.height())
     }
 
@@ -268,7 +282,7 @@ private class RecentPhotosErrorView: UIView {
 
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.textColor = Theme.primaryColor
+        label.textColor = Theme.primaryTextColor
         label.font = .ows_dynamicTypeSubheadlineClamped
         label.textAlignment = .center
 

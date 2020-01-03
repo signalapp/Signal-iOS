@@ -39,6 +39,18 @@ public class AccountManager: NSObject {
         return AppEnvironment.shared.pushRegistrationManager
     }
 
+    var readReceiptManager: OWSReadReceiptManager {
+        return OWSReadReceiptManager.shared()
+    }
+
+    var identityManager: OWSIdentityManager {
+        return SSKEnvironment.shared.identityManager
+    }
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     // MARK: -
 
     @objc
@@ -89,7 +101,7 @@ public class AccountManager: NSObject {
 
             return self.accountServiceClient.requestPreauthChallenge(recipientId: recipientId, pushToken: voipToken).then { () -> Promise<String?> in
                 let timeout: TimeInterval
-                if OWSIsDebugBuild() && IsUsingProductionService() {
+                if OWSIsDebugBuild() && TSConstants.isUsingProductionService {
                     // won't receive production voip in debug build, don't wait for long
                     timeout = 0.5
                 } else {
@@ -104,7 +116,7 @@ public class AccountManager: NSObject {
                 Logger.warn("Push not supported: \(description)")
             case let networkError as NetworkManagerError:
                 // not deployed to production yet.
-                if networkError.statusCode == 404, IsUsingProductionService() {
+                if networkError.statusCode == 404, TSConstants.isUsingProductionService {
                     Logger.warn("404 while requesting preauthChallenge: \(error)")
                 } else {
                     fallthrough
@@ -130,11 +142,20 @@ public class AccountManager: NSObject {
         }.then { (uuid: UUID?) -> Promise<Void> in
             assert(!FeatureFlags.allowUUIDOnlyContacts || uuid != nil)
             self.tsAccountManager.uuidAwaitingVerification = uuid
+
+            if !self.tsAccountManager.isReregistering {
+                self.databaseStorage.write { transaction in
+                    // For new users, read receipts are on by default.
+                    self.readReceiptManager.setAreReadReceiptsEnabled(true,
+                                                                      transaction: transaction)
+                }
+            }
+
             return self.accountServiceClient.updateAttributes()
         }.then {
             self.createPreKeys()
         }.done {
-            self.profileManager.fetchLocalUsersProfile()
+            self.profileManager.fetchAndUpdateLocalUsersProfile()
         }.then { _ -> Promise<Void> in
             return self.syncPushTokens().recover { (error) -> Promise<Void> in
                 switch error {
@@ -157,16 +178,110 @@ public class AccountManager: NSObject {
         return registrationPromise
     }
 
-    private func registerForTextSecure(verificationCode: String, pin: String?) -> Promise<UUID?> {
-        let promise = Promise<Any?> { resolver in
-            tsAccountManager.verifyAccount(withCode: verificationCode,
-                                           pin: pin,
-                                           success: { responseObject in resolver.fulfill((responseObject)) },
-                                           failure: resolver.reject)
-        }
+    func completeSecondaryLinking(provisionMessage: ProvisionMessage, deviceName: String) -> Promise<Void> {
+        identityManager.generateNewIdentityKey()
+        tsAccountManager.phoneNumberAwaitingVerification = provisionMessage.phoneNumber
+        tsAccountManager.uuidAwaitingVerification = provisionMessage.uuid
 
-        // TODO UUID: this UUID param should be non-optional when the production service is updated
-        return promise.map { responseObject throws -> UUID? in
+        let serverAuthToken = generateServerAuthToken()
+
+        return firstly {
+            accountServiceClient.verifySecondaryDevice(deviceName: deviceName,
+                                                       verificationCode: provisionMessage.provisioningCode,
+                                                       phoneNumber: provisionMessage.phoneNumber,
+                                                       authKey: serverAuthToken)
+        }.done { (deviceId: UInt32) in
+            self.databaseStorage.write { transaction in
+                self.identityManager.storeIdentityKeyPair(provisionMessage.identityKeyPair,
+                                                          transaction: transaction)
+
+                self.profileManager.setLocalProfileKey(provisionMessage.profileKey,
+                                                       transaction: transaction)
+
+                if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
+                    self.readReceiptManager.setAreReadReceiptsEnabled(areReadReceiptsEnabled,
+                                                                      transaction: transaction)
+                }
+
+                self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
+                                                               deviceId: deviceId,
+                                                               transaction: transaction)
+
+                self.tsAccountManager.setStoredDeviceName(deviceName,
+                                                          transaction: transaction)
+            }
+        }.then {
+            self.accountServiceClient.updateAttributes()
+        }.then { _ -> Promise<Void> in
+            self.createPreKeys()
+        }.then { _ -> Promise<Void> in
+            return self.syncPushTokens().recover { (error) -> Promise<Void> in
+                switch error {
+                case PushRegistrationError.pushNotSupported(let description):
+                    // This can happen with:
+                    // - simulators, none of which support receiving push notifications
+                    // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
+                    Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
+                    return self.enableManualMessageFetching()
+                default:
+                    throw error
+                }
+            }
+        }.then { _ -> Promise<Void> in
+            self.completeRegistration()
+
+            // we wait a bit for the initial syncs to come in before proceeding to the inbox
+            // because we want to present the inbox already populated with groups and contacts,
+            // rather than have the trickle in moments later.
+            BenchEventStart(title: "waiting for initial contact and group sync", eventId: "initial-contact-sync")
+
+            return firstly {
+                OWSSyncManager.shared().sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: 60)
+            }.done(on: .global() ) { orderedThreadIds in
+                Logger.debug("orderedThreadIds: \(orderedThreadIds)")
+                // Maintain the remote sort ordering of threads by inserting `syncedThread` messages
+                // in that thread order.
+                self.databaseStorage.write { transaction in
+                    for threadId in orderedThreadIds.reversed() {
+                        guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
+                            owsFailDebug("thread was unexpectedly nil")
+                            continue
+                        }
+                        let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                                    in: thread,
+                                                    messageType: .syncedThread)
+                        message.anyInsert(transaction: transaction)
+                    }
+                }
+            }.ensure {
+                BenchEventComplete(eventId: "initial-contact-sync")
+            }
+        }
+    }
+
+    private func registerForTextSecure(verificationCode: String, pin: String?) -> Promise<UUID?> {
+        let serverAuthToken = generateServerAuthToken()
+
+        return Promise<Any?> { resolver in
+            guard let phoneNumber = tsAccountManager.phoneNumberAwaitingVerification else {
+                throw OWSAssertionError("phoneNumberAwaitingVerification was unexpectedly nil")
+            }
+
+            let request = OWSRequestFactory.verifyPrimaryDeviceRequest(verificationCode: verificationCode,
+                                                                       phoneNumber: phoneNumber,
+                                                                       authKey: serverAuthToken,
+                                                                       pin: pin)
+
+            tsAccountManager.verifyAccount(with: request,
+                                           success: resolver.fulfill,
+                                           failure: resolver.reject)
+        }.map(on: .global()) { responseObject throws -> UUID? in
+            self.databaseStorage.write { transaction in
+                self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
+                                                               deviceId: OWSDevicePrimaryDeviceId,
+                                                               transaction: transaction)
+            }
+
             guard let responseObject = responseObject else {
                 return nil
             }
@@ -176,6 +291,7 @@ public class AccountManager: NSObject {
                 throw OWSErrorMakeUnableToProcessServerResponseError()
             }
 
+            // TODO UUID: this UUID param should be non-optional when the production service is updated
             guard let uuidString: String = try params.optional(key: "uuid") else {
                 return nil
             }
@@ -187,6 +303,33 @@ public class AccountManager: NSObject {
 
             return uuid
         }
+    }
+
+    @objc
+    public func fakeRegistration() {
+        fakeRegisterForTests(phoneNumber: "+15551231234", uuid: UUID())
+        SignalApp.shared().showConversationSplitView()
+    }
+
+    private func fakeRegisterForTests(phoneNumber: String, uuid: UUID) {
+        let serverAuthToken = generateServerAuthToken()
+        let identityKeyPair = Curve25519.generateKeyPair()
+        let profileKey = OWSAES256Key.generateRandom()
+
+        tsAccountManager.phoneNumberAwaitingVerification = phoneNumber
+        tsAccountManager.uuidAwaitingVerification = uuid
+
+        databaseStorage.write { transaction in
+            self.identityManager.storeIdentityKeyPair(identityKeyPair,
+                                                      transaction: transaction)
+            self.profileManager.setLocalProfileKey(profileKey,
+                                                   transaction: transaction)
+            self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
+                                                           deviceId: 1,
+                                                           transaction: transaction)
+        }
+        OWS2FAManager.shared().mark2FAAsEnabled(withPin: "12341234")
+        completeRegistration()
     }
 
     private func createPreKeys() -> Promise<Void> {
@@ -266,7 +409,7 @@ public class AccountManager: NSObject {
             return Promise.value(existingUuid)
         }
 
-        return accountServiceClient.getUuid().map { uuid in
+        return accountServiceClient.getUuid().map(on: DispatchQueue.global()) { uuid in
             // It's possible this method could be called multiple times, so we check
             // again if it's been set. We dont bother serializing access since it should
             // be idempotent.
@@ -279,14 +422,8 @@ public class AccountManager: NSObject {
             return uuid
         }
     }
-}
 
-extension Promise {
-    func nilTimeout(seconds: TimeInterval) -> Promise<T?> {
-        let timeout: Promise<T?> = after(seconds: seconds).map {
-            return nil
-        }
-
-        return race(self.map { $0 }, timeout)
+    private func generateServerAuthToken() -> String {
+        return Cryptography.generateRandomBytes(16).hexadecimalString
     }
 }

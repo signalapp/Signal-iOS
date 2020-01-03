@@ -65,9 +65,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
         let migratorGroups = [
             GRDBMigratorGroup { ydbTransaction in
                 return [
-                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0)
+                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction)
                 ]
             }
         ]
@@ -143,9 +143,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
         let migratorGroups = [
             GRDBMigratorGroup { ydbTransaction in
                 return [
-                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0)
+                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction)
                 ]
             }
         ]
@@ -221,9 +221,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
         let migratorGroups = [
             GRDBMigratorGroup { ydbTransaction in
                 return [
-                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0)
+                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction)
                 ]
             }
         ]
@@ -299,9 +299,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
         let migratorGroups = [
             GRDBMigratorGroup { ydbTransaction in
                 return [
-                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0)
+                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction)
                 ]
             }
         ]
@@ -369,9 +369,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
         let migratorGroups = [
             GRDBMigratorGroup { ydbTransaction in
                 return [
-                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0)
+                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction)
                 ]
             }
         ]
@@ -449,10 +449,10 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
         let migratorGroups = [
             GRDBMigratorGroup { ydbTransaction in
                 return [
-                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store4", keyStore: store4, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0)
+                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store4", keyStore: store4, ydbTransaction: ydbTransaction)
                 ]
             }
         ]
@@ -531,9 +531,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
         let migratorGroups = [
             GRDBMigratorGroup { ydbTransaction in
                 return [
-                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
-                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0)
+                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction)
                 ]
             }
         ]

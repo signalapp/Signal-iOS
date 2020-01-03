@@ -203,7 +203,9 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding {
             return uuidString
         } else {
             guard let phoneNumber = phoneNumber else {
-                owsFailDebug("phoneNumber was unexpectedly nil")
+                if !CurrentAppContext().isRunningTests {
+                    owsFailDebug("phoneNumber was unexpectedly nil")
+                }
                 return uuidString
             }
 
@@ -213,14 +215,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding {
 
     @objc
     override public var description: String {
-        let redactedUUID: String?
-        if let uuid = uuid {
-            redactedUUID = "[REDACTED_UUID:xxx\(uuid.uuidString.suffix(2))]"
-        } else {
-            redactedUUID = nil
-        }
-
-        return "<SignalServiceAddress phoneNumber: \(phoneNumber ?? "nil"), uuid: \(redactedUUID ?? "nil")>"
+        return "<SignalServiceAddress phoneNumber: \(phoneNumber ?? "nil"), uuid: \(uuid?.uuidString ?? "nil")>"
     }
 }
 

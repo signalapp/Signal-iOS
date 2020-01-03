@@ -97,13 +97,20 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
         AccountServiceClient *accountServiceClient = [AccountServiceClient new];
         OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
+        SSKPreferences *sskPreferences = [SSKPreferences new];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
+        OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
+        OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue = [OWSIncomingGroupSyncJobQueue new];
+        LaunchJobs *launchJobs = [LaunchJobs new];
         OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
-        
+
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
+                                             incomingContactSyncJobQueue:incomingContactSyncJobQueue
+                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
+                                                              launchJobs:launchJobs
                                                              preferences:preferences
                                               proximityMonitoringManager:proximityMonitoringManager
                                                                   sounds:sounds
@@ -145,7 +152,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         signalServiceAddressCache:signalServiceAddressCache
                                                              accountServiceClient:accountServiceClient
                                                             storageServiceManager:storageServiceManager
-                                                               storageCoordinator:storageCoordinator]];
+                                                               storageCoordinator:storageCoordinator
+                                                                   sskPreferences:sskPreferences]];
 
         appSpecificSingletonBlock();
 
@@ -156,31 +164,76 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:[ExperienceUpgrade collection]];
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:@"Signal.ExperienceUpgrade"];
+        [NSKeyedUnarchiver setClass:[OWSGroupInfoRequestMessage class] forClassName:@"OWSSyncGroupsRequestMessage"];
 
-        dispatch_block_t warmCachesRunMigrationsAndComplete = ^{
-            [SSKEnvironment.shared warmCaches];
+        // Prevent device from sleeping during migrations.
+        // This protects long migrations (e.g. the YDB-to-GRDB migration)
+        // from the iOS 13 background crash.
+        //
+        // We can use any object.
+        NSObject *sleepBlockObject = [NSObject new];
+        [DeviceSleepManager.sharedInstance addBlockWithBlockObject:sleepBlockObject];
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // Don't start database migrations until storage is ready.
-                [VersionMigrations performUpdateCheckWithCompletion:^() {
-                    OWSAssertIsOnMainThread();
-                    
-                    migrationCompletion();
-                    
-                    OWSAssertDebug(backgroundTask);
-                    backgroundTask = nil;
-                }];
+        dispatch_block_t completionBlock = ^{
+            if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
+                // It's only safe to do this for YDB. For GRDB-only users in
+                // the post yap world, the tables for this won't exist yet on
+                // the first launch of a new install.
+                [SSKEnvironment.shared warmCaches];
+            }
+
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if (AppSetup.shouldTruncateGrdbWal) {
+                    // Try to truncate GRDB WAL before any readers or writers are
+                    // active.
+                    NSError *_Nullable error;
+                    [databaseStorage.grdbStorage syncTruncatingCheckpointAndReturnError:&error];
+                    if (error != nil) {
+                        OWSFailDebug(@"error: %@", error);
+                    }
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [storageCoordinator markStorageSetupAsComplete];
+
+                    // Don't start database migrations until storage is ready.
+                    [VersionMigrations performUpdateCheckWithCompletion:^() {
+                        OWSAssertIsOnMainThread();
+
+                        [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:sleepBlockObject];
+
+                        if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
+                            [SSKEnvironment.shared warmCaches];
+                        }
+                        migrationCompletion();
+
+                        OWSAssertDebug(backgroundTask);
+                        backgroundTask = nil;
+                    }];
+                });
             });
         };
 
         if (databaseStorage.canLoadYdb) {
-            [OWSStorage registerExtensionsWithMigrationBlock:^() {
-                warmCachesRunMigrationsAndComplete();
-            }];
+            [OWSStorage registerExtensionsWithCompletionBlock:completionBlock];
         } else {
-            warmCachesRunMigrationsAndComplete();
+            completionBlock();
         }
     });
+}
+
++ (BOOL)shouldTruncateGrdbWal
+{
+    if (StorageCoordinator.dataStoreForUI != DataStoreGrdb) {
+        return NO;
+    }
+    if (!CurrentAppContext().isMainApp) {
+        return NO;
+    }
+    if (CurrentAppContext().mainApplicationStateOnLaunch == UIApplicationStateBackground) {
+        return NO;
+    }
+    return YES;
 }
 
 @end

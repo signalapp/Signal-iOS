@@ -100,7 +100,8 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -116,17 +117,16 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
                       authorUUID:(nullable NSString *)authorUUID
-    incomingMessageSchemaVersion:(NSUInteger)incomingMessageSchemaVersion
                             read:(BOOL)read
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
                          timestamp:timestamp
@@ -142,7 +142,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion
       storedShouldStartExpireTimer:storedShouldStartExpireTimer];
 
     if (!self) {
@@ -151,7 +150,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
     _authorPhoneNumber = authorPhoneNumber;
     _authorUUID = authorUUID;
-    _incomingMessageSchemaVersion = incomingMessageSchemaVersion;
     _read = read;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;
@@ -170,6 +168,20 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 }
 
 #pragma mark - OWSReadTracking
+
+// This method will be called after every insert and update, so it needs
+// to be cheap.
+- (BOOL)shouldStartExpireTimer
+{
+    if (self.hasPerConversationExpirationStarted) {
+        // Expiration already started.
+        return YES;
+    } else if (!self.hasPerConversationExpiration) {
+        return NO;
+    } else {
+        return self.wasRead && [super shouldStartExpireTimer];
+    }
+}
 
 - (BOOL)shouldAffectUnreadCounts
 {
@@ -204,14 +216,15 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                                 message.read = YES;
                                             }];
 
+    // readTimestamp may be earlier than now, so backdate the expiration if necessary.
+    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
+                                                     expirationStartedAt:readTimestamp
+                                                             transaction:transaction];
+
     [transaction addCompletionWithBlock:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
                                                                  object:self];
     }];
-
-    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
-                                                     expirationStartedAt:readTimestamp
-                                                             transaction:transaction];
 
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];

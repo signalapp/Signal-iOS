@@ -222,6 +222,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
                                       [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
                                       [TSDatabaseView asyncRegisterIncompleteViewOnceMessagesDatabaseView:self];
+                                      [TSDatabaseView asyncRegisterInteractionsBySortIdDatabaseView:self];
 
                                       // YAPDBSignalServiceAddressIndex must register before YDBFullTextSearchFinder.
                                       [YAPDBSignalServiceAddressIndex asyncRegisterDatabaseExtensions:self];
@@ -238,6 +239,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [YAPDBLinkedDeviceReadReceiptFinder asyncRegisterDatabaseExtensions:self];
                                       [YAPDBContactQueryFinder asyncRegisterDatabaseExtensions:self];
                                       [YAPDBUserProfileFinder asyncRegisterDatabaseExtensions:self];
+                                      [YAPDBReactionFinderAdapter asyncRegisterDatabaseExtensions:self];
 
                                       [self.database
                                           flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(
@@ -273,7 +275,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
     OWSLogInfo(@"\t WAL file size: %@", [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
 
     // Protect the entire new database directory.
-    [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.ensureSharedDataDatabaseFilePath];
 }
 
 + (NSString *)legacyDatabaseDirPath
@@ -283,8 +285,12 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 + (NSString *)sharedDataDatabaseDirPath
 {
-    NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
+    return [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
+}
 
++ (NSString *)ensureSharedDataDatabaseFilePath
+{
+    NSString *databaseDirPath = self.sharedDataDatabaseDirPath;
     if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
         OWSFail(@"Could not create new database directory");
     }
@@ -323,17 +329,17 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 + (NSString *)sharedDataDatabaseFilePath
 {
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
+    return [self.ensureSharedDataDatabaseFilePath stringByAppendingPathComponent:self.databaseFilename];
 }
 
 + (NSString *)sharedDataDatabaseFilePath_SHM
 {
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
+    return [self.ensureSharedDataDatabaseFilePath stringByAppendingPathComponent:self.databaseFilename_SHM];
 }
 
 + (NSString *)sharedDataDatabaseFilePath_WAL
 {
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
+    return [self.ensureSharedDataDatabaseFilePath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
 + (nullable NSError *)migrateToSharedData
@@ -480,7 +486,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
     // made in another process (e.g. the SAE) from showing up in other processes.
     // There's a simple workaround: a trivial write to the database flushes changes
     // made from other processes.
-    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
+    if (StorageCoordinator.dataStoreForUI != DataStoreYdb) {
         OWSFailDebug(@"Unexpected storage mode.");
     }
     [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

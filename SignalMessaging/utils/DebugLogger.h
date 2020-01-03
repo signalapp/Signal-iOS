@@ -25,4 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface ErrorLogger : DDFileLogger
+
++ (void)playAlertSound;
+
+@end
+
 NS_ASSUME_NONNULL_END

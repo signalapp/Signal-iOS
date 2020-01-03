@@ -15,17 +15,18 @@ protocol SendMediaNavDelegate: AnyObject {
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?)
     var sendMediaNavApprovalButtonImageName: String { get }
     var sendMediaNavCanSaveAttachments: Bool { get }
+    var sendMediaNavTextInputContextIdentifier: String? { get }
 }
 
 @objc
-class CaptureFirstCaptureNavigationController: SendMediaNavigationController {
+class CameraFirstCaptureNavigationController: SendMediaNavigationController {
 
     @objc
     private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
 
     @objc
-    public class func captureFirstCameraModal() -> CaptureFirstCaptureNavigationController {
-        let navController = CaptureFirstCaptureNavigationController()
+    public class func cameraFirstModal() -> CameraFirstCaptureNavigationController {
+        let navController = CameraFirstCaptureNavigationController()
         navController.setViewControllers([navController.captureViewController], animated: false)
 
         let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow()
@@ -36,12 +37,23 @@ class CaptureFirstCaptureNavigationController: SendMediaNavigationController {
     }
 }
 
+public let fixedBottomSafeAreaInset: CGFloat = 20
+public let fixedHorizontalMargin: CGFloat = 16
+
 @objc
 class SendMediaNavigationController: OWSNavigationController {
-
     static var bottomButtonsCenterOffset: CGFloat {
-        return -1 * (CaptureButton.recordingDiameter / 2 + 4)
+        if UIDevice.current.hasIPhoneXNotch {
+            // we pin to a constant rather than margin, because on notched devices the
+            // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
+            // is locked to portrait.
+            return -1 * (CaptureButton.recordingDiameter / 2 + 4) - fixedBottomSafeAreaInset
+        } else {
+            return -1 * (CaptureButton.recordingDiameter / 2 + 4)
+        }
     }
+
+    static var trailingButtonsOffset: CGFloat = -28
 
     var attachmentCount: Int {
         return attachmentDraftCollection.count
@@ -50,7 +62,7 @@ class SendMediaNavigationController: OWSNavigationController {
     // MARK: - Overrides
 
     override var prefersStatusBarHidden: Bool {
-        guard !OWSWindowManager.shared().hasCall() else {
+        guard !OWSWindowManager.shared.hasCall else {
             return false
         }
 
@@ -66,23 +78,49 @@ class SendMediaNavigationController: OWSNavigationController {
 
         view.addSubview(batchModeButton)
         batchModeButton.setCompressionResistanceHigh()
-        batchModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        batchModeButton.autoPinEdge(toSuperviewMargin: .trailing)
 
         view.addSubview(doneButton)
         doneButton.setCompressionResistanceHigh()
-        doneButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        doneButton.autoPinEdge(toSuperviewMargin: .trailing)
 
         view.addSubview(cameraModeButton)
         cameraModeButton.setCompressionResistanceHigh()
-        cameraModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        cameraModeButton.autoPinEdge(toSuperviewMargin: .leading)
 
         view.addSubview(mediaLibraryModeButton)
         mediaLibraryModeButton.setCompressionResistanceHigh()
-        mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        mediaLibraryModeButton.autoPinEdge(toSuperviewMargin: .leading)
+
+        if UIDevice.current.isIPad {
+            let buttonSpacing: CGFloat = 28
+            // `doneButton` is our widest button, so we position it relative to the superview
+            // margin, and position other buttons relative to `doneButton`. This ensures
+            // `donebutton` has a good distance from the edge *and* that all the buttons in the
+            // cluster are centered WRT eachother.
+            doneButton.autoPinEdge(toSuperviewMargin: .trailing)
+            doneButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -buttonSpacing).isActive = true
+
+            batchModeButton.autoAlignAxis(.vertical, toSameAxisOf: doneButton)
+            batchModeButton.autoAlignAxis(.horizontal, toSameAxisOf: doneButton)
+
+            cameraModeButton.autoAlignAxis(.vertical, toSameAxisOf: doneButton)
+            cameraModeButton.autoPinEdge(.bottom, to: .top, of: doneButton, withOffset: -buttonSpacing)
+
+            mediaLibraryModeButton.autoAlignAxis(.vertical, toSameAxisOf: cameraModeButton)
+            mediaLibraryModeButton.autoAlignAxis(.horizontal, toSameAxisOf: cameraModeButton)
+        } else {
+            // we pin to edges rather than margin, because on notched devices the safeAreaInsets/margins change
+            // as the device rotates *EVEN THOUGH* the interface is locked to portrait.
+
+            batchModeButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            batchModeButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
+
+            doneButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            doneButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
+
+            cameraModeButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            cameraModeButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
+
+            mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            mediaLibraryModeButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -160,6 +198,7 @@ class SendMediaNavigationController: OWSNavigationController {
     private var isForcingBatchSelectInMediaLibrary = true
 
     private var isShowingMediaLibrary = false
+    private var isRecordingMovie = false
 
     var isInBatchSelectMode: Bool {
         get {
@@ -178,65 +217,77 @@ class SendMediaNavigationController: OWSNavigationController {
                 guard let topViewController = viewControllers.last else {
                     return
                 }
-                updateViewState(topViewController: topViewController)
+                updateViewState(topViewController: topViewController, animated: false)
             }
         }
     }
 
-    func updateViewState(topViewController: UIViewController) {
+    func updateViewState(topViewController: UIViewController, animated: Bool) {
+        let changes: () -> Void
         switch topViewController {
         case is AttachmentApprovalViewController:
-            isShowingMediaLibrary = false
-            batchModeButton.isHidden = true
-            doneButton.isHidden = true
-            cameraModeButton.isHidden = true
-            mediaLibraryModeButton.isHidden = true
+            changes = {
+                self.isShowingMediaLibrary = false
+                self.batchModeButton.alpha = 0
+                self.doneButton.alpha = 0
+                self.cameraModeButton.alpha = 0
+                self.mediaLibraryModeButton.alpha = 0
+            }
         case let mediaLibraryView as ImagePickerGridController:
-            isShowingMediaLibrary = true
-            let showDoneButton = isInBatchSelectMode && attachmentCount > 0
-            doneButton.isHidden = !showDoneButton
+            changes = {
+                self.isShowingMediaLibrary = true
+                let showDoneButton = self.isInBatchSelectMode && self.attachmentCount > 0
+                self.doneButton.alpha = showDoneButton ? 1 : 0
 
-            batchModeButton.isHidden = showDoneButton || isForcingBatchSelectInMediaLibrary
-            batchModeButton.isBeingPresentedOverPhotoCapture = false
+                self.batchModeButton.alpha = showDoneButton || self.isForcingBatchSelectInMediaLibrary ? 0 : 1
+                self.batchModeButton.isBeingPresentedOverPhotoCapture = false
 
-            cameraModeButton.isHidden = false
-            cameraModeButton.isBeingPresentedOverPhotoCapture = false
+                self.cameraModeButton.alpha = 1
+                self.cameraModeButton.isBeingPresentedOverPhotoCapture = false
 
-            mediaLibraryModeButton.isHidden = true
-            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
+                self.mediaLibraryModeButton.alpha = 0
+                self.mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
 
-            mediaLibraryView.applyBatchSelectMode()
+                mediaLibraryView.applyBatchSelectMode()
+            }
         case is PhotoCaptureViewController:
-            isShowingMediaLibrary = false
-            let showDoneButton = isInBatchSelectMode && attachmentCount > 0
-            doneButton.isHidden = !showDoneButton
+            changes = {
+                self.isShowingMediaLibrary = false
+                let showDoneButton = self.isInBatchSelectMode && self.attachmentCount > 0
+                self.doneButton.alpha = !showDoneButton || self.isRecordingMovie ? 0 : 1
 
-            batchModeButton.isHidden = showDoneButton
-            batchModeButton.isBeingPresentedOverPhotoCapture = true
+                self.batchModeButton.alpha = showDoneButton || self.isRecordingMovie ? 0 : 1
+                self.batchModeButton.isBeingPresentedOverPhotoCapture = true
 
-            cameraModeButton.isHidden = true
-            cameraModeButton.isBeingPresentedOverPhotoCapture = true
+                self.cameraModeButton.alpha = 0
+                self.cameraModeButton.isBeingPresentedOverPhotoCapture = true
 
-            mediaLibraryModeButton.isHidden = false
-            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
+                self.mediaLibraryModeButton.alpha = self.isRecordingMovie ? 0 : 1
+                self.mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
+            }
         case is ConversationPickerViewController:
-            doneButton.isHidden = true
-            batchModeButton.isHidden = true
-            batchModeButton.isBeingPresentedOverPhotoCapture = false
-            cameraModeButton.isHidden = true
-            cameraModeButton.isBeingPresentedOverPhotoCapture = false
-            mediaLibraryModeButton.isHidden = true
-            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
+            changes = {
+                self.doneButton.alpha = 0
+                self.batchModeButton.alpha = 0
+                self.cameraModeButton.alpha = 0
+                self.mediaLibraryModeButton.alpha = 0
+            }
         default:
             owsFailDebug("unexpected topViewController: \(topViewController)")
+            changes = { }
         }
 
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: changes)
+        } else {
+            changes()
+        }
         doneButton.updateCount()
     }
 
-    func fadeTo(viewControllers: [UIViewController]) {
+    func fadeTo(viewControllers: [UIViewController], duration: CFTimeInterval) {
         let transition: CATransition = CATransition()
-        transition.duration = 0.08
+        transition.duration = duration
         transition.type = CATransitionType.fade
         view.layer.add(transition, forKey: nil)
         setViewControllers(viewControllers, animated: false)
@@ -254,7 +305,7 @@ class SendMediaNavigationController: OWSNavigationController {
             guard isGranted else { return }
 
             BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
-            self.fadeTo(viewControllers: [self.captureViewController])
+            self.fadeTo(viewControllers: [self.captureViewController], duration: 0.08)
         }
     }
 
@@ -263,7 +314,7 @@ class SendMediaNavigationController: OWSNavigationController {
             guard isGranted else { return }
 
             BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
-            self.fadeTo(viewControllers: [self.mediaLibraryViewController])
+            self.fadeTo(viewControllers: [self.mediaLibraryViewController], duration: 0.08)
         }
     }
 
@@ -339,44 +390,40 @@ class SendMediaNavigationController: OWSNavigationController {
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
-        pushViewController(approvalViewController, animated: animated)
+        if animated {
+            fadeTo(viewControllers: viewControllers + [approvalViewController], duration: 0.3)
+        } else {
+            pushViewController(approvalViewController, animated: false)
+        }
     }
 
     private func didRequestExit(dontAbandonText: String) {
         if attachmentDraftCollection.count == 0 {
             self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
         } else {
-            let alertTitle = NSLocalizedString("SEND_MEDIA_ABANDON_TITLE", comment: "alert title when user attempts to leave the send media flow when they have an in-progress album")
-
-            let alert = UIAlertController(title: alertTitle, message: nil, preferredStyle: .alert)
+            let alert = ActionSheetController(title: nil, message: nil)
 
             let confirmAbandonText = NSLocalizedString("SEND_MEDIA_CONFIRM_ABANDON_ALBUM", comment: "alert action, confirming the user wants to exit the media flow and abandon any photos they've taken")
-            let confirmAbandonAction = UIAlertAction(title: confirmAbandonText,
+            let confirmAbandonAction = ActionSheetAction(title: confirmAbandonText,
                                                      style: .destructive,
                                                      handler: { [weak self] _ in
                                                         guard let self = self else { return }
                                                         self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
             })
             alert.addAction(confirmAbandonAction)
-            let dontAbandonAction = UIAlertAction(title: dontAbandonText,
+            let dontAbandonAction = ActionSheetAction(title: dontAbandonText,
                                                   style: .default,
                                                   handler: { _ in  })
             alert.addAction(dontAbandonAction)
 
-            self.presentAlert(alert)
+            self.presentActionSheet(alert)
         }
     }
 }
 
 extension SendMediaNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if let navbarTheme = preferredNavbarTheme(viewController: viewController) {
-            if let owsNavBar = navigationBar as? OWSNavigationBar {
-                owsNavBar.overrideTheme(type: navbarTheme)
-            } else {
-                owsFailDebug("unexpected navigationBar: \(navigationBar)")
-            }
-        }
+        updateNavbarTheme(for: viewController, animated: animated)
 
         switch viewController {
         case is PhotoCaptureViewController:
@@ -394,36 +441,47 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
             break
         }
 
-        self.updateViewState(topViewController: viewController)
+        updateViewState(topViewController: viewController, animated: false)
     }
 
     // In case back navigation was canceled, we re-apply whatever is showing.
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        if let navbarTheme = preferredNavbarTheme(viewController: viewController) {
-            if let owsNavBar = navigationBar as? OWSNavigationBar {
-                owsNavBar.overrideTheme(type: navbarTheme)
-            } else {
-                owsFailDebug("unexpected navigationBar: \(navigationBar)")
-            }
-        }
-        self.updateViewState(topViewController: viewController)
+        updateNavbarTheme(for: viewController, animated: animated)
+        updateViewState(topViewController: viewController, animated: false)
+    }
+
+    func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask {
+        return navigationController.topViewController?.supportedInterfaceOrientations ?? UIDevice.current.defaultSupportedOrienations
     }
 
     // MARK: - Helpers
 
-    private func preferredNavbarTheme(viewController: UIViewController) -> OWSNavigationBar.NavigationBarThemeOverride? {
+    private func updateNavbarTheme(for viewController: UIViewController, animated: Bool) {
+        let showNavbar: (OWSNavigationBar.NavigationBarStyle) -> Void = { navigationBarStyle in
+            if self.isNavigationBarHidden {
+                self.setNavigationBarHidden(false, animated: animated)
+            }
+            guard let owsNavBar = self.navigationBar as? OWSNavigationBar else {
+                owsFailDebug("unexpected navigationBar: \(self.navigationBar)")
+                return
+            }
+            owsNavBar.switchToStyle(navigationBarStyle)
+        }
+
         switch viewController {
-        case is AttachmentApprovalViewController:
-            return .clear
-        case is ImagePickerGridController:
-            return .alwaysDark
         case is PhotoCaptureViewController:
-            return .clear
+            if !isNavigationBarHidden {
+                setNavigationBarHidden(true, animated: animated)
+            }
+        case is AttachmentApprovalViewController:
+            showNavbar(.clear)
+        case is ImagePickerGridController:
+            showNavbar(.alwaysDark)
         case is ConversationPickerViewController:
-            return .removeOverride
+            showNavbar(.default)
         default:
             owsFailDebug("unexpected viewController: \(viewController)")
-            return nil
+            return
         }
     }
 
@@ -453,7 +511,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment, canSave: sendMediaNavDelegate.sendMediaNavCanSaveAttachments)
         attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
         if isInBatchSelectMode {
-            updateViewState(topViewController: photoCaptureViewController)
+            updateViewState(topViewController: photoCaptureViewController, animated: false)
         } else {
             pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
                                        animated: true)
@@ -480,6 +538,12 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         }
         assert(attachmentDraftCollection.attachmentDrafts.count == 0)
     }
+
+    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, isRecordingMovie: Bool) {
+        assert(self.isRecordingMovie != isRecordingMovie)
+        self.isRecordingMovie = isRecordingMovie
+        updateViewState(topViewController: photoCaptureViewController, animated: true)
+    }
 }
 
 extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
@@ -503,7 +567,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")
                 modal.dismiss {
-                    OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+                    OWSActionSheets.showActionSheet(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
                 }
             }.retainUntilComplete()
         }
@@ -532,7 +596,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         let libraryMedia = MediaLibraryAttachment(asset: asset, attachmentApprovalItemPromise: attachmentApprovalItemPromise)
         attachmentDraftCollection.append(.picker(attachment: libraryMedia))
 
-        updateViewState(topViewController: imagePicker)
+        updateViewState(topViewController: imagePicker, animated: false)
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset) {
@@ -541,7 +605,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         }
         attachmentDraftCollection.remove(.picker(attachment: draft))
 
-        updateViewState(topViewController: imagePicker)
+        updateViewState(topViewController: imagePicker, animated: false)
     }
 
     func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool {
@@ -556,7 +620,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
 
     func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-        updateViewState(topViewController: attachmentApproval)
+        updateViewState(topViewController: attachmentApproval, animated: true)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
@@ -588,6 +652,10 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
         isInBatchSelectMode = true
 
         popViewController(animated: true)
+    }
+
+    var attachmentApprovalTextInputContextIdentifier: String? {
+        return sendMediaNavDelegate?.sendMediaNavTextInputContextIdentifier
     }
 }
 
@@ -740,9 +808,8 @@ private class DoneButton: UIView {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(tapGesture:)))
         addGestureRecognizer(tapGesture)
 
-        let container = UIView()
+        let container = PillView()
         container.backgroundColor = .ows_white
-        container.layer.cornerRadius = 20
         container.layoutMargins = UIEdgeInsets(top: 7, leading: 8, bottom: 7, trailing: 8)
 
         addSubview(container)
@@ -774,17 +841,11 @@ private class DoneButton: UIView {
     // MARK: - Subviews
 
     private lazy var badge: UIView = {
-        let badge = CircleView()
+        let badge = PillView()
         badge.layoutMargins = UIEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
         badge.backgroundColor = .ows_signalBlue
         badge.addSubview(badgeLabel)
         badgeLabel.autoPinEdgesToSuperviewMargins()
-
-        // Constrain to be a pill that is at least a circle, and maybe wider.
-        badgeLabel.autoPin(toAspectRatio: 1.0, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            badgeLabel.autoPinToSquareAspectRatio()
-        }
 
         return badge
     }()

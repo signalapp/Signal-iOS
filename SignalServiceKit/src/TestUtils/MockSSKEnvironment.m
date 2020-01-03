@@ -26,6 +26,7 @@
 #import "StorageCoordinator.h"
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
+#import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -57,6 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
+    // Ensure that OWSBackgroundTaskManager is created now.
+    [OWSBackgroundTaskManager sharedManager];
+
     StorageCoordinator *storageCoordinator = [StorageCoordinator new];
     SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
     // Unlike AppSetup, we always load YDB in the tests.
@@ -86,13 +90,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
     OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
     id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
-    id<OWSSyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
+    id<SyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
     id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
     OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
     StickerManager *stickerManager = [[StickerManager alloc] init];
     SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
     AccountServiceClient *accountServiceClient = [FakeAccountServiceClient new];
     OWSFakeStorageServiceManager *storageServiceManager = [OWSFakeStorageServiceManager new];
+    SSKPreferences *sskPreferences = [SSKPreferences new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -128,7 +133,8 @@ NS_ASSUME_NONNULL_BEGIN
                 signalServiceAddressCache:signalServiceAddressCache
                      accountServiceClient:accountServiceClient
                     storageServiceManager:storageServiceManager
-                       storageCoordinator:storageCoordinator];
+                       storageCoordinator:storageCoordinator
+                           sskPreferences:sskPreferences];
 
     if (!self) {
         return nil;
@@ -136,16 +142,24 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.callMessageHandler = [OWSFakeCallMessageHandler new];
     self.notificationsManager = [NoopNotificationsManager new];
+
     return self;
 }
 
 - (void)configure
 {
-    if (self.databaseStorage.canLoadYdb) {
         __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [OWSStorage registerExtensionsWithMigrationBlock:^() {
-            dispatch_semaphore_signal(semaphore);
-        }];
+        [[self configureYdb]
+                .then(^{
+                    OWSAssertIsOnMainThread();
+
+                    return [self configureGrdb];
+                })
+                .then(^{
+                    OWSAssertIsOnMainThread();
+
+                    dispatch_semaphore_signal(semaphore);
+                }) retainUntilComplete];
 
         // Registering extensions is a complicated process than can move
         // on and off the main thread.  While we wait for it to complete,
@@ -163,7 +177,32 @@ NS_ASSUME_NONNULL_BEGIN
             // Process a single "source" (e.g. item) on the default run loop.
             CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, false);
         }
+}
+
+- (AnyPromise *)configureYdb
+{
+    if (!self.databaseStorage.canLoadYdb) {
+        return [AnyPromise promiseWithValue:@(1)];
     }
+    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        [OWSStorage registerExtensionsWithCompletionBlock:^() {
+            [self.storageCoordinator markStorageSetupAsComplete];
+
+            // The value doesn't matter, we just need any non-NSError value.
+            resolve(@(1));
+        }];
+    }];
+    return promise;
+}
+
+- (AnyPromise *)configureGrdb
+{
+    OWSAssertIsOnMainThread();
+
+    GRDBSchemaMigrator *grdbSchemaMigrator = [GRDBSchemaMigrator new];
+    [grdbSchemaMigrator runSchemaMigrations];
+
+    return [AnyPromise promiseWithValue:@(1)];
 }
 
 @end

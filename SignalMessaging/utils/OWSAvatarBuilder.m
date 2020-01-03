@@ -8,9 +8,9 @@
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "Theme.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -79,7 +79,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 {
     // Adapt the font size to reflect the diameter.
     CGFloat fontSize = 20.f * diameter / kStandardAvatarSize;
-    return [UIFont ows_mediumFontWithSize:fontSize];
+    return [UIFont ows_semiboldFontWithSize:fontSize];
 }
 
 + (nullable UIImage *)avatarImageWithInitials:(NSString *)initials

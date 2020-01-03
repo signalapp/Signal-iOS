@@ -66,10 +66,6 @@ public class LongTextViewController: OWSViewController {
         databaseStorage.add(databaseStorageObserver: self)
     }
 
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     // MARK: -
 
     private func refreshContent() {
@@ -113,7 +109,7 @@ public class LongTextViewController: OWSViewController {
         messageTextView.showsHorizontalScrollIndicator = false
         messageTextView.showsVerticalScrollIndicator = true
         messageTextView.isUserInteractionEnabled = true
-        messageTextView.textColor = Theme.primaryColor
+        messageTextView.textColor = Theme.primaryTextColor
         if let displayableText = displayableText {
             messageTextView.text = fullText
             messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
@@ -124,8 +120,8 @@ public class LongTextViewController: OWSViewController {
         }
 
         let linkTextAttributes: [NSAttributedString.Key: Any] = [
-            NSAttributedString.Key.foregroundColor: Theme.primaryColor,
-            NSAttributedString.Key.underlineColor: Theme.primaryColor,
+            NSAttributedString.Key.foregroundColor: Theme.primaryTextColor,
+            NSAttributedString.Key.underlineColor: Theme.primaryTextColor,
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
         ]
         messageTextView.linkTextAttributes = linkTextAttributes
@@ -141,18 +137,33 @@ public class LongTextViewController: OWSViewController {
         footer.autoPinWidthToSuperview()
         footer.autoPinEdge(.top, to: .bottom, of: messageTextView)
         footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        footer.tintColor = Theme.primaryIconColor
 
         footer.items = [
+            UIBarButtonItem(
+                image: Theme.iconImage(.messageActionShare),
+                style: .plain,
+                target: self,
+                action: #selector(shareButtonPressed)
+            ),
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            UIBarButtonItem(
+                image: Theme.iconImage(.messageActionForward),
+                style: .plain,
+                target: self,
+                action: #selector(forwardButtonPressed)
+            )
         ]
     }
 
     // MARK: - Actions
 
-    @objc func shareButtonPressed() {
-        AttachmentSharing.showShareUI(forText: fullText)
+    @objc func shareButtonPressed(_ sender: UIBarButtonItem) {
+        AttachmentSharing.showShareUI(forText: fullText, sender: sender)
+    }
+
+    @objc func forwardButtonPressed() {
+        ForwardMessageNavigationController.present(for: viewItem, from: self, delegate: self)
     }
 }
 
@@ -162,8 +173,7 @@ extension LongTextViewController: SDSDatabaseStorageObserver {
     public func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
         AssertIsOnMainThread()
 
-        let uniqueId = self.viewItem.interaction.uniqueId
-        guard change.didUpdate(interactionId: uniqueId) else {
+        guard change.didUpdate(interaction: self.viewItem.interaction) else {
             return
         }
         assert(change.didUpdateInteractions)
@@ -181,5 +191,34 @@ extension LongTextViewController: SDSDatabaseStorageObserver {
         AssertIsOnMainThread()
 
         refreshContent()
+    }
+}
+
+// MARK: -
+
+extension LongTextViewController: ForwardMessageDelegate {
+    public func forwardMessageFlowDidComplete(viewItem: ConversationViewItem,
+                                              threads: [TSThread]) {
+        dismiss(animated: true) {
+            self.didForwardMessage(threads: threads)
+        }
+    }
+
+    public func forwardMessageFlowDidCancel() {
+        dismiss(animated: true)
+    }
+
+    func didForwardMessage(threads: [TSThread]) {
+        guard threads.count == 1 else {
+            return
+        }
+        guard let thread = threads.first else {
+            owsFailDebug("Missing thread.")
+            return
+        }
+        guard thread.uniqueId != viewItem.interaction.uniqueThreadId else {
+            return
+        }
+        SignalApp.shared().presentConversation(for: thread, animated: true)
     }
 }

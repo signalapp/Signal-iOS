@@ -126,14 +126,14 @@ struct KeyBackupProtos_BackupRequest {
   /// Clears the value of `backupID`. Subsequent reads from it will return its default value.
   mutating func clearBackupID() {self._backupID = nil}
 
-  var nonce: Data {
-    get {return _nonce ?? SwiftProtobuf.Internal.emptyData}
-    set {_nonce = newValue}
+  var token: Data {
+    get {return _token ?? SwiftProtobuf.Internal.emptyData}
+    set {_token = newValue}
   }
-  /// Returns true if `nonce` has been explicitly set.
-  var hasNonce: Bool {return self._nonce != nil}
-  /// Clears the value of `nonce`. Subsequent reads from it will return its default value.
-  mutating func clearNonce() {self._nonce = nil}
+  /// Returns true if `token` has been explicitly set.
+  var hasToken: Bool {return self._token != nil}
+  /// Clears the value of `token`. Subsequent reads from it will return its default value.
+  mutating func clearToken() {self._token = nil}
 
   var validFrom: UInt64 {
     get {return _validFrom ?? 0}
@@ -177,7 +177,7 @@ struct KeyBackupProtos_BackupRequest {
 
   fileprivate var _serviceID: Data? = nil
   fileprivate var _backupID: Data? = nil
-  fileprivate var _nonce: Data? = nil
+  fileprivate var _token: Data? = nil
   fileprivate var _validFrom: UInt64? = nil
   fileprivate var _data: Data? = nil
   fileprivate var _pin: Data? = nil
@@ -198,21 +198,21 @@ struct KeyBackupProtos_BackupResponse {
   /// Clears the value of `status`. Subsequent reads from it will return its default value.
   mutating func clearStatus() {self._status = nil}
 
-  var nonce: Data {
-    get {return _nonce ?? SwiftProtobuf.Internal.emptyData}
-    set {_nonce = newValue}
+  var token: Data {
+    get {return _token ?? SwiftProtobuf.Internal.emptyData}
+    set {_token = newValue}
   }
-  /// Returns true if `nonce` has been explicitly set.
-  var hasNonce: Bool {return self._nonce != nil}
-  /// Clears the value of `nonce`. Subsequent reads from it will return its default value.
-  mutating func clearNonce() {self._nonce = nil}
+  /// Returns true if `token` has been explicitly set.
+  var hasToken: Bool {return self._token != nil}
+  /// Clears the value of `token`. Subsequent reads from it will return its default value.
+  mutating func clearToken() {self._token = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Status: SwiftProtobuf.Enum {
     typealias RawValue = Int
     case ok // = 1
-    case nonceMismatch // = 2
+    case alreadyExists // = 2
     case notYetValid // = 3
 
     init() {
@@ -222,7 +222,7 @@ struct KeyBackupProtos_BackupResponse {
     init?(rawValue: Int) {
       switch rawValue {
       case 1: self = .ok
-      case 2: self = .nonceMismatch
+      case 2: self = .alreadyExists
       case 3: self = .notYetValid
       default: return nil
       }
@@ -231,7 +231,7 @@ struct KeyBackupProtos_BackupResponse {
     var rawValue: Int {
       switch self {
       case .ok: return 1
-      case .nonceMismatch: return 2
+      case .alreadyExists: return 2
       case .notYetValid: return 3
       }
     }
@@ -241,7 +241,7 @@ struct KeyBackupProtos_BackupResponse {
   init() {}
 
   fileprivate var _status: KeyBackupProtos_BackupResponse.Status? = nil
-  fileprivate var _nonce: Data? = nil
+  fileprivate var _token: Data? = nil
 }
 
 #if swift(>=4.2)
@@ -275,14 +275,14 @@ struct KeyBackupProtos_RestoreRequest {
   /// Clears the value of `backupID`. Subsequent reads from it will return its default value.
   mutating func clearBackupID() {self._backupID = nil}
 
-  var nonce: Data {
-    get {return _nonce ?? SwiftProtobuf.Internal.emptyData}
-    set {_nonce = newValue}
+  var token: Data {
+    get {return _token ?? SwiftProtobuf.Internal.emptyData}
+    set {_token = newValue}
   }
-  /// Returns true if `nonce` has been explicitly set.
-  var hasNonce: Bool {return self._nonce != nil}
-  /// Clears the value of `nonce`. Subsequent reads from it will return its default value.
-  mutating func clearNonce() {self._nonce = nil}
+  /// Returns true if `token` has been explicitly set.
+  var hasToken: Bool {return self._token != nil}
+  /// Clears the value of `token`. Subsequent reads from it will return its default value.
+  mutating func clearToken() {self._token = nil}
 
   var validFrom: UInt64 {
     get {return _validFrom ?? 0}
@@ -308,7 +308,7 @@ struct KeyBackupProtos_RestoreRequest {
 
   fileprivate var _serviceID: Data? = nil
   fileprivate var _backupID: Data? = nil
-  fileprivate var _nonce: Data? = nil
+  fileprivate var _token: Data? = nil
   fileprivate var _validFrom: UInt64? = nil
   fileprivate var _pin: Data? = nil
 }
@@ -327,14 +327,14 @@ struct KeyBackupProtos_RestoreResponse {
   /// Clears the value of `status`. Subsequent reads from it will return its default value.
   mutating func clearStatus() {self._status = nil}
 
-  var nonce: Data {
-    get {return _nonce ?? SwiftProtobuf.Internal.emptyData}
-    set {_nonce = newValue}
+  var token: Data {
+    get {return _token ?? SwiftProtobuf.Internal.emptyData}
+    set {_token = newValue}
   }
-  /// Returns true if `nonce` has been explicitly set.
-  var hasNonce: Bool {return self._nonce != nil}
-  /// Clears the value of `nonce`. Subsequent reads from it will return its default value.
-  mutating func clearNonce() {self._nonce = nil}
+  /// Returns true if `token` has been explicitly set.
+  var hasToken: Bool {return self._token != nil}
+  /// Clears the value of `token`. Subsequent reads from it will return its default value.
+  mutating func clearToken() {self._token = nil}
 
   var data: Data {
     get {return _data ?? SwiftProtobuf.Internal.emptyData}
@@ -359,7 +359,7 @@ struct KeyBackupProtos_RestoreResponse {
   enum Status: SwiftProtobuf.Enum {
     typealias RawValue = Int
     case ok // = 1
-    case nonceMismatch // = 2
+    case tokenMismatch // = 2
     case notYetValid // = 3
     case missing // = 4
     case pinMismatch // = 5
@@ -371,7 +371,7 @@ struct KeyBackupProtos_RestoreResponse {
     init?(rawValue: Int) {
       switch rawValue {
       case 1: self = .ok
-      case 2: self = .nonceMismatch
+      case 2: self = .tokenMismatch
       case 3: self = .notYetValid
       case 4: self = .missing
       case 5: self = .pinMismatch
@@ -382,7 +382,7 @@ struct KeyBackupProtos_RestoreResponse {
     var rawValue: Int {
       switch self {
       case .ok: return 1
-      case .nonceMismatch: return 2
+      case .tokenMismatch: return 2
       case .notYetValid: return 3
       case .missing: return 4
       case .pinMismatch: return 5
@@ -394,7 +394,7 @@ struct KeyBackupProtos_RestoreResponse {
   init() {}
 
   fileprivate var _status: KeyBackupProtos_RestoreResponse.Status? = nil
-  fileprivate var _nonce: Data? = nil
+  fileprivate var _token: Data? = nil
   fileprivate var _data: Data? = nil
   fileprivate var _tries: UInt32? = nil
 }
@@ -611,7 +611,7 @@ extension KeyBackupProtos_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._M
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "service_id"),
     2: .standard(proto: "backup_id"),
-    3: .same(proto: "nonce"),
+    3: .same(proto: "token"),
     4: .standard(proto: "valid_from"),
     5: .same(proto: "data"),
     6: .same(proto: "pin"),
@@ -623,7 +623,7 @@ extension KeyBackupProtos_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._M
       switch fieldNumber {
       case 1: try decoder.decodeSingularBytesField(value: &self._serviceID)
       case 2: try decoder.decodeSingularBytesField(value: &self._backupID)
-      case 3: try decoder.decodeSingularBytesField(value: &self._nonce)
+      case 3: try decoder.decodeSingularBytesField(value: &self._token)
       case 4: try decoder.decodeSingularUInt64Field(value: &self._validFrom)
       case 5: try decoder.decodeSingularBytesField(value: &self._data)
       case 6: try decoder.decodeSingularBytesField(value: &self._pin)
@@ -640,7 +640,7 @@ extension KeyBackupProtos_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._M
     if let v = self._backupID {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     }
-    if let v = self._nonce {
+    if let v = self._token {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
     }
     if let v = self._validFrom {
@@ -661,7 +661,7 @@ extension KeyBackupProtos_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._M
   static func ==(lhs: KeyBackupProtos_BackupRequest, rhs: KeyBackupProtos_BackupRequest) -> Bool {
     if lhs._serviceID != rhs._serviceID {return false}
     if lhs._backupID != rhs._backupID {return false}
-    if lhs._nonce != rhs._nonce {return false}
+    if lhs._token != rhs._token {return false}
     if lhs._validFrom != rhs._validFrom {return false}
     if lhs._data != rhs._data {return false}
     if lhs._pin != rhs._pin {return false}
@@ -675,14 +675,14 @@ extension KeyBackupProtos_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._
   static let protoMessageName: String = _protobuf_package + ".BackupResponse"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "status"),
-    2: .same(proto: "nonce"),
+    2: .same(proto: "token"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularEnumField(value: &self._status)
-      case 2: try decoder.decodeSingularBytesField(value: &self._nonce)
+      case 2: try decoder.decodeSingularBytesField(value: &self._token)
       default: break
       }
     }
@@ -692,7 +692,7 @@ extension KeyBackupProtos_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._
     if let v = self._status {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
     }
-    if let v = self._nonce {
+    if let v = self._token {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -700,7 +700,7 @@ extension KeyBackupProtos_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._
 
   static func ==(lhs: KeyBackupProtos_BackupResponse, rhs: KeyBackupProtos_BackupResponse) -> Bool {
     if lhs._status != rhs._status {return false}
-    if lhs._nonce != rhs._nonce {return false}
+    if lhs._token != rhs._token {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -709,7 +709,7 @@ extension KeyBackupProtos_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._
 extension KeyBackupProtos_BackupResponse.Status: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "OK"),
-    2: .same(proto: "NONCE_MISMATCH"),
+    2: .same(proto: "ALREADY_EXISTS"),
     3: .same(proto: "NOT_YET_VALID"),
   ]
 }
@@ -719,7 +719,7 @@ extension KeyBackupProtos_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "service_id"),
     2: .standard(proto: "backup_id"),
-    3: .same(proto: "nonce"),
+    3: .same(proto: "token"),
     4: .standard(proto: "valid_from"),
     5: .same(proto: "pin"),
   ]
@@ -729,7 +729,7 @@ extension KeyBackupProtos_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._
       switch fieldNumber {
       case 1: try decoder.decodeSingularBytesField(value: &self._serviceID)
       case 2: try decoder.decodeSingularBytesField(value: &self._backupID)
-      case 3: try decoder.decodeSingularBytesField(value: &self._nonce)
+      case 3: try decoder.decodeSingularBytesField(value: &self._token)
       case 4: try decoder.decodeSingularUInt64Field(value: &self._validFrom)
       case 5: try decoder.decodeSingularBytesField(value: &self._pin)
       default: break
@@ -744,7 +744,7 @@ extension KeyBackupProtos_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._
     if let v = self._backupID {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     }
-    if let v = self._nonce {
+    if let v = self._token {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
     }
     if let v = self._validFrom {
@@ -759,7 +759,7 @@ extension KeyBackupProtos_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._
   static func ==(lhs: KeyBackupProtos_RestoreRequest, rhs: KeyBackupProtos_RestoreRequest) -> Bool {
     if lhs._serviceID != rhs._serviceID {return false}
     if lhs._backupID != rhs._backupID {return false}
-    if lhs._nonce != rhs._nonce {return false}
+    if lhs._token != rhs._token {return false}
     if lhs._validFrom != rhs._validFrom {return false}
     if lhs._pin != rhs._pin {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -771,7 +771,7 @@ extension KeyBackupProtos_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf.
   static let protoMessageName: String = _protobuf_package + ".RestoreResponse"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "status"),
-    2: .same(proto: "nonce"),
+    2: .same(proto: "token"),
     3: .same(proto: "data"),
     4: .same(proto: "tries"),
   ]
@@ -780,7 +780,7 @@ extension KeyBackupProtos_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf.
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularEnumField(value: &self._status)
-      case 2: try decoder.decodeSingularBytesField(value: &self._nonce)
+      case 2: try decoder.decodeSingularBytesField(value: &self._token)
       case 3: try decoder.decodeSingularBytesField(value: &self._data)
       case 4: try decoder.decodeSingularUInt32Field(value: &self._tries)
       default: break
@@ -792,7 +792,7 @@ extension KeyBackupProtos_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf.
     if let v = self._status {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
     }
-    if let v = self._nonce {
+    if let v = self._token {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     }
     if let v = self._data {
@@ -806,7 +806,7 @@ extension KeyBackupProtos_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf.
 
   static func ==(lhs: KeyBackupProtos_RestoreResponse, rhs: KeyBackupProtos_RestoreResponse) -> Bool {
     if lhs._status != rhs._status {return false}
-    if lhs._nonce != rhs._nonce {return false}
+    if lhs._token != rhs._token {return false}
     if lhs._data != rhs._data {return false}
     if lhs._tries != rhs._tries {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -817,7 +817,7 @@ extension KeyBackupProtos_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf.
 extension KeyBackupProtos_RestoreResponse.Status: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "OK"),
-    2: .same(proto: "NONCE_MISMATCH"),
+    2: .same(proto: "TOKEN_MISMATCH"),
     3: .same(proto: "NOT_YET_VALID"),
     4: .same(proto: "MISSING"),
     5: .same(proto: "PIN_MISMATCH"),

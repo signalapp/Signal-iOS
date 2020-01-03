@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 protocol MediaGalleryFinder {
     associatedtype ReadTransaction
@@ -14,7 +14,8 @@ protocol MediaGalleryFinder {
     func enumerateMediaAttachments(range: NSRange, transaction: ReadTransaction, block: @escaping (TSAttachment) -> Void)
 }
 
-public class AnyMediaGalleryFinder {
+@objc
+public class AnyMediaGalleryFinder: NSObject {
     public typealias ReadTransaction = SDSAnyReadTransaction
 
     public lazy var yapAdapter = {
@@ -70,6 +71,48 @@ extension AnyMediaGalleryFinder: MediaGalleryFinder {
             return yapAdapter.mostRecentMediaAttachment(transaction: yapRead)
         }
     }
+
+    @objc(didInsertAttachmentStream:transaction:)
+    public class func didInsert(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite:
+            break
+        case .grdbWrite(let grdbWrite):
+            do {
+                try GRDBMediaGalleryFinder.insertGalleryRecord(attachmentStream: attachmentStream, transaction: grdbWrite)
+            } catch {
+                owsFailDebug("error: \(error)")
+            }
+        }
+    }
+
+    @objc(didRemoveAttachmentStream:transaction:)
+    public class func didRemove(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite:
+            break
+        case .grdbWrite(let grdbWrite):
+            do {
+                try GRDBMediaGalleryFinder.removeAnyGalleryRecord(attachmentStream: attachmentStream, transaction: grdbWrite)
+            } catch {
+                owsFailDebug("error: \(error)")
+            }
+        }
+    }
+
+    @objc
+    public class func didRemoveAllContent(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite:
+            break
+        case .grdbWrite(let grdbWrite):
+            do {
+                try GRDBMediaGalleryFinder.removeAllGalleryRecords(transaction: grdbWrite)
+            } catch {
+                owsFailDebug("error: \(error)")
+            }
+        }
+    }
 }
 
 // MARK: - GRDB
@@ -84,8 +127,12 @@ public class GRDBMediaGalleryFinder: NSObject {
 
     // MARK: - 
 
-    var threadUniqueId: String {
-        return thread.uniqueId
+    var threadId: Int64 {
+        guard let rowId = thread.grdbId else {
+            owsFailDebug("thread.grdbId was unexpectedly nil")
+            return 0
+        }
+        return rowId.int64Value
     }
 
     public static func setup(storage: GRDBDatabaseStorageAdapter) {
@@ -99,6 +146,78 @@ public class GRDBMediaGalleryFinder: NSObject {
 
         return MIMETypeUtil.isVisualMedia(contentType)
     }
+
+    public class func removeAnyGalleryRecord(attachmentStream: TSAttachmentStream, transaction: GRDBWriteTransaction) throws {
+        let sql = """
+        DELETE FROM \(MediaGalleryRecord.databaseTableName) WHERE attachmentId = ?
+        """
+        guard let attachmentId = attachmentStream.grdbId else {
+            owsFailDebug("attachmentId was unexpectedly nil")
+            return
+        }
+
+        guard attachmentStream.albumMessageId != nil else {
+            Logger.verbose("not a gallery attachment")
+            return
+        }
+
+        try transaction.database.execute(sql: sql, arguments: [attachmentId.int64Value])
+    }
+
+    public class func insertGalleryRecord(attachmentStream: TSAttachmentStream, transaction: GRDBWriteTransaction) throws {
+        guard let attachmentRowId = attachmentStream.grdbId else {
+            owsFailDebug("attachmentRowId was unexpectedly nil")
+            return
+        }
+
+        guard let messageUniqueId = attachmentStream.albumMessageId else {
+            Logger.verbose("not a gallery attachment")
+            return
+        }
+
+        guard let message = TSMessage.anyFetchMessage(uniqueId: messageUniqueId, transaction: transaction.asAnyRead) else {
+            // This can happen *during* the YDB migration. We use `skipTouchObservations` as a proxy for
+            // "are we running the ydb migration"
+            assert(UIDatabaseObserver.skipTouchObservations, "message was unexpectedly nil")
+            return
+        }
+
+        guard let messageRowId = message.grdbId else {
+            owsFailDebug("message was unexpectedly nil")
+            return
+        }
+
+        let thread = message.thread(transaction: transaction.asAnyRead)
+        guard let threadId = thread.grdbId else {
+            owsFailDebug("threadId was unexpectedly nil")
+            return
+        }
+
+        guard let originalAlbumIndex = message.attachmentIds.firstIndex(of: attachmentStream.uniqueId) else {
+            owsFailDebug("originalAlbumIndex was unexpectedly nil")
+            return
+        }
+
+        let galleryRecord = MediaGalleryRecord(attachmentId: attachmentRowId.int64Value,
+                                               albumMessageId: messageRowId.int64Value,
+                                               threadId: threadId.int64Value,
+                                               originalAlbumOrder: originalAlbumIndex)
+
+        try galleryRecord.insert(transaction.database)
+    }
+
+    public class func removeAllGalleryRecords(transaction: GRDBWriteTransaction) throws {
+        try MediaGalleryRecord.deleteAll(transaction.database)
+    }
+}
+
+struct MediaGalleryRecord: Codable, FetchableRecord, PersistableRecord {
+    static let databaseTableName = "media_gallery_items"
+
+    let attachmentId: Int64
+    let albumMessageId: Int64
+    let threadId: Int64
+    let originalAlbumOrder: Int
 }
 
 extension GRDBMediaGalleryFinder: MediaGalleryFinder {
@@ -107,60 +226,59 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
     func mostRecentMediaAttachment(transaction: GRDBReadTransaction) -> TSAttachment? {
         let sql = """
             SELECT \(AttachmentRecord.databaseTableName).*
-            FROM \(AttachmentRecord.databaseTableName)
-            LEFT JOIN \(InteractionRecord.databaseTableName)
-                ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
-                AND \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .isViewOnceMessage) = FALSE
-            WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
-                AND \(attachmentColumn: .albumMessageId) IS NOT NULL
+            FROM "media_gallery_items"
+            INNER JOIN \(AttachmentRecord.databaseTableName)
+                ON media_gallery_items.attachmentId = model_TSAttachment.id
                 AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
+            INNER JOIN \(InteractionRecord.databaseTableName)
+                ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
+                AND \(interactionColumn: .isViewOnceMessage) = FALSE
+            WHERE media_gallery_items.threadId = ?
             ORDER BY
-                \(interactionColumnFullyQualified: .id) DESC,
-                \(attachmentColumnFullyQualified: .id) DESC
+                media_gallery_items.albumMessageId DESC,
+                media_gallery_items.originalAlbumOrder DESC
             LIMIT 1
         """
 
-        // GRDB TODO: migrate such that attachment.id reflects ordering in TSInteraction.attachmentIds
-        let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadUniqueId], transaction: transaction)
+        let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         return try! cursor.next()
     }
 
     func mediaCount(transaction: GRDBReadTransaction) -> UInt {
         let sql = """
-        SELECT
-            COUNT(*)
-        FROM \(AttachmentRecord.databaseTableName)
-        LEFT JOIN \(InteractionRecord.databaseTableName)
-            ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
-            AND \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .isViewOnceMessage) = FALSE
-        WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
-            AND \(attachmentColumn: .albumMessageId) IS NOT NULL
-            AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
+            SELECT COUNT(*)
+            FROM "media_gallery_items"
+            INNER JOIN \(AttachmentRecord.databaseTableName)
+                ON media_gallery_items.attachmentId = model_TSAttachment.id
+                AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
+            INNER JOIN \(InteractionRecord.databaseTableName)
+                ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
+                AND \(interactionColumn: .isViewOnceMessage) = FALSE
+            WHERE media_gallery_items.threadId = ?
         """
 
-        return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId]) ?? 0
+        return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadId]) ?? 0
     }
 
     func enumerateMediaAttachments(range: NSRange, transaction: GRDBReadTransaction, block: @escaping (TSAttachment) -> Void) {
         let sql = """
-        SELECT \(AttachmentRecord.databaseTableName).*
-        FROM \(AttachmentRecord.databaseTableName)
-        LEFT JOIN \(InteractionRecord.databaseTableName)
-            ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
-            AND \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .isViewOnceMessage) = FALSE
-        WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
-            AND \(attachmentColumn: .albumMessageId) IS NOT NULL
-            AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
-        ORDER BY
-            \(interactionColumnFullyQualified: .id) DESC,
-            \(attachmentColumnFullyQualified: .id) DESC
+            SELECT \(AttachmentRecord.databaseTableName).*
+            FROM "media_gallery_items"
+            INNER JOIN \(AttachmentRecord.databaseTableName)
+                ON media_gallery_items.attachmentId = model_TSAttachment.id
+                AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
+            INNER JOIN \(InteractionRecord.databaseTableName)
+                ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
+                AND \(interactionColumn: .isViewOnceMessage) = FALSE
+            WHERE media_gallery_items.threadId = ?
+            ORDER BY
+                media_gallery_items.albumMessageId,
+                media_gallery_items.originalAlbumOrder
+            LIMIT \(range.length)
+            OFFSET \(range.lowerBound)
         """
 
-        // GRDB TODO: migrate such that attachment.id reflects ordering in TSInteraction.attachmentIds
-        let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadUniqueId], transaction: transaction)
+        let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         while let next = try! cursor.next() {
             block(next)
         }
@@ -168,27 +286,32 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
 
     func mediaIndex(attachment: TSAttachmentStream, transaction: GRDBReadTransaction) -> Int? {
         let sql = """
-        SELECT rowNumber
+        SELECT mediaIndex
         FROM (
             SELECT
                 ROW_NUMBER() OVER (
                     ORDER BY
-                        \(interactionColumnFullyQualified: .id) DESC,
-                        \(attachmentColumnFullyQualified: .id) DESC
-                ) as rowNumber,
-                \(attachmentColumnFullyQualified: .uniqueId)
-            FROM \(AttachmentRecord.databaseTableName)
-            LEFT JOIN \(InteractionRecord.databaseTableName)
-                ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
-                AND \(interactionColumn: .threadUniqueId) = ?
+                        media_gallery_items.albumMessageId,
+                        media_gallery_items.originalAlbumOrder
+                ) - 1 as mediaIndex,
+                media_gallery_items.attachmentId
+            FROM media_gallery_items
+            INNER JOIN \(AttachmentRecord.databaseTableName)
+                ON media_gallery_items.attachmentId = model_TSAttachment.id
+                AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
+            INNER JOIN \(InteractionRecord.databaseTableName)
+                ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
                 AND \(interactionColumn: .isViewOnceMessage) = FALSE
-            WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
-              AND \(attachmentColumn: .albumMessageId) IS NOT NULL
-              AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
+            WHERE media_gallery_items.threadId = ?
         )
-        WHERE \(attachmentColumn: .uniqueId) = ?
+        WHERE attachmentId = ?
         """
 
-        return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId, attachment.uniqueId])
+        guard let attachmentRowId = attachment.grdbId else {
+            owsFailDebug("attachment.grdbId was unexpectedly nil")
+            return nil
+        }
+
+        return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadId, attachmentRowId])
     }
 }

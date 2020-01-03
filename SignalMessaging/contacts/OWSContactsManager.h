@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
+@class AnyPromise;
 @class ImageCache;
 @class SDSAnyReadTransaction;
 @class SDSKeyValueStore;
@@ -38,6 +39,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 // This will return an instance of SignalAccount for _known_ signal accounts.
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
+
+- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
+                                             transaction:(SDSAnyReadTransaction *)transaction;
+
 // This will always return an instance of SignalAccount.
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 - (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address;
@@ -69,7 +74,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // This variant will fetch system contacts if contact access has already been granted,
 // but not prompt for contact access. Also, it will always notify delegates, even if
 // contacts haven't changed, and will clear out any stale cached SignalAccounts
-- (void)userRequestedSystemContactsRefreshWithCompletion:(void (^)(NSError *_Nullable error))completionHandler;
+- (AnyPromise *)userRequestedSystemContactsRefresh;
 
 #pragma mark - Util
 
@@ -82,9 +87,11 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
  * Used for sorting, respects system contacts name sort order preference.
  */
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount;
+- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
+                                 transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable UIImage *)systemContactImageForAddress:(nullable SignalServiceAddress *)address;
+- (nullable UIImage *)systemContactOrSyncedImageForAddress:(nullable SignalServiceAddress *)address;
 - (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 - (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 - (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
@@ -104,6 +111,8 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
                                             primaryAttributes:(NSDictionary *)primaryAttributes
                                           secondaryAttributes:(NSDictionary *)secondaryAttributes;
 - (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address;
+- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSString *)contactOrProfileNameForAddress:(SignalServiceAddress *)address;
 

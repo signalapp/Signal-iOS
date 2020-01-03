@@ -6,7 +6,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SDSDatabaseStorage;
 
-typedef NS_ENUM(NSUInteger, StorageCoordinatorState) {
+extern NSString *const StorageIsReadyNotification;
+
+typedef NS_CLOSED_ENUM(NSUInteger, DataStore) {
+    DataStoreYdb,
+    DataStoreGrdb,
+};
+NSString *NSStringForDataStore(DataStore value);
+
+typedef NS_CLOSED_ENUM(NSUInteger, StorageCoordinatorState) {
     // GRDB TODO: Remove .ydb and ydbTests once we ship GRDB to production.
     StorageCoordinatorStateYDB,
     StorageCoordinatorStateBeforeYDBToGRDBMigration,
@@ -23,6 +31,10 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 
 @property (atomic, readonly) StorageCoordinatorState state;
 
+@property (atomic, readonly) BOOL isMigrating;
+
+@property (atomic, readonly) BOOL isStorageReady;
+
 - (instancetype)init;
 
 // These methods should only be called by the migration itself.
@@ -31,6 +43,13 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 
 @property (class, nonatomic, readonly) BOOL hasYdbFile;
 @property (class, nonatomic, readonly) BOOL hasGrdbFile;
+@property (class, nonatomic, readonly) BOOL hasUnmigratedYdbFile;
+
+@property (class, nonatomic, readonly) BOOL hasInvalidDatabaseVersion;
+
+// The data store that will be used once the app is ready.
+// This data store may not be available before then.
+@property (class, nonatomic, readonly) DataStore dataStoreForUI;
 
 - (BOOL)isDatabasePasswordAccessible;
 
@@ -38,6 +57,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 - (void)useGRDBForTests;
 - (void)useYDBForTests;
 #endif
+
+- (void)markStorageSetupAsComplete;
 
 @end
 

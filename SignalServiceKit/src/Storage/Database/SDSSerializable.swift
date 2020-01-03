@@ -3,8 +3,12 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import SignalCoreKit
+
+func convertDateForGrdb(_ value: Date) -> Double {
+    return value.timeIntervalSince1970
+}
 
 // MARK: - SDSSerializer
 
@@ -27,6 +31,19 @@ public extension SDSSerializer {
 
     func archiveNSNumber<T>(_ value: NSNumber, conversion: (NSNumber) -> T) -> T {
         return conversion(value)
+    }
+
+    // MARK: - Date
+
+    func archiveOptionalDate(_ value: Date?) -> Double? {
+        guard let value = value else {
+            return nil
+        }
+        return archiveDate(value)
+    }
+
+    func archiveDate(_ value: Date) -> Double {
+        return convertDateForGrdb(value)
     }
 
     // MARK: - Blob

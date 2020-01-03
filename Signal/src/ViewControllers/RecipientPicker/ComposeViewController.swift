@@ -21,7 +21,9 @@ class ComposeViewController: OWSViewController {
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(dismissPressed))
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(imageResource: "btnGroup--white"), style: .plain, target: self, action: #selector(newGroupPressed))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btnGroup--white"), style: .plain, target: self, action: #selector(newGroupPressed))
+        navigationItem.rightBarButtonItem?.accessibilityLabel = NSLocalizedString("NEW_GROUP_BUTTON_LABEL",
+                                                                                  comment: "Accessibility label for the new group button")
     }
 
     @objc func dismissPressed() {

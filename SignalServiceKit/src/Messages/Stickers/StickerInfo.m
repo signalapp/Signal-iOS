@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)shareUrl
 {
-    return [NSString stringWithFormat:@"https://signal.org/addstickers/#pack_id=%@&pack_key=%@",
+    return [NSString stringWithFormat:@"https://signal.art/addstickers/#pack_id=%@&pack_key=%@",
                      self.packId.hexadecimalString,
                      self.packKey.hexadecimalString];
 }
@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (![url.scheme isEqualToString:@"https"]) {
         return NO;
     }
-    if (![url.host isEqualToString:@"signal.org"]) {
+    if (![url.host isEqualToString:@"signal.art"]) {
         return NO;
     }
     if (![url.path isEqualToString:@"/addstickers"]) {

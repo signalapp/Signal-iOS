@@ -233,12 +233,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
+                                                     transaction:(SDSAnyReadTransaction *)transaction
 {
     // Check for matches against "Note to Self".
     NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
     SignalAccount *selfAccount = [[SignalAccount alloc] initWithSignalServiceAddress:self.localAddress];
     [signalAccountsToSearch addObject:selfAccount];
-    return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch withSearchText:searchText];
+    return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch
+                                        withSearchText:searchText
+                                           transaction:transaction];
 }
 
 - (BOOL)doesContact:(Contact *)contact matchSearchTerm:(NSString *)searchTerm
@@ -350,46 +353,43 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
 {
-    UIAlertController *alert = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
-                                                   : @"Alert title for when the user has just tried to edit a "
-                                                     @"contacts after declining to give Signal contacts "
-                                                     @"permissions")
-                         message:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
-                                                   : @"Alert body for when the user has just tried to edit a "
-                                                     @"contacts after declining to give Signal contacts "
-                                                     @"permissions")
-                  preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert = [[ActionSheetController alloc]
+        initWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
+                                        : @"Alert title for when the user has just tried to edit a "
+                                          @"contacts after declining to give Signal contacts "
+                                          @"permissions")
+              message:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
+                                        : @"Alert body for when the user has just tried to edit a "
+                                          @"contacts after declining to give Signal contacts "
+                                          @"permissions")];
 
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
-                                                        @"Button text to dismiss missing contacts permission alert")
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"not_now")
-                                              style:UIAlertActionStyleCancel
-                                            handler:nil]];
+    [alert addAction:[[ActionSheetAction alloc]
+                                   initWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
+                                                     @"Button text to dismiss missing contacts permission alert")
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"not_now")
+                                           style:ActionSheetActionStyleCancel
+                                         handler:nil]];
 
-    UIAlertAction *_Nullable openSystemSettingsAction =
+    ActionSheetAction *_Nullable openSystemSettingsAction =
         [CurrentAppContext() openSystemSettingsActionWithCompletion:nil];
     if (openSystemSettingsAction) {
         [alert addAction:openSystemSettingsAction];
     }
 
-    [viewController presentAlert:alert];
+    [viewController presentActionSheet:alert];
 }
 
-- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
-                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                               editImmediately:(BOOL)shouldEditImmediately
+- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                                      editImmediately:(BOOL)shouldEditImmediately
 {
-    [self presentContactViewControllerForAddress:address
-                              fromViewController:fromViewController
+    return [self contactViewControllerForAddress:address
                                  editImmediately:shouldEditImmediately
                           addToExistingCnContact:nil];
 }
 
-- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
-                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                               editImmediately:(BOOL)shouldEditImmediately
-                        addToExistingCnContact:(CNContact *_Nullable)existingContact
+- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                                      editImmediately:(BOOL)shouldEditImmediately
+                                               addToExistingCnContact:(CNContact *_Nullable)existingContact
 {
     OWSAssertIsOnMainThread();
 
@@ -398,12 +398,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
         OWSFailDebug(@"Contact editing not supported.");
-        return;
+        return nil;
     }
 
     if (!self.contactsManager.isSystemContactsAuthorized) {
-        [self presentMissingContactAccessAlertControllerFromViewController:fromViewController];
-        return;
+        [self presentMissingContactAccessAlertControllerFromViewController:CurrentAppContext().frontmostViewController];
+        return nil;
     }
 
     CNContactViewController *_Nullable contactViewController;
@@ -440,7 +440,7 @@ NS_ASSUME_NONNULL_BEGIN
             cnContact = updatedContact;
         }
     }
-    if (signalAccount && !cnContact) {
+    if (signalAccount && !cnContact && signalAccount.contact.cnContactId != nil) {
         cnContact = [self.contactsManager cnContactWithId:signalAccount.contact.cnContactId];
     }
     if (cnContact) {
@@ -473,23 +473,12 @@ NS_ASSUME_NONNULL_BEGIN
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }
 
-    contactViewController.delegate = fromViewController;
     contactViewController.allowsActions = NO;
     contactViewController.allowsEditing = YES;
-    contactViewController.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:CommonStrings.cancelButton
-                                         style:UIBarButtonItemStylePlain
-                                        target:fromViewController
-                                        action:@selector(didFinishEditingContact)];
     contactViewController.edgesForExtendedLayout = UIRectEdgeNone;
+    contactViewController.view.backgroundColor = Theme.backgroundColor;
 
-    OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:contactViewController];
-
-    // We want the presentation to imply a "replacement" in this case.
-    if (shouldEditImmediately) {
-        modal.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    }
-    [fromViewController presentViewController:modal animated:YES completion:nil];
+    return contactViewController;
 }
 
 - (void)blockListCacheDidUpdate:(OWSBlockListCache *)blocklistCache

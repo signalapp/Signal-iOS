@@ -12,6 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AudioWaveform;
 @class SSKProtoAttachmentPointer;
 @class TSAttachmentPointer;
 
@@ -46,8 +47,7 @@ typedef void (^OWSThumbnailFailure)(void);
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
-                     albumMessageId:(nullable NSString *)albumMessageId
-                    shouldAlwaysPad:(BOOL)shouldAlwaysPad NS_DESIGNATED_INITIALIZER;
+                     albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
                     transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
@@ -60,15 +60,15 @@ typedef void (^OWSThumbnailFailure)(void);
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
-         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
+                        blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
-                    isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
@@ -80,8 +80,7 @@ typedef void (^OWSThumbnailFailure)(void);
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
-                 shouldAlwaysPad:(BOOL)shouldAlwaysPad
-NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:shouldAlwaysPad:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
 
 // clang-format on
 
@@ -104,7 +103,7 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 @property (nonatomic, readonly, nullable) NSString *originalFilePath;
 @property (nonatomic, readonly, nullable) NSURL *originalMediaURL;
 
-- (NSArray<NSString *> *)allThumbnailPaths;
+- (NSArray<NSString *> *)allSecondaryFilePaths;
 
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType;
 
@@ -121,7 +120,7 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 - (BOOL)writeConsumingDataSource:(id<DataSource>)dataSource
                            error:(NSError **)error NS_SWIFT_NAME(writeConsumingDataSource(_:));
 
-+ (void)deleteAttachments;
++ (void)deleteAttachmentsFromDisk;
 
 + (NSString *)attachmentsFolder;
 + (NSString *)legacyAttachmentsDirPath;
@@ -131,6 +130,7 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 - (CGSize)imageSize;
 
 - (CGFloat)audioDurationSeconds;
+- (nullable AudioWaveform *)audioWaveform;
 
 + (nullable NSError *)migrateToSharedData;
 
@@ -152,10 +152,6 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 // This method should only be invoked by OWSThumbnailService.
 - (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints;
 
-// When uploading, always apply adding to this attachment,
-// regardless of feature flags.
-@property (nonatomic, readonly) BOOL shouldAlwaysPad;
-
 #pragma mark - Validation
 
 @property (nonatomic, readonly) BOOL isValidImage;
@@ -173,7 +169,8 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 
 #pragma mark - Protobuf
 
-+ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId;
++ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
+                                                      transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable SSKProtoAttachmentPointer *)buildProto;
 

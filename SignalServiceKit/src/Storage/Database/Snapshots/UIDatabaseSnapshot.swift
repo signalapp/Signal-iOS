@@ -3,24 +3,25 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 /// Anything 
 public protocol DatabaseSnapshotDelegate: AnyObject {
-    // Called on the Database serial write queue before `databaseSnapshotWillUpdate`
-    //
-    // Use this callback to prepare state from the just-committed
-    // database which will be passed along in your DidUpdate hooks
-    func databaseSnapshotSourceDidCommit(db: Database)
 
-    // The following are called on the Main Thread
-    func databaseSnapshotWillUpdate()
-    func databaseSnapshotDidUpdate()
-    func databaseSnapshotDidUpdateExternally()
-}
+    // MARK: - Transaction Lifecycle
 
-@objc
-public protocol ObjCDatabaseSnapshotDelegate: AnyObject {
+    /// Called on the DatabaseSnapshotSerial queue durign the transaction
+    /// so the DatabaseSnapshotDelegate can accrue information about changes
+    /// as they occur.
+
+    func snapshotTransactionDidChange(with event: DatabaseEvent)
+    func snapshotTransactionDidCommit(db: Database)
+    func snapshotTransactionDidRollback(db: Database)
+
+    // MARK: - Snapshot LifeCycle (Post Commit)
+
+    /// Called on the Main Thread after the transaction has committed
+
     func databaseSnapshotWillUpdate()
     func databaseSnapshotDidUpdate()
     func databaseSnapshotDidUpdateExternally()
@@ -28,33 +29,6 @@ public protocol ObjCDatabaseSnapshotDelegate: AnyObject {
 
 enum DatabaseObserverError: Error {
     case changeTooLarge
-}
-
-@objc
-public class AtomicBool: NSObject {
-    private var value: Bool
-
-    @objc
-    public required init(_ value: Bool) {
-        self.value = value
-    }
-
-    // All instances can share a single queue.
-    private static let serialQueue = DispatchQueue(label: "AtomicBool")
-
-    @objc
-    public func get() -> Bool {
-        return AtomicBool.serialQueue.sync {
-            return self.value
-        }
-    }
-
-    @objc
-    public func set(_ value: Bool) {
-        return AtomicBool.serialQueue.sync {
-            self.value = value
-        }
-    }
 }
 
 func AssertIsOnUIDatabaseObserverSerialQueue() {
@@ -65,6 +39,8 @@ func AssertIsOnUIDatabaseObserverSerialQueue() {
 public class UIDatabaseObserver: NSObject {
 
     public static let kMaxIncrementalRowChanges = 200
+
+    private lazy var nonModelTables: Set<String> = Set([MediaGalleryRecord.databaseTableName])
 
     // tldr; Instead, of protecting UIDatabaseObserver state with a nested DispatchQueue,
     // which would break GRDB's SchedulingWatchDog, we use objc_sync
@@ -81,6 +57,11 @@ public class UIDatabaseObserver: NSObject {
         return _isOnUIDatabaseObserverSerialQueue.get()
     }
 
+    // Toggle to skip expensive observations resulting
+    // from a `touch`. Useful for large migrations.
+    // Should only be accessed within UIDatabaseObserver.serializedSync
+    public static var skipTouchObservations: Bool = false
+
     public class func serializedSync(block: () -> Void) {
         objc_sync_enter(self)
         assert(!_isOnUIDatabaseObserverSerialQueue.get())
@@ -95,17 +76,12 @@ public class UIDatabaseObserver: NSObject {
         return _snapshotDelegates.compactMap { $0.value }
     }
 
-    @objc
-    public func appendSnapshotDelegate(_ snapshotDelegate: ObjCDatabaseSnapshotDelegate) {
-        let wrapper: DatabaseSnapshotDelegate = ObjCDatabaseSnapshotDelegateWrapper(snapshotDelegate)
-        _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: wrapper)]
-    }
-
     public func appendSnapshotDelegate(_ snapshotDelegate: DatabaseSnapshotDelegate) {
         _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
     }
 
-    private var observer: TransactionObserver?
+    let pool: DatabasePool
+
     internal var latestSnapshot: DatabaseSnapshot {
         didSet {
             AssertIsOnMainThread()
@@ -113,37 +89,9 @@ public class UIDatabaseObserver: NSObject {
     }
 
     init(pool: DatabasePool) throws {
+        self.pool = pool
         self.latestSnapshot = try pool.makeSnapshot()
         super.init()
-
-        let observation = DatabaseRegionObservation(tracking: DatabaseRegion.fullDatabase)
-        self.observer = try observation.start(in: pool) { [weak self] (database: Database) in
-            guard let self = self else { return }
-
-            UIDatabaseObserver.serializedSync { [weak self] in
-                guard let self = self else { return }
-                for delegate in self.snapshotDelegates {
-                    delegate.databaseSnapshotSourceDidCommit(db: database)
-                }
-            }
-
-            let newSnapshot = try! pool.makeSnapshot()
-
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                Logger.verbose("databaseSnapshotWillUpdate")
-                for delegate in self.snapshotDelegates {
-                    delegate.databaseSnapshotWillUpdate()
-                }
-
-                self.latestSnapshot = newSnapshot
-
-                Logger.verbose("databaseSnapshotDidUpdate")
-                for delegate in self.snapshotDelegates {
-                    delegate.databaseSnapshotDidUpdate()
-                }
-            }
-        }
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didReceiveCrossProcessNotification),
@@ -162,32 +110,139 @@ public class UIDatabaseObserver: NSObject {
     }
 }
 
-private class ObjCDatabaseSnapshotDelegateWrapper {
-    let objCDatabaseSnapshotDelegate: ObjCDatabaseSnapshotDelegate
-    init(_ objCDatabaseSnapshotDelegate: ObjCDatabaseSnapshotDelegate) {
-        self.objCDatabaseSnapshotDelegate = objCDatabaseSnapshotDelegate
-    }
-}
+extension UIDatabaseObserver: TransactionObserver {
 
-extension ObjCDatabaseSnapshotDelegateWrapper: DatabaseSnapshotDelegate {
-    func databaseSnapshotSourceDidCommit(db: Database) {
-        // Currently no objc delegates will need to handle the commit
-        // Doing so would be slightly complicated since `Database` is Swift only.
-        owsFailDebug("not implemented.")
+    public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
+        guard !eventKind.tableName.hasPrefix(GRDBFullTextSearchFinder.databaseTableName) else {
+            // Ignore updates to the GRDB FTS table(s)
+            return false
+        }
+
+        guard !nonModelTables.contains(eventKind.tableName) else {
+            // Ignore updates to non-model tables
+            return false
+        }
+
+        return true
     }
 
-    func databaseSnapshotWillUpdate() {
+    public func databaseDidChange(with event: DatabaseEvent) {
+        UIDatabaseObserver.serializedSync {
+            for snapshotDelegate in snapshotDelegates {
+                snapshotDelegate.snapshotTransactionDidChange(with: event)
+            }
+        }
+    }
+
+    public func databaseDidCommit(_ db: Database) {
+        UIDatabaseObserver.serializedSync {
+            for snapshotDelegate in snapshotDelegates {
+                snapshotDelegate.snapshotTransactionDidCommit(db: db)
+            }
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            Logger.verbose("databaseSnapshotWillUpdate")
+            for delegate in self.snapshotDelegates {
+                delegate.databaseSnapshotWillUpdate()
+            }
+
+            self.latestSnapshot.read { db in
+                do {
+                    try self.fastForwardDatabaseSnapshot(db: db)
+                } catch {
+                    owsFailDebug("\(error)")
+                }
+            }
+
+            Logger.verbose("databaseSnapshotDidUpdate")
+            for delegate in self.snapshotDelegates {
+                delegate.databaseSnapshotDidUpdate()
+            }
+        }
+    }
+
+    public func databaseDidRollback(_ db: Database) {
+        UIDatabaseObserver.serializedSync {
+            for snapshotDelegate in snapshotDelegates {
+                snapshotDelegate.snapshotTransactionDidRollback(db: db)
+            }
+        }
+    }
+
+    // Currently GRDB offers no built in way to fast-forward a
+    // database snapshot.
+    // See: https://github.com/groue/GRDB.swift/issues/619
+    func fastForwardDatabaseSnapshot(db: Database) throws {
         AssertIsOnMainThread()
-        objCDatabaseSnapshotDelegate.databaseSnapshotWillUpdate()
+        // [1] end the old transaction from the old db state
+        try db.commit()
+
+        // [2] Checkpoint the WAL
+        // Checkpointing is the process of moving data from the WAL back into the main database file.
+        // Without it, the WAL will grow indefinitely.
+        //
+        // Checkpointing has several flavors, including `passive` which opportunistically checkpoints
+        // what it can without requiring blocking of reads or writes.
+        //
+        // SQLite's default auto-checkpointing uses `passive` checkpointing, but because our
+        // DatabaseSnapshot maintains a long running read transaction, passive checkpointing can
+        // never successfully truncate the WAL (because there is at least the one read transaction
+        // using it).
+        //
+        // The only time the long-lived read transaction is *not* reading the database is
+        // *right here*, between committing the last transaction and starting the next one.
+        //
+        // Solution:
+        //   Perform an explicit passive checkpoint sync after every write.
+        //   It will probably not succeed often in truncating the database, but
+        //   we only need it to succeed periodically. This might have an
+        //   unacceptable perf cost, and it might not succeed often enough.
+        //
+        //   We periodically try to perform a restart checkpoint which
+        //   can limit WAL size when truncation isn't possible.
+        do {
+            try self.checkpoint()
+        } catch {
+            owsFailDebug("error \(error)")
+        }
+
+        // [3] open a new transaction from the current db state
+        try db.beginTransaction(.deferred)
+
+        // [4] do *any* read to acquire non-deferred read lock
+        _ = try Row.fetchCursor(db, sql: "SELECT rootpage FROM sqlite_master LIMIT 1").next()
     }
 
-    func databaseSnapshotDidUpdate() {
-        AssertIsOnMainThread()
-        objCDatabaseSnapshotDelegate.databaseSnapshotDidUpdate()
-    }
+    private static let isRunningCheckpoint = AtomicBool(false)
 
-    func databaseSnapshotDidUpdateExternally() {
-        AssertIsOnMainThread()
-        objCDatabaseSnapshotDelegate.databaseSnapshotDidUpdateExternally()
+    func checkpoint() throws {
+        do {
+            try UIDatabaseObserver.isRunningCheckpoint.transition(from: false, to: true)
+        } catch {
+            Logger.warn("Skipping checkpoint; already running checkpoint.")
+            return
+        }
+        defer {
+            UIDatabaseObserver.isRunningCheckpoint.set(false)
+        }
+
+        // Try to restart after every Nth write.
+        let restartFrequency: UInt32 = 100
+        let shouldTryToRestart = arc4random_uniform(restartFrequency) == 0
+        let mode: Database.CheckpointMode = shouldTryToRestart ? .restart : .passive
+
+        let result = try GRDBDatabaseStorageAdapter.checkpoint(pool: pool, mode: mode)
+
+        let pageSize: Int32 = 4 * 1024
+        let walFileSizeBytes = result.walSizePages * pageSize
+        let maxWalFileSizeBytes = 4 * 1024 * 1024
+        if walFileSizeBytes > maxWalFileSizeBytes {
+            Logger.info("walFileSizeBytes: \(walFileSizeBytes).")
+            Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed).")
+        } else {
+            Logger.verbose("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed).")
+        }
     }
 }

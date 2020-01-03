@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ class OWSSignalAddressTest: SSKBaseTestSwift {
 
     func testInitializer() {
         let recipientId = "+13213214321"
-        let deviceId: UInt = 1
+        let deviceId: UInt32 = OWSDevicePrimaryDeviceId
         let address = try! OWSSignalAddress(recipientId: recipientId, deviceId: deviceId)
         XCTAssertEqual(address.recipientId, recipientId)
         XCTAssertEqual(address.deviceId, deviceId)
@@ -28,13 +28,13 @@ class OWSSignalAddressTest: SSKBaseTestSwift {
 
     func testInitializer_badRecipientId() {
         let recipientId = ""
-        let deviceId: UInt = 1
+        let deviceId: UInt32 = OWSDevicePrimaryDeviceId
         XCTAssertThrowsError(try OWSSignalAddress(recipientId: recipientId, deviceId: deviceId))
     }
 
     func testInitializer_badDeviceId() {
         let recipientId = "+13213214321"
-        let deviceId: UInt = 0
+        let deviceId: UInt32 = 0
         XCTAssertThrowsError(try OWSSignalAddress(recipientId: recipientId, deviceId: deviceId))
     }
 }
