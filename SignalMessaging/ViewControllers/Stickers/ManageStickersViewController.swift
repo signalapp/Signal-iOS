@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -429,6 +429,7 @@ public class ManageStickersViewController: OWSTableViewController {
         }
 
         let stickerView = YYAnimatedImageView()
+        stickerView.contentMode = .scaleAspectFit
         stickerView.image = stickerImage
         return stickerView
     }

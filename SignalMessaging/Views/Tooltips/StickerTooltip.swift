@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -55,7 +55,11 @@ public class StickerTooltip: UIView {
     private let tailWidth: CGFloat = 16
     private let bubbleRounding: CGFloat = 8
 
-    private let iconView = YYAnimatedImageView()
+    private let iconView: YYAnimatedImageView = {
+        let stickerView = YYAnimatedImageView()
+        stickerView.contentMode = .scaleAspectFit
+        return stickerView
+    }()
 
     private func createContents(fromView: UIView,
                                 widthReferenceView: UIView,
