@@ -249,7 +249,7 @@
 "BACKUP_EXPORT_PHASE_EXPORT" = "Exportant la còpia de seguretat";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Pujant còpia de seguretat";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Es carrega la còpia de seguretat";
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "La còpia de seguretat no s’ha pogut importar";
@@ -810,7 +810,7 @@
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "No s'han pogut empacar els registres.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "No s'han pogut pujar els registres.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "No s'han pogut penjar els registres.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Què voleu fer amb l'enllaç al vostre registre de depuració?";
@@ -1133,6 +1133,12 @@
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Entra el que vols buscar";
+
+/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+
+/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimitzant la base de dades";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "S'ha canviat l'avatar.";
@@ -1465,7 +1471,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "S'ha omès";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Pujant";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Penjant";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "El missatge no té contingut o no té cap adjunt.";
@@ -1540,7 +1546,7 @@
 "MESSAGE_STATUS_SENT" = "S'ha enviat";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Es puja...";
+"MESSAGE_STATUS_UPLOADING" = "Es penja...";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Missatge nou";
@@ -2734,7 +2740,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "No s'ha pogut enviar l'adjunt";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Es puja...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Es penja...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "No s'ha pogut preparar l'adjunt";
@@ -3047,6 +3053,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Revisa els números de seguretat";
+
+/* Tooltip highlighting the view once messages button. */
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Llisqueu per a cancel·lar";

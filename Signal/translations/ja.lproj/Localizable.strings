@@ -54,7 +54,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "分かりました";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "削除";
+"ALERT_DISCARD_BUTTON" = "破棄";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "保存しない";
@@ -72,7 +72,7 @@
 "APN_Message" = "新着メッセージがあります";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signalを起動できません。解決のため、デバッグ用ログをsupport@signal.orgにお送りください。";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signalを起動できません。解決のため、デバッグ用ログを support@signal.org にお送りください。";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "エラー";
@@ -81,7 +81,7 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "データベースを読み込めませんでした";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "最新バージョンのSignalにアップグレードしてください";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "最新のSignalにアップグレードしてください。";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "データベースのバージョンが不明です。";
@@ -93,7 +93,7 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "後にする";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "バージョン%@がApp Storeで入手できます";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "App Storeでバージョン%@を入手できます。";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Signalの新バージョンがあります！";
@@ -135,10 +135,10 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "保存に失敗しました";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ファイルの種類：%@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ファイルの種類: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "サイズ：%@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "サイズ: %@";
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "保存済み";
@@ -213,7 +213,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "ドキュメントの選択に失敗しました";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "ファイルやディレクトリを圧縮して再送信してみてください。";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "このファイルやディレクトリの圧縮アーカイブを作成して、送信してみてください。";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "未対応ファイル";
@@ -231,10 +231,10 @@
 "BACK_BUTTON" = "戻る";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "バックアップデータのエクスポートができませんでした。";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "バックアップデータをエクスポートできませんでした。";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "無効なサービスレスポンス";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "不正なサービスレスポンス";
 
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "バックアップをクリーンアップ中";
@@ -243,43 +243,43 @@
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "バックアップを初期化しています";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "データのエクスポート中";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "データをエクスポートしています";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "バックアップをエクスポート中";
+"BACKUP_EXPORT_PHASE_EXPORT" = "バックアップをエクスポートしています";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "バックアップをアップロード中";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "バックアップをアップロードしています";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "バックアップデータを正常にインポートできませんでした。";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "バックアップデータをインポートできませんでした。";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "バックアップを構成中";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "バックアップを設定しています";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "バックアップデータをダウンロード中";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "バックアップデータをダウンロードしています";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "バックアップの最終処理中";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "バックアップの処理を終了しています";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "バックアップデータをインポート中";
+"BACKUP_IMPORT_PHASE_IMPORT" = "バックアップをインポートしています";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "データベースを復旧中";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "データベースを復旧しています";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "ファイルを復元中";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "ファイルを復元しています";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "バックアップがあります";
+"BACKUP_RESTORE_DECISION_TITLE" = "バックアップ利用可能";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "バックアップから修復中";
+"BACKUP_RESTORE_DESCRIPTION" = "バックアップを復元しています";
 
 /* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "進展";
+"BACKUP_RESTORE_PROGRESS" = "進捗";
 
 /* Label for the backup restore status. */
 "BACKUP_RESTORE_STATUS" = "状態";
@@ -306,7 +306,7 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "ブロックされたユーザ";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "ブロックを解除する";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "ブロックを解除";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "既存のメンバーは、あなたをグループに再加入させることができるようになります。";
@@ -315,7 +315,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "このグループのブロックを解除しますか？";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@のブロックを解除しますか？";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ のブロックを解除しますか？";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "ブロックする";
@@ -330,7 +330,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "グループがブロックされました";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "自分自身はブロックできません";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "自分自身はブロックできません。";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "エラー";
@@ -360,7 +360,7 @@
 "BUTTON_DONE" = "完了";
 
 /* Label for the 'next' button. */
-"BUTTON_NEXT" = "進む";
+"BUTTON_NEXT" = "次へ";
 
 /* Label for the 'okay' button. */
 "BUTTON_OKAY" = "OK";
@@ -372,7 +372,7 @@
 "BUTTON_SUBMIT" = "送信";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "再通話";
+"CALL_AGAIN_BUTTON_TITLE" = "リダイヤル";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "iOSの設定でマイクを有効にすると、Signalで電話や録音ができます。";
@@ -1133,6 +1133,12 @@
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "検索";
+
+/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+
+/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "データベースを更新中";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "アイコンが変わりました";
@@ -3047,6 +3053,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "安全番号を確認する";
+
+/* Tooltip highlighting the view once messages button. */
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "スライドしてキャンセル";
