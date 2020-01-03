@@ -9,7 +9,6 @@
 #import "OWSSystemMessageCell.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -144,7 +143,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
 @synthesize shouldShowDate = _shouldShowDate;
 @synthesize shouldShowSenderAvatar = _shouldShowSenderAvatar;
-@synthesize unreadIndicator = _unreadIndicator;
 @synthesize didCellMediaFailToLoad = _didCellMediaFailToLoad;
 @synthesize interaction = _interaction;
 @synthesize isFirstInCluster = _isFirstInCluster;
@@ -357,7 +355,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
 - (BOOL)hasCellHeader
 {
-    return self.shouldShowDate || self.unreadIndicator;
+    return self.shouldShowDate && ![self.interaction isKindOfClass:OWSUnreadIndicatorCell.class];
 }
 
 - (void)setShouldShowDate:(BOOL)shouldShowDate
@@ -435,17 +433,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     _isLastInCluster = isLastInCluster;
 
     [self setNeedsUpdate];
-}
-
-- (void)setUnreadIndicator:(nullable OWSUnreadIndicator *)unreadIndicator
-{
-    if ([NSObject isNullableObject:_unreadIndicator equalTo:unreadIndicator]) {
-        return;
-    }
-
-    _unreadIndicator = unreadIndicator;
-
-    [self clearCachedLayoutState];
 }
 
 - (void)setStickerInfo:(nullable StickerInfo *)stickerInfo
@@ -568,6 +555,9 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
             case OWSInteractionType_ThreadDetails:
                 measurementCell = [OWSThreadDetailsCell new];
                 break;
+            case OWSInteractionType_UnreadIndicator:
+                measurementCell = [OWSUnreadIndicatorCell new];
+                break;
         }
 
         OWSAssertDebug(measurementCell);
@@ -582,7 +572,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     OWSAssertDebug(previousLayoutItem);
 
     if (self.hasCellHeader) {
-        return OWSMessageHeaderViewDateHeaderVMargin;
+        return self.conversationStyle.headerViewDateHeaderVMargin;
     }
 
     // "Bubble Collapse".  Adjacent messages with the same author should be close together.
@@ -631,6 +621,9 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
                                                              forIndexPath:indexPath];
         case OWSInteractionType_ThreadDetails:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSThreadDetailsCell cellReuseIdentifier]
+                                                             forIndexPath:indexPath];
+        case OWSInteractionType_UnreadIndicator:
+            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
     }
 }
@@ -788,6 +781,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSInteractionType_ThreadDetails:
         case OWSInteractionType_TypingIndicator:
         case OWSInteractionType_Offer:
+        case OWSInteractionType_UnreadIndicator:
             return;
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:

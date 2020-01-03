@@ -31,6 +31,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
             return @"OWSInteractionType_TypingIndicator";
         case OWSInteractionType_Offer:
             return @"OWSInteractionType_Offer";
+        case OWSInteractionType_UnreadIndicator:
+            return @"OWSInteractionType_UnreadIndicator";
     }
 }
 
@@ -88,9 +90,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return @"TSInteraction";
 }
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                                  timestamp:(uint64_t)timestamp
-                                   inThread:(TSThread *)thread
+- (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp inThread:(TSThread *)thread
 {
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(thread);
@@ -102,6 +102,27 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     }
 
     _timestamp = timestamp;
+    _uniqueThreadId = thread.uniqueId;
+
+    return self;
+}
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       timestamp:(uint64_t)timestamp
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        inThread:(TSThread *)thread
+{
+    OWSAssertDebug(timestamp > 0);
+    OWSAssertDebug(thread);
+
+    self = [super initWithUniqueId:uniqueId];
+
+    if (!self) {
+        return self;
+    }
+
+    _timestamp = timestamp;
+    _receivedAtTimestamp = receivedAtTimestamp;
     _uniqueThreadId = thread.uniqueId;
 
     return self;

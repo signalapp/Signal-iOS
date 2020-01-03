@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,224 +7,201 @@ import Foundation
 @objc
 public class ConversationMessageMapping: NSObject {
 
-    // The desired number of the items to load BEFORE the pivot (see below).
-    @objc
-    public private(set) var desiredLength: UInt
-    private let isNoteToSelf: Bool
-
     private let interactionFinder: InteractionFinder
 
-    // When we enter a conversation, we want to load up to N interactions. This
-    // is the "initial load window".
-    //
-    // We subsequently expand the load window in two directions using two very
-    // different behaviors.
-    //
-    // * We expand the load window "upwards" (backwards in time) only when
-    //   loadMore() is called, in "pages".
-    // * We auto-expand the load window "downwards" (forward in time) to include
-    //   any new interactions created after the initial load.
-    //
-    // We define the "pivot" as the last item in the initial load window.  This
-    // value is only set once.
-    //
-    // For example, if you enter a conversation with messages, 1..15:
-    //
-    // 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-    //
-    // We initially load just the last 5 (if 5 is the initial desired length):
-    //
-    // 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-    //                      |      pivot ^ | <-- load window
-    // pivot: 15, desired length=5.
-    //
-    // If a few more messages (16..18) are sent or received, we'll always load
-    // them immediately (they're after the pivot):
-    //
-    // 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
-    //                      |      pivot ^        | <-- load window
-    // pivot: 15, desired length=5.
-    //
-    // To load an additional page of items (perhaps due to user scrolling
-    // upward), we extend the desired length and thereby load more items
-    // before the pivot.
-    //
-    // 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
-    //           |                 pivot ^        | <-- load window
-    // pivot: 15, desired length=10.
-    //
-    // To reiterate:
-    //
-    // * The pivot doesn't move.
-    // * The desired length applies _before_ the pivot.
-    // * Everything after the pivot is auto-loaded.
-    //
-    // One last optimization:
-    //
-    // After an update, we _can sometimes_ move the pivot (for perf
-    // reasons), but we also adjust the "desired length" so that this
-    // no effect on the load behavior.
-    //
-    // And note: we use the pivot's sort id, not its uniqueId, which works
-    // even if the pivot itself is deleted.
-    private var pivotSortId: UInt64?
+    @objc
+    public var loadedUniqueIds: [String] {
+        return loadedInteractions.map { $0.uniqueId }
+    }
 
     @objc
-    public var canLoadMore = false
-
-    let thread: TSThread
+    public private(set) var loadedInteractions: [TSInteraction] = []
 
     @objc
-    public required init(thread: TSThread, desiredLength: UInt, isNoteToSelf: Bool) {
+    public var canLoadOlder = false
+
+    @objc
+    public var canLoadNewer = false
+
+    private let thread: TSThread
+
+    @objc
+    public required init(thread: TSThread) {
         self.thread = thread
         self.interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-        self.desiredLength = desiredLength
-        self.isNoteToSelf = isNoteToSelf
     }
 
-    @objc
-    private(set) var loadedInteractions: [TSInteraction] = [] {
-        didSet {
-            AssertIsOnMainThread()
-            loadedUniqueIds = loadedInteractions.map { $0.uniqueId }
+    // The smaller this number is, the faster the conversation can display.
+    //
+    // However, too small and we'll immediately trigger a "load more" because
+    // the user's viewports is too close to the conversation view's edge.
+    //
+    // Therefore we target a (slightly worse than) general case which will load fast for most
+    // conversations, at the expense of a second fetch for conversations with pathologically
+    // small messages (e.g. a bunch of 1-line texts in a row from the same sender and timestamp)
+    private var initialLoadCount: Int {
+        let avgMessageHeight: CGFloat = 60
+        let referenceSize = UIScreen.main.bounds
+        let messageCountToFillScreen = (referenceSize.height / avgMessageHeight)
+
+        let result = Int(messageCountToFillScreen * 2)
+        Logger.verbose("initialLoadCount: \(result)")
+        guard result >= 10 else {
+            owsFailDebug("unexpectedly small initialLoadCount: \(result)")
+            return 10
         }
+        return result
+    }
+
+    // After this size, we'll start unloading interactions
+    private let maxInteractionLimit: Int = 200
+
+    // oldest saved message in a conversation has an index of 0, the most recent message has index conversationCount - 1.
+    private var loadedIndexSet = IndexSet()
+
+    enum LoadWindowDirection {
+        case before(interactionUniqueId: String)
+        case after(interactionUniqueId: String)
+        case around(interactionUniqueId: String)
+        case newest
+    }
+
+    @objc(loadMessagePageAroundInteractionId:transaction:error:)
+    public func loadMessagePage(aroundInteractionId interactionUniqueId: String, transaction: SDSAnyReadTransaction) throws {
+        try ensureLoaded(.around(interactionUniqueId: interactionUniqueId),
+                         count: initialLoadCount,
+                         transaction: transaction)
     }
 
     @objc
-    private(set) var loadedUniqueIds: [String] = []
-
-    @objc
-    public func contains(uniqueId: String) -> Bool {
-        return loadedUniqueIds.contains(uniqueId)
-    }
-
-    // This method can be used to extend the desired length
-    // and update.
-    @objc
-    public func update(withDesiredLength desiredLength: UInt, transaction: SDSAnyReadTransaction) throws {
-        assert(desiredLength >= self.desiredLength)
-
-        self.desiredLength = desiredLength
-
-        try update(transaction: transaction)
-    }
-
-    @objc
-    var shouldShowThreadDetails: Bool {
-        return !canLoadMore && FeatureFlags.messageRequest
-    }
-
-    // This is the core method of the class. It updates the state to
-    // reflect the latest database state & the current desired length.
-    @objc
-    public func update(transaction: SDSAnyReadTransaction) throws {
-        AssertIsOnMainThread()
-
-        // If we have a "pivot", load all items AFTER the pivot and up to minDesiredLength items BEFORE the pivot.
-        // If we do not have a "pivot", load up to minDesiredLength BEFORE the pivot.
-        var newInteractions: [TSInteraction] = []
-        var canLoadMore = false
-        let desiredLength = self.desiredLength
-        // Not all items "count" towards the desired length. On an initial load, all items count.  Subsequently,
-        // only items above the pivot count.
-        var afterPivotCount: UInt = 0
-        var beforePivotCount: UInt = 0
-        // (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
-        try interactionFinder.enumerateInteractions(transaction: transaction) { interaction, stopPtr in
-            // Load "uncounted" items after the pivot if possible.
-            //
-            // As an optimization, we can skip this check (which requires
-            // deserializing the interaction) if beforePivotCount is non-zero,
-            // e.g. after we "pass" the pivot.
-            if beforePivotCount == 0,
-                let pivotSortId = self.pivotSortId {
-                let sortId = interaction.sortId
-                    let isAfterPivot = sortId > pivotSortId
-                    if isAfterPivot {
-                        newInteractions.append(interaction)
-                        afterPivotCount += 1
-                        return
-                    }
-            }
-
-            // Load "counted" items unless the load window overflows.
-            if beforePivotCount >= desiredLength {
-                // Overflow
-                canLoadMore = true
-                stopPtr.pointee = true
-            } else {
-                newInteractions.append(interaction)
-                beforePivotCount += 1
-            }
+    public func loadNewerMessagePage(transaction: SDSAnyReadTransaction) throws {
+        guard let newestLoadedId = loadedUniqueIds.last else {
+            // empty convo
+            return
         }
-        self.canLoadMore = canLoadMore
 
-        if self.shouldShowThreadDetails {
-            // We only show the thread details if we're at the start of the conversation
-            let details = ThreadDetailsInteraction(thread: self.thread,
-                                                   timestamp: NSDate.ows_millisecondTimeStamp())
+        try ensureLoaded(.after(interactionUniqueId: newestLoadedId),
+                         count: initialLoadCount * 2,
+                         transaction: transaction)
+    }
 
-            self.loadedInteractions = [details] + Array(newInteractions.reversed())
+    @objc
+    public func loadOlderMessagePage(transaction: SDSAnyReadTransaction) throws {
+        guard let oldestLoadedId = loadedUniqueIds.first else {
+            // empty convo
+            return
+        }
+
+        try ensureLoaded(.before(interactionUniqueId: oldestLoadedId),
+                         count: initialLoadCount * 2,
+                         transaction: transaction)
+    }
+
+    @objc
+    public func loadNewestMessagePage(transaction: SDSAnyReadTransaction) throws {
+        try ensureLoaded(.newest,
+                         count: initialLoadCount,
+                         transaction: transaction)
+    }
+
+    @objc
+    public func loadInitialMessagePage(focusMessageId: String?, transaction: SDSAnyReadTransaction) throws {
+        try updateOldestUnreadInteraction(transaction: transaction)
+
+        if let focusMessageId = focusMessageId {
+            try ensureLoaded(.around(interactionUniqueId: focusMessageId),
+                             count: initialLoadCount * 2,
+                             transaction: transaction)
+        } else if let oldestUnreadInteraction = self.oldestUnreadInteraction {
+            try ensureLoaded(.around(interactionUniqueId: oldestUnreadInteraction.uniqueId),
+                             count: initialLoadCount * 2,
+                             transaction: transaction)
         } else {
-            // The items need to be reversed, since we load them in reverse order.
-            self.loadedInteractions = Array(newInteractions.reversed())
-        }
-
-        // Establish the pivot, if necessary and possible.
-        //
-        // Deserializing interactions is expensive. We only need to deserialize
-        // interactions that are "after" the pivot.  So there would be performance
-        // benefits to moving the pivot after each update to the last loaded item.
-        //
-        // However, this would undesirable side effects. The desired length for
-        // conversations with very short disappearing message durations would
-        // continuously grow as messages appeared and disappeared.
-        //
-        // Therefore, we only move the pivot when we've accumulated N items after
-        // the pivot.  This puts an upper bound on the number of interactions we
-        // have to deserialize while minimizing "load window size creep".
-        let kMaxItemCountAfterPivot = 32
-        let shouldSetPivot = (self.pivotSortId == nil ||
-            afterPivotCount > kMaxItemCountAfterPivot)
-
-        if shouldSetPivot, let newOldestInteraction = newInteractions.first {
-            let sortId = newOldestInteraction.sortId
-
-            // Update the pivot.
-            if self.pivotSortId != nil {
-                self.desiredLength += afterPivotCount
-            }
-            self.pivotSortId = UInt64(sortId)
+           try loadNewestMessagePage(transaction: transaction)
         }
     }
 
-    // Tries to ensure that the load window includes a given item.
-    // On success, returns the index path of that item.
-    // On failure, returns nil.
-    @objc(ensureLoadWindowContainsUniqueId:transaction:error:)
-    public func ensureLoadWindowContains(uniqueId: String,
-                                         transaction: SDSAnyReadTransaction) throws -> IndexPath {
-        if let oldIndex = loadedUniqueIds.firstIndex(of: uniqueId) {
-            return IndexPath(row: oldIndex, section: 0)
+    // MARK: -
+
+    private func ensureLoaded(_ direction: LoadWindowDirection, count: Int, transaction: SDSAnyReadTransaction) throws {
+        let conversationSize = interactionFinder.count(transaction: transaction)
+
+        let getDistanceFromEnd = { (interactionUniqueId: String) throws -> Int in
+            guard let sortIndex = try self.interactionFinder.sortIndex(interactionUniqueId: interactionUniqueId, transaction: transaction) else {
+                throw OWSAssertionError("viewIndex was unexpectedly nil")
+            }
+            return Int(sortIndex)
         }
 
-        guard let index = try interactionFinder.sortIndex(interactionUniqueId: uniqueId, transaction: transaction) else {
-            throw assertionError("could not find interaction")
+        let lowerBound: Int
+        switch direction {
+        case .before(let interactionUniqueId):
+            let distanceFromEnd = try getDistanceFromEnd(interactionUniqueId)
+            lowerBound = distanceFromEnd - count + 1
+        case .after(let interactionUniqueId):
+            let distanceFromEnd = try getDistanceFromEnd(interactionUniqueId)
+            lowerBound = distanceFromEnd
+        case .around(let interactionUniqueId):
+            let distanceFromEnd = try getDistanceFromEnd(interactionUniqueId)
+            lowerBound = distanceFromEnd - count / 2
+        case .newest:
+            lowerBound = Int(conversationSize) - count
+        }
+        let upperBound = lowerBound + count
+        let requestRange = (lowerBound..<upperBound).clamped(to: 0..<Int(conversationSize))
+        let requestSet = IndexSet(integersIn: requestRange)
+
+        let unfetchedSet = requestSet.subtracting(loadedIndexSet)
+        guard unfetchedSet.count > 0 else {
+            Logger.debug("ignoring empty fetch request: \(unfetchedSet.count)")
+            return
         }
 
-        let threadInteractionCount = interactionFinder.count(transaction: transaction)
-        guard index < threadInteractionCount else {
-            throw assertionError("invalid index")
-        }
-        // This math doesn't take into account the number of items loaded _after_ the pivot.
-        // That's fine; it's okay to load too many interactions here.
-        let desiredWindowSize: UInt = threadInteractionCount - index
-        try self.update(withDesiredLength: desiredWindowSize, transaction: transaction)
+        // For perf we only want to fetch a substantially full batch...
+        let isSubstantialRequest = unfetchedSet.count > (requestSet.count / 2)
+        // ...but we always fulfill even small requests if we're getting just the tail end
+        let isFetchingEdge = unfetchedSet.contains(0) || unfetchedSet.contains(Int(conversationSize - 1))
 
-        guard let newIndex = loadedUniqueIds.firstIndex(of: uniqueId) else {
-            throw assertionError("couldn't find new index")
+        guard isSubstantialRequest || isFetchingEdge else {
+            Logger.debug("ignoring small fetch request: \(unfetchedSet.count)")
+            return
         }
-        return IndexPath(row: newIndex, section: 0)
+
+        let nsRange: NSRange = NSRange(location: unfetchedSet.min()!, length: unfetchedSet.count)
+        Logger.debug("fetching set: \(unfetchedSet), nsRange: \(nsRange)")
+        let newItems = try fetchInteractions(nsRange: nsRange, transaction: transaction)
+
+        switch direction {
+        case .before:
+            self.loadedIndexSet = loadedIndexSet.union(requestSet)
+            let items = (newItems + self.loadedInteractions)
+            let trimmedItems = items.prefix(maxInteractionLimit)
+            if (items.count != trimmedItems.count) {
+                let trimCount = items.count - trimmedItems.count
+                let trimmedSet = loadedIndexSet.suffix(trimCount)
+                loadedIndexSet.subtract(IndexSet(trimmedSet))
+                Logger.verbose("trimmed newest \(trimCount) items")
+            }
+            self.loadedInteractions = Array(trimmedItems)
+        case .after:
+            self.loadedIndexSet = loadedIndexSet.union(requestSet)
+            let items = (self.loadedInteractions + newItems)
+            let trimmedItems = items.suffix(maxInteractionLimit)
+            if (items.count != trimmedItems.count) {
+                let trimCount = items.count - trimmedItems.count
+                let trimmedSet = loadedIndexSet.prefix(trimCount)
+                loadedIndexSet.subtract(IndexSet(trimmedSet))
+                Logger.verbose("trimmed oldest \(trimCount) items")
+            }
+            self.loadedInteractions = Array(trimmedItems)
+        case .around, .newest:
+            // replace, rather than append, because the new results might not be contiguous
+            // with the existing loadedIndexSet
+            self.loadedIndexSet = requestSet
+            self.loadedInteractions = newItems
+        }
+
+        updateCanLoadMore(conversationSize: conversationSize)
     }
 
     @objc
@@ -245,28 +222,93 @@ public class ConversationMessageMapping: NSObject {
 
     // Updates and then calculates which items were inserted, removed or modified.
     @objc
-    public func updateAndCalculateDiff(transaction: SDSAnyReadTransaction,
-                                       updatedInteractionIds: Set<String>) throws -> ConversationMessageMappingDiff {
+    public func updateAndCalculateDiff(updatedInteractionIds: Set<String>,
+                                       transaction: SDSAnyReadTransaction) throws -> ConversationMessageMappingDiff {
         let oldItemIds = Set(self.loadedUniqueIds)
-        try self.update(transaction: transaction)
+        try reloadInteractions(transaction: transaction)
         let newItemIds = Set(self.loadedUniqueIds)
 
         let removedItemIds = oldItemIds.subtracting(newItemIds)
         let addedItemIds = newItemIds.subtracting(oldItemIds)
         // We only notify for updated items that a) were previously loaded b) weren't also inserted or removed.
-        let exclusivelyUpdatedInteractionIds = updatedInteractionIds.subtracting(addedItemIds)
+        let exclusivelyUpdatedItemIds = updatedInteractionIds.subtracting(addedItemIds)
             .subtracting(removedItemIds)
             .intersection(oldItemIds)
 
         return ConversationMessageMappingDiff(addedItemIds: addedItemIds,
                                               removedItemIds: removedItemIds,
-                                              updatedItemIds: exclusivelyUpdatedInteractionIds)
+                                              updatedItemIds: exclusivelyUpdatedItemIds)
+    }
+
+    func updateCanLoadMore(conversationSize: UInt) {
+        guard conversationSize > 0 else {
+            self.canLoadOlder = false
+            self.canLoadNewer = false
+            return
+        }
+
+        self.canLoadOlder = !loadedIndexSet.contains(0)
+        self.canLoadNewer = !loadedIndexSet.contains(Int(conversationSize) - 1)
+        Logger.verbose("canLoadOlder: \(canLoadOlder) canLoadNewer: \(canLoadNewer)")
+    }
+
+    private func fetchInteractions(nsRange: NSRange, transaction: SDSAnyReadTransaction) throws -> [TSInteraction] {
+        var newItems: [TSInteraction] = []
+        try interactionFinder.enumerateInteractions(range: nsRange, transaction: transaction) { (interaction: TSInteraction, _) in
+            newItems.append(interaction)
+        }
+        return newItems
+    }
+
+    @objc
+    var oldestUnreadInteraction: TSInteraction?
+    private func updateOldestUnreadInteraction(transaction: SDSAnyReadTransaction) throws {
+        self.oldestUnreadInteraction = try interactionFinder.oldestUnseenInteraction(transaction: transaction)
+    }
+
+    private func reloadInteractions(transaction: SDSAnyReadTransaction) throws {
+        if self.oldestUnreadInteraction == nil {
+            try updateOldestUnreadInteraction(transaction: transaction)
+        }
+        let conversationSize = interactionFinder.count(transaction: transaction)
+
+        let hasLoadedBottomEdge = !canLoadNewer
+        guard hasLoadedBottomEdge else {
+            let reloadingSet = loadedIndexSet
+            let nsRange: NSRange = NSRange(location: reloadingSet.min()!, length: reloadingSet.count)
+            Logger.debug("reloadingSet: \(reloadingSet), nsRange: \(nsRange)")
+            loadedInteractions = try fetchInteractions(nsRange: nsRange, transaction: transaction)
+            updateCanLoadMore(conversationSize: conversationSize)
+            return
+        }
+
+        guard let oldestLoadedIndex = loadedIndexSet.min() else {
+            // no existing interactions until now
+            try loadInitialMessagePage(focusMessageId: nil, transaction: transaction)
+            return
+        }
+
+        let updatingSet = IndexSet(integersIn: oldestLoadedIndex..<Int(conversationSize))
+        guard updatingSet.count > 0 else {
+            Logger.verbose("conversation is now empty")
+            loadedIndexSet = []
+            loadedInteractions = []
+            updateCanLoadMore(conversationSize: conversationSize)
+            return
+        }
+
+        loadedIndexSet = updatingSet
+        let nsRange: NSRange = NSRange(location: updatingSet.min()!, length: updatingSet.count)
+        Logger.debug("updatingSet: \(updatingSet), nsRange: \(nsRange)")
+        loadedInteractions = try fetchInteractions(nsRange: nsRange, transaction: transaction)
+        updateCanLoadMore(conversationSize: conversationSize)
     }
 
     // For performance reasons, the database modification notifications are used
     // to determine which items were modified.  If YapDatabase ever changes the
     // structure or semantics of these notifications, we'll need to update this
     // code to reflect that.
+    // POST GRDB: remove this yap-only method
     @objc
     public func updatedItemIds(for notifications: [NSNotification]) -> Set<String> {
         // We'll move this into the Yap adapter when addressing updates/observation
@@ -310,8 +352,24 @@ public class ConversationMessageMapping: NSObject {
 
         return updatedItemIds
     }
+}
 
-    private func assertionError(_ description: String) -> Error {
-        return OWSErrorMakeAssertionError(description)
+@objc
+public class ConversationScrollState: NSObject {
+
+    @objc
+    public let referenceViewItem: ConversationViewItem
+
+    @objc
+    public let referenceFrame: CGRect
+
+    @objc
+    public let contentOffset: CGPoint
+
+    @objc
+    public init(referenceViewItem: ConversationViewItem, referenceFrame: CGRect, contentOffset: CGPoint) {
+        self.referenceViewItem = referenceViewItem
+        self.referenceFrame = referenceFrame
+        self.contentOffset = contentOffset
     }
 }

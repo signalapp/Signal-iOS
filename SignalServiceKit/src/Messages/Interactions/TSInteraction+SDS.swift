@@ -344,21 +344,6 @@ extension TSInteraction {
                                                         read: read,
                                                         unregisteredAddress: unregisteredAddress)
 
-        case .contactOffersInteraction:
-
-            let uniqueId: String = record.uniqueId
-            let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = UInt64(recordId)
-            let timestamp: UInt64 = record.timestamp
-            let uniqueThreadId: String = record.threadUniqueId
-
-            return OWSContactOffersInteraction(grdbId: recordId,
-                                               uniqueId: uniqueId,
-                                               receivedAtTimestamp: receivedAtTimestamp,
-                                               sortId: sortId,
-                                               timestamp: timestamp,
-                                               uniqueThreadId: uniqueThreadId)
-
         case .disappearingConfigurationUpdateInfoMessage:
 
             let uniqueId: String = record.uniqueId
@@ -1162,9 +1147,6 @@ extension TSInteraction: SDSModel {
         case let model as TSCall:
             assert(type(of: model) == TSCall.self)
             return TSCallSerializer(model: model)
-        case let model as OWSContactOffersInteraction:
-            assert(type(of: model) == OWSContactOffersInteraction.self)
-            return OWSContactOffersInteractionSerializer(model: model)
         default:
             return TSInteractionSerializer(model: self)
         }

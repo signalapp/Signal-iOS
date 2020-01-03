@@ -50,6 +50,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createReaction
         case dedupeSignalRecipients
         case indexMediaGallery2
+        case unreadThreadInteractions
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -219,6 +220,13 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.indexMediaGallery2.rawValue) { db in
             // re-index the media gallery for those who failed to create during the initial YDB migration
             try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+        }
+
+        migrator.registerMigration(MigrationId.unreadThreadInteractions.rawValue) { db in
+            try db.create(index: "index_interactions_on_threadId_read_and_id",
+                          on: "model_TSInteraction",
+                          columns: ["uniqueThreadId", "read", "id"],
+                          unique: true)
         }
 
         return migrator

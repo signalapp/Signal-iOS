@@ -96,7 +96,7 @@ public enum StorageModeStrictness: Int {
 public class FeatureFlags: NSObject {
 
     @objc
-    public static let conversationSearch = false
+    public static let conversationSearch = true
 
     @objc
     public static var storageMode: StorageMode {

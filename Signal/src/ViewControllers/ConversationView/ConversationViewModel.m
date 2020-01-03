@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewModel.h"
@@ -10,7 +10,6 @@
 #import "Signal-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSContactsManager.h>
-#import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
@@ -43,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation ConversationViewState
 
 - (instancetype)initWithViewItems:(NSArray<id<ConversationViewItem>> *)viewItems
+                   focusMessageId:(nullable NSString *)focusMessageId
 {
     self = [super init];
     if (!self) {
@@ -56,8 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
         id<ConversationViewItem> viewItem = self.viewItems[i];
         interactionIndexMap[viewItem.interaction.uniqueId] = @(i);
         [interactionIds addObject:viewItem.interaction.uniqueId];
-
-        if (viewItem.unreadIndicator != nil) {
+        if (focusMessageId != nil && [focusMessageId isEqualToString:viewItem.interaction.uniqueId]) {
+            _focusItemIndex = @(i);
+        }
+        if ([viewItem.interaction isKindOfClass:OWSUnreadIndicatorInteraction.class]) {
             _unreadIndicatorIndex = @(i);
         }
     }
@@ -65,19 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
     _interactionIds = [interactionIds copy];
 
     return self;
-}
-
-- (nullable id<ConversationViewItem>)unreadIndicatorViewItem
-{
-    if (self.unreadIndicatorIndex == nil) {
-        return nil;
-    }
-    NSUInteger index = self.unreadIndicatorIndex.unsignedIntegerValue;
-    if (index >= self.viewItems.count) {
-        OWSFailDebug(@"Invalid index.");
-        return nil;
-    }
-    return self.viewItems[index];
 }
 
 @end
@@ -152,24 +141,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-// Always load up to n messages when user arrives.
-//
-// The smaller this number is, the faster the conversation can display.
-// To test, shrink you accessability font as much as possible, then count how many 1-line system info messages (our
-// shortest cells) can fit on screen at a time on an iPhoneX
-//
-// PERF: we could do less messages on shorter (older, slower) devices
-// PERF: we could cache the cell height, since some messages will be much taller.
-static const int kYapDatabasePageSize = 18;
-
-// Never show more than n messages in conversation view when user arrives.
-static const NSUInteger kConversationInitialMaxRangeSize = 300;
-
-// Never show more than n messages in conversation view at a time.
-static const int kYapDatabaseRangeMaxLength = 25000;
-
-#pragma mark -
-
 @interface ConversationViewModel () <ConversationViewDatabaseSnapshotDelegate>
 
 @property (nonatomic, weak) id<ConversationViewModelDelegate> delegate;
@@ -193,9 +164,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 @property (nonatomic) ConversationViewState *viewState;
 @property (nonatomic) NSMutableDictionary<NSString *, id<ConversationViewItem>> *viewItemCache;
 
-@property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
-@property (nonatomic, nullable) NSDate *collapseCutoffDate;
+@property (nonatomic) NSDate *collapseCutoffDate;
 @property (nonatomic, nullable) SignalServiceAddress *typingIndicatorsSender;
 
 @property (nonatomic, nullable) ConversationProfileState *conversationProfileState;
@@ -226,8 +196,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     _delegate = delegate;
     _persistedViewItems = @[];
     _unsavedOutgoingMessages = @[];
-    self.focusMessageIdOnOpen = focusMessageIdOnOpen;
-    _viewState = [[ConversationViewState alloc] initWithViewItems:@[]];
+    _focusMessageIdOnOpen = focusMessageIdOnOpen;
+    _viewState = [[ConversationViewState alloc] initWithViewItems:@[] focusMessageId:focusMessageIdOnOpen];
+    _messageMapping = [[ConversationMessageMapping alloc] initWithThread:thread];
+    _collapseCutoffDate = [NSDate new];
 
     [self configure];
 
@@ -288,10 +260,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                  name:OWSApplicationDidEnterBackgroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalAccountsDidChange:)
-                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(typingIndicatorStateDidChange:)
                                                  name:[OWSTypingIndicatorsImpl typingIndicatorStateDidChange]
                                                object:nil];
@@ -307,13 +275,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                              selector:@selector(localProfileDidChange:)
                                                  name:kNSNotificationName_LocalProfileDidChange
                                                object:nil];
-}
-
-- (void)signalAccountsDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
 }
 
 - (void)profileWhitelistDidChange:(NSNotification *)notification
@@ -346,19 +307,27 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
     self.typingIndicatorsSender = [self.typingIndicators typingAddressForThread:self.thread];
-    self.collapseCutoffDate = [NSDate new];
 
     if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
         [self.primaryStorage updateUIDatabaseConnectionToLatest];
     }
 
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self ensureDynamicInteractionsAndUpdateIfNecessary:NO transaction:transaction];
-        [self createNewMessageMappingWithTransaction:transaction];
-        if (![self reloadViewItemsWithTransaction:transaction]) {
-            OWSFailDebug(@"failed to reload view items in configureForThread.");
-        }
-    }];
+    [BenchManager benchWithTitle:@"loading initial interactions"
+                           block:^{
+                               [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                   NSError *error;
+                                   [self.messageMapping
+                                       loadInitialMessagePageWithFocusMessageId:self.focusMessageIdOnOpen
+                                                                    transaction:transaction
+                                                                          error:&error];
+                                   if (error != nil) {
+                                       OWSFailDebug(@"error: %@", error);
+                                   }
+                                   if (![self reloadViewItemsWithTransaction:transaction]) {
+                                       OWSFailDebug(@"failed to reload view items in configureForThread.");
+                                   }
+                               }];
+                           }];
 
     if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
         [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
@@ -402,21 +371,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (BOOL)canLoadMoreItems
-{
-    if (self.messageMapping.desiredLength >= kYapDatabaseRangeMaxLength) {
-        return NO;
-    }
-
-    return self.messageMapping.canLoadMore;
-}
-
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
-    if (self.hasClearedUnreadMessagesIndicator) {
-        self.hasClearedUnreadMessagesIndicator = NO;
-        [self.dynamicInteractions clearUnreadIndicatorState];
-    }
+    [self resetClearedUnreadMessagesIndicator];
 }
 
 - (void)viewDidResetContentAndLayoutWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -427,164 +384,58 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }
 }
 
-- (void)loadAnotherPageOfMessagesWithTransaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)canLoadOlderItems
 {
-    BOOL hasEarlierUnseenMessages = self.dynamicInteractions.unreadIndicator.hasMoreUnseenMessages;
-
-    // Now that we're using a "minimal" page size, we should
-    // increase the load window by 2 pages at a time.
-    [self loadNMoreMessages:kYapDatabasePageSize * 2 transaction:transaction];
-
-    // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
-    //
-    // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
-    if (hasEarlierUnseenMessages && !self.focusMessageIdOnOpen) {
-        dispatch_async(dispatch_get_main_queue(), ^() {
-            // Ensure view items are updated before trying to scroll to the
-            // unread indicator.
-            //
-            // loadNMoreMessages calls resetMapping which calls ensureDynamicInteractions,
-            // which may move the unread indicator, and for scrollToUnreadIndicatorAnimated
-            // to work properly, the view items need to be updated to reflect that change.
-            if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-                [self.primaryStorage updateUIDatabaseConnectionToLatest];
-            }
-
-            [self.delegate conversationViewModelDidLoadPrevPage];
-        });
-    }
+    return self.messageMapping.canLoadOlder;
 }
 
-- (void)loadNMoreMessages:(NSUInteger)numberOfMessagesToLoad transaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)canLoadNewerItems
+{
+    return self.messageMapping.canLoadNewer;
+}
+
+- (void)appendOlderItemsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     [self.delegate conversationViewModelWillLoadMoreItems];
-
-    [self resetMappingWithAdditionalLength:numberOfMessagesToLoad transaction:transaction];
-
-    [self.delegate conversationViewModelDidLoadMoreItems];
-}
-
-- (NSUInteger)initialMessageMappingLength
-{
-    NSUInteger rangeLength = kYapDatabasePageSize;
-
-    // If this is the first time we're configuring the range length,
-    // try to take into account the position of the unread indicator
-    // and the "focus message".
-    OWSAssertDebug(self.dynamicInteractions);
-
-    if (self.focusMessageIdOnOpen) {
-        OWSAssertDebug(self.dynamicInteractions.focusMessagePosition);
-        if (self.dynamicInteractions.focusMessagePosition) {
-            OWSLogVerbose(@"ensuring load of focus message: %@", self.dynamicInteractions.focusMessagePosition);
-            rangeLength = MAX(rangeLength, 1 + self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue);
-        }
-    }
-
-    if (self.dynamicInteractions.unreadIndicator) {
-        NSUInteger unreadIndicatorPosition
-            = (NSUInteger)self.dynamicInteractions.unreadIndicator.unreadIndicatorPosition;
-
-        // If there is an unread indicator, increase the initial load window
-        // to include it.
-        OWSAssertDebug(unreadIndicatorPosition > 0);
-        OWSAssertDebug(unreadIndicatorPosition <= kYapDatabaseRangeMaxLength);
-
-        // We'd like to include at least N seen messages,
-        // to give the user the context of where they left off the conversation.
-        const NSUInteger kPreferredSeenMessageCount = 1;
-        rangeLength = MAX(rangeLength, unreadIndicatorPosition + kPreferredSeenMessageCount);
-    }
-
-    return rangeLength;
-}
-
-- (void)updateMessageMappingWithAdditionalLength:(NSUInteger)additionalLength
-                                     transaction:(SDSAnyReadTransaction *)transaction
-{
-    // Range size should monotonically increase.
-    NSUInteger rangeLength = self.messageMapping.desiredLength + additionalLength;
-
-    // Always try to load at least a single page of messages.
-    rangeLength = MAX(rangeLength, kYapDatabasePageSize);
-
-    // Enforce max range size.
-    rangeLength = MIN(rangeLength, kYapDatabaseRangeMaxLength);
-
     NSError *error;
-    [self.messageMapping updateWithDesiredLength:rangeLength transaction:transaction error:&error];
+    [self.messageMapping loadOlderMessagePageWithTransaction:transaction error:&error];
     if (error != nil) {
         OWSFailDebug(@"failure: %@", error);
     }
-
+    [self resetMappingWithTransaction:transaction];
+    [self.delegate conversationViewModelDidLoadMoreItems];
     [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
-    self.collapseCutoffDate = [NSDate new];
 }
 
-- (void)ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:(BOOL)updateIfNecessary
+- (void)appendNewerItemsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self ensureDynamicInteractionsAndUpdateIfNecessary:updateIfNecessary transaction:transaction];
-    }];
-}
-
-- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary
-                                          transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(transaction != nil);
-
-    const NSUInteger currentMaxRangeSize = self.messageMapping.desiredLength;
-    const NSUInteger maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
-
-    ThreadDynamicInteractions *dynamicInteractions =
-        [ThreadUtil ensureDynamicInteractionsForThread:self.thread
-                           hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
-                                   lastUnreadIndicator:self.dynamicInteractions.unreadIndicator
-                                        focusMessageId:self.focusMessageIdOnOpen
-                                          maxRangeSize:maxRangeSize
-                                           transaction:transaction];
-    BOOL didChange = ![NSObject isNullableObject:self.dynamicInteractions equalTo:dynamicInteractions];
-    self.dynamicInteractions = dynamicInteractions;
-
-    if (didChange && updateIfNecessary) {
-        if (![self reloadViewItemsWithTransaction:transaction]) {
-            OWSFailDebug(@"Failed to reload view items.");
-        }
-
-        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate transaction:transaction];
+    [self.delegate conversationViewModelWillLoadMoreItems];
+    NSError *error;
+    [self.messageMapping loadNewerMessagePageWithTransaction:transaction error:&error];
+    if (error != nil) {
+        OWSFailDebug(@"failure: %@", error);
     }
+    [self resetMappingWithTransaction:transaction];
+    [self.delegate conversationViewModelDidLoadMoreItems];
+    [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
 }
 
 - (void)clearUnreadMessagesIndicator
 {
     OWSAssertIsOnMainThread();
-
-    // TODO: Remove by making unread indicator a view model concern.
-    id<ConversationViewItem> _Nullable oldIndicatorItem = [self.viewState unreadIndicatorViewItem];
-    if (oldIndicatorItem.interaction != nil) {
-        // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
-        // to be cleared.
-        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [self.databaseStorage touchInteraction:oldIndicatorItem.interaction transaction:transaction];
-        }];
-    }
-
-    if (self.hasClearedUnreadMessagesIndicator) {
-        // ensureDynamicInteractionsForThread is somewhat expensive
-        // so we don't want to call it unnecessarily.
-        return;
-    }
+    self.messageMapping.oldestUnreadInteraction = nil;
 
     // Once we've cleared the unread messages indicator,
     // make sure we don't show it again.
     self.hasClearedUnreadMessagesIndicator = YES;
+}
 
-    if (self.dynamicInteractions.unreadIndicator) {
-        // If we've just cleared the "unread messages" indicator,
-        // update the dynamic interactions.
-        [self ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
-    }
+- (void)resetClearedUnreadMessagesIndicator
+{
+    OWSAssertIsOnMainThread();
+    self.messageMapping.oldestUnreadInteraction = nil;
+    self.hasClearedUnreadMessagesIndicator = NO;
+    [self updateForTransientItems];
 }
 
 #pragma mark - GRDB Updates
@@ -616,14 +467,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                                                   transaction:transaction
                                                                                         error:&updateError];
                                                      }];
-
-    // If we have a thread details item, insert it into the updated items. We assume
-    // it always needs to update, because it's rarely actually loaded and can be changed
-    // by a large number of thread updates.
-    if (self.messageMapping.shouldShowThreadDetails) {
-        updatedInteractionIds = [updatedInteractionIds setByAddingObject:OWSThreadDetailsInteraction.ThreadDetailsId];
-    }
-
 
     if (dbError || updateError || !updatedInteractionIds) {
         OWSFailDebug(@"failure: %@, %@", dbError, updateError);
@@ -664,19 +507,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
     OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
     if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]
-        && !self.messageMapping.shouldShowThreadDetails) {
+        && !self.shouldShowThreadDetails) {
         [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.minorUpdate];
         return;
     }
 
     NSSet<NSString *> *updatedInteractionIds = [self.messageMapping updatedItemIdsFor:notifications];
-
-    // If we have a thread details item, insert it into the updated items. We assume
-    // it always needs to update, because it's rarely actually loaded and can be changed
-    // by a large number of thread updates.
-    if (self.messageMapping.shouldShowThreadDetails) {
-        updatedInteractionIds = [updatedInteractionIds setByAddingObject:OWSThreadDetailsInteraction.ThreadDetailsId];
-    }
 
     [self anyDBDidUpdateWithUpdatedInteractionIds:updatedInteractionIds];
 }
@@ -686,9 +522,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     __block ConversationMessageMappingDiff *_Nullable diff = nil;
     __block NSError *error;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        diff = [self.messageMapping updateAndCalculateDiffWithTransaction:transaction
-                                                    updatedInteractionIds:updatedInteractionIds
-                                                                    error:&error];
+        diff = [self.messageMapping updateAndCalculateDiffWithUpdatedInteractionIds:updatedInteractionIds
+                                                                        transaction:transaction
+                                                                              error:&error];
     }];
     if (error != nil || diff == nil) {
         OWSFailDebug(@"Could not determine diff. error: %@", error);
@@ -701,6 +537,13 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableSet<NSString *> *diffAddedItemIds = [diff.addedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffRemovedItemIds = [diff.removedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffUpdatedItemIds = [diff.updatedItemIds mutableCopy];
+
+    // If we have a thread details item, insert it into the updated items. We assume
+    // it always needs to update, because it's rarely actually loaded and can be changed
+    // by a large number of thread updates.
+    if (self.shouldShowThreadDetails) {
+        [diffUpdatedItemIds addObject:OWSThreadDetailsInteraction.ThreadDetailsId];
+    }
 
     if (diffAddedItemIds.count < 1 && diffRemovedItemIds.count < 1 && diffUpdatedItemIds.count < 1) {
         // This probably isn't an error; presumably the modifications
@@ -1070,23 +913,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     return shouldAnimateRowUpdates;
 }
 
-- (void)createNewMessageMappingWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    if (self.thread.uniqueId.length < 1) {
-        OWSFailDebug(@"uniqueId unexpectedly empty for thread: %@", self.thread);
-    }
-
-    self.messageMapping = [[ConversationMessageMapping alloc] initWithThread:self.thread
-                                                               desiredLength:self.initialMessageMappingLength
-                                                                isNoteToSelf:self.thread.isNoteToSelf];
-
-    NSError *error;
-    [self.messageMapping updateWithTransaction:transaction error:&error];
-    if (error != nil) {
-        OWSFailDebug(@"failure: %@", error);
-    }
-}
-
 // This is more expensive than incremental updates.
 //
 // We call `resetMapping` for two separate reasons:
@@ -1106,23 +932,14 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 - (void)resetMappingWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(self.messageMapping);
-    [self resetMappingWithAdditionalLength:0 transaction:transaction];
-}
-
-- (void)resetMappingWithAdditionalLength:(NSUInteger)additionalLength transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(self.messageMapping);
-
-    [self updateMessageMappingWithAdditionalLength:additionalLength transaction:transaction];
 
     self.collapseCutoffDate = [NSDate new];
-
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO transaction:transaction];
 
     if (![self reloadViewItemsWithTransaction:transaction]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
     }
 
+    // PERF TODO: don't call "reload" when appending new items, do a batch insert. Otherwise we re-render every cell.
     [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate transaction:transaction];
 }
 
@@ -1132,6 +949,22 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 }
 
 #pragma mark - View Items
+
+- (nullable NSIndexPath *)indexPathForViewItem:(id<ConversationViewItem>)viewItem
+{
+    return [self indexPathForInteractionId:viewItem.interaction.uniqueId];
+}
+
+- (nullable NSIndexPath *)indexPathForInteractionId:(NSString *)interactionId
+{
+    NSUInteger index = [self.viewState.viewItems indexOfObjectPassingTest:^BOOL(id<ConversationViewItem>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        return [obj.interaction.uniqueId isEqualToString:interactionId];
+    }];
+    if (index == NSNotFound) {
+        return nil;
+    }
+    return [NSIndexPath indexPathForRow:(NSInteger)index inSection:0];
+}
 
 - (void)ensureConversationProfileStateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
@@ -1163,20 +996,11 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 - (nullable OWSContactOffersInteraction *)tryToBuildContactOffersInteractionWithTransaction:
                                               (SDSAnyReadTransaction *)transaction
-                                                                           canLoadMoreItems:(BOOL)canLoadMoreItems
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(self.conversationProfileState);
-
-    // Only show the contacts offer if the message request feature is disabled
-    if (SSKFeatureFlags.messageRequest) {
-        return nil;
-    }
-
-    if (canLoadMoreItems) {
-        // Only show contact offers at the start of the conversation.
-        return nil;
-    }
+    // message requests deprecates ContactOffers
+    OWSAssertDebug(!SSKFeatureFlags.messageRequest);
 
     BOOL hasLocalProfile = self.conversationProfileState.hasLocalProfile;
     BOOL isThreadInProfileWhitelist = self.conversationProfileState.isThreadInProfileWhitelist;
@@ -1295,8 +1119,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                        thread:thread
                                                 hasBlockOffer:shouldHaveBlockOffer
                                         hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                                hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                          beforeInteractionId:firstCallOrMessage.uniqueId];
+                                hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer];
 
     OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.sortId);
     return offersMessage;
@@ -1354,7 +1177,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         };
 
     NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
-    BOOL canLoadMoreItems = self.messageMapping.canLoadMore;
+    BOOL canLoadMoreItems = self.messageMapping.canLoadOlder;
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
     for (TSInteraction *interaction in self.messageMapping.loadedInteractions) {
@@ -1372,36 +1195,54 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         [interactionIds addObject:interaction.uniqueId];
     }
 
-    OWSContactOffersInteraction *_Nullable offers =
-        [self tryToBuildContactOffersInteractionWithTransaction:transaction canLoadMoreItems:canLoadMoreItems];
-    if (offers && [interactionIds containsObject:offers.beforeInteractionId]) {
-        id<ConversationViewItem> _Nullable offersItem = tryToAddViewItem(offers);
-        if (!offersItem) {
-            OWSFailDebug(@"Contact offers should never be filtered out.");
-            // Do nothing.
-        } else if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
-            OWSContactOffersInteraction *oldOffers = (OWSContactOffersInteraction *)offersItem.interaction;
-            BOOL didChange = (oldOffers.hasBlockOffer != offers.hasBlockOffer
-                || oldOffers.hasAddToContactsOffer != offers.hasAddToContactsOffer
-                || oldOffers.hasAddToProfileWhitelistOffer != offers.hasAddToProfileWhitelistOffer);
-            if (didChange) {
-                [offersItem clearCachedLayoutState];
-            }
+    // Contact Offers / Thread Details are the first item in the thread
+    if (!canLoadMoreItems) {
+        if (self.shouldShowThreadDetails) {
+            OWSLogDebug(@"adding thread details");
+            OWSThreadDetailsInteraction *threadDetails =
+                [[OWSThreadDetailsInteraction alloc] initWithThread:self.thread
+                                                          timestamp:NSDate.ows_millisecondTimeStamp];
+
+            tryToAddViewItem(threadDetails);
         } else {
-            OWSFailDebug(@"Unexpected offers item: %@", offersItem.interaction.class);
+            OWSContactOffersInteraction *_Nullable offers =
+                [self tryToBuildContactOffersInteractionWithTransaction:transaction];
+
+            if (offers) {
+                id<ConversationViewItem> _Nullable offersItem = tryToAddViewItem(offers);
+                if (!offersItem) {
+                    OWSFailDebug(@"Contact offers should never be filtered out.");
+                    // Do nothing.
+                } else if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
+                    OWSContactOffersInteraction *oldOffers = (OWSContactOffersInteraction *)offersItem.interaction;
+                    BOOL didChange = (oldOffers.hasBlockOffer != offers.hasBlockOffer
+                        || oldOffers.hasAddToContactsOffer != offers.hasAddToContactsOffer
+                        || oldOffers.hasAddToProfileWhitelistOffer != offers.hasAddToProfileWhitelistOffer);
+                    if (didChange) {
+                        [offersItem clearCachedLayoutState];
+                    }
+                } else {
+                    OWSFailDebug(@"Unexpected offers item: %@", offersItem.interaction.class);
+                }
+            }
         }
     }
 
+    BOOL hasPlacedUnreadIndicator = NO;
     for (TSInteraction *interaction in interactions) {
+        if (!hasPlacedUnreadIndicator && !self.hasClearedUnreadMessagesIndicator
+            && self.messageMapping.oldestUnreadInteraction != nil
+            && self.messageMapping.oldestUnreadInteraction.sortId <= interaction.sortId) {
+            hasPlacedUnreadIndicator = YES;
+            OWSUnreadIndicatorInteraction *unreadIndicator =
+                [[OWSUnreadIndicatorInteraction alloc] initWithThread:self.thread
+                                                            timestamp:interaction.timestamp
+                                                  receivedAtTimestamp:interaction.receivedAtTimestamp];
+            tryToAddViewItem(unreadIndicator);
+        }
+
         tryToAddViewItem(interaction);
     }
-
-    // POST GRDB TODO seems like this redundant sorting can go away with GRDB
-    // This will usually be redundant, but this will resolve one of the symptoms
-    // of the "corrupt YDB view" issue caused by multi-process writes.
-    [viewItems sortUsingComparator:^NSComparisonResult(id<ConversationViewItem> left, id<ConversationViewItem> right) {
-        return [left.interaction compareForSorting:right.interaction];
-    }];
 
     if (self.unsavedOutgoingMessages.count > 0) {
         for (TSOutgoingMessage *outgoingMessage in self.unsavedOutgoingMessages) {
@@ -1409,9 +1250,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 OWSFailDebug(@"Duplicate interaction: %@", outgoingMessage.uniqueId);
                 continue;
             }
-            if (tryToAddViewItem(outgoingMessage) != nil) {
-                [interactionIds addObject:outgoingMessage.uniqueId];
-            }
+            tryToAddViewItem(outgoingMessage);
+            [interactionIds addObject:outgoingMessage.uniqueId];
         }
     }
 
@@ -1431,13 +1271,11 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         }
     }
 
-    // Update the "break" properties (shouldShowDate and unreadIndicator) of the view items.
+    // Update the "shouldShowDate" property
     BOOL shouldShowDateOnNextViewItem = YES;
     uint64_t previousViewItemTimestamp = 0;
-    OWSUnreadIndicator *_Nullable unreadIndicator = self.dynamicInteractions.unreadIndicator;
     uint64_t collapseCutoffTimestamp = [NSDate ows_millisecondsSince1970ForDate:self.collapseCutoffDate];
 
-    BOOL hasPlacedUnreadIndicator = NO;
     for (id<ConversationViewItem> viewItem in viewItems) {
         BOOL canShowDate = NO;
         switch (viewItem.interaction.interactionType) {
@@ -1453,6 +1291,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 canShowDate = infoMessage.messageType != TSInfoMessageSyncedThread;
                 break;
             }
+            case OWSInteractionType_UnreadIndicator:
             case OWSInteractionType_IncomingMessage:
             case OWSInteractionType_OutgoingMessage:
             case OWSInteractionType_Error:
@@ -1481,39 +1320,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         viewItem.shouldShowDate = shouldShowDate;
 
         previousViewItemTimestamp = viewItemTimestamp;
-
-        // When a conversation without unread messages receives an incoming message,
-        // we call ensureDynamicInteractions to ensure that the unread indicator (etc.)
-        // state is updated accordingly.  However this is done in a separate transaction.
-        // We don't want to show the incoming message _without_ an unread indicator and
-        // then immediately re-render it _with_ an unread indicator.
-        //
-        // To avoid this, we use a temporary instance of OWSUnreadIndicator whenever
-        // we find an unread message that _should_ have an unread indicator, but no
-        // unread indicator exists yet on dynamicInteractions.
-        BOOL isItemUnread = ([viewItem.interaction conformsToProtocol:@protocol(OWSReadTracking)]
-            && !((id<OWSReadTracking>)viewItem.interaction).wasRead);
-        if (isItemUnread && !unreadIndicator && !hasPlacedUnreadIndicator && !self.hasClearedUnreadMessagesIndicator) {
-            unreadIndicator = [[OWSUnreadIndicator alloc] initWithFirstUnseenSortId:viewItem.interaction.sortId
-                                                              hasMoreUnseenMessages:NO
-                                               missingUnseenSafetyNumberChangeCount:0
-                                                            unreadIndicatorPosition:0];
-        }
-
-        // Place the unread indicator onto the first appropriate view item,
-        // if any.
-        if (unreadIndicator && viewItem.interaction.sortId >= unreadIndicator.firstUnseenSortId) {
-            viewItem.unreadIndicator = unreadIndicator;
-            unreadIndicator = nil;
-            hasPlacedUnreadIndicator = YES;
-        } else {
-            viewItem.unreadIndicator = nil;
-        }
-    }
-    if (unreadIndicator) {
-        // This isn't necessarily a bug - all of the interactions after the
-        // unread indicator may have disappeared or been deleted.
-        OWSLogWarn(@"Couldn't find an interaction to hang the unread indicator on.");
     }
 
     // Update the properties of the view items.
@@ -1679,7 +1485,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         viewItem.accessibilityAuthorName = accessibilityAuthorName;
     }
 
-    self.viewState = [[ConversationViewState alloc] initWithViewItems:viewItems];
+    self.viewState = [[ConversationViewState alloc] initWithViewItems:viewItems
+                                                       focusMessageId:self.focusMessageIdOnOpen];
     self.viewItemCache = viewItemCache;
 
     return !hasError;
@@ -1748,18 +1555,28 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return nil;
     }
 
+    return [self ensureLoadWindowContainsInteractionId:quotedInteraction.uniqueId transaction:transaction];
+}
+
+- (nullable NSIndexPath *)ensureLoadWindowContainsInteractionId:(NSString *)interactionId
+                                                    transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(interactionId);
+
     NSError *error;
-    NSIndexPath *_Nullable indexPath = [self.messageMapping ensureLoadWindowContainsUniqueId:quotedInteraction.uniqueId
-                                                                                 transaction:transaction
-                                                                                       error:&error];
+    [self.messageMapping loadMessagePageAroundInteractionId:interactionId transaction:transaction error:&error];
     if (error != nil) {
         OWSFailDebug(@"failure: %@", error);
         return nil;
     }
 
-    self.collapseCutoffDate = [NSDate new];
+    NSIndexPath *_Nullable indexPath = [self indexPathForInteractionId:interactionId];
+    if (indexPath == nil) {
+        OWSFailDebug(@"indexPath was unexpectedly nil");
+    }
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO transaction:transaction];
+    self.collapseCutoffDate = [NSDate new];
 
     if (![self reloadViewItemsWithTransaction:transaction]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
@@ -1771,24 +1588,18 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     return indexPath;
 }
 
-- (nullable NSIndexPath *)ensureLoadWindowContainsInteractionId:(NSString *)interactionId
-                                                    transaction:(SDSAnyReadTransaction *)transaction
+- (void)ensureLoadWindowContainsNewestItemsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(interactionId);
-
 
     NSError *error;
-    NSIndexPath *_Nullable indexPath =
-        [self.messageMapping ensureLoadWindowContainsUniqueId:interactionId transaction:transaction error:&error];
+    [self.messageMapping loadNewestMessagePageWithTransaction:transaction error:&error];
     if (error != nil) {
         OWSFailDebug(@"failure: %@", error);
-        return nil;
+        return;
     }
 
     self.collapseCutoffDate = [NSDate new];
-
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO transaction:transaction];
 
     if (![self reloadViewItemsWithTransaction:transaction]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
@@ -1796,8 +1607,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate transaction:transaction];
     [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
-
-    return indexPath;
 }
 
 - (nullable NSNumber *)findGroupIndexOfThreadInteraction:(TSInteraction *)interaction
@@ -1867,17 +1676,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 - (nullable TSInteraction *)firstCallOrMessageForLoadedInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    for (NSString *uniqueId in self.messageMapping.loadedUniqueIds) {
-        TSInteraction *_Nullable interaction = [InteractionFinder fetchSwallowingErrorsWithUniqueId:uniqueId
-                                                                                        transaction:transaction];
-
-        if (!interaction) {
-            if (![uniqueId isEqualToString:OWSThreadDetailsInteraction.ThreadDetailsId]) {
-                OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
-            }
-            continue;
-        }
-
+    for (TSInteraction *interaction in self.messageMapping.loadedInteractions) {
         switch (interaction.interactionType) {
             case OWSInteractionType_Unknown:
                 OWSFailDebug(@"Unknown interaction type.");
@@ -1891,12 +1690,18 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 break;
             case OWSInteractionType_ThreadDetails:
             case OWSInteractionType_TypingIndicator:
+            case OWSInteractionType_UnreadIndicator:
                 break;
             case OWSInteractionType_Offer:
                 break;
         }
     }
     return nil;
+}
+
+- (BOOL)shouldShowThreadDetails
+{
+    return !self.canLoadOlderItems && SSKFeatureFlags.messageRequest;
 }
 
 @end

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageStickerView.h"
@@ -243,6 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSAttachmentStream *stickerAttachment = self.viewItem.stickerAttachment;
     YYAnimatedImageView *stickerView = [YYAnimatedImageView new];
+    stickerView.contentMode = UIViewContentModeScaleAspectFit;
 
     stickerView.accessibilityLabel =
         [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_STICKER",

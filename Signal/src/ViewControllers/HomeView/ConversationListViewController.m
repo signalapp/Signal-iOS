@@ -1686,6 +1686,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated
 {
+    [BenchManager startEventWithTitle:@"Presenting Conversation"
+                              eventId:[NSString stringWithFormat:@"presenting-conversation-%@", thread.uniqueId]];
     [self presentThread:thread action:action focusMessageId:nil animated:isAnimated];
 }
 

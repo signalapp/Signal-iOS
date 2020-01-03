@@ -771,3 +771,11 @@ CREATE
         ON "model_SignalRecipient"("recipientUUID"
 )
 ;
+
+CREATE
+    UNIQUE INDEX "index_interactions_on_threadId_read_and_id"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"read"
+    ,"id"
+)
+;

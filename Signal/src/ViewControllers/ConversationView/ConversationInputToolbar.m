@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -349,11 +349,13 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                                                                       cellInset:0
                                                                         spacing:suggestedStickerSpacing];
     self.suggestedStickerView.backgroundColor = Theme.conversationButtonBackgroundColor;
-    self.suggestedStickerView.contentInset = UIEdgeInsetsMake(
-        suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing);
+    const UIEdgeInsets stickerListContentInset
+        = UIEdgeInsetsMake(suggestedStickerSpacing, 24, suggestedStickerSpacing, 24);
+    self.suggestedStickerView.contentInset = stickerListContentInset;
     self.suggestedStickerView.hidden = YES;
-    [self.suggestedStickerView autoSetDimension:ALDimensionHeight
-                                         toSize:suggestedStickerSize + 2 * suggestedStickerSpacing];
+    [self.suggestedStickerView
+        autoSetDimension:ALDimensionHeight
+                  toSize:suggestedStickerSize + stickerListContentInset.bottom + stickerListContentInset.top];
 
     // "Outer" Stack
     _outerStack = [[UIStackView alloc] initWithArrangedSubviews:@[ self.suggestedStickerView, hStack ]];
@@ -600,8 +602,11 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (void)endEditingMessage
 {
     [self.inputTextView resignFirstResponder];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-result"
     [self.stickerKeyboard resignFirstResponder];
     [self.attachmentKeyboard resignFirstResponder];
+#pragma clang diagnostic pop
 }
 
 - (BOOL)isInputViewFirstResponder
@@ -1491,7 +1496,8 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     self.suggestedStickerView.items = items;
     self.suggestedStickerView.hidden = NO;
     if (shouldReset) {
-        self.suggestedStickerView.contentOffset = CGPointZero;
+        self.suggestedStickerView.contentOffset
+            = CGPointMake(-self.suggestedStickerView.contentInset.left, -self.suggestedStickerView.contentInset.top);
     }
 }
 

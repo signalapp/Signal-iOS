@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -32,7 +32,11 @@ public class StickerTooltip: TooltipView {
         NotificationCenter.default.removeObserver(self)
     }
 
-    private let iconView = YYAnimatedImageView()
+    private let iconView: YYAnimatedImageView = {
+        let stickerView = YYAnimatedImageView()
+        stickerView.contentMode = .scaleAspectFit
+        return stickerView
+    }()
 
     @objc
     public class func present(fromView: UIView,

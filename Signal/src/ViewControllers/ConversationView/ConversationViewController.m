@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
@@ -54,7 +54,6 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSNavigationController.h>
-#import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIUtil.h>
@@ -86,8 +85,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static const CGFloat kLoadMoreHeaderHeight = 60.f;
-
 static const CGFloat kToastInset = 10;
 
 typedef enum : NSUInteger {
@@ -108,7 +105,6 @@ typedef enum : NSUInteger {
     CNContactViewControllerDelegate,
     ContactsPickerDelegate,
     ContactShareViewHelperDelegate,
-    ContactsViewHelperDelegate,
     DisappearingTimerConfigurationViewDelegate,
     OWSConversationSettingsViewDelegate,
     ConversationHeaderViewDelegate,
@@ -116,6 +112,7 @@ typedef enum : NSUInteger {
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
     ConversationSearchControllerDelegate,
+    ContactsViewHelperDelegate,
     LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,
@@ -142,7 +139,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
-@property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
 @property (nonatomic, readonly) UIView *bottomBar;
 @property (nonatomic, nullable) NSLayoutConstraint *bottomBarBottomConstraint;
@@ -181,11 +177,12 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable) UIBarButtonItem *customBackButton;
 
-@property (nonatomic, readonly) BOOL showLoadMoreHeader;
-@property (nonatomic) UILabel *loadMoreHeader;
+@property (nonatomic, readonly) BOOL showLoadOlderHeader;
+@property (nonatomic, readonly) BOOL showLoadNewerHeader;
 @property (nonatomic) uint64_t lastVisibleSortId;
 
 @property (nonatomic) BOOL isUserScrolling;
+@property (nonatomic, nullable) ConversationScrollState *scrollStateBeforeLoadingMore;
 
 @property (nonatomic) ConversationScrollButton *scrollDownButton;
 
@@ -199,7 +196,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSTimer *reloadTimer;
 @property (nonatomic, nullable) NSDate *lastReloadDate;
 
-@property (nonatomic) CGFloat scrollDistanceToBottomSnapshot;
 @property (nonatomic, nullable) NSNumber *lastKnownDistanceFromBottom;
 @property (nonatomic) ScrollContinuity scrollContinuity;
 @property (nonatomic, nullable) NSTimer *autoLoadMoreTimer;
@@ -253,7 +249,6 @@ typedef enum : NSUInteger {
 
 - (void)commonInit
 {
-    _viewControllerCreatedAt = CACurrentMediaTime();
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
     _contactShareViewHelper.delegate = self;
@@ -262,6 +257,9 @@ typedef enum : NSUInteger {
     _recordVoiceNoteAudioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:OWSAudioBehavior_PlayAndRecord];
 
     self.scrollContinuity = kScrollContinuityBottom;
+
+    _inputAccessoryPlaceholder = [InputAccessoryViewPlaceholder new];
+    self.inputAccessoryPlaceholder.delegate = self;
 }
 
 #pragma mark - Dependencies
@@ -433,11 +431,10 @@ typedef enum : NSUInteger {
     SignalServiceAddress *_Nullable address = notification.userInfo[kNSNotificationKey_ProfileAddress];
     NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
     if (address.isValid && [self.thread.recipientAddresses containsObject:address]) {
-        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
+        [self ensureBannerState];
     } else if (groupId.length > 0 && self.thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
-            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
             [self ensureBannerState];
         }
     }
@@ -495,6 +492,11 @@ typedef enum : NSUInteger {
 
     _searchController = [[ConversationSearchController alloc] initWithThread:thread];
     _searchController.delegate = self;
+
+    // because the search bar view is hosted in the navigation bar, it's not in the CVC's responder
+    // chain, and thus won't inherit our inputAccessoryView, so we manually set it here.
+    OWSAssertDebug(self.inputAccessoryPlaceholder != nil);
+    _searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder;
 
     self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
                                                             target:self
@@ -619,23 +621,8 @@ typedef enum : NSUInteger {
     self.bottomBarBottomConstraint = [self.bottomBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.bottomBar autoPinWidthToSuperview];
 
-    _inputAccessoryPlaceholder = [InputAccessoryViewPlaceholder new];
-    self.inputAccessoryPlaceholder.delegate = self;
-
-    self.loadMoreHeader = [UILabel new];
-    self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
-        @"Indicates that the app is loading more messages in this conversation.");
-    self.loadMoreHeader.textColor = UIColor.ows_signalBlueColor;
-    self.loadMoreHeader.textAlignment = NSTextAlignmentCenter;
-    self.loadMoreHeader.font = [UIFont ows_semiboldFontWithSize:16.f];
-    [self.collectionView addSubview:self.loadMoreHeader];
-    [self.loadMoreHeader autoPinWidthToWidthOfView:self.view];
-    [self.loadMoreHeader autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _loadMoreHeader);
-
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self updateShowLoadMoreHeaderWithTransaction:transaction];
+        [self updateShowLoadMoreHeadersWithTransaction:transaction];
     }];
 }
 
@@ -687,6 +674,14 @@ typedef enum : NSUInteger {
             forCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSThreadDetailsCell class]
             forCellWithReuseIdentifier:[OWSThreadDetailsCell cellReuseIdentifier]];
+    [self.collectionView registerClass:[OWSUnreadIndicatorCell class]
+            forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
+    [self.collectionView registerClass:LoadMoreMessagesView.class
+            forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                   withReuseIdentifier:LoadMoreMessagesView.reuseIdentifier];
+    [self.collectionView registerClass:LoadMoreMessagesView.class
+            forSupplementaryViewOfKind:UICollectionElementKindSectionFooter
+                   withReuseIdentifier:LoadMoreMessagesView.reuseIdentifier];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -766,8 +761,8 @@ typedef enum : NSUInteger {
     [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 
     if (!self.viewHasEverAppeared) {
-        NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
-        OWSLogVerbose(@"First viewWillAppear took: %.2fms", appearenceDuration * 1000);
+        [BenchManager
+            completeEventWithEventId:[NSString stringWithFormat:@"presenting-conversation-%@", self.thread.uniqueId]];
     }
     [self updateInputToolbarLayout];
 
@@ -787,11 +782,6 @@ typedef enum : NSUInteger {
     return self.conversationViewModel.viewState.viewItems;
 }
 
-- (ThreadDynamicInteractions *)dynamicInteractions
-{
-    return self.conversationViewModel.dynamicInteractions;
-}
-
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
 {
     NSNumber *_Nullable unreadIndicatorIndex = self.conversationViewModel.viewState.unreadIndicatorIndex;
@@ -801,26 +791,13 @@ typedef enum : NSUInteger {
     return [NSIndexPath indexPathForRow:unreadIndicatorIndex.integerValue inSection:0];
 }
 
-- (NSIndexPath *_Nullable)indexPathOfMessageOnOpen
+- (NSIndexPath *_Nullable)indexPathOfFocusMessage
 {
-    OWSAssertDebug(self.conversationViewModel.focusMessageIdOnOpen);
-    OWSAssertDebug(self.dynamicInteractions.focusMessagePosition);
-
-    if (!self.dynamicInteractions.focusMessagePosition) {
-        // This might happen if the focus message has disappeared
-        // before this view could appear.
-        OWSFailDebug(@"focus message has unknown position.");
+    NSNumber *_Nullable index = self.conversationViewModel.viewState.focusItemIndex;
+    if (index == nil) {
         return nil;
     }
-    NSUInteger focusMessagePosition = self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue;
-    if (focusMessagePosition >= self.viewItems.count) {
-        // This might happen if the focus message is outside the maximum
-        // valid load window size for this view.
-        OWSFailDebug(@"focus message has invalid position.");
-        return nil;
-    }
-    NSInteger row = (NSInteger)((self.viewItems.count - 1) - focusMessagePosition);
-    return [NSIndexPath indexPathForRow:row inSection:0];
+    return [NSIndexPath indexPathForRow:index.integerValue inSection:0];
 }
 
 - (void)scrollToDefaultPosition:(BOOL)isAnimated
@@ -829,10 +806,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    NSIndexPath *_Nullable indexPath = nil;
-    if (self.conversationViewModel.focusMessageIdOnOpen) {
-        indexPath = [self indexPathOfMessageOnOpen];
-    }
+    NSIndexPath *_Nullable indexPath = [self indexPathOfFocusMessage];
 
     if (!indexPath) {
         indexPath = [self indexPathOfUnreadMessagesIndicator];
@@ -1479,10 +1453,14 @@ typedef enum : NSUInteger {
     }
 
     if (self.isShowingSearchUI) {
-        self.navigationItem.rightBarButtonItems = @[];
-        self.navigationItem.leftBarButtonItem = nil;
-        self.navigationItem.hidesBackButton = YES;
-        return;
+        if (@available(iOS 11.0, *)) {
+            OWSAssertDebug(self.navigationItem.searchController != nil);
+        } else {
+            self.navigationItem.rightBarButtonItems = @[];
+            self.navigationItem.leftBarButtonItem = nil;
+            self.navigationItem.hidesBackButton = YES;
+            return;
+        }
     }
 
     const CGFloat kBarButtonSize = 44;
@@ -1794,33 +1772,56 @@ typedef enum : NSUInteger {
     if (self.isUserScrolling || !self.isViewVisible || !isMainAppAndActive) {
         return;
     }
-    if (!self.showLoadMoreHeader) {
+    if (!self.showLoadOlderHeader && !self.showLoadNewerHeader) {
         return;
     }
+    [self.navigationController.view layoutIfNeeded];
     CGSize navControllerSize = self.navigationController.view.frame.size;
-    CGFloat loadMoreThreshold = MAX(navControllerSize.width, navControllerSize.height);
+    CGFloat loadThreshold = MAX(navControllerSize.width, navControllerSize.height);
 
-    [BenchManager
-        benchWithTitle:@"loading more interactions"
-                 block:^{
-                     if (self.collectionView.contentOffset.y < loadMoreThreshold) {
-                         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-                             [self.conversationViewModel loadAnotherPageOfMessagesWithTransaction:transaction];
-                         }];
-                     }
-                 }];
+    BOOL closeToTop = self.collectionView.contentOffset.y < loadThreshold;
+    if (self.showLoadOlderHeader && closeToTop) {
+        [BenchManager benchWithTitle:@"loading older interactions"
+                               block:^{
+                                   [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                       [self.conversationViewModel appendOlderItemsWithTransaction:transaction];
+                                   }];
+                               }];
+    }
+
+    CGFloat distanceFromBottom = self.collectionView.contentSize.height - self.collectionView.bounds.size.height
+        - self.collectionView.contentOffset.y;
+    BOOL closeToBottom = distanceFromBottom < loadThreshold;
+    if (self.showLoadNewerHeader && closeToBottom) {
+        [BenchManager benchWithTitle:@"loading newer interactions"
+                               block:^{
+                                   [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                       [self.conversationViewModel appendNewerItemsWithTransaction:transaction];
+                                   }];
+                               }];
+    }
 }
 
-- (void)updateShowLoadMoreHeaderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (void)updateShowLoadMoreHeadersWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(self.conversationViewModel);
-    BOOL newValue = self.conversationViewModel.canLoadMoreItems;
-    BOOL valueChanged = _showLoadMoreHeader != newValue;
 
-    _showLoadMoreHeader = newValue;
+    BOOL valueChanged = NO;
 
-    self.loadMoreHeader.hidden = !newValue;
-    self.loadMoreHeader.userInteractionEnabled = newValue;
+    {
+        BOOL newValue = self.conversationViewModel.canLoadOlderItems;
+        valueChanged = _showLoadOlderHeader != newValue;
+
+        _showLoadOlderHeader = newValue;
+    }
+
+    {
+        BOOL newValue = self.conversationViewModel.canLoadNewerItems;
+        valueChanged = valueChanged || (_showLoadNewerHeader != newValue);
+
+        _showLoadNewerHeader = newValue;
+
+    }
 
     if (valueChanged) {
         [self resetContentAndLayoutWithTransaction:transaction];
@@ -2464,13 +2465,16 @@ typedef enum : NSUInteger {
                             OWSLogInfo(@"Blocking an unknown user.");
                             [self.blockingManager addBlockedAddress:contactThread.contactAddress
                                                 wasLocallyInitiated:YES];
-                            // Delete the offers.
                             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                                 [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                                                block:^(TSContactThread *thread) {
+                                                                                   // The contactoffers interaction is
+                                                                                   // an unsaved interaction. The
+                                                                                   // conversationViewModel will delete
+                                                                                   // it when it reloads interaction in
+                                                                                   // response to this change.
                                                                                    thread.hasDismissedOffers = YES;
                                                                                }];
-                                [interaction anyRemoveWithTransaction:transaction];
                             }];
                         }];
     [actionSheet addAction:blockAction];
@@ -2502,13 +2506,14 @@ typedef enum : NSUInteger {
 
     [self.navigationController pushViewController:contactVC animated:YES];
 
-    // Delete the offers.
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                        block:^(TSContactThread *thread) {
+                                                           // The contactoffers interaction is an unsaved interaction.
+                                                           // The conversationViewModel will delete it when it reloads
+                                                           // interaction in response to this change.
                                                            thread.hasDismissedOffers = YES;
                                                        }];
-        [interaction anyRemoveWithTransaction:transaction];
     }];
 }
 
@@ -2522,13 +2527,15 @@ typedef enum : NSUInteger {
     TSContactThread *contactThread = (TSContactThread *)self.thread;
 
     [self presentAddThreadToProfileWhitelistWithSuccess:^() {
-        // Delete the offers.
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                            block:^(TSContactThread *thread) {
+                                                               // The contactoffers interaction is an unsaved
+                                                               // interaction. The conversationViewModel will delete it
+                                                               // when it reloads interaction in response to this
+                                                               // change.
                                                                thread.hasDismissedOffers = YES;
                                                            }];
-            [interaction anyRemoveWithTransaction:transaction];
         }];
     }];
 }
@@ -2867,8 +2874,10 @@ typedef enum : NSUInteger {
 
 - (void)contactsViewHelperDidUpdateContacts
 {
-    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
+    // no-op
 }
+
+#pragma mark - Scroll Down Button
 
 - (void)createConversationScrollButtons
 {
@@ -2896,7 +2905,6 @@ typedef enum : NSUInteger {
     _hasUnreadMessages = hasUnreadMessages;
 
     self.scrollDownButton.hasUnreadMessages = hasUnreadMessages;
-    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES transaction:transaction];
 }
 
 - (void)scrollDownButtonTapped
@@ -3270,7 +3278,7 @@ typedef enum : NSUInteger {
             [self messageWasSent:message];
 
             if (didAddToProfileWhitelist) {
-                [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
+                [self ensureBannerState];
             }
         }];
 }
@@ -3577,6 +3585,8 @@ typedef enum : NSUInteger {
         }
     }
     if (lastVisibleIndexPath && lastVisibleIndexPath.row >= (NSInteger)self.viewItems.count) {
+        // unclear to me why this should happen, so adding an assert to catch it.
+        OWSFailDebug(@"invalid lastVisibleIndexPath");
         return (self.viewItems.count > 0 ? [NSIndexPath indexPathForRow:(NSInteger)self.viewItems.count - 1 inSection:0]
                                          : nil);
     }
@@ -3924,7 +3934,7 @@ typedef enum : NSUInteger {
         [self messageWasSent:message];
 
         if (didAddToProfileWhitelist) {
-            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
+            [self ensureBannerState];
         }
     });
 }
@@ -4051,6 +4061,12 @@ typedef enum : NSUInteger {
 
     if (self.isUserScrolling) {
         return;
+    }
+
+    if (self.conversationViewModel.canLoadNewerItems) {
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            [self.conversationViewModel ensureLoadWindowContainsNewestItemsWithTransaction:transaction];
+        }];
     }
 
     // Ensure the view is fully layed out before we try to scroll to the bottom, since
@@ -4210,64 +4226,33 @@ typedef enum : NSUInteger {
 {
     self.isShowingSearchUI = YES;
 
-    UIView *searchBar = self.searchController.uiSearchController.searchBar;
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.searchController = self.searchController.uiSearchController;
+    } else {
+        // Note: setting a searchBar as the titleView causes UIKit to render the navBar
+        // *slightly* taller (44pt -> 56pt)
+        self.navigationItem.titleView = self.searchController.uiSearchController.searchBar;
+    }
 
-    // Note: setting a searchBar as the titleView causes UIKit to render the navBar
-    // *slightly* taller (44pt -> 56pt)
-    self.navigationItem.titleView = searchBar;
     [self updateBarButtonItems];
     [self reloadBottomBar];
-
-    // Hack so that the ResultsBar stays on the screen when dismissing the search field
-    // keyboard.
-    //
-    // Details:
-    //
-    // When the search UI is activated, both the SearchField and the ConversationVC
-    // have the resultsBar as their inputAccessoryView.
-    //
-    // So when the SearchField is first responder, the ResultsBar is shown on top of the keyboard.
-    // When the ConversationVC is first responder, the ResultsBar is shown at the bottom of the
-    // screen.
-    //
-    // When the user swipes to dismiss the keyboard, trying to see more of the content while
-    // searching, we want the ResultsBar to stay at the bottom of the screen - that is, we
-    // want the ConversationVC to becomeFirstResponder.
-    //
-    // If the SearchField were a subview of ConversationVC.view, this would all be automatic,
-    // as first responder status is percolated up the responder chain via `nextResponder`, which
-    // basically travereses each superView, until you're at a rootView, at which point the next
-    // responder is the ViewController which controls that View.
-    //
-    // However, because SearchField lives in the Navbar, it's "controlled" by the
-    // NavigationController, not the ConversationVC.
-    //
-    // So here we stub the next responder on the navBar so that when the searchBar resigns
-    // first responder, the ConversationVC will be in it's responder chain - keeeping the
-    // ResultsBar on the bottom of the screen after dismissing the keyboard.
-    if (![self.navigationController.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
-        OWSFailDebug(@"unexpected navigationController: %@", self.navigationController);
-        return;
-    }
-    OWSNavigationBar *navBar = (OWSNavigationBar *)self.navigationController.navigationBar;
-    navBar.stubbedNextResponder = self;
 }
 
 - (void)hideSearchUI
 {
     self.isShowingSearchUI = NO;
 
-    self.navigationItem.titleView = self.headerView;
-    [self updateBarButtonItems];
-
-    if (![self.navigationController.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
-        OWSFailDebug(@"unexpected navigationController: %@", self.navigationController);
-        return;
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.searchController = nil;
+        // HACK: For some reason at this point the OWSNavbar retains the extra space it
+        // used to house the search bar. This only seems to occur when dismissing
+        // the search UI when scrolled to the very top of the conversation.
+        [self.navigationController.navigationBar sizeToFit];
+    } else {
+        self.navigationItem.titleView = self.headerView;
     }
-    OWSNavigationBar *navBar = (OWSNavigationBar *)self.navigationController.navigationBar;
-    OWSAssertDebug(navBar.stubbedNextResponder == self);
-    navBar.stubbedNextResponder = nil;
 
+    [self updateBarButtonItems];
     [self reloadBottomBar];
 }
 
@@ -4330,7 +4315,12 @@ typedef enum : NSUInteger {
 
 - (CGFloat)layoutHeaderHeight
 {
-    return (self.showLoadMoreHeader ? kLoadMoreHeaderHeight : 0.f);
+    return (self.showLoadOlderHeader ? LoadMoreMessagesView.fixedHeight : 0.f);
+}
+
+- (CGFloat)layoutFooterHeight
+{
+    return (self.showLoadNewerHeader ? LoadMoreMessagesView.fixedHeight : 0.f);
 }
 
 #pragma mark - ConversationInputToolbarDelegate
@@ -4379,10 +4369,6 @@ typedef enum : NSUInteger {
         return;
     }
 
-    // Limit outgoing text messages to 16kb.
-    //
-    // We convert large text messages to attachments
-    // which are presented as normal text messages.
     BOOL didAddToProfileWhitelist =
         [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
     __block TSOutgoingMessage *message;
@@ -4394,8 +4380,8 @@ typedef enum : NSUInteger {
                                     linkPreviewDraft:self.inputToolbar.linkPreviewDraft
                                          transaction:transaction];
     }];
+    [self.conversationViewModel clearUnreadMessagesIndicator];
     [self.conversationViewModel appendUnsavedOutgoingTextMessage:message];
-
     [self messageWasSent:message];
 
     // Clearing the text message is a key part of the send animation.
@@ -4423,7 +4409,7 @@ typedef enum : NSUInteger {
     }];
 
     if (didAddToProfileWhitelist) {
-        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
+        [self ensureBannerState];
     }
 }
 
@@ -4555,45 +4541,6 @@ typedef enum : NSUInteger {
     }
 }
 
-- (nullable NSIndexPath *)firstIndexPathAtViewHorizonTimestamp
-{
-    if (!self.viewHorizonTimestamp) {
-        return nil;
-    }
-    if (self.viewItems.count < 1) {
-        return nil;
-    }
-    uint64_t viewHorizonTimestamp = self.viewHorizonTimestamp.unsignedLongLongValue;
-    // Binary search for the first view item whose timestamp >= the "view horizon" timestamp.
-    // We want to move "left" rightward, discarding interactions before this cutoff.
-    // We want to move "right" leftward, discarding all-but-the-first interaction after this cutoff.
-    // In the end, if we converge on an item _after_ this cutoff, it's the one we want.
-    // If we converge on an item _before_ this cutoff, there was no interaction that fit our criteria.
-    NSUInteger left = 0, right = self.viewItems.count - 1;
-    while (left != right) {
-        OWSAssertDebug(left < right);
-        NSUInteger mid = (left + right) / 2;
-        OWSAssertDebug(left <= mid);
-        OWSAssertDebug(mid < right);
-        id<ConversationViewItem> viewItem = self.viewItems[mid];
-        if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
-            right = mid;
-        } else {
-            // This is an optimization; it also ensures that we converge.
-            left = mid + 1;
-        }
-    }
-    OWSAssertDebug(left == right);
-    id<ConversationViewItem> viewItem = self.viewItems[left];
-    if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
-        OWSLogInfo(@"firstIndexPathAtViewHorizonTimestamp: %zd / %zd", left, self.viewItems.count);
-        return [NSIndexPath indexPathForRow:(NSInteger) left inSection:0];
-    } else {
-        OWSLogInfo(@"firstIndexPathAtViewHorizonTimestamp: none / %zd", self.viewItems.count);
-        return nil;
-    }
-}
-
 #pragma mark - ConversationCollectionViewDelegate
 
 - (void)collectionViewWillChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
@@ -4681,6 +4628,23 @@ typedef enum : NSUInteger {
 #endif
 
     return cell;
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
+           viewForSupplementaryElementOfKind:(NSString *)kind
+                                 atIndexPath:(NSIndexPath *)indexPath
+{
+    if ([kind isEqualToString:UICollectionElementKindSectionHeader] ||
+        [kind isEqualToString:UICollectionElementKindSectionFooter]) {
+        LoadMoreMessagesView *loadMoreView =
+            [self.collectionView dequeueReusableSupplementaryViewOfKind:kind
+                                                    withReuseIdentifier:LoadMoreMessagesView.reuseIdentifier
+                                                           forIndexPath:indexPath];
+        [loadMoreView configureForDisplay];
+        return loadMoreView;
+    }
+    OWSFailDebug(@"unexpected supplementaryElement: %@", kind);
+    return [UICollectionReusableView new];
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -5154,9 +5118,42 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.conversationViewModel);
 
-    // We want to restore the current scroll state after we update the range, update
-    // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
-    self.scrollDistanceToBottomSnapshot = self.safeContentHeight - self.collectionView.contentOffset.y;
+    // To maintain scroll position after changing the items loaded in the conversation view:
+    //
+    // 1. in conversationViewModelWillLoadMoreItems
+    //   - Get position of some interactions cell before transition.
+    //   - Get content offset before transition
+    //
+    // 2. Load More
+    //
+    // 3. in conversationViewModelDidLoadMoreItems
+    //   - Get position of that same interaction's cell (it'll have a new index)
+    //   - Get content offset after transition
+    //   - Offset scrollViewContent so that the cell is in the same spot after as it was before.
+    NSIndexPath *_Nullable indexPath = [self lastVisibleIndexPath];
+    if (indexPath == nil) {
+        // nothing visible yet
+        return;
+    }
+
+    id<ConversationViewItem> viewItem = [self viewItemForIndex:indexPath.row];
+    if (viewItem == nil) {
+        OWSFailDebug(@"viewItem was unexpectedly nil");
+        return;
+    }
+
+    UIView *cell = [self collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
+    if (cell == nil) {
+        OWSFailDebug(@"cell was unexpectedly nil");
+        return;
+    }
+
+    CGRect frame = cell.frame;
+    CGPoint contentOffset = self.collectionView.contentOffset;
+
+    self.scrollStateBeforeLoadingMore = [[ConversationScrollState alloc] initWithReferenceViewItem:viewItem
+                                                                                    referenceFrame:frame
+                                                                                     contentOffset:contentOffset];
 }
 
 - (void)conversationViewModelDidLoadMoreItems
@@ -5166,15 +5163,32 @@ typedef enum : NSUInteger {
 
     [self.layout prepareLayout];
 
-    self.collectionView.contentOffset = CGPointMake(0, self.safeContentHeight - self.scrollDistanceToBottomSnapshot);
-}
+    ConversationScrollState *_Nullable scrollState = self.scrollStateBeforeLoadingMore;
+    if (scrollState == nil) {
+        OWSFailDebug(@"scrollState was unexpectedly nil");
+        return;
+    }
 
-- (void)conversationViewModelDidLoadPrevPage
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(self.conversationViewModel);
+    NSIndexPath *_Nullable newIndexPath =
+        [self.conversationViewModel indexPathForViewItem:scrollState.referenceViewItem];
+    if (newIndexPath == nil) {
+        OWSFailDebug(@"newIndexPath was unexpectedly nil");
+        return;
+    }
 
-    [self scrollToUnreadIndicatorAnimated];
+    UIView *_Nullable cell = [self collectionView:self.collectionView cellForItemAtIndexPath:newIndexPath];
+    if (cell == nil) {
+        OWSFailDebug(@"cell was unexpectedly nil");
+        return;
+    }
+
+    CGRect newFrame = cell.frame;
+    // distance from top of cell to top of content pane.
+    CGFloat previousDistance = scrollState.referenceFrame.origin.y - scrollState.contentOffset.y;
+    CGFloat newDistance = newFrame.origin.y - previousDistance;
+
+    CGPoint newContentOffset = CGPointMake(0, newDistance);
+    self.collectionView.contentOffset = newContentOffset;
 }
 
 - (void)conversationViewModelRangeDidChangeWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -5185,7 +5199,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self updateShowLoadMoreHeaderWithTransaction:transaction];
+    [self updateShowLoadMoreHeadersWithTransaction:transaction];
 }
 
 - (void)conversationViewModelDidReset
