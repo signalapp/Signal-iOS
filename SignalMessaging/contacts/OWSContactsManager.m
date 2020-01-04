@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsManager.h"
@@ -119,8 +119,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                                  [signalAccounts addObject:signalAccount];
                                              }];
     }];
-    [signalAccounts sortUsingComparator:self.signalAccountComparator];
-
     [self updateSignalAccounts:signalAccounts shouldSetHasLoadedContacts:NO];
 }
 
@@ -734,7 +732,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
     self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
 
-    self.signalAccounts = [signalAccounts copy];
+    self.signalAccounts = [signalAccounts sortedArrayUsingComparator:self.signalAccountComparator];
 
     [self.profileManager setContactAddresses:allAddresses];
 
