@@ -59,23 +59,30 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // ensure images at the end of the list can be scrolled above the bottom buttons
         let bottomButtonInset = -1 * SendMediaNavigationController.bottomButtonsCenterOffset + SendMediaNavigationController.bottomButtonWidth / 2
         collectionView.contentInset.bottom = bottomButtonInset + 8
-        view.backgroundColor = .ows_gray95
+        view.backgroundColor = Colors.navigationBarBackground
 
         // The PhotoCaptureVC needs a shadow behind it's cancel button, so we use a custom icon.
         // This VC has a visible navbar so doesn't need the shadow, but because the user can
         // quickly toggle between the Capture and the Picker VC's, we use the same custom "X"
         // icon here rather than the system "stop" icon so that the spacing matches exactly.
         // Otherwise there's a noticable shift in the icon placement.
-        let cancelImage = UIImage(imageLiteralResourceName: "ic_x_with_shadow")
+        let cancelImage = UIImage(imageLiteralResourceName: "X")
         let cancelButton = UIBarButtonItem(image: cancelImage, style: .plain, target: self, action: #selector(didPressCancel))
 
-        cancelButton.tintColor = .ows_gray05
+        cancelButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = cancelButton
 
         let titleView = TitleView()
         titleView.delegate = self
         titleView.text = photoCollection.localizedTitle()
 
+        // Loki: Set navigation bar background color
+        let navigationBar = navigationController!.navigationBar
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = Colors.navigationBarBackground
+        
         if #available(iOS 11, *) {
             // do nothing
         } else {
@@ -86,7 +93,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         navigationItem.titleView = titleView
         self.titleView = titleView
 
-        collectionView.backgroundColor = .ows_gray95
+        collectionView.backgroundColor = Colors.navigationBarBackground
 
         let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
         selectionPanGesture.delegate = self
@@ -244,7 +251,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: 
 
     var lastPageYOffset: CGFloat {
-        return collectionView.contentSize.height - collectionView.frame.height
+        var yOffset = collectionView.contentSize.height - collectionView.frame.height + collectionView.contentInset.bottom
+        if #available(iOS 11.0, *) {
+            yOffset += view.safeAreaInsets.bottom
+        }
+        return yOffset
     }
 
     func scrollToBottom(animated: Bool) {
@@ -581,7 +592,7 @@ class TitleView: UIView {
         let stackView = UIStackView(arrangedSubviews: [label, iconView])
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.spacing = 5
+        stackView.spacing = 8
         stackView.isUserInteractionEnabled = true
 
         self.stackView = stackView
@@ -591,10 +602,10 @@ class TitleView: UIView {
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
 
-        label.textColor = .ows_gray05
-        label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        label.textColor = Colors.text
+        label.font = .boldSystemFont(ofSize: Values.mediumFontSize)
 
-        iconView.tintColor = .ows_gray05
+        iconView.tintColor = Colors.text
         iconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
 
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))

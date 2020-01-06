@@ -25,13 +25,29 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     [super viewDidLoad];
 
-    self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
-
     [self observeNotifications];
 
     [self updateTableContents];
     
-    [LKAnalytics.shared track:@"Privacy Settings Opened"];
+    // Loki: Set gradient background
+    self.tableView.backgroundColor = UIColor.clearColor;
+    LKGradient *gradient = LKGradients.defaultLokiBackground;
+    self.view.backgroundColor = UIColor.clearColor;
+    [self.view setGradient:gradient];
+    
+    // Loki: Set navigation bar background color
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navigationBar.shadowImage = [UIImage new];
+    [navigationBar setTranslucent:NO];
+    navigationBar.barTintColor = LKColors.navigationBarBackground;
+    
+    // Loki: Customize title
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.text = NSLocalizedString(@"Privacy", @"");
+    titleLabel.textColor = LKColors.text;
+    titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
+    self.navigationItem.titleView = titleLabel;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -140,7 +156,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     OWSTableSection *screenLockSection = [OWSTableSection new];
     screenLockSection.headerTitle = NSLocalizedString(
         @"SETTINGS_SCREEN_LOCK_SECTION_TITLE", @"Title for the 'screen lock' section of the privacy settings.");
-    screenLockSection.footerTitle = NSLocalizedString(@"Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed.", @"");
+    screenLockSection.footerTitle = NSLocalizedString(@"Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed.", @"");
     [screenLockSection
         addItem:[OWSTableItem
                     switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_SWITCH_LABEL",

@@ -27,12 +27,12 @@
 
 + (void)setupSignalAppearence
 {
-    UINavigationBar.appearance.barTintColor = Theme.navbarBackgroundColor;
-    UINavigationBar.appearance.tintColor = Theme.navbarIconColor;
+    UINavigationBar.appearance.barTintColor = [UIColor colorWithRGBHex:0x161616]; // Colors.navigationBarBackground
+    UINavigationBar.appearance.tintColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
     UIToolbar.appearance.barTintColor = Theme.navbarBackgroundColor;
     UIToolbar.appearance.tintColor = Theme.navbarIconColor;
 
-    UIBarButtonItem.appearance.tintColor = Theme.navbarIconColor;
+    UIBarButtonItem.appearance.tintColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
 
     // Using the keyboardAppearance causes crashes due to a bug in UIKit.
     //    UITextField.appearance.keyboardAppearance = (Theme.isDarkThemeEnabled
@@ -42,11 +42,11 @@
     //                                                 ? UIKeyboardAppearanceDark
     //                                                 : UIKeyboardAppearanceDefault);
 
-    [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
+    [[UISwitch appearance] setOnTintColor:[UIColor colorWithRGBHex:0x00F782]]; // Colors.accent
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
-    UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : Theme.navbarTitleColor };
+    UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : [UIColor colorWithRGBHex:0xFFFFFF] }; // Colors.text
 }
 
 @end

@@ -61,9 +61,9 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         sendButton.setTitle(sendTitle, for: .normal)
         sendButton.addTarget(self, action: #selector(didTapSend), for: .touchUpInside)
 
-        sendButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: 16)
+        sendButton.titleLabel?.font = .boldSystemFont(ofSize: 15) // Values.mediumFontSize
         sendButton.titleLabel?.textAlignment = .center
-        sendButton.tintColor = Theme.galleryHighlightColor
+        sendButton.tintColor = UIColor(rgbHex: 0x00F782) // Colors.accent
 
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
@@ -158,7 +158,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     private lazy var placeholderTextView: UITextView = {
         let placeholderTextView = buildTextView()
 
-        placeholderTextView.text = NSLocalizedString("MESSAGE_TEXT_FIELD_PLACEHOLDER", comment: "placeholder text for the editable message field")
+        placeholderTextView.text = NSLocalizedString("Message", comment: "")
         placeholderTextView.isEditable = false
 
         return placeholderTextView
@@ -188,9 +188,10 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         textView.backgroundColor = .clear
         textView.tintColor = Theme.darkThemePrimaryColor
 
-        textView.font = UIFont.ows_dynamicTypeBody
+        textView.font = .systemFont(ofSize: 15) // Values.mediumFontSize
         textView.textColor = Theme.darkThemePrimaryColor
-        textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
+        textView.showsVerticalScrollIndicator = false
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
 
         return textView
     }

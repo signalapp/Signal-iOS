@@ -86,7 +86,7 @@ class ImageEditorCropViewController: OWSViewController {
     override func loadView() {
         self.view = UIView()
 
-        self.view.backgroundColor = .black
+        self.view.backgroundColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
         self.view.layoutMargins = .zero
 
         // MARK: - Buttons

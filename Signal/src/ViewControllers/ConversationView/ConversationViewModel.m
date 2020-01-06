@@ -1503,10 +1503,11 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // the previous message has the same sender name and
                 // no "date break" separates us.
                 BOOL shouldShowSenderName = YES;
+                NSString *_Nullable previousIncomingSenderId = nil;
                 if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
 
                     TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
-                    NSString *previousIncomingSenderId = previousIncomingMessage.authorId;
+                    previousIncomingSenderId = previousIncomingMessage.authorId;
                     OWSAssertDebug(previousIncomingSenderId.length > 0);
 
                     shouldShowSenderName
@@ -1539,9 +1540,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // the next message has the same sender avatar and
                 // no "date break" separates us.
                 shouldShowSenderAvatar = YES;
-                if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
-                    shouldShowSenderAvatar = (![NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
-                        || nextViewItem.hasCellHeader);
+                if (viewItem.isRSSFeed) {
+                    shouldShowSenderAvatar = NO;
+                } else if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
+                    shouldShowSenderAvatar = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]);
                 }
             }
         }

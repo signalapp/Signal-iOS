@@ -28,8 +28,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, VoiceMemoRecordingState){
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 
-const CGFloat kMinTextViewHeight = 36;
-const CGFloat kMaxTextViewHeight = 98;
+const CGFloat kMinTextViewHeight = 40;
+const CGFloat kMaxTextViewHeight = 120;
 
 #pragma mark -
 
@@ -119,25 +119,15 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)createContents
 {
     self.layoutMargins = UIEdgeInsetsZero;
-
-    if (UIAccessibilityIsReduceTransparencyEnabled()) {
-        self.backgroundColor = Theme.toolbarBackgroundColor;
-    } else {
-        CGFloat alpha = OWSNavigationBar.backgroundBlurMutingFactor;
-        self.backgroundColor = [UIColor.lokiDarkerGray colorWithAlphaComponent:alpha];
-
-        UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:Theme.barBlurEffect];
-        blurEffectView.layer.zPosition = -1;
-        [self addSubview:blurEffectView];
-        [blurEffectView autoPinEdgesToSuperviewEdges];
-    }
-
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    
+    self.backgroundColor = LKColors.composeViewBackground;
 
     _inputTextView = [ConversationInputTextView new];
     self.inputTextView.textViewToolbarDelegate = self;
-    self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
-    self.inputTextView.backgroundColor = Theme.toolbarBackgroundColor;
+    self.inputTextView.textColor = LKColors.text;
+    self.inputTextView.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+    self.inputTextView.backgroundColor = LKColors.composeViewTextFieldBackground;
     [self.inputTextView setContentHuggingLow];
     [self.inputTextView setCompressionResistanceLow];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputTextView);
@@ -145,43 +135,30 @@ const CGFloat kMaxTextViewHeight = 98;
     _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
 
     _attachmentButton = [[UIButton alloc] init];
-    self.attachmentButton.accessibilityLabel
-        = NSLocalizedString(@"ATTACHMENT_LABEL", @"Accessibility label for attaching photos");
-    self.attachmentButton.accessibilityHint = NSLocalizedString(
-        @"ATTACHMENT_HINT", @"Accessibility hint describing what you can do with the attachment button");
-    [self.attachmentButton addTarget:self
-                              action:@selector(attachmentButtonPressed)
-                    forControlEvents:UIControlEventTouchUpInside];
-    UIImage *attachmentImage = [UIImage imageNamed:@"ic_circled_plus"];
-    [self.attachmentButton setImage:[attachmentImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                           forState:UIControlStateNormal];
-    self.attachmentButton.tintColor = Theme.navbarIconColor;
+    self.attachmentButton.accessibilityLabel = NSLocalizedString(@"ATTACHMENT_LABEL", @"Accessibility label for attaching photos");
+    self.attachmentButton.accessibilityHint = NSLocalizedString(@"ATTACHMENT_HINT", @"Accessibility hint describing what you can do with the attachment button");
+    [self.attachmentButton addTarget:self action:@selector(attachmentButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    UIImage *attachmentImage = [UIImage imageNamed:@"CirclePlus"];
+    [self.attachmentButton setImage:attachmentImage forState:UIControlStateNormal];
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.sendButton setTitle:MessageStrings.sendButton forState:UIControlStateNormal];
-    [self.sendButton setTitleColor:UIColor.lokiGreen forState:UIControlStateNormal];
-    self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:17.f];
-    self.sendButton.contentEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 4);
-    [self.sendButton autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
-    [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    UIImage *sendImage = [UIImage imageNamed:@"ArrowUp"];
+    [self.sendButton setImage:sendImage forState:UIControlStateNormal];
+    [self.sendButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
+    [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
 
-    UIImage *voiceMemoIcon = [UIImage imageNamed:@"voice-memo-button"];
-    OWSAssertDebug(voiceMemoIcon);
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                          forState:UIControlStateNormal];
-    self.voiceMemoButton.imageView.tintColor = Theme.navbarIconColor;
+    UIImage *voiceMemoIcon = [UIImage imageNamed:@"Microphone"];
+    [self.voiceMemoButton setImage:voiceMemoIcon forState:UIControlStateNormal];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     // We want to be permissive about the voice message gesture, so we hang
     // the long press GR on the button's wrapper, not the button itself.
-    UILongPressGestureRecognizer *longPressGestureRecognizer =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    UILongPressGestureRecognizer *longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPressGestureRecognizer.minimumPressDuration = 0;
     self.voiceMemoGestureRecognizer = longPressGestureRecognizer;
     [self.voiceMemoButton addGestureRecognizer:longPressGestureRecognizer];
@@ -189,6 +166,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.userInteractionEnabled = YES;
 
     _quotedReplyWrapper = [UIView containerView];
+    self.quotedReplyWrapper.backgroundColor = LKColors.composeViewTextFieldBackground;
     self.quotedReplyWrapper.hidden = YES;
     [self.quotedReplyWrapper setContentHuggingHorizontalLow];
     [self.quotedReplyWrapper setCompressionResistanceHorizontalLow];
@@ -201,8 +179,7 @@ const CGFloat kMaxTextViewHeight = 98;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _linkPreviewWrapper);
 
     // V Stack
-    UIStackView *vStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.quotedReplyWrapper, self.linkPreviewWrapper, self.inputTextView ]];
+    UIStackView *vStack = [[UIStackView alloc] initWithArrangedSubviews:@[ self.quotedReplyWrapper, self.linkPreviewWrapper, self.inputTextView ]];
     vStack.axis = UILayoutConstraintAxisVertical;
     [vStack setContentHuggingHorizontalLow];
     [vStack setCompressionResistanceHorizontalLow];
@@ -213,7 +190,7 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 
     // V Stack Wrapper
-    const CGFloat vStackRounding = 18.f;
+    const CGFloat vStackRounding = kMinTextViewHeight / 2;
     UIView *vStackWrapper = [UIView containerView];
     vStackWrapper.layer.cornerRadius = vStackRounding;
     vStackWrapper.clipsToBounds = YES;
@@ -228,16 +205,24 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.mentionCandidateSelectionView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.mentionCandidateSelectionView autoPinWidthToSuperview];
     self.mentionCandidateSelectionViewSizeConstraint = [self.mentionCandidateSelectionView autoSetDimension:ALDimensionHeight toSize:0];
+    self.mentionCandidateSelectionView.alpha = 0;
     self.mentionCandidateSelectionView.delegate = self;
+    
+    // Button Container
+    UIView *buttonContainer = [UIView new];
+    [buttonContainer addSubview:self.voiceMemoButton];
+    [self.voiceMemoButton ows_autoPinToSuperviewEdges];
+    [buttonContainer addSubview:self.sendButton];
+    [self.sendButton ows_autoPinToSuperviewEdges];
     
     // H Stack
     _hStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.voiceMemoButton, self.sendButton ]];
+        initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, buttonContainer ]];
     self.hStack.axis = UILayoutConstraintAxisHorizontal;
     self.hStack.layoutMarginsRelativeArrangement = YES;
-    self.hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
+    self.hStack.layoutMargins = UIEdgeInsetsMake(LKValues.smallSpacing, LKValues.smallSpacing, LKValues.smallSpacing, LKValues.smallSpacing);
     self.hStack.alignment = UIStackViewAlignmentBottom;
-    self.hStack.spacing = 8;
+    self.hStack.spacing = LKValues.smallSpacing;
 
     [self addSubview:self.hStack];
     [self.hStack autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mentionCandidateSelectionView];
@@ -266,8 +251,9 @@ const CGFloat kMaxTextViewHeight = 98;
     self.borderView.userInteractionEnabled = NO;
     self.borderView.backgroundColor = UIColor.clearColor;
     self.borderView.opaque = NO;
-    self.borderView.layer.borderColor = Theme.secondaryColor.CGColor;
-    self.borderView.layer.borderWidth = CGHairlineWidth();
+    self.borderView.layer.borderColor = LKColors.text.CGColor;
+    self.borderView.layer.opacity = LKValues.composeViewTextFieldBorderOpacity;
+    self.borderView.layer.borderWidth = LKValues.composeViewTextFieldBorderThickness;
     self.borderView.layer.cornerRadius = vStackRounding;
     [self addSubview:self.borderView];
     [self.borderView autoPinToEdgesOfView:vStackWrapper];
@@ -428,20 +414,20 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     void (^updateBlock)(void) = ^{
         if (self.inputTextView.trimmedText.length > 0) {
-            if (!self.voiceMemoButton.isHidden) {
-                self.voiceMemoButton.hidden = YES;
+            if (self.voiceMemoButton.alpha != 0) {
+                self.voiceMemoButton.alpha = 0;
             }
 
-            if (self.sendButton.isHidden) {
-                self.sendButton.hidden = NO;
+            if (self.sendButton.alpha == 0) {
+                self.sendButton.alpha = 1;
             }
         } else {
-            if (self.voiceMemoButton.isHidden) {
-                self.voiceMemoButton.hidden = NO;
+            if (self.voiceMemoButton.alpha == 0) {
+                self.voiceMemoButton.alpha = 1;
             }
 
-            if (!self.sendButton.isHidden) {
-                self.sendButton.hidden = YES;
+            if (self.sendButton.alpha != 0) {
+                self.sendButton.alpha = 0;
             }
         }
         if (doLayout) {
@@ -606,18 +592,22 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.voiceMemoLockView removeFromSuperview];
 
     self.voiceMemoUI = [UIView new];
-    self.voiceMemoUI.backgroundColor = Theme.toolbarBackgroundColor;
+    self.voiceMemoUI.backgroundColor = LKColors.composeViewBackground;
     [self addSubview:self.voiceMemoUI];
     [self.voiceMemoUI autoPinEdgesToSuperviewEdges];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoUI);
 
     self.voiceMemoContentView = [UIView new];
     [self.voiceMemoUI addSubview:self.voiceMemoContentView];
-    [self.voiceMemoContentView ows_autoPinToSuperviewEdges];
+    
+    [self.voiceMemoContentView autoPinLeadingToEdgeOfView:self.voiceMemoUI];
+    [self.voiceMemoContentView autoPinTopToSuperviewMargin];
+    [self.voiceMemoContentView autoPinTrailingToEdgeOfView:self.voiceMemoUI];
+    [self.voiceMemoContentView autoPinBottomToSuperviewMargin];
 
     self.recordingLabel = [UILabel new];
-    self.recordingLabel.textColor = [UIColor ows_destructiveRedColor];
-    self.recordingLabel.font = [UIFont ows_mediumFontWithSize:14.f];
+    self.recordingLabel.textColor = LKColors.destructive;
+    self.recordingLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
     [self.voiceMemoContentView addSubview:self.recordingLabel];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _recordingLabel);
 
@@ -630,24 +620,24 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [self updateVoiceMemo];
 
-    UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
+    UIImage *icon = [UIImage imageNamed:@"Microphone"];
     OWSAssertDebug(icon);
     UIImageView *imageView =
         [[UIImageView alloc] initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-    imageView.tintColor = [UIColor ows_destructiveRedColor];
+    imageView.tintColor = LKColors.destructive;
     [imageView setContentHuggingHigh];
     [self.voiceMemoContentView addSubview:imageView];
 
     NSMutableAttributedString *cancelString = [NSMutableAttributedString new];
     const CGFloat cancelArrowFontSize = ScaleFromIPhone5To7Plus(18.4, 20.f);
-    const CGFloat cancelFontSize = ScaleFromIPhone5To7Plus(14.f, 16.f);
+    const CGFloat cancelFontSize = ScaleFromIPhone5To7Plus(LKValues.smallFontSize, LKValues.mediumFontSize);
     NSString *arrowHead = (CurrentAppContext().isRTL ? @"\uf105" : @"\uf104");
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : LKColors.destructive,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -655,7 +645,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : LKColors.destructive,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -663,15 +653,15 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:NSLocalizedString(@"VOICE_MESSAGE_CANCEL_INSTRUCTIONS",
                                                       @"Indicates how to cancel a voice message.")
                                        attributes:@{
-                                           NSFontAttributeName : [UIFont ows_mediumFontWithSize:cancelFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSFontAttributeName : [UIFont systemFontOfSize:cancelFontSize],
+                                           NSForegroundColorAttributeName : LKColors.destructive,
                                        }]];
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : LKColors.destructive,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -679,7 +669,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : LKColors.destructive,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     UILabel *cancelLabel = [UILabel new];
@@ -690,7 +680,7 @@ const CGFloat kMaxTextViewHeight = 98;
     const CGFloat kRedCircleSize = 100.f;
     UIView *redCircleView = [UIView new];
     self.voiceMemoRedRecordingCircle = redCircleView;
-    redCircleView.backgroundColor = [UIColor ows_destructiveRedColor];
+    redCircleView.backgroundColor = LKColors.destructive;
     redCircleView.layer.cornerRadius = kRedCircleSize * 0.5f;
     [redCircleView autoSetDimension:ALDimensionWidth toSize:kRedCircleSize];
     [redCircleView autoSetDimension:ALDimensionHeight toSize:kRedCircleSize];
@@ -698,16 +688,16 @@ const CGFloat kMaxTextViewHeight = 98;
     [redCircleView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
     [redCircleView autoAlignAxis:ALAxisVertical toSameAxisOfView:self.voiceMemoButton];
 
-    UIImage *whiteIcon = [UIImage imageNamed:@"voice-message-large-white"];
+    UIImage *whiteIcon = [UIImage imageNamed:@"Microphone"];
     OWSAssertDebug(whiteIcon);
     UIImageView *whiteIconView = [[UIImageView alloc] initWithImage:whiteIcon];
     [redCircleView addSubview:whiteIconView];
     [whiteIconView autoCenterInSuperview];
 
     [imageView autoVCenterInSuperview];
-    [imageView autoPinLeadingToSuperviewMarginWithInset:10.f];
+    [imageView autoPinLeadingToSuperviewMarginWithInset:LKValues.smallSpacing];
     [self.recordingLabel autoVCenterInSuperview];
-    [self.recordingLabel autoPinLeadingToTrailingEdgeOfView:imageView offset:5.f];
+    [self.recordingLabel autoPinLeadingToTrailingEdgeOfView:imageView offset:4.f];
     [cancelLabel autoVCenterInSuperview];
     [cancelLabel autoHCenterInSuperview];
     [self.voiceMemoUI layoutIfNeeded];
@@ -813,10 +803,11 @@ const CGFloat kMaxTextViewHeight = 98;
         [weakSelf.inputToolbarDelegate voiceMemoGestureDidComplete];
     }];
     [sendVoiceMemoButton setTitle:MessageStrings.sendButton forState:UIControlStateNormal];
-    [sendVoiceMemoButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
+    [sendVoiceMemoButton setTitleColor:LKColors.text forState:UIControlStateNormal];
+    sendVoiceMemoButton.titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.mediumFontSize];
     sendVoiceMemoButton.alpha = 0;
     [self.voiceMemoContentView addSubview:sendVoiceMemoButton];
-    [sendVoiceMemoButton autoPinEdgeToSuperviewMargin:ALEdgeTrailing withInset:10.f];
+    [sendVoiceMemoButton autoPinEdgeToSuperviewMargin:ALEdgeTrailing withInset:LKValues.smallSpacing];
     [sendVoiceMemoButton autoVCenterInSuperview];
     [sendVoiceMemoButton setCompressionResistanceHigh];
     [sendVoiceMemoButton setContentHuggingHigh];
@@ -826,7 +817,8 @@ const CGFloat kMaxTextViewHeight = 98;
         [weakSelf.inputToolbarDelegate voiceMemoGestureDidCancel];
     }];
     [cancelButton setTitle:CommonStrings.cancelButton forState:UIControlStateNormal];
-    [cancelButton setTitleColor:UIColor.ows_destructiveRedColor forState:UIControlStateNormal];
+    [cancelButton setTitleColor:LKColors.destructive forState:UIControlStateNormal];
+    cancelButton.titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.mediumFontSize];
     cancelButton.alpha = 0;
     cancelButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, cancelButton);
@@ -1107,15 +1099,16 @@ const CGFloat kMaxTextViewHeight = 98;
         [self.mentionCandidateSelectionView setPublicChatChannel:publicChat.channel];
     }
     self.mentionCandidateSelectionView.mentionCandidates = mentionCandidates;
-    self.mentionCandidateSelectionViewSizeConstraint.constant = 6 + MIN(mentionCandidates.count, 4) * 52;
+    self.mentionCandidateSelectionViewSizeConstraint.constant = MIN(mentionCandidates.count, 4) * 42;
+    self.mentionCandidateSelectionView.alpha = 1;
     [self setNeedsLayout];
     [self layoutIfNeeded];
-    [self.mentionCandidateSelectionView.tableView setContentOffset:CGPointMake(0, -6)]; // TODO: Workaround for content offset bug
 }
 
 - (void)hideMentionCandidateSelectionView
 {
     self.mentionCandidateSelectionViewSizeConstraint.constant = 0;
+    self.mentionCandidateSelectionView.alpha = 0;
     [self setNeedsLayout];
     [self layoutIfNeeded];
     [self.mentionCandidateSelectionView.tableView setContentOffset:CGPointMake(0, 0)];

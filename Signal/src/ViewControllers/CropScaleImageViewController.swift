@@ -146,10 +146,10 @@ import SignalMessaging
 
     private func createViews() {
 
-        view.backgroundColor = UIColor.black
+        view.backgroundColor = .black
 
         let contentView = UIView()
-        contentView.backgroundColor = UIColor.black
+        contentView.backgroundColor = .black
         self.view.addSubview(contentView)
         contentView.autoPinEdgesToSuperviewEdges()
 
@@ -186,14 +186,14 @@ import SignalMessaging
             layer.path = path.cgPath
             layer.fillRule = .evenOdd
             layer.fillColor = UIColor.black.cgColor
-            layer.opacity = 0.7
+            layer.opacity = 0.75
         }
         maskingView.autoPinEdgesToSuperviewEdges()
 
         let titleLabel = UILabel()
-        titleLabel.textColor = UIColor.white
+        titleLabel.textColor = Colors.text
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(16))
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",
                                             comment: "Title for the 'crop/scale image' dialog.")
         contentView.addSubview(titleLabel)
@@ -439,6 +439,7 @@ import SignalMessaging
 
         let cancelButton = createButton(title: CommonStrings.cancelButton,
                                         action: #selector(cancelPressed))
+        cancelButton.titleLabel!.font = .systemFont(ofSize: 18) // Match iOS UI
         buttonRow.addSubview(cancelButton)
         cancelButton.autoPinEdge(toSuperviewEdge: .top)
         cancelButton.autoPinEdge(toSuperviewEdge: .bottom)
@@ -446,6 +447,7 @@ import SignalMessaging
 
         let doneButton = createButton(title: CommonStrings.doneButton,
                                       action: #selector(donePressed))
+        doneButton.titleLabel!.font = .systemFont(ofSize: 18) // Match iOS UI
         buttonRow.addSubview(doneButton)
         doneButton.autoPinEdge(toSuperviewEdge: .top)
         doneButton.autoPinEdge(toSuperviewEdge: .bottom)
