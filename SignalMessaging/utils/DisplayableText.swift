@@ -1,22 +1,49 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc public class DisplayableText: NSObject {
 
-    @objc public let fullText: String
-    @objc public let fullTextNaturalAlignment: NSTextAlignment
+    private struct Content {
+        let text: String
+        let naturalAlignment: NSTextAlignment
+    }
 
-    @objc public let displayText: String
-    @objc public let displayTextNaturalAlignment: NSTextAlignment
+    private let fullContent: Content
+    private let truncatedContent: Content?
 
-    @objc public let isTextTruncated: Bool
+    @objc
+    public var fullText: String {
+        return fullContent.text
+    }
+
+    @objc
+    public var fullTextNaturalAlignment: NSTextAlignment {
+        return fullContent.naturalAlignment
+    }
+
+    @objc
+    public var displayText: String {
+        return truncatedContent?.text ?? fullContent.text
+    }
+
+    @objc
+    public var displayTextNaturalAlignment: NSTextAlignment {
+        return truncatedContent?.naturalAlignment ?? fullContent.naturalAlignment
+    }
+
+    @objc
+    public var isTextTruncated: Bool {
+        return truncatedContent != nil
+    }
+
     @objc public let jumbomojiCount: UInt
 
     @objc
     static let kMaxJumbomojiCount: UInt = 5
+
     // This value is a bit arbitrary since we don't need to be 100% correct about 
     // rendering "Jumbomoji".  It allows us to place an upper bound on worst-case
     // performacne.
@@ -25,14 +52,10 @@ import Foundation
 
     // MARK: Initializers
 
-    @objc
-    public init(fullText: String, displayText: String, isTextTruncated: Bool) {
-        self.fullText = fullText
-        self.fullTextNaturalAlignment = fullText.naturalTextAlignment
-        self.displayText = displayText
-        self.displayTextNaturalAlignment = displayText.naturalTextAlignment
-        self.isTextTruncated = isTextTruncated
-        self.jumbomojiCount = DisplayableText.jumbomojiCount(in: fullText)
+    private init(fullContent: Content, truncatedContent: Content?) {
+        self.fullContent = fullContent
+        self.truncatedContent = truncatedContent
+        self.jumbomojiCount = DisplayableText.jumbomojiCount(in: fullContent.text)
     }
 
     // MARK: Emoji
@@ -126,21 +149,23 @@ import Foundation
 
     @objc
     public class func displayableText(_ rawText: String) -> DisplayableText {
+        let fullText = rawText.filterStringForDisplay()
+        let fullContent = Content(text: fullText, naturalAlignment: fullText.naturalTextAlignment)
+
         // Only show up to N characters of text.
         let kMaxTextDisplayLength = 512
-        let fullText = rawText.filterStringForDisplay()
-        var isTextTruncated = false
-        var displayText = fullText
-        if displayText.count > kMaxTextDisplayLength {
+        let truncatedContent: Content?
+        if fullText.count > kMaxTextDisplayLength {
             // Trim whitespace before _AND_ after slicing the snipper from the string.
-            let snippet = String(displayText.prefix(kMaxTextDisplayLength)).ows_stripped()
-            displayText = String(format: NSLocalizedString("OVERSIZE_TEXT_DISPLAY_FORMAT", comment:
+            let snippet = String(fullText.prefix(kMaxTextDisplayLength)).ows_stripped()
+            let truncatedText = String(format: NSLocalizedString("OVERSIZE_TEXT_DISPLAY_FORMAT", comment:
                 "A display format for oversize text messages."),
                 snippet)
-            isTextTruncated = true
+            truncatedContent = Content(text: truncatedText, naturalAlignment: truncatedText.naturalTextAlignment)
+        } else {
+            truncatedContent = nil
         }
 
-        let displayableText = DisplayableText(fullText: fullText, displayText: displayText, isTextTruncated: isTextTruncated)
-        return displayableText
+        return DisplayableText(fullContent: fullContent, truncatedContent: truncatedContent)
     }
 }
