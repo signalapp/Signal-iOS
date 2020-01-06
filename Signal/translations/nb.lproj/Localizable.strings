@@ -129,7 +129,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Tekst";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Vedlegg kunne ikke eksporteres.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Kunne ikke lagre";
@@ -183,7 +183,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Vedlegget er tomt.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "Velg Media du vil sende";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Kamera";
@@ -351,7 +351,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokkerte brukere kan ikke ringe eller sende deg meldinger.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "Bla gjennom";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Fortsett";
@@ -504,10 +504,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Sammenlign med utklippstavlen";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "Velg eller søk etter en Signal-bruker å starte en samtale med.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "Skriv";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontakter";
@@ -681,7 +681,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Legg til eksisterende kontakt";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Legg til i systemkontakter";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Blokker denne gruppen";
@@ -1048,10 +1048,10 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sikkerhetsnummer endret.";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "Enheten din er ikke lenger koblet. Vennligst lenke på nytt for å sende flere meldinger.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "Enheten din er ikke lenger registrert. Registrer deg på nytt for å sende flere meldinger.";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "Din versjon av Signal er utløpt. Vennligst oppdater for å sende ytterligere meldinger.";
@@ -1093,10 +1093,10 @@
 "FINISH_GROUP_CREATION_LABEL" = "Fullfør oppretting av gruppe";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "Videresend kontakt";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "Videresend melding";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Du har ingen mediefiler i denne samtalen.";
@@ -1133,6 +1133,12 @@
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Skriv inn søket ditt";
+
+/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+
+/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimaliserer database";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar endret.";
@@ -1255,7 +1261,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Tapt anrop fordi sikkerhetsnummeret for kontakten har blitt endret.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Du kan sende eller motta synkroniserte meldinger fra telefonen eller iPad. ↵For sikkerhets skyld blir ikke samtaleloggen overført til nye koblede enheter.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ er på Signal! ";
@@ -1294,22 +1300,22 @@
 "KEEP_MESSAGES_FOREVER" = "Meldinger forsvinner ikke.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "Gå til alle medier";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Arkiver samtalen";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "Vis vedlegg";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "Gå til samtaleinfo";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "Fokus inntastingsfelt";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "Gå til GIF-søk";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "Ny gruppe";
@@ -1318,10 +1324,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Ny melding";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Gå til Neste samtale";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Gå til forrige samtale";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Søk";
@@ -1330,10 +1336,10 @@
 "KEY_COMMAND_SETTINGS" = "Innstillinger";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "Vis klistremerker";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "Uarkiver samtale";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Forlat";
@@ -1378,7 +1384,7 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Gruppemedlemmer";
 
 /* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Du)";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Søk etter navn eller adresse";
@@ -1426,13 +1432,13 @@
 "MESSAGE_ACTION_DETAILS" = "Mer informasjon";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Videresend denne meldingen";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Svar på denne meldingen";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Del media";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Melding";
@@ -1624,7 +1630,7 @@
 "NETWORK_STATUS_CONNECTING" = "Kobler til";
 
 /* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
+"NETWORK_STATUS_DELINKED" = "Ikke lenger koblet";
 
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "Ikke registrert lengre";
@@ -1642,13 +1648,13 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Velg gruppefoto";
 
 /* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+"NEW_GROUP_BUTTON_LABEL" = "Opprett en ny gruppe";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Opprett";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "Ny gruppe kunne ikke opprettes.";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Ny gruppe";
@@ -1702,7 +1708,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Det kan hende du mottok meldinger mens din %@ restartet.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "Handlinger inkluderer \"Merk som lest\", \"Svar\" og \"Ring tilbake.\"";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Ingen navn eller innhold";
@@ -1714,7 +1720,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Lyder";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Navn, Innhold, og handlinger";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Kun navn";
@@ -1726,7 +1732,7 @@
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Feil PIN-kode. Forsøk oppbrukt.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Dette telefonnummeret er låst i Signal med registreringslås. Skriv inn registrerings-PIN.";
@@ -1741,10 +1747,10 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Feil PIN-kode";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Feil PIN-kode. %lu forsøk igjen.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Feil PIN-kode. 1 forsøk igjen.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Registreringslås";
@@ -1762,10 +1768,10 @@
 "ONBOARDING_CAPTCHA_TITLE" = "Legg til til menneskelighet i dine meldinger";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Registrer iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Koble til iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
@@ -1777,22 +1783,22 @@
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrer denne iPaden";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Koble denne iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registrering av denne iPad vil deaktivere Signal på andre enheter som for øyeblikket er registrert med samme telefonnummer.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Det anbefales ikke å koble din iPhone og vil begrense kjernefunksjonaliteten.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Slå på tillatelser";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Varsler lar deg se når meldinger kommer og mottar oppdateringer om ny samtaleaktivitet.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
+"ONBOARDING_PERMISSIONS_TITLE" = "Få meldingen";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Skriv inn telefonnummeret ditt for å komme i gang";
@@ -1882,7 +1888,7 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Feil ved håndtering av innkommende melding";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Media Message";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Mediemelding";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
@@ -1966,7 +1972,7 @@
 "PIN_CREATION_EXPLANATION" = "PIN-koden din gir et ekstra lag med sikkerhet og sikkerhetskopierer kontoen din.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
+"PIN_CREATION_MISMATCH_ERROR" = "PIN-koder stemmer ikke overens. Prøv igjen.";
 
 /* The placeholder when confirming a pin in the 'pin creation' view. */
 "PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Skriv inn PIN-koden på nytt";
@@ -2146,7 +2152,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* notification body */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagerte %@ på meldingen din";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Jeg har glemt min PIN.";
@@ -2326,37 +2332,37 @@
 "SEARCH_SECTION_MESSAGES" = "Meldinger";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Kan ikke hente lenkkode";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Den andre enheten din kjører en gammel versjon av Signal som ikke støtter skanning av iPad QR-koder. Installer den siste utgaven av Signal og prøv igjen.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Oppdater skannings enhet";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Kunne ikke koble enheten din";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Velg et navn for denne enheten";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Du vil se dette navnet under \"Koblede enheter.\"";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Velg et navn";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Fullfør kobling";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Start Signal på telefonen din for å koble denne iPad til kontoen din";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Jeg har ikke Signal på telefonen...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Gå til App Store på telefonen, installer Signal, fullfør registreringsprosessen, og så kan du koble iPad til samme konto.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installer Signal på din telefon";
@@ -2365,10 +2371,10 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Få hjelp til å koble iPad-en din her";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code with your phone";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Skann QR-koden med telefonen din";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Sikker sesjon ble tilbakestilt.";
@@ -2449,7 +2455,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avansert";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Feil logger";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -2623,7 +2629,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Se og del når meldinger har blitt lest. Denne innstillingen er valgfri og gjelder for alle samtaler.";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Re-link";
+"SETTINGS_RELINK_BUTTON" = "Koble på nytt";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "Registrer på nytt";
@@ -2773,7 +2779,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Klistremerker du mottok";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Noen klistremerke pakker kunne ikke lastes";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installerte klistremerker";
@@ -2800,7 +2806,7 @@
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Klistremerke pakke";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Klistremerkepakken kunne ikke lastes";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Avinstaller";
@@ -2821,7 +2827,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Medlem av %@, %@, og %lu tilleggsgrupper";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan legge til notater for deg selv i denne samtalen. Hvis kontoen din har koblede enheter, blir nye notater synkronisert.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Medlem av %@";
@@ -3007,7 +3013,7 @@
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Brukernavn kan ikke begynne med et nummer.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "Brukernavn";
@@ -3022,7 +3028,7 @@
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Oppdatering av brukernavn mislyktes.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Enhetsnavnet kan ikke være tomt";
 
 /* error label near a field */
 "VALIDATION_ERROR_TOO_LONG" = "Enhetsnavnet er for langt";
@@ -3047,6 +3053,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Gjennomgå sikkerhetsnumre";
+
+/* Tooltip highlighting the view once messages button. */
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Skyv for å avbryte";

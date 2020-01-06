@@ -78,13 +78,13 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Chyba";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Nepodařilo se načíst databázi";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Prosím, aktualizujte na nejnovější verzi Signalu.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Neznámá verze databáze.";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Zadejte své jméno";
@@ -129,10 +129,10 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Titulek";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Přílohu se nepodařilo exportovat.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Failed to Save";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Nepodařilo se uložit";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Typ souboru: %@";
@@ -183,7 +183,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Příloha je prázdná.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "Zvolte přílohu k odeslání";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Kamera";
@@ -201,10 +201,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Poloha";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Pokud odtud chcete odesílat fotky, povolte přístup v nastavení.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Až pořídíte fotky, poslední budete moct odsud odeslat.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Příloha";
@@ -222,7 +222,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Hlasová zpráva";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audio Message";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Zvuková zpráva";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Nahlas";
@@ -351,7 +351,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Zablokovaní uživatelé vám nebudou moci zavolat nebo posílat zprávy.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "Procházet";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Pokračovat";
@@ -456,7 +456,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Uživatel Signalu";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
+"CAMERA_BUTTON_HINT" = "Vyfoťte fotku a odešlete ji";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Kamera";
@@ -504,10 +504,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Porovnat se schránkou";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "Zvolte nebo vyhledejte uživatele Signalu, se kterým chcete začít konverzaci";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "Sestavit";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontakty";
@@ -534,7 +534,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Opravdu chcete odstranit veškerá přidružená data?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Nebudete dále moci odesílat nebo přijímat zprávy v této skupině.";
@@ -651,7 +651,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Smazat konverzaci?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Nemůžete vybrat víc než %@ konverzací.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Skupiny";
@@ -660,10 +660,10 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Poslední chaty";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Lidé";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "Zvolte příjemce";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Žádné shody";
@@ -681,7 +681,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Přidat ke kontaktu";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Přidat k systémovým kontaktům";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Zablokovat tuto skupinu";
@@ -738,7 +738,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Zrušit ztlumení";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Tento uživatel je ve vašich kontaktech";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Tato skupina může vidět váš profil.";
@@ -946,10 +946,10 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Zadaný PIN nesouhlasí.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN nemůže mít víc než 20 číslic.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN must be at least 4 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN musí mít aspoň 4 číslice.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Zadejte PIN zámku registrace. Při příští registraci pod tímto telefonním číslem budete na PIN dotázán(a).";
@@ -976,7 +976,7 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Nelze přistoupit ke kontaktům.";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "Nepodařilo se uložit video.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Nepodařilo se odeslat zprávu.";
@@ -1015,7 +1015,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt není uživatelem Signalu.";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Attachment download failed.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Stažení přílohy selhalo.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Chyba přílohy: Požádejte odesílatele, aby aktualizoval(a) Signal a odeslal(a) zprávu znovu.";
@@ -1063,7 +1063,7 @@
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Nyní ne";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Let's Go";
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Začínáme";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Your version of Signal has expired! Messages will no longer send successfully. Tap to update to the most recent version.";
@@ -1093,10 +1093,10 @@
 "FINISH_GROUP_CREATION_LABEL" = "Dokončit tvorbu skupiny";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "Přeposlat kontakt";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "Přeposlat zprávu";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "V konverzaci nejsou žádná média.";
@@ -1133,6 +1133,12 @@
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Zadejte vyhledávání";
+
+/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+
+/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimalizace databáze";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar změněn.";
@@ -1201,7 +1207,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Svoji první konverzaci můžete zahájit zde";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Požadavek na zprávu";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nebyly nalezeny žádné výsledky pro „%@“";
@@ -1258,7 +1264,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ je na Signalu";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Nálepky";
@@ -1294,22 +1300,22 @@
 "KEEP_MESSAGES_FOREVER" = "Zprávy nezmizí.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "Přejít na všechna média";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Archivovat konverzaci";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "Zobrazit přílohy";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "Přejít na informaci o konverzaci";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "Zaměřit vstupní pole";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "Přejít na hledání GIFů";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "Nová skupina";
@@ -1318,10 +1324,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Nová zpráva";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Přejít na následující konverzaci";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Přejít na předchozí konverzaci";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Hledat";
@@ -1330,10 +1336,10 @@
 "KEY_COMMAND_SETTINGS" = "Nastavení";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "Zobrazit samolepky";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "Zrušit archivaci konverzace";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Opustit";
@@ -1378,13 +1384,13 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Členové skupiny";
 
 /* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Vy)";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Hledejte podle jména nebo adresy";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "Zvolte umístění";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logování";
@@ -1426,13 +1432,13 @@
 "MESSAGE_ACTION_DETAILS" = "Více informací";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Přeposlat tuto zprávu";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Odpovědět na tuto zprávu";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Sdílet média";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Zpráva";
@@ -1495,19 +1501,19 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Smazat";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Abyste mohli pokračovat v konverzaci s %@, musíte nasdílet svůj profil.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Abyste mohli pokračovat konverzaci v %@, musíte nasdílet svůj profil.";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Dozvědět se více";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Chcete, aby vám %@ mohl(a) psát? Dokud nebudete souhlasit, nebude vědět o tom, že jste jejich zprávy viděl(a).";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Chcete se připojit ke skupině %@? Dokud tak neučiníte, nedozví se, že jste viděl(a) jejich zprávy.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Sdílet profil";
@@ -1591,7 +1597,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Tento souhlas můžete udělit v nastavení iOS.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Tato funkce vyžaduje přístup k vaší poloze.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Tento souhlas můžete udělit v nastavení iOS.";
@@ -1624,7 +1630,7 @@
 "NETWORK_STATUS_CONNECTING" = "Připojuje se";
 
 /* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
+"NETWORK_STATUS_DELINKED" = "Již nepřidruženo";
 
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "Již není registrováno";
@@ -1642,13 +1648,13 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Nastavit fotku skupiny";
 
 /* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+"NEW_GROUP_BUTTON_LABEL" = "Vytvořit novou skupinu";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Vytvořit";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "Nebylo možné vytvořit novou skupinu.";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nová skupina";
@@ -1690,10 +1696,10 @@
 "NO_SELECTED_CONVERSATION_TITLE" = "Vítejte v Signalu";
 
 /* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "New message to:";
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Nová zpráva pro:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Nepodařilo se najít uživatele?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Poznámka sobě";
@@ -1702,7 +1708,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Je možné, že byly přijaty nové zprávy zatímco váš %@ byl restartován.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "Akce zahrnují “Označit jako přečtené,” “Odpovědět,” a “Volat zpět.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Beze jména i obsahu";
@@ -1714,7 +1720,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Zvuky";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Jméno, obsah a akce";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Pouze jméno";
@@ -1726,7 +1732,7 @@
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Nesprávný PIN. Pokusy vyčerpány.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Toto telefonní číslo má registraci zabezpečenou PINnem. Prosím vložte PIN zámku registrace.";
@@ -1735,16 +1741,16 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "Váš PIN zámku registrace se liší od automatizovaného ověřovacího kódu, který byl zaslán na váš telefon v průběhu předchozího kroku.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Zapomněl(a) jste váš PIN?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
+"ONBOARDING_2FA_INVALID_PIN" = "Nesprávný PIN";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Nesprávný PIN. Zbývá %lu pokusů.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Nesprávný PIN. Zbývá 1 pokus.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Zámek registrace";
@@ -1753,19 +1759,19 @@
 "ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Zjistěte víc o uzamčených účtech";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Účet uzamčen";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Dodejte vašim zprávám trochu lidskosti";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Zaregistrovat iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Přidružit iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
@@ -1777,7 +1783,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrovat tento iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Přidružit tento iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
@@ -1789,10 +1795,10 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Povolit oprávnění";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Upozornění vám umožní vidět, kdy zprávy dorazí a také vám umožní přijímat aktualizace o nové aktivitě v konverzacích.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
+"ONBOARDING_PERMISSIONS_TITLE" = "Získat zprávu";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Začněte zadáním telefoního čísla";
@@ -1801,10 +1807,10 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Neplatné číslo";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "Zadejte PIN, který jste vytvořili pro váš účet. Je to jiný kód, než ten v ověřovací SMS.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "Zadejte váš PIN";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Smluvní podmínky a zásady ochrany osobních údajů";
@@ -1834,7 +1840,7 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Žádný kód?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend Code";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Znovu odeslat kód";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Místo toho mi zavolejte";
@@ -1873,7 +1879,7 @@
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@...";
 
 /* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "PDF could not be displayed";
+"PDF_VIEW_COULD_NOT_RENDER" = "Nepodařilo se zobrazit PDF";
 
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
@@ -1954,25 +1960,25 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album beze jména";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
+"PIN_CREATION_BOLD_EXPLANATION" = "Váš PIN nejde žádným způsobem obnovit, takže si ho zapamatujte.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "Změnit váš PIN";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Potvrďte váš nový PIN.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "Váš PIN přidává dodatečnou vrstvu zabezpečení a zálohu vašeho účtu.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
+"PIN_CREATION_MISMATCH_ERROR" = "PINy se neshodují. Zkuste to znovu.";
 
 /* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Re-enter PIN";
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Zadejte PIN znovu";
 
 /* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN must be 4+ digits";
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN musí mít aspoň 4 číslice";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
@@ -1981,31 +1987,31 @@
 "PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Vytvořit nový PIN";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "Vytvořte váš PIN";
 
 /* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN nemůže být delší než 20 číslic.";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN musí být dlouhý aspoň 4 číslice.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "Zapomněl(a) jste váš PIN?";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
+"PIN_REMINDER_MISMATCH_ERROR" = "Neplatný PIN, zkuste to znovu.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "Zadejte váš PIN k Signalu";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN musí být aspoň 4 číslice.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spustit média";
@@ -2068,7 +2074,7 @@
 "PROFILE_VIEW_CLEAR_AVATAR" = "Smazat obrázek";
 
 /* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "Create Username";
+"PROFILE_VIEW_CREATE_USERNAME" = "Vytvořit uživatelské jméno";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
 "PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Vaše jménu v profilu je příliš dlouhé.";
@@ -2146,7 +2152,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* notification body */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Na vaši zprávu zareagoval(a) %@";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Zapoměl jsem PIN.";
@@ -2155,7 +2161,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Zapomněl(a) jste váš PIN?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
@@ -2164,7 +2170,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Incorrect PIN";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Nesprávný PIN";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Potvrdit";
@@ -2308,7 +2314,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Odemknout Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Name, username, or number";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Jméno, uživatelské jméno, nebo číslo";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Hledat podle telefoního čísla";
@@ -2326,7 +2332,7 @@
 "SEARCH_SECTION_MESSAGES" = "Zprávy";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Nepodařilo se získat sdružovací kód";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
@@ -2338,22 +2344,22 @@
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Zvolte si jméno pro toto zařízení";
 
 /* label text */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Zvolte jméno";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Dokončit sdružování";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Na mém telefonu nemám Signal...";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
@@ -2449,7 +2455,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Rozšířené";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Protokoly chyb";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Motiv";
@@ -2584,7 +2590,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Obsah notifikace";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joined Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt se připojil k Signalu";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Události";
@@ -2596,7 +2602,7 @@
 "SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
 /* Label for the 'pins' item of the privacy settings. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "Změnit váš PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2623,7 +2629,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Zobrazte a sdílejte, kdy byly zprávy přečteny. Toto nastavení je volitelné a platí pro všechny konverzace.";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Re-link";
+"SETTINGS_RELINK_BUTTON" = "Znovu sdružit";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "Znovu se zaregistrovat";
@@ -2755,7 +2761,7 @@
 "SOUNDS_NONE" = "Žádné";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+"STICKER_MESSAGE_PREVIEW" = "Zpráva se samolepkou";
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Balíček nálepek nainstalován";
@@ -2773,7 +2779,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Přijaté nálepky";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Některé sady samolepek se nepovedlo načíst";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Instalované nálepky";
@@ -2794,13 +2800,13 @@
 "STICKERS_PACK_DEFAULT_TITLE" = "Balík nálepek";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Sdílet sadu samolepek";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Balík nálepek";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sadu samolepek se nepodařilo načíst";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Odinstalovat";
@@ -2815,22 +2821,22 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Ověřit bezpečnostní číslo";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu members";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu členů";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Člen %@, %@, a %lu dalších skupin";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Člen %@";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Člen %@, %@ a %@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Člen %@ a %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dnů";
@@ -2902,7 +2908,7 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Aktualizovat Signal nyní";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Updated to the latest version of Signal. You can now receive this message type on your device.";
@@ -2950,10 +2956,10 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nepodporováno";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Vytvořit váš PIN";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Zjistěte víc o PINech";
 
 /* Body text for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock now does more. With PINs you can take your contacts with you when you switch devices.";
@@ -2971,7 +2977,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
 
 /* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Why use words when you can use stickers? Tap this icon on your keyboard:";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Proč užívat slova, když můžete poslat nálepku? Ťukněte na tuto ikonku na svojí klávesnici:";
 
 /* Header for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Představujeme nálepky";
@@ -2998,34 +3004,34 @@
 "USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_NOT_FOUND_TITLE" = "Uživatel nenalezen";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Enter a username";
+"USERNAME_PLACEHOLDER" = "Vložte uživatelské jméno";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Uživatelská jména nemohou začínat číslem.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "Uživatelské jméno";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
+"USERNAME_TOO_SHORT_ERROR" = "Uživatelská jména musí mít alespoň 4 znaky.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ is taken.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ je již použito.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Username update failed.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Aktualizace uživatelského jména selhala.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Jméno zařízení nemůže být prázdné";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "Jméno zařízení je příliš dlouhé";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Označil(a) jste %@ jako neověřený.";
@@ -3047,6 +3053,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Ověření bezpečnostních čísel";
+
+/* Tooltip highlighting the view once messages button. */
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Pro zrušení přejeďte";

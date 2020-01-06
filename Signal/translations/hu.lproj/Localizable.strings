@@ -42,19 +42,19 @@
 "ACTION_VIDEO_CALL" = "Videóhívás";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Meg szeretnéd osztani a profilod ezzel a csoporttal?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Szeretnéd megosztani a profilod ezzel a csoporttal?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Hozzá szeretnéd adni ezt a felhasználót a kontaktjaidhoz?";
+"ADD_TO_CONTACTS_OFFER" = "Szeretnéd hozzáadni ezt a felhasználót a kontaktjaidhoz?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Meg szeretnéd osztani a profilod ezzel a felhasználóval?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Szeretnéd megosztani a profilod ezzel a felhasználóval?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Rendben";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Elvet";
+"ALERT_DISCARD_BUTTON" = "Elvetés";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Nincs mentés";
@@ -66,31 +66,31 @@
 "ALERT_SAVE" = "Mentés";
 
 /* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "Válaszol";
+"ANSWER_CALL_BUTTON_TITLE" = "Válasz";
 
 /* notification body */
 "APN_Message" = "Új üzenet!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal indítási hiba. Kérlek küldj egy debug naplófájlt a support@signal.org címre, hogy megvizsgálhassuk, mi történt.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Hiba";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Adatbázis betöltési hiba";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Kérlek frissíts a legújabb Signal verzióra.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Ismeretlen adatbázis verzió.";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Név megadása";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Nem most";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Később";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "A %@ verzió elérhető az App Store-ban.";
@@ -120,16 +120,16 @@
 "ATTACHMENT" = "Melléklet";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Felirat korlátot elérte.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Elérted a felirat karakter korlátot.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Egy felirat hozzáadása...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Felirat hozzáadása...";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Felirat";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Nem sikerült a csatolmány exportálása.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Mentés sikertelen";
@@ -183,7 +183,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "A csatolmány üres.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "Küldendő média kiválasztása";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Kamera";
@@ -201,7 +201,7 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Hely";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "A fotóküldés használatához engedélyezned kell a képeidhez való hozzáférést az iOS Beállítások alatt.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
@@ -234,10 +234,10 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Biztonsági mentés exportálása sikertelen.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Érvénytelen szerver válasz.";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Biztonsági mentés karbantartása";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Régi biztonsági mentés eltávolítása";
 
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "Biztonsági mentés előkészítése";
@@ -300,7 +300,7 @@
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ letiltása?";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Tiltott csoportok";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Letiltott csoportok";
 
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Letiltott felhasználók";
@@ -312,7 +312,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "A csoport tagjai újra hozzáadhatnak a csoporthoz a későbbiekben.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Feloldod ezt a csoportot?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Feloldod ezt a csoport tiltást?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ tiltásának feloldása?";
@@ -339,7 +339,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ letiltása feloldva.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "A csoport tagjai újra hozzáadhatnak a csoporthoz.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Letiltás";
@@ -351,7 +351,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "A letiltott felhasználók nem fognak tudni sem üzenetet küldeni Neked, sem pedig felhívni.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "Tallózás";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Folytatás";
@@ -363,7 +363,7 @@
 "BUTTON_NEXT" = "Tovább";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Oké";
+"BUTTON_OKAY" = "OK";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Kiválasztás";
@@ -375,7 +375,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Újrahívás";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "A hanghívások és hangüzenetekek küldéséhez az iOS beállításokban mikrofon hozzáférés adása szükséges a Signal alkalmazás számára.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Mikrofon hozzáférés szükséges";
@@ -393,7 +393,7 @@
 "CALL_MISSED_NOTIFICATION_BODY" = "Nem fogadott hívás.";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Sikertelen hívás";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -417,7 +417,7 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Bejövő hívás elutasítása";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tap here to turn on your video";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Koppintsd ide a videókép bekapcsolásához";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Hívás befejezése";
@@ -426,19 +426,19 @@
 "CALL_VIEW_MUTE_LABEL" = "Elnémítás";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can enable iOS Call Integration in your Signal privacy settings to answer incoming calls from your lock screen.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Engedélyezheted az iOS hivás integrációt a Signal Adatvédelmi beállításai alatt. Ezzel a készülék zárolási képernyőjéről is fogadhatod a hívásokat.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can enable iOS Call Integration in your Signal privacy settings to see the name and phone number for incoming calls.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Engedélyezheted az iOS hivás integrációt a Signal Adatvédelmi beállításai alatt. Bekapcsolásával láthatod bejövő híváskor a hívó fél nevét és telefonszámát.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Nem most";
 
 /* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Magánélettel kapcsolatos beállítások";
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Adatvédelmi beállítások";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Kamera váltás";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Váltás hanghívásra";
@@ -447,7 +447,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Váltás videóhívásra";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "Vissza a híváshoz";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Visszahívás";
@@ -471,10 +471,10 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Ország kiválasztása";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Ne legyen mentés visszatöltés";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Mentett állomány keresése visszatöltéshez sikertelen.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Hiba";
@@ -483,16 +483,16 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Visszaállítás";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Nem sikerült kapcsolódni az iCloud-hoz. Menj a Beállításokba és lépj be az iCloud-ba, biztonsági mentés készítéséhez";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Nem sikerült kapcsolódni az iCloud-hoz. iOS Beállítások alatt jelentkezz be (újra) az iCloud-ba. Ez előfeltétele a biztonsági mentés készítésének.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Az iCloud nincs beállítva. Menj a Beállításokba és lépj be az iCloud-ba, biztonsági mentés készítéséhez.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Nincs aktív iCloud bejelentkezés. iOS Beállítások alatt jelentkezz be az iCloud-ba. Ez előfeltétele a biztonsági mentés készítésének.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "A Signal nem képes hozzáférni az iCloud azonosítódhoz. iOS Beállítások alatt kérlek adj jogosultságot a Signal számára, hogy hozzáférhessen az iCloud azonosítódhoz.\nEz előfeltétele a biztonsági mentés készítésének.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Válassz színt a kimenő üzenetek számára.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Csak te láthatod a választott színt.";
@@ -504,10 +504,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Összehasonlítás vágólappal";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "Válassz egyet a Signal kontaktok közül akivel beszélgetést kezdeményeznél.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "Új üzenet írása";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontaktok";
@@ -522,16 +522,16 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Felhasználónév keresés";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Engedélyezd a kontaktokhoz való hozzáférést, hogy lásd kik Signal felhasználók közülük";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Engedélyezd a kontaktokhoz való hozzáférést az iOS Beállításokban, hogy lásd kik Signal felhasználók közülük.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ezzel minden üzeneted törlődik és megszűnik a regisztrált Signal fiókod is. Az alkalmazás ezt követően bezáródik.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Biztosan törölni akarod a fiókod?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ezzel az alkalmazás alaphelyzetbe áll és minden üzeneted törlődik. A későbbiekben bármikor újrapárosíthatod a készüléked, de a törölt üzenetek nem kerülnek vissza. Az alkalmazás ezt követően bezáródik.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Biztosan törölni akarsz minden adatot?";
@@ -546,10 +546,10 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Új Készülék Társítása";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@valószínűleg újratelepítette a Signalt, vagy készüléket cserélt. A maximális bizonyosság érdekében ellenőrízhetitek egymás biztonsági számát személyesen.";
 
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Safety number with %@ has changed";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "%@biztonsági azonosítója megváltozott";
 
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Megerősítés";
@@ -579,7 +579,7 @@
 "CONTACT_FIELD_ADDRESS_COUNTRY" = "Ország";
 
 /* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Neighborhood";
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Környék";
 
 /* Label for the 'pobox' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_POBOX" = "Postafiók";
@@ -645,13 +645,13 @@
 "CONTACT_WITHOUT_NAME" = "Névtelen kontakt";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Ez a művelet nem visszavonható";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Beszélgetés törlése?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "A maximálisan kijelölhető beszélgetések száma %@.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Csoportok";
@@ -672,13 +672,13 @@
 "CONVERSATION_SEARCH_ONE_RESULT" = "1 találat";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d/%dtalálat";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Beszélgetés beállítások";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Hozzáadás létező kontakthoz";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Hozzáadás meglevő kontakthoz";
 
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
@@ -774,7 +774,7 @@
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Felhasználó letiltása";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
+"CORRUPTED_SESSION_DESCRIPTION" = "A munkamenet alaphelyzetbe állításával a jövőben gond nélkül fogadhatsz üzeneteket%@felhasználótól, de a korábbi hibás üzenetek visszaállítására nincs lehetőség.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Válassz országhívószámot";
@@ -804,19 +804,19 @@
 "DATE_YESTERDAY" = "Tegnap";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Hibanapló másolása sikertelen.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Hibanapló előkészítése sikertelen.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Hibanapló feltöltése sikertelen.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "What would you like to do with the link to your debug log?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Mit tennél a hibanapló URL címmel?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Nem találhatóak naplófájlok.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Hibabejelentés";
@@ -828,7 +828,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "E-mailes támogatás";
 
 /* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send to Self";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Privát feljegyzés";
 
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Megosztás";
@@ -838,19 +838,19 @@
 "DEBUG_LOG_ALERT_TITLE" = "Még egy lépés";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Could not open Email app.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Email alkalmazás megnyitása sikertelen.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "A gist URL a vágólapra került. Átirányítás a GitHub oldalára...";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Github átirányítás";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Telefonszám újraregisztrálása";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+"DEREGISTRATION_WARNING" = "Ez az eszköz nincs regisztrálva. A telefonszámod - mint egyedi azonosítód - azonban más eszközeiden ettől függetlenül még regisztrálva lehet a Signal alkalmazás számára. Koppints az újraregisztráláshoz.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Utoljára aktív: %@";
@@ -865,25 +865,25 @@
 "DISAPPEARING_MESSAGES" = "Eltűnő üzenetek";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Ennek a beszélgetésnek az üzenetei %@után eltűnnek.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this conversation will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Bekapcsolt állapotban az ebben a beszélgetésben küldött és fogadott üzenetek a megtekintésük után, a beállított időtartam leteltekor mindkét fél készülékén eltűnnek.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Az üzenetek jelenleg %@ után eltűnnek.";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Eltűnő üzenetek beállításai";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "Elvet";
+"DISMISS_BUTTON_TEXT" = "Elvetés";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Cenzúra megkerülése innen";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Hozzáférés az iOS Beállításokban adható.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "A Kontakt részletek szerkesztéséhez a Signal-nak Kontakt Hozzáférésre van szüksége";
@@ -904,7 +904,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Frissítés";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this group?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Szeretnéd menteni a csoport beállítás változtatásait?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Mentetlen változtatások";
@@ -916,22 +916,22 @@
 "EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Kapcsoljunk át Signal-ra";
+"EMAIL_INVITE_SUBJECT" = "Váltsunk Signal-ra";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Nincs partnerei közt Signal használó";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Nincs kontaklistájában Signal felhasználó";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Miért nem hív meg egy párat?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Miért nem hívsz meg valakit?";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirm your PIN.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "PIN visszaellenőrzése.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Regisztrációs zár tiltása sikertelen.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Regisztrációs zár engedélyezése sikertelen.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "Kikapcsolás";
@@ -943,7 +943,7 @@
 "ENABLE_2FA_VIEW_NEXT_BUTTON" = "Tovább";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "A PIN kód nem talál.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "A PIN kód nem egyezik.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
 "ENABLE_2FA_VIEW_PIN_TOO_LONG" = "A PIN kód nem lehet hosszabb 20 számjegynél.";
@@ -952,13 +952,13 @@
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "A PIN kódnak legalább 4 számjegyből kell állnia.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Adj meg egy PIN kódot a Regisztrációs zár aktiválásához. Erre a PIN kódra akkor lesz szükséged, amikor ezzel a telefonszámmal akarsz Signal-ba regisztrálni a jövőben.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "For increased security, enable a Registration Lock PIN that will be required in order to register this phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "A biztonság növelése érdekében engedélyezd a Regisztrációs zár PIN kódot. Erre a kódra akkor lesz szükséged, amikor ezzel a telefonszámmal akarsz Signal-ba (újra)regisztrálni a jövőben.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registration Lock is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Regisztrációs zár engedélyezve. Amikor ezzel a telefonszámmal akarsz Signal-ba (újra)regisztrálni a jövőben, meg kell adnod a PIN kódodat.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Regisztrációs zár";
@@ -970,7 +970,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Sikertelen hívás.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "A legfrissebb Signal már sajnos nem fut ezen a régi iOS verzión. Kérlek frissítsd készüléked operációs rendszerét, hogy a Signal legújabb verziói továbbra is elérhetőek legyenek számodra.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "A névjegyzékhez való hozzáférés sikertelen.";
@@ -985,25 +985,25 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Tiltott felhasználónak próbáltál volna üzenetet küldeni.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "A Signal nem tudott kapcsolódni az internethez. Kérlek, próbáld újra!";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Message send failed due to a lack of valid recipients.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Érvénytelen címzettnek próbáltál volna üzenetet küldeni.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Hálózati kapcsolódás sikertelen.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Hlózati időtúllépés.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Érvénytelen szerver válasz.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Ez az eszköz a telefonszámoddal többé nincs regisztrálva. Telepítsd újra a Signal alkalmazást.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Szerver hiba. Próbálkozz újra később.";
@@ -1018,19 +1018,19 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Melléklet letöltése sikertelen.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Csatolmány fogadása sikertelen. A küldő fél Signal alkalmazása frissítésre szorul. Az üzenet újraküldése a frissítés után javasolt.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Duplikált üzenet érkezett.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "A címzett kulcsa nem érvényes.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Időszinkron hiba a fogadott üzenetnél.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Received a message that is not compatible with this version.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Inkompatiblilis verziójú üzenet érkezett.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Nincs elérhető munkamenet a kontakthoz.";
@@ -1039,7 +1039,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Megváltozott a biztonsági szám.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Your safety number with %@ has changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@biztonsági száma megváltozott.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ismeretlen hiba történt.";
@@ -1048,25 +1048,25 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Megváltozott a biztonsági szám.";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "Ez az eszköz többé nincs párosítva. Végezd el újra a párosítást a Signal használatának folytatásához.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "Ez az eszköz többé nincs regisztrálva. Regisztráld újra a Signal használatának folytatásához.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Your version of Signal has expired. Please update to send further messages.";
+"ERROR_SENDING_EXPIRED" = "Elavult Signal verziót használsz, kérlek frissíts a további használat érdekében.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Nem regisztrált felhasználó: %@";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Ne most";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Let's Go";
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Start";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Messages will no longer send successfully. Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "A Signal verziója elavult. A továbbiakban üzeneteidet nem tudod elküldeni. Koppints ide a legfrissebb verzióra történő frissítéshez.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "A Signal-od verziója %d nap múlva lejár. Koppints a legutóbbi verzióra történő frissítéshez.";
@@ -1075,16 +1075,16 @@
 "EXPIRATION_WARNING_TODAY" = "A Signal-od verziója ma le fog járni. Koppints ide a legfrissebb verzióra történő frissítéshez.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again later.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Túl sok sikertelen küldési kísérlet. Kérlek próbáld újra később.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before sending this message again.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Biztonsági számod megváltozott a következő ismerősöddel: %@. Érdemes lenne leellenőrizni, mielőtt újraküldenéd ezt az üzenetet.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Biztonsági szám ellenőrzése sikertelen!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Megjelölés Ellenőrzöttként";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Munkamenet visszaállítása";
@@ -1099,19 +1099,19 @@
 "FORWARD_MESSAGE" = "Üzenet továbbítása";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this conversation.";
+"GALLERY_TILES_EMPTY_GALLERY" = "A beszélgetés nem tartalmaz médiafájlokat.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Tartalom betöltése";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Korábbi tartalmak betöltése...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Csatolmány";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "GIF letöltése sikertelen, kérlek ellenőrízd az internetkapcsolatod.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Ismeretlen hiba történt.";
@@ -1134,6 +1134,12 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Keresés";
 
+/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+
+/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Adatbázis optimalizálása";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "A profilképed megváltozott.";
 
@@ -1141,7 +1147,7 @@
 "GROUP_CREATED" = "Csoport létrehozva.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
+"GROUP_CREATION_FAILED" = "Nem sikerült az összes tagot a csoporthoz adni. Koppints az újrapróbálkozáshoz.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Csoport menedzsment";
@@ -1165,13 +1171,13 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Tagok";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "No Longer Marked as Verified";
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "\"Ellenőrzött\" státusz már nem érvényes";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Üzenetek";
 
 /* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "A cím most %@";
+"GROUP_TITLE_CHANGED" = "A csoport címe: '%@'.";
 
 /* No comment provided by engineer. */
 "GROUP_UPDATED" = "Csoport frissítve.";
@@ -1189,22 +1195,22 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Keresés";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "A kontaklistádból %@szintén Signal felhasználó.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "A kontaktlistádból többen is Signal felhasználók, mint például %@ és %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "A kontaktlistádból többen is Signal felhasználók, mint például %@, %@ és %@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Indítsd el első Signal beszélgetésed!";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Kezdeményezett beszélgetés";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nincs találat a kifejezésre: '%@'";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archiválás";
@@ -1213,10 +1219,10 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "A maximum megosztási limit %@db.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Csatolmány kiválasztása sikertelen.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Csatlakozás...";
@@ -1228,7 +1234,7 @@
 "IN_CALL_RINGING" = "Kicseng...";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Answered. Securing…";
+"IN_CALL_SECURING" = "Hívás fogadva. Titkosítás...";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Hívás vége";
@@ -1240,7 +1246,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Dobj a postaládádba valamit, hogy ne legyen olyan magányos! Láss hozzá, és üzenj egy barátodnak!";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Engedélyezheted a kontaktokhoz való hozzáférést az iOS Beállításokban, hogy a Signalt használó ismerőseid megjelenjenek a beszélgetési listában.";
 
 /* info message text in conversation view */
 "INCOMING_CALL" = "Bejövő hívás";
@@ -1252,13 +1258,13 @@
 "INCOMING_INCOMPLETE_CALL" = "Bejövő hívás";
 
 /* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Missed call because their safety number has changed.";
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Nem fogadott hívás. A hívó biztonsági száma megváltozott.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Mostantól a társított telefonodról, vagy iPad-edről is tudsz üzeneteket küldeni.\nBiztonsági okokból a beszélgetéseid előzményei nem kerültek átszinkronizálásra.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@mától elérhető Signalon!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Matricák";
@@ -1270,7 +1276,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Érvénytelen hangüzenet.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Engedélyezheted a kontaktokhoz való hozzáférést az iOS Beállításokban, így barátaidat is meghívhatod, hogy csatlakozzanak a Signal közösséghez.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Kontaktokhoz való hozzáférés megadása";
@@ -1288,28 +1294,28 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Messages disappear after %@.";
+"KEEP_MESSAGES_DURATION" = "Üzenetek eltűnése ennyi idő után: %@.";
 
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Messages do not disappear.";
+"KEEP_MESSAGES_FOREVER" = "Eltűnő üzenetek funkció kikapcsolva.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "Váltás \"Összes média\" nézetre";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Beszélgetés archiválása";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "Összes csatolmány megtekintése";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "Beszélgetés beállításainak megtekintése";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "Ugrás beviteli mezőre";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "Váltás GIF választó nézetre";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "Új csoport";
@@ -1318,10 +1324,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Új üzenet";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Ugrás következő beszélgetésre";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ugrás előző beszélgetésre";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Keresés";
@@ -1330,10 +1336,10 @@
 "KEY_COMMAND_SETTINGS" = "Beállítások";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "Matrica nézet";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "Archivált állapot feloldása";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Csoport elhagyása";
@@ -1342,13 +1348,13 @@
 "LEAVE_GROUP_ACTION" = "Csoport elhagyása";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid. Please make sure you are scanning the QR code that is displayed on the device you want to link.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Érvénytelen QR kód. Ellenőrizd, hogy a párosítani kívánt készüléken megjelent QR kódot olvasod be.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Készülék Társítása Sikertelen";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your conversations, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Ez az eszköz a továbbiakban hozzáfér a Signal beszélgetéseidhez, a kontakt és csoportlistádhoz, valamint képes lesz üzenetet küldeni a nevedben.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Társítod ezt a készüléket?";
@@ -1357,7 +1363,7 @@
 "LINK_DEVICE_RESTART" = "Újra";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan the QR code that is displayed on the device you want to link.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Olvasd be a párosítani kívánt eszköz képernyőjén látható QR kódot.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "QR Kód Szkennelés";
@@ -1366,7 +1372,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Új Készülék Társítása";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link előnézet";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Társított készülékek";
@@ -1378,13 +1384,13 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Csoport tagok";
 
 /* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@(Te)";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Keresés név, vagy cím alapján";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "Hely kiválasztása";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Naplózás";
@@ -1393,16 +1399,16 @@
 "LONG_TEXT_VIEW_TITLE" = "Üzenetek";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Minden média";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Fotógaléria";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%düzenet törlése";
 
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Üzenet törlése";
@@ -1420,19 +1426,19 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Szöveg másolása";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Üzenet törlése";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Részletek";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Üzenet továbbítása";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Válasz";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Média megosztása";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Üzenetek";
@@ -1441,7 +1447,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Új üzenet";
 
 /* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "File Size";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Fájl méret";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
@@ -1450,7 +1456,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Kézbesítve";
 
 /* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Sikertelen";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Elolvasva";
@@ -1462,25 +1468,25 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Elküldve";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Kihagyva";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploading";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Feltöltés";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Az üzenet nem tartalmaz szöveget, vagy csatolmányt.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Beérkezett";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENDER" = "Sender";
+"MESSAGE_METADATA_VIEW_SENDER" = "Küldő";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Elküldve";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Fájlnév";
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Üzenetek";
@@ -1495,19 +1501,19 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Törlés";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Profiod megosztása szükséges a beszélgetés folyatatásához %@felhasználóval.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Profiod megosztása szükséges a beszélgetés folyatatásához %@felhasználóval.";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Tudj meg többet";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Engedélyezed, hogy %@üzenetet küldjön számodra?\nAmíg ebbe bele nem egyezel, nem értesül róla, hogy láttad -e ezt az üzenetét.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Szeretnél csatlakozni az alábbi csoporthoz: %@? Amíg ezt meg nem erősíted, senki nem értesül róla, hogy láttad -e ezt a felkérő üzenetet.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Profil megosztása";
@@ -1519,16 +1525,16 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Letöltés";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "A küldés sikertelen.";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+"MESSAGE_STATUS_FAILED_SHORT" = "Sikertelen";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Elolvasva";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Kihagyva";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "Küldés sikertelen";
@@ -1546,25 +1552,25 @@
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Új üzenet";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@\"Ellenőrzött\" státusza megszűnt. Koppints a lehetőségekért.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Ez a felhasználó letiltásra került";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@\"Ellenőrzött\" státusza megszűnt. Koppints a lehetőségekért.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "A csoport egy tagja a tiltólistádon van";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "Ez a csoport tiltva van";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "A csoport %@ tagja a tiltólistádon van";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Több mint egy csoporttag \"Ellenőrzött\" állapota megszűnt. Koppints a lehetőségekért.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Beállításokhoz koppints ide";
@@ -1573,49 +1579,49 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Új üzenetek";
 
 /* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "There are more unread messages.";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "További olvasatlan üzenetek elérhetőek.";
 
 /* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "There are more unread messages (including safety number changes).";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "További olvasatlan üzenetek elérhetőek (biztonsági szám változásokat is beleértve).";
 
 /* info message text in conversation view */
 "MISSED_CALL" = "Nem fogadott hívás";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Videóhívások indításához az iOS beállításokban kamera hozzáférés adása szükséges a Signal alkalmazás számára.";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "A Signal szeretne hozzáférni a kamerádhoz.";
 
 /* Alert body indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "Engedélyezheted az iOS Beállításokban.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Ehhez a művelethez a Signalnak helymeghatározási hozzáférés kell.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Engedélyezheted az iOS Beállításokban.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "A Signal hozzáférést igényel a fotóidhoz.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Nem lehetséges több eszköz párosítása.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Elérted a maximum párosítható eszközök számát. Szüntesd meg az egyik megelvő párosítást, majd próbálkozz újra.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
+"MUTE_BEHAVIOR_EXPLANATION" = "A némított beszélgetésekből nem kapsz több értesítést.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Kihagyás";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
+"NETWORK_ERROR_RECOVERY" = "Ellenőrizd az internetkapcsolatodat, majd próbálkozz újra.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censorship Circumvention: On";
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Cenzúra megkerülése funkció: Aktív";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTED" = "Csatlakozva";
@@ -1624,10 +1630,10 @@
 "NETWORK_STATUS_CONNECTING" = "Csatlakozás";
 
 /* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
+"NETWORK_STATUS_DELINKED" = "Már nincs párosítva";
 
 /* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
+"NETWORK_STATUS_DEREGISTERED" = "Már nincs regisztrálva";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "Hálózat állapota";
@@ -1639,25 +1645,25 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Keresés telefonszám alapján";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Csoport borítókép beállítása";
 
 /* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+"NEW_GROUP_BUTTON_LABEL" = "Új csoport létrehozása";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Létrehozás";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "Sikertelen csoport létrehozás.";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Új csoport";
 
 /* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Member";
+"NEW_GROUP_MEMBER_LABEL" = "Tag";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@itt: %@";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Csoportos chat elnevezése";
@@ -1666,7 +1672,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Other Users";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to discard these changes?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Elveted a módosításokat?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Mentetlen változtatások";
@@ -1690,16 +1696,16 @@
 "NO_SELECTED_CONVERSATION_TITLE" = "Üdvözöl a Signal!";
 
 /* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "New message to:";
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Új üzenet neki:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Nincs ilyen felhasználó. Meghívod SMS-ben?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Privát feljegyzés";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Lehetséges, hogy volt bejövő üzeneted, amíg az %@ újraindult.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
@@ -1726,46 +1732,46 @@
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Hibás PIN. Nincs több lehetőség.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Ehhez a telefonszámhoz bekapcsolták a regisztrációs zárat. Kérlek add meg a regisztrációs zár PIN kódot!";
 
 /* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"ONBOARDING_2FA_EXPLANATION_2" = "A regisztrációs zár PIN nem ugyanaz, mint az SMS ellenőrző kód, amit az imént kaptál.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Elfelejtett PIN?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
+"ONBOARDING_2FA_INVALID_PIN" = "Hibás PIN";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Hibás PIN. %lu próbálkozás maradt.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Hibás PIN. 1 próbálkozás maradt.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Regisztrációs zár";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Személyes adataid védelme érdekében zároltuk a fiókodat 7 napra.\n\n7 nap inaktivitás után újra tudsz majd regisztrálni ezzel a telefonszámmal, ekkor már a PIN használata nélkül is. Minden tartalom törölve lesz.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "További információ a zárolt fiókról";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Fiók zárolva";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "Most bizonyíthatod az emberségedet";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad regisztrálása";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "iPhone párosítása";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
@@ -1774,22 +1780,22 @@
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Register this iPad";
+"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "iPad regisztrálása";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "iPhone párosítása";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Ezen iPad regisztrálása letiltja a Signalt az ezzel a telenfonszámmal regisztrált egyéb eszközökön.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Ezen iPhone társítása nem javasolt - erősen korlátozná az alkalmazás teljeskörű működését.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Enable Permissions";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Az Értesítések segítségével tudni fogsz az új üzenetek érkezéséről, valamint a Beszélgetésekben történt változásokról.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
@@ -1804,49 +1810,49 @@
 "ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "Add meg PIN kódodat";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Adatvédelmi és Általános Szerződési Feltételek";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
+"ONBOARDING_SPLASH_TITLE" = "Minden személyes adatod a tiéd.\nLégy önmagad minden üzenetedben.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Helytelen telefonszám?";
 
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "I didn't get a code (available in %@)";
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Nem kaptam meg a kódot (elérhető %@múlva)";
 
 /* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
 "ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Kapcsolatfelvétel a Signal támogatással";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "This code is incorrect";
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Helytelen ellenőrző kód";
 
 /* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "I didn't get a code";
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Nem kaptam ellenőrző kódot";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Please ensure that you have cellular service and can receive SMS messages.";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Ellenőrizd, hogy eléred -e a mobilhálózatot és képes vagy sms-t fogadni.";
 
 /* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "No code?";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Nem jött kód?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend Code";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Ellenőrző kód újraküldése";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Inkább hívj";
 
 /* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Still no code?";
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Továbbra sem jött kód?";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Enter the code we sent to %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Add meg a kódot amelyet az alábbi számra küldtünk: %@";
 
 /* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "We just resent a code to %@";
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Újraküldtük a kódot erre a számra: %@";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Beállítások";
@@ -1867,13 +1873,13 @@
 "OUTGOING_INCOMPLETE_CALL" = "Kimenő hívás";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
+"OUTGOING_MISSED_CALL" = "Nem fogadott kimenő hívás";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@...";
 
 /* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "PDF could not be displayed";
+"PDF_VIEW_COULD_NOT_RENDER" = "A PDF nem megjeleníthető";
 
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
@@ -1948,31 +1954,31 @@
 "PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Failed to configure camera.";
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Kamerabeállítás sikertelen";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Névtelen album";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "Adj meg egy új PIN kódot";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "PIN megerősítése";
 
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
+"PIN_CREATION_MISMATCH_ERROR" = "PIN kódok nem egyeznek. Próbáld újra.";
 
 /* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Re-enter PIN";
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "PIN újraellenőrzése";
 
 /* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN must be 4+ digits";
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "A PIN minimum 4 karakter hosszú";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
@@ -1981,34 +1987,34 @@
 "PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Új PIN létrehozása";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "PIN létrehozása";
 
 /* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+"PIN_CREATION_TOO_LONG_ERROR" = "A PIN maximum 20 szám hosszú lehet";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_CREATION_TOO_SHORT_ERROR" = "A PIN kódnak legalább 4 számjegyből kell állnia.";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "A PIN megjegyzéséhez segítségül időnként be kell majd gépelned. Egyre kevesebbszer az idő haladtával.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "Elfelejtett PIN?";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
+"PIN_REMINDER_MISMATCH_ERROR" = "Hibás PIN, próbáld újra.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "Add meg Signal PIN kódodat";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "A PIN kódnak legalább 4 számjegyből kell állnia.";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Média lejátszása";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
@@ -2023,7 +2029,7 @@
 "PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Tudj meg többet";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Tap to Scan";
+"PRIVACY_TAP_TO_SCAN" = "Koppints a leolvasáshoz";
 
 /* Button that lets user mark another user's identity as unverified. */
 "PRIVACY_UNVERIFY_BUTTON" = "Clear Verification";
@@ -2056,7 +2062,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Biztonsági szám ellenőrzése";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Mark as Verified";
+"PRIVACY_VERIFY_BUTTON" = "Ellenőrzöttként megjelölés";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Végrehajtás";
@@ -2083,7 +2089,7 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "A Signal profilod a kontaktjaid számára látható, amikor új beszélgetést kezdeményezel, illetve ha megosztod más felhasználókkal vagy csoporotokkal.";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Bővebben a profilokról";
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profil név";
@@ -2104,7 +2110,7 @@
 "PUSH_MANAGER_REPLY" = "Válasz";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Successfully re-registered for push notifications.";
+"PUSH_REGISTER_SUCCESS" = "Push értesítések újraregisztrálása sikeresen megtörtént.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Azonnali értesítések";
@@ -2113,7 +2119,7 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Válasz neki: %@";
 
 /* message header label when someone else is quoting you */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Válasz neked";
@@ -2122,13 +2128,13 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Válasz magadnak";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
-"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Eredeti üzenet nem található";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Original message no longer available.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Az eredeti üzenet többé nem elérhető.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original message not found.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Eredeti üzenet nem található";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Csatolmány";
@@ -2155,7 +2161,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Elfelejtett PIN?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
@@ -2164,7 +2170,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Incorrect PIN";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Hibás PIN";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Küldés";
@@ -2182,7 +2188,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "You have tried too often. Please wait a minute before trying again.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Failed to re-register for push notifications.";
+"REGISTRATION_BODY" = "Push értesítések újraregisztrálása sikertelen.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Országkód";
@@ -2194,7 +2200,7 @@
 "REGISTRATION_ERROR" = "Regisztrációs hiba";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "A fiókod nem aktiválható, amíg a neked küldött ellenőrző kódot meg nem adod.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Telefonszám formátum nem támogatott, vedd fel a kapcsolatot a supporttal.";
@@ -2203,16 +2209,16 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefonszám";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "Üzenetküldés csak regisztráció után lehetséges.";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verification Failed";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Visszaellenőrzés sikertelen";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Hibás regisztrációs zár PIN kód";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Adj meg egy valós telefonszámot a regisztrációhoz.";
@@ -2242,10 +2248,10 @@
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
+"REMINDER_2FA_NAV_TITLE" = "Add meg a regisztrációs zár PIN kódot";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "You can set a new PIN in your privacy settings.";
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Új PIN kódot az Adtvédelmi beállítások alatt tudsz megadni.";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Helytelen PIN kód.";
@@ -2257,19 +2263,19 @@
 "RETRY_BUTTON_TEXT" = "Újra";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Add to Group Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Csoporthoz adás akkor is";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Call Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Hívás ennek ellenére";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Küldés ennek ellenére";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Signal biztonsági számunk:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Biztonsági számod megváltozott a következő ismerősöddel: %@. Érdemes lenne leellenőrizni.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Szkenneld be a QR kódot a kapcsolatod készülékén.";
@@ -2278,16 +2284,16 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "QR kód szkennelése";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Azonnal";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "A hitelesítés funkció nem elérhető.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "A hitelesítés sikertelen.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Túl sok sikertelen hitelesítési kísérlet. Kérlek próbáld meg később.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
@@ -2302,7 +2308,7 @@
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "A hitelesítés sikertelen";
 
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal feloldása";
@@ -2326,7 +2332,7 @@
 "SEARCH_SECTION_MESSAGES" = "Üzenetek";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Párosító kód lekérése sikertelen";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
@@ -2335,7 +2341,7 @@
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Nem sikerült a készülék párosítása";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
@@ -2425,19 +2431,19 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Ha engedélyezed, a Signal megpróbálja megkerülni a cenzúrát. Ne engedélyezd ezt a funkciót, ha a tartózkodási helyeden a Signal nincs cenzúrázva.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "A cenzúra megkerülése aktiválva lett a telefonszámod alapján.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "A cenzúra megkerülés funkció aktiválva lett a telefonszámod alapján.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Cenzúra megkerülés funkció manuálisan letiltva.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censorship circumvention can only be activated when connected to the internet.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "A cenzúra megkerülés funkció csak aktív internetkapcsolat esetén aktiválható.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Cenzúra megkerülése nem szükséges; csatlakozva vagy a Signalhoz.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Cenzúra megkerülés funkció nem szükséges; A Signal szolgáltatás aktív.";
 
 /* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Cenzúra megkerülése";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Cenzúra megkerülés funkció";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Debug Log engedélyezés";
@@ -2509,7 +2515,7 @@
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Biztonsági mentés sikeres";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Felhasználó letiltása";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Nincsenek Signal felhasználó kontaktjaid.";
@@ -2521,22 +2527,22 @@
 "SETTINGS_BLOCK_LIST_TITLE" = "Letiltva";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Minden hívás átjátszása";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Minden hívás a Signal kiszolgálón keresztül haladjon - ezzel elfedhető IP címed a hívott fél számára. A funkció engedélyezése csökkentheti a hívásminőséget.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Beszélgetés előzményeinek törlése";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licenc típusa: GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Fiók törlése";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Minden adat törlése";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
@@ -2596,7 +2602,7 @@
 "SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
 /* Label for the 'pins' item of the privacy settings. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "Adj meg egy új PIN kódot";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2689,13 +2695,13 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Rejtett feladó";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Állapotjelzők megjelenítése";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Jelenítsen meg egy státuszikont a rejtett feladóval kézbesített üzenetek \"Üzenet részletei\" menüpontjában.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Engedélyezés mindenkitől";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Rejtett feladóval érkező üzenetek engedélyezése olyan nem-kontaktoktól és személyektől is, akikkel nem osztottad meg profilod.";
@@ -2722,13 +2728,13 @@
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Launch the Signal app to register.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Not Registered";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Nincs regisztrálva";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Indítsd el a Signal alkalmazást a regisztrálás beállításához.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Not Ready";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Nem elérhető";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "A csatolmány küldése sikertelen";
@@ -2740,7 +2746,7 @@
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "A csatolmány előkészítése sikertelen";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Megosztás: Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Biztonsági azonosító mutatása";
@@ -2755,7 +2761,7 @@
 "SOUNDS_NONE" = "Nincs";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+"STICKER_MESSAGE_PREVIEW" = "Matrica üzenet";
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Matricacsomag telepítve";
@@ -2773,7 +2779,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Beérkezett matricák";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Nem minden matrica csomagot sikerült betölteni";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Telepített matricák";
@@ -2794,13 +2800,13 @@
 "STICKERS_PACK_DEFAULT_TITLE" = "Matricsacsomag";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Matrica csomag megosztása";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Matricsacsomag";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "A matrica csomag betöltése sikertelen";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "ltávolítás";
@@ -2809,28 +2815,28 @@
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Egyező Biztonsági szám.";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Biztonsági szám ellenőrzése";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu members";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu tag";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Az alábbi csoportok tagja: '%@', '%@' és még %lu további";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Az alábbi csoport tagja: %@";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Az alábbi csoportok tagja: '%@', '%@' és '%@'";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Az alábbi csoportok tagja: '%@' és '%@'";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ nap";
@@ -2842,7 +2848,7 @@
 "TIME_AMOUNT_HOURS" = "%@ óra";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ó";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ perc";
@@ -2872,7 +2878,7 @@
 "TIME_AMOUNT_WEEKS" = "%@ hét";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@hét";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Mégsem";
@@ -2890,7 +2896,7 @@
 "UNKNOWN_CONTACT_NAME" = "Ismeretlen kontakt";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
+"UNKNOWN_COUNTRY_NAME" = "Ismeretlen ország";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "One of your devices sent a message that can't be processed or displayed here because it uses a new Signal feature.";
@@ -2902,7 +2908,7 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Signal frissítése most";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Updated to the latest version of Signal. You can now receive this message type on your device.";
@@ -2920,13 +2926,13 @@
 "UNLINK_ACTION" = "Társítás megszüntetése";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "This device will no longer be able to send or receive messages if it is unlinked.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Ez az eszköz már nincs párosítva, így jelenleg nem képes üzeneteket küldeni és fogadni.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Társítás megszüntetése ezzel: \"%@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "Az eszköz párosítása megszűnt. A Signal használatának folytatásához a párosítás ismételt elvégzése szükséges.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "A Signal nem tudja megszüntetni a társítást a készülékeddel.";
@@ -2947,106 +2953,109 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "A csoport tagjait nem tudod eltávolítani. Vagy maguk kell elhagyják a csoportot, vagy új csoportot tudsz létrehozni ezen tagok hozzáadása nélkül.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nem támogatott";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "PIN létrehozása";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Bővebben a PIN kódokról";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock now does more. With PINs you can take your contacts with you when you switch devices.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "A Regisztrációs zár fejlettebb, mint volt. A PIN segítségével már készülékcsere esetén is hordozhatod kontaktlistádat. ";
 
 /* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registration Lock = PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Regisztrációs kód = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Add even more security to your account and take your contacts with you when you switch phones.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Adj egy újabb réteget a biztonsághoz és hordozd kontaktlistádat már készülékcsere esetén is.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "A PIN kódok bemutatása";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Miért kéne PIN-t megadnom?";
 
 /* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Why use words when you can use stickers? Tap this icon on your keyboard:";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Miért használnál szavakat, ha használhatsz matricákat is? Koppints erre az ikonra a billentyűzeteden:";
 
 /* Header for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Bemutatkozik a Matricák";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "A következő Signal verziók már iOS 10 követelménnyel érkeznek. Kérlek frissítsd az operációs rendszered az iOS Beállítások >> Általános >> Szoftverfrissítés alatt. ";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS frissítése";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
+"USERNAME_DESCRIPTION" = "Signalban a felhasználónév nem kötelező. Ha mégis beállítod, más felhasználók a jövőben név alapján is megtalálhatnak, a telefonszámod ismerete nélkül.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "Felhasználónév";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "A felhasználónevek csak az alábbi karaktereket tartalmazhatják: a-z, 0-9, _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occured while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "Felhasználónév elérhetősége nem ellenőrizhető, kérlek próbáld meg később.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@nem Signal felhasználó. Kérlek ellenőrizd a felhasználónevet, majd próbáld újra.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_NOT_FOUND_TITLE" = "Nincs ilyen felhasználó";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Enter a username";
+"USERNAME_PLACEHOLDER" = "Adj meg egy felhasználónevet";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "A felhasználónév nem kezdődhet számmal";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "Felhasználónév";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
+"USERNAME_TOO_SHORT_ERROR" = "A felhasználónév minimális hossza 4 karakter";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ is taken.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "A %@ felhasználónév már foglalt.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Username update failed.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Felhasználónév frissítése sikertelen.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Az eszköz megadása kötelező";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "Túl hosszú eszköz név";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "You marked %@ as not verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@ ismerősödet Nem Ellenőrzöttnek jeölted.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "You marked %@ as not verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "%@ ismerősödet egy másik készülékről Nem Ellenőrzöttnek jelölted.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "You marked %@ as verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@ ismerősödet Ellenörzöttnek jelölted.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You marked %@ as verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "%@ ismerősödet egy másik készülékről Ellenőrzöttnek jelölted.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "\"Ellenőrzött\" állapot megváltozott.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "View Safety Number";
+"VERIFY_PRIVACY" = "Biztonsági szám megtekintése";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
+"VERIFY_PRIVACY_MULTIPLE" = "Biztonsági számok áttekintése";
+
+/* Tooltip highlighting the view once messages button. */
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
@@ -3055,7 +3064,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Hangüzenet";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Koppints és tartsd nyomva a hangüzenet rögzítéséhez.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Hangüzenet";

@@ -45,7 +45,7 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "¿Deseas compartir tu perfil con este grupo?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "¿Deseas añadir este usuario a tus contactos del iPhone?";
+"ADD_TO_CONTACTS_OFFER" = "¿Deseas añadir este usuario a tus contactos?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "¿Deseas compartir tu perfil con este usuario?";
@@ -1134,6 +1134,12 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Buscar";
 
+/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+
+/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimizando base de datos";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "La imagen de grupo ha cambiado.";
 
@@ -1378,7 +1384,7 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Participantes en el grupo";
 
 /* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (tú)";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Buscar por nombre o dirección";
@@ -1432,7 +1438,7 @@
 "MESSAGE_ACTION_REPLY" = "Responder a este mensaje";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Compartir multimedia";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mensaje";
@@ -1765,7 +1771,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Registrar iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Enlazar teléfono";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Enlazar iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Seleccionar «Registrar iPad» te permitirá crear una cuenta de Signal o mover una cuenta existente a este iPad. Esto desactivará Signal en todos los dispositivos que estén registrados bajo el mismo número.";
@@ -1783,7 +1789,7 @@
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registrar este iPad desactivará Signal en todos los otros dispositivos que están registrados bajo el mismo número de teléfono.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Enlazar con tu teléfono no está recomendado ya que limitará funcionalidades importantes.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Enlazar tu iPhone no está recomendado ya que limitará funcionalidades importantes.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Habilitar permisos";
@@ -2146,7 +2152,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Vídeo";
 
 /* notification body */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacción a tu mensaje: %@";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "He olvidado mi PIN.";
@@ -2821,7 +2827,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Participa en «%@», «%@» y %lu grupos adicionales";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "En este chat puedes añadir notas, mensajes personales, contraseñas .... Si tu cuenta tiene dispositivos enlazados, las notas se sincronizarán.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Participa en «%@»";
@@ -3047,6 +3053,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Verificar cifras de seguridad";
+
+/* Tooltip highlighting the view once messages button. */
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Desliza para cancelar";

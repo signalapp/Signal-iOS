@@ -351,7 +351,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "کاربری که مسدود شده است، امکان تماس یا ارسال پیام به شما را ندارد.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "مرور";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "ادامه دادن";
@@ -504,10 +504,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "مقایسه با کلیپ‌بورد";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "یک کاربر Signal را برای شروع مکالمه انتخاب کرده یا جستجو کنید.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "نوشتن";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "دفترتلفن";
@@ -534,7 +534,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "آیا مطمئن هستید که میخواهید تمام داده ها را پاک کنید؟";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "شما دیگر قادر به ارسال یا دریافت پیام از این گروه نخواهید بود";
@@ -681,7 +681,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "اضافه کردن به مخاطبین قبلی";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "افزودن به مخاطبان سیستم";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "این گروه را مسدود کن";
@@ -976,7 +976,7 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "دسترسی به مخاطبین ممکن نشد.";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "عدم توانایی در ذخیره ویدیو.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "خطا در ارسال پیام.";
@@ -1048,10 +1048,10 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "کد امنیتی تغییر یافت.";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "پیوند با دستگاه شما دیگر وجود ندارد. لطفا برای ارسال پیام های بعدی دوباره پیوند دهید.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "دستگاه شما دیگر ثبت نمی باشد. لطفا دوباره ثبت نام کنید تا پیام های بعدی را ارسال کنید.";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "نسخه Signal شما منقضی شده است. لطفا برای ارسال پیام های بیشتر به روزرسانی کنید.";
@@ -1093,10 +1093,10 @@
 "FINISH_GROUP_CREATION_LABEL" = "اتمام ساخت گروه";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "ارسال مخاطب";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "ارسال پیام";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "شما در این مکالمه هیچ مدیایی ندارید.";
@@ -1133,6 +1133,12 @@
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "عبارت مورد نظر خود را وارد کنید.";
+
+/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+
+/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "در حال بهینه‌سازی پایگاه داده";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "آواتار تغییر کرد.";
@@ -1255,7 +1261,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "تماس به دلیل اینکه کد امنیتی آن ها تغییر یافته است برقرار نشد.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "شما میتوانید پیام های همگام شده را از تلفن همراه یا iPad خود ارسال کرده یا دریافت کنید.↵برای امنیت شما، تاریخچه مکالمه به دستگاه های پیوند داده شده جدید منتقل داده نمی شوند.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ عضو Signal شده است!";
@@ -1294,22 +1300,22 @@
 "KEEP_MESSAGES_FOREVER" = "پیام‌ها ناپدید نمی‌شوند.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "رفتن به تمام رسانه ها";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "آرشیو مکالمات";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "نمایش پیوست‌ها";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "برو به اطلاعات مکاتبه";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "نوار ورودی تمرکز";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "برو به جستجو GIF";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "گروه جدید";
@@ -1318,10 +1324,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "پیام جدید";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "برو به مکاتبه بعدی";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "برو بع مکاتبه قبلی";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "جستجو";
@@ -1330,10 +1336,10 @@
 "KEY_COMMAND_SETTINGS" = "تنظیمات";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "نمایش استیکرها";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "خارج کردن از بایگانی مکاتبه";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "خروج از گروه";
@@ -1378,7 +1384,7 @@
 "LIST_GROUP_MEMBERS_ACTION" = "اعضای گروه";
 
 /* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (شما)";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "جستجو بر اساس نام یا آدرس";
@@ -1426,13 +1432,13 @@
 "MESSAGE_ACTION_DETAILS" = "اطلاعات بیشتر";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "ارسال این پیام";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "پاسخ به این پیام";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "اشتراک گذاری رسانه";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "پیام";
@@ -1624,7 +1630,7 @@
 "NETWORK_STATUS_CONNECTING" = "در حال برقراری اتصال";
 
 /* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
+"NETWORK_STATUS_DELINKED" = "دیگر پیوند ندارد";
 
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "دیگر ثبت شده نمی باشد";
@@ -1642,13 +1648,13 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "انتخاب تصویر گروه";
 
 /* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+"NEW_GROUP_BUTTON_LABEL" = "ایجاد یک گروه جدید";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "ساخت";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "گروه جدید نمی تواند ایجاد شود.";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "گروه جدید";
@@ -1714,7 +1720,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "صداها";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "نام، محتوا، و عملیات";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "فقط نام";
@@ -1762,10 +1768,10 @@
 "ONBOARDING_CAPTCHA_TITLE" = "کمی انسانیت به پیام های خود اضافه کنید";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "ثبت iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "پیوند آیفون";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
@@ -1777,7 +1783,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "ثبت این آیپد";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "پیوند این آیفون";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
@@ -1792,7 +1798,7 @@
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
+"ONBOARDING_PERMISSIONS_TITLE" = "گرفتن پیام";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "برای شروع شماره تلفن خود را وارد کنید";
@@ -2146,7 +2152,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "ویدیو";
 
 /* notification body */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ به پیام شما واکنش نشان داد";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "پین خود را فراموش کرده ام.";
@@ -2326,49 +2332,49 @@
 "SEARCH_SECTION_MESSAGES" = "پیام ها";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "عدم توانایی در گرفتن کد گرفتن پیوند";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "به روز رسانی اسکن دستگاه";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "ناموفقیت در پیوند دستگاه شما";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "انتخاب یک نام برای این دستگاه";
 
 /* label text */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "انتخاب یک نام";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "پایان پیوند دهی";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "باز کردن Signal روی گوشی شما برای پیوند این آیپد به حساب کاربری شما";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "روی تلفن همراه خود Signal ندارم...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "به اپ استور بروید، سیگنال را نصب کنید، رویه ثبت نام را کامل کرده، سپس میتوانید آیپد خود را به همان حساب کاربری پیوند دهید.";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "نصب Signal روی تلفن همراه خود";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "گرفتن کمک در پیوند آیپد خود در اینجا";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code with your phone";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "اسکن کد کیوآر با تلفن همراه خود";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "وضعیت رمزنگاری به حالت اولیه بازگردانیده شد.";
@@ -2623,7 +2629,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "دریافت و ارسال پیام خوانده شدن. این امکان اختیاری است و بر همه‌ی مکالمات اعمال می‌شود.";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Re-link";
+"SETTINGS_RELINK_BUTTON" = "پیوند دهی مجدد";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "ثبت نام دوباره";
@@ -2926,7 +2932,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "قطع ارتباط با «%@»؟";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "دستگاه دیگر پیوند ندارد. سیگنال را مجددا با تلفن همراه خود برای ادامه پیام دادن پیوند دهید.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal قادر به قطع ارتباط با دستگاه شما نبود.";
@@ -3007,7 +3013,7 @@
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "نام های کاربری نمی توانند با یک عدد آغاز شوند.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "نام کاربری";
@@ -3022,10 +3028,10 @@
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "بروزرسانی نام کاربری با شکست مواجه شد";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "نام دستگاه نمی تواند سفید باشد";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "نام دستگاه بیش از حد طولانی است";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "شما %@ را به عنوان تائیدنشده علامت‌گذاری کردید.";
@@ -3047,6 +3053,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "بازبینی کد های امنیتی";
+
+/* Tooltip highlighting the view once messages button. */
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "برای کنسل کردن به کناره بکشید";

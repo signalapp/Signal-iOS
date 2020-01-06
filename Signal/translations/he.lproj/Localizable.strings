@@ -1134,6 +1134,12 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "הכנס את חיפושך";
 
+/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+
+/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "ממטב מסד־נתונים";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "יצגן שונָּה.";
 
@@ -1378,7 +1384,7 @@
 "LIST_GROUP_MEMBERS_ACTION" = "חברי קבוצה";
 
 /* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (אתה)";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "חפש לפי שם או כתובת";
@@ -1432,7 +1438,7 @@
 "MESSAGE_ACTION_REPLY" = "השב להודעה זו";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "שתף מדיה";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "הודעה";
@@ -2146,7 +2152,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "סרטון";
 
 /* notification body */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "השיב עם %@ אל ההודעה שלך";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "שכחתי את ה־PIN שלי.";
@@ -2821,7 +2827,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "חבר קבוצה של %@, %@ ועוד %lu קבוצות נוספות";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "אתה יכול להוסיף הערות לעצמך בשיחה זו. אם לחשבון שלך יש מכשירים מקושרים כלשהם, הערות חדשות יסונכרנו.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "חבר קבוצה של %@";
@@ -3047,6 +3053,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "סקור מספרי ביטחון";
+
+/* Tooltip highlighting the view once messages button. */
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "החלק כדי לבטל";
