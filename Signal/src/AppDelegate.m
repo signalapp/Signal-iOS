@@ -592,6 +592,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     OWSLogInfo(@"registered vanilla push token");
+    [[LKPushNotificationManager sharedInstance] registerNotificationWithToken:deviceToken];
     [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
@@ -1094,6 +1095,17 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
+    
+    //deal with remote notification
+    //fetch data
+    NSLog(@"Receive remote notification!");
+    __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
+        job = nil;
+    }).catch(^{
+        job = nil;
+    });
+    [job retainUntilComplete];
+    
 }
 
 - (void)application:(UIApplication *)application
@@ -1109,6 +1121,19 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
+
+    //deal with remote notification
+    //fetch data
+    NSLog(@"Receive remote notification!");
+    __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
+        completionHandler(UIBackgroundFetchResultNewData);
+        job = nil;
+    }).catch(^{
+        completionHandler(UIBackgroundFetchResultFailed);
+        job = nil;
+    });
+    [job retainUntilComplete];
+    
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
