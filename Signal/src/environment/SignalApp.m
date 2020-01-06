@@ -158,6 +158,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)resetAppData
 {
+    [self resetAppData:nil];
+}
+
++ (void)resetAppData:(void (^__nullable)(void))onReset {
     // This _should_ be wiped out below.
     OWSLogError(@"");
     [DDLog flushLog];
@@ -168,6 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
     [AppEnvironment.shared.notificationPresenter clearAllNotifications];
 
     [DebugLogger.sharedLogger wipeLogs];
+    if(onReset != nil) { onReset(); }
     exit(0);
 }
 

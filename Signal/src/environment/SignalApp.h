@@ -51,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Methods
 
 + (void)resetAppData;
++ (void)resetAppData:(void (^__nullable)(void))onReset;
 
 
 - (void)showHomeView;
