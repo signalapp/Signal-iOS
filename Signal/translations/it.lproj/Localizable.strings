@@ -1135,7 +1135,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Inserisci la tua ricerca";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Questa versione di Signal include ottimizzazioni del database e miglioramenti delle prestazioni. Potrebbe essere necessario aprire l'app per completare il processo.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Ottimizzazione del database";
@@ -3055,7 +3055,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Esamina codici di sicurezza";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Clicca qui per far scomparire questo messaggio dopo che è stato visualizzato.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Scorri per cancellare";

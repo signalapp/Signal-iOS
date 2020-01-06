@@ -14,7 +14,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "مخاطب";
 
 /* Accessibility label for media. */
-"ACCESSIBILITY_LABEL_MEDIA" = "مدیا";
+"ACCESSIBILITY_LABEL_MEDIA" = "رسانه";
 
 /* Accessibility label for message. */
 "ACCESSIBILITY_LABEL_MESSAGE" = "پیام";
@@ -96,7 +96,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "نسخه %@ هم اكنون در اپ استور موجود است.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "نسخه جدیدی از Signal قابل دسترسی است";
+"APP_UPDATE_NAG_ALERT_TITLE" = "نسخهٔ جدید Signal موجود است";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "به روز رسانی";
@@ -123,7 +123,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "\"عنوان\" به حد خود رسید.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "یک عنوان اضافه کنید...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "عنوان اضافه کنید...";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "کپشن";
@@ -2482,16 +2482,16 @@
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "وضعیت iCloud";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "بازیابی ‍پشتیبان گیری ناموفق بود";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "بازگردانی ‍پشتیبان ناموفق بود";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "بازیابی پشتیبان بدون کار می باشد";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "بازگردانی پشتیبان صورت نمی‌گیرد.";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "بازیابی پشتیبان در حال انجام";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "بازگردانی پشتیبان در حال انجام";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "بازیابی ‍پشتیبان گیری موفق بود";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "بازگردانی ‍پشتیبان موفق بود";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "فاز";
@@ -2638,7 +2638,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "تایم اوت قفل صفحه نمایش";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "سیگنال را با تاچ آیدی یا فیس آیدی یا رمز دستگاهتان باز کنید. حتی اگر قفل صفحه فعال باشد، شما همچنان می‌توانید تماس‌هایتان را پاسخ دهید و اعلان‌های پیام‌هایتان را دریافت کنید. در تنظیمات اعلان‌های سیگنال می‌توانید مشخص کنید چه اطلاعاتی در اعلان‌ها نمایش داده شود.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "قفل صفحه نمایش";

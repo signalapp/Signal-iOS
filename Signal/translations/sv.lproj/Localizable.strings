@@ -1135,7 +1135,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Skriv vad du söker";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Denna version av Signal innehåller databasoptimeringar och prestandaförbättringar. Du kan behöva öppna appen för att slutföra processen.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimerar databas";
@@ -1483,7 +1483,7 @@
 "MESSAGE_METADATA_VIEW_SENDER" = "Avsändare";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Skickat";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Skickad";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filnamn";
@@ -1543,7 +1543,7 @@
 "MESSAGE_STATUS_SENDING" = "Skickar...";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "Skickat";
+"MESSAGE_STATUS_SENT" = "Skickad";
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Laddar upp...";
@@ -3055,7 +3055,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Granska säkerhetsnummer";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tryck här för att få detta meddelande att försvinna efter att det har visats.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Dra för att avbryta";

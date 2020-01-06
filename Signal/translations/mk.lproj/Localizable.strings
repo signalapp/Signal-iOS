@@ -123,7 +123,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Додади титла...";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
