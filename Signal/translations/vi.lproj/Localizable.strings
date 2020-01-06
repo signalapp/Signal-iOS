@@ -1312,7 +1312,7 @@
 "KEY_COMMAND_CONVERSATION_INFO" = "Đi đến Thông tin cuộc trò chuyện";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "Trỏ vào trường soạn thảo";
 
 /* A keyboard command to open the current conversations GIF picker. */
 "KEY_COMMAND_GIF_SEARCH" = "Đi đến Tìm kiếm ảnh GIF";
@@ -1384,7 +1384,7 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Thành viên Nhóm";
 
 /* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Bạn)";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Tìm theo tên hoặc địa chỉ";
@@ -1438,7 +1438,7 @@
 "MESSAGE_ACTION_REPLY" = "Trả lời Tin nhắn này";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Chia sẻ tệp đa phương tiện";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Tin nhắn";
@@ -2152,7 +2152,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* notification body */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Đã bày tỏ cảm xúc %@ về tin nhắn của bạn";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Tôi đã quên mã PIN.";
@@ -2338,7 +2338,7 @@
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Thiết bị còn lại của bạn đang chạy một phiên bản cũ của Signal không hỗ trợ quét mã QR iPad. Vui lòng cập nhật phiên bản Signal mới nhất và thử lại.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Cập nhật thiết bị quét";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Không thể Liên kết Thiết bị của bạn";
@@ -2827,7 +2827,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Thành viên của %@, %@ và %lu nhóm khác.";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Bạn có thể thêm ghi chú trong cuộc trò chuyện này. Nếu tài khoản của bạn có thiết bị liên kết, ghi chú cũng sẽ được đồng bộ.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Thành viên của %@";
@@ -3055,7 +3055,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Kiểm tra lại các Số An toàn";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Nhấn vào đây để khiến tin nhắn tự hủy sau khi đã được xem.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Kéo để huỷ";

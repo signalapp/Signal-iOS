@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesJob.h"
@@ -123,16 +123,20 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     AssertIsOnDisappearingMessagesQueue();
 
-    uint64_t now = [NSDate ows_millisecondTimeStamp];
-
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     __block NSUInteger expirationCount = 0;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
+            // We want to compute `now` *after* our finder fetches results.
+            // Otherwise, if we computed it before the finder, and a message had expired in the tiny
+            // gap between that computation and when the finder runs, we would skip deleting an
+            // expired message until the next expiration run.
+            uint64_t now = [NSDate ows_millisecondTimeStamp];
+
             // sanity check
             if (message.expiresAt > now) {
-                OWSFailDebug(@"Refusing to remove message which doesn't expire until: %lld", message.expiresAt);
+                OWSFailDebug(@"Refusing to remove message which doesn't expire until: %llu, now: %lld", message.expiresAt, now);
                 return;
             }
 

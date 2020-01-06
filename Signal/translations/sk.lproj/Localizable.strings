@@ -426,10 +426,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Stlmiť";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "V nastaveniach súkromia Signalu môžete zapnúť integráciu do iOS hovorov, aby ste prichádzajúce hovory prijímali na uzamykacej obrazovke.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "V nastaveniach súkromia Signalu môžete zapnúť integráciu s iOS hovormi, aby ste prichádzajúce hovory prijímali na uzamykacej obrazovke.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "V nastaveniach súkromia Signalu môžete zapnúť integráciu do iOS hovorov, aby sa pri prichádzajúcich hovoroch zobrazovalo meno a telefónne číslo.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "V nastaveniach súkromia Signalu môžete zapnúť integráciu s iOS hovormi, aby sa pri prichádzajúcich hovoroch zobrazovalo meno a telefónne číslo.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Teraz nie";
@@ -507,7 +507,7 @@
 "COMPOSE_BUTTON_HINT" = "Vyberte alebo nájdite používateľa Signalu, aby ste začali konverzáciu.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Začať";
+"COMPOSE_BUTTON_LABEL" = "Vytvoriť";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontakty";
@@ -1126,7 +1126,7 @@
 "GIF_PICKER_VIEW_TITLE" = "Vyhľadávanie GIFu";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Chyba. Ťuknutím skúsite znovu.";
+"GIF_VIEW_SEARCH_ERROR" = "Chyba. Ťuknutím skúste znovu.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Žiadne výsledky.";
@@ -1135,7 +1135,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Zadajte hľadaný výraz";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Táto verzia prináša optimalizácie databázy a vylepšenia výkonu. Na dokončenie procesu budete zrejme musieť aplikáciu otvoriť.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimalizácia databázy";
@@ -1147,7 +1147,7 @@
 "GROUP_CREATED" = "Skupina bola vytvorená.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Nepodarilo sa každého člena pridať do skupiny. Ťuknutím skúsite znovu.";
+"GROUP_CREATION_FAILED" = "Nepodarilo sa každého člena pridať do skupiny. Ťuknutím skúste znovu.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Správa skupiny";
@@ -1774,10 +1774,10 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Pripojiť iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Ťuknutím na  “Registrovať iPad” budete môcť vytvoriť čisto nový Signal účet, alebo presunúť existujúci účet na tento iPad. Toto vypne Signal na akomkoľvek inom zariadení, ktoré je momentálne registrované prostredníctvom tohoto istého telefónneho čísla.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Ťuknutím na “Pripojiť iPhone” budete môcť spojiť váš telefón s existujúcim účtom. Vo všeobecnosti sa to neodporúča a obmedzí to niektoré funkcie, ako uskutočňovanie hovorov.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrovať tento iPad";
@@ -2158,7 +2158,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "Zabudol/la som PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Kvôli vašemu súkromiu a vašej bezpečnosti nie je možné PIN nijakým spôsobom obnoviť. Ak svoj PIN zabudnete, po 7 dňoch neaktivity si budete môcť overiť svoj účet prostredníctvom SMS. V tom prípade bude váš účet zmazaný a celý jeho obsah sa odstráni.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Zabudli ste svoj PIN?";
@@ -2362,13 +2362,13 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nemám Signal na svojom telefóne...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Choďte do App Store na vašom telefóne, nainštalujte Signal, dokončite proces registrácie a potom budete môcť pripojiť váš iPad k tomu istému účtu.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Inštalovať Signal na váš telefón";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Ťuknite na váš profilový obrázok, aby ste otvorili nastavenia Signal vo vašom telefóne. Potom na \"Pripojené zariadenia\" a \"Pripojiť nové zariadenie\", pre naskenovanie tohoto kódu pomocou vašeho telefónu:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Získajte tu pomoc s pripojením vášho iPadu";
@@ -2530,7 +2530,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Vždy presmerovať hovory";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Smerovať všetky hovory cez server Signal pre zabránenie odhaleniu vašej IP adresy kontaktu. Zapnutie zníži kvalitu hovoru.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Vymazať históriu konverzácie";
@@ -2584,7 +2584,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Nastavenia";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Upozornenia na hovory a správy sa môžu zobrazovať, keď je váš telefón zamknutý. Môžete obmedziť, čo sa v týchto upozorneniach zobrazí.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Obsah hlásenia";
@@ -2599,7 +2599,7 @@
 "SETTINGS_NOTIFICATIONS" = "Upozornenia";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "Registrujte vaše telefónne číslo v aplikácii Signal. Ak svoj PIN zabudnete, budete z vašeho účtu vymknutý/á na 7 dní.";
 
 /* Label for the 'pins' item of the privacy settings. */
 "SETTINGS_PINS_ITEM" = "Zmente si PIN";
@@ -2611,13 +2611,13 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Zobraziť meno a číslo volajúceho";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Zobraziť hovory v zozname \"Posledné\" v iOS aplikácii Telefón.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Zobraziť hovory v Posledných";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integrácia do hovorov iOS";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integrácia s hovormi iOS";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Súkromie";
@@ -2626,7 +2626,7 @@
 "SETTINGS_READ_RECEIPT" = "Potvrdenia o prečítaní";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Zistite a zdieľajte, keď si niekto prečíta správu. Toto nastavenie je voliteľné a vzťahuje sa na všetky konverzácie.";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Opätovne pripojiť";
@@ -2638,7 +2638,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Časový limit pred uzamknutím";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Odomknite obrazovku aplikácie Signal pomocou Touch ID, Face ID, alebo kódového zámku na vašom iOS zariadení. Pri zamknutej obrazovke budete aj naďalej môcť prijímať prichádzajúce hovory a dostávať upozornenia na správy a hovory. Nastavenia upozornení Signalu vám umožňujú zobrazené informácie prispôsobiť.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Zámok obrazovky";
@@ -2653,7 +2653,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Zabrániť, aby sa ukážky zo Signalu zobrazovali v prepínači aplikácií.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Integrácia s hovormi iOS zobrazuje hovory z aplikácie Signal na zamknutej obrazovke a v systémovej histórii hovorov. Voliteľne môžete zobraziť mená a telefónne čísla vašich kontaktov. Ak je povolený iCloud, tieto dáta sú zdieľané so spoločnosťou Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Upozornenia";
@@ -2686,7 +2686,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Indikátory písania";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Zistite a zdieľajte, keď niekto píše správu. Toto nastavenie je voliteľné a vzťahuje sa na všetky konverzácie.";
 
 /* Label for a link to more info about unidentified delivery. */
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Dozvedieť sa viac";
@@ -2698,7 +2698,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Zobraziť indikátory";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Zobraziť stavovú ikonu v detailoch správ, ktoré boli doručené s použitím zapečateného odosielateľa.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Povoliť od každého";
@@ -2827,7 +2827,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Člen %@, %@, a %lu ďalších skupín";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "V tejto konverzácii si môžete pridávať poznámky. Ak máte vo vašom účte nejaké pripojené zariadenia, nové poznámky sa budú synchronizovať.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Člen %@";
@@ -2899,13 +2899,13 @@
 "UNKNOWN_COUNTRY_NAME" = "Neznáma krajina";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "One of your devices sent a message that can't be processed or displayed here because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Jedno z vašich zariadení odoslalo správu, ktorú tu nie je možné spracovať alebo zobraziť, pretože používa novú funkciu Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ vám poslal(a) správu, ktorú nie je možné zobraziť alebo spracovať, pretože používa novú funkciu Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Dostali ste správu, ktorú nie je možné zobraziť alebo spracovať, pretože používa novú funkciu Signal.";
 
 /* Label for button that lets users upgrade the app. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Aktualizujte Signal teraz";
@@ -3055,7 +3055,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Prezrieť bezpečnostné čísla";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Ťuknite sem, aby táto správa po zobrazení zmizla.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Potiahnite pre zrušenie";
