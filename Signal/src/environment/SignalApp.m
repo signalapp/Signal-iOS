@@ -172,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
     [AppEnvironment.shared.notificationPresenter clearAllNotifications];
 
     [DebugLogger.sharedLogger wipeLogs];
-    if(onReset != nil) { onReset(); }
+    if (onReset != nil) { onReset(); }
     exit(0);
 }
 

@@ -592,7 +592,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     OWSLogInfo(@"registered vanilla push token");
-    [[LKPushNotificationManager sharedInstance] registerNotificationWithToken:deviceToken];
+    [LKPushNotificationManager.shared registerWithToken:deviceToken];
     [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
@@ -1096,16 +1096,13 @@ static NSTimeInterval launchStartedAt;
         return;
     }
     
-    //deal with remote notification
-    //fetch data
-    NSLog(@"Receive remote notification!");
+    [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
     __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
         job = nil;
     }).catch(^{
         job = nil;
     });
     [job retainUntilComplete];
-    
 }
 
 - (void)application:(UIApplication *)application
@@ -1122,9 +1119,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    //deal with remote notification
-    //fetch data
-    NSLog(@"Receive remote notification!");
+    [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
     __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
         completionHandler(UIBackgroundFetchResultNewData);
         job = nil;
@@ -1133,7 +1128,6 @@ static NSTimeInterval launchStartedAt;
         job = nil;
     });
     [job retainUntilComplete];
-    
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
