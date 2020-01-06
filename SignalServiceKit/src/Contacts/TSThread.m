@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSThread.h"
@@ -490,10 +490,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 {
     OWSAssertDebug(message != nil);
     OWSAssertDebug(transaction != nil);
-
-    if (![self.class shouldInteractionAppearInInbox:message]) {
-        return;
-    }
 
     int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToUpdateLastInteractionRowId = messageSortId == self.lastInteractionRowId;
