@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewItem.h"
@@ -954,7 +954,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         // are rendered like empty text messages, but without any interactivity.
         OWSLogWarn(@"Treating unknown message as empty text message: %@ %llu", message.class, message.timestamp);
         self.messageCellType = OWSMessageCellType_TextOnlyMessage;
-        self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
+        self.displayableBodyText = [DisplayableText displayableText:@""];
     }
 }
 
