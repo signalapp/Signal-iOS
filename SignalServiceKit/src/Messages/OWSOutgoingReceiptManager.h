@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SSKProtoEnvelope;
 @class SignalServiceAddress;
@@ -17,9 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope;
+- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
+                              transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)messageAuthorAddress timestamp:(uint64_t)timestamp;
+- (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)messageAuthorAddress
+                           timestamp:(uint64_t)timestamp
+                         transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

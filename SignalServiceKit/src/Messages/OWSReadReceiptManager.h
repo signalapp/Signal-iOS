@@ -100,7 +100,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:recipientMap:sentTimestamp:));
 // Both types of messages are deduplicated.
 //
 // This method can be called from any thread.
-- (void)messageWasReadLocally:(TSIncomingMessage *)message;
+- (void)messageWasReadLocally:(TSIncomingMessage *)message transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread completion:(void (^)(void))completion;
 

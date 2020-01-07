@@ -227,7 +227,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     }];
 
     if (sendReadReceipt) {
-        [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
+        [OWSReadReceiptManager.sharedManager messageWasReadLocally:self transaction:transaction];
     }
 }
 
