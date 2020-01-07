@@ -29,7 +29,6 @@ Pod::Spec.new do |s|
   s.private_header_files = 'WebRTC/Build/libringrtc/*.h'
 
   s.vendored_libraries = 'WebRTC/Build/libringrtc/libringrtc.a'
-  s.libraries = 'ringrtc'
 
   s.module_map = 'RingRTC/src/ios/SignalRingRTC/SignalRingRTC/SignalRingRTC.modulemap'
 
