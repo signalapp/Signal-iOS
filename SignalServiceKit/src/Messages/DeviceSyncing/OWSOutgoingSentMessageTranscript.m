@@ -101,6 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Create data message without renderable content.
         SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
         [dataBuilder setTimestamp:self.message.timestamp];
+        [dataBuilder setExpireTimer:self.message.expiresInSeconds];
 
         OWSAssertDebug(SSKFeatureFlags.viewOnceSending);
         [dataBuilder setIsViewOnce:YES];
