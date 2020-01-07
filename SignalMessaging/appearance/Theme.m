@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "Theme.h"
@@ -67,15 +67,15 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     OWSSingletonAssert();
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self notifyIfDarkThemeEnabled];
+        [self notifyIfThemeModeIsNotDefault];
     }];
 
     return self;
 }
 
-- (void)notifyIfDarkThemeEnabled
+- (void)notifyIfThemeModeIsNotDefault
 {
-    if (self.isDarkThemeEnabled) {
+    if (self.defaultTheme != self.getOrFetchCurrentTheme) {
         [self themeDidChange];
     }
 }
@@ -134,7 +134,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     }
 
     if (!self.storageCoordinator.isStorageReady) {
-        return ThemeMode_Light;
+        return self.defaultTheme;
     }
 
     __block ThemeMode currentMode;
@@ -209,6 +209,18 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 #else
     return NO;
 #endif
+}
+
+- (ThemeMode)defaultTheme
+{
+// TODO Xcode 11: Delete this once we're compiling only in Xcode 11
+#ifdef __IPHONE_13_0
+    if (@available(iOS 13, *)) {
+        return ThemeMode_System;
+    }
+#endif
+
+    return ThemeMode_Light;
 }
 
 #pragma mark -
