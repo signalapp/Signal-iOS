@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupExportJob.h"
@@ -969,9 +969,14 @@ NS_ASSUME_NONNULL_BEGIN
         kOWSBackup_ManifestKey_AttachmentFiles : [self jsonForItems:self.savedAttachmentItems],
     } mutableCopy];
 
-    NSString *_Nullable localProfileName = self.profileManager.localProfileName;
-    if (localProfileName.length > 0) {
-        json[kOWSBackup_ManifestKey_LocalProfileName] = localProfileName;
+    NSString *_Nullable localGivenName = self.profileManager.localGivenName;
+    if (localGivenName.length > 0) {
+        json[kOWSBackup_ManifestKey_LocalProfileGivenName] = localGivenName;
+    }
+
+    NSString *_Nullable localFamilyName = self.profileManager.localFamilyName;
+    if (localFamilyName.length > 0) {
+        json[kOWSBackup_ManifestKey_LocalProfileFamilyName] = localFamilyName;
     }
 
     if (self.localProfileAvatarItem) {

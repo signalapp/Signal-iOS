@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 @class Contact;
+@class NSPersonNameComponents;
 @class PhoneNumber;
 @class SDSAnyReadTransaction;
 @class SignalAccount;
@@ -25,6 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address;
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
+
+- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address;
+- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
+                                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread

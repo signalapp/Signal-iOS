@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -35,6 +35,7 @@ public struct UserProfileRecord: SDSRecord {
     public let recipientPhoneNumber: String?
     public let recipientUUID: String?
     public let username: String?
+    public let familyName: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -47,6 +48,7 @@ public struct UserProfileRecord: SDSRecord {
         case recipientPhoneNumber
         case recipientUUID
         case username
+        case familyName
     }
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -80,6 +82,7 @@ public extension UserProfileRecord {
         recipientPhoneNumber = row[7]
         recipientUUID = row[8]
         username = row[9]
+        familyName = row[10]
     }
 }
 
@@ -113,6 +116,7 @@ extension OWSUserProfile {
             let uniqueId: String = record.uniqueId
             let avatarFileName: String? = record.avatarFileName
             let avatarUrlPath: String? = record.avatarUrlPath
+            let familyName: String? = record.familyName
             let profileKeySerialized: Data? = record.profileKey
             let profileKey: OWSAES256Key? = try SDSDeserialization.optionalUnarchive(profileKeySerialized, name: "profileKey")
             let profileName: String? = record.profileName
@@ -124,6 +128,7 @@ extension OWSUserProfile {
                                   uniqueId: uniqueId,
                                   avatarFileName: avatarFileName,
                                   avatarUrlPath: avatarUrlPath,
+                                  familyName: familyName,
                                   profileKey: profileKey,
                                   profileName: profileName,
                                   recipientPhoneNumber: recipientPhoneNumber,
@@ -180,6 +185,7 @@ extension OWSUserProfileSerializer {
     static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 7)
     static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 8)
     static let usernameColumn = SDSColumnMetadata(columnName: "username", columnType: .unicodeString, isOptional: true, columnIndex: 9)
+    static let familyNameColumn = SDSColumnMetadata(columnName: "familyName", columnType: .unicodeString, isOptional: true, columnIndex: 10)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -195,7 +201,8 @@ extension OWSUserProfileSerializer {
         profileNameColumn,
         recipientPhoneNumberColumn,
         recipientUUIDColumn,
-        usernameColumn
+        usernameColumn,
+        familyNameColumn
         ])
 }
 
@@ -612,7 +619,8 @@ class OWSUserProfileSerializer: SDSSerializer {
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID
         let username: String? = model.username
+        let familyName: String? = model.familyName
 
-        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, username: username)
+        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, username: username, familyName: familyName)
     }
 }

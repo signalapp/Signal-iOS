@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -56,7 +56,8 @@ extension StorageServiceProtoContactRecord {
 
         let isInWhitelist = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
         let profileKey = profileManager.profileKeyData(for: address, transaction: transaction)
-        let profileName = profileManager.profileName(for: address, transaction: transaction)
+        let profileGivenName = profileManager.givenName(for: address, transaction: transaction)
+        let profileFamilyName = profileManager.familyName(for: address, transaction: transaction)
 
         builder.setBlocked(blockingManager.isAddressBlocked(address))
         builder.setWhitelisted(isInWhitelist)
@@ -81,8 +82,12 @@ extension StorageServiceProtoContactRecord {
             profileBuilder.setKey(profileKey)
         }
 
-        if let profileName = profileName {
-            profileBuilder.setName(profileName)
+        if let profileGivenName = profileGivenName {
+            profileBuilder.setGivenName(profileGivenName)
+        }
+
+        if let profileFamilyName = profileFamilyName {
+            profileBuilder.setFamilyName(profileFamilyName)
         }
 
         builder.setProfile(try profileBuilder.build())
@@ -134,8 +139,8 @@ extension StorageServiceProtoContactRecord {
 
             // We'll immediately schedule a fetch of the new profile, but restore the name
             // if it exists so we we can start displaying it immediately.
-            if let profileName = profile?.name {
-                profileManager.setProfileName(profileName, for: address, transaction: transaction)
+            if let givenName = profile?.givenName {
+                profileManager.setProfileGivenName(givenName, familyName: profile?.familyName, for: address, transaction: transaction)
             }
 
         // If we have a local profile key for this user but the service doesn't mark it as needing update.

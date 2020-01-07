@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSettingsViewController.h"
@@ -368,7 +368,7 @@
     [nameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     UILabel *titleLabel = [UILabel new];
-    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
+    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localFullName];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
         titleLabel.textColor = Theme.primaryTextColor;

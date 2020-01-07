@@ -806,8 +806,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(nullable NSData *)encryptedPaddedName
 {
-    const NSUInteger kEncodedNameLength = 72;
-    
+    const NSUInteger kEncodedNameLength = 108;
+
     NSString *urlString;
     
     NSString *base64EncodedName = [encryptedPaddedName base64EncodedString];

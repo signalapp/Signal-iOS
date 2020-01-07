@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -995,14 +995,17 @@ public class StorageServiceProtoContactRecordProfile: NSObject {
     @objc
     public func asBuilder() -> StorageServiceProtoContactRecordProfileBuilder {
         let builder = StorageServiceProtoContactRecordProfileBuilder()
-        if let _value = name {
-            builder.setName(_value)
+        if let _value = givenName {
+            builder.setGivenName(_value)
         }
         if let _value = key {
             builder.setKey(_value)
         }
         if let _value = username {
             builder.setUsername(_value)
+        }
+        if let _value = familyName {
+            builder.setFamilyName(_value)
         }
         return builder
     }
@@ -1017,13 +1020,13 @@ public class StorageServiceProtoContactRecordProfile: NSObject {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setName(_ valueParam: String?) {
+        public func setGivenName(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
-            proto.name = valueParam
+            proto.givenName = valueParam
         }
 
-        public func setName(_ valueParam: String) {
-            proto.name = valueParam
+        public func setGivenName(_ valueParam: String) {
+            proto.givenName = valueParam
         }
 
         @objc
@@ -1049,6 +1052,17 @@ public class StorageServiceProtoContactRecordProfile: NSObject {
         }
 
         @objc
+        @available(swift, obsoleted: 1.0)
+        public func setFamilyName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.familyName = valueParam
+        }
+
+        public func setFamilyName(_ valueParam: String) {
+            proto.familyName = valueParam
+        }
+
+        @objc
         public func build() throws -> StorageServiceProtoContactRecordProfile {
             return try StorageServiceProtoContactRecordProfile.parseProto(proto)
         }
@@ -1062,15 +1076,15 @@ public class StorageServiceProtoContactRecordProfile: NSObject {
     fileprivate let proto: StorageServiceProtos_ContactRecord.Profile
 
     @objc
-    public var name: String? {
-        guard hasName else {
+    public var givenName: String? {
+        guard hasGivenName else {
             return nil
         }
-        return proto.name
+        return proto.givenName
     }
     @objc
-    public var hasName: Bool {
-        return proto.hasName
+    public var hasGivenName: Bool {
+        return proto.hasGivenName
     }
 
     @objc
@@ -1095,6 +1109,18 @@ public class StorageServiceProtoContactRecordProfile: NSObject {
     @objc
     public var hasUsername: Bool {
         return proto.hasUsername
+    }
+
+    @objc
+    public var familyName: String? {
+        guard hasFamilyName else {
+            return nil
+        }
+        return proto.familyName
+    }
+    @objc
+    public var hasFamilyName: Bool {
+        return proto.hasFamilyName
     }
 
     private init(proto: StorageServiceProtos_ContactRecord.Profile) {
@@ -1353,7 +1379,7 @@ public class StorageServiceProtoContactRecord: NSObject {
         let phoneNumber: String? = {
             guard hasServiceE164 else {
                 // Shouldn’t happen in prod yet
-//                assert(FeatureFlags.allowUUIDOnlyContacts)
+                assert(FeatureFlags.allowUUIDOnlyContacts)
                 return nil
             }
 

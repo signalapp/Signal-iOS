@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupJob.h"
@@ -20,7 +20,8 @@ NSString *const kOWSBackup_ManifestKey_RelativeFilePath = @"relative_file_path";
 NSString *const kOWSBackup_ManifestKey_AttachmentId = @"attachment_id";
 NSString *const kOWSBackup_ManifestKey_DataSize = @"data_size";
 NSString *const kOWSBackup_ManifestKey_LocalProfileAvatar = @"local_profile_avatar";
-NSString *const kOWSBackup_ManifestKey_LocalProfileName = @"local_profile_name";
+NSString *const kOWSBackup_ManifestKey_LocalProfileGivenName = @"local_profile_name";
+NSString *const kOWSBackup_ManifestKey_LocalProfileFamilyName = @"local_profile_family_name";
 
 NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
@@ -226,16 +227,24 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         localProfileAvatarItems = [self parseManifestItems:json key:kOWSBackup_ManifestKey_LocalProfileAvatar];
     }
 
-    NSString *_Nullable localProfileName = [self parseManifestItem:json key:kOWSBackup_ManifestKey_LocalProfileName];
+    NSString *_Nullable localProfileGivenName = [self parseManifestItem:json
+                                                                    key:kOWSBackup_ManifestKey_LocalProfileGivenName];
+    NSString *_Nullable localProfileFamilyName = [self parseManifestItem:json
+                                                                     key:kOWSBackup_ManifestKey_LocalProfileFamilyName];
 
     OWSBackupManifestContents *contents = [OWSBackupManifestContents new];
     contents.databaseItems = databaseItems;
     contents.attachmentsItems = attachmentsItems;
     contents.localProfileAvatarItem = localProfileAvatarItems.firstObject;
-    if ([localProfileName isKindOfClass:[NSString class]]) {
-        contents.localProfileName = localProfileName;
-    } else if (localProfileName) {
-        OWSFailDebug(@"Invalid localProfileName: %@", [localProfileName class]);
+    if ([localProfileGivenName isKindOfClass:[NSString class]]) {
+        contents.localProfileGivenName = localProfileGivenName;
+    } else if (localProfileGivenName) {
+        OWSFailDebug(@"Invalid localProfileGivenName: %@", [localProfileGivenName class]);
+    }
+    if ([localProfileFamilyName isKindOfClass:[NSString class]]) {
+        contents.localProfileFamilyName = localProfileFamilyName;
+    } else if (localProfileFamilyName) {
+        OWSFailDebug(@"Invalid localProfileFamilyName: %@", [localProfileFamilyName class]);
     }
 
     return [AnyPromise promiseWithValue:contents];

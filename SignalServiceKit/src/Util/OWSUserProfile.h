@@ -24,7 +24,10 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 
 @property (atomic, readonly) SignalServiceAddress *address;
 @property (atomic, readonly, nullable) OWSAES256Key *profileKey;
-@property (atomic, readonly, nullable) NSString *profileName;
+@property (atomic, readonly, nullable) NSString *givenName;
+@property (atomic, readonly, nullable) NSString *familyName;
+@property (atomic, readonly, nullable) NSPersonNameComponents *nameComponents;
+@property (atomic, readonly, nullable) NSString *fullName;
 @property (atomic, readonly, nullable) NSString *username;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
@@ -42,12 +45,13 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
                       uniqueId:(NSString *)uniqueId
                   avatarFileName:(nullable NSString *)avatarFileName
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
+                      familyName:(nullable NSString *)familyName
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
                         username:(nullable NSString *)username
-NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on
 
@@ -68,18 +72,19 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:profileKey:profi
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                avatarUrlPath:(nullable NSString *)avatarUrlPath
-               avatarFileName:(nullable NSString *)avatarFileName
-                  transaction:(SDSAnyWriteTransaction *)transaction
-                   completion:(nullable OWSUserProfileCompletion)completion
-    NS_SWIFT_NAME(update(profileName:avatarUrlPath:avatarFileName:transaction:completion:));
+- (void)updateWithGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+             avatarFileName:(nullable NSString *)avatarFileName
+                transaction:(SDSAnyWriteTransaction *)transaction
+                 completion:(nullable OWSUserProfileCompletion)completion;
 
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                     username:(nullable NSString *)username
-                avatarUrlPath:(nullable NSString *)avatarUrlPath
-                  transaction:(SDSAnyWriteTransaction *)transaction
-                   completion:(nullable OWSUserProfileCompletion)completion;
+- (void)updateWithGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+                   username:(nullable NSString *)username
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+                transaction:(SDSAnyWriteTransaction *)transaction
+                 completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
                      transaction:(SDSAnyWriteTransaction *)transaction
@@ -89,9 +94,10 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:profileKey:profi
                  transaction:(SDSAnyWriteTransaction *)transaction
                   completion:(nullable OWSUserProfileCompletion)completion;
 
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                  transaction:(SDSAnyWriteTransaction *)transaction
-                   completion:(nullable OWSUserProfileCompletion)completion;
+- (void)updateWithGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+                transaction:(SDSAnyWriteTransaction *)transaction
+                 completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
                 transaction:(SDSAnyWriteTransaction *)transaction

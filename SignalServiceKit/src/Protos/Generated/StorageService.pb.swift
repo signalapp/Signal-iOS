@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 //
@@ -343,14 +343,14 @@ struct StorageServiceProtos_ContactRecord {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var name: String {
-      get {return _name ?? String()}
-      set {_name = newValue}
+    var givenName: String {
+      get {return _givenName ?? String()}
+      set {_givenName = newValue}
     }
-    /// Returns true if `name` has been explicitly set.
-    var hasName: Bool {return self._name != nil}
-    /// Clears the value of `name`. Subsequent reads from it will return its default value.
-    mutating func clearName() {self._name = nil}
+    /// Returns true if `givenName` has been explicitly set.
+    var hasGivenName: Bool {return self._givenName != nil}
+    /// Clears the value of `givenName`. Subsequent reads from it will return its default value.
+    mutating func clearGivenName() {self._givenName = nil}
 
     var key: Data {
       get {return _key ?? SwiftProtobuf.Internal.emptyData}
@@ -370,13 +370,23 @@ struct StorageServiceProtos_ContactRecord {
     /// Clears the value of `username`. Subsequent reads from it will return its default value.
     mutating func clearUsername() {self._username = nil}
 
+    var familyName: String {
+      get {return _familyName ?? String()}
+      set {_familyName = newValue}
+    }
+    /// Returns true if `familyName` has been explicitly set.
+    var hasFamilyName: Bool {return self._familyName != nil}
+    /// Clears the value of `familyName`. Subsequent reads from it will return its default value.
+    mutating func clearFamilyName() {self._familyName = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
-    fileprivate var _name: String?
+    fileprivate var _givenName: String?
     fileprivate var _key: Data?
     fileprivate var _username: String?
+    fileprivate var _familyName: String?
   }
 
   init() {}
@@ -848,24 +858,26 @@ extension StorageServiceProtos_ContactRecord.Identity.State: SwiftProtobuf._Prot
 extension StorageServiceProtos_ContactRecord.Profile: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_ContactRecord.protoMessageName + ".Profile"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "name"),
+    1: .same(proto: "givenName"),
     2: .same(proto: "key"),
-    3: .same(proto: "username")
+    3: .same(proto: "username"),
+    4: .same(proto: "familyName")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._name)
+      case 1: try decoder.decodeSingularStringField(value: &self._givenName)
       case 2: try decoder.decodeSingularBytesField(value: &self._key)
       case 3: try decoder.decodeSingularStringField(value: &self._username)
+      case 4: try decoder.decodeSingularStringField(value: &self._familyName)
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._name {
+    if let v = self._givenName {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     }
     if let v = self._key {
@@ -874,13 +886,17 @@ extension StorageServiceProtos_ContactRecord.Profile: SwiftProtobuf.Message, Swi
     if let v = self._username {
       try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     }
+    if let v = self._familyName {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: StorageServiceProtos_ContactRecord.Profile, rhs: StorageServiceProtos_ContactRecord.Profile) -> Bool {
-    if lhs._name != rhs._name {return false}
+    if lhs._givenName != rhs._givenName {return false}
     if lhs._key != rhs._key {return false}
     if lhs._username != rhs._username {return false}
+    if lhs._familyName != rhs._familyName {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

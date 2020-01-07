@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactAvatarBuilder.h"
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSContactAvatarBuilder ()
 
 @property (nonatomic, readonly, nullable) SignalServiceAddress *address;
-@property (nonatomic, readonly) NSString *contactName;
+@property (nonatomic, readonly, nullable) NSPersonNameComponents *contactNameComponents;
 @property (nonatomic, readonly) ConversationColorName colorName;
 @property (nonatomic, readonly) NSUInteger diameter;
 
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Initializers
 
 - (instancetype)initWithAddress:(nullable SignalServiceAddress *)address
-                           name:(NSString *)name
+                 nameComponents:(nullable NSPersonNameComponents *)nameComponents
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
 {
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(colorName.length > 0);
 
     _address = address;
-    _contactName = name;
+    _contactNameComponents = nameComponents;
     _colorName = colorName;
     _diameter = diameter;
 
@@ -50,30 +50,18 @@ NS_ASSUME_NONNULL_BEGIN
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
 {
-
-
-    // Name for avatar initials.
-    NSString *_Nullable name;
-
-    if (SSKFeatureFlags.profileDisplayChanges) {
-        name = [OWSContactAvatarBuilder.contactsManager displayNameForAddress:address];
-    } else {
-        name = [OWSContactAvatarBuilder.contactsManager contactOrProfileNameForAddress:address];
-
-        if (name.length == 0) {
-            name = address.stringForDisplay;
-        }
-    }
-
-    return [self initWithAddress:address name:name colorName:colorName diameter:diameter];
+    // Components for avatar initials.
+    NSPersonNameComponents *_Nullable nameComponents =
+        [OWSContactAvatarBuilder.contactsManager nameComponentsForAddress:address];
+    return [self initWithAddress:address nameComponents:nameComponents colorName:colorName diameter:diameter];
 }
 
-- (instancetype)initWithNonSignalName:(NSString *)nonSignalName
-                            colorSeed:(NSString *)colorSeed
-                             diameter:(NSUInteger)diameter
+- (instancetype)initWithNonSignalNameComponents:(NSPersonNameComponents *)nonSignalNameComponents
+                                      colorSeed:(NSString *)colorSeed
+                                       diameter:(NSUInteger)diameter
 {
     ConversationColorName colorName = [TSThread stableColorNameForNewConversationWithString:colorSeed];
-    return [self initWithAddress:nil name:nonSignalName colorName:colorName diameter:diameter];
+    return [self initWithAddress:nil nameComponents:nonSignalNameComponents colorName:colorName diameter:diameter];
 }
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
@@ -130,8 +118,33 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.address.isValid) {
         return [NSString stringWithFormat:@"%@-%d", self.address.stringForDisplay, Theme.isDarkThemeEnabled];
     } else {
-        return [NSString stringWithFormat:@"%@-%d", self.contactName, Theme.isDarkThemeEnabled];
+        return [NSString stringWithFormat:@"%@-%d", self.contactInitials, Theme.isDarkThemeEnabled];
     }
+}
+
+- (nullable NSString *)contactInitials
+{
+    if (self.contactNameComponents == nil) {
+        return nil;
+    }
+
+    NSString *_Nullable abbreviation = [NSPersonNameComponentsFormatter
+        localizedStringFromPersonNameComponents:self.contactNameComponents
+                                          style:NSPersonNameComponentsFormatterStyleAbbreviated
+                                        options:0];
+    if (abbreviation.length > 0 && abbreviation.length < 4) {
+        return abbreviation;
+    }
+
+    // Some languages, such as Arabic, don't natively support abbreviations or
+    // have default abbreviations that are too long. In this case, fallback
+    // to just using the first letter of their full name.
+
+    NSString *fullName =
+        [NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents:self.contactNameComponents
+                                                                           style:0
+                                                                         options:0];
+    return [fullName substringToIndex:1];
 }
 
 - (nullable UIImage *)buildDefaultImage
@@ -142,32 +155,11 @@ NS_ASSUME_NONNULL_BEGIN
         return cachedAvatar;
     }
 
-    NSMutableString *initials = [NSMutableString string];
-
-    NSRange rangeOfLetters = [self.contactName rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet]];
-    if (rangeOfLetters.location != NSNotFound) {
-        // Contact name contains letters, so it's probably not just a phone number.
-        // Make an image from the contact's initials
-        NSCharacterSet *excludeAlphanumeric = [NSCharacterSet alphanumericCharacterSet].invertedSet;
-        NSArray *words =
-            [self.contactName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        for (NSString *word in words) {
-            NSString *trimmedWord = [word stringByTrimmingCharactersInSet:excludeAlphanumeric];
-            if (trimmedWord.length > 0) {
-                NSString *firstLetter = [trimmedWord substringToIndex:1];
-                [initials appendString:firstLetter.localizedUppercaseString];
-            }
-        }
-
-        NSRange stringRange = { 0, MIN([initials length], (NSUInteger)3) }; // Rendering max 3 letters.
-        initials = [[initials substringWithRange:stringRange] mutableCopy];
-    }
-
     UIColor *color = [OWSConversationColor conversationColorOrDefaultForColorName:self.colorName].themeColor;
     OWSAssertDebug(color);
 
     UIImage *_Nullable image;
-    if (initials.length == 0) {
+    if (self.contactInitials.length == 0) {
         // We don't have a name for this contact, so we can't make an "initials" image.
 
         UIImage *icon;
@@ -186,7 +178,9 @@ NS_ASSUME_NONNULL_BEGIN
         image =
             [OWSAvatarBuilder avatarImageWithIcon:icon iconSize:iconSize backgroundColor:color diameter:self.diameter];
     } else {
-        image = [OWSAvatarBuilder avatarImageWithInitials:initials backgroundColor:color diameter:self.diameter];
+        image = [OWSAvatarBuilder avatarImageWithInitials:self.contactInitials
+                                          backgroundColor:color
+                                                 diameter:self.diameter];
     }
 
     if (!image) {

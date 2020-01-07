@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/OWSBackupFragment.h>
@@ -14,7 +14,8 @@ extern NSString *const kOWSBackup_ManifestKey_RelativeFilePath;
 extern NSString *const kOWSBackup_ManifestKey_AttachmentId;
 extern NSString *const kOWSBackup_ManifestKey_DataSize;
 extern NSString *const kOWSBackup_ManifestKey_LocalProfileAvatar;
-extern NSString *const kOWSBackup_ManifestKey_LocalProfileName;
+extern NSString *const kOWSBackup_ManifestKey_LocalProfileGivenName;
+extern NSString *const kOWSBackup_ManifestKey_LocalProfileFamilyName;
 
 @class AnyPromise;
 @class OWSBackupIO;
@@ -31,7 +32,8 @@ typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 @property (nonatomic) NSArray<OWSBackupFragment *> *databaseItems;
 @property (nonatomic) NSArray<OWSBackupFragment *> *attachmentsItems;
 @property (nonatomic, nullable) OWSBackupFragment *localProfileAvatarItem;
-@property (nonatomic, nullable) NSString *localProfileName;
+@property (nonatomic, nullable) NSString *localProfileGivenName;
+@property (nonatomic, nullable) NSString *localProfileFamilyName;
 
 @end
 

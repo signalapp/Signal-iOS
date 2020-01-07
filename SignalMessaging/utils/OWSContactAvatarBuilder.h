@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAvatarBuilder.h"
@@ -22,9 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Build an avatar for a non-Signal recipient
  */
-- (instancetype)initWithNonSignalName:(NSString *)nonSignalName
-                            colorSeed:(NSString *)colorSeed
-                             diameter:(NSUInteger)diameter;
+- (instancetype)initWithNonSignalNameComponents:(NSPersonNameComponents *)nonSignalNameComponents
+                                      colorSeed:(NSString *)colorSeed
+                                       diameter:(NSUInteger)diameter;
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter;
 

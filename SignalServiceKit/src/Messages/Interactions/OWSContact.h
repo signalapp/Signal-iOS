@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel.h>
@@ -110,6 +110,8 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 @property (nonatomic, nullable) NSString *organizationName;
 
 @property (nonatomic) NSString *displayName;
+
+@property (nonatomic, readonly) NSPersonNameComponents *components;
 
 // Returns true if any of the name parts (which doesn't include
 // organization name) is non-empty.

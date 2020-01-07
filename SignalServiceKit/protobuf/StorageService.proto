@@ -62,9 +62,10 @@ message ContactRecord {
   }
 
   message Profile {
-    optional string name     = 1;
-    optional bytes  key      = 2;
-    optional string username = 3;
+    optional string givenName  = 1;
+    optional bytes  key        = 2;
+    optional string username   = 3;
+    optional string familyName = 4;
   }
 
   optional string   serviceUuid = 1;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContact.h"
@@ -313,6 +313,17 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         return NSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
     }
     return _displayName;
+}
+
+- (NSPersonNameComponents *)components
+{
+    NSPersonNameComponents *components = [NSPersonNameComponents new];
+    components.givenName = self.givenName;
+    components.familyName = self.familyName;
+    components.middleName = self.middleName;
+    components.namePrefix = self.namePrefix;
+    components.nameSuffix = self.nameSuffix;
+    return components;
 }
 
 - (void)ensureDisplayName

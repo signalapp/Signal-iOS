@@ -17,9 +17,9 @@ public extension OWSProfileManager {
     // The returned promise will fail if the service can't be updated
     // (or in the unlikely fact that another error occurs) but this
     // manager will continue to retry until the update succeeds.
-    class func updateLocalProfilePromise(profileName: String?, profileAvatarData: Data?) -> Promise<Void> {
+    class func updateLocalProfilePromise(profileGivenName: String?, profileFamilyName: String?, profileAvatarData: Data?) -> Promise<Void> {
         return DispatchQueue.global().async(.promise) {
-            return enqueueProfileUpdate(profileName: profileName, profileAvatarData: profileAvatarData)
+            return enqueueProfileUpdate(profileGivenName: profileGivenName, profileFamilyName: profileFamilyName, profileAvatarData: profileAvatarData)
             }.then { update in
                 return self.attemptToUpdateProfileOnService(update: update)
             }.done(on: .global()) { () -> Void in
@@ -33,8 +33,8 @@ public extension OWSProfileManager {
 @objc
 public extension OWSProfileManager {
     // See OWSProfileManager.updateProfilePromise().
-    class func updateLocalProfilePromiseObj(profileName: String?, profileAvatarData: Data?) -> AnyPromise {
-        return AnyPromise(updateLocalProfilePromise(profileName: profileName, profileAvatarData: profileAvatarData))
+    class func updateLocalProfilePromiseObj(profileGivenName: String?, profileFamilyName: String?, profileAvatarData: Data?) -> AnyPromise {
+        return AnyPromise(updateLocalProfilePromise(profileGivenName: profileGivenName, profileFamilyName: profileFamilyName, profileAvatarData: profileAvatarData))
     }
 
     class func updateProfileOnServiceIfNecessaryObjc() {
@@ -232,7 +232,8 @@ extension OWSProfileManager {
     private class func updateProfileNameOnServiceUnversioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
         let (promise, resolver) = Promise<Void>.pending()
         DispatchQueue.global().async {
-            self.profileManager.updateService(unversionedProfileName: attempt.update.profileName,
+            self.profileManager.updateService(unversionedGivenName: attempt.update.profileGivenName,
+                                              familyName: attempt.update.profileFamilyName,
                                               success: {
                                                 resolver.fulfill(())
             }, failure: { error in
@@ -258,7 +259,7 @@ extension OWSProfileManager {
     }
 
     private class func updateProfileOnServiceVersioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
-        return VersionedProfiles.updateProfilePromise(profileName: attempt.update.profileName, profileAvatarData: attempt.update.profileAvatarData)
+        return VersionedProfiles.updateProfilePromise(profileGivenName: attempt.update.profileGivenName, profileFamilyName: attempt.update.profileFamilyName, profileAvatarData: attempt.update.profileAvatarData)
             .map(on: .global()) { versionedUpdate in
                 attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
         }
@@ -266,9 +267,10 @@ extension OWSProfileManager {
 
     private class func updateLocalProfile(with attempt: ProfileUpdateAttempt,
                                           transaction: SDSAnyWriteTransaction) {
-        Logger.verbose("profileName: \(attempt.update.profileName), avatarFilename: \(attempt.avatarFilename)")
+        Logger.verbose("profile givenName: \(attempt.update.profileGivenName), familyName: \(attempt.update.profileFamilyName), avatarFilename: \(attempt.avatarFilename)")
 
-        attempt.userProfile.update(profileName: attempt.update.profileName,
+        attempt.userProfile.updateWith(givenName: attempt.update.profileGivenName,
+                                   familyName: attempt.update.profileFamilyName,
                                    avatarUrlPath: nil,
                                    avatarFileName: attempt.avatarFilename,
                                    transaction: transaction,
@@ -279,13 +281,13 @@ extension OWSProfileManager {
 
     private static let kPendingProfileUpdateKey = "kPendingProfileUpdateKey"
 
-    private class func enqueueProfileUpdate(profileName: String?, profileAvatarData: Data?) -> PendingProfileUpdate {
+    private class func enqueueProfileUpdate(profileGivenName: String?, profileFamilyName: String?, profileAvatarData: Data?) -> PendingProfileUpdate {
         Logger.verbose("")
 
         // Note that this might overwrite a pending profile update.
         // That's desirable.  We only ever want to retain the
         // latest changes.
-        let update = PendingProfileUpdate(profileName: profileName, profileAvatarData: profileAvatarData)
+        let update = PendingProfileUpdate(profileGivenName: profileGivenName, profileFamilyName: profileFamilyName, profileAvatarData: profileAvatarData)
         databaseStorage.write { transaction in
             self.settingsStore.setObject(update, key: kPendingProfileUpdateKey, transaction: transaction)
         }
@@ -329,15 +331,19 @@ class PendingProfileUpdate: NSObject, NSCoding {
     // It should always be set in practice.
     let id: UUID
 
-    // If nil, we are clearing the profile name.
-    let profileName: String?
+    // If nil, we are clearing the profile given name.
+    let profileGivenName: String?
+
+    // If nil, we are clearing the profile family name.
+    let profileFamilyName: String?
 
     // If nil, we are clearing the profile avatar.
     let profileAvatarData: Data?
 
-    init(profileName: String?, profileAvatarData: Data?) {
+    init(profileGivenName: String?, profileFamilyName: String?, profileAvatarData: Data?) {
         self.id = UUID()
-        self.profileName = profileName
+        self.profileGivenName = profileGivenName
+        self.profileFamilyName = profileFamilyName
         self.profileAvatarData = profileAvatarData
     }
 
@@ -350,7 +356,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
     @objc
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(id.uuidString, forKey: "id")
-        aCoder.encode(profileName, forKey: "profileName")
+        aCoder.encode(profileGivenName, forKey: "profileGivenName")
+        aCoder.encode(profileFamilyName, forKey: "profileFamilyName")
         aCoder.encode(profileAvatarData, forKey: "profileAvatarData")
     }
 
@@ -362,7 +369,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
             return nil
         }
         self.id = id
-        self.profileName = aDecoder.decodeObject(forKey: "profileName") as? String
+        self.profileGivenName = aDecoder.decodeObject(forKey: "profileGivenName") as? String
+        self.profileFamilyName = aDecoder.decodeObject(forKey: "profileFamilyName") as? String
         self.profileAvatarData = aDecoder.decodeObject(forKey: "profileAvatarData") as? Data
     }
 }
@@ -381,5 +389,110 @@ private class ProfileUpdateAttempt {
     init(update: PendingProfileUpdate, userProfile: OWSUserProfile) {
         self.update = update
         self.userProfile = userProfile
+    }
+}
+
+// MARK: - Encryption
+
+@objc
+public extension OWSProfileManager {
+    @objc(encryptProfileData:profileKey:)
+    func encrypt(profileData: Data?, profileKey: OWSAES256Key) -> Data? {
+        assert(profileKey.keyData.count == kAES256_KeyByteLength)
+
+        guard let profileData = profileData else { return nil }
+
+        return Cryptography.encryptAESGCMProfileData(plainTextData: profileData, key: profileKey)
+    }
+
+    @objc(encryptLocalProfileData:)
+    func encrypt(profileData: Data?) -> Data? {
+        return encrypt(profileData: profileData, profileKey: localProfileKey())
+    }
+
+    @objc(decryptProfileData:profileKey:)
+    func decrypt(profileData: Data?, profileKey: OWSAES256Key) -> Data? {
+        assert(profileKey.keyData.count == kAES256_KeyByteLength)
+
+        guard let profileData = profileData else { return nil }
+
+        return Cryptography.decryptAESGCMProfileData(encryptedData: profileData, key: profileKey)
+    }
+
+    @objc(decryptProfileNameData:profileKey:)
+    func decrypt(profileNameData: Data?, profileKey: OWSAES256Key) -> PersonNameComponents? {
+        guard let decryptedData = decrypt(profileData: profileNameData, profileKey: profileKey) else { return nil }
+
+        // Unpad profile name. The given and family name are stored
+        // in the string like "<given name><null><family name><null padding>"
+        var givenNameEnd = 0
+        var familyNameEnd = 0
+
+        for (pos, byte) in decryptedData.enumerated() {
+            guard byte == 0x00 else { continue }
+
+            guard givenNameEnd > 0 else {
+                givenNameEnd = pos - 1
+                continue
+            }
+
+            // If the next character after the given name null
+            // is another null, there is no family name.
+            guard pos - 1 != givenNameEnd + 1 else { break }
+
+            familyNameEnd = pos - 1
+            break
+        }
+
+        // Given name is required
+        let givenNameData = decryptedData.subdata(in: Range<Data.Index>(0...givenNameEnd))
+        guard let givenName = String(data: givenNameData, encoding: .utf8), !givenName.isEmpty else {
+            owsFailDebug("unexpectedly missing first name")
+            return nil
+        }
+
+        // Family name is optional
+        let familyName: String?
+        if familyNameEnd > 0 {
+            let familyNameData = decryptedData.subdata(in: Range<Data.Index>((givenNameEnd + 2)...familyNameEnd))
+            familyName = String(data: familyNameData, encoding: .utf8)
+        } else {
+            familyName = nil
+        }
+
+        var nameComponents = PersonNameComponents()
+        nameComponents.givenName = givenName
+        nameComponents.familyName = familyName
+        return nameComponents
+    }
+
+    @objc(encryptLocalProfileNameComponents:)
+    func encrypt(profileNameComponents: PersonNameComponents) -> Data? {
+        return encrypt(profileNameComponents: profileNameComponents, profileKey: localProfileKey())
+    }
+
+    @objc(encryptProfileNameComponents:profileKey:)
+    func encrypt(profileNameComponents: PersonNameComponents, profileKey: OWSAES256Key) -> Data? {
+        guard var paddedNameData = profileNameComponents.givenName?.data(using: .utf8) else { return nil }
+        if let familyName = profileNameComponents.familyName {
+            // Insert a null separator
+            paddedNameData.count += 1
+            guard let familyNameData = familyName.data(using: .utf8) else { return nil }
+            paddedNameData.append(familyNameData)
+        }
+
+        // Two names plus null separator.
+        let totalNameLength = Int(kOWSProfileManager_NameDataLength) * 2 + 1
+
+        guard paddedNameData.count <= totalNameLength else { return nil }
+
+        // All encrpyted profile names should be the same length on the server,
+        // so we pad out the length with null bytes to the maximum length.
+        let paddingByteCount = totalNameLength - paddedNameData.count
+        paddedNameData.count += paddingByteCount
+
+        assert(paddedNameData.count == totalNameLength)
+
+        return encrypt(profileData: paddedNameData, profileKey: profileKey)
     }
 }
