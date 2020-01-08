@@ -39,7 +39,7 @@ public class ConversationMessageMapping: NSObject {
     // Therefore we target a (slightly worse than) general case which will load fast for most
     // conversations, at the expense of a second fetch for conversations with pathologically
     // small messages (e.g. a bunch of 1-line texts in a row from the same sender and timestamp)
-    private var initialLoadCount: Int {
+    internal var initialLoadCount: Int {
         let avgMessageHeight: CGFloat = 60
         let referenceSize = UIScreen.main.bounds
         let messageCountToFillScreen = (referenceSize.height / avgMessageHeight)
@@ -282,11 +282,20 @@ public class ConversationMessageMapping: NSObject {
             return
         }
 
-        guard let oldestLoadedIndex = loadedIndexSet.min() else {
+        guard var oldestLoadedIndex = loadedIndexSet.min() else {
             // no existing interactions until now
             try loadInitialMessagePage(focusMessageId: nil, transaction: transaction)
             return
         }
+
+        // Ensure we're keeping at least `initialLoadCount` in our load window.
+        // This solves two problems:
+        //  1. avoids a crash in the extreme case that we delete a page of messages and
+        //     conversationSize becomes less than oldestLoadedIndex
+        //  2. in the case where we delete enough messages that reloading would leave us within the
+        //     "autoload more messages" threshold, instead, we more optimally load more messages now.
+        oldestLoadedIndex = min(oldestLoadedIndex, Int(conversationSize) - initialLoadCount)
+        oldestLoadedIndex = max(0, oldestLoadedIndex)
 
         let updatingSet = IndexSet(integersIn: oldestLoadedIndex..<Int(conversationSize))
         guard updatingSet.count > 0 else {
