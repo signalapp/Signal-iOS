@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIContacts.h"
@@ -121,10 +121,11 @@ NS_ASSUME_NONNULL_BEGIN
         TSAccountManager.localAddress,
     ] mutableCopy];
 
-    [GroupManager createGroupObjcWithMembers:recipientAddresses
+    [GroupManager createNewGroupObjcWithMembers:recipientAddresses
         groupId:nil
         name:groupName
         avatarData:nil
+        shouldSendMessage:YES
         success:^(TSGroupThread *thread) {
             [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
         }

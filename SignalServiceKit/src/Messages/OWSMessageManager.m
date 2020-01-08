@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageManager.h"
@@ -549,8 +549,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (dataMessage.group) {
-        TSGroupThread *_Nullable groupThread = [TSGroupThread getThreadWithGroupId:dataMessage.group.id
-                                                                       transaction:transaction];
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:dataMessage.group.id
+                                                                   transaction:transaction];
 
         if (!dataMessage.group.hasType) {
             OWSFailDebug(@"Group message is missing type.");
@@ -779,9 +779,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *_Nullable thread;
     if (typingMessage.hasGroupID) {
-        TSGroupThread *groupThread = [TSGroupThread getThreadWithGroupId:typingMessage.groupID transaction:transaction];
-
-        if (!groupThread.isLocalUserInGroup) {
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:typingMessage.groupID
+                                                                   transaction:transaction];
+        if (groupThread != nil && !groupThread.isLocalUserInGroup) {
             OWSLogInfo(@"Ignoring messages for left group.");
             return;
         }
@@ -845,8 +845,12 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // We distinguish between the old group state (if any) and the new group
     // state.
-    TSGroupThread *_Nullable oldGroupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
+    TSGroupThread *_Nullable oldGroupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
     if (oldGroupThread) {
+        if (oldGroupThread.groupModel.groupsVersion != GroupsVersionV1) {
+            OWSFailDebug(@"Group update for invalid group version.");
+            return;
+        }
         // Don't trust other clients; ensure all known group members remain in
         // the group unless it is a "quit" message in which case we should only
         // remove the quiting member below.
@@ -857,21 +861,22 @@ NS_ASSUME_NONNULL_BEGIN
             // GroupsV2 TODO
         case SSKProtoGroupContextTypeUpdate: {
             // Ensures that the thread exists but doesn't update it.
-            TSGroupThread *newGroupThread = [TSGroupThread getOrCreateThreadWithGroupId:groupId
-                                                                            transaction:transaction];
-
-            TSGroupModel *newGroupModel =
-                [[TSGroupModel alloc] initWithGroupId:dataMessage.group.id
-                                                 name:dataMessage.group.name
-                                           avatarData:oldGroupThread.groupModel.groupAvatarData
-                                              members:newMembers.allObjects
-                                        groupsVersion:oldGroupThread.groupModel.groupsVersion];
-            NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
-                                                                              contactsManager:self.contactsManager];
-            [newGroupThread anyUpdateGroupThreadWithTransaction:transaction
-                                                          block:^(TSGroupThread *thread) {
-                                                              thread.groupModel = newGroupModel;
-                                                          }];
+            NSError *_Nullable error;
+            EnsureGroupResult *_Nullable result =
+                [GroupManager upsertExistingGroupWithMembers:newMembers.allObjects
+                                                        name:dataMessage.group.name
+                                                  avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                     groupId:dataMessage.group.id
+                                               groupsVersion:GroupsVersionV1
+                                       groupSecretParamsData:nil
+                                           shouldSendMessage:false
+                                                 transaction:transaction
+                                                       error:&error];
+            if (error != nil || result == nil) {
+                OWSFailDebug(@"Error: %@", error);
+                return;
+            }
+            TSGroupThread *newGroupThread = result.thread;
 
             [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                       thread:newGroupThread
@@ -880,10 +885,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                  transaction:transaction];
 
             // MJK TODO - should be safe to remove senderTimestamp
+            NSString *updateDescription =
+                [oldGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupThread.groupModel
+                                                      contactsManager:self.contactsManager];
             TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                          inThread:newGroupThread
                                                                       messageType:TSInfoMessageTypeGroupUpdate
-                                                                    customMessage:updateGroupInfo];
+                                                                    customMessage:updateDescription];
             [infoMessage anyInsertWithTransaction:transaction];
 
             if (dataMessage.group.avatar != nil) {
@@ -952,8 +960,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSGroupThread *_Nullable groupThread = [TSGroupThread getThreadWithGroupId:dataMessage.group.id
-                                                                   transaction:transaction];
+    TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:dataMessage.group.id
+                                                               transaction:transaction];
     if (!groupThread) {
         OWSFailDebug(@"Missing group for group avatar update");
         return;
@@ -1114,7 +1122,14 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (dataMessage.reaction != nil) {
             TSThread *thread;
             if (dataMessage.group && dataMessage.group.id.length > 0) {
-                thread = [TSGroupThread getOrCreateThreadWithGroupId:dataMessage.group.id transaction:transaction];
+                // GroupsV2 TODO: We may eventually want and be able to create the group here.
+                TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:dataMessage.group.id
+                                                                           transaction:transaction];
+                if (groupThread == nil) {
+                    OWSFailDebug(@"Received reaction for unknown group.");
+                    return;
+                }
+                thread = groupThread;
             } else {
                 thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
                                                                   transaction:transaction];
@@ -1390,8 +1405,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"Received 'Request Group Info' message for group: %@ from: %@", groupId, envelope.sourceAddress);
 
-    TSGroupThread *_Nullable gThread = [TSGroupThread getThreadWithGroupId:dataMessage.group.id
-                                                               transaction:transaction];
+    TSGroupThread *_Nullable gThread = [TSGroupThread fetchWithGroupId:dataMessage.group.id transaction:transaction];
     if (!gThread) {
         OWSLogWarn(@"Unknown group: %@", groupId);
         return;
@@ -1480,10 +1494,15 @@ NS_ASSUME_NONNULL_BEGIN
         // Group messages create the group if it doesn't already exist.
         //
         // We distinguish between the old group state (if any) and the new group state.
-        TSGroupThread *_Nullable groupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
 
         if (dataMessage.hasRequiredProtocolVersion
             && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
+            if (groupThread == nil) {
+                OWSFailDebug(@"ignoring message with invalid protocol version in unknown group.");
+                return nil;
+            }
+
             [self insertUnknownProtocolVersionErrorInThread:groupThread
                                             protocolVersion:dataMessage.requiredProtocolVersion
                                                      sender:envelope.sourceAddress
@@ -1828,7 +1847,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (dataMessage.group) {
         NSData *groupId = dataMessage.group.id;
         OWSAssertDebug(groupId.length > 0);
-        TSGroupThread *_Nullable groupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
         // This method should only be called from a code path that has already verified
         // that this is a "known" group.
         OWSAssertDebug(groupThread);

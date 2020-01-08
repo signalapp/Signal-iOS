@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -232,7 +232,10 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let tryToCreateGroupsV2 = false
+    public static let tryToCreateNewGroupsV2 = false
+
+    @objc
+    public static let incomingGroupsV2 = false
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
@@ -245,4 +248,10 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let isUsingProductionService = true
+
+    @objc
+    public static let versionedProfiledFetches = false
+
+    @objc
+    public static let versionedProfiledUpdate = false
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -80,10 +80,7 @@ public extension DebugUIMessages {
         let members = uuidMembers + [TSAccountManager.localAddress!]
         let groupName = "UUID Group"
 
-        GroupManager.createGroup(members: members, name: groupName)
-        .then(on: .global()) { thread in
-            return GroupManager.sendDurableNewGroupMessage(forThread: thread)
-        }.retainUntilComplete()
+        GroupManager.createNewGroup(members: members, name: groupName, shouldSendMessage: true).retainUntilComplete()
     }
 }
 

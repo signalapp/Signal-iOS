@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -45,9 +45,9 @@ class GRDBFinderTest: SignalBaseTest {
         let createGroupThread: () -> TSGroupThread = {
             var groupThread: TSGroupThread!
             self.write { transaction in
-                groupThread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                                    members: [address1],
-                                                                    name: "Test Group")
+                groupThread = try! GroupManager.createGroupForTests(members: [address1],
+                                                                    name: "Test Group",
+                                                                    transaction: transaction)
             }
             return groupThread
         }

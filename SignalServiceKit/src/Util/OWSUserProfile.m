@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUserProfile.h"
@@ -375,23 +375,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
             [userProfile setProfileName:[profileName ows_stripped]];
             [userProfile setUsername:username];
             [userProfile setAvatarUrlPath:avatarUrlPath];
-        }
-        functionName:__PRETTY_FUNCTION__
-         transaction:transaction
-          completion:completion];
-}
-
-- (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
-                 avatarFileName:(nullable NSString *)avatarFileName
-                    transaction:(SDSAnyWriteTransaction *)transaction
-                     completion:(nullable OWSUserProfileCompletion)completion
-{
-    [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            // Always setAvatarUrlPath: before you setAvatarFileName: since
-            // setAvatarUrlPath: may clear the avatar filename.
-            [userProfile setAvatarUrlPath:avatarUrlPath];
-            [userProfile setAvatarFileName:avatarFileName];
         }
         functionName:__PRETTY_FUNCTION__
          transaction:transaction

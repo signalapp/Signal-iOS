@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SyncManagerProtocol;
 @protocol OWSTypingIndicators;
 @protocol StorageServiceManagerProtocol;
+@protocol GroupsV2;
 
 @interface SSKEnvironment : NSObject
 
@@ -84,7 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
-                         sskPreferences:(SSKPreferences *)sskPreferences NS_DESIGNATED_INITIALIZER;
+                         sskPreferences:(SSKPreferences *)sskPreferences
+                               groupsV2:(id<GroupsV2>)groupsV2 NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -128,6 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SignalServiceAddressCache *signalServiceAddressCache;
 @property (nonatomic, readonly) AccountServiceClient *accountServiceClient;
 @property (nonatomic, readonly) id<StorageServiceManagerProtocol> storageServiceManager;
+@property (nonatomic, readonly) id<GroupsV2> groupsV2;
 
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;

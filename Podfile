@@ -26,6 +26,9 @@ pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'addPodspe
 
 pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
 
+pod 'ZKGroup', git: 'git@github.com:signalapp/signal-zkgroup-swift', testspecs: ["Tests"]
+# pod 'ZKGroup', path: '../signal-zkgroup-swift', testspecs: ["Tests"]
+
 # Project does not compile with PromiseKit 6.7.1
 # see: https://github.com/mxcl/PromiseKit/issues/990
 pod 'PromiseKit', "6.5.3"

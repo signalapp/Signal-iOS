@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSetup.h"
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
         OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
         OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
-        OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];
+        id<SyncManagerProtocol> syncManager = (id<SyncManagerProtocol>)[[OWSSyncManager alloc] initDefault];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
         OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
@@ -98,6 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
         AccountServiceClient *accountServiceClient = [AccountServiceClient new];
         OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
         SSKPreferences *sskPreferences = [SSKPreferences new];
+        id<GroupsV2> groupsV2 = [GroupsV2Impl new];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
@@ -153,7 +154,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                              accountServiceClient:accountServiceClient
                                                             storageServiceManager:storageServiceManager
                                                                storageCoordinator:storageCoordinator
-                                                                   sskPreferences:sskPreferences]];
+                                                                   sskPreferences:sskPreferences
+                                                                         groupsV2:groupsV2]];
 
         appSpecificSingletonBlock();
 

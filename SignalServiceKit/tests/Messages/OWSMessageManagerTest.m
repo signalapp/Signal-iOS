@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsManagerProtocol.h"
@@ -113,8 +113,8 @@ NSString *const kAliceRecipientId = @"+13213214321";
 {
     NSData *groupId = [TSGroupModel generateRandomGroupId];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSGroupThread *groupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
-        XCTAssertNil(groupThread);
+        TSGroupThread *_Nullable thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+        XCTAssertNil(thread);
     }];
 
     SSKProtoEnvelopeBuilder *envelopeBuilder =
@@ -137,19 +137,18 @@ NSString *const kAliceRecipientId = @"+13213214321";
     }];
 
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSGroupThread *groupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
-        XCTAssertNotNil(groupThread);
-        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.groupNameOrDefault);
+        TSGroupThread *_Nullable thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+        XCTAssertNotNil(thread);
+        XCTAssertEqualObjects(@"Newly created Group Name", thread.groupNameOrDefault);
     }];
 }
-
 
 - (void)test_GroupUpdateWithAvatar
 {
     NSData *groupId = [TSGroupModel generateRandomGroupId];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSGroupThread *groupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
-        XCTAssertNil(groupThread);
+        TSGroupThread *_Nullable thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+        XCTAssertNil(thread);
     }];
 
     SSKProtoEnvelopeBuilder *envelopeBuilder =
@@ -178,9 +177,9 @@ NSString *const kAliceRecipientId = @"+13213214321";
     }];
 
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSGroupThread *groupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
-        XCTAssertNotNil(groupThread);
-        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.groupNameOrDefault);
+        TSGroupThread *_Nullable thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+        XCTAssertNotNil(thread);
+        XCTAssertEqualObjects(@"Newly created Group Name", thread.groupNameOrDefault);
     }];
 }
 

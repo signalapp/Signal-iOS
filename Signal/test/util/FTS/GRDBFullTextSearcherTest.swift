@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -108,14 +108,14 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         SSKEnvironment.shared.contactsManager = GRDBFullTextSearcherContactsManager()
 
         self.write { transaction in
-            let bookClubGroupThread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                                            members: [aliceRecipient, bobRecipient],
-                                                                            name: "Book Club")
+            let bookClubGroupThread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
+                                                                            name: "Book Club",
+                                                                            transaction: transaction)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction)
 
-            let snackClubGroupThread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                                             members: [aliceRecipient],
-                                                                             name: "Snack Club")
+            let snackClubGroupThread = try! GroupManager.createGroupForTests(members: [aliceRecipient],
+                                                                             name: "Snack Club",
+                                                                             transaction: transaction)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction)
@@ -337,9 +337,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         var thread: TSGroupThread! = nil
         self.write { transaction in
-            thread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                           members: [aliceRecipient, bobRecipient],
-                                                           name: "Lifecycle")
+            thread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
+                                                           name: "Lifecycle",
+                                                           transaction: transaction)
         }
 
         let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
@@ -391,9 +391,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     func testModelLifecycle2() {
 
         self.write { transaction in
-            let thread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                               members: [aliceRecipient, bobRecipient],
-                                                               name: "Lifecycle")
+            let thread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
+                                                               name: "Lifecycle",
+                                                               transaction: transaction)
 
             let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
             let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.", attachmentId: nil)
@@ -420,9 +420,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     func testModelLifecycle3() {
 
         self.write { transaction in
-            let thread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                               members: [aliceRecipient, bobRecipient],
-                                                               name: "Lifecycle")
+            let thread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
+                                                               name: "Lifecycle",
+                                                               transaction: transaction)
 
             let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
             let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.", attachmentId: nil)
@@ -449,9 +449,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     func testDiacritics() {
 
         self.write { transaction in
-            let thread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                               members: [aliceRecipient, bobRecipient],
-                                                               name: "Lifecycle")
+            let thread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
+                                                               name: "Lifecycle",
+                                                               transaction: transaction)
 
             TSOutgoingMessage(in: thread, messageBody: "NOËL and SØRINA and ADRIÁN and FRANÇOIS and NUÑEZ and Björk.", attachmentId: nil).anyInsert(transaction: transaction)
         }
@@ -490,9 +490,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         var thread: TSGroupThread! = nil
         self.write { transaction in
-            thread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                           members: [aliceRecipient, bobRecipient],
-                                                           name: "Lifecycle")
+            thread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
+                                                           name: "Lifecycle",
+                                                           transaction: transaction)
         }
 
         let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
@@ -531,9 +531,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
             self.write { transaction in
-                let thread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                                   members: [aliceRecipient, bobRecipient],
-                                                                   name: "Perf")
+                let thread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
+                                                                   name: "Perf",
+                                                                   transaction: transaction)
 
                 TSOutgoingMessage(in: thread, messageBody: string1, attachmentId: nil).anyInsert(transaction: transaction)
 

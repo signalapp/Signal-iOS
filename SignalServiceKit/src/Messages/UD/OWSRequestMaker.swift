@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,7 +12,8 @@ public enum RequestMakerUDAuthError: Int, Error {
 }
 
 public enum RequestMakerError: Error {
-    case websocketRequestError(statusCode : Int, responseData : Data?, underlyingError : Error)
+    case requestCreationFailed
+    case websocketRequestError(statusCode: Int, responseData: Data?, underlyingError: Error)
 }
 
 @objc(OWSRequestMakerResult)
@@ -43,7 +44,7 @@ public class RequestMakerResult: NSObject {
 @objc(OWSRequestMaker)
 public class RequestMaker: NSObject {
 
-    public typealias RequestFactoryBlock = (SMKUDAccessKey?) -> TSRequest
+    public typealias RequestFactoryBlock = (SMKUDAccessKey?) -> TSRequest?
     public typealias UDAuthFailureBlock = () -> Void
     public typealias WebsocketFailureBlock = () -> Void
 
@@ -118,7 +119,9 @@ public class RequestMaker: NSObject {
             udAccessForRequest = udAccess
         }
         let isUDRequest: Bool = udAccessForRequest != nil
-        let request: TSRequest = requestFactoryBlock(udAccessForRequest?.udAccessKey)
+        guard let request: TSRequest = requestFactoryBlock(udAccessForRequest?.udAccessKey) else {
+            return Promise(error: RequestMakerError.requestCreationFailed)
+        }
         let canMakeWebsocketRequests = (socketManager.canMakeRequests() && !skipWebsocket && !isUDRequest)
 
         if canMakeWebsocketRequests {

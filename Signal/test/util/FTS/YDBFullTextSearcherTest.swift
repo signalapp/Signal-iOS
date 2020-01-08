@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -113,14 +113,14 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         SSKEnvironment.shared.contactsManager = YDBFullTextSearcherContactsManager()
 
         self.yapWrite { transaction in
-            let bookClubGroupThread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
-                                                                            members: [aliceRecipient, bobRecipient],
-                                                                            name: "Book Club")
+            let bookClubGroupThread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
+                                                                            name: "Book Club",
+                                                                            transaction: transaction.asAnyWrite)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyRead)
 
-            let snackClubGroupThread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
-                                                                             members: [aliceRecipient],
-                                                                             name: "Snack Club")
+            let snackClubGroupThread = try! GroupManager.createGroupForTests(members: [aliceRecipient],
+                                                                             name: "Snack Club",
+                                                                             transaction: transaction.asAnyWrite)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyRead)
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction.asAnyWrite)
@@ -340,9 +340,9 @@ class YDBFullTextSearcherTest: SignalBaseTest {
 
         Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
             self.yapWrite { transaction in
-                let thread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
-                                                                   members: [aliceRecipient, bobRecipient],
-                                                                   name: "Perf")
+                let thread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
+                                                                   name: "Perf",
+                                                                   transaction: transaction.asAnyWrite)
 
                 TSOutgoingMessage(in: thread, messageBody: string1, attachmentId: nil).anyInsert(transaction: transaction.asAnyWrite)
 
