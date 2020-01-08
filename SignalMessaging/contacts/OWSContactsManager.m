@@ -788,12 +788,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (nullable NSPersonNameComponents *)cachedContactNameComponentsForAddress:(SignalServiceAddress *)address
-                                                               transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address);
-    OWSAssertDebug(transaction);
 
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address];
 
     NSPersonNameComponents *nameComponents = [NSPersonNameComponents new];
 
@@ -1034,31 +1032,17 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
-    __block NSPersonNameComponents *_Nullable nameComponents;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        nameComponents = [self nameComponentsForAddress:address transaction:transaction];
-    }];
-    return nameComponents;
-}
 
-- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
-                                                  transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(address.isValid);
-
-    NSPersonNameComponents *_Nullable savedContactNameComponents =
-        [self cachedContactNameComponentsForAddress:address transaction:transaction];
-    if (savedContactNameComponents != nil) {
+    NSPersonNameComponents *_Nullable savedContactNameComponents = [self cachedContactNameComponentsForAddress:address];
+    if (savedContactNameComponents) {
         return savedContactNameComponents;
     }
 
-    NSPersonNameComponents *_Nullable profileNameComponents =
-        [self.profileManager nameComponentsForAddress:address transaction:transaction];
-    if (profileNameComponents != nil) {
-        return profileNameComponents;
-    }
-
-    return nil;
+    __block NSPersonNameComponents *_Nullable profileNameComponents;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        profileNameComponents = [self.profileManager nameComponentsForAddress:address transaction:transaction];
+    }];
+    return profileNameComponents;
 }
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address

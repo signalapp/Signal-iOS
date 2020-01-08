@@ -397,64 +397,40 @@ private class ProfileUpdateAttempt {
 @objc
 public extension OWSProfileManager {
     @objc(encryptProfileData:profileKey:)
-    func encrypt(profileData: Data?, profileKey: OWSAES256Key) -> Data? {
+    func encrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
         assert(profileKey.keyData.count == kAES256_KeyByteLength)
-
-        guard let profileData = profileData else { return nil }
-
         return Cryptography.encryptAESGCMProfileData(plainTextData: profileData, key: profileKey)
     }
 
     @objc(encryptLocalProfileData:)
-    func encrypt(profileData: Data?) -> Data? {
-        return encrypt(profileData: profileData, profileKey: localProfileKey())
+    func encrypt(localProfileData: Data) -> Data? {
+        return encrypt(profileData: localProfileData, profileKey: localProfileKey())
     }
 
     @objc(decryptProfileData:profileKey:)
-    func decrypt(profileData: Data?, profileKey: OWSAES256Key) -> Data? {
+    func decrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
         assert(profileKey.keyData.count == kAES256_KeyByteLength)
-
-        guard let profileData = profileData else { return nil }
-
         return Cryptography.decryptAESGCMProfileData(encryptedData: profileData, key: profileKey)
     }
 
     @objc(decryptProfileNameData:profileKey:)
-    func decrypt(profileNameData: Data?, profileKey: OWSAES256Key) -> PersonNameComponents? {
+    func decrypt(profileNameData: Data, profileKey: OWSAES256Key) -> PersonNameComponents? {
         guard let decryptedData = decrypt(profileData: profileNameData, profileKey: profileKey) else { return nil }
 
         // Unpad profile name. The given and family name are stored
         // in the string like "<given name><null><family name><null padding>"
-        var givenNameEnd = 0
-        var familyNameEnd = 0
-
-        for (pos, byte) in decryptedData.enumerated() {
-            guard byte == 0x00 else { continue }
-
-            guard givenNameEnd > 0 else {
-                givenNameEnd = pos - 1
-                continue
-            }
-
-            // If the next character after the given name null
-            // is another null, there is no family name.
-            guard pos - 1 != givenNameEnd + 1 else { break }
-
-            familyNameEnd = pos - 1
-            break
-        }
+        let nameSegments = decryptedData.split(separator: 0x00)
 
         // Given name is required
-        let givenNameData = decryptedData.subdata(in: Range<Data.Index>(0...givenNameEnd))
-        guard let givenName = String(data: givenNameData, encoding: .utf8), !givenName.isEmpty else {
+        guard let givenNameData = nameSegments[safe: 0],
+            let givenName = String(data: givenNameData, encoding: .utf8), !givenName.isEmpty else {
             owsFailDebug("unexpectedly missing first name")
             return nil
         }
 
         // Family name is optional
         let familyName: String?
-        if familyNameEnd > 0 {
-            let familyNameData = decryptedData.subdata(in: Range<Data.Index>((givenNameEnd + 2)...familyNameEnd))
+        if let familyNameData = nameSegments[safe: 1] {
             familyName = String(data: familyNameData, encoding: .utf8)
         } else {
             familyName = nil
@@ -482,11 +458,11 @@ public extension OWSProfileManager {
         }
 
         // Two names plus null separator.
-        let totalNameLength = Int(kOWSProfileManager_NameDataLength) * 2 + 1
+        let totalNameLength = Int(kOWSProfileManager_NameDataLength) // * 2 + 1
 
         guard paddedNameData.count <= totalNameLength else { return nil }
 
-        // All encrpyted profile names should be the same length on the server,
+        // All encrypted profile names should be the same length on the server,
         // so we pad out the length with null bytes to the maximum length.
         let paddingByteCount = totalNameLength - paddedNameData.count
         paddedNameData.count += paddingByteCount

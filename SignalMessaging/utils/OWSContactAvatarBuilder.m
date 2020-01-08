@@ -137,14 +137,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Some languages, such as Arabic, don't natively support abbreviations or
-    // have default abbreviations that are too long. In this case, fallback
-    // to just using the first letter of their full name.
-
-    NSString *fullName =
-        [NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents:self.contactNameComponents
-                                                                           style:0
-                                                                         options:0];
-    return [fullName substringToIndex:1];
+    // have default abbreviations that are too long. In this case, we will not
+    // show an abbreviation. This matches the behavior of iMessage.
+    return nil;
 }
 
 - (nullable UIImage *)buildDefaultImage

@@ -1228,7 +1228,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             // Ensure disk IO and decryption occurs off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 NSData *_Nullable encryptedData = (error ? nil : [NSData dataWithContentsOfFile:tempFilePath]);
-                NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKeyAtStart];
+                NSData *_Nullable decryptedData
+                    = (!encryptedData ? nil : [self decryptProfileData:encryptedData profileKey:profileKeyAtStart]);
                 UIImage *_Nullable image = nil;
                 if (decryptedData) {
                     BOOL success = [decryptedData writeToFile:filePath atomically:YES];

@@ -24,7 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithNonSignalNameComponents:(NSPersonNameComponents *)nonSignalNameComponents
                                       colorSeed:(NSString *)colorSeed
-                                       diameter:(NSUInteger)diameter;
+                                       diameter:(NSUInteger)diameter
+    NS_SWIFT_NAME(init(nonSignalNameComponents:colorSeed:diameter:));
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter;
 

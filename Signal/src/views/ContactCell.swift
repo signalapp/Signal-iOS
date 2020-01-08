@@ -98,7 +98,7 @@ class ContactCell: UITableViewCell {
             nameComponents.givenName = contact.firstName
             nameComponents.familyName = contact.lastName
 
-            let avatarBuilder = OWSContactAvatarBuilder(nonSignal: nameComponents,
+            let avatarBuilder = OWSContactAvatarBuilder(nonSignalNameComponents: nameComponents,
                                                         colorSeed: contactIdForDeterminingBackgroundColor,
                                                         diameter: ContactCell.kAvatarDiameter)
 

@@ -63,7 +63,7 @@ public class ContactShareViewModel: NSObject {
             colorSeed = firstRecipientId
         }
 
-        let avatarBuilder = OWSContactAvatarBuilder(nonSignal: name.components,
+        let avatarBuilder = OWSContactAvatarBuilder(nonSignalNameComponents: name.components,
                                                     colorSeed: colorSeed,
                                                     diameter: UInt(diameter))
         // Note: we use buildDefaultImage() and not build() so that contact

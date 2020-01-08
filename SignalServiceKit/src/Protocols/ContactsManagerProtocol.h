@@ -28,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address;
-- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
-                                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread

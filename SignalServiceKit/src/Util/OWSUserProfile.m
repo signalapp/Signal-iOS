@@ -359,8 +359,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 {
     [self
         applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setGivenName:[givenName ows_stripped]];
-            [userProfile setFamilyName:[familyName ows_stripped]];
+            [userProfile setGivenName:givenName];
+            [userProfile setFamilyName:familyName];
             // Always setAvatarUrlPath: before you setAvatarFileName: since
             // setAvatarUrlPath: may clear the avatar filename.
             [userProfile setAvatarUrlPath:avatarUrlPath];
@@ -380,8 +380,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 {
     [self
         applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setGivenName:[givenName ows_stripped]];
-            [userProfile setFamilyName:[familyName ows_stripped]];
+            [userProfile setGivenName:givenName];
+            [userProfile setFamilyName:familyName];
             [userProfile setUsername:username];
             [userProfile setAvatarUrlPath:avatarUrlPath];
         }
@@ -482,7 +482,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 - (nullable NSString *)profileName
 {
     @synchronized(self) {
-        return _profileName.filterStringForDisplay;
+        return _profileName;
     }
 }
 
@@ -506,7 +506,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 - (nullable NSString *)familyName
 {
     @synchronized(self) {
-        return _familyName.filterStringForDisplay;
+        return _familyName;
     }
 }
 
