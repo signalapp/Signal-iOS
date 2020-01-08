@@ -430,7 +430,7 @@ public extension OWSProfileManager {
 
         // Family name is optional
         let familyName: String?
-        if let familyNameData = nameSegments[safe: 1] {
+        if let familyNameData = nameSegments[safe: 1], FeatureFlags.profileFamilyName {
             familyName = String(data: familyNameData, encoding: .utf8)
         } else {
             familyName = nil
@@ -450,7 +450,7 @@ public extension OWSProfileManager {
     @objc(encryptProfileNameComponents:profileKey:)
     func encrypt(profileNameComponents: PersonNameComponents, profileKey: OWSAES256Key) -> Data? {
         guard var paddedNameData = profileNameComponents.givenName?.data(using: .utf8) else { return nil }
-        if let familyName = profileNameComponents.familyName {
+        if let familyName = profileNameComponents.familyName, FeatureFlags.profileFamilyName {
             // Insert a null separator
             paddedNameData.count += 1
             guard let familyNameData = familyName.data(using: .utf8) else { return nil }
@@ -458,7 +458,10 @@ public extension OWSProfileManager {
         }
 
         // Two names plus null separator.
-        let totalNameLength = Int(kOWSProfileManager_NameDataLength) // * 2 + 1
+        let totalNameLength: Int = {
+            guard FeatureFlags.profileFamilyName else { return Int(kOWSProfileManager_NameDataLength) }
+            return Int(kOWSProfileManager_NameDataLength) * 2 + 1
+        }()
 
         guard paddedNameData.count <= totalNameLength else { return nil }
 
