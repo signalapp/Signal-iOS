@@ -40,6 +40,10 @@ class YDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         return "Fake name"
     }
 
+    func nameComponents(for address: SignalServiceAddress) -> PersonNameComponents? {
+        return PersonNameComponents()
+    }
+
     func signalAccounts() -> [SignalAccount] {
         return []
     }
