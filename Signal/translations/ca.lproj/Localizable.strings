@@ -237,16 +237,16 @@
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Resposta invàlida del servidor";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Netejant la còpia de segeuretat";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Es neteja la còpia de segeuretat";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Inicialitzant la còpia de seguretat";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "S'inicialitza la còpia de seguretat";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exportant dades";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "S'exporten dades";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exportant la còpia de seguretat";
+"BACKUP_EXPORT_PHASE_EXPORT" = "S'exporta la còpia de seguretat";
 
 /* Indicates that the backup export data is being uploaded. */
 "BACKUP_EXPORT_PHASE_UPLOAD" = "Es carrega la còpia de seguretat";
@@ -255,28 +255,28 @@
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "La còpia de seguretat no s’ha pogut importar";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configurant còpia de seguretat";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Es configura la còpia de seguretat";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Baixant còpia de seguretat";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Es baixa la còpia de seguretat";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalitzant còpia de seguretat";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "S'acaba còpia de seguretat";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Important còpia de seguretat";
+"BACKUP_IMPORT_PHASE_IMPORT" = "S'importa la còpia de seguretat.";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restaurant base de dades";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Es restaura la base de dades";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restaurant arxius";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Es restauren els fitxers";
 
 /* Label for the backup restore decision section. */
 "BACKUP_RESTORE_DECISION_TITLE" = "Còpia de seguretat disponible";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restauració de còpia de seguretat";
+"BACKUP_RESTORE_DESCRIPTION" = "Es restaura la còpia de seguretat";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Progrés";
@@ -525,16 +525,16 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per a veure quins contactes són usuaris del Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "S'eliminaran els missatges i deixareu d'estar registrat al servidor. L'aplicació es tancarà una vegada s'eliminin les dades.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Se suprimiran els missatges i deixareu d'estar registrat al servidor. L'aplicació es tancarà una vegada se suprimeixin les dades.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Segur que voleu eliminar el vostre compte?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Segur que voleu suprimir el compte?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Això restablirà l’aplicació eliminant tots els vostres missatges d’aquest dispositiu. Sempre podeu tornar a enllaçar amb el telèfon, però això no restablirà els missatges suprimits. L’aplicació es tancarà un cop acabat aquest procés.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Això restablirà l’aplicació suprimint tots els vostres missatges d’aquest dispositiu. Sempre podeu tornar a enllaçar amb el telèfon, però això no restablirà els missatges suprimits. L’aplicació es tancarà un cop acabat aquest procés.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Segur que voleu eliminar totes les dades?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Segur que voleu suprimir totes les dades?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Ja no podreu enviar o rebre missatges d'aquest grup.";
@@ -1102,10 +1102,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "No teniu contingut en aquesta conversa.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Carregant contingut nou...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Es carrega contingut nou...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Carregant contingut antic...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Es carregant contingut antic...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Fitxer adjunt";
@@ -1135,10 +1135,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Entra el que vols buscar";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Aquesta versió del Signal inclou optimitzacions de bases de dades i millores de rendiment. És possible que hàgiu d’obrir l’aplicació per completar el procés.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimitzant la base de dades";
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "S'optimitza la base de dades";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "S'ha canviat l'avatar.";
@@ -1228,7 +1228,7 @@
 "IN_CALL_CONNECTING" = "Es connecta...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnectant...";
+"IN_CALL_RECONNECTING" = "Es torna a connectar...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Sona...";
@@ -1471,7 +1471,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "S'ha omès";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Penjant";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Es penja";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "El missatge no té contingut o no té cap adjunt.";
@@ -1540,7 +1540,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Ha fallat l'enviament.";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Enviant...";
+"MESSAGE_STATUS_SENDING" = "S'envia...";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "S'ha enviat";
@@ -2158,16 +2158,16 @@
 "REGISTER_2FA_FORGOT_PIN" = "He oblidat el PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Per a la vostra privadesa i seguretat, no hi ha manera de recuperar el PIN. Si no el podeu recordar, podeu refer la verificació amb un SMS al cap de 7 dies d'inactivitat. En aquest cas, el compte s'esborrarà i se n'eliminarà el contingut.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Per a la vostra privadesa i seguretat, no hi ha manera de recuperar el PIN. Si no el podeu recordar, podeu refer la verificació amb un SMS al cap de 7 dies d'inactivitat. En aquest cas, el compte s'esborrarà i se'n suprimirà el contingut.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Heu oblidat el PIN?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Us resten %lu intents. Si se us acaben, el compte es bloquejarà. Al cap de 7 dies d'inactivitat, podeu tornar-vos-hi a registrar sense el PIN. El compte s'esborrarà i se n'eliminarà tot el contingut.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Us resten %lu intents. Si se us acaben, el compte es bloquejarà. Al cap de 7 dies d'inactivitat, podeu tornar-vos-hi a registrar sense el PIN. El compte s'esborrarà i se'n suprimirà tot el contingut.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Us resta 1 intent. Si se us acaben, el compte es bloquejarà. Al cap de 7 dies d'inactivitat, podeu tornar-vos-hi a registrar sense el PIN. El compte s'esborrarà i se n'eliminarà tot el contingut.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Us resta 1 intent. Si se us acaben, el compte es bloquejarà. Al cap de 7 dies d'inactivitat, podeu tornar-vos-hi a registrar sense el PIN. El compte s'esborrarà i se'n suprimirà tot el contingut.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorrecte";
@@ -2506,7 +2506,7 @@
 "SETTINGS_BACKUP_STATUS_FAILED" = "Ha fallat la còpia de seguretat";
 
 /* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "Esperant";
+"SETTINGS_BACKUP_STATUS_IDLE" = "S'espera";
 
 /* Indicates that app is backing up. */
 "SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Es fa la còpia de seguretat";
@@ -2539,13 +2539,13 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nAmb llicència de GPLv3";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Elimina el compte";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Suprimeix el compte";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Suprimeix totes les dades";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Segur que voleu eliminar tot l'historial (missatges, adjunts, trucades, etc.)? Aquesta acció no es pot desfer.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Segur que voleu suprimir tot l'historial (missatges, adjunts, trucades, etc.)? Aquesta acció no es pot desfer.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Suprimeix-ho tot";
@@ -2884,7 +2884,7 @@
 "TXT_CANCEL_TITLE" = "Cancel·la";
 
 /* No comment provided by engineer. */
-"TXT_DELETE_TITLE" = "Elimina";
+"TXT_DELETE_TITLE" = "Suprimeix";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Restaura";
@@ -2950,7 +2950,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "El dispositiu no és compatible amb aquesta característica.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "No podeu eliminar membres del grup. Hauran de sortir per ells mateix, o podeu crear un grup nou sense aquest membre.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "No podeu suprimir membres del grup. Hauran de sortir per ells mateix, o podeu crear un grup nou sense aquest membre.";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "No s'admet";
@@ -3055,7 +3055,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Revisa els números de seguretat";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Toqueu aquí per fer desaparèixer aquest missatge un cop vist.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Llisqueu per a cancel·lar";

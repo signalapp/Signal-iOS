@@ -3055,7 +3055,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Verifică numerele de siguranță";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Apăsați aici pentru a face acest mesaj să dispară după ce este vizualizat.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Glisează pentru a anula";

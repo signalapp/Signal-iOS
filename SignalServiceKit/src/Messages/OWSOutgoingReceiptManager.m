@@ -248,21 +248,25 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
     return [sendPromises copy];
 }
 
-- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
+- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self enqueueReceiptForAddress:envelope.sourceAddress
                          timestamp:envelope.timestamp
-                       receiptType:OWSReceiptType_Delivery];
+                       receiptType:OWSReceiptType_Delivery
+                       transaction:transaction];
 }
 
-- (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)address timestamp:(uint64_t)timestamp
+- (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)address
+                           timestamp:(uint64_t)timestamp
+                         transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self enqueueReceiptForAddress:address timestamp:timestamp receiptType:OWSReceiptType_Read];
+    [self enqueueReceiptForAddress:address timestamp:timestamp receiptType:OWSReceiptType_Read transaction:transaction];
 }
 
 - (void)enqueueReceiptForAddress:(SignalServiceAddress *)address
                        timestamp:(uint64_t)timestamp
                      receiptType:(OWSReceiptType)receiptType
+                     transaction:(SDSAnyWriteTransaction *)transaction
 {
     SDSKeyValueStore *store = [self storeForReceiptType:receiptType];
 
@@ -272,44 +276,41 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         return;
     }
 
-    dispatch_async(self.serialQueue, ^{
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            NSString *identifier = address.uuidString ?: address.phoneNumber;
+    NSString *identifier = address.uuidString ?: address.phoneNumber;
 
-            NSSet<NSNumber *> *_Nullable oldUUIDTimestamps;
-            if (address.uuidString) {
-                oldUUIDTimestamps = [store getObject:address.uuidString transaction:transaction];
-            }
+    NSSet<NSNumber *> *_Nullable oldUUIDTimestamps;
+    if (address.uuidString) {
+        oldUUIDTimestamps = [store getObject:address.uuidString transaction:transaction];
+    }
 
-            NSSet<NSNumber *> *_Nullable oldPhoneNumberTimestamps;
-            if (address.phoneNumber) {
-                oldPhoneNumberTimestamps = [store getObject:address.phoneNumber transaction:transaction];
-            }
+    NSSet<NSNumber *> *_Nullable oldPhoneNumberTimestamps;
+    if (address.phoneNumber) {
+        oldPhoneNumberTimestamps = [store getObject:address.phoneNumber transaction:transaction];
+    }
 
-            NSSet<NSNumber *> *_Nullable oldTimestamps;
+    NSSet<NSNumber *> *_Nullable oldTimestamps;
 
-            // Unexpectedly have entries both on phone number and UUID, defer to UUID
-            if (oldUUIDTimestamps && oldPhoneNumberTimestamps) {
-                oldTimestamps = [oldUUIDTimestamps setByAddingObjectsFromSet:oldPhoneNumberTimestamps];
-                [store removeValueForKey:address.phoneNumber transaction:transaction];
+    // Unexpectedly have entries both on phone number and UUID, defer to UUID
+    if (oldUUIDTimestamps && oldPhoneNumberTimestamps) {
+        oldTimestamps = [oldUUIDTimestamps setByAddingObjectsFromSet:oldPhoneNumberTimestamps];
+        [store removeValueForKey:address.phoneNumber transaction:transaction];
 
-                // If we have timestamps only under phone number, but know the UUID, migrate them lazily
-            } else if (oldPhoneNumberTimestamps && address.uuidString) {
-                oldTimestamps = oldPhoneNumberTimestamps;
-                [store removeValueForKey:address.phoneNumber transaction:transaction];
-            } else {
-                oldTimestamps = oldUUIDTimestamps ?: oldPhoneNumberTimestamps;
-            }
+        // If we have timestamps only under phone number, but know the UUID, migrate them lazily
+    } else if (oldPhoneNumberTimestamps && address.uuidString) {
+        oldTimestamps = oldPhoneNumberTimestamps;
+        [store removeValueForKey:address.phoneNumber transaction:transaction];
+    } else {
+        oldTimestamps = oldUUIDTimestamps ?: oldPhoneNumberTimestamps;
+    }
 
-            NSMutableSet<NSNumber *> *newTimestamps
-                = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
-            [newTimestamps addObject:@(timestamp)];
+    NSMutableSet<NSNumber *> *newTimestamps = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
+    [newTimestamps addObject:@(timestamp)];
 
-            [store setObject:newTimestamps key:identifier transaction:transaction];
-        }];
+    [store setObject:newTimestamps key:identifier transaction:transaction];
 
+    [transaction addCompletionWithBlock:^{
         [self process];
-    });
+    }];
 }
 
 - (void)dequeueReceiptsForAddress:(SignalServiceAddress *)address
@@ -323,47 +324,44 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         OWSFailDebug(@"Invalid timestamps.");
         return;
     }
-    dispatch_async(self.serialQueue, ^{
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            NSString *identifier = address.uuidString ?: address.phoneNumber;
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSString *identifier = address.uuidString ?: address.phoneNumber;
 
-            NSSet<NSNumber *> *_Nullable oldUUIDTimestamps;
-            if (address.uuidString) {
-                oldUUIDTimestamps = [store getObject:address.uuidString transaction:transaction];
-            }
+        NSSet<NSNumber *> *_Nullable oldUUIDTimestamps;
+        if (address.uuidString) {
+            oldUUIDTimestamps = [store getObject:address.uuidString transaction:transaction];
+        }
 
-            NSSet<NSNumber *> *_Nullable oldPhoneNumberTimestamps;
-            if (address.phoneNumber) {
-                oldPhoneNumberTimestamps = [store getObject:address.phoneNumber transaction:transaction];
-            }
+        NSSet<NSNumber *> *_Nullable oldPhoneNumberTimestamps;
+        if (address.phoneNumber) {
+            oldPhoneNumberTimestamps = [store getObject:address.phoneNumber transaction:transaction];
+        }
 
-            NSSet<NSNumber *> *_Nullable oldTimestamps = oldUUIDTimestamps;
+        NSSet<NSNumber *> *_Nullable oldTimestamps = oldUUIDTimestamps;
 
-            // Unexpectedly have entries both on phone number and UUID, defer to UUID
-            if (oldUUIDTimestamps && oldPhoneNumberTimestamps) {
-                [store removeValueForKey:address.phoneNumber transaction:transaction];
+        // Unexpectedly have entries both on phone number and UUID, defer to UUID
+        if (oldUUIDTimestamps && oldPhoneNumberTimestamps) {
+            [store removeValueForKey:address.phoneNumber transaction:transaction];
 
-                // If we have timestamps only under phone number, but know the UUID, migrate them lazily
-            } else if (oldPhoneNumberTimestamps && address.uuidString) {
-                oldTimestamps = oldPhoneNumberTimestamps;
-                [store removeValueForKey:address.phoneNumber transaction:transaction];
+            // If we have timestamps only under phone number, but know the UUID, migrate them lazily
+        } else if (oldPhoneNumberTimestamps && address.uuidString) {
+            oldTimestamps = oldPhoneNumberTimestamps;
+            [store removeValueForKey:address.phoneNumber transaction:transaction];
 
-                // We don't know the UUID, just use the phone number timestamps.
-            } else if (oldPhoneNumberTimestamps) {
-                oldTimestamps = oldPhoneNumberTimestamps;
-            }
+            // We don't know the UUID, just use the phone number timestamps.
+        } else if (oldPhoneNumberTimestamps) {
+            oldTimestamps = oldPhoneNumberTimestamps;
+        }
 
-            NSMutableSet<NSNumber *> *newTimestamps
-                = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
-            [newTimestamps minusSet:timestamps];
+        NSMutableSet<NSNumber *> *newTimestamps = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
+        [newTimestamps minusSet:timestamps];
 
-            if (newTimestamps.count > 0) {
-                [store setObject:newTimestamps key:identifier transaction:transaction];
-            } else {
-                [store removeValueForKey:identifier transaction:transaction];
-            }
-        }];
-    });
+        if (newTimestamps.count > 0) {
+            [store setObject:newTimestamps key:identifier transaction:transaction];
+        } else {
+            [store removeValueForKey:identifier transaction:transaction];
+        }
+    }];
 }
 
 - (void)reachabilityChanged
