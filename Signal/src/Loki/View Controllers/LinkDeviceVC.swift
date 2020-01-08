@@ -11,7 +11,7 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("Enter Public Key", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("Enter Session ID", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
@@ -139,7 +139,7 @@ private final class EnterPublicKeyVC : UIViewController {
     private var linkButtonBottomConstraint: NSLayoutConstraint!
     
     // MARK: Components
-    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter your public key", comment: ""))
+    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter your Session ID", comment: ""))
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -149,14 +149,14 @@ private final class EnterPublicKeyVC : UIViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Enter your public key", comment: "")
+        titleLabel.text = NSLocalizedString("Link your device", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "Enter your account's public key to link your device."
+        explanationLabel.text = "Enter your Session ID to start the linking process."
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Link button
@@ -247,7 +247,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Loki Messenger needs camera access to scan QR codes", comment: "")
+        explanationLabel.text = NSLocalizedString("Session needs camera access to scan QR codes", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping

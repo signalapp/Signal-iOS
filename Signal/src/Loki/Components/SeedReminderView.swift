@@ -27,7 +27,8 @@ final class SeedReminderView : UIView {
         let result = UILabel()
         result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
-        result.lineBreakMode = .byTruncatingTail
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
         return result
     }()
     

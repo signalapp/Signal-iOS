@@ -29,7 +29,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let attributedTitle = NSMutableAttributedString(string: title)
         attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "80%"))
         result.title = attributedTitle
-        result.subtitle = NSLocalizedString("Secure your account by saving your seed", comment: "")
+        result.subtitle = NSLocalizedString("Secure your account by saving your recovery phrase", comment: "")
         result.setProgress(0.8, animated: false)
         result.delegate = self
         return result

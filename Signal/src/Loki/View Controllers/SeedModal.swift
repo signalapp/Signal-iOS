@@ -18,7 +18,7 @@ final class SeedModal : Modal {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        titleLabel.text = NSLocalizedString("Your Seed", comment: "")
+        titleLabel.text = NSLocalizedString("Your Recovery Phrase", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -34,7 +34,7 @@ final class SeedModal : Modal {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("This is your personal password. It can be used to restore your account or migrate your account to a new device.", comment: "")
+        explanationLabel.text = NSLocalizedString("This is your personal recovery phrase. It can be used to restore your account or migrate your account to a new device.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center

@@ -30,7 +30,7 @@ final class SeedVCV2 : UIViewController {
         let attributedTitle = NSMutableAttributedString(string: title)
         attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "90%"))
         result.title = attributedTitle
-        result.subtitle = NSLocalizedString("Press the redacted words to view your seed and secure your account", comment: "")
+        result.subtitle = NSLocalizedString("Press the redacted words to view your recovery phrase and secure your account", comment: "")
         result.setProgress(0.9, animated: false)
         return result
     }()
@@ -69,7 +69,7 @@ final class SeedVCV2 : UIViewController {
         navigationBar.barTintColor = Colors.navigationBarBackground
         // Customize title
         let navigationBarTitleLabel = UILabel()
-        navigationBarTitleLabel.text = NSLocalizedString("Your Seed", comment: "")
+        navigationBarTitleLabel.text = NSLocalizedString("Your Recovery Phrase", comment: "")
         navigationBarTitleLabel.textColor = Colors.text
         navigationBarTitleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = navigationBarTitleLabel
@@ -81,7 +81,7 @@ final class SeedVCV2 : UIViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Meet your seed", comment: "")
+        titleLabel.text = NSLocalizedString("Meet your recovery phrase", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
@@ -145,7 +145,7 @@ final class SeedVCV2 : UIViewController {
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, copyButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
-        mainStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: Values.onboardingButtonBottomOffset, trailing: 0)
+        mainStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: Values.mediumSpacing, trailing: 0)
         mainStackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: view)
@@ -179,7 +179,7 @@ final class SeedVCV2 : UIViewController {
             self.seedReminderView.title = attributedTitle
         }, completion: nil)
         UIView.transition(with: seedReminderView.subtitleLabel, duration: 1, options: .transitionCrossDissolve, animations: {
-            self.seedReminderView.subtitle = NSLocalizedString("Make sure to store your seed in a safe place", comment: "")
+            self.seedReminderView.subtitle = NSLocalizedString("Make sure to store your recovery phrase in a safe place", comment: "")
         }, completion: nil)
         seedReminderView.setProgress(1, animated: true)
         UserDefaults.standard.set(true, forKey: "hasViewedSeed")

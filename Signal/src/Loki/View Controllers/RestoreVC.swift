@@ -8,7 +8,7 @@ final class RestoreVC : UIViewController {
     
     // MARK: Components
     private lazy var mnemonicTextField: TextField = {
-        let result = TextField(placeholder: NSLocalizedString("Enter your seed", comment: ""))
+        let result = TextField(placeholder: NSLocalizedString("Enter your recovery phrase", comment: ""))
         result.layer.borderColor = Colors.text.cgColor
         return result
     }()
@@ -54,14 +54,14 @@ final class RestoreVC : UIViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Restore your account using your seed", comment: "")
+        titleLabel.text = NSLocalizedString("Restore your account", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "Enter the seed that was given to you when you signed up to restore your account."
+        explanationLabel.text = "Enter the recovery phrase that was given to you when you signed up to restore your account."
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up legal label
