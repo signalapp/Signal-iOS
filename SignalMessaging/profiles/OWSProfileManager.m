@@ -1052,6 +1052,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         return;
     }
 
+    // Whenever a user's profile key changes, we need to fetch a new
+    // profile key credential for them.
+    [VersionedProfiles clearProfileKeyCredentialForAddress:address transaction:transaction];
+
     [userProfile
         clearWithProfileKey:profileKey
                 transaction:transaction

@@ -146,14 +146,25 @@ public class GroupManager: NSObject {
     }
 
     private static func groupsVersion(for members: [SignalServiceAddress]) -> GroupsVersion {
-        for recipientAddress in members {
-            guard recipientAddress.uuid != nil else {
-                Logger.warn("Creating legacy group; member without UUID.")
-                return .V1
+
+        let canUseV2: Bool = databaseStorage.read { transaction in
+            for recipientAddress in members {
+                guard let uuid = recipientAddress.uuid else {
+                    Logger.warn("Creating legacy group; member without UUID.")
+                    return false
+                }
+                let address = SignalServiceAddress(uuid: uuid, phoneNumber: nil)
+                let hasCredential = self.groupsV2.hasProfileKeyCredential(for: address,
+                                                                          transaction: transaction)
+                guard hasCredential else {
+                    Logger.warn("Creating legacy group; member missing credential.")
+                    return false
+                }
+                // GroupsV2 TODO: Check capability.
             }
-            // GroupsV2 TODO: Check whether recipient supports Groups v2.
+            return true
         }
-        return defaultGroupsVersion
+        return canUseV2 ? defaultGroupsVersion : .V1
     }
 
     @objc
@@ -191,12 +202,22 @@ public class GroupManager: NSObject {
             guard let localAddress = self.tsAccountManager.localAddress else {
                 throw OWSAssertionError("Missing localAddress.")
             }
-            let members = membersParam + [localAddress]
-
-            return try buildGroupModel(groupId: groupId, name: name, members: members, avatarData: avatarData, isCreating: true)
-            }.then(on: .global()) { groupModel in
+            let members: [SignalServiceAddress] = membersParam + [localAddress]
+            return members
+            }.then(on: .global()) { (members: [SignalServiceAddress]) -> Promise<[SignalServiceAddress]> in
+                guard FeatureFlags.tryToCreateNewGroupsV2 else {
+                    return Promise.value(members)
+                }
+                return self.groupsV2.tryToEnsureProfileKeyCredentialsObjc(for: members)
+                    .map(on: .global()) { (_) -> [SignalServiceAddress] in
+                        return members
+                }
+            }.map(on: .global()) { (members: [SignalServiceAddress]) throws -> TSGroupModel in
+                return try self.buildGroupModel(groupId: groupId, name: name, members: members, avatarData: avatarData, isCreating: true)
+            }
+            .then(on: .global()) { (groupModel: TSGroupModel) -> Promise<TSGroupModel> in
                 return self.createNewGroupOnServiceIfNecessary(groupModel: groupModel)
-            }.map(on: .global()) { groupModel in
+            }.map(on: .global()) { (groupModel: TSGroupModel) -> TSGroupThread in
                 let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
                     if let thread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
                         thread.update(with: groupModel, transaction: transaction)
@@ -226,7 +247,7 @@ public class GroupManager: NSObject {
         guard groupModel.groupsVersion == .V2 else {
             return Promise.value(groupModel)
         }
-        return groupsV2.createNewGroupV2OnService(groupModel: groupModel)
+        return groupsV2.createNewGroupOnServiceObjc(groupModel: groupModel)
             .map(on: .global()) { _ in
                 return groupModel
         }
@@ -503,5 +524,64 @@ public class GroupManager: NSObject {
             }.catch { error in
                 failure(error)
             }.retainUntilComplete()
+    }
+}
+
+// MARK: -
+
+// GroupsV2 TODO: Convert this extension into tests.
+@objc
+public extension GroupManager {
+    static func testGroupsV2Functionality() {
+        guard !FeatureFlags.isUsingProductionService,
+            FeatureFlags.tryToCreateNewGroupsV2,
+            FeatureFlags.versionedProfiledFetches,
+            FeatureFlags.versionedProfiledUpdate else {
+                owsFailDebug("Incorrect feature flags.")
+                return
+        }
+        let members = [SignalServiceAddress]()
+        let title0 = "hello"
+        guard let localUuid = self.tsAccountManager.localUuid else {
+            owsFailDebug("Missing localUuid.")
+            return
+        }
+        createNewGroup(members: members,
+                       name: title0,
+                       shouldSendMessage: true)
+            .then(on: .global()) { (groupThread: TSGroupThread) -> Promise<GroupV2State> in
+                let groupModel = groupThread.groupModel
+                guard groupModel.groupsVersion == .V2 else {
+                    throw OWSAssertionError("Not a V2 group.")
+                }
+                guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
+                    throw OWSAssertionError("Invalid groupsV2 instance.")
+                }
+                return groupsV2Swift.fetchGroupState(groupModel: groupModel)
+            }.done { (groupV2State: GroupV2State) -> Void in
+                guard groupV2State.version == 0 else {
+                    throw OWSAssertionError("Unexpected group version: \(groupV2State.version).")
+                }
+                guard groupV2State.title == title0 else {
+                    throw OWSAssertionError("Unexpected group title: \(groupV2State.title).")
+                }
+                let expectedMembers = [SignalServiceAddress(uuid: localUuid, phoneNumber: nil)]
+                guard groupV2State.activeMembers == expectedMembers else {
+                    throw OWSAssertionError("Unexpected members: \(groupV2State.activeMembers).")
+                }
+                let expectedAdministrators = expectedMembers
+                guard groupV2State.administrators == expectedAdministrators else {
+                    throw OWSAssertionError("Unexpected administrators: \(groupV2State.administrators).")
+                }
+                guard groupV2State.accessControlForMembers == .member else {
+                    throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2State.accessControlForMembers).")
+                }
+                guard groupV2State.accessControlForAttributes == .member else {
+                    throw OWSAssertionError("Unexpected accessControlForAttributes: \(groupV2State.accessControlForAttributes).")
+                }
+                Logger.info("---- Success.")
+            }.catch { error in
+                owsFailDebug("---- Error: \(error)")
+        }
     }
 }
