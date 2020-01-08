@@ -1571,11 +1571,6 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    NSIndexPath *_Nullable indexPath = [self indexPathForInteractionId:interactionId];
-    if (indexPath == nil) {
-        OWSFailDebug(@"indexPath was unexpectedly nil");
-    }
-
     self.collapseCutoffDate = [NSDate new];
 
     if (![self reloadViewItemsWithTransaction:transaction]) {
@@ -1584,6 +1579,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate transaction:transaction];
     [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
+
+    NSIndexPath *_Nullable indexPath = [self indexPathForInteractionId:interactionId];
+    if (indexPath == nil) {
+        OWSFailDebug(@"indexPath was unexpectedly nil");
+    }
 
     return indexPath;
 }
