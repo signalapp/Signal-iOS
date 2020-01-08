@@ -1894,10 +1894,10 @@
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Multimedia";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Foto con caducidad";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Foto de ver sólo una vez";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Vídeo con caducidad";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Vídeo de ver sólo una vez";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Foto";
