@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <AFNetworking/AFHTTPSessionManager.h>
@@ -39,6 +39,10 @@ typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *err
     completionQueue:(dispatch_queue_t)completionQueue
             success:(TSNetworkManagerSuccess)success
             failure:(TSNetworkManagerFailure)failure NS_SWIFT_NAME(makeRequest(_:completionQueue:success:failure:));
+
+#if TESTABLE_BUILD
++ (void)logCurlForTask:(NSURLSessionDataTask *)task;
+#endif
 
 @end
 

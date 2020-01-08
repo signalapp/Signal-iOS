@@ -865,8 +865,10 @@ NS_ASSUME_NONNULL_BEGIN
         case SSKProtoGroupContextTypeUpdate: {
             // Ensures that the thread exists but doesn't update it.
             NSError *_Nullable error;
+            // We don't need to set administrators; this is a v1 group.
             EnsureGroupResult *_Nullable result =
                 [GroupManager upsertExistingGroupWithMembers:newMembers.allObjects
+                                              administrators:@[]
                                                         name:dataMessage.group.name
                                                   avatarData:oldGroupThread.groupModel.groupAvatarData
                                                      groupId:dataMessage.group.id
@@ -912,11 +914,11 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             [newMembers removeObject:envelope.sourceAddress];
-            [oldGroupThread anyUpdateGroupThreadWithTransaction:transaction
-                                                          block:^(TSGroupThread *thread) {
-                                                              thread.groupModel.groupMembers =
-                                                                  [newMembers.allObjects mutableCopy];
-                                                          }];
+            [oldGroupThread
+                anyUpdateGroupThreadWithTransaction:transaction
+                                              block:^(TSGroupThread *thread) {
+                                                  [thread.groupModel updateGroupMembers:newMembers.allObjects];
+                                              }];
 
             // If we sent this message (it's from a sent transcript), show a self quit.
             if (envelope.sourceAddress.isLocalAddress) {

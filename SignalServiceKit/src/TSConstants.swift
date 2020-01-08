@@ -26,6 +26,8 @@ private protocol TSConstantsProtocol: class {
     var keyBackupServiceId: String { get }
 
     var applicationGroup: String { get }
+
+    var serverPublicParamsBase64: String { get }
 }
 
 // MARK: -
@@ -81,6 +83,9 @@ public class TSConstants: NSObject {
 
     @objc
     public static var applicationGroup: String { return shared.applicationGroup }
+
+    @objc
+    public static var serverPublicParamsBase64: String { return shared.serverPublicParamsBase64 }
 
     @objc
     public static var isUsingProductionService: Bool {
@@ -165,6 +170,12 @@ private class TSConstantsProduction: TSConstantsProtocol {
     }
 
     public let applicationGroup = "group.org.whispersystems.signal.group"
+
+    // GroupsV2 TODO: This is for staging. We need the production values.
+    //
+    // We need to discard all profile key credentials if these values ever change.
+    // See: VersionedProfiles.clearProfileKeyCredentials(...)
+    public let serverPublicParamsBase64 = "Mmngo/SFRpC5kRLUKE8sXnpUx0QhQGcxUGI3b5eQXUX0kgK6SSL7XWcmjQv2ZsL5qKqyADTfhBakDSSfVEr2dHheAw/6JYMjgXnYZAn1845KOk9gHwWGaISIZWR55u4xpHdqZhZBdUyQ2MuDpIurLWifw8Jq/W6pumywOTg6zAeegHWx9MwyGaQD4R35nAAcPgqWuKrlIBX/z7kCYDwEFCaZwW+KmB0HluyEN362MzuzgGv+zK1SZR2aIpBmtsFYeG7FAV7aXXwB0aqB+5kDBJYCdhrzxWAqnWHC0Gm0JFASX3yaxmIWElacrfYtqLAP9KZcfViLRa4IiBIx3w9OAQ=="
 }
 
 // MARK: -
@@ -199,4 +210,8 @@ private class TSConstantsStaging: TSConstantsProtocol {
     }
 
     public let applicationGroup = "group.org.whispersystems.signal.group.staging"
+
+    // We need to discard all profile key credentials if these values ever change.
+    // See: VersionedProfiles.clearProfileKeyCredentials(...)
+    public let serverPublicParamsBase64 = "Mmngo/SFRpC5kRLUKE8sXnpUx0QhQGcxUGI3b5eQXUX0kgK6SSL7XWcmjQv2ZsL5qKqyADTfhBakDSSfVEr2dHheAw/6JYMjgXnYZAn1845KOk9gHwWGaISIZWR55u4xpHdqZhZBdUyQ2MuDpIurLWifw8Jq/W6pumywOTg6zAeegHWx9MwyGaQD4R35nAAcPgqWuKrlIBX/z7kCYDwEFCaZwW+KmB0HluyEN362MzuzgGv+zK1SZR2aIpBmtsFYeG7FAV7aXXwB0aqB+5kDBJYCdhrzxWAqnWHC0Gm0JFASX3yaxmIWElacrfYtqLAP9KZcfViLRa4IiBIx3w9OAQ=="
 }

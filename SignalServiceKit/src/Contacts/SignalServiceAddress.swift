@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -60,6 +60,11 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding {
     @objc
     public convenience init(phoneNumber: String) {
         self.init(uuidString: nil, phoneNumber: phoneNumber)
+    }
+
+    @objc
+    public convenience init(uuid: UUID) {
+        self.init(uuid: uuid, phoneNumber: nil)
     }
 
     @objc

@@ -13,22 +13,30 @@ extern const int32_t kGroupIdLength;
 
 typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVersionV2 };
 
+typedef NS_CLOSED_ENUM(NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal = 0, TSGroupMemberRole_Administrator };
+
 @interface TSGroupModel : MTLModel
 
-@property (nonatomic) NSArray<SignalServiceAddress *> *groupMembers;
-@property (nonatomic) NSArray<SignalServiceAddress *> *externalGroupMembers;
-@property (nullable, readonly, nonatomic) NSString *groupName;
-@property (readonly, nonatomic) NSData *groupId;
+@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *groupMembers;
+@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *externalGroupMembers;
+@property (nonatomic, readonly, nullable) NSString *groupName;
+@property (nonatomic, readonly) NSData *groupId;
 
 #if TARGET_OS_IOS
-@property (nullable, nonatomic, readonly) UIImage *groupAvatarImage;
+@property (nonatomic, readonly, nullable) UIImage *groupAvatarImage;
 // This data should always be in PNG format.
-@property (nullable, nonatomic) NSData *groupAvatarData;
+@property (nonatomic, readonly, nullable) NSData *groupAvatarData;
 
-@property (nonatomic) GroupsVersion groupsVersion;
-@property (nullable, nonatomic) NSData *groupSecretParamsData;
+@property (nonatomic, readonly) GroupsVersion groupsVersion;
+@property (nonatomic, readonly, nullable) NSData *groupSecretParamsData;
+@property (nonatomic, readonly) uint32_t groupV2Revision;
+@property (nonatomic, readonly, nullable) NSMutableDictionary<NSString *, NSNumber *> *groupsV2MemberRoles;
 
+// GroupsV2 TODO: This should be done via GroupManager.
 - (void)setGroupAvatarDataWithImage:(nullable UIImage *)image;
+
+// GroupsV2 TODO: This should be done via GroupManager.
+- (void)updateGroupMembers:(NSArray<SignalServiceAddress *> *)groupMembers;
 
 + (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image;
 
@@ -41,6 +49,7 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVer
                            name:(nullable NSString *)name
                      avatarData:(nullable NSData *)avatarData
                         members:(NSArray<SignalServiceAddress *> *)members
+                 administrators:(NSArray<SignalServiceAddress *> *)administrators
                   groupsVersion:(GroupsVersion)groupsVersion
           groupSecretParamsData:(nullable NSData *)groupSecretParamsData NS_DESIGNATED_INITIALIZER;
 
@@ -52,6 +61,18 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVer
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
 
 + (NSData *)generateRandomGroupId;
+
+// Note that this method uses TSGroupMemberRole, not GroupsProtoMemberRole.
+- (TSGroupMemberRole)roleForGroupsV2Member:(SignalServiceAddress *)address;
+
+// Note that this method uses TSGroupMemberRole, not GroupsProtoMemberRole.
+//
+// This method should only be called by GroupManager.
+- (void)setRoleForGroupsV2Member:(SignalServiceAddress *)address role:(TSGroupMemberRole)role;
+
+- (BOOL)isAdministrator:(SignalServiceAddress *)address;
+
+@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *administrators;
 
 @end
 

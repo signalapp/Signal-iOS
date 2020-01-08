@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateGroupWithId:(NSData *)groupId
                   members:(NSArray<SignalServiceAddress *> *)members
+           administrators:(NSArray<SignalServiceAddress *> *)administrators
                      name:(nullable NSString *)name
                avatarData:(nullable NSData *)avatarData;
 

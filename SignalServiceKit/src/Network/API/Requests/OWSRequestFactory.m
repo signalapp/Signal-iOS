@@ -865,15 +865,15 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 #pragma mark - Groups v2
 
-+ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionTime:(uint32_t)fromRedemptionTime
-                                                         toRedemptionTime:(uint32_t)toRedemptionTime
++ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionDays:(uint32_t)fromRedemptionDays
+                                                         toRedemptionDays:(uint32_t)toRedemptionDays
 {
-    OWSAssertDebug(fromRedemptionTime > 0);
-    OWSAssertDebug(toRedemptionTime > 0);
+    OWSAssertDebug(fromRedemptionDays > 0);
+    OWSAssertDebug(toRedemptionDays > 0);
 
     NSString *path = [NSString stringWithFormat:@"/v1/certificate/group/%lu/%lu",
-                               (unsigned long)fromRedemptionTime,
-                               (unsigned long)toRedemptionTime];
+                               (unsigned long)fromRedemptionDays,
+                               (unsigned long)toRedemptionDays];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 

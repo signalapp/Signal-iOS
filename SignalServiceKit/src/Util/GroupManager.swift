@@ -73,10 +73,12 @@ public class GroupManager: NSObject {
     private static func buildGroupModel(groupId groupIdParam: Data?,
                                         name nameParam: String?,
                                         members membersParam: [SignalServiceAddress],
+                                        administrators administratorsParam: [SignalServiceAddress],
                                         avatarData: Data?,
                                         groupsVersion groupsVersionParam: GroupsVersion? = nil,
                                         groupSecretParamsData groupSecretParamsDataParam: Data? = nil,
-                                        isCreating: Bool = false) throws -> TSGroupModel {
+                                        isCreating: Bool = false,
+                                        transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
 
         let groupId: Data
         if let groupIdParam = groupIdParam {
@@ -105,7 +107,13 @@ public class GroupManager: NSObject {
         if let groupsVersionParam = groupsVersionParam {
             groupsVersion = groupsVersionParam
         } else {
-            groupsVersion = self.groupsVersion(for: members)
+            groupsVersion = self.groupsVersion(for: members,
+                                               transaction: transaction)
+        }
+
+        let administrators = members.filter { administratorsParam.contains($0) }
+        if administrators.count < administratorsParam.count {
+            owsFailDebug("Invalid administrator.")
         }
 
         var groupSecretParamsData: Data?
@@ -125,46 +133,55 @@ public class GroupManager: NSObject {
                             name: name,
                             avatarData: avatarData,
                             members: members,
+                            administrators: administrators,
                             groupsVersion: groupsVersion,
                             groupSecretParamsData: groupSecretParamsData)
     }
 
     // This should only be used for certain legacy edge cases.
     @objc
-    public static func fakeGroupModel(groupId: Data?) -> TSGroupModel? {
+    public static func fakeGroupModel(groupId: Data?,
+                                      transaction: SDSAnyReadTransaction) -> TSGroupModel? {
         do {
             return try buildGroupModel(groupId: groupId,
                                        name: nil,
                                        members: [],
+                                       administrators: [],
                                        avatarData: nil,
                                        groupsVersion: .V1,
-                                       groupSecretParamsData: nil)
+                                       groupSecretParamsData: nil,
+                                       transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
         }
     }
 
-    private static func groupsVersion(for members: [SignalServiceAddress]) -> GroupsVersion {
+    private static func groupsVersion(for members: [SignalServiceAddress],
+                                      transaction: SDSAnyReadTransaction) -> GroupsVersion {
 
-        let canUseV2: Bool = databaseStorage.read { transaction in
-            for recipientAddress in members {
-                guard let uuid = recipientAddress.uuid else {
-                    Logger.warn("Creating legacy group; member without UUID.")
-                    return false
-                }
-                let address = SignalServiceAddress(uuid: uuid, phoneNumber: nil)
-                let hasCredential = self.groupsV2.hasProfileKeyCredential(for: address,
-                                                                          transaction: transaction)
-                guard hasCredential else {
-                    Logger.warn("Creating legacy group; member missing credential.")
-                    return false
-                }
-                // GroupsV2 TODO: Check capability.
-            }
-            return true
-        }
+        let canUseV2 = self.canUseV2(for: members, transaction: transaction)
         return canUseV2 ? defaultGroupsVersion : .V1
+    }
+
+    private static func canUseV2(for members: [SignalServiceAddress],
+                                 transaction: SDSAnyReadTransaction) -> Bool {
+
+        for recipientAddress in members {
+            guard let uuid = recipientAddress.uuid else {
+                Logger.warn("Creating legacy group; member without UUID.")
+                return false
+            }
+            let address = SignalServiceAddress(uuid: uuid)
+            let hasCredential = self.groupsV2.hasProfileKeyCredential(for: address,
+                                                                      transaction: transaction)
+            guard hasCredential else {
+                Logger.warn("Creating legacy group; member missing credential.")
+                return false
+            }
+            // GroupsV2 TODO: Check capability.
+        }
+        return true
     }
 
     @objc
@@ -183,12 +200,12 @@ public class GroupManager: NSObject {
 
         return DispatchQueue.global().async(.promise) {
             return TSGroupModel.data(forGroupAvatar: avatarImage)
-            }.then(on: .global()) { avatarData in
-                return createNewGroup(members: members,
-                                      groupId: groupId,
-                                      name: name,
-                                      avatarData: avatarData,
-                                      shouldSendMessage: shouldSendMessage)
+        }.then(on: .global()) { avatarData in
+            return createNewGroup(members: members,
+                                  groupId: groupId,
+                                  name: name,
+                                  avatarData: avatarData,
+                                  shouldSendMessage: shouldSendMessage)
         }
     }
 
@@ -198,48 +215,64 @@ public class GroupManager: NSObject {
                                       avatarData: Data? = nil,
                                       shouldSendMessage: Bool) -> Promise<TSGroupThread> {
 
-        return DispatchQueue.global().async(.promise) {
+        struct GroupMembers {
+            let members: [SignalServiceAddress]
+            let administrators: [SignalServiceAddress]
+        }
+
+        return DispatchQueue.global().async(.promise) { () -> GroupMembers in
             guard let localAddress = self.tsAccountManager.localAddress else {
                 throw OWSAssertionError("Missing localAddress.")
             }
+            assert(!membersParam.contains(localAddress))
             let members: [SignalServiceAddress] = membersParam + [localAddress]
-            return members
-            }.then(on: .global()) { (members: [SignalServiceAddress]) -> Promise<[SignalServiceAddress]> in
-                guard FeatureFlags.tryToCreateNewGroupsV2 else {
-                    return Promise.value(members)
-                }
-                return self.groupsV2.tryToEnsureProfileKeyCredentialsObjc(for: members)
-                    .map(on: .global()) { (_) -> [SignalServiceAddress] in
-                        return members
-                }
-            }.map(on: .global()) { (members: [SignalServiceAddress]) throws -> TSGroupModel in
-                return try self.buildGroupModel(groupId: groupId, name: name, members: members, avatarData: avatarData, isCreating: true)
+            let administrators: [SignalServiceAddress] = [localAddress]
+            return GroupMembers(members: members, administrators: administrators)
+        }.then(on: .global()) { (members: GroupMembers) -> Promise<GroupMembers> in
+            guard FeatureFlags.tryToCreateNewGroupsV2 else {
+                return Promise.value(members)
             }
-            .then(on: .global()) { (groupModel: TSGroupModel) -> Promise<TSGroupModel> in
-                return self.createNewGroupOnServiceIfNecessary(groupModel: groupModel)
-            }.map(on: .global()) { (groupModel: TSGroupModel) -> TSGroupThread in
-                let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
-                    if let thread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
-                        thread.update(with: groupModel, transaction: transaction)
-                        return thread
-                    } else {
-                        let thread = TSGroupThread(groupModelPrivate: groupModel)
-                        thread.anyInsert(transaction: transaction)
-                        return thread
-                    }
-                }
-                return thread
-            }.then(on: .global()) { (thread: TSGroupThread) -> Promise<TSGroupThread> in
-                self.profileManager.addThread(toProfileWhitelist: thread)
-
-                if shouldSendMessage {
-                    return sendDurableNewGroupMessage(forThread: thread)
-                        .map(on: .global()) { _ in
-                            return thread
-                    }
+            guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
+                throw OWSAssertionError("Invalid groupsV2 instance.")
+            }
+            return groupsV2Swift.tryToEnsureProfileKeyCredentials(for: members.members)
+                .map(on: .global()) { (_) -> GroupMembers in
+                    return members
+            }
+        }.then(on: .global()) { (members: GroupMembers) throws -> Promise<TSGroupModel> in
+            let groupModel = try self.databaseStorage.read { transaction in
+                return try self.buildGroupModel(groupId: groupId,
+                                                name: name,
+                                                members: members.members,
+                                                administrators: members.administrators,
+                                                avatarData: avatarData,
+                                                isCreating: true,
+                                                transaction: transaction)
+            }
+            return self.createNewGroupOnServiceIfNecessary(groupModel: groupModel)
+        }.map(on: .global()) { (groupModel: TSGroupModel) -> TSGroupThread in
+            let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
+                if let thread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
+                    thread.update(with: groupModel, transaction: transaction)
+                    return thread
                 } else {
-                    return Promise.value(thread)
+                    let thread = TSGroupThread(groupModelPrivate: groupModel)
+                    thread.anyInsert(transaction: transaction)
+                    return thread
                 }
+            }
+            return thread
+        }.then(on: .global()) { (thread: TSGroupThread) -> Promise<TSGroupThread> in
+            self.profileManager.addThread(toProfileWhitelist: thread)
+
+            if shouldSendMessage {
+                return sendDurableNewGroupMessage(forThread: thread)
+                    .map(on: .global()) { _ in
+                        return thread
+                }
+            } else {
+                return Promise.value(thread)
+            }
         }
     }
 
@@ -247,7 +280,10 @@ public class GroupManager: NSObject {
         guard groupModel.groupsVersion == .V2 else {
             return Promise.value(groupModel)
         }
-        return groupsV2.createNewGroupOnServiceObjc(groupModel: groupModel)
+        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
+            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
+        }
+        return groupsV2Swift.createNewGroupOnService(groupModel: groupModel)
             .map(on: .global()) { _ in
                 return groupModel
         }
@@ -268,9 +304,9 @@ public class GroupManager: NSObject {
                        avatarImage: avatarImage,
                        shouldSendMessage: shouldSendMessage).done { thread in
                         success(thread)
-            }.catch { error in
-                failure(error)
-            }.retainUntilComplete()
+        }.catch { error in
+            failure(error)
+        }.retainUntilComplete()
     }
 
     // success and failure are invoked on the main thread.
@@ -288,9 +324,9 @@ public class GroupManager: NSObject {
                        avatarData: avatarData,
                        shouldSendMessage: shouldSendMessage).done { thread in
                         success(thread)
-            }.catch { error in
-                failure(error)
-            }.retainUntilComplete()
+        }.catch { error in
+            failure(error)
+        }.retainUntilComplete()
     }
 
     // MARK: - Tests
@@ -328,6 +364,7 @@ public class GroupManager: NSObject {
     }
 
     public static func createGroupForTests(members: [SignalServiceAddress],
+                                           administrators: [SignalServiceAddress] = [],
                                            name: String? = nil,
                                            avatarData: Data? = nil,
                                            groupId: Data? = nil,
@@ -335,10 +372,17 @@ public class GroupManager: NSObject {
                                            transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
         // Use buildGroupModel() to fill in defaults, like it was a new group.
-        let model = try buildGroupModel(groupId: groupId, name: name, members: members, avatarData: avatarData, groupsVersion: groupsVersion)
+        let model = try buildGroupModel(groupId: groupId,
+                                        name: name,
+                                        members: members,
+                                        administrators: administrators,
+                                        avatarData: avatarData,
+                                        groupsVersion: groupsVersion,
+                                        transaction: transaction)
 
         // But just create it in the database, don't create it on the service.
         return try upsertExistingGroup(members: model.groupMembers,
+                                       administrators: model.administrators,
                                        name: model.groupName,
                                        avatarData: model.groupAvatarData,
                                        groupId: model.groupId,
@@ -354,8 +398,9 @@ public class GroupManager: NSObject {
     //
     // "Existing" groups have already been created, we just need to make sure they're in the database.
 
-    @objc(upsertExistingGroupWithMembers:name:avatarData:groupId:groupsVersion:groupSecretParamsData:shouldSendMessage:transaction:error:)
+    @objc(upsertExistingGroupWithMembers:administrators:name:avatarData:groupId:groupsVersion:groupSecretParamsData:shouldSendMessage:transaction:error:)
     public static func upsertExistingGroup(members: [SignalServiceAddress],
+                                           administrators: [SignalServiceAddress],
                                            name: String? = nil,
                                            avatarData: Data? = nil,
                                            groupId: Data,
@@ -369,9 +414,11 @@ public class GroupManager: NSObject {
         let groupModel = try buildGroupModel(groupId: groupId,
                                              name: name,
                                              members: members,
+                                             administrators: administrators,
                                              avatarData: avatarData,
                                              groupsVersion: groupsVersion,
-                                             groupSecretParamsData: groupSecretParamsData)
+                                             groupSecretParamsData: groupSecretParamsData,
+                                             transaction: transaction)
 
         if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             guard !groupModel.isEqual(to: thread.groupModel) else {
@@ -379,6 +426,7 @@ public class GroupManager: NSObject {
             }
             let updatedThread = try updateExistingGroup(groupId: groupId,
                                                         members: members,
+                                                        administrators: administrators,
                                                         name: name,
                                                         avatarData: avatarData,
                                                         shouldSendMessage: shouldSendMessage,
@@ -396,6 +444,7 @@ public class GroupManager: NSObject {
     @objc
     public static func updateExistingGroup(groupId: Data,
                                            members membersParam: [SignalServiceAddress],
+                                           administrators: [SignalServiceAddress],
                                            name: String? = nil,
                                            avatarData: Data? = nil,
                                            shouldSendMessage: Bool,
@@ -417,14 +466,34 @@ public class GroupManager: NSObject {
         let newGroupModel = try buildGroupModel(groupId: oldGroupModel.groupId,
                                                 name: name,
                                                 members: members,
+                                                administrators: administrators,
                                                 avatarData: avatarData,
                                                 groupsVersion: oldGroupModel.groupsVersion,
-                                                groupSecretParamsData: oldGroupModel.groupSecretParamsData)
+                                                groupSecretParamsData: oldGroupModel.groupSecretParamsData,
+                                                transaction: transaction)
         if oldGroupModel.isEqual(to: newGroupModel) {
             // Skip redundant update.
             return thread
         }
 
+        // GroupsV2 TODO: Convert this method and callers to return a promise.
+        //                We need to audit usage of upsertExistingGroup();
+        //                It's possible that it should only be used for v1 groups?
+        switch oldGroupModel.groupsVersion {
+        case .V1:
+            break
+        case .V2:
+            guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
+                throw OWSAssertionError("Invalid groupsV2 instance.")
+            }
+            let changeSet = try groupsV2Swift.buildChangeSet(from: oldGroupModel,
+                                                             to: newGroupModel)
+            // GroupsV2 TODO: Return promise.
+            groupsV2Swift.updateExistingGroupOnService(changeSet: changeSet).retainUntilComplete()
+        }
+
+        // GroupsV2 TODO: v2 groups must be modified in step-wise fashion,
+        //                creating local messages for each revision.
         thread.update(with: newGroupModel, transaction: transaction)
 
         if shouldSendMessage {
@@ -474,9 +543,9 @@ public class GroupManager: NSObject {
                                                                   message: message)
                     .done(on: .global()) { _ in
                         Logger.debug("Successfully sent group update with avatar")
-                    }.recover(on: .global()) { error in
-                        owsFailDebug("Failed to send group avatar update with error: \(error)")
-                        throw error
+                }.recover(on: .global()) { error in
+                    owsFailDebug("Failed to send group avatar update with error: \(error)")
+                    throw error
                 }
             }
         }
@@ -487,9 +556,9 @@ public class GroupManager: NSObject {
         return self.messageSender.sendMessage(.promise, message.asPreparer)
             .done(on: .global()) { _ in
                 Logger.debug("Successfully sent group update")
-            }.recover(on: .global()) { error in
-                owsFailDebug("Failed to send group update with error: \(error)")
-                throw error
+        }.recover(on: .global()) { error in
+            owsFailDebug("Failed to send group update with error: \(error)")
+            throw error
         }
     }
 
@@ -521,67 +590,8 @@ public class GroupManager: NSObject {
                                                        failure: @escaping (Error) -> Void) {
         sendDurableNewGroupMessage(forThread: thread).done { _ in
             success()
-            }.catch { error in
-                failure(error)
-            }.retainUntilComplete()
-    }
-}
-
-// MARK: -
-
-// GroupsV2 TODO: Convert this extension into tests.
-@objc
-public extension GroupManager {
-    static func testGroupsV2Functionality() {
-        guard !FeatureFlags.isUsingProductionService,
-            FeatureFlags.tryToCreateNewGroupsV2,
-            FeatureFlags.versionedProfiledFetches,
-            FeatureFlags.versionedProfiledUpdate else {
-                owsFailDebug("Incorrect feature flags.")
-                return
-        }
-        let members = [SignalServiceAddress]()
-        let title0 = "hello"
-        guard let localUuid = self.tsAccountManager.localUuid else {
-            owsFailDebug("Missing localUuid.")
-            return
-        }
-        createNewGroup(members: members,
-                       name: title0,
-                       shouldSendMessage: true)
-            .then(on: .global()) { (groupThread: TSGroupThread) -> Promise<GroupV2State> in
-                let groupModel = groupThread.groupModel
-                guard groupModel.groupsVersion == .V2 else {
-                    throw OWSAssertionError("Not a V2 group.")
-                }
-                guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-                    throw OWSAssertionError("Invalid groupsV2 instance.")
-                }
-                return groupsV2Swift.fetchGroupState(groupModel: groupModel)
-            }.done { (groupV2State: GroupV2State) -> Void in
-                guard groupV2State.version == 0 else {
-                    throw OWSAssertionError("Unexpected group version: \(groupV2State.version).")
-                }
-                guard groupV2State.title == title0 else {
-                    throw OWSAssertionError("Unexpected group title: \(groupV2State.title).")
-                }
-                let expectedMembers = [SignalServiceAddress(uuid: localUuid, phoneNumber: nil)]
-                guard groupV2State.activeMembers == expectedMembers else {
-                    throw OWSAssertionError("Unexpected members: \(groupV2State.activeMembers).")
-                }
-                let expectedAdministrators = expectedMembers
-                guard groupV2State.administrators == expectedAdministrators else {
-                    throw OWSAssertionError("Unexpected administrators: \(groupV2State.administrators).")
-                }
-                guard groupV2State.accessControlForMembers == .member else {
-                    throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2State.accessControlForMembers).")
-                }
-                guard groupV2State.accessControlForAttributes == .member else {
-                    throw OWSAssertionError("Unexpected accessControlForAttributes: \(groupV2State.accessControlForAttributes).")
-                }
-                Logger.info("---- Success.")
-            }.catch { error in
-                owsFailDebug("---- Error: \(error)")
-        }
+        }.catch { error in
+            failure(error)
+        }.retainUntilComplete()
     }
 }

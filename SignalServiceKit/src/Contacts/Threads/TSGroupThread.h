@@ -38,7 +38,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 
 // --- CODE GENERATION MARKER
 
-@property (nonatomic, strong) TSGroupModel *groupModel;
+@property (nonatomic, readonly) TSGroupModel *groupModel;
 
 // This method should only be called by GroupManager.
 - (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel;
@@ -50,7 +50,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
-@property (class, nonatomic, readonly) NSString *defaultGroupName;
+@property (nonatomic, readonly, class) NSString *defaultGroupName;
 
 - (BOOL)isLocalUserInGroup;
 
@@ -71,6 +71,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 
 #pragma mark - Update With...
 
+// GroupsV2 TODO: We need to ensure this is only called by GroupManager.
 - (void)updateWithGroupModel:(TSGroupModel *)groupModel transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark -

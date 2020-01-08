@@ -56,6 +56,12 @@ public class VersionedProfiles: NSObject {
     // Never instantiate this class.
     private override init() {}
 
+    // MARK: -
+
+    public class func clientZkProfileOperations() throws -> ClientZkProfileOperations {
+        return ClientZkProfileOperations(serverPublicParams: try GroupsV2Utils.serverPublicParams())
+    }
+
     // MARK: - Update
 
     @objc
@@ -105,7 +111,7 @@ public class VersionedProfiles: NSObject {
                 nameComponents.familyName = profileFamilyName
 
                 guard let encryptedPaddedProfileName = OWSProfileManager.shared().encrypt(profileNameComponents: nameComponents, profileKey: profileKey) else {
-                    throw OWSErrorMakeAssertionError("Could not encrypt profile name.")
+                    throw OWSAssertionError("Could not encrypt profile name.")
                 }
                 nameData = encryptedPaddedProfileName
             }
@@ -115,9 +121,9 @@ public class VersionedProfiles: NSObject {
 
             let request = OWSRequestFactory.versionedProfileSetRequest(withName: nameData, hasAvatar: hasAvatar, version: profileKeyVersionData, commitment: commitmentData)
             return self.networkManager.makePromise(request: request)
-        }.then(on: DispatchQueue.global()) { (response: TSNetworkManager.Response) -> Promise<VersionedProfileUpdate> in
+        }.then(on: DispatchQueue.global()) { (_: URLSessionDataTask, responseObject: Any?) -> Promise<VersionedProfileUpdate> in
             if let profileAvatarData = profileAvatarData {
-                return self.parseFormAndUpload(formResponseObject: response.responseObject,
+                return self.parseFormAndUpload(formResponseObject: responseObject,
                                                profileAvatarData: profileAvatarData)
             }
             return Promise.value(VersionedProfileUpdate())
@@ -172,32 +178,6 @@ public class VersionedProfiles: NSObject {
 
     // MARK: - Get
 
-    private class func serverPublicParamsData() throws -> Data {
-        // GroupsV2 TODO: This if for staging. We need the production values.
-        // We should also move this to TSConstants.
-        //
-        // We need to discard all profile key credentials if these values ever change.
-        // See: VersionedProfiles.clearProfileKeyCredentials(...)
-        let encodedData = "Mmngo/SFRpC5kRLUKE8sXnpUx0QhQGcxUGI3b5eQXUX0kgK6SSL7XWcmjQv2ZsL5qKqyADTfhBakDSSfVEr2dHheAw/6JYMjgXnYZAn1845KOk9gHwWGaISIZWR55u4xpHdqZhZBdUyQ2MuDpIurLWifw8Jq/W6pumywOTg6zAeegHWx9MwyGaQD4R35nAAcPgqWuKrlIBX/z7kCYDwEFCaZwW+KmB0HluyEN362MzuzgGv+zK1SZR2aIpBmtsFYeG7FAV7aXXwB0aqB+5kDBJYCdhrzxWAqnWHC0Gm0JFASX3yaxmIWElacrfYtqLAP9KZcfViLRa4IiBIx3w9OAQ=="
-        guard let data = Data(base64Encoded: encodedData),
-            data.count > 0 else {
-                throw OWSErrorMakeAssertionError("Invalid server public params")
-        }
-
-        return data
-    }
-
-    // GroupsV2 TODO: Move this elsewhere, maybe TSConstants?
-    public class func serverPublicParams() throws -> ServerPublicParams {
-        let data = try serverPublicParamsData()
-        let bytes = [UInt8](data)
-        return try ServerPublicParams(contents: bytes)
-    }
-
-    private class func clientZkProfileOperations() throws -> ClientZkProfileOperations {
-        return ClientZkProfileOperations(serverPublicParams: try serverPublicParams())
-    }
-
     public class func versionedProfileRequest(address: SignalServiceAddress,
                                               udAccessKey: SMKUDAccessKey?) throws -> VersionedProfileRequest {
         guard address.isValid,
@@ -222,9 +202,7 @@ public class VersionedProfiles: NSObject {
             let credential = try self.profileKeyCredentialData(for: address, transaction: transaction)
             if credential == nil {
                 let clientZkProfileOperations = try self.clientZkProfileOperations()
-                let uuidData: Data = withUnsafeBytes(of: uuid.uuid) { Data($0) }
-                let requestUuid = try ZKGUuid(contents: [UInt8](uuidData))
-                let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(uuid: requestUuid,
+                let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(uuid: try uuid.asZKGUuid(),
                                                                                                      profileKey: profileKey)
                 requestContext = context
                 let credentialRequest = try context.getRequest()
@@ -316,7 +294,7 @@ public class VersionedProfiles: NSObject {
         guard let uuid = address.uuid else {
             return
         }
-        credentialStore.removeValue(forKey: uuid.uuidString)
+        credentialStore.removeValue(forKey: uuid.uuidString, transaction: transaction)
     }
 
     public class func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {

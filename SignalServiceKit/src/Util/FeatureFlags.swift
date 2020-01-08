@@ -255,6 +255,8 @@ public class FeatureFlags: NSObject {
     @objc
     public static let versionedProfiledFetches = false
 
+    // When we activate this feature flag, we also need to ensure that all
+    // users update their profile once in a durable way.
     @objc
     public static let versionedProfiledUpdate = false
 
@@ -263,4 +265,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let useOrphanDataCleaner = true
+
+    @objc
+    public static let sendRecipientUpdates = false
 }

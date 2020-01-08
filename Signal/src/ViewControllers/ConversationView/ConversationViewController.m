@@ -3703,6 +3703,7 @@ typedef enum : NSUInteger {
 
 - (void)updateGroupWithId:(NSData *)groupId
                   members:(NSArray<SignalServiceAddress *> *)members
+           administrators:(NSArray<SignalServiceAddress *> *)administrators
                      name:(nullable NSString *)name
                avatarData:(nullable NSData *)avatarData
 {
@@ -3714,6 +3715,7 @@ typedef enum : NSUInteger {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         newThread = [GroupManager updateExistingGroupWithGroupId:groupId
                                                          members:members
+                                                  administrators:administrators
                                                             name:name
                                                       avatarData:avatarData
                                                shouldSendMessage:YES

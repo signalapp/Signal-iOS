@@ -108,7 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 NSArray<SignalServiceAddress *> *members = @[ localAddress ];
                 NSError *_Nullable groupError;
+                // GroupsV2 TODO: Set administrators.
                 _thread = [GroupManager upsertExistingGroupWithMembers:members
+                                                        administrators:@[]
                                                                   name:nil
                                                             avatarData:nil
                                                                groupId:_groupId

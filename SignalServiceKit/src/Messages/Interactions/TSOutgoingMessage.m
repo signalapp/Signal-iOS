@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingMessage.h"
@@ -23,10 +23,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-BOOL AreRecipientUpdatesEnabled(void)
-{
-    return NO;
-}
+typedef NS_CLOSED_ENUM(NSUInteger, OutgoingGroupProtoResult) { OutgoingGroupProtoResult_AddedWithGroupAvatar,
+    OutgoingGroupProtoResult_AddedWithoutGroupAvatar,
+    OutgoingGroupProtoResult_Error };
 
 NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRecipientAll";
 
@@ -118,6 +117,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
+}
+
+- (id<GroupsV2>)groupsV2
+{
+    return SSKEnvironment.shared.groupsV2;
 }
 
 #pragma mark -
@@ -1087,71 +1091,25 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     // Group Messages
     BOOL attachmentWasGroupAvatar = NO;
     if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *gThread = (TSGroupThread *)thread;
-        SSKProtoGroupContextType groupMessageType;
-        switch (self.groupMetaMessage) {
-            case TSGroupMetaMessageQuit:
-                groupMessageType = SSKProtoGroupContextTypeQuit;
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        OutgoingGroupProtoResult result;
+        switch (groupThread.groupModel.groupsVersion) {
+            case GroupsVersionV1:
+                result = [self addGroupsV1ToDataMessageBuilder:builder groupThread:groupThread transaction:transaction];
                 break;
-            case TSGroupMetaMessageUpdate:
-            case TSGroupMetaMessageNew:
-                groupMessageType = SSKProtoGroupContextTypeUpdate;
-                break;
-            default:
-                groupMessageType = SSKProtoGroupContextTypeDeliver;
+            case GroupsVersionV2:
+                result = [self addGroupsV2ToDataMessageBuilder:builder groupThread:groupThread transaction:transaction];
                 break;
         }
-        SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:gThread.groupModel.groupId];
-        [groupBuilder setType:groupMessageType];
-        if (groupMessageType == SSKProtoGroupContextTypeUpdate) {
-            if (gThread.groupModel.groupAvatarData != nil && self.attachmentIds.count == 1) {
+        switch (result) {
+            case OutgoingGroupProtoResult_Error:
+                return nil;
+            case OutgoingGroupProtoResult_AddedWithGroupAvatar:
                 attachmentWasGroupAvatar = YES;
-                SSKProtoAttachmentPointer *_Nullable attachmentProto =
-                    [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject
-                                                      transaction:transaction];
-                if (!attachmentProto) {
-                    OWSFailDebug(@"could not build protobuf.");
-                    return nil;
-                }
-                [groupBuilder setAvatar:attachmentProto];
-            }
-
-            NSMutableArray<NSString *> *membersE164 = [NSMutableArray new];
-            NSMutableArray<SSKProtoGroupContextMember *> *members = [NSMutableArray new];
-
-            for (SignalServiceAddress *address in gThread.groupModel.groupMembers) {
-                // We currently include an independent group member list
-                // of just the phone numbers to support older pre-UUID
-                // clients. Eventually we probably want to remove this.
-                if (address.phoneNumber) {
-                    [membersE164 addObject:address.phoneNumber];
-                }
-
-                SSKProtoGroupContextMemberBuilder *memberBuilder = [SSKProtoGroupContextMember builder];
-                memberBuilder.uuid = address.uuidString;
-                memberBuilder.e164 = address.phoneNumber;
-
-                NSError *error;
-                SSKProtoGroupContextMember *_Nullable member = [memberBuilder buildAndReturnError:&error];
-                if (error || !member) {
-                    OWSFailDebug(@"could not build members protobuf: %@", error);
-                } else {
-                    [members addObject:member];
-                }
-            }
-
-            [groupBuilder setMembersE164:membersE164];
-            [groupBuilder setMembers:members];
-
-            [groupBuilder setName:gThread.groupModel.groupName];
+                break;
+            case OutgoingGroupProtoResult_AddedWithoutGroupAvatar:
+                break;
         }
-        NSError *error;
-        SSKProtoGroupContext *_Nullable groupContextProto = [groupBuilder buildAndReturnError:&error];
-        if (error || !groupContextProto) {
-            OWSFailDebug(@"could not build protobuf: %@.", error);
-            return nil;
-        }
-        [builder setGroup:groupContextProto];
     }
     
     // Message Attachments
@@ -1244,6 +1202,110 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 
     return builder;
+}
+
+- (OutgoingGroupProtoResult)addGroupsV1ToDataMessageBuilder:(SSKProtoDataMessageBuilder *)builder
+                                                groupThread:(TSGroupThread *)groupThread
+                                                transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(builder);
+    OWSAssertDebug(groupThread);
+    OWSAssertDebug(transaction);
+
+    TSGroupModel *groupModel = groupThread.groupModel;
+    OWSAssertDebug(groupModel.groupsVersion == GroupsVersionV1);
+
+    SSKProtoGroupContextType groupMessageType;
+    switch (self.groupMetaMessage) {
+        case TSGroupMetaMessageQuit:
+            groupMessageType = SSKProtoGroupContextTypeQuit;
+            break;
+        case TSGroupMetaMessageUpdate:
+        case TSGroupMetaMessageNew:
+            groupMessageType = SSKProtoGroupContextTypeUpdate;
+            break;
+        default:
+            groupMessageType = SSKProtoGroupContextTypeDeliver;
+            break;
+    }
+    BOOL attachmentWasGroupAvatar = NO;
+    SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:groupModel.groupId];
+    [groupBuilder setType:groupMessageType];
+    if (groupMessageType == SSKProtoGroupContextTypeUpdate) {
+        if (groupModel.groupAvatarData != nil && self.attachmentIds.count == 1) {
+            attachmentWasGroupAvatar = YES;
+            SSKProtoAttachmentPointer *_Nullable attachmentProto =
+                [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject transaction:transaction];
+            if (!attachmentProto) {
+                OWSFailDebug(@"could not build protobuf.");
+                return OutgoingGroupProtoResult_Error;
+            }
+            [groupBuilder setAvatar:attachmentProto];
+        }
+
+        NSMutableArray<NSString *> *membersE164 = [NSMutableArray new];
+        NSMutableArray<SSKProtoGroupContextMember *> *members = [NSMutableArray new];
+
+        for (SignalServiceAddress *address in groupModel.groupMembers) {
+            // We currently include an independent group member list
+            // of just the phone numbers to support older pre-UUID
+            // clients. Eventually we probably want to remove this.
+            if (address.phoneNumber) {
+                [membersE164 addObject:address.phoneNumber];
+            }
+
+            SSKProtoGroupContextMemberBuilder *memberBuilder = [SSKProtoGroupContextMember builder];
+            memberBuilder.uuid = address.uuidString;
+            memberBuilder.e164 = address.phoneNumber;
+
+            NSError *error;
+            SSKProtoGroupContextMember *_Nullable member = [memberBuilder buildAndReturnError:&error];
+            if (error || !member) {
+                OWSFailDebug(@"could not build members protobuf: %@", error);
+            } else {
+                [members addObject:member];
+            }
+        }
+
+        [groupBuilder setMembersE164:membersE164];
+        [groupBuilder setMembers:members];
+
+        [groupBuilder setName:groupModel.groupName];
+    }
+    NSError *error;
+    SSKProtoGroupContext *_Nullable groupContextProto = [groupBuilder buildAndReturnError:&error];
+    if (error || !groupContextProto) {
+        OWSFailDebug(@"could not build protobuf: %@.", error);
+        return OutgoingGroupProtoResult_Error;
+    }
+    [builder setGroup:groupContextProto];
+
+    return (attachmentWasGroupAvatar ? OutgoingGroupProtoResult_AddedWithGroupAvatar
+                                     : OutgoingGroupProtoResult_AddedWithoutGroupAvatar);
+}
+
+- (OutgoingGroupProtoResult)addGroupsV2ToDataMessageBuilder:(SSKProtoDataMessageBuilder *)builder
+                                                groupThread:(TSGroupThread *)groupThread
+                                                transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(builder);
+    OWSAssertDebug(groupThread);
+    OWSAssertDebug(transaction);
+
+    TSGroupModel *groupModel = groupThread.groupModel;
+    OWSAssertDebug(groupModel.groupsVersion == GroupsVersionV2);
+
+    // GroupsV2 TODO: Populate groupChangeData.
+    NSError *error;
+    SSKProtoGroupContextV2 *_Nullable groupContextV2 = [self.groupsV2 buildGroupContextV2ProtoWithGroupModel:groupModel
+                                                                                             groupChangeData:nil
+                                                                                                       error:&error];
+    if (groupContextV2 == nil || error != nil) {
+        OWSFailDebug(@"Error: %@", error);
+        return OutgoingGroupProtoResult_Error;
+    }
+    [builder setGroupV2:groupContextV2];
+    return OutgoingGroupProtoResult_AddedWithoutGroupAvatar;
 }
 
 - (nullable SSKProtoDataMessageQuoteBuilder *)quotedMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction

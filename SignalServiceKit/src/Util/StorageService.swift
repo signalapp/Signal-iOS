@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -213,11 +213,16 @@ public struct StorageService {
         let data: Data
     }
 
-    private struct Auth {
+    public struct Auth {
         let username: String
         let password: String
 
-        func authHeader() throws -> String {
+        public init(username: String, password: String) {
+            self.username = username
+            self.password = password
+        }
+
+        public func authHeader() throws -> String {
             guard let data = "\(username):\(password)".data(using: .utf8) else {
                 owsFailDebug("failed to encode auth data")
                 throw StorageError.assertion

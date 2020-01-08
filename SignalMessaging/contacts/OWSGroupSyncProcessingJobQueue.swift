@@ -194,7 +194,9 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         if let groupsVersionReceived = groupDetails.groupsVersion {
             groupsVersion = groupsVersionReceived
         }
+        // GroupsV2 TODO: Set administrators.
         let result = try GroupManager.upsertExistingGroup(members: groupDetails.memberAddresses,
+                                                          administrators: [],
                                                           name: groupDetails.name,
                                                           avatarData: groupDetails.avatarData,
                                                           groupId: groupDetails.groupId,
