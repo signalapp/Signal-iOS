@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -743,8 +743,24 @@ class NotificationActionHandler {
         // If this happens when the the app is not, visible we skip the animation so the thread
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
-        let shouldAnimate = UIApplication.shared.applicationState == .active
-        signalApp.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadId, animated: shouldAnimate)
+        if (UIApplication.shared.applicationState == .active) {
+            signalApp.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadId, animated: true)
+        } else {
+            // On iOS 13, there is a bug with UISplitViewController that causes the `isCollapsed` state to
+            // get out of sync while the app isn't active. This results in conversations opening up in the
+            // wrong pane when you were in portrait and then try and open the app in landscape. This is
+            // a gross hack of a workaround and results in the user seeing the transition between conversations
+            // on iOS 13.
+            if #available(iOS 14, *) { owsFailDebug("check if this is still broken") }
+
+            if #available(iOS 13, *) {
+                DispatchQueue.main.async {
+                    self.signalApp.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadId, animated: true)
+                }
+            } else {
+                signalApp.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadId, animated: false)
+            }
+        }
         return Promise.value(())
     }
 
