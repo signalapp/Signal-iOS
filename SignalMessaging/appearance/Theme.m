@@ -75,7 +75,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 - (void)notifyIfThemeModeIsNotDefault
 {
-    if (self.defaultTheme != self.getOrFetchCurrentTheme) {
+    if (self.isDarkThemeEnabled || self.defaultTheme != self.getOrFetchCurrentTheme) {
         [self themeDidChange];
     }
 }
