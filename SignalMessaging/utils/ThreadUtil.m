@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ThreadUtil.h"
@@ -332,27 +332,27 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(messageSender);
     OWSAssertDebug(completion);
 
-    __block OWSDisappearingMessagesConfiguration *configuration;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
+    __block TSOutgoingMessage *message;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
+        uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+        // MJK TODO - remove senderTimestamp
+        message =
+            [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                               inThread:thread
+                                                            messageBody:nil
+                                                          attachmentIds:[NSMutableArray new]
+                                                       expiresInSeconds:expiresInSeconds
+                                                        expireStartedAt:0
+                                                         isVoiceMessage:NO
+                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                          quotedMessage:nil
+                                                           contactShare:contactShare
+                                                            linkPreview:nil
+                                                         messageSticker:nil
+                                                      isViewOnceMessage:NO];
+        [message anyInsertWithTransaction:transaction];
     }];
-
-    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-    // MJK TODO - remove senderTimestamp
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:nil
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:expiresInSeconds
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:contactShare
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                  isViewOnceMessage:NO];
 
     [messageSender sendMessage:message.asPreparer
         success:^{

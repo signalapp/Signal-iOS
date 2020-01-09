@@ -20,11 +20,13 @@ setup:
 	gem install bundler
 	bundle install
 
-dependencies:
+dependencies: pristine_dependencies
+	git submodule update --init
+
+pristine_dependencies:
 	cd $(WORKING_DIR) && \
-		git submodule foreach --recursive git clean -xfd && \
-		git submodule foreach --recursive git reset --hard && \
-		git submodule update --init
+		git submodule foreach --recursive "git clean -xfd" && \
+		git submodule foreach --recursive "git reset --hard"
 
 build: dependencies
 	cd $(WORKING_DIR) && \
