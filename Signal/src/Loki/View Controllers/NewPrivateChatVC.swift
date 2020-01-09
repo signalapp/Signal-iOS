@@ -57,6 +57,10 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
+        
+        let newPrivateGroupButton = UIBarButtonItem(image: #imageLiteral(resourceName: "btnGroup--white"), style: .plain, target: self, action: #selector(showNewPrivateGroupVC))
+        newPrivateGroupButton.tintColor = Colors.text
+        navigationItem.rightBarButtonItem = newPrivateGroupButton
         // Customize title
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("New Conversation", comment: "")
@@ -119,6 +123,12 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
     // MARK: Interaction
     @objc private func close() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    // Loki - Show the VC of creating new private group chat
+    @objc private func showNewPrivateGroupVC() {
+        let newPrivateGroupVC = NewGroupViewController()
+        navigationController?.pushViewController(newPrivateGroupVC, animated: true)
     }
     
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {

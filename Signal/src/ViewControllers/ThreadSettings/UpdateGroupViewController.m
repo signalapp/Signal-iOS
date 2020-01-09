@@ -379,7 +379,8 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                          memberIds:self.memberRecipientIds.allObjects
                                                              image:self.groupAvatar
-                                                           groupId:self.thread.groupModel.groupId];
+                                                           groupId:self.thread.groupModel.groupId
+                                                         groupType:self.thread.groupModel.groupType];
     [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
 }
 

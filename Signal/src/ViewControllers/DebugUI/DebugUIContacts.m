@@ -109,8 +109,9 @@ NS_ASSUME_NONNULL_BEGIN
         [TSAccountManager localNumber],
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:16];
+    //TODO: Figure out if this is correct
     TSGroupModel *model =
-        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:SIGNAL];
     TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:model];
 
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];

@@ -1389,12 +1389,13 @@ NS_ASSUME_NONNULL_BEGIN
             case SSKProtoGroupContextTypeUpdate: {
                 // Ensures that the thread exists but doesn't update it.
                 TSGroupThread *newGroupThread =
-                    [TSGroupThread getOrCreateThreadWithGroupId:groupId transaction:transaction];
+                [TSGroupThread getOrCreateThreadWithGroupId:groupId groupType:oldGroupThread.groupModel.groupType transaction:transaction];
 
                 TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
                                                                         memberIds:newMemberIds.allObjects
                                                                             image:oldGroupThread.groupModel.groupImage
-                                                                          groupId:dataMessage.group.id];
+                                                                          groupId:dataMessage.group.id
+                                                                        groupType:oldGroupThread.groupModel.groupType];
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
                 newGroupThread.groupModel = newGroupModel;

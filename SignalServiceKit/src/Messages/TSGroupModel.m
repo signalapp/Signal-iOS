@@ -25,6 +25,7 @@ const int32_t kGroupIdLength = 16;
                     memberIds:(NSArray<NSString *> *)memberIds
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId
+                    groupType:(GroupType)groupType
 {
     OWSAssertDebug(memberIds);
 
@@ -32,6 +33,7 @@ const int32_t kGroupIdLength = 16;
     _groupMemberIds         = [memberIds copy];
     _groupImage = image; // image is stored in DB
     _groupId                = groupId;
+    _groupType              = groupType;
 
     return self;
 }
@@ -73,6 +75,9 @@ const int32_t kGroupIdLength = 16;
     }
     if (!(_groupImage != nil && other.groupImage != nil &&
           [UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(other.groupImage)])) {
+        return NO;
+    }
+    if (_groupType != other.groupType) {
         return NO;
     }
     NSMutableArray *compareMyGroupMemberIds = [NSMutableArray arrayWithArray:_groupMemberIds];

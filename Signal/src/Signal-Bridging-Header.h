@@ -130,3 +130,4 @@
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>
+#import "NewGroupViewController.h"

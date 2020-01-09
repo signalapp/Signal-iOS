@@ -51,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIImage *groupAvatar;
 @property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
 
+@property (nonatomic) GroupType groupType;
+
 @property (nonatomic) BOOL hasUnsavedChanges;
 @property (nonatomic) BOOL hasAppeared;
 
@@ -530,7 +532,8 @@ NS_ASSUME_NONNULL_BEGIN
     return [[TSGroupModel alloc] initWithTitle:groupName
                                      memberIds:recipientIds
                                          image:self.groupAvatar
-                                       groupId:self.groupId];
+                                       groupId:self.groupId
+                                     groupType:self.groupType];
 }
 
 #pragma mark - Group Avatar

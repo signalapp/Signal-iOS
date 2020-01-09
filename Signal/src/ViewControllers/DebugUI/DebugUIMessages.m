@@ -3878,8 +3878,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         [TSAccountManager localNumber],
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
+    //TODO: Figure out if this is correct
     TSGroupModel *groupModel =
-        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:SIGNAL];
 
     __block TSGroupThread *thread;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -4384,8 +4385,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                [TSAccountManager localNumber],
                                                                ] mutableCopy];
                  NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
+                 //TODO: Figure out if this is correct
                  TSGroupModel *groupModel =
-                 [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+                 [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:SIGNAL];
 
                  TSGroupThread *groupThread =
                  [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
@@ -4425,8 +4427,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                         [TSAccountManager localNumber],
                     ] mutableCopy];
                     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
+                    //TODO: Figure out if this is correct
                     TSGroupModel *groupModel =
-                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:SIGNAL];
 
                     TSGroupThread *groupThread =
                         [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
@@ -4464,8 +4467,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                         [TSAccountManager localNumber],
                     ] mutableCopy];
                     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
+                    //TODO: Figure out if this is correct
                     TSGroupModel *groupModel =
-                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:SIGNAL];
 
                     TSGroupThread *groupThread =
                         [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];

@@ -22,8 +22,10 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId;
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
+                                   groupType:(GroupType) groupType;
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
+                                   groupType:(GroupType) groupType
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction;
