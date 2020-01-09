@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -157,7 +157,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         }
         guard let phoneNumberText = phoneNumberTextField.text else { return [] }
         let possiblePhoneNumber = callingCode + phoneNumberText
-        return PhoneNumber.tryParsePhoneNumbersFromsUserSpecifiedText(possiblePhoneNumber, clientPhoneNumber: localNumber)
+        return PhoneNumber.tryParsePhoneNumbers(fromUserSpecifiedText: possiblePhoneNumber, clientPhoneNumber: localNumber)
     }
 
     func hasValidPhoneNumber() -> Bool {

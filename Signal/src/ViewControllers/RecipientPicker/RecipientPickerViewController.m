@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "RecipientPickerViewController.h"
@@ -1145,7 +1145,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
     NSMutableSet<NSString *> *parsedPhoneNumbers = [NSMutableSet new];
     for (PhoneNumber *phoneNumber in
-        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:searchText
+        [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:searchText
                                               clientPhoneNumber:[TSAccountManager localNumber]]) {
 
         NSString *phoneNumberString = phoneNumber.toE164;

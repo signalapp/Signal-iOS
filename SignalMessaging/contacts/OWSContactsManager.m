@@ -279,12 +279,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     NSMutableSet<NSString *> *phoneNumbers = [NSMutableSet set];
 
     for (Contact *contact in contacts) {
-        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-            [phoneNumbers addObject:phoneNumber.toE164];
-        }
+        [phoneNumbers addObjectsFromArray:contact.e164sForIntersection];
     }
-
-    return phoneNumbers;
+    return [phoneNumbers copy];
 }
 
 - (void)intersectContacts:(NSArray<Contact *> *)contacts

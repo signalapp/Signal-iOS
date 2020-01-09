@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "Contact.h"
@@ -215,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (NSString *phoneNumberString in userTextPhoneNumbers) {
         for (PhoneNumber *phoneNumber in
-            [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:phoneNumberString
+            [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:phoneNumberString
                                                   clientPhoneNumber:[TSAccountManager localNumber]]) {
             [parsedPhoneNumbers addObject:phoneNumber];
             NSString *phoneNumberName = phoneNumberNameMap[phoneNumberString];
@@ -268,29 +268,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString stringWithFormat:@"%@: %@", self.fullName, self.userTextPhoneNumbers];
 }
 
-- (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    __block NSMutableArray *result = [NSMutableArray array];
-
-    for (PhoneNumber *number in [self.parsedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)]) {
-        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:number.toE164];
-        SignalRecipient *_Nullable signalRecipient =
-            [SignalRecipient registeredRecipientForAddress:address mustHaveDevices:YES transaction:transaction];
-        if (signalRecipient) {
-            [result addObject:signalRecipient];
-        }
-    }
-
-    return [result copy];
-}
-
 - (NSArray<SignalServiceAddress *> *)registeredAddresses
 {
     __block NSMutableArray<SignalServiceAddress *> *addresses = [NSMutableArray array];
 
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        for (PhoneNumber *number in self.parsedPhoneNumbers) {
-            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:number.toE164];
+        for (NSString *e164PhoneNumber in self.e164sForIntersection) {
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:e164PhoneNumber];
             if ([SignalRecipient isRegisteredRecipient:address transaction:transaction]) {
                 [addresses addObject:address];
             }

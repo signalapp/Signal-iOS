@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumber.h"
@@ -265,7 +265,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return result;
 }
 
-+ (NSArray<PhoneNumber *> *)tryParsePhoneNumbersFromsUserSpecifiedText:(NSString *)text
++ (NSArray<PhoneNumber *> *)tryParsePhoneNumbersFromUserSpecifiedText:(NSString *)text
                                                      clientPhoneNumber:(NSString *)clientPhoneNumber
 {
     NSMutableArray<PhoneNumber *> *result =
@@ -386,7 +386,40 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
         tryParsingWithCountryCode(phoneNumberByApplyingMissingAreaCode, localCountryCode);
     }
 
+    for (NSString *phoneNumber in [self generateAdditionalMexicanCandidatesIfMexicanNumbers:phoneNumberSet]) {
+        tryParsingWithCountryCode(phoneNumber, @"MX");
+    }
+
     return result;
+}
+
+#pragma mark - missing/extra mobile prefix
+
++ (NSSet<NSString *> *)generateAdditionalMexicanCandidatesIfMexicanNumbers:(NSSet<NSString *> *)e164PhoneNumbers
+{
+    NSMutableSet<NSString *> *mexicanNumbers = [NSMutableSet new];
+    for (NSString *phoneNumber in e164PhoneNumbers) {
+        if ([phoneNumber hasPrefix:@"+52"]) {
+            [mexicanNumbers addObject:phoneNumber];
+        }
+    }
+
+    NSMutableSet<NSString *> *additionalCandidates = [NSMutableSet new];
+    for (NSString *mexicanNumber in mexicanNumbers) {
+        if ([mexicanNumber hasPrefix:@"+521"]) {
+            NSString *withoutMobilePrefix = [mexicanNumber stringByReplacingOccurrencesOfString:@"+521"
+                                                                                     withString:@"+52"];
+            [additionalCandidates addObject:mexicanNumber];
+            [additionalCandidates addObject:withoutMobilePrefix];
+        } else {
+            OWSAssertDebug([mexicanNumber hasPrefix:@"+52"]);
+            NSString *withMobilePrefix = [mexicanNumber stringByReplacingOccurrencesOfString:@"+52" withString:@"+521"];
+            [additionalCandidates addObject:mexicanNumber];
+            [additionalCandidates addObject:withMobilePrefix];
+        }
+    }
+
+    return [additionalCandidates copy];
 }
 
 #pragma mark - missing area code

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumber.h"
@@ -64,7 +64,7 @@
                                                         clientPhoneNumber:(NSString *)clientPhoneNumber
 {
     NSArray<PhoneNumber *> *phoneNumbers =
-        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:text clientPhoneNumber:clientPhoneNumber];
+        [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:text clientPhoneNumber:clientPhoneNumber];
     NSMutableArray<NSString *> *result = [NSMutableArray new];
     for (PhoneNumber *phoneNumber in phoneNumbers) {
         [result addObject:phoneNumber.toE164];
