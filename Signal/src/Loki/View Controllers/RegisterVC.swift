@@ -9,7 +9,6 @@ final class RegisterVC : UIViewController {
         result.textColor = Colors.text
         result.font = Fonts.spaceMono(ofSize: Values.largeFontSize)
         result.numberOfLines = 0
-        result.textAlignment = .center
         result.lineBreakMode = .byCharWrapping
         return result
     }()
