@@ -56,9 +56,25 @@ public class LongTextViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.title = NSLocalizedString("LONG_TEXT_VIEW_TITLE",
-                                                      comment: "Title for the 'long text message' view.")
-
+        // Loki: Set gradient background
+        view.backgroundColor = .clear
+        let gradient = Gradients.defaultLokiBackground
+        view.setGradient(gradient)
+        
+        // Loki: Set navigation bar background color
+        let navigationBar = navigationController!.navigationBar
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = Colors.navigationBarBackground
+        
+        // Loki: Customize title
+        let titleLabel = UILabel()
+        titleLabel.text = NSLocalizedString("LONG_TEXT_VIEW_TITLE", comment: "")
+        titleLabel.textColor = Colors.text
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        navigationItem.titleView = titleLabel
+        
         createViews()
 
         self.messageTextView.contentOffset = CGPoint(x: 0, y: self.messageTextView.contentInset.top)
@@ -119,8 +135,8 @@ public class LongTextViewController: OWSViewController {
 
         let messageTextView = OWSTextView()
         self.messageTextView = messageTextView
-        messageTextView.font = UIFont.ows_dynamicTypeBody
-        messageTextView.backgroundColor = Theme.backgroundColor
+        messageTextView.font = .systemFont(ofSize: Values.mediumFontSize)
+        messageTextView.backgroundColor = .clear
         messageTextView.isOpaque = true
         messageTextView.isEditable = false
         messageTextView.isSelectable = true
@@ -128,7 +144,8 @@ public class LongTextViewController: OWSViewController {
         messageTextView.showsHorizontalScrollIndicator = false
         messageTextView.showsVerticalScrollIndicator = true
         messageTextView.isUserInteractionEnabled = true
-        messageTextView.textColor = Theme.primaryColor
+        messageTextView.textColor = Colors.text
+        messageTextView.contentInset = UIEdgeInsets(top: Values.mediumSpacing, leading: 0, bottom: 0, trailing: 0)
         if let displayableText = displayableText {
             messageTextView.text = fullText
             messageTextView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
@@ -138,8 +155,8 @@ public class LongTextViewController: OWSViewController {
         }
 
         let linkTextAttributes: [NSAttributedString.Key: Any] = [
-            NSAttributedString.Key.foregroundColor: Theme.primaryColor,
-            NSAttributedString.Key.underlineColor: Theme.primaryColor,
+            NSAttributedString.Key.foregroundColor: Colors.text,
+            NSAttributedString.Key.underlineColor: Colors.text,
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
         ]
         messageTextView.linkTextAttributes = linkTextAttributes
