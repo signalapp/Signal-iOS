@@ -243,6 +243,7 @@ DEPENDENCIES:
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`, branch `mkirk/1.0.2t`)
   - HKDFKit (from `https://github.com/signalapp/HKDFKit.git`)
   - HKDFKit/Tests (from `https://github.com/signalapp/HKDFKit.git`)
+  - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - PromiseKit (= 6.5.3)
@@ -269,7 +270,6 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - GRDB.swift
-    - libPhoneNumber-iOS
     - libwebp
     - lottie-ios
     - PromiseKit
@@ -295,6 +295,9 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   HKDFKit:
     :git: https://github.com/signalapp/HKDFKit.git
+  libPhoneNumber-iOS:
+    :branch: signal-master
+    :git: https://github.com/signalapp/libPhoneNumber-iOS
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
@@ -334,6 +337,9 @@ CHECKOUT OPTIONS:
   HKDFKit:
     :commit: b6985abcacda0292b82785ba93b8be47c0d608b6
     :git: https://github.com/signalapp/HKDFKit.git
+  libPhoneNumber-iOS:
+    :commit: 01c0b2a0626a149c98d3cfa4909184843f094293
+    :git: https://github.com/signalapp/libPhoneNumber-iOS
   Mantle:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
@@ -386,6 +392,6 @@ SPEC CHECKSUMS:
   ZKGroup: b5fcf00855c58ffa45861d5427621d8a519f4314
   ZXingObjC: 512b34b9b6920e8ef0461a4159d0814c5e48c28a
 
-PODFILE CHECKSUM: 1ee16f33d5cff33f8ee90ff610570018edb66a56
+PODFILE CHECKSUM: 7ae8483815f4ae74a82baf598adffb135234fd8a
 
 COCOAPODS: 1.7.5
