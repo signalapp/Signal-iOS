@@ -45,18 +45,19 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [edgesView autoPinWidthToSuperview];
 
-    UIImage *image = [UIImage imageNamed:@"Loki"];
+    UIImage *image = [UIImage imageNamed:@"Session"];
     UIImageView *imageView = [UIImageView new];
     imageView.image = image;
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
     [edgesView addSubview:imageView];
     [imageView autoHCenterInSuperview];
 
     [imageView autoSetDimension:ALDimensionWidth toSize:75];
-    [imageView autoSetDimension:ALDimensionHeight toSize:71];
+    [imageView autoSetDimension:ALDimensionHeight toSize:75];
 
     const CGFloat kButtonHeight = 40.f;
     OWSFlatButton *button =
-        [OWSFlatButton buttonWithTitle:NSLocalizedString(@"Unlock Loki Messenger", @"")
+        [OWSFlatButton buttonWithTitle:NSLocalizedString(@"Unlock Session", @"")
                                   font:[OWSFlatButton fontForHeight:kButtonHeight]
                             titleColor:UIColor.whiteColor
                        backgroundColor:UIColor.clearColor
