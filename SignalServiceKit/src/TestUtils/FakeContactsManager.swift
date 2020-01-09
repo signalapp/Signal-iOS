@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Contacts
@@ -20,6 +20,14 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
 
     public func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
         return "Fake name"
+    }
+
+    public func nameComponents(for address: SignalServiceAddress) -> PersonNameComponents? {
+        return PersonNameComponents()
+    }
+
+    public func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
+        return PersonNameComponents()
     }
 
     public func displayNameWithSneakyTransaction(thread: TSThread) -> String {

@@ -51,7 +51,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (BOOL)localProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
 // hasLocalProfile is true if there is a local profile with a name or avatar.
 - (BOOL)hasLocalProfile;
-- (nullable NSString *)localProfileName;
+- (nullable NSString *)localGivenName;
+- (nullable NSString *)localFamilyName;
+- (nullable NSString *)localFullName;
 - (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
@@ -88,10 +90,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     NS_SWIFT_NAME(updateService(unversionedProfileAvatarData:success:failure:));
 
 // If profileName is nil, we are clearing the profileName.
-- (void)updateServiceWithUnversionedProfileName:(nullable NSString *)profileName
-                                        success:(void (^)(void))successBlock
-                                        failure:(ProfileManagerFailureBlock)failureBlock
-    NS_SWIFT_NAME(updateService(unversionedProfileName:success:failure:));
+- (void)updateServiceWithUnversionedGivenName:(nullable NSString *)givenName
+                                   familyName:(nullable NSString *)familyName
+                                      success:(void (^)(void))successBlock
+                                      failure:(ProfileManagerFailureBlock)failureBlock
+    NS_SWIFT_NAME(updateService(unversionedGivenName:familyName:success:failure:));
 
 #pragma mark - Profile Whitelist
 
@@ -113,8 +116,17 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address
                                     transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
-                                 transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable NSString *)givenNameForAddress:(SignalServiceAddress *)address
+                               transaction:(SDSAnyReadTransaction *)transaction;
+
+- (nullable NSString *)familyNameForAddress:(SignalServiceAddress *)address
+                                transaction:(SDSAnyReadTransaction *)transaction;
+
+- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
+                                                  transaction:(SDSAnyReadTransaction *)transaction;
+
+- (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction;
@@ -138,11 +150,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
                         fromViewController:(UIViewController *)fromViewController
                                    success:(void (^)(void))successHandler;
-
-#pragma mark - Misc.
-
-+ (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
-                                        localProfileKey:(OWSAES256Key *)localProfileKey;
 
 @end
 

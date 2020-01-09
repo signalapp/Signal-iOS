@@ -59,9 +59,11 @@ public class VersionedProfiles: NSObject {
     // MARK: - Update
 
     @objc
-    public class func updateProfileOnService(profileName: String?,
+    public class func updateProfileOnService(profileGivenName: String?,
+                                             profileFamilyName: String?,
                                              profileAvatarData: Data?) {
-        updateProfilePromise(profileName: profileName,
+        updateProfilePromise(profileGivenName: profileGivenName,
+                             profileFamilyName: profileFamilyName,
                              profileAvatarData: profileAvatarData)
             .done { _ in
                 Logger.verbose("success")
@@ -83,7 +85,8 @@ public class VersionedProfiles: NSObject {
             }.retainUntilComplete()
     }
 
-    public class func updateProfilePromise(profileName: String?,
+    public class func updateProfilePromise(profileGivenName: String?,
+                                           profileFamilyName: String?,
                                            profileAvatarData: Data?) -> Promise<VersionedProfileUpdate> {
 
         return DispatchQueue.global().async(.promise) {
@@ -96,8 +99,12 @@ public class VersionedProfiles: NSObject {
             let commitmentData = commitment.serialize().asData
             let hasAvatar = profileAvatarData != nil
             var nameData: Data?
-            if let profileName = profileName {
-                guard let encryptedPaddedProfileName = OWSProfileManager.encryptProfileName(withUnpaddedName: profileName, localProfileKey: profileKey) else {
+            if let profileGivenName = profileGivenName {
+                var nameComponents = PersonNameComponents()
+                nameComponents.givenName = profileGivenName
+                nameComponents.familyName = profileFamilyName
+
+                guard let encryptedPaddedProfileName = OWSProfileManager.shared().encrypt(profileNameComponents: nameComponents, profileKey: profileKey) else {
                     throw OWSErrorMakeAssertionError("Could not encrypt profile name.")
                 }
                 nameData = encryptedPaddedProfileName

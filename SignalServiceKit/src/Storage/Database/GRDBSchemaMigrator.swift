@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -51,6 +51,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dedupeSignalRecipients
         case indexMediaGallery2
         case unreadThreadInteractions
+        case createFamilyName
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -227,6 +228,12 @@ public class GRDBSchemaMigrator: NSObject {
                           on: "model_TSInteraction",
                           columns: ["uniqueThreadId", "read", "id"],
                           unique: true)
+        }
+
+        migrator.registerMigration(MigrationId.createFamilyName.rawValue) { db in
+            try db.alter(table: "model_OWSUserProfile", body: { alteration in
+                alteration.add(column: "familyName", .text)
+            })
         }
 
         return migrator

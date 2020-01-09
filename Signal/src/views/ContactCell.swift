@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -94,7 +94,11 @@ class ContactCell: UITableViewCell {
                 contactIdForDeterminingBackgroundColor = contact.fullName
             }
 
-            let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.fullName,
+            var nameComponents = PersonNameComponents()
+            nameComponents.givenName = contact.firstName
+            nameComponents.familyName = contact.lastName
+
+            let avatarBuilder = OWSContactAvatarBuilder(nonSignalNameComponents: nameComponents,
                                                         colorSeed: contactIdForDeterminingBackgroundColor,
                                                         diameter: ContactCell.kAvatarDiameter)
 

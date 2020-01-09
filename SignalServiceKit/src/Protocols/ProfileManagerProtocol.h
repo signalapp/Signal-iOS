@@ -20,9 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
                forAddress:(SignalServiceAddress *)address
               transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)setProfileName:(nullable NSString *)profileName
-            forAddress:(SignalServiceAddress *)address
-           transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)setProfileGivenName:(nullable NSString *)firstName
+                 familyName:(nullable NSString *)lastName
+                 forAddress:(SignalServiceAddress *)address
+                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 

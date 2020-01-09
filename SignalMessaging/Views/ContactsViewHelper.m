@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsViewHelper.h"
@@ -467,7 +467,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            newContact.givenName = [self.profileManager profileNameForAddress:address transaction:transaction];
+            newContact.givenName = [self.profileManager givenNameForAddress:address transaction:transaction];
+            newContact.familyName = [self.profileManager familyNameForAddress:address transaction:transaction];
         }];
 
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];

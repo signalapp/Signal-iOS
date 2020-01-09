@@ -315,17 +315,22 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
     }
 
-    NSString *_Nullable localProfileName = self.manifest.localProfileName;
+    NSString *_Nullable localProfileGivenName = self.manifest.localProfileGivenName;
+    NSString *_Nullable localProfileFamilyName = self.manifest.localProfileFamilyName;
     NSData *_Nullable localProfileAvatarData = [self tryToLoadLocalProfileAvatarData];
 
-    OWSLogVerbose(@"local profile name: %@, avatar: %d", localProfileName, localProfileAvatarData != nil);
+    OWSLogVerbose(@"local profile given name: %@, family name: %@, avatar: %d",
+        localProfileGivenName,
+        localProfileFamilyName,
+        localProfileAvatarData != nil);
 
-    if (localProfileName.length < 1 && !localProfileAvatarData) {
+    if (localProfileGivenName.length < 1 && !localProfileAvatarData) {
         return [AnyPromise promiseWithValue:@(1)];
     }
 
-    return [OWSProfileManager updateLocalProfilePromiseObjWithProfileName:localProfileName
-                                                        profileAvatarData:localProfileAvatarData]
+    return [OWSProfileManager updateLocalProfilePromiseObjWithProfileGivenName:localProfileGivenName
+                                                             profileFamilyName:localProfileFamilyName
+                                                             profileAvatarData:localProfileAvatarData]
         .catch(^(NSError *error) {
             OWSFailDebug(@"Error: %@", error);
             // Ignore errors related to local profile.

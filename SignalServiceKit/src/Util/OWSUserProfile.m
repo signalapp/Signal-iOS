@@ -30,7 +30,9 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 @interface OWSUserProfile ()
 
 @property (atomic, nullable) OWSAES256Key *profileKey;
+// Ultimately used as an alias of givenName, but sqlite doesn't support renaming columns
 @property (atomic, nullable) NSString *profileName;
+@property (atomic, nullable) NSString *familyName;
 @property (atomic, nullable) NSString *username;
 @property (atomic, nullable) NSString *avatarUrlPath;
 @property (atomic, nullable) NSString *avatarFileName;
@@ -48,6 +50,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 @synthesize avatarUrlPath = _avatarUrlPath;
 @synthesize avatarFileName = _avatarFileName;
 @synthesize profileName = _profileName;
+@synthesize familyName = _familyName;
 
 
 - (id<StorageServiceManagerProtocol>)storageServiceManager
@@ -65,6 +68,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                       uniqueId:(NSString *)uniqueId
                   avatarFileName:(nullable NSString *)avatarFileName
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
+                      familyName:(nullable NSString *)familyName
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
@@ -80,6 +84,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     _avatarFileName = avatarFileName;
     _avatarUrlPath = avatarUrlPath;
+    _familyName = familyName;
     _profileKey = profileKey;
     _profileName = profileName;
     _recipientPhoneNumber = recipientPhoneNumber;
@@ -345,15 +350,17 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                   }];
 }
 
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                avatarUrlPath:(nullable NSString *)avatarUrlPath
-               avatarFileName:(nullable NSString *)avatarFileName
-                  transaction:(SDSAnyWriteTransaction *)transaction
-                   completion:(nullable OWSUserProfileCompletion)completion
+- (void)updateWithGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+             avatarFileName:(nullable NSString *)avatarFileName
+                transaction:(SDSAnyWriteTransaction *)transaction
+                 completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
         applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setProfileName:[profileName ows_stripped]];
+            [userProfile setGivenName:givenName];
+            [userProfile setFamilyName:familyName];
             // Always setAvatarUrlPath: before you setAvatarFileName: since
             // setAvatarUrlPath: may clear the avatar filename.
             [userProfile setAvatarUrlPath:avatarUrlPath];
@@ -364,15 +371,17 @@ NSUInteger const kUserProfileSchemaVersion = 1;
           completion:completion];
 }
 
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                     username:(nullable NSString *)username
-                avatarUrlPath:(nullable NSString *)avatarUrlPath
-                  transaction:(SDSAnyWriteTransaction *)transaction
-                   completion:(nullable OWSUserProfileCompletion)completion
+- (void)updateWithGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+                   username:(nullable NSString *)username
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+                transaction:(SDSAnyWriteTransaction *)transaction
+                 completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
         applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setProfileName:[profileName ows_stripped]];
+            [userProfile setGivenName:givenName];
+            [userProfile setFamilyName:familyName];
             [userProfile setUsername:username];
             [userProfile setAvatarUrlPath:avatarUrlPath];
         }
@@ -401,7 +410,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     [self
         applyChanges:^(OWSUserProfile *userProfile) {
             [userProfile setProfileKey:profileKey];
-            [userProfile setProfileName:nil];
+            [userProfile setGivenName:nil];
+            [userProfile setFamilyName:nil];
             // Always setAvatarUrlPath: before you setAvatarFileName: since
             // setAvatarUrlPath: may clear the avatar filename.
             [userProfile setAvatarUrlPath:nil];
@@ -427,13 +437,15 @@ NSUInteger const kUserProfileSchemaVersion = 1;
           completion:completion];
 }
 
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                  transaction:(SDSAnyWriteTransaction *)transaction
-                   completion:(nullable OWSUserProfileCompletion)completion
+- (void)updateWithGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+                transaction:(SDSAnyWriteTransaction *)transaction
+                 completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
         applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setProfileName:profileName];
+            [userProfile setGivenName:givenName];
+            [userProfile setFamilyName:familyName];
         }
         functionName:__PRETTY_FUNCTION__
          transaction:transaction
@@ -456,12 +468,13 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // This should only be used in verbose, developer-only logs.
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"%@ %p %@ %lu %@ %@ %@",
+    return [NSString stringWithFormat:@"%@ %p %@ %lu %@ %@ %@ %@",
                      self.logTag,
                      self,
                      self.address,
                      (unsigned long)self.profileKey.keyData.length,
-                     self.profileName,
+                     self.givenName,
+                     self.familyName,
                      self.avatarUrlPath,
                      self.avatarFileName];
 }
@@ -469,7 +482,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 - (nullable NSString *)profileName
 {
     @synchronized(self) {
-        return _profileName.filterStringForDisplay;
+        return _profileName;
     }
 }
 
@@ -478,6 +491,53 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     @synchronized(self) {
         _profileName = profileName.filterStringForDisplay;
     }
+}
+
+- (nullable NSString *)givenName
+{
+    return self.profileName;
+}
+
+- (void)setGivenName:(nullable NSString *)givenName
+{
+    [self setProfileName:givenName];
+}
+
+- (nullable NSString *)familyName
+{
+    @synchronized(self) {
+        return _familyName;
+    }
+}
+
+- (void)setFamilyName:(nullable NSString *)familyName
+{
+    @synchronized(self) {
+        _familyName = familyName.filterStringForDisplay;
+    }
+}
+
+- (nullable NSPersonNameComponents *)nameComponents
+{
+    if (self.givenName.length <= 0) {
+        return nil;
+    }
+
+    NSPersonNameComponents *nameComponents = [NSPersonNameComponents new];
+    nameComponents.givenName = self.givenName;
+    nameComponents.familyName = self.familyName;
+    return nameComponents;
+}
+
+- (nullable NSString *)fullName
+{
+    if (self.givenName.length <= 0) {
+        return nil;
+    }
+
+    return [NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents:self.nameComponents
+                                                                              style:0
+                                                                            options:0];
 }
 
 #pragma mark - Profile Avatars Directory

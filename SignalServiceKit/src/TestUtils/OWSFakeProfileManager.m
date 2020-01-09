@@ -58,9 +58,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.profileKeys[address] = key;
 }
 
-- (void)setProfileName:(nullable NSString *)profileName
-            forAddress:(SignalServiceAddress *)address
-           transaction:(SDSAnyWriteTransaction *)transaction
+- (void)setProfileGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+                 forAddress:(SignalServiceAddress *)address
+                transaction:(SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalAccount.h"
@@ -144,6 +144,16 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 - (nullable NSString *)contactFullName
 {
     return self.contact.fullName.filterStringForDisplay;
+}
+
+- (nullable NSString *)contactFirstName
+{
+    return self.contact.firstName.filterStringForDisplay;
+}
+
+- (nullable NSString *)contactLastName
+{
+    return self.contact.lastName.filterStringForDisplay;
 }
 
 - (NSString *)multipleAccountLabelText

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -63,7 +63,7 @@ public class ContactShareViewModel: NSObject {
             colorSeed = firstRecipientId
         }
 
-        let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: displayName,
+        let avatarBuilder = OWSContactAvatarBuilder(nonSignalNameComponents: name.components,
                                                     colorSeed: colorSeed,
                                                     diameter: UInt(diameter))
         // Note: we use buildDefaultImage() and not build() so that contact

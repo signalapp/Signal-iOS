@@ -251,12 +251,22 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (BOOL)hasLocalProfile
 {
-    return (self.localProfileName.length > 0 || self.localProfileAvatarImage != nil);
+    return (self.localGivenName.length > 0 || self.localProfileAvatarImage != nil);
 }
 
-- (nullable NSString *)localProfileName
+- (nullable NSString *)localGivenName
 {
-    return self.localUserProfile.profileName;
+    return self.localUserProfile.givenName;
+}
+
+- (nullable NSString *)localFamilyName
+{
+    return self.localUserProfile.familyName;
+}
+
+- (nullable NSString *)localFullName
+{
+    return self.localUserProfile.fullName;
 }
 
 - (nullable UIImage *)localProfileAvatarImage
@@ -343,7 +353,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSData *_Nullable encryptedAvatarData;
         if (avatarData) {
-            encryptedAvatarData = [self encryptProfileData:avatarData];
+            encryptedAvatarData = [self encryptLocalProfileData:avatarData];
             OWSAssertDebug(encryptedAvatarData.length > 0);
         }
 
@@ -366,15 +376,19 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 }
 
 // If profileName is nil, we are clearing the profileName.
-- (void)updateServiceWithUnversionedProfileName:(nullable NSString *)profileName
-                                        success:(void (^)(void))successBlock
-                                        failure:(ProfileManagerFailureBlock)failureBlock
+- (void)updateServiceWithUnversionedGivenName:(nullable NSString *)givenName
+                                   familyName:(nullable NSString *)familyName
+                                      success:(void (^)(void))successBlock
+                                      failure:(ProfileManagerFailureBlock)failureBlock
 {
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSData *_Nullable encryptedPaddedName = [self encryptProfileNameWithUnpaddedName:profileName];
+        NSPersonNameComponents *nameComponents = [NSPersonNameComponents new];
+        nameComponents.givenName = givenName;
+        nameComponents.familyName = familyName;
+        NSData *_Nullable encryptedPaddedName = [self encryptLocalProfileNameComponents:nameComponents];
 
         TSRequest *request = [OWSRequestFactory profileNameSetRequestWithEncryptedPaddedName:encryptedPaddedName];
         [self.networkManager makeRequest:request
@@ -568,7 +582,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         // Make copies of the current local profile state.
         OWSUserProfile *localUserProfile = self.localUserProfile;
-        NSString *_Nullable oldProfileName = localUserProfile.profileName;
+        NSString *_Nullable oldGivenName = localUserProfile.givenName;
+        NSString *_Nullable oldFamilyName = localUserProfile.familyName;
         __block NSData *_Nullable oldAvatarData;
 
         // Rotate the stored profile key.
@@ -591,11 +606,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         //
         // This may fail.
         promise = promise.thenInBackground(^(id value) {
-            if (oldProfileName.length < 1) {
+            if (oldGivenName.length < 1) {
                 return [AnyPromise promiseWithValue:@(1)];
             }
-            return [OWSProfileManager updateLocalProfilePromiseObjWithProfileName:oldProfileName
-                                                                profileAvatarData:oldAvatarData];
+            return [OWSProfileManager updateLocalProfilePromiseObjWithProfileGivenName:oldGivenName
+                                                                     profileFamilyName:oldFamilyName
+                                                                     profileAvatarData:oldAvatarData];
         });
 
         promise = promise.thenInBackground(^(id value) {
@@ -999,18 +1015,20 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         OWSLogError(@"logUserProfiles: %ld", (unsigned long)[OWSUserProfile anyCountWithTransaction:transaction]);
 
-        [OWSUserProfile anyEnumerateWithTransaction:transaction
-                                            batched:YES
-                                              block:^(OWSUserProfile *userProfile, BOOL *stop) {
-                                                  OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
-                                                              @"avatar file: %d, name: %@, username: %@",
-                                                      userProfile.address,
-                                                      userProfile.profileKey != nil,
-                                                      userProfile.avatarUrlPath != nil,
-                                                      userProfile.avatarFileName != nil,
-                                                      userProfile.profileName,
-                                                      userProfile.username);
-                                              }];
+        [OWSUserProfile
+            anyEnumerateWithTransaction:transaction
+                                batched:YES
+                                  block:^(OWSUserProfile *userProfile, BOOL *stop) {
+                                      OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
+                                                  @"avatar file: %d, given name: %@, family name: %@, username: %@",
+                                          userProfile.address,
+                                          userProfile.profileKey != nil,
+                                          userProfile.avatarUrlPath != nil,
+                                          userProfile.avatarFileName != nil,
+                                          userProfile.givenName,
+                                          userProfile.familyName,
+                                          userProfile.username);
+                                  }];
     }];
 }
 
@@ -1043,14 +1061,15 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                  }];
 }
 
-- (void)setProfileName:(nullable NSString *)profileName
-            forAddress:(SignalServiceAddress *)address
-           transaction:(SDSAnyWriteTransaction *)transaction
+- (void)setProfileGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+                 forAddress:(SignalServiceAddress *)address
+                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
-    [userProfile updateWithProfileName:profileName transaction:transaction completion:nil];
+    [userProfile updateWithGivenName:givenName familyName:familyName transaction:transaction completion:nil];
 }
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
@@ -1069,14 +1088,44 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return userProfile.profileKey;
 }
 
-- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
-                                 transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSString *)givenNameForAddress:(SignalServiceAddress *)address
+                               transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
-    return userProfile.profileName;
+    return userProfile.givenName;
+}
+
+- (nullable NSString *)familyNameForAddress:(SignalServiceAddress *)address
+                                transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
+
+    return userProfile.familyName;
+}
+
+- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
+                                                  transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
+
+    return userProfile.nameComponents;
+}
+
+- (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
+
+    return userProfile.fullName;
 }
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
@@ -1179,7 +1228,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             // Ensure disk IO and decryption occurs off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 NSData *_Nullable encryptedData = (error ? nil : [NSData dataWithContentsOfFile:tempFilePath]);
-                NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKeyAtStart];
+                NSData *_Nullable decryptedData
+                    = (!encryptedData ? nil : [self decryptProfileData:encryptedData profileKey:profileKeyAtStart]);
                 UIImage *_Nullable image = nil;
                 if (decryptedData) {
                     BOOL success = [decryptedData writeToFile:filePath atomically:YES];
@@ -1301,23 +1351,25 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             }
 
             // Decryption is slightly expensive to do inside this write transaction.
-            NSString *_Nullable profileName =
+            NSPersonNameComponents *_Nullable profileNameComponents =
                 [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
 
-            [userProfile updateWithProfileName:profileName
-                                      username:username
-                                 avatarUrlPath:avatarUrlPath
-                                   transaction:transaction
-                                    completion:nil];
+            [userProfile updateWithGivenName:profileNameComponents.givenName
+                                  familyName:profileNameComponents.familyName
+                                    username:username
+                               avatarUrlPath:avatarUrlPath
+                                 transaction:transaction
+                                  completion:nil];
 
             // If we're updating the profile that corresponds to our local number,
             // update the local profile as well.
             if (address.isLocalAddress) {
-                [localUserProfile updateWithProfileName:profileName
-                                               username:username
-                                          avatarUrlPath:avatarUrlPath
-                                            transaction:transaction
-                                             completion:nil];
+                [localUserProfile updateWithGivenName:profileNameComponents.givenName
+                                           familyName:profileNameComponents.familyName
+                                             username:username
+                                        avatarUrlPath:avatarUrlPath
+                                          transaction:transaction
+                                           completion:nil];
             }
         }];
 
@@ -1355,92 +1407,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 #pragma mark - Profile Encryption
 
-+ (nullable NSData *)encryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
-{
-    OWSAssertDebug(profileKey.keyData.length == kAES256_KeyByteLength);
-
-    if (!encryptedData) {
-        return nil;
-    }
-
-    return [Cryptography encryptAESGCMWithProfileData:encryptedData key:profileKey];
-}
-
-- (nullable NSData *)decryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
-{
-    OWSAssertDebug(profileKey.keyData.length == kAES256_KeyByteLength);
-
-    if (!encryptedData) {
-        return nil;
-    }
-
-    return [Cryptography decryptAESGCMWithProfileData:encryptedData key:profileKey];
-}
-
-- (nullable NSString *)decryptProfileNameData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
-{
-    OWSAssertDebug(profileKey.keyData.length == kAES256_KeyByteLength);
-
-    NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKey];
-    if (decryptedData.length < 1) {
-        return nil;
-    }
-
-    // Unpad profile name.
-    NSUInteger unpaddedLength = 0;
-    const char *bytes = decryptedData.bytes;
-
-    // Work through the bytes until we encounter our first
-    // padding byte (our padding scheme is NULL bytes)
-    for (NSUInteger i = 0; i < decryptedData.length; i++) {
-        if (bytes[i] == 0x00) {
-            break;
-        }
-        unpaddedLength = i + 1;
-    }
-
-    NSData *unpaddedData = [decryptedData subdataWithRange:NSMakeRange(0, unpaddedLength)];
-
-    return [[NSString alloc] initWithData:unpaddedData encoding:NSUTF8StringEncoding];
-}
-
-- (nullable NSData *)encryptProfileData:(nullable NSData *)data
-{
-    return [OWSProfileManager encryptProfileData:data profileKey:self.localProfileKey];
-}
-
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName
 {
     OWSAssertIsOnMainThread();
 
     NSData *nameData = [profileName dataUsingEncoding:NSUTF8StringEncoding];
     return nameData.length > kOWSProfileManager_NameDataLength;
-}
-
-- (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
-{
-    return [OWSProfileManager encryptProfileNameWithUnpaddedName:name
-                                                 localProfileKey:self.localProfileKey];
-}
-
-+ (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
-                                        localProfileKey:(OWSAES256Key *)localProfileKey
-{
-    NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
-    if (nameData.length > kOWSProfileManager_NameDataLength) {
-        OWSFailDebug(@"name data is too long with length:%lu", (unsigned long)nameData.length);
-        return nil;
-    }
-
-    NSUInteger paddingByteCount = kOWSProfileManager_NameDataLength - nameData.length;
-
-    NSMutableData *paddedNameData = [nameData mutableCopy];
-    // Since we want all encrypted profile names to be the same length on the server, we use `increaseLengthBy`
-    // to pad out any remaining length with 0 bytes.
-    [paddedNameData increaseLengthBy:paddingByteCount];
-    OWSAssertDebug(paddedNameData.length == kOWSProfileManager_NameDataLength);
-
-    return [self encryptProfileData:[paddedNameData copy] profileKey:localProfileKey];
 }
 
 #pragma mark - Avatar Disk Cache

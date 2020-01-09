@@ -806,13 +806,16 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(nullable NSData *)encryptedPaddedName
 {
-    const NSUInteger kEncodedNameLength = 72;
-    
+    const NSUInteger kLegacyEncodedNameLength = 72;
+    const NSUInteger kEncodedNameLength = 108;
+
+    NSUInteger encodedNameLength = SSKFeatureFlags.profileFamilyName ? kEncodedNameLength : kLegacyEncodedNameLength;
+
     NSString *urlString;
     
     NSString *base64EncodedName = [encryptedPaddedName base64EncodedString];
     // name length must match exactly
-    if (base64EncodedName.length == kEncodedNameLength) {
+    if (base64EncodedName.length == encodedNameLength) {
         NSString *_Nullable urlEncodedName = base64EncodedName.encodeURIComponent;
         urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, urlEncodedName];
     } else {

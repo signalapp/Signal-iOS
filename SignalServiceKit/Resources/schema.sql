@@ -336,6 +336,7 @@ CREATE
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
             ,"username" TEXT
+            ,"familyName" TEXT
         )
 ;
 

@@ -310,6 +310,10 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
         return "Fake Name"
     }
 
+    func nameComponents(for address: SignalServiceAddress) -> PersonNameComponents? {
+        return PersonNameComponents()
+    }
+
     func signalAccounts() -> [SignalAccount] {
         return []
     }
