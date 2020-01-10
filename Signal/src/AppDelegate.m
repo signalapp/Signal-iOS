@@ -1569,6 +1569,16 @@ static NSTimeInterval launchStartedAt;
             }];
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
         }
+        else {
+            [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                TSGroupThread *thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
+                if (!thread.groupModel.groupType) {
+                    thread.groupModel.groupType = PUBLIC_CHAT;
+                    [thread saveWithTransaction:transaction];
+                }
+//                OWSLogInfo(@"GROUP MODEL TYPE %d", thread.groupModel.groupType);
+            }];
+        }
     }
 }
 
@@ -1587,6 +1597,16 @@ static NSTimeInterval launchStartedAt;
             }];
             [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
+        }
+        else {
+            [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                TSGroupThread *thread = [TSGroupThread threadWithGroupId: [feed.id dataUsingEncoding:NSUTF8StringEncoding] transaction:transaction];
+                if (!thread.groupModel.groupType) {
+                    thread.groupModel.groupType = RSS_FEED;
+                    [thread saveWithTransaction:transaction];
+                }
+//                OWSLogInfo(@"GROUP MODEL TYPE %d", thread.groupModel.groupType);
+            }];
         }
     }
 }
