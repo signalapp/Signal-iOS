@@ -3055,7 +3055,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "View-once messages are not stored in your conversation history.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
