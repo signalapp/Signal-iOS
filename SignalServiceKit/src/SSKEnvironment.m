@@ -30,6 +30,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) SSKMessageDecryptJobQueue *messageDecryptJobQueue;
 @property (nonatomic) OWSBatchMessageProcessor *batchMessageProcessor;
 @property (nonatomic) OWSMessageReceiver *messageReceiver;
+@property (nonatomic) GroupsV2MessageProcessor *groupsV2MessageProcessor;
 @property (nonatomic) TSSocketManager *socketManager;
 @property (nonatomic) TSAccountManager *tsAccountManager;
 @property (nonatomic) OWS2FAManager *ows2FAManager;
@@ -75,6 +76,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                  messageDecryptJobQueue:(SSKMessageDecryptJobQueue *)messageDecryptJobQueue
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
                         messageReceiver:(OWSMessageReceiver *)messageReceiver
+               groupsV2MessageProcessor:(GroupsV2MessageProcessor *)groupsV2MessageProcessor
                           socketManager:(TSSocketManager *)socketManager
                        tsAccountManager:(TSAccountManager *)tsAccountManager
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
@@ -117,6 +119,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(messageDecryptJobQueue);
     OWSAssertDebug(batchMessageProcessor);
     OWSAssertDebug(messageReceiver);
+    OWSAssertDebug(groupsV2MessageProcessor);
     OWSAssertDebug(socketManager);
     OWSAssertDebug(tsAccountManager);
     OWSAssertDebug(ows2FAManager);
@@ -155,6 +158,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageDecryptJobQueue = messageDecryptJobQueue;
     _batchMessageProcessor = batchMessageProcessor;
     _messageReceiver = messageReceiver;
+    _groupsV2MessageProcessor = groupsV2MessageProcessor;
     _socketManager = socketManager;
     _tsAccountManager = tsAccountManager;
     _ows2FAManager = ows2FAManager;

@@ -7,9 +7,12 @@ import PromiseKit
 
 @objc
 public protocol GroupsV2: AnyObject {
+
     func createNewGroupOnServiceObjc(groupModel: TSGroupModel) -> AnyPromise
 
     func generateGroupSecretParamsData() throws -> Data
+
+    func groupId(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data
 
     func hasProfileKeyCredential(for address: SignalServiceAddress,
                                  transaction: SDSAnyReadTransaction) -> Bool
@@ -20,6 +23,12 @@ public protocol GroupsV2: AnyObject {
 
     func buildGroupContextV2Proto(groupModel: TSGroupModel,
                                   groupChangeData: Data?) throws -> SSKProtoGroupContextV2
+
+    func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo
+
+    func fetchAndApplyGroupV2UpdatesFromServiceObjc(groupId: Data,
+                                                    groupSecretParamsData: Data,
+                                                    upToRevision: UInt32) -> AnyPromise
 }
 
 // MARK: -
@@ -35,6 +44,8 @@ public protocol GroupsV2Swift {
     to newGroupModel: TSGroupModel) throws -> GroupsV2ChangeSet
 
     func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<Void>
+
+    func reuploadLocalProfilePromise() -> Promise<Void>
 }
 
 // MARK: -
@@ -49,6 +60,8 @@ public protocol GroupsV2ChangeSet: AnyObject {
 // MARK: -
 
 public protocol GroupV2State {
+    var groupSecretParamsData: Data { get }
+
     var debugDescription: String { get }
 
     var version: UInt32 { get }
@@ -68,7 +81,26 @@ public protocol GroupV2State {
 
 // MARK: -
 
+@objc
+public class GroupV2ContextInfo: NSObject {
+    @objc
+    let masterKeyData: Data
+    @objc
+    let groupSecretParamsData: Data
+    @objc
+    let groupId: Data
+
+    public init(masterKeyData: Data, groupSecretParamsData: Data, groupId: Data) {
+        self.masterKeyData = masterKeyData
+        self.groupSecretParamsData = groupSecretParamsData
+        self.groupId = groupId
+    }
+}
+
+// MARK: -
+
 public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
+
     public func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void> {
         owsFail("Not implemented.")
     }
@@ -78,6 +110,10 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func generateGroupSecretParamsData() throws -> Data {
+        owsFail("Not implemented.")
+    }
+
+    public func groupId(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data {
         owsFail("Not implemented.")
     }
 
@@ -113,6 +149,20 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<Void> {
+        owsFail("Not implemented.")
+    }
+
+    public func reuploadLocalProfilePromise() -> Promise<Void> {
+        owsFail("Not implemented.")
+    }
+
+    public func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo {
+        owsFail("Not implemented.")
+    }
+
+    public func fetchAndApplyGroupV2UpdatesFromServiceObjc(groupId: Data,
+                                                           groupSecretParamsData: Data,
+                                                           upToRevision: UInt32) -> AnyPromise {
         owsFail("Not implemented.")
     }
 }

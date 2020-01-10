@@ -16,25 +16,14 @@ public extension StorageService {
                                      authCredentialMap: [UInt32: AuthCredential],
                                      redemptionTime: UInt32) throws -> NSURLRequest {
 
-        let groupProtoData = try groupProto.serializedData()
-
-        let urlPath = "/v1/groups/"
-        guard let url = URL(string: urlPath, relativeTo: sessionManager.baseURL) else {
-            throw OWSAssertionError("Invalid URL.")
-        }
-        let request = NSMutableURLRequest(url: url)
-        let method = "PUT"
-        request.httpMethod = method
-        request.httpBody = groupProtoData
-
-        request.setValue(OWSMimeTypeProtobuf, forHTTPHeaderField: "Content-Type")
-
-        try self.addAuthorizationHeader(to: request,
-                                        groupParams: groupParams,
-                                        authCredentialMap: authCredentialMap,
-                                        redemptionTime: redemptionTime)
-
-        return request
+        let protoData = try groupProto.serializedData()
+        return try buildGroupV2Request(protoData: protoData,
+                                            urlPath: "/v1/groups/",
+                                            httpMethod: "PUT",
+                                            groupParams: groupParams,
+                                            sessionManager: sessionManager,
+                                            authCredentialMap: authCredentialMap,
+                                            redemptionTime: redemptionTime)
     }
 
     static func buildUpdateGroupRequest(groupChangeProto: GroupsProtoGroupChangeActions,
@@ -43,40 +32,48 @@ public extension StorageService {
                                         authCredentialMap: [UInt32: AuthCredential],
                                         redemptionTime: UInt32) throws -> NSURLRequest {
 
-        let groupProtoData = try groupChangeProto.serializedData()
-
-        let urlPath = "/v1/groups/"
-        guard let url = URL(string: urlPath, relativeTo: sessionManager.baseURL) else {
-            throw OWSAssertionError("Invalid URL.")
-        }
-        let request = NSMutableURLRequest(url: url)
-        let method = "PATCH"
-        request.httpMethod = method
-        request.httpBody = groupProtoData
-
-        request.setValue(OWSMimeTypeProtobuf, forHTTPHeaderField: "Content-Type")
-
-        try self.addAuthorizationHeader(to: request,
-                                        groupParams: groupParams,
-                                        authCredentialMap: authCredentialMap,
-                                        redemptionTime: redemptionTime)
-
-        return request
+        let protoData = try groupChangeProto.serializedData()
+        return try buildGroupV2Request(protoData: protoData,
+                                            urlPath: "/v1/groups/",
+                                            httpMethod: "PATCH",
+                                            groupParams: groupParams,
+                                            sessionManager: sessionManager,
+                                            authCredentialMap: authCredentialMap,
+                                            redemptionTime: redemptionTime)
     }
 
-    static func buildFetchGroupStateRequest(groupModel: TSGroupModel,
-                                            groupParams: GroupParams,
+    static func buildFetchGroupStateRequest(groupParams: GroupParams,
                                             sessionManager: AFHTTPSessionManager,
                                             authCredentialMap: [UInt32: AuthCredential],
                                             redemptionTime: UInt32) throws -> NSURLRequest {
 
-        let urlPath = "/v1/groups/"
+        return try buildGroupV2Request(protoData: nil,
+                                            urlPath: "/v1/groups/",
+                                            httpMethod: "GET",
+                                            groupParams: groupParams,
+                                            sessionManager: sessionManager,
+                                            authCredentialMap: authCredentialMap,
+                                            redemptionTime: redemptionTime)
+    }
+
+    private static func buildGroupV2Request(protoData: Data?,
+                                                 urlPath: String,
+                                                 httpMethod: String,
+                                                 groupParams: GroupParams,
+                                                 sessionManager: AFHTTPSessionManager,
+                                                 authCredentialMap: [UInt32: AuthCredential],
+                                                 redemptionTime: UInt32) throws -> NSURLRequest {
+
         guard let url = URL(string: urlPath, relativeTo: sessionManager.baseURL) else {
             throw OWSAssertionError("Invalid URL.")
         }
         let request = NSMutableURLRequest(url: url)
-        let method = "GET"
-        request.httpMethod = method
+        request.httpMethod = httpMethod
+
+        if let protoData = protoData {
+            request.httpBody = protoData
+            request.setValue(OWSMimeTypeProtobuf, forHTTPHeaderField: "Content-Type")
+        }
 
         try self.addAuthorizationHeader(to: request,
                                         groupParams: groupParams,

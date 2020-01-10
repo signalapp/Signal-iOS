@@ -194,6 +194,17 @@ public extension YapDatabaseReadWriteTransaction {
 // MARK: - Convenience Methods
 
 public extension GRDBWriteTransaction {
+    func executeUpdate(sql: String, arguments: StatementArguments = StatementArguments()) {
+        do {
+            let statement = try database.makeUpdateStatement(sql: sql)
+            // TODO: We could use setArgumentsWithValidation for more safety.
+            statement.unsafeSetArguments(arguments)
+            try statement.execute()
+        } catch {
+            owsFail("Error: \(error)")
+        }
+    }
+
     // This has significant perf benefits over database.execute()
     // for queries that we perform repeatedly.
     func executeWithCachedStatement(sql: String,

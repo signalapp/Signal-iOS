@@ -406,7 +406,8 @@ public class GroupThreadFactory: NSObject, Factory {
 
     @objc
     public var groupIdBuilder: () -> Data = {
-        return Randomness.generateRandomBytes(Int32(kGroupIdLength))
+        // GroupsV2 TODO: Handle groups v2.
+        return Randomness.generateRandomBytes(Int32(kGroupIdLengthV1))
     }
 
     @objc

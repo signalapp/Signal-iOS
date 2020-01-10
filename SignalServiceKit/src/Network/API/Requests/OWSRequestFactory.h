@@ -46,7 +46,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
     NS_SWIFT_NAME(getUnversionedProfileRequest(address:udAccessKey:));
 
 + (TSRequest *)getVersionedProfileRequestWithAddress:(SignalServiceAddress *)address
-                                   profileKeyVersion:(nullable NSData *)profileKeyVersion
+                                   profileKeyVersion:(nullable NSString *)profileKeyVersion
                                    credentialRequest:(nullable NSData *)credentialRequest
                                          udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
     NS_SWIFT_NAME(getVersionedProfileRequest(address:profileKeyVersion:credentialRequest:udAccessKey:));
@@ -169,7 +169,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)versionedProfileSetRequestWithName:(nullable NSData *)name
                                         hasAvatar:(BOOL)hasAvatar
-                                          version:(NSData *)version
+                                          version:(NSString *)version
                                        commitment:(NSData *)commitment;
 
 #pragma mark - Groups v2

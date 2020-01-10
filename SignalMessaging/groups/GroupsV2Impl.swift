@@ -33,6 +33,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         return OWSSignalService.sharedInstance().storageServiceSessionManager
     }
 
+    fileprivate var profileManager: OWSProfileManager {
+        return OWSProfileManager.shared()
+    }
+
     // MARK: -
 
     public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
@@ -245,20 +249,25 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func fetchGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State> {
+        guard groupModel.groupsVersion == .V2 else {
+            return Promise(error: OWSAssertionError("Invalid groupsVersion."))
+        }
+        guard let groupSecretParamsData = groupModel.groupSecretParamsData else {
+            return Promise(error: OWSAssertionError("Missing groupSecretParamsData."))
+        }
+
+        return self.fetchGroupState(groupSecretParamsData: groupSecretParamsData)
+    }
+
+    public func fetchGroupState(groupSecretParamsData: Data) -> Promise<GroupV2State> {
         // GroupsV2 TODO: Should we make sure we have a local profile credential?
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise<GroupV2State>(error: OWSAssertionError("Missing localUuid."))
         }
-        return DispatchQueue.global().async(.promise) { () -> [UUID] in
-            let uuids = self.uuids(for: groupModel.groupMembers)
-            guard uuids.contains(localUuid) else {
-                throw OWSAssertionError("localUuid is not a member.")
-            }
-            return uuids
-        }.then(on: DispatchQueue.global()) { (_: [UUID]) -> Promise<GroupV2State> in
-            let groupParams = try GroupParams(groupModel: groupModel)
-            return self.fetchGroupState(groupModel: groupModel,
-                                        groupParams: groupParams,
+        return DispatchQueue.global().async(.promise) { () -> GroupParams in
+            return try GroupParams(groupSecretParamsData: groupSecretParamsData)
+        }.then(on: DispatchQueue.global()) { (groupParams: GroupParams) -> Promise<GroupV2State> in
+            return self.fetchGroupState(groupParams: groupParams,
                                         localUuid: localUuid)
         }.map(on: DispatchQueue.global()) { (groupState: GroupV2State) -> GroupV2State in
             // GroupsV2 TODO: Remove this logging.
@@ -267,12 +276,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }
     }
 
-    private func fetchGroupState(groupModel: TSGroupModel,
-                                 groupParams: GroupParams,
+    private func fetchGroupState(groupParams: GroupParams,
                                  localUuid: UUID) -> Promise<GroupV2State> {
         let sessionManager = self.sessionManager
-        return self.buildFetchGroupStateRequest(groupModel: groupModel,
-                                                localUuid: localUuid,
+        return self.buildFetchGroupStateRequest(localUuid: localUuid,
                                                 groupParams: groupParams,
                                                 sessionManager: sessionManager)
             .then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<Data> in
@@ -285,8 +292,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }
     }
 
-    private func buildFetchGroupStateRequest(groupModel: TSGroupModel,
-                                             localUuid: UUID,
+    private func buildFetchGroupStateRequest(localUuid: UUID,
                                              groupParams: GroupParams,
                                              sessionManager: AFHTTPSessionManager) -> Promise<NSURLRequest> {
 
@@ -294,8 +300,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             .map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) -> NSURLRequest in
 
                 let redemptionTime = self.daysSinceEpoch
-                return try StorageService.buildFetchGroupStateRequest(groupModel: groupModel,
-                                                                      groupParams: groupParams,
+                return try StorageService.buildFetchGroupStateRequest(groupParams: groupParams,
                                                                       sessionManager: sessionManager,
                                                                       authCredentialMap: authCredentialMap,
                                                                       redemptionTime: redemptionTime)
@@ -378,14 +383,55 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         //        public var disappearingMessagesTimer: Data? {
 
         let version = groupProto.version
-
-        return GroupV2StateImpl(groupProto: groupProto,
+        let groupSecretParamsData = groupParams.groupSecretParamsData
+        return GroupV2StateImpl(groupSecretParamsData: groupSecretParamsData,
+                                groupProto: groupProto,
                                 version: version,
                                 title: title,
                                 members: members,
                                 pendingMembers: pendingMembers,
                                 accessControlForAttributes: accessControlForAttributes,
                                 accessControlForMembers: accessControlForMembers)
+    }
+
+    // MARK: - Updates
+
+    public func fetchAndApplyGroupV2UpdatesFromServiceObjc(groupId: Data,
+                                                           groupSecretParamsData: Data,
+                                                           upToRevision: UInt32) -> AnyPromise {
+        return AnyPromise(fetchAndApplyGroupV2UpdatesFromService(groupId: groupId,
+                                                                 groupSecretParamsData: groupSecretParamsData,
+                                                                 upToRevision: upToRevision))
+    }
+
+    // Fetch group state from service and apply.
+    //
+    // * Try to fetch and apply incremental "changes".
+    // * Failover to fetching and applying latest state.
+    // * We need to distinguish between retryable (network) errors
+    //   and non-retryable errors.
+    // * In the case of networking errors, we should do exponential
+    //   backoff.
+    // * If reachability changes, we should retry network errors
+    //   immediately.
+    //
+    // GroupsV2 TODO: Implement properly.
+    public func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
+                                                       groupSecretParamsData: Data,
+                                                       upToRevision: UInt32) -> Promise<Void> {
+        return self.fetchGroupState(groupSecretParamsData: groupSecretParamsData)
+            .done(on: DispatchQueue.global()) { (groupState: GroupV2State) throws in
+                try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) throws in
+                    // GroupsV2 TODO: We could make this a single GroupManager method.
+                    let groupModel = try GroupManager.buildGroupModel(groupV2State: groupState,
+                                                                      transaction: transaction)
+                    _ = try GroupManager.upsertGroupThread(groupModel: groupModel,
+                                                           addCreatedMessageIfNecessary: true,
+                                                           transaction: transaction)
+                }
+                // GroupsV2 TODO: Remove this logging.
+                Logger.verbose("GroupV2State: \(groupState.debugDescription)")
+        }
     }
 
     // MARK: - Perform Request
@@ -400,7 +446,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                 uploadProgress: nil,
                 downloadProgress: nil
             ) { response, responseObject, error in
-
                 guard let response = response as? HTTPURLResponse else {
                     Logger.info("Request failed: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
 
@@ -651,18 +696,54 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         return try builder.build()
     }
 
+    // MARK: - Profiles
+
+    public func reuploadLocalProfilePromise() -> Promise<Void> {
+        guard FeatureFlags.versionedProfiledUpdate else {
+            return Promise(error: OWSAssertionError("Versioned profiles are not enabled."))
+        }
+        return self.profileManager.reuploadLocalProfilePromise()
+    }
+
+    // MARK: - Groups Secrets
+
+    public func generateGroupSecretParamsData() throws -> Data {
+        let groupSecretParams = try GroupSecretParams.generate()
+        let bytes = groupSecretParams.serialize()
+        return bytes.asData
+    }
+
+    public func groupSecretParamsData(forMasterKeyData masterKeyData: Data) throws -> Data {
+        let groupMasterKey = try GroupMasterKey(contents: [UInt8](masterKeyData))
+        let groupSecretParams = try GroupSecretParams.deriveFromMasterKey(groupMasterKey: groupMasterKey)
+        return groupSecretParams.serialize().asData
+    }
+
+    public func groupId(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data {
+        let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
+        return try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
+    }
+
+    public func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo {
+        guard let masterKeyData = masterKeyData else {
+            throw OWSAssertionError("Missing masterKeyData.")
+        }
+        let groupSecretParamsData = try self.groupSecretParamsData(forMasterKeyData: masterKeyData)
+        let groupId = try self.groupId(forGroupSecretParamsData: groupSecretParamsData)
+        guard GroupManager.isValidGroupId(groupId, groupsVersion: .V2) else {
+            throw OWSAssertionError("Invalid groupId.")
+        }
+        return GroupV2ContextInfo(masterKeyData: masterKeyData,
+                                  groupSecretParamsData: groupSecretParamsData,
+                                  groupId: groupId)
+    }
+
     // MARK: - Utils
 
     private var daysSinceEpoch: UInt32 {
         let msSinceEpoch = NSDate.ows_millisecondTimeStamp()
         let daysSinceEpoch = UInt32(msSinceEpoch / kDayInMs)
         return daysSinceEpoch
-    }
-
-    public func generateGroupSecretParamsData() throws -> Data {
-        let groupSecretParams = try GroupSecretParams.generate()
-        let bytes = groupSecretParams.serialize()
-        return bytes.asData
     }
 
     private func uuids(for addresses: [SignalServiceAddress]) -> [UUID] {
@@ -707,11 +788,11 @@ public extension GroupsV2Impl {
         let members = [SignalServiceAddress]()
         let title0 = "hello"
         let title1 = "goodbye"
-        guard let localUuid = self.tsAccountManager.localUuid else {
+        guard let localUuid = tsAccountManager.localUuid else {
             owsFailDebug("Missing localUuid.")
             return
         }
-        guard let localNumber = self.tsAccountManager.localNumber else {
+        guard let localNumber = tsAccountManager.localNumber else {
             owsFailDebug("Missing localNumber.")
             return
         }

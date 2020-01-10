@@ -26,6 +26,16 @@ public extension OWSProfileManager {
                 Logger.verbose("Profile update did complete.")
         }
     }
+
+    // This will re-upload the existing local profile state.
+    func reuploadLocalProfilePromise() -> Promise<Void> {
+        let profileGivenName: String? = localGivenName()
+        let profileFamilyName: String? = localFamilyName()
+        let profileAvatarData: Data? = localProfileAvatarData()
+        return OWSProfileManager.updateLocalProfilePromise(profileGivenName: profileGivenName,
+                                                           profileFamilyName: profileFamilyName,
+                                                           profileAvatarData: profileAvatarData)
+    }
 }
 
 // MARK: -

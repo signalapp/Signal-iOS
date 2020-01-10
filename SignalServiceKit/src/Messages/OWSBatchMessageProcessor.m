@@ -171,6 +171,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
+- (GroupsV2MessageProcessor *)groupsV2MessageProcessor
+{
+    return SSKEnvironment.shared.groupsV2MessageProcessor;
+}
+
 #pragma mark - Notifications
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -254,10 +259,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We want a value that is just high enough to yield perf benefits.
     const NSUInteger kIncomingMessageBatchSize = 32;
+    // If the app is in the background, use batch size of 1.
+    // This reduces the cost of being interrupted and rolled back if
+    // app is suspended.
+    NSUInteger batchSize = self.isAppInBackground ? 1 : kIncomingMessageBatchSize;
 
     __block NSArray<OWSMessageContentJob *> *batchJobs;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        batchJobs = [self.finder nextJobsWithBatchSize:kIncomingMessageBatchSize transaction:transaction];
+        batchJobs = [self.finder nextJobsWithBatchSize:batchSize transaction:transaction];
     }];
     OWSAssertDebug(batchJobs);
     if (batchJobs.count < 1) {
@@ -315,6 +324,11 @@ NS_ASSUME_NONNULL_BEGIN
             SSKProtoEnvelope *_Nullable envelope = job.envelope;
             if (!envelope) {
                 reportFailure(transaction);
+            } else if ([GroupsV2MessageProcessor isGroupsV2Message:envelope plaintextData:job.plaintextData]) {
+                [self.groupsV2MessageProcessor enqueueEnvelopeData:job.envelopeData
+                                                     plaintextData:job.plaintextData
+                                                   wasReceivedByUD:job.wasReceivedByUD
+                                                       transaction:transaction];
             } else {
                 [self.messageManager throws_processEnvelope:envelope
                                               plaintextData:job.plaintextData

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -92,6 +92,6 @@ class GRDBMessageContentJobFinder: MessageContentJobFinder {
             WHERE \(messageContentJobColumn: .uniqueId) in (\(commaSeparatedIds))
         """
 
-        transaction.executeWithCachedStatement(sql: sql)
+        transaction.executeUpdate(sql: sql)
     }
 }
