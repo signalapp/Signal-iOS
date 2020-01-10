@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -258,12 +258,6 @@ class ViewOnceMessageViewController: OWSViewController {
         dismissButton.autoPinEdge(.top, to: .top, of: mediaView)
         dismissButton.setShadow(opacity: 0.66)
 
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                         action: #selector(rootViewWasTapped)))
-        let verticalSwipe = UISwipeGestureRecognizer(target: self, action: #selector(rootViewWasSwiped))
-        verticalSwipe.direction = [.up, .down]
-        view.addGestureRecognizer(verticalSwipe)
-
         setupDatabaseObservation()
     }
 
@@ -426,20 +420,6 @@ class ViewOnceMessageViewController: OWSViewController {
 
     @objc
     private func dismissButtonPressed() {
-        AssertIsOnMainThread()
-
-        dismiss(animated: true)
-    }
-
-    @objc
-    func rootViewWasTapped(sender: UIGestureRecognizer) {
-        AssertIsOnMainThread()
-
-        dismiss(animated: true)
-    }
-
-    @objc
-    func rootViewWasSwiped(sender: UIGestureRecognizer) {
         AssertIsOnMainThread()
 
         dismiss(animated: true)
