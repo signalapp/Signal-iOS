@@ -472,8 +472,6 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageType) {
             self.label.text = CommonStrings.retryButton;
             break;
         case ViewOnceMessageState_OutgoingSending:
-            self.label.text = NSLocalizedString(@"MESSAGE_STATUS_SENDING", @"message status while message is sending.");
-            break;
         case ViewOnceMessageState_OutgoingSentExpired:
             self.label.text = NSLocalizedString(
                 @"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE", @"Label for outgoing view-once messages.");
