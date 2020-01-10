@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -750,21 +750,21 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         let itemProvider: NSItemProvider
         let itemUrl: URL
         let utiType: String
+        let isConvertibleToTextMessage: Bool
+        let isConvertibleToContactShare: Bool
 
-        var customFileName: String?
-        var isConvertibleToTextMessage = false
-        var isConvertibleToContactShare = false
+        var customFileName: String? {
+            isConvertibleToContactShare ? "Contact.vcf" : nil
+        }
 
         init(itemProvider: NSItemProvider,
              itemUrl: URL,
              utiType: String,
-             customFileName: String? = nil,
              isConvertibleToTextMessage: Bool = false,
              isConvertibleToContactShare: Bool = false) {
             self.itemProvider = itemProvider
             self.itemUrl = itemUrl
             self.utiType = utiType
-            self.customFileName = customFileName
             self.isConvertibleToTextMessage = isConvertibleToTextMessage
             self.isConvertibleToContactShare = isConvertibleToContactShare
         }
@@ -808,7 +808,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             Logger.info("value type: \(type(of: value))")
 
             if let data = value as? Data {
-                let customFileName = "Contact.vcf"
                 var isConvertibleToContactShare = false
 
                 // Although we don't support contacts _yet_, when we do we'll want to make
@@ -836,7 +835,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 resolver.fulfill(LoadedItem(itemProvider: itemProvider,
                                             itemUrl: fileUrl,
                                             utiType: srcUtiType,
-                                            customFileName: customFileName,
                                             isConvertibleToContactShare: isConvertibleToContactShare))
             } else if let string = value as? String {
                 Logger.debug("string provider: \(string)")
