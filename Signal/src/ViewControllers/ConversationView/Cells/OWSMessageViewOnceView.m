@@ -584,6 +584,12 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageType) {
     return (self.viewItem.viewOnceMessageState == ViewOnceMessageState_IncomingAvailable);
 }
 
+- (BOOL)isExpired
+{
+    return (self.viewItem.viewOnceMessageState == ViewOnceMessageState_IncomingExpired
+        || self.viewItem.viewOnceMessageState == ViewOnceMessageState_OutgoingSentExpired);
+}
+
 #pragma mark - Measurement
 
 - (CGSize)contentSize
@@ -753,6 +759,8 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageType) {
             return;
         }
         [self.delegate didTapViewOnceAttachment:self.viewItem attachmentStream:self.viewItem.attachmentStream];
+    } else if (self.isExpired) {
+        [self.delegate didTapViewOnceExpired:self.viewItem];
     }
 }
 
