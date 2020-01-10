@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -78,9 +78,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (void)setShouldNotifyOfNewAccounts:(BOOL)newValue
                          transaction:(SDSAnyWriteTransaction *)transactio
     NS_SWIFT_NAME(shouldNotifyOfNewAccounts(_:transaction:));
-
-- (BOOL)isViewOnceMessagesEnabled;
-- (void)setIsViewOnceMessagesEnabled:(BOOL)value;
 
 - (BOOL)wasViewOnceTooltipShown;
 - (void)setWasViewOnceTooltipShown;

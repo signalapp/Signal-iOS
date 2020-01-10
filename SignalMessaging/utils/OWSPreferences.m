@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPreferences.h"
@@ -47,7 +47,6 @@ NSString *const OWSPreferencesKey_IsYdbReadyForAppExtensions = @"isReadyForAppEx
 NSString *const OWSPreferencesKey_IsGrdbReadyForAppExtensions = @"IsGrdbReadyForAppExtensions";
 NSString *const OWSPreferencesKey_IsAudibleErrorLoggingEnabled = @"IsAudibleErrorLoggingEnabled";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
-NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKeyIsViewOnceMessagesEnabled";
 NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWasViewOnceTooltipShown";
 
 @interface OWSPreferences ()
@@ -466,20 +465,6 @@ NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWa
     }
 
     return [self hasValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
-}
-
-- (BOOL)isViewOnceMessagesEnabled
-{
-    if (SSKFeatureFlags.viewOnceSending) {
-        return [self boolForKey:OWSPreferencesKeyIsViewOnceMessagesEnabled defaultValue:NO];
-    } else {
-        return NO;
-    }
-}
-
-- (void)setIsViewOnceMessagesEnabled:(BOOL)value
-{
-    [self setBool:value forKey:OWSPreferencesKeyIsViewOnceMessagesEnabled];
 }
 
 - (BOOL)wasViewOnceTooltipShown
