@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageViewOnceView.h"
@@ -507,19 +507,19 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageType) {
             OWSFailDebug(@"Invalid value.");
             // Fall through.
         case ViewOnceMessageState_IncomingExpired:
-            return @"play-outline-24";
+            return @"viewed-once-24";
         case ViewOnceMessageState_IncomingDownloading:
             OWSFailDebug(@"Unexpected state.");
             return nil;
         case ViewOnceMessageState_IncomingFailed:
-            return @"retry-24";
-        case ViewOnceMessageState_IncomingAvailable:
-            return @"play-filled-24";
-        case ViewOnceMessageState_OutgoingFailed:
             return @"arrow-down-circle-outline-24";
+        case ViewOnceMessageState_IncomingAvailable:
+            return @"view-once-24";
+        case ViewOnceMessageState_OutgoingFailed:
+            return @"retry-24";
         case ViewOnceMessageState_OutgoingSending:
         case ViewOnceMessageState_OutgoingSentExpired:
-            return @"play-outline-24";
+            return @"viewed-once-24";
         case ViewOnceMessageState_IncomingInvalidContent:
             OWSFailDebug(@"Unexpected state.");
             return nil;
