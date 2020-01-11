@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -204,7 +204,7 @@ class ThreadMapping: NSObject {
         var updatedItemIds = Set<String>()
         for threadId in allUpdatedItemIds {
             guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
-                owsFailDebug("Missing thread.")
+                // Missing thread, it was deleted and should no longer be visible.
                 continue
             }
             if thread.shouldThreadBeVisible {

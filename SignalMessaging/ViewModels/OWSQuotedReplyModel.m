@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQuotedReplyModel.h"
@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
         // We construct a quote that does not include any of the
         // quoted message's renderable content.
         NSString *body
-            = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE", @"Label for outgoing view-once messages.");
+            = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE", @"inbox cell and notification text for an already viewed view-once media message.");
         return [[self alloc] initWithTimestamp:timestamp
                                  authorAddress:authorAddress
                                           body:body
