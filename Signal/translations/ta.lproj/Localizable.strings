@@ -1578,12 +1578,6 @@
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "புதிய செய்திகள்";
 
-/* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "மேலும் பல படிக்காத செய்திகள் உள்ளன.";
-
-/* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "மேலும் பல படிக்காத செய்திகள் உள்ளன (பாதுகாப்பு எண் மாற்றங்கள் உட்பட).";
-
 /* info message text in conversation view */
 "MISSED_CALL" = "தவறிய அழைப்பு";
 
@@ -1888,22 +1882,22 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "உள்வரும் செய்தியைக் கையாளுவதில் பிழை";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "ஊடக செய்தி";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "ஊடகம்";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "மறைந்துபோகின்ற  புகைப்படம்";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "மறைந்துபோகின்ற  வீடியோ";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "புகைப்படம் ";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "புகைப்படத்தைக் காண்க";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "காணொளி";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "பார்க்கப்பட்டவை";
@@ -3054,8 +3048,14 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "பாதுகாப்பு எண்களை மதிப்பாய்வு செய்யவும்";
 
+/* Toast alert text shown when tapping on a view-once message that has already been viewed. */
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+
+/* Toast alert text shown when tapping on a view-once message that you have sent. */
+"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "ரத்து செய்ய ஸ்லைடு செய்யவும் ";

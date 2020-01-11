@@ -1578,12 +1578,6 @@
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Uusia viestejä";
 
-/* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Lisää uusia viestejä";
-
-/* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Lisää uusia viestejä (mukaan lukien turvanumeroiden vaihdoksia).";
-
 /* info message text in conversation view */
 "MISSED_CALL" = "Vastaamatta jäänyt puhelu";
 
@@ -1888,25 +1882,25 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Virhe saapuvan viestin käsittelyssä";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Mediaviesti";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Kerran katsottava media";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Katoava kuva";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Kerran katsottava kuva";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Katoava video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Kerran katsottava video";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Kuva";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Katso kuvaa";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Katso video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "Nähty";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Katsottu";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Esimerkki: %@";
@@ -3054,8 +3048,14 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Näytä turvanumerot";
 
+/* Toast alert text shown when tapping on a view-once message that has already been viewed. */
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Napauttamalla tätä viesti katoaa sen jälkeen, kun se on katsottu.";
+
+/* Toast alert text shown when tapping on a view-once message that you have sent. */
+"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Pyyhkäise hylkääksesi";
