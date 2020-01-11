@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -58,12 +58,6 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
 @objc
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
 
-    // MARK: - Dependencies
-
-    private var preferences: OWSPreferences {
-        return Environment.shared.preferences
-    }
-
     // MARK: - Properties
 
     private let receivedOptions: AttachmentApprovalViewControllerOptions
@@ -82,8 +76,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     var isAddMoreVisible: Bool {
-        return options.contains(.canAddMore) && !preferences.isViewOnceMessagesEnabled()
+        return options.contains(.canAddMore) && !isViewOnceEnabled
     }
+
+    var isViewOnceEnabled = false
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
@@ -868,8 +864,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
                     modalVC.dismiss {
                         AssertIsOnMainThread()
 
-                        if self.options.contains(.canToggleViewOnce),
-                            self.preferences.isViewOnceMessagesEnabled() {
+                        if self.options.contains(.canToggleViewOnce), self.isViewOnceEnabled {
                             for attachment in attachments {
                                 attachment.isViewOnceAttachment = true
                             }

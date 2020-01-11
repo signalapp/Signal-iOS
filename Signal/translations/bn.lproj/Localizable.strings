@@ -1438,7 +1438,7 @@
 "MESSAGE_ACTION_REPLY" = "এই বার্তার জবাব দিন";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "মিডিয়া শেয়ার করুন";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "বার্তা";
@@ -1577,12 +1577,6 @@
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "নতুন বার্তাসমূহ";
-
-/* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "আরও অপঠিত বার্তা রয়েছে।";
-
-/* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "আরও অপঠিত বার্তা রয়েছে (যার মধ্যে নিরাপত্তা নাম্বার পরিবর্তন হয়েছে এমনও আছে)।";
 
 /* info message text in conversation view */
 "MISSED_CALL" = "ব্যর্থ কল";
@@ -1771,7 +1765,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "আইফোন সংযুক্ত করুন";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
@@ -1888,22 +1882,22 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "আগত বার্তা পরিচালনা করার সময় ত্রুটি";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "মিডিয়া বার্তা";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "মিডিয়া";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "অদৃশ্য ছবি";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "অদৃশ্য ভিডিও";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "ছবি";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "ছবি দেখুন";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "ভিডিও";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "দেখা হয়েছে";
@@ -3054,8 +3048,14 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "সুরক্ষা নাম্বার পর্যালোচনা করুন";
 
+/* Toast alert text shown when tapping on a view-once message that has already been viewed. */
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+
+/* Toast alert text shown when tapping on a view-once message that you have sent. */
+"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "বাতিল করতে স্লাইড করুন";

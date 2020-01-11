@@ -1578,12 +1578,6 @@
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Новые сообщения";
 
-/* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Есть ещё непрочитанные сообщения.";
-
-/* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Есть больше непрочитанных сообщений (включая изменения кода безопасности).";
-
 /* info message text in conversation view */
 "MISSED_CALL" = "Пропущенный звонок";
 
@@ -1888,22 +1882,22 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Ошибка при обработке входящего сообщения";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Медиа-сообщение";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Одноразовое медиа";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Медиа";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Исчезающая фотография";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Одноразовое фото";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Исчезающее видео";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Одноразовое видео";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Фото";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Просмотреть фотографию";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Видео";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Просмотреть видео";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Просмотрено";
@@ -3054,8 +3048,14 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Проверить коды безопасности";
 
+/* Toast alert text shown when tapping on a view-once message that has already been viewed. */
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Нажмите здесь, чтобы ваше сообщение исчезло после того, как оно будет просмотрено.";
+
+/* Toast alert text shown when tapping on a view-once message that you have sent. */
+"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Проведите для отмены";

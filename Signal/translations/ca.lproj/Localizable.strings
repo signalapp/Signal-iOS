@@ -1578,12 +1578,6 @@
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "MIssatges nous";
 
-/* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Hi ha més missatges sense llegir.";
-
-/* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Hi ha més missatges sense llegir (inclosos canvis de número de seguretat).";
-
 /* info message text in conversation view */
 "MISSED_CALL" = "Telefonada perduda";
 
@@ -1888,22 +1882,22 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "S'ha produït un error en gestionar el missatge rebut";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Missatge multimèdia";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Contingut d'una sola visualització";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Contingut";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Fotografia efímera";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Fotografia d'una sola visualització";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Vídeo efímer";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Vídeo d'una sola visualització";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Foto";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Mostra la fotografia";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Vídeo";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Mostra el vídeo";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Vist";
@@ -3054,8 +3048,14 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Revisa els números de seguretat";
 
+/* Toast alert text shown when tapping on a view-once message that has already been viewed. */
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Toqueu aquí per fer desaparèixer aquest missatge un cop vist.";
+
+/* Toast alert text shown when tapping on a view-once message that you have sent. */
+"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Llisqueu per a cancel·lar";

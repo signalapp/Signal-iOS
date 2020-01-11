@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,6 +14,8 @@ protocol AttachmentTextToolbarDelegate: class {
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidViewOnce(_ attachmentTextToolbar: AttachmentTextToolbar)
+
+    var isViewOnceEnabled: Bool { get set }
 }
 
 // MARK: -
@@ -37,8 +39,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     weak var attachmentTextToolbarDelegate: AttachmentTextToolbarDelegate?
 
     var isViewOnceEnabled: Bool {
-        return (options.contains(.canToggleViewOnce) &&
-                preferences.isViewOnceMessagesEnabled())
+        return options.contains(.canToggleViewOnce) && attachmentTextToolbarDelegate?.isViewOnceEnabled ?? false
     }
 
     var messageText: String? {
@@ -178,8 +179,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     private func updateContent() {
         AssertIsOnMainThread()
 
-        let isViewOnceMessagesEnabled = preferences.isViewOnceMessagesEnabled()
-        let imageName = isViewOnceMessagesEnabled ? "view-once-24" : "view-infinite-24"
+        let imageName = isViewOnceEnabled ? "view-once-24" : "view-infinite-24"
         viewOnceButton.setTemplateImageName(imageName, tintColor: Theme.darkThemePrimaryColor)
 
         viewOnceSpacer.isHidden = !isViewOnceEnabled
@@ -263,8 +263,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         AssertIsOnMainThread()
 
         // Toggle value.
-        let isViewOnceMessagesEnabled = !preferences.isViewOnceMessagesEnabled()
-        preferences.setIsViewOnceMessagesEnabled(isViewOnceMessagesEnabled)
+        attachmentTextToolbarDelegate?.isViewOnceEnabled = !isViewOnceEnabled
         preferences.setWasViewOnceTooltipShown()
 
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidViewOnce(self)
@@ -365,7 +364,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         guard FeatureFlags.viewOnceSending else {
             return false
         }
-        guard !preferences.isViewOnceMessagesEnabled() else {
+        guard !isViewOnceEnabled else {
             return false
         }
         guard !preferences.wasViewOnceTooltipShown() else {

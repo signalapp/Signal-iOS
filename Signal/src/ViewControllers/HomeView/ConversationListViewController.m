@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationListViewController.h"
@@ -1624,6 +1624,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 [groupThread softDeleteThreadWithTransaction:transaction];
             } else {
                 [groupThread anyRemoveWithTransaction:transaction];
+                [self.databaseStorage touchThread:groupThread transaction:transaction];
             }
         } else {
             // contact thread

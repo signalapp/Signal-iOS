@@ -2862,6 +2862,18 @@ typedef enum : NSUInteger {
     [ViewOnceMessageViewController tryToPresentWithInteraction:viewItem.interaction from:self];
 }
 
+- (void)didTapViewOnceExpired:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(viewItem);
+
+    if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        [self presentViewOnceOutgoingToast];
+    } else {
+        [self presentViewOnceAlreadyViewedToast];
+    }
+}
+
 #pragma mark - CNContactViewControllerDelegate
 
 - (void)contactViewController:(CNContactViewController *)viewController
@@ -4853,6 +4865,34 @@ typedef enum : NSUInteger {
     NSString *toastText = NSLocalizedString(@"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED",
         @"Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of "
         @"the message didn't exist when the quote was received.");
+
+    ToastController *toastController = [[ToastController alloc] initWithText:toastText];
+
+    CGFloat bottomInset = kToastInset + self.collectionView.contentInset.bottom + self.view.layoutMargins.bottom;
+
+    [toastController presentToastViewFromBottomOfView:self.view inset:bottomInset];
+}
+
+- (void)presentViewOnceAlreadyViewedToast
+{
+    OWSLogInfo(@"");
+
+    NSString *toastText = NSLocalizedString(@"VIEW_ONCE_ALREADY_VIEWED_TOAST",
+        @"Toast alert text shown when tapping on a view-once message that has already been viewed.");
+
+    ToastController *toastController = [[ToastController alloc] initWithText:toastText];
+
+    CGFloat bottomInset = kToastInset + self.collectionView.contentInset.bottom + self.view.layoutMargins.bottom;
+
+    [toastController presentToastViewFromBottomOfView:self.view inset:bottomInset];
+}
+
+- (void)presentViewOnceOutgoingToast
+{
+    OWSLogInfo(@"");
+
+    NSString *toastText = NSLocalizedString(
+        @"VIEW_ONCE_OUTGOING_TOAST", @"Toast alert text shown when tapping on a view-once message that you have sent.");
 
     ToastController *toastController = [[ToastController alloc] initWithText:toastText];
 

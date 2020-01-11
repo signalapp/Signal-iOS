@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -811,6 +811,10 @@ extension MessageDetailViewController: OWSMessageViewOnceViewDelegate {
     public func didTapViewOnceAttachment(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
         ViewOnceMessageViewController.tryToPresent(interaction: viewItem.interaction,
                                                         from: self)
+    }
+
+    func didTapViewOnceExpired(_ viewItem: ConversationViewItem) {
+
     }
 }
 

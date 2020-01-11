@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageView.h"
@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didTapViewOnceAttachment:(id<ConversationViewItem>)viewItem
                 attachmentStream:(TSAttachmentStream *)attachmentStream;
+
+- (void)didTapViewOnceExpired:(id<ConversationViewItem>)viewItem;
 
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem;
 
