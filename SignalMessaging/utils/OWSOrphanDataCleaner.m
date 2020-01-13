@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOrphanDataCleaner.h"
@@ -28,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 // LOG_ALL_FILE_PATHS can be used to determine if there are other kinds of files
 // that we're not cleaning up.
 //#define LOG_ALL_FILE_PATHS
-
-#define ENABLE_ORPHAN_DATA_CLEANER
 
 NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey = @"OWSOrphanDataCleaner_LastCleaningVersionKey";
 NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleaner_LastCleaningDateKey";
@@ -556,9 +554,12 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 {
     OWSAssertIsOnMainThread();
 
-#ifndef ENABLE_ORPHAN_DATA_CLEANER
-    return NO;
-#endif
+    if (!SSKFeatureFlags.useOrphanDataCleaner) {
+        return NO;
+    }
+    if (!SSKFeatureFlags.isUsingProductionService) {
+        return NO;
+    }
 
     __block NSString *_Nullable lastCleaningVersion;
     __block NSDate *_Nullable lastCleaningDate;

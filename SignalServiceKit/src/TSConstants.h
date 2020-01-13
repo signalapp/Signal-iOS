@@ -39,8 +39,6 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecure2FAAPI @"v1/accounts/pin"
 #define textSecureRegistrationLockV2API @"v1/accounts/registration_lock"
 
-#define SignalApplicationGroup @"group.org.whispersystems.signal.group"
-
 #endif
 
 NS_ASSUME_NONNULL_END

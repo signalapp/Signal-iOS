@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -135,5 +135,6 @@ void ExitShareExtension(void);
 #ifdef TESTABLE_BUILD
 void ClearCurrentAppContextForTests(void);
 #endif
+
 
 NS_ASSUME_NONNULL_END

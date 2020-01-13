@@ -247,7 +247,7 @@ public class FeatureFlags: NSObject {
     public static let reactionSend = build.includes(.qa)
 
     @objc
-    public static let isUsingProductionService = true
+    public static let isUsingProductionService = false
 
     @objc
     public static let versionedProfiledFetches = false
@@ -257,4 +257,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let profileFamilyName = !isUsingProductionService
+
+    @objc
+    public static let useOrphanDataCleaner = true
 }

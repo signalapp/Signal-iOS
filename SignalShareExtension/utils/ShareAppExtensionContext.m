@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ShareAppExtensionContext.h"
 #import <SignalMessaging/UIViewController+OWS.h>
+#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSConstants.h>
 
@@ -57,6 +58,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(extensionHostWillEnterForeground:)
                                                  name:NSExtensionHostWillEnterForegroundNotification
                                                object:nil];
+
+    if (!SSKFeatureFlags.isUsingProductionService) {
+        [OWSFileSystem ensureDirectoryExists:self.appDocumentDirectoryPathStaging];
+    }
 
     return self;
 }
@@ -278,7 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [SSKDefaultKeychainStorage shared];
 }
 
-- (NSString *)appDocumentDirectoryPath
+- (NSString *)appDocumentDirectoryPathProduction
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *documentDirectoryURL =
@@ -286,10 +291,21 @@ NS_ASSUME_NONNULL_BEGIN
     return [documentDirectoryURL path];
 }
 
+- (NSString *)appDocumentDirectoryPathStaging
+{
+    return [self.appDocumentDirectoryPathProduction stringByAppendingPathComponent:@"Staging"];
+}
+
+- (NSString *)appDocumentDirectoryPath
+{
+    return (SSKFeatureFlags.isUsingProductionService ? self.appDocumentDirectoryPathProduction
+                                                     : self.appDocumentDirectoryPathStaging);
+}
+
 - (NSString *)appSharedDataDirectoryPath
 {
     NSURL *groupContainerDirectoryURL =
-        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:SignalApplicationGroup];
+        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:self.applicationGroup];
     return [groupContainerDirectoryURL path];
 }
 
@@ -300,7 +316,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUserDefaults *)appUserDefaults
 {
-    return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];
+    return [[NSUserDefaults alloc] initWithSuiteName:self.applicationGroup];
+}
+
+- (NSString *)applicationGroup
+{
+    return TSConstants.applicationGroup;
 }
 
 - (BOOL)canPresentNotifications
