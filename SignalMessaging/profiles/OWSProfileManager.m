@@ -1350,9 +1350,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 return;
             }
 
-            // Decryption is slightly expensive to do inside this write transaction.
-            NSPersonNameComponents *_Nullable profileNameComponents =
-                [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
+            NSPersonNameComponents *_Nullable profileNameComponents = nil;
+
+            if (profileNameEncrypted.length > 0) {
+                // Decryption is slightly expensive to do inside this write transaction.
+                profileNameComponents = [self decryptProfileNameData:profileNameEncrypted
+                                                          profileKey:userProfile.profileKey];
+            }
 
             [userProfile updateWithGivenName:profileNameComponents.givenName
                                   familyName:profileNameComponents.familyName
