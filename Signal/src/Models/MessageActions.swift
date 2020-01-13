@@ -33,7 +33,7 @@ struct MessageActionBuilder {
     
     static func copyPublicKey(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
         return MenuAction(image: #imageLiteral(resourceName: "Key"),
-                          title: NSLocalizedString("Copy Public Key", comment: ""),
+                          title: NSLocalizedString("Copy Session ID", comment: ""),
                           subtitle: nil,
                           block: { [weak delegate] _ in delegate?.copyPublicKey(for: conversationViewItem) }
         )

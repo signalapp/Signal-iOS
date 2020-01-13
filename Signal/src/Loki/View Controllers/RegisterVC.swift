@@ -9,7 +9,6 @@ final class RegisterVC : UIViewController {
         result.textColor = Colors.text
         result.font = Fonts.spaceMono(ofSize: Values.largeFontSize)
         result.numberOfLines = 0
-        result.textAlignment = .center
         result.lineBreakMode = .byCharWrapping
         return result
     }()
@@ -152,7 +151,30 @@ final class RegisterVC : UIViewController {
     }
     
     private func updatePublicKeyLabel() {
-        publicKeyLabel.text = keyPair.hexEncodedPublicKey
+        let hexEncodedPublicKey = keyPair.hexEncodedPublicKey
+        let characterCount = hexEncodedPublicKey.count
+        var count = 0
+        let limit = 32
+        func animate() {
+            let numberOfIndexesToShuffle = 32 - count
+            let indexesToShuffle = (0..<characterCount).shuffled()[0..<numberOfIndexesToShuffle]
+            var mangledHexEncodedPublicKey = hexEncodedPublicKey
+            for index in indexesToShuffle {
+                let startIndex = mangledHexEncodedPublicKey.index(mangledHexEncodedPublicKey.startIndex, offsetBy: index)
+                let endIndex = mangledHexEncodedPublicKey.index(after: startIndex)
+                mangledHexEncodedPublicKey.replaceSubrange(startIndex..<endIndex, with: "0123456789abcdef__".shuffled()[0..<1])
+            }
+            count += 1
+            if count < limit {
+                publicKeyLabel.text = mangledHexEncodedPublicKey
+                Timer.scheduledTimer(withTimeInterval: 0.032, repeats: false) { _ in
+                    animate()
+                }
+            } else {
+                publicKeyLabel.text = hexEncodedPublicKey
+            }
+        }
+        animate()
     }
     
     // MARK: Interaction

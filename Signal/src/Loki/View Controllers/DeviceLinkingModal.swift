@@ -121,7 +121,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         subtitleLabel.text = {
             switch mode {
             case .master: return NSLocalizedString("Create a new account on your other device and click \"Link to an existing account\" to start the linking process", comment: "")
-            case .slave: return NSLocalizedString("Please check that the words below match the ones shown on your other device", comment: "")
+            case .slave: return NSLocalizedString("Please check that the words below match those shown on your other device", comment: "")
             }
         }()
         mnemonicLabel.isHidden = (mode == .master)
@@ -142,7 +142,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         self.deviceLink = deviceLink
         qrCodeImageView.isHidden = true
         titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
-        subtitleLabel.text = NSLocalizedString("Please check that the words below match the ones shown on your other device", comment: "")
+        subtitleLabel.text = NSLocalizedString("Please check that the words below match those shown on your other device", comment: "")
         let hexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey.removing05PrefixIfNeeded()
         mnemonicLabel.text = Mnemonic.hash(hexEncodedString: hexEncodedPublicKey)
         mnemonicLabel.isHidden = false

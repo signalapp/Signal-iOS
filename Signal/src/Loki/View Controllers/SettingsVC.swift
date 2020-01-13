@@ -91,15 +91,15 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
         displayNameTextField.pin(to: displayNameContainer)
         displayNameContainer.set(.height, to: 40)
         displayNameTextField.alpha = 0
-        let displayNameLabelTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditDisplayNameUI))
-        displayNameContainer.addGestureRecognizer(displayNameLabelTapGestureRecognizer)
+        let displayNameContainerTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditDisplayNameUI))
+        displayNameContainer.addGestureRecognizer(displayNameContainerTapGestureRecognizer)
         // Set up header view
         let headerStackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameContainer ])
         headerStackView.axis = .vertical
         headerStackView.spacing = Values.smallSpacing
         headerStackView.alignment = .center
         // Set up separator
-        let separator = Separator(title: NSLocalizedString("Your Public Key", comment: ""))
+        let separator = Separator(title: NSLocalizedString("Your Session ID", comment: ""))
         // Set up public key label
         let publicKeyLabel = UILabel()
         publicKeyLabel.textColor = Colors.text
@@ -185,7 +185,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
             result.append(getSeparator())
             result.append(getSettingButton(withTitle: NSLocalizedString("Linked Devices", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)))
             result.append(getSeparator())
-            result.append(getSettingButton(withTitle: NSLocalizedString("Show Seed", comment: ""), color: Colors.text, action: #selector(showSeed)))
+            result.append(getSettingButton(withTitle: NSLocalizedString("Show Recovery Phrase", comment: ""), color: Colors.text, action: #selector(showSeed)))
         }
         result.append(getSeparator())
         result.append(getSettingButton(withTitle: NSLocalizedString("Clear All Data", comment: ""), color: Colors.destructive, action: #selector(clearAllData)))

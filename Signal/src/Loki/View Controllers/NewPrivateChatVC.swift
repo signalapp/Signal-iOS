@@ -10,7 +10,7 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("Enter Public Key", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("Enter Session ID", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
@@ -138,7 +138,7 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
     
     fileprivate func startNewPrivateChatIfPossible(with hexEncodedPublicKey: String) {
         if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
-            let alert = UIAlertController(title: NSLocalizedString("Invalid Public Key", comment: ""), message: NSLocalizedString("Please check the public key you entered and try again.", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("Invalid Session ID", comment: ""), message: NSLocalizedString("Please check the Session ID you entered and try again.", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         } else {
@@ -161,7 +161,7 @@ private final class EnterPublicKeyVC : UIViewController {
     }()
     
     // MARK: Components
-    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter public key of recipient", comment: ""))
+    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter Session ID of recipient", comment: ""))
     
     private lazy var copyButton: Button = {
         let result = Button(style: .unimportant, size: .medium)
@@ -178,12 +178,12 @@ private final class EnterPublicKeyVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Users can share their public key by going into their account settings and tapping \"Share Public Key\", or by sharing their QR code.", comment: "")
+        explanationLabel.text = NSLocalizedString("Users can share their Session ID by going into their account settings and tapping \"Share Session ID\", or by sharing their QR code.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up separator
-        let separator = Separator(title: NSLocalizedString("Your Public Key", comment: ""))
+        let separator = Separator(title: NSLocalizedString("Your Session ID", comment: ""))
         // Set up user public key label
         let userPublicKeyLabel = UILabel()
         userPublicKeyLabel.textColor = Colors.text
@@ -215,7 +215,7 @@ private final class EnterPublicKeyVC : UIViewController {
         let stackView = UIStackView(arrangedSubviews: [ publicKeyTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.spacer(withHeight: Values.largeSpacing), separator, UIView.spacer(withHeight: Values.veryLargeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.veryLargeSpacing), buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
+        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.pin(to: view)
@@ -273,7 +273,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Loki Messenger needs camera access to scan QR codes", comment: "")
+        explanationLabel.text = NSLocalizedString("Session needs camera access to scan QR codes", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping

@@ -29,7 +29,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let attributedTitle = NSMutableAttributedString(string: title)
         attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "80%"))
         result.title = attributedTitle
-        result.subtitle = NSLocalizedString("Secure your account by saving your seed", comment: "")
+        result.subtitle = NSLocalizedString("Secure your account by saving your recovery phrase", comment: "")
         result.setProgress(0.8, animated: false)
         result.delegate = self
         return result
@@ -89,7 +89,8 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         navigationItem.titleView = titleLabel
         // Set up seed reminder view if needed
         let hasViewedSeed = UserDefaults.standard.bool(forKey: "hasViewedSeed")
-        if !hasViewedSeed {
+        let isMasterDevice = (UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") == nil)
+        if !hasViewedSeed && isMasterDevice {
             view.addSubview(seedReminderView)
             seedReminderView.pin(.leading, to: .leading, of: view)
             seedReminderView.pin(.top, to: .top, of: view)
@@ -100,7 +101,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         tableView.delegate = self
         view.addSubview(tableView)
         tableView.pin(.leading, to: .leading, of: view)
-        if !hasViewedSeed {
+        if !hasViewedSeed && isMasterDevice {
             tableViewTopConstraint = tableView.pin(.top, to: .bottom, of: seedReminderView)
         } else {
             tableViewTopConstraint = tableView.pin(.top, to: .top, of: view)

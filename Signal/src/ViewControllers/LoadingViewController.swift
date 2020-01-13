@@ -18,12 +18,13 @@ public class LoadingViewController: UIViewController {
         self.view = UIView()
         view.backgroundColor = UIColor.lokiDarkestGray()
 
-        self.logoView = UIImageView(image: #imageLiteral(resourceName: "Loki"))
+        self.logoView = UIImageView(image: #imageLiteral(resourceName: "Session"))
         view.addSubview(logoView)
 
         logoView.autoCenterInSuperview()
         logoView.autoSetDimension(.width, toSize: 75)
-        logoView.autoSetDimension(.height, toSize: 71)
+        logoView.autoSetDimension(.height, toSize: 75)
+        logoView.contentMode = .scaleAspectFit
 
         self.topLabel = buildLabel()
         topLabel.alpha = 0
