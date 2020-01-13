@@ -247,7 +247,7 @@ public class FeatureFlags: NSObject {
     public static let reactionSend = build.includes(.qa)
 
     @objc
-    public static let isUsingProductionService = false
+    public static let isUsingProductionService = true
 
     @objc
     public static let versionedProfiledFetches = false

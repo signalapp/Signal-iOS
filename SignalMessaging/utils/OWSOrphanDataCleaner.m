@@ -557,9 +557,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     if (!SSKFeatureFlags.useOrphanDataCleaner) {
         return NO;
     }
-    if (!SSKFeatureFlags.isUsingProductionService) {
-        return NO;
-    }
 
     __block NSString *_Nullable lastCleaningVersion;
     __block NSDate *_Nullable lastCleaningDate;
