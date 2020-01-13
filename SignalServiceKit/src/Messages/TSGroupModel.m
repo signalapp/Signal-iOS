@@ -145,6 +145,11 @@ const int32_t kGroupIdLength = 16;
     return _groupName.filterStringForDisplay;
 }
 
+- (void)setGroupAdminIds:(NSArray<NSString *> *)groupAdminIds
+{
+    _groupAdminIds = groupAdminIds;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

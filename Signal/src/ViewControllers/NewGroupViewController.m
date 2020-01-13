@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
 @property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
-
+@property (nonatomic) NSMutableSet<NSString* > *adminIds;
 @property (nonatomic) GroupType groupType;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
@@ -530,11 +530,13 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
-    return [[TSGroupModel alloc] initWithTitle:groupName
-                                     memberIds:recipientIds
-                                         image:self.groupAvatar
-                                       groupId:self.groupId
-                                     groupType:self.groupType];
+    TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:groupName
+                                                    memberIds:recipientIds
+                                                        image:self.groupAvatar
+                                                      groupId:self.groupId
+                                                    groupType:self.groupType];
+    [group setGroupAdminIds:[self.adminIds.allObjects copy]];
+    return group;
 }
 
 #pragma mark - Group Avatar

@@ -591,7 +591,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    OWSLogInfo(@"registered vanilla push token");
+    OWSLogInfo(@"registered vanilla push token %@", deviceToken);
     [LKPushNotificationManager.shared registerWithToken:deviceToken];
     [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
