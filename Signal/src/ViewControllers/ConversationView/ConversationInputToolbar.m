@@ -1023,6 +1023,7 @@ const CGFloat kMaxTextViewHeight = 120;
     self.linkPreviewView = linkPreviewView;
 
     self.linkPreviewWrapper.hidden = NO;
+    self.linkPreviewWrapper.backgroundColor = LKColors.composeViewTextFieldBackground;
     [self.linkPreviewWrapper addSubview:linkPreviewView];
     [linkPreviewView ows_autoPinToSuperviewMargins];
 }

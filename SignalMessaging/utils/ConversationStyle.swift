@@ -146,17 +146,17 @@ public class ConversationStyle: NSObject {
 
     @objc
     private static var defaultBubbleColorIncoming: UIColor {
-        return UIColor(rgbHex: 0x222325) // Colors.receivedMessageBackgroundColor
+        return UIColor(rgbHex: 0x222325) // Colors.receivedMessageBackground
     }
 
     @objc
-    public let bubbleColorOutgoingFailed = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackgroundColor
+    public let bubbleColorOutgoingFailed = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
 
     @objc
-    public let bubbleColorOutgoingSending = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackgroundColor
+    public let bubbleColorOutgoingSending = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
 
     @objc
-    public let bubbleColorOutgoingSent = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackgroundColor
+    public let bubbleColorOutgoingSent = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
 
     @objc
     public let dateBreakTextColor = UIColor.ows_gray60
@@ -228,9 +228,9 @@ public class ConversationStyle: NSObject {
     @objc
     public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
         if isIncoming {
-            return UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackgroundColor
+            return UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
         } else {
-            return UIColor(rgbHex: 0x222325) // Colors.receivedMessageBackgroundColor
+            return UIColor(rgbHex: 0x222325) // Colors.receivedMessageBackground
         }
     }
 
