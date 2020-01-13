@@ -94,6 +94,12 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         }
 
         _friendRequestStatus = LKThreadFriendRequestStatusNone;
+        
+        // Loki - Friend request logic doesn't apply to group chats, always treat them as friends
+        if (self.isGroupThread) {
+            _friendRequestStatus = LKThreadFriendRequestStatusFriends;
+        }
+//        OWSLogInfo(@"FRIEND REQUEST STATUS %@", self.friendRequestStatusDescription);
     }
 
     return self;
@@ -224,6 +230,20 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
     return NO;
 }
+
+//- (BOOL)isPublicChat
+//{
+//    OWSAbstractMethod();
+//
+//    return NO;
+//}
+//
+//- (BOOL)isRSSFeed
+//{
+//    OWSAbstractMethod();
+//
+//    return NO;
+//}
 
 // Override in ContactThread
 - (nullable NSString *)contactIdentifier

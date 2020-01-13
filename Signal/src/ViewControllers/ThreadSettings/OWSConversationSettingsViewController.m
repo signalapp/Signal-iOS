@@ -185,6 +185,17 @@ const CGFloat kIconViewLength = 24;
     return [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
+-(BOOL)isPrivateGroupChat
+{
+    if (self.isGroupThread) {
+        TSGroupThread *thread = (TSGroupThread*)self.thread;
+        if (thread.isRSSFeed || thread.isPublicChat) {
+            return false;
+        }
+    }
+    return true;
+}
+
 - (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
 {
     OWSAssertDebug(thread);
@@ -624,8 +635,8 @@ const CGFloat kIconViewLength = 24;
 
     // Group settings section.
 
-    /*
-    if (self.isGroupThread) {
+    
+    if (self.isGroupThread && self.isPrivateGroupChat) {
         NSArray *groupItems = @[
             [OWSTableItem
                 itemWithCustomCellBlock:^{
@@ -676,7 +687,7 @@ const CGFloat kIconViewLength = 24;
                                                                    @"Conversation settings table section title")
                                                          items:groupItems]];
     }
-     */
+    
 
     // Mute thread section.
 
@@ -1075,8 +1086,10 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showGroupMembersView
 {
+    OWSLogInfo(@"Setting show thread");
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     ShowGroupMembersViewController *showGroupMembersViewController = [ShowGroupMembersViewController new];
-    [showGroupMembersViewController configWithThread:(TSGroupThread *)self.thread];
+    [showGroupMembersViewController configWithThread:groupThread];
     [self.navigationController pushViewController:showGroupMembersViewController animated:YES];
 }
 

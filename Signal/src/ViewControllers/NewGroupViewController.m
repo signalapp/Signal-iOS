@@ -89,6 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)commonInit
 {
     _groupId = [Randomness generateRandomBytes:kGroupIdLength];
+    _groupType = SIGNAL;
 
     _messageSender = SSKEnvironment.shared.messageSender;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
