@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
     _profileManager = [OWSProfileManager sharedManager];
 
     // We don't want to notify the delegate in the `updateContacts`.
-    self.shouldNotifyDelegateOfUpdatedContacts = YES;
+//    self.shouldNotifyDelegateOfUpdatedContacts = YES;
     [self updateContacts];
     self.shouldNotifyDelegateOfUpdatedContacts = NO;
 
@@ -189,6 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Don't fire delegate "change" events during initialization.
     if (self.shouldNotifyDelegateOfUpdatedContacts) {
+        OWSLogInfo(@"Fire delegate update function");
         [self.delegate contactsViewHelperDidUpdateContacts];
         self.hasUpdatedContactsAtLeastOnce = YES;
     }
