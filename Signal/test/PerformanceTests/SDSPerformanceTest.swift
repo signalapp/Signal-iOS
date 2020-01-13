@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -166,29 +166,5 @@ class SDSPerformanceTest: PerformanceBaseTest {
             TSThread.anyRemoveAllWithInstantation(transaction: transaction)
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
         }
-    }
-
-    private func buildEnvelope(for thread: TSThread) -> SSKProtoEnvelope {
-        let source: SignalServiceAddress
-        switch thread {
-        case let groupThread as TSGroupThread:
-            source = groupThread.groupModel.groupMembers[0]
-        case let contactThread as TSContactThread:
-            source = contactThread.contactAddress
-        default:
-            owsFail("Invalid thread.")
-        }
-
-        let timestamp = NSDate.ows_millisecondTimeStamp()
-        let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: timestamp)
-        envelopeBuilder.setType(.ciphertext)
-        if let phoneNumber = source.phoneNumber {
-            envelopeBuilder.setSourceE164(phoneNumber)
-        }
-        if let uuid = source.uuid {
-            envelopeBuilder.setSourceUuid(uuid.uuidString)
-        }
-        envelopeBuilder.setSourceDevice(1)
-        return try! envelopeBuilder.build()
     }
 }

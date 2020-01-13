@@ -52,6 +52,7 @@ public class GRDBSchemaMigrator: NSObject {
         case indexMediaGallery2
         case unreadThreadInteractions
         case createFamilyName
+        case createIndexableFTSTable
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -234,6 +235,49 @@ public class GRDBSchemaMigrator: NSObject {
             try db.alter(table: "model_OWSUserProfile", body: { alteration in
                 alteration.add(column: "familyName", .text)
             })
+        }
+
+        migrator.registerMigration(MigrationId.createIndexableFTSTable.rawValue) { db in
+            try Bench(title: MigrationId.createIndexableFTSTable.rawValue, logInProduction: true) {
+                try db.create(table: "indexable_text") { table in
+                    table.autoIncrementedPrimaryKey("id")
+                        .notNull()
+                    table.column("collection", .text)
+                        .notNull()
+                    table.column("uniqueId", .text)
+                        .notNull()
+                    table.column("ftsIndexableContent", .text)
+                        .notNull()
+                }
+
+                try db.create(index: "index_indexable_text_on_collection_and_uniqueId",
+                              on: "indexable_text",
+                              columns: ["collection", "uniqueId"],
+                              unique: true)
+
+                try db.create(virtualTable: "indexable_text_fts", using: FTS5()) { table in
+                    // We could use FTS5TokenizerDescriptor.porter(wrapping: FTS5TokenizerDescriptor.unicode61())
+                    //
+                    // Porter does stemming (e.g. "hunting" will match "hunter").
+                    // unicode61 will remove diacritics (e.g. "senor" will match "señor").
+                    //
+                    // GRDB TODO: Should we do stemming?
+                    let tokenizer = FTS5TokenizerDescriptor.unicode61()
+                    table.tokenizer = tokenizer
+
+                    table.synchronize(withTable: "indexable_text")
+
+                    // I thought leveraging the prefix-index feature would speed up as-you-type
+                    // searching, but my measurements showed no substantive change.
+                    // table.prefixes = [2, 4]
+
+                    table.column("ftsIndexableContent")
+                }
+
+                // Copy over existing indexable content so we don't have to regenerate content from every indexed object.
+                try db.execute(sql: "INSERT INTO indexable_text (collection, uniqueId, ftsIndexableContent) SELECT collection, uniqueId, ftsIndexableContent FROM signal_grdb_fts")
+                try db.drop(table: "signal_grdb_fts")
+            }
         }
 
         return migrator
@@ -868,9 +912,22 @@ private func createV1Schema(db: Database) throws {
                   on: AttachmentRecord.databaseTableName,
                   columns: [
                     AttachmentRecord.columnName(.lazyRestoreFragmentId)
-        ])
+    ])
 
-    try GRDBFullTextSearchFinder.createTables(database: db)
+    try db.create(virtualTable: "signal_grdb_fts", using: FTS5()) { table in
+        // We could use FTS5TokenizerDescriptor.porter(wrapping: FTS5TokenizerDescriptor.unicode61())
+        //
+        // Porter does stemming (e.g. "hunting" will match "hunter").
+        // unicode61 will remove diacritics (e.g. "senor" will match "señor").
+        //
+        // GRDB TODO: Should we do stemming?
+        let tokenizer = FTS5TokenizerDescriptor.unicode61()
+        table.tokenizer = tokenizer
+
+        table.column("collection").notIndexed()
+        table.column("uniqueId").notIndexed()
+        table.column("ftsIndexableContent")
+    }
 }
 
 public func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throws {

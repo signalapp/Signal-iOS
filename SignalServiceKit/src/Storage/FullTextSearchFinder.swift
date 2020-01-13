@@ -272,27 +272,11 @@ public class YDBFullTextSearchFinder: NSObject {
 @objc
 class GRDBFullTextSearchFinder: NSObject {
 
-    static let databaseTableName: String = "signal_grdb_fts"
+    static let contentTableName: String = "indexable_text"
+    static let ftsTableName: String = "indexable_text_fts"
     static let uniqueIdColumn: String = "uniqueId"
     static let collectionColumn: String = "collection"
     static let ftsContentColumn: String = "ftsIndexableContent"
-
-    class func createTables(database: Database) throws {
-        try database.create(virtualTable: databaseTableName, using: FTS5()) { table in
-            // We could use FTS5TokenizerDescriptor.porter(wrapping: FTS5TokenizerDescriptor.unicode61())
-            //
-            // Porter does stemming (e.g. "hunting" will match "hunter").
-            // unicode61 will remove diacritics (e.g. "senor" will match "señor").
-            //
-            // GRDB TODO: Should we do stemming?
-            let tokenizer = FTS5TokenizerDescriptor.unicode61()
-            table.tokenizer = tokenizer
-
-            table.column("\(collectionColumn)").notIndexed()
-            table.column("\(uniqueIdColumn)").notIndexed()
-            table.column("\(ftsContentColumn)")
-        }
-    }
 
     private class func collection(forModel model: SDSModel) -> String {
         // Note that allModelsWereRemoved(collection: ) makes the same
@@ -321,7 +305,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
         executeUpdate(
             sql: """
-            INSERT INTO \(databaseTableName)
+            INSERT INTO \(contentTableName)
             (\(collectionColumn), \(uniqueIdColumn), \(ftsContentColumn))
             VALUES
             (?, ?, ?)
@@ -354,7 +338,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
         executeUpdate(
             sql: """
-            UPDATE \(databaseTableName)
+            UPDATE \(contentTableName)
             SET \(ftsContentColumn) = ?
             WHERE \(collectionColumn) == ?
             AND \(uniqueIdColumn) == ?
@@ -374,7 +358,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
         executeUpdate(
             sql: """
-            DELETE FROM \(databaseTableName)
+            DELETE FROM \(contentTableName)
             WHERE \(uniqueIdColumn) == ?
             AND \(collectionColumn) == ?
             """,
@@ -390,7 +374,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
         executeUpdate(
             sql: """
-            DELETE FROM \(databaseTableName)
+            DELETE FROM \(contentTableName)
             WHERE \(collectionColumn) == ?
             """,
             arguments: [collection],
@@ -457,17 +441,18 @@ class GRDBFullTextSearchFinder: NSObject {
             var stop: ObjCBool = false
 
             // GRDB TODO: We could use bm25() instead of rank to order results.
-            let columnIndex = 2
+            let indexOfContentColumnInFTSTable = 0
             // Determines the length of the snippet.
             let numTokens: UInt = 15
             let matchSnippet = "match_snippet"
             let sql: String = """
                 SELECT
-                \(collectionColumn), \(uniqueIdColumn), \(ftsContentColumn),
-                snippet(\(databaseTableName), \(columnIndex), '', '', '…', \(numTokens) ) as \(matchSnippet)
-                FROM \(databaseTableName)
-                WHERE \(databaseTableName)
-                MATCH '"\(ftsContentColumn)" : \(query)'
+                    \(contentTableName).\(collectionColumn),
+                    \(contentTableName).\(uniqueIdColumn),
+                    snippet(\(ftsTableName), \(indexOfContentColumnInFTSTable), '', '', '…', \(numTokens) ) as \(matchSnippet)
+                FROM \(ftsTableName)
+                LEFT JOIN \(contentTableName) ON \(contentTableName).rowId = \(ftsTableName).rowId
+                WHERE \(ftsTableName) MATCH '"\(ftsContentColumn)" : \(query)'
                 ORDER BY rank
             """
             let cursor = try Row.fetchCursor(transaction.database, sql: sql)

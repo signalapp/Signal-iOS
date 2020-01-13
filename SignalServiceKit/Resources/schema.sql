@@ -610,64 +610,6 @@ CREATE
 ;
 
 CREATE
-    VIRTUAL TABLE
-        "signal_grdb_fts"
-            USING fts5 (
-            collection UNINDEXED
-            ,uniqueId UNINDEXED
-            ,ftsIndexableContent
-            ,tokenize = 'unicode61'
-        ) /* signal_grdb_fts(collection,uniqueId,ftsIndexableContent) */
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS 'signal_grdb_fts_data' (
-            id INTEGER PRIMARY KEY
-            ,block BLOB
-        )
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS 'signal_grdb_fts_idx' (
-            segid
-            ,term
-            ,pgno
-            ,PRIMARY KEY (
-                segid
-                ,term
-            )
-        ) WITHOUT ROWID
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS 'signal_grdb_fts_content' (
-            id INTEGER PRIMARY KEY
-            ,c0
-            ,c1
-            ,c2
-        )
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS 'signal_grdb_fts_docsize' (
-            id INTEGER PRIMARY KEY
-            ,sz BLOB
-        )
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS 'signal_grdb_fts_config' (
-            k PRIMARY KEY
-            ,v
-        ) WITHOUT ROWID
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_SignalAccount" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -779,4 +721,132 @@ CREATE
     ,"read"
     ,"id"
 )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "indexable_text" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"collection" TEXT NOT NULL
+            ,"uniqueId" TEXT NOT NULL
+            ,"ftsIndexableContent" TEXT NOT NULL
+        )
+;
+
+CREATE
+    UNIQUE INDEX "index_indexable_text_on_collection_and_uniqueId"
+        ON "indexable_text"("collection"
+    ,"uniqueId"
+)
+;
+
+CREATE
+    VIRTUAL TABLE
+        "indexable_text_fts"
+            USING fts5 (
+            ftsIndexableContent
+            ,tokenize = 'unicode61'
+            ,content = 'indexable_text'
+            ,content_rowid = 'id'
+        ) /* indexable_text_fts(ftsIndexableContent) */
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS 'indexable_text_fts_data' (
+            id INTEGER PRIMARY KEY
+            ,block BLOB
+        )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS 'indexable_text_fts_idx' (
+            segid
+            ,term
+            ,pgno
+            ,PRIMARY KEY (
+                segid
+                ,term
+            )
+        ) WITHOUT ROWID
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS 'indexable_text_fts_docsize' (
+            id INTEGER PRIMARY KEY
+            ,sz BLOB
+        )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS 'indexable_text_fts_config' (
+            k PRIMARY KEY
+            ,v
+        ) WITHOUT ROWID
+;
+
+CREATE
+    TRIGGER "__indexable_text_fts_ai" AFTER INSERT
+            ON "indexable_text" BEGIN INSERT
+            INTO
+                "indexable_text_fts"("rowid"
+                ,"ftsIndexableContent"
+)
+VALUES (
+new. "id"
+,new. "ftsIndexableContent"
+)
+;
+
+END
+;
+
+CREATE
+    TRIGGER "__indexable_text_fts_ad" AFTER DELETE
+                ON "indexable_text" BEGIN INSERT
+                INTO
+                    "indexable_text_fts"("indexable_text_fts"
+                    ,"rowid"
+                    ,"ftsIndexableContent"
+)
+VALUES (
+'delete'
+,old. "id"
+,old. "ftsIndexableContent"
+)
+;
+
+END
+;
+
+CREATE
+    TRIGGER "__indexable_text_fts_au" AFTER UPDATE
+                ON "indexable_text" BEGIN INSERT
+                INTO
+                    "indexable_text_fts"("indexable_text_fts"
+                    ,"rowid"
+                    ,"ftsIndexableContent"
+)
+VALUES (
+'delete'
+,old. "id"
+,old. "ftsIndexableContent"
+)
+;
+
+INSERT
+    INTO
+        "indexable_text_fts"("rowid"
+        ,"ftsIndexableContent"
+)
+VALUES (
+new. "id"
+,new. "ftsIndexableContent"
+)
+;
+
+END
 ;

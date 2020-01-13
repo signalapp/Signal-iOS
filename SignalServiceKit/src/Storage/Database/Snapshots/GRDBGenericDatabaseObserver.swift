@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -96,7 +96,7 @@ public class GRDBGenericDatabaseObserver: NSObject {
         // If necessary, convert GRDB table names to "collections".
         var allCollections = pendingChanges.collections
         for tableName in pendingChanges.tableNames {
-            guard !tableName.hasPrefix(GRDBFullTextSearchFinder.databaseTableName) else {
+            guard !tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
                 owsFailDebug("should not have been notified for changes to FTS tables")
                 continue
             }
