@@ -573,6 +573,8 @@
 		4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */; };
 		4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC613352227A00400E21A3A /* ConversationSearch.swift */; };
+		4CCB567D23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */; };
+		4CCB567F23CBB6A3004A5731 /* NSItemProvider+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCB567E23CBB6A3004A5731 /* NSItemProvider+Promises.swift */; };
 		4CD09B802398A12C009CA4AE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450DF2041E0D74AC003D14BE /* Platform.swift */; };
 		4CD675BE22E7BE35008010D2 /* MediaDismissAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675BD22E7BE35008010D2 /* MediaDismissAnimationController.swift */; };
 		4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */; };
@@ -1413,6 +1415,9 @@
 		4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateNag.swift; sourceTree = "<group>"; };
 		4CC613352227A00400E21A3A /* ConversationSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearch.swift; sourceTree = "<group>"; };
+		4CCB567B23C8D89C004A5731 /* NSItemProvider+TypedAccessors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSItemProvider+TypedAccessors.h"; sourceTree = "<group>"; };
+		4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSItemProvider+TypedAccessors.m"; sourceTree = "<group>"; };
+		4CCB567E23CBB6A3004A5731 /* NSItemProvider+Promises.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "NSItemProvider+Promises.swift"; path = "/Users/michael/src/signal/ios/SignalShareExtension/utils/NSItemProvider+Promises.swift"; sourceTree = "<absolute>"; };
 		4CD675BD22E7BE35008010D2 /* MediaDismissAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDismissAnimationController.swift; sourceTree = "<group>"; };
 		4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+OWS.swift"; sourceTree = "<group>"; };
 		4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPresentationContext.swift; sourceTree = "<group>"; };
@@ -1836,6 +1841,9 @@
 		34480B2F1FD0921000BC14EF /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				4CCB567E23CBB6A3004A5731 /* NSItemProvider+Promises.swift */,
+				4CCB567B23C8D89C004A5731 /* NSItemProvider+TypedAccessors.h */,
+				4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */,
 				34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */,
 				34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */,
 			);
@@ -3888,10 +3896,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CCB567F23CBB6A3004A5731 /* NSItemProvider+Promises.swift in Sources */,
 				4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */,
 				34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */,
 				34641E1F2088DA6D00E2EDE5 /* SAEScreenLockViewController.m in Sources */,
 				3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */,
+				4CCB567D23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m in Sources */,
 				347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
