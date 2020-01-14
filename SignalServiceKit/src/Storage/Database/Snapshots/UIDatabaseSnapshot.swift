@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -113,7 +113,7 @@ public class UIDatabaseObserver: NSObject {
 extension UIDatabaseObserver: TransactionObserver {
 
     public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
-        guard !eventKind.tableName.hasPrefix(GRDBFullTextSearchFinder.databaseTableName) else {
+        guard !eventKind.tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
             // Ignore updates to the GRDB FTS table(s)
             return false
         }
