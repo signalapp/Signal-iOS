@@ -4,6 +4,7 @@
 
 #import "ContactsManagerProtocol.h"
 #import "TSYapDatabaseObject.h"
+#import "TSAccountManager.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,6 +24,7 @@ extern const int32_t kGroupIdLength;
 @property (nullable, readonly, nonatomic) NSString *groupName;
 @property (readonly, nonatomic) NSData *groupId;
 @property (nonatomic) GroupType groupType;
+@property (nonatomic) NSMutableSet<NSString *> *removedMembers;
 
 #if TARGET_OS_IOS
 @property (nullable, nonatomic, strong) UIImage *groupImage;

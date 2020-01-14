@@ -2309,6 +2309,11 @@ struct SignalServiceProtos_GroupContext {
     get {return _storage._members}
     set {_uniqueStorage()._members = newValue}
   }
+    
+    var removedMembers: [String] {
+        get {return _storage._removedMembers}
+        set {_uniqueStorage()._removedMembers = newValue}
+    }
 
   var avatar: SignalServiceProtos_AttachmentPointer {
     get {return _storage._avatar ?? SignalServiceProtos_AttachmentPointer()}
@@ -4943,6 +4948,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
     var _type: SignalServiceProtos_GroupContext.TypeEnum? = nil
     var _name: String? = nil
     var _members: [String] = []
+    var _removedMembers: [String] = []
     var _avatar: SignalServiceProtos_AttachmentPointer? = nil
 
     static let defaultInstance = _StorageClass()
@@ -4955,6 +4961,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
       _name = source._name
       _members = source._members
       _avatar = source._avatar
+      _removedMembers = source._removedMembers
     }
   }
 
@@ -4975,6 +4982,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
         case 3: try decoder.decodeSingularStringField(value: &_storage._name)
         case 4: try decoder.decodeRepeatedStringField(value: &_storage._members)
         case 5: try decoder.decodeSingularMessageField(value: &_storage._avatar)
+        case 6: try decoder.decodeRepeatedStringField(value: &_storage._removedMembers)
         default: break
         }
       }

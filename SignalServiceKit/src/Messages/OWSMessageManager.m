@@ -1296,6 +1296,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogWarn(@"Ignoring 'Request Group Info' message for group we no longer belong to.");
         return;
     }
+    
+    gThread.groupModel.removedMembers = [NSMutableSet setWithArray:dataMessage.group.removedMembers];
 
     NSString *updateGroupInfo =
         [gThread.groupModel getInfoStringAboutUpdateTo:gThread.groupModel contactsManager:self.contactsManager];
@@ -1358,6 +1360,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (groupId.length > 0) {
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
+        NSMutableSet *removedMemberIds = [NSMutableSet setWithArray:dataMessage.group.removedMembers];
         for (NSString *recipientId in newMemberIds) {
             if (!recipientId.isValidE164) {
                 OWSLogVerbose(
@@ -1396,6 +1399,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                             image:oldGroupThread.groupModel.groupImage
                                                                           groupId:dataMessage.group.id
                                                                         groupType:oldGroupThread.groupModel.groupType];
+                newGroupModel.removedMembers = removedMemberIds;
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
                 newGroupThread.groupModel = newGroupModel;

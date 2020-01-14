@@ -50,6 +50,14 @@ const int32_t kGroupIdLength = 16;
     if (_groupMemberIds == nil) {
         _groupMemberIds = [NSArray new];
     }
+    
+    if (_groupAdminIds == nil) {
+        _groupAdminIds = [NSArray new];
+    }
+    
+    if (_removedMembers == nil) {
+        _removedMembers = [NSMutableSet new];
+    }
 
     return self;
 }
@@ -114,6 +122,7 @@ const int32_t kGroupIdLength = 16;
 
     NSMutableSet *membersWhoLeft = [NSMutableSet setWithSet:oldMembers];
     [membersWhoLeft minusSet:newMembers];
+    [membersWhoLeft minusSet:_removedMembers];
 
 
     if ([membersWhoLeft count] > 0) {
@@ -134,6 +143,32 @@ const int32_t kGroupIdLength = 16;
                                   stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),
                                                            [newMembersNames componentsJoinedByString:@", "]]];
     }
+    
+    if ([_removedMembers count] > 0) {
+        NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+        NSString *hexEncodedPublicKey = masterDeviceHexEncodedPublicKey != nil ? masterDeviceHexEncodedPublicKey : [TSAccountManager localNumber];
+        if ([_removedMembers containsObject:hexEncodedPublicKey]) {
+            updatedGroupInfoString = [updatedGroupInfoString
+                                      stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
+        }
+        else {
+            NSArray *removedMembersNames = [[_removedMembers allObjects] map:^NSString*(NSString* item) {
+                return [contactsManager displayNameForPhoneIdentifier:item];
+            }];
+            if ([removedMembersNames count] > 1) {
+                updatedGroupInfoString = [updatedGroupInfoString
+                                          stringByAppendingString:[NSString
+                                                                   stringWithFormat:NSLocalizedString(@"GROUP_MEMBERS_REMOVED", @""),
+                                                                   [removedMembersNames componentsJoinedByString:@", "]]];
+            }
+            else {
+                updatedGroupInfoString = [updatedGroupInfoString
+                                          stringByAppendingString:[NSString
+                                                                   stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_REMOVED", @""),
+                                                                   [removedMembersNames componentsJoinedByString:@", "]]];
+            }
+        }
+    }
 
     return updatedGroupInfoString;
 }
@@ -148,6 +183,11 @@ const int32_t kGroupIdLength = 16;
 - (void)setGroupAdminIds:(NSArray<NSString *> *)groupAdminIds
 {
     _groupAdminIds = groupAdminIds;
+}
+
+- (void)setRemovedMembers:(NSMutableSet<NSString *> *)removedMembers
+{
+    _removedMembers = removedMembers;
 }
 
 @end
