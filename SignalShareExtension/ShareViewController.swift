@@ -849,9 +849,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                         return promise
                     }
 
-                    DispatchQueue.main.async {
-                        loadViewController.progress = progressPoller.progress
-                    }
+                    loadViewController.progress = progressPoller.progress
                 }
 
                 return promise
