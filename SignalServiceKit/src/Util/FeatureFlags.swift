@@ -192,7 +192,7 @@ public class FeatureFlags: NSObject {
     public static var pinsForEveryone = build.includes(.dev)
 
     @objc
-    public static let useOnlyModernContactDiscovery = !isUsingProductionService && build.includes(.dev)
+    public static let useOnlyModernContactDiscovery = false
 
     @objc
     public static let compareLegacyContactDiscoveryAgainstModern = false
