@@ -171,10 +171,6 @@ public class FeatureFlags: NSObject {
     @objc
     public static let strictYDBExtensions = build.includes(.beta)
 
-    // Don't enable this flag in production.
-    @objc
-    public static let onlyModernNotificationClearance = build.includes(.beta)
-
     @objc
     public static var allowUUIDOnlyContacts: Bool {
         // TODO UUID: Remove production check once this rolls out to prod service

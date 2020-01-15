@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -76,17 +76,6 @@ import SignalMessaging
  *                   --[DC.Hangup]--> (via CallConnection API)
  *                   --[SS.Hangup]-->
  */
-
-public enum CallError: Error {
-    case providerReset
-    case assertionError(description: String)
-    case disconnected
-    case externalError(underlyingError: Error)
-    case timeout(description: String)
-    case obsoleteCall(description: String)
-    case fatalError(description: String)
-    case messageSendFailure(underlyingError: Error)
-}
 
 // All Observer methods will be invoked from the main thread.
 protocol CallServiceObserver: class {
@@ -1883,31 +1872,31 @@ private class SignalCallData: NSObject {
 
     // MARK: - CallObserver
 
-    internal func stateDidChange(call: SignalCall, state: CallState) {
+    public func stateDidChange(call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
         Logger.info("\(state)")
 
         updateIsVideoEnabled()
     }
 
-    internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
+    public func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
         Logger.info("\(hasLocalVideo)")
 
         self.updateIsVideoEnabled()
     }
 
-    internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+    public func muteDidChange(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
         // Do nothing
     }
 
-    internal func holdDidChange(call: SignalCall, isOnHold: Bool) {
+    public func holdDidChange(call: SignalCall, isOnHold: Bool) {
         AssertIsOnMainThread()
         // Do nothing
     }
 
-    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
+    public func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
         AssertIsOnMainThread()
         // Do nothing
     }

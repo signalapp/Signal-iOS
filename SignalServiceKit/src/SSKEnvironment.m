@@ -287,6 +287,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     [self.blockingManager warmCaches];
     [self.profileManager warmCaches];
     [self.tsAccountManager warmCaches];
+    [self.readReceiptManager prepareCachedValues];
     [OWSKeyBackupService warmCaches];
 }
 

@@ -92,6 +92,7 @@ end
 # These extensions inherit all of the pods
 target 'SignalShareExtension'
 target 'SignalMessaging'
+target 'NotificationServiceExtension'
 
 post_install do |installer|
   enable_extension_support_for_purelayout(installer)

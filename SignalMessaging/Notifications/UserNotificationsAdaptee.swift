@@ -7,7 +7,7 @@ import UserNotifications
 import PromiseKit
 
 @available(iOS 10.0, *)
-class UserNotificationConfig {
+public class UserNotificationConfig {
 
     class var allNotificationCategories: Set<UNNotificationCategory> {
         let categories = AppNotificationCategory.allCases.map { notificationCategory($0) }
@@ -56,7 +56,7 @@ class UserNotificationConfig {
         }
     }
 
-    class func action(identifier: String) -> AppNotificationAction? {
+    public class func action(identifier: String) -> AppNotificationAction? {
         return AppNotificationAction.allCases.first { notificationAction($0).identifier == identifier }
     }
 
@@ -110,7 +110,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = category.identifier
         content.userInfo = userInfo
-        let isAppActive = UIApplication.shared.applicationState == .active
+        let isAppActive = CurrentAppContext().isMainAppAndActive
         if let sound = sound, sound != OWSSound.none {
             content.sound = sound.notificationSound(isQuiet: isAppActive)
         }
@@ -200,10 +200,6 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
-
-        if !FeatureFlags.onlyModernNotificationClearance {
-            clearLegacyNotifications()
-        }
     }
 
     private static let kMigrationNotificationId = "kMigrationNotificationId"
@@ -228,19 +224,9 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         cancelNotification(identifier: identifier)
     }
 
-    private func clearLegacyNotifications() {
-        // This will cancel all "scheduled" local notifications that haven't
-        // been presented yet.
-        UIApplication.shared.cancelAllLocalNotifications()
-        // To clear all already presented local notifications, we need to
-        // set the app badge number to zero after setting it to a non-zero value.
-        UIApplication.shared.applicationIconBadgeNumber = 1
-        UIApplication.shared.applicationIconBadgeNumber = 0
-    }
-
     func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
         AssertIsOnMainThread()
-        guard UIApplication.shared.applicationState == .active else {
+        guard CurrentAppContext().isMainAppAndActive else {
             return true
         }
 
@@ -269,7 +255,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             return true
         }
 
-        guard let conversationSplitVC = UIApplication.shared.frontmostViewController as? ConversationSplitViewController else {
+        guard let conversationSplitVC = CurrentAppContext().frontmostViewController() as? ConversationSplit else {
             return true
         }
 
@@ -278,70 +264,8 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
     }
 }
 
-@objc(OWSUserNotificationActionHandler)
-@available(iOS 10.0, *)
-public class UserNotificationActionHandler: NSObject {
-
-    var actionHandler: NotificationActionHandler {
-        return NotificationActionHandler.shared
-    }
-
-    @objc
-    func handleNotificationResponse( _ response: UNNotificationResponse, completionHandler: @escaping () -> Void) {
-        AssertIsOnMainThread()
-        firstly {
-            try handleNotificationResponse(response)
-        }.done {
-            completionHandler()
-        }.catch { error in
-            completionHandler()
-            owsFailDebug("error: \(error)")
-            Logger.error("error: \(error)")
-        }.retainUntilComplete()
-    }
-
-    func handleNotificationResponse( _ response: UNNotificationResponse) throws -> Promise<Void> {
-        AssertIsOnMainThread()
-        assert(AppReadiness.isAppReady())
-
-        let userInfo = response.notification.request.content.userInfo
-
-        switch response.actionIdentifier {
-        case UNNotificationDefaultActionIdentifier:
-            Logger.debug("default action")
-            return try actionHandler.showThread(userInfo: userInfo)
-        case UNNotificationDismissActionIdentifier:
-            // TODO - mark as read?
-            Logger.debug("dismissed notification")
-            return Promise.value(())
-        default:
-            // proceed
-            break
-        }
-
-        guard let action = UserNotificationConfig.action(identifier: response.actionIdentifier) else {
-            throw NotificationError.failDebug("unable to find action for actionIdentifier: \(response.actionIdentifier)")
-        }
-
-        switch action {
-        case .answerCall:
-            return try actionHandler.answerCall(userInfo: userInfo)
-        case .callBack:
-            return try actionHandler.callBack(userInfo: userInfo)
-        case .declineCall:
-            return try actionHandler.declineCall(userInfo: userInfo)
-        case .markAsRead:
-            return try actionHandler.markAsRead(userInfo: userInfo)
-        case .reply:
-            guard let textInputResponse = response as? UNTextInputNotificationResponse else {
-                throw NotificationError.failDebug("response had unexpected type: \(response)")
-            }
-
-            return try actionHandler.reply(userInfo: userInfo, replyText: textInputResponse.userText)
-        case .showThread:
-            return try actionHandler.showThread(userInfo: userInfo)
-        }
-    }
+public protocol ConversationSplit {
+    var visibleThread: TSThread? { get }
 }
 
 extension OWSSound {

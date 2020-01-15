@@ -278,8 +278,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     [AppVersion sharedInstance];
 
-    [self startupLogging];
-
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
     //
@@ -407,7 +405,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     // We perform a subset of the [application:didFinishLaunchingWithOptions:].
     [AppVersion sharedInstance];
-    [self startupLogging];
 
     self.window = [OWSWindow new];
 
@@ -450,38 +447,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                                                        }];
                                                    }]];
     [viewController presentActionSheet:actionSheet];
-}
-
-- (void)startupLogging
-{
-    OWSLogInfo(@"iOS Version: %@ (%@)",
-        [UIDevice currentDevice].systemVersion,
-        [NSString stringFromSysctlKey:@"kern.osversion"]);
-
-    NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
-    if (localeIdentifier.length > 0) {
-        OWSLogInfo(@"Locale Identifier: %@", localeIdentifier);
-    }
-    NSString *countryCode = [NSLocale.currentLocale objectForKey:NSLocaleCountryCode];
-    if (countryCode.length > 0) {
-        OWSLogInfo(@"Country Code: %@", countryCode);
-    }
-    NSString *languageCode = [NSLocale.currentLocale objectForKey:NSLocaleLanguageCode];
-    if (languageCode.length > 0) {
-        OWSLogInfo(@"Language Code: %@", languageCode);
-    }
-
-    OWSLogInfo(@"Device Model: %@ (%@)", UIDevice.currentDevice.model, [NSString stringFromSysctlKey:@"hw.machine"]);
-
-    NSDictionary<NSString *, NSString *> *buildDetails =
-        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
-    OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
-    OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
-    OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
-    OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
-    OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
-
-    OWSLogInfo(@"Build Expires in: %ld days", (long)SSKAppExpiry.daysUntilBuildExpiry);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -1276,7 +1241,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 #endif
 
     [self.profileManager fetchAndUpdateLocalUsersProfile];
-    [self.readReceiptManager prepareCachedValues];
 
     [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
 

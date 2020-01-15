@@ -233,11 +233,11 @@ public class MessageProcessing: NSObject {
     // to this class.  We'll probably still need this
     // websocketDrainedPromiseObjc() for usage by the main app.
     @objc
-    public func websocketDrainedPromiseObjc() -> AnyPromise {
+    private func websocketDrainedPromiseObjc() -> AnyPromise {
         return AnyPromise(websocketDrainedPromise())
     }
 
-    private func websocketDrainedPromise() -> Promise<Void> {
+    public func websocketDrainedPromise() -> Promise<Void> {
         let (promise, resolver) = Promise<Void>.pending()
 
         serialQueue.async {
