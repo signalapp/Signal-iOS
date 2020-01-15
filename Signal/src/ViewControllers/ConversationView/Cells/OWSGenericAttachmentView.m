@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)topLabelFont
 {
-    return [UIFont ows_dynamicTypeBodyFont];
+    return [UIFont systemFontOfSize:LKValues.mediumFontSize];
 }
 
 + (UIFont *)bottomLabelFont
