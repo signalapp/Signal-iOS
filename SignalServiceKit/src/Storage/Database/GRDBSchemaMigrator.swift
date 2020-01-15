@@ -54,6 +54,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createFamilyName
         case createIndexableFTSTable
         case dropContactQuery
+        case indexFailedJob
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -283,6 +284,28 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.dropContactQuery.rawValue) { db in
             try db.drop(table: "model_OWSContactQuery")
+        }
+
+        migrator.registerMigration(MigrationId.indexFailedJob.rawValue) { db in
+            // index this query:
+            //      SELECT \(interactionColumn: .uniqueId)
+            //      FROM \(InteractionRecord.databaseTableName)
+            //      WHERE \(interactionColumn: .storedMessageState) = ?
+            try db.create(index: "index_interaction_on_storedMessageState",
+                          on: "model_TSInteraction",
+                          columns: ["storedMessageState"])
+
+            // index this query:
+            //      SELECT \(interactionColumn: .uniqueId)
+            //      FROM \(InteractionRecord.databaseTableName)
+            //      WHERE \(interactionColumn: .recordType) = ?
+            //      AND (
+            //          \(interactionColumn: .callType) = ?
+            //          OR \(interactionColumn: .callType) = ?
+            //      )
+            try db.create(index: "index_interaction_on_recordType_and_callType",
+                          on: "model_TSInteraction",
+                          columns: ["recordType", "callType"])
         }
 
         return migrator
