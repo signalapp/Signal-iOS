@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,7 +12,8 @@ public enum KeychainStorageError: Error {
 
 // MARK: -
 
-@objc public protocol SSKKeychainStorage: class {
+@objc
+public protocol SSKKeychainStorage: class {
 
     @objc func string(forService service: String, key: String) throws -> String
 
@@ -24,6 +25,8 @@ public enum KeychainStorageError: Error {
 
     @objc func remove(service: String, key: String) throws
 }
+
+// MARK: -
 
 public extension SSKKeychainStorage {
     func optionalString(forService service: String, key: String) throws -> String? {
@@ -61,7 +64,16 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         SwiftSingletons.register(self)
     }
 
-    @objc public func string(forService service: String, key: String) throws -> String {
+    private func normalizeService(service: String) -> String {
+        return (FeatureFlags.isUsingProductionService
+            ? service
+            : service + ".staging")
+    }
+
+    @objc
+    public func string(forService service: String, key: String) throws -> String {
+        let service = normalizeService(service: service)
+
         var error: NSError?
         let result = SAMKeychain.password(forService: service, account: key, error: &error)
         if let error = error {
@@ -77,7 +89,9 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         return string
     }
 
-    @objc public func set(string: String, service: String, key: String) throws {
+    @objc
+    public func set(string: String, service: String, key: String) throws {
+        let service = normalizeService(service: service)
 
         SAMKeychain.setAccessibilityType(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
 
@@ -91,7 +105,10 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         }
     }
 
-    @objc public func data(forService service: String, key: String) throws -> Data {
+    @objc
+    public func data(forService service: String, key: String) throws -> Data {
+        let service = normalizeService(service: service)
+
         var error: NSError?
         let result = SAMKeychain.passwordData(forService: service, account: key, error: &error)
         if let error = error {
@@ -107,7 +124,9 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         return data
     }
 
-    @objc public func set(data: Data, service: String, key: String) throws {
+    @objc
+    public func set(data: Data, service: String, key: String) throws {
+        let service = normalizeService(service: service)
 
         SAMKeychain.setAccessibilityType(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
 
@@ -121,7 +140,10 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         }
     }
 
-    @objc public func remove(service: String, key: String) throws {
+    @objc
+    public func remove(service: String, key: String) throws {
+        let service = normalizeService(service: service)
+
         var error: NSError?
         let result = SAMKeychain.deletePassword(forService: service, account: key, error: &error)
         if let error = error {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 private protocol TSConstantsProtocol: class {
@@ -24,6 +24,8 @@ private protocol TSConstantsProtocol: class {
     var keyBackupEnclaveName: String { get }
     var keyBackupMrEnclave: String { get }
     var keyBackupServiceId: String { get }
+
+    var applicationGroup: String { get }
 }
 
 // MARK: -
@@ -76,6 +78,9 @@ public class TSConstants: NSObject {
     public static var keyBackupMrEnclave: String { return shared.keyBackupMrEnclave }
     @objc
     public static var keyBackupServiceId: String { return shared.keyBackupServiceId }
+
+    @objc
+    public static var applicationGroup: String { return shared.applicationGroup }
 
     @objc
     public static var isUsingProductionService: Bool {
@@ -158,6 +163,8 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public var keyBackupServiceId: String {
         return keyBackupEnclaveName
     }
+
+    public let applicationGroup = "group.org.whispersystems.signal.group"
 }
 
 // MARK: -
@@ -190,4 +197,6 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public var keyBackupServiceId: String {
         return keyBackupEnclaveName
     }
+
+    public let applicationGroup = "group.org.whispersystems.signal.group.staging"
 }
