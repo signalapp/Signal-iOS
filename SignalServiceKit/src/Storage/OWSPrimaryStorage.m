@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPrimaryStorage.h"
@@ -237,7 +237,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
                                       [YAPDBJobRecordFinderSetup asyncRegisterDatabaseExtensionObjCWithStorage:self];
                                       [YAPDBLinkedDeviceReadReceiptFinder asyncRegisterDatabaseExtensions:self];
-                                      [YAPDBContactQueryFinder asyncRegisterDatabaseExtensions:self];
                                       [YAPDBUserProfileFinder asyncRegisterDatabaseExtensions:self];
                                       [YAPDBReactionFinderAdapter asyncRegisterDatabaseExtensions:self];
 

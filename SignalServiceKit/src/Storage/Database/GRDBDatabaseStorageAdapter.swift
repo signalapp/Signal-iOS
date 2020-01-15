@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -86,7 +86,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         TSRecipientReadReceipt.table,
         OWSLinkedDeviceReadReceipt.table,
         OWSDevice.table,
-        OWSContactQuery.table,
         TestModel.table,
         OWSReaction.table
         // NOTE: We don't include OWSMessageDecryptJob,

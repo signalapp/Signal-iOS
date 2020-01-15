@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMisc.h"
@@ -577,12 +577,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         // SignalRecipient
         [[[SignalRecipient alloc] initWithAddress:address1] anyInsertWithTransaction:transaction];
-
-        // OWSContactQuery
-        [[[OWSContactQuery alloc] initWithUniqueId:NSUUID.UUID.UUIDString
-                                       lastQueried:[NSDate new]
-                                             nonce:[Randomness generateRandomBytes:16]]
-            anyInsertWithTransaction:transaction];
 
         // OWSUnknownDBObject
         //

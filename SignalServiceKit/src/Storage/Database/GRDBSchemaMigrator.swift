@@ -53,6 +53,7 @@ public class GRDBSchemaMigrator: NSObject {
         case unreadThreadInteractions
         case createFamilyName
         case createIndexableFTSTable
+        case dropContactQuery
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -278,6 +279,10 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.execute(sql: "INSERT INTO indexable_text (collection, uniqueId, ftsIndexableContent) SELECT collection, uniqueId, ftsIndexableContent FROM signal_grdb_fts")
                 try db.drop(table: "signal_grdb_fts")
             }
+        }
+
+        migrator.registerMigration(MigrationId.dropContactQuery.rawValue) { db in
+            try db.drop(table: "model_OWSContactQuery")
         }
 
         return migrator
@@ -902,10 +907,8 @@ private func createV1Schema(db: Database) throws {
 
     // ContactQuery
     try db.create(index: "index_contact_queries_on_lastQueried",
-                  on: ContactQueryRecord.databaseTableName,
-                  columns: [
-                    ContactQueryRecord.columnName(.lastQueried)
-        ])
+                  on: "model_OWSContactQuery",
+                  columns: ["lastQueried"])
 
     // Backup
     try db.create(index: "index_attachments_on_lazyRestoreFragmentId",
