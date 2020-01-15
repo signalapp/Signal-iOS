@@ -826,3 +826,16 @@ new. "id"
 
 END
 ;
+
+CREATE
+    INDEX "index_interaction_on_storedMessageState"
+        ON "model_TSInteraction"("storedMessageState"
+)
+;
+
+CREATE
+    INDEX "index_interaction_on_recordType_and_callType"
+        ON "model_TSInteraction"("recordType"
+    ,"callType"
+)
+;
