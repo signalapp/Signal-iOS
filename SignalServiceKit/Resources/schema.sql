@@ -406,24 +406,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "model_OWSContactQuery" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"recordType" INTEGER NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"lastQueried" DOUBLE NOT NULL
-            ,"nonce" BLOB NOT NULL
-        )
-;
-
-CREATE
-    INDEX "index_model_OWSContactQuery_on_uniqueId"
-        ON "model_OWSContactQuery"("uniqueId"
-)
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "model_TestModel" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"recordType" INTEGER NOT NULL
@@ -594,12 +576,6 @@ CREATE
     ,"expireStartedAt"
     ,"storedShouldStartExpireTimer"
     ,"uniqueThreadId"
-)
-;
-
-CREATE
-    INDEX "index_contact_queries_on_lastQueried"
-        ON "model_OWSContactQuery"("lastQueried"
 )
 ;
 

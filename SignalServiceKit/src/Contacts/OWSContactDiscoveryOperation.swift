@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,11 +14,7 @@ public class LegacyContactDiscoveryOperation: OWSOperation {
     @objc
     public var registeredAddresses: Set<SignalServiceAddress>?
 
-    private var phoneNumbersToLookup: [String] {
-        return contactsToLookup.map { $0.e164PhoneNumber }
-    }
-
-    private let contactsToLookup: [CDSContactQuery]
+    private let phoneNumbersToLookup: [String]
 
     // MARK: - Dependencies
 
@@ -28,9 +24,10 @@ public class LegacyContactDiscoveryOperation: OWSOperation {
 
     // MARK: - Initializers
 
-    public required init(contactsToLookup: [CDSContactQuery]) {
-        self.contactsToLookup = contactsToLookup
-        Logger.debug("with contactsToLookup: \(contactsToLookup.count)")
+    @objc
+    public required init(phoneNumbersToLookup: [String]) {
+        self.phoneNumbersToLookup = phoneNumbersToLookup
+        Logger.debug("with phoneNumbersToLookup: \(phoneNumbersToLookup.count)")
     }
 
     // MARK: - OWSOperation Overrides
@@ -90,25 +87,29 @@ public class LegacyContactDiscoveryOperation: OWSOperation {
 
     // Called at most one time.
     override public func didSucceed() {
-        guard !TSConstants.isUsingProductionService else {
+
+        guard FeatureFlags.compareLegacyContactDiscoveryAgainstModern else {
             // comparison disabled in prod for now
             return
         }
 
+        owsFailDebug("CDS TODO")
+
+        // CDS TODO - Commented out while API settles.
+        //
         // Compare against new CDS service
-        let modernContactDiscoveryOperation = ContactDiscoveryOperation(contactsToLookup: self.contactsToLookup)
-
-        let operations = modernContactDiscoveryOperation.dependencies + [modernContactDiscoveryOperation]
-        ContactDiscoveryOperation.operationQueue.addOperations(operations, waitUntilFinished: false)
-
-        guard let legacyRegisteredPhoneNumbers = self.registeredPhoneNumbers else {
-            owsFailDebug("legacyRegisteredPhoneNumbers was unexpectedly nil")
-            return
-        }
-
-        let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredPhoneNumbers: legacyRegisteredPhoneNumbers)
-        cdsFeedbackOperation.addDependency(modernContactDiscoveryOperation)
-        ContactDiscoveryOperation.operationQueue.addOperation(cdsFeedbackOperation)
+        // let modernContactDiscoveryOperation = ContactDiscoveryOperation(contactsToLookup: self.contactsToLookup)
+        // let operations = modernContactDiscoveryOperation.dependencies + [modernContactDiscoveryOperation]
+        // ContactDiscoveryOperation.operationQueue.addOperations(operations, waitUntilFinished: false)
+        //
+        // guard let legacyRegisteredPhoneNumbers = self.registeredPhoneNumbers else {
+        //     owsFailDebug("legacyRegisteredPhoneNumbers was unexpectedly nil")
+        //     return
+        // }
+        //
+        // let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredPhoneNumbers: legacyRegisteredPhoneNumbers)
+        // cdsFeedbackOperation.addDependency(modernContactDiscoveryOperation)
+        // ContactDiscoveryOperation.operationQueue.addOperation(cdsFeedbackOperation)
     }
 
     // MARK: Private Helpers
