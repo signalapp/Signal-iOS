@@ -506,14 +506,26 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             recipientIds = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
         }];
     } else if (thread.isGroupThread) {
-        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
-            if (publicChat != nil) {
-                [recipientIds addObject:publicChat.server];
-            } else {
-                // TODO: Handle
-            }
-        }];
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        if (groupThread.isPublicChat) {
+            [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
+                if (publicChat != nil) {
+                    [recipientIds addObject:publicChat.server];
+                } else {
+                    // TODO: Handle
+                }
+            }];
+        }
+        //Maybe need to handle RssFeed
+        else {
+            [recipientIds addObjectsFromArray:message.sendingRecipientIds];
+            // Only send to members in the latest known group member list.
+            [recipientIds intersectSet:[NSSet setWithArray:groupThread.groupModel.groupMemberIds]];
+//            for (NSString *recipientId in recipientIds) {
+//                
+//            }
+        }
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
 
@@ -688,6 +700,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (thread.isGroupThread) {
         [self saveInfoMessageForGroupMessage:message inThread:thread];
     }
+    OWSLogInfo(@"group message save here %@ %@", message.customMessage, message.recipientIds.lastObject);
 
     NSError *error;
     NSArray<NSString *> *_Nullable recipientIds = [self unsentRecipientsForMessage:message thread:thread error:&error];
@@ -714,6 +727,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         }];
     }
+    
+    OWSLogInfo(@"recipient count: %d", recipientIds.count);
 
     if (recipientIds.count < 1) {
         // All recipients are already sent or can be skipped.
@@ -986,6 +1001,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)sendMessage:(OWSMessageSend *)messageSend
 {
+    OWSLogInfo(@"message send here %@ %@", messageSend.message.body, messageSend.recipient.recipientId);
     OWSAssertDebug(messageSend);
     OWSAssertDebug(messageSend.thread || [messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]);
 
@@ -1047,10 +1063,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSError *deviceMessagesError;
     NSArray<NSDictionary *> *_Nullable deviceMessages;
-    if (!message.thread.isGroupThread) {
-        deviceMessages = [self deviceMessagesForMessageSend:messageSend error:&deviceMessagesError];
-    } else {
+    if (message.thread.isGroupThread && ((TSGroupThread *)message.thread).isPublicChat) {
         deviceMessages = @{};
+    } else {
+        deviceMessages = [self deviceMessagesForMessageSend:messageSend error:&deviceMessagesError];
     }
     if (deviceMessagesError || !deviceMessages) {
         OWSAssertDebug(deviceMessagesError);
@@ -1594,7 +1610,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }];
     
-    BOOL isPublicChatMessage = message.thread.isGroupThread;
+    BOOL isPublicChatMessage = message.thread.isGroupThread && ((TSGroupThread *)message.thread).isPublicChat;
+    OWSLogInfo(@"Message recipient %d %@", [message.recipientIds count], message.recipientIds[0]);
+    OWSLogInfo(@"Try to figure out if it is a public chat message %d", isPublicChatMessage);
     
     BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript) && !isNoteToSelf && !isPublicChatMessage && !([message isKindOfClass:LKDeviceLinkMessage.class]);
     if (!shouldSendTranscript) {
@@ -2025,16 +2043,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(thread);
 
     if (message.groupMetaMessage == TSGroupMetaMessageDeliver) {
+        OWSLogInfo(@"save for group message deliver");
         // TODO: Why is this necessary?
         [message save];
     } else if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
         // MJK TODO - remove senderTimestamp
+        OWSLogInfo(@"save for group message quit: %@", message.customMessage);
         [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupQuit
                                     customMessage:message.customMessage] save];
     } else {
         // MJK TODO - remove senderTimestamp
+        OWSLogInfo(@"save for group message update: %@", message.customMessage);
         [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupUpdate

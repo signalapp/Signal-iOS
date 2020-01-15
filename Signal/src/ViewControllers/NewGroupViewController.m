@@ -529,6 +529,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
+    //Test: Add Ryan to a new group. Should be deleted!!!!!
+//    [recipientIds addObject:@"055a7f102ee3af057e4b69bfc8d4327a83d21bf14f794dbf3432d122a10a51fe55"];
+//    [recipientIds addObject:@"05211c97117a9f8f2f90a055b6227bfc6516483300f08026497d8404c71137744e"];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
     TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:groupName
                                                     memberIds:recipientIds

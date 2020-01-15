@@ -4466,6 +4466,7 @@ typedef enum : NSUInteger {
                                     quotedReplyModel:self.inputToolbar.quotedReply
                                     linkPreviewDraft:self.inputToolbar.linkPreviewDraft
                                          transaction:transaction];
+        OWSLogInfo(@"message generated here %@ %@", message.body, message.recipientIds[0]);
     }];
     [self.conversationViewModel appendUnsavedOutgoingTextMessage:message];
 

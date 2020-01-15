@@ -1361,14 +1361,15 @@ NS_ASSUME_NONNULL_BEGIN
     if (groupId.length > 0) {
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
         NSMutableSet *removedMemberIds = [NSMutableSet setWithArray:dataMessage.group.removedMembers];
-        for (NSString *recipientId in newMemberIds) {
-            if (!recipientId.isValidE164) {
-                OWSLogVerbose(
-                    @"incoming group update has invalid group member: %@", [self descriptionForEnvelope:envelope]);
-                OWSFailDebug(@"incoming group update has invalid group member");
-                return nil;
-            }
-        }
+        //Ryan TODO: validate the recipientId
+//        for (NSString *recipientId in newMemberIds) {
+//            if (!recipientId.isValidE164) {
+//                OWSLogVerbose(
+//                    @"incoming group update has invalid group member: %@", [self descriptionForEnvelope:envelope]);
+//                OWSFailDebug(@"incoming group update has invalid group member");
+//                return nil;
+//            }
+//        }
 
         // Group messages create the group if it doesn't already exist.
         //
