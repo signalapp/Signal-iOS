@@ -350,15 +350,14 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             autoreleasepool {
                 transaction = GRDBWriteTransaction(database: database)
                 block(transaction)
-
-                // perform the sync completions _within_ the
-                // transaction to ensure they are performed
-                // before another write transaction can begin.
-                for block in transaction.syncCompletions {
-                    block()
-                }
             }
         }
+
+        // Perform all completions _after_ the write transaction completes.
+        for block in transaction.syncCompletions {
+            block()
+        }
+
         for (queue, block) in transaction.asyncCompletions {
             queue.async(execute: block)
         }

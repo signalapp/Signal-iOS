@@ -127,6 +127,8 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
             // commits.
             addExclusion(for: key)
         }
+        // Once the write transaction has completed, it is safe
+        // to use the cache for this key again.
         transaction.addSyncCompletion {
             _ = self.performSync {
                 self.removeExclusion(for: key)
@@ -146,11 +148,12 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
     // MARK: - Exclusion
 
     // Races between reads and writes can corrupt the cache.
-    // Therefore gets should not read from or write to the cache
-    // during database writes, specifically from the "exclusion
-    // period" that begins when the write query completes and
-    // ends when its write transaction has committed (or soon
-    // thereafter).
+    // Therefore gets _for a given key_ should not read from or
+    // write to the cache during database writes which affect
+    // that key, specifically during the "exclusion period"
+    // that begins when the first write query affecting that
+    // key completes and that ends when the write transaction
+    // has committed.
     //
     // The desired behavior:
     //
@@ -160,16 +163,16 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
     // * We might "get" from within the same write
     //   transaction that caused the "exclusion". That should
     //   reflect the _new_ state.
-    // * Concurrent gets during the "exclusion period" should
-    //   refect the old state.
+    // * Concurrent gets from read transactions or without a transaction
+    //   during the "exclusion period" should refect the old state.
     //
-    // We acheive this by having all gets ignore the cache during
+    // We achieve this by having all gets ignore the cache during
     // the "exclusion period."
     //
     // Bear in mind that:
     //
     // * Values might be evacuated from the cache between the
-    //   write query and the write transction being committed.
+    //   write query and the write transaction being committed.
     //
     // Note that we use a map with counters so that the async
     // completion of one write doesn't interfere with exclusion

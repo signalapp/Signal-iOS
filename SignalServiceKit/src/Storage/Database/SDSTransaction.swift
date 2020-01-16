@@ -132,6 +132,8 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
         }
     }
 
+    // NOTE: These completions are performed _after_ the write
+    //       transaction has completed.
     @objc
     public func addSyncCompletion(_ block: @escaping () -> Void) {
         switch writeTransaction {
