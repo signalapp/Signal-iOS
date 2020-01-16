@@ -851,10 +851,13 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Group update for invalid group version.");
             return;
         }
-        // Don't trust other clients; ensure all known group members remain in
-        // the group unless it is a "quit" message in which case we should only
-        // remove the quiting member below.
-        [newMembers addObjectsFromArray:oldGroupThread.groupModel.groupMembers];
+        if (oldGroupThread.isLocalUserInGroup) {
+            // If the local user had left the group we couldn't trust our local group state - we'd
+            // have to trust the remote.
+            //
+            // But since we're in the group, ensure no-one is kicked via a group update.
+            [newMembers addObjectsFromArray:oldGroupThread.groupModel.groupMembers];
+        }
     }
 
     switch (dataMessage.group.unwrappedType) {
