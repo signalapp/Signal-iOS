@@ -19,14 +19,14 @@ pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tes
 pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
 # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
-pod 'SignalMetadataKit', git: 'git@github.com:signalapp/SignalMetadataKit', testspecs: ["Tests"]
+pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
 # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'addPodspec'
 
 pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
 
-pod 'ZKGroup', git: 'git@github.com:signalapp/signal-zkgroup-swift', testspecs: ["Tests"]
+pod 'ZKGroup', git: 'https://github.com/signalapp/signal-zkgroup-swift', testspecs: ["Tests"]
 # pod 'ZKGroup', path: '../signal-zkgroup-swift', testspecs: ["Tests"]
 
 # Project does not compile with PromiseKit 6.7.1
@@ -55,7 +55,7 @@ pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.g
 pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework', branch: 'mkirk/1.0.2t'
 #pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
 
-pod 'Starscream', git: 'git@github.com:signalapp/Starscream.git', branch: 'signal-release'
+pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 'signal-release'
 # pod 'Starscream', path: '../Starscream'
 
 ###

@@ -250,18 +250,18 @@ DEPENDENCIES:
   - Reachability
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
-  - "SignalMetadataKit (from `git@github.com:signalapp/SignalMetadataKit`)"
-  - "SignalMetadataKit/Tests (from `git@github.com:signalapp/SignalMetadataKit`)"
+  - SignalMetadataKit (from `https://github.com/signalapp/SignalMetadataKit`)
+  - SignalMetadataKit/Tests (from `https://github.com/signalapp/SignalMetadataKit`)
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
   - SQLCipher (>= 4.0.1)
   - SSZipArchive
-  - "Starscream (from `git@github.com:signalapp/Starscream.git`, branch `signal-release`)"
+  - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
   - YYImage
-  - "ZKGroup (from `git@github.com:signalapp/signal-zkgroup-swift`)"
-  - "ZKGroup/Tests (from `git@github.com:signalapp/signal-zkgroup-swift`)"
+  - ZKGroup (from `https://github.com/signalapp/signal-zkgroup-swift`)
+  - ZKGroup/Tests (from `https://github.com/signalapp/signal-zkgroup-swift`)
   - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC`)
 
 SPEC REPOS:
@@ -301,7 +301,7 @@ EXTERNAL SOURCES:
   SignalCoreKit:
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :git: "git@github.com:signalapp/SignalMetadataKit"
+    :git: https://github.com/signalapp/SignalMetadataKit
   SignalRingRTC:
     :inhibit_wranings: true
     :path: ThirdParty/SignalRingRTC.podspec
@@ -309,12 +309,12 @@ EXTERNAL SOURCES:
     :path: "."
   Starscream:
     :branch: signal-release
-    :git: "git@github.com:signalapp/Starscream.git"
+    :git: https://github.com/signalapp/Starscream.git
   YapDatabase:
     :branch: signal-release
     :git: https://github.com/signalapp/YapDatabase.git
   ZKGroup:
-    :git: "git@github.com:signalapp/signal-zkgroup-swift"
+    :git: https://github.com/signalapp/signal-zkgroup-swift
   ZXingObjC:
     :git: https://github.com/TheLevelUp/ZXingObjC
 
@@ -342,16 +342,16 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: 33dc101ee66b25ba6f4310dce04d48276a934781
-    :git: "git@github.com:signalapp/SignalMetadataKit"
+    :git: https://github.com/signalapp/SignalMetadataKit
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
-    :git: "git@github.com:signalapp/Starscream.git"
+    :git: https://github.com/signalapp/Starscream.git
   YapDatabase:
     :commit: e43ab163b2dcb4c817339c819b07dac545f05fea
     :git: https://github.com/signalapp/YapDatabase.git
   ZKGroup:
     :commit: 06e500809d4f910187c3fffe878e5131193710d0
-    :git: "git@github.com:signalapp/signal-zkgroup-swift"
+    :git: https://github.com/signalapp/signal-zkgroup-swift
   ZXingObjC:
     :commit: cac61d5404b3ee75fca58433dd2ae825c631e4ee
     :git: https://github.com/TheLevelUp/ZXingObjC
@@ -379,13 +379,13 @@ SPEC CHECKSUMS:
   SignalServiceKit: 71856e789067b45672443a9fdc5152409db2cd19
   SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
-  Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
+  Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
   SwiftProtobuf: 4fd9645e69b72cbae6ec8da5be0cdd20ca6565dd
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
   ZKGroup: b5fcf00855c58ffa45861d5427621d8a519f4314
   ZXingObjC: 512b34b9b6920e8ef0461a4159d0814c5e48c28a
 
-PODFILE CHECKSUM: 6ba90fe3bd993f3bae6d976bfa5b5ec233f0bc2b
+PODFILE CHECKSUM: 1ee16f33d5cff33f8ee90ff610570018edb66a56
 
 COCOAPODS: 1.7.5
