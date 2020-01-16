@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAccountManager.h"
@@ -424,10 +424,6 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
 - (nullable NSUUID *)localUuidWithAccountState:(TSAccountState *)accountState
 {
-    if (!SSKFeatureFlags.allowUUIDOnlyContacts) {
-        return nil;
-    }
-
     @synchronized(self) {
         NSUUID *awaitingVerif = self.uuidAwaitingVerification;
         if (awaitingVerif) {
