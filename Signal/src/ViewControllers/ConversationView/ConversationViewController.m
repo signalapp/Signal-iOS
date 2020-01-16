@@ -2820,6 +2820,7 @@ typedef enum : NSUInteger {
 - (void)populateReplyForViewItem:(id<ConversationViewItem>)conversationItem
 {
     OWSLogDebug(@"user did tap reply");
+    [self hideSearchUI];
 
     __block OWSQuotedReplyModel *quotedReply;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
