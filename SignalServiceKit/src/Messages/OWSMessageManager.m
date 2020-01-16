@@ -20,6 +20,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "LKEphemeralMessage.h"
+#import "LKSessionRequestMessage.h"
 #import "LKDeviceLinkMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSIncomingMessageFinder.h"
@@ -577,6 +578,7 @@ NS_ASSUME_NONNULL_BEGIN
             // Unknown group.
             if (dataMessage.group.type == SSKProtoGroupContextTypeUpdate) {
                 // Accept group updates for unknown groups.
+                OWSLogInfo(@"RYAN: Group update message for unknown groups, %@", dataMessage.body);
             } else if (dataMessage.group.type == SSKProtoGroupContextTypeDeliver) {
                 [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
@@ -1405,6 +1407,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   contactsManager:self.contactsManager];
                 newGroupThread.groupModel = newGroupModel;
                 [newGroupThread saveWithTransaction:transaction];
+                
+                //Loki - Try to establish session with members when a group is created or updated
+                [self establishSessionsWithMembersIfNeeded: newMemberIds.allObjects forThread:newGroupThread transaction:transaction];
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                           thread:newGroupThread
@@ -1644,6 +1649,24 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             OWSFailDebug(
                          @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, recipientId);
+        }
+    }
+}
+
+//Loki: Establish a session if there is no session between the memebers of a group
+- (void)establishSessionsWithMembersIfNeeded: (NSArray *)members forThread: (TSGroupThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    for (NSString *member in members) {
+        if ([member isEqualToString:userHexEncodedPublicKey] ) { continue; }
+        TSThread *contactThread = [TSContactThread getThreadWithContactId:member transaction:transaction];
+        if (contactThread == nil || !contactThread.isContactFriend) {
+            OWSLogInfo(@"Try to build session with %@", member);
+          LKSessionRequestMessage *message = [[LKSessionRequestMessage alloc] initWithThread:thread];
+          [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        }
+        else {
+            OWSLogInfo(@"There is session with %@", member);
         }
     }
 }

@@ -45,6 +45,7 @@
 #import "TSThread.h"
 #import "TSContactThread.h"
 #import "LKFriendRequestMessage.h"
+#import "LKSessionRequestMessage.h"
 #import "LKDeviceLinkMessage.h"
 #import "LKAddressMessage.h"
 #import <AxolotlKit/AxolotlExceptions.h>
@@ -960,6 +961,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     } else {
         BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];
         BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
+        BOOL isSessionRequestMessage = [message isKindOfClass:LKSessionRequestMessage.class];
         [[LKAPI getDestinationsFor:contactID]
         .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
             // Get master destination
@@ -969,7 +971,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Send to master destination
             if (masterDestination != nil) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:masterDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage) {
+                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage || isSessionRequestMessage) {
                     OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
                     [self sendMessage:messageSendCopy];
                 } else {
@@ -984,7 +986,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
             for (LKDestination *slaveDestination in slaveDestinations) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:slaveDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage) {
+                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage || isSessionRequestMessage) {
                     OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestination];
                     [self sendMessage:messageSendCopy];
                 } else {
@@ -1698,8 +1700,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             
             // Loki: Both for friend request messages and device link messages we don't require a session
             BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
+            BOOL isSessionRequest = [messageSend.message isKindOfClass:LKSessionRequestMessage.class];
             BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
-            if (!isFriendRequest && !(isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
+            if (!isFriendRequest && !isSessionRequest && !(isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
                 [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
             }
 
@@ -1943,8 +1946,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     
     // Loki: Both for friend request messages and device link messages we use fallback encryption as we don't necessarily have a session yet
     BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
+    BOOL isSessionRequest = [messageSend.message isKindOfClass:LKSessionRequestMessage.class];
     BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
-    if (isFriendRequest || (isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
+    if (isFriendRequest || isSessionRequest || (isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
         return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId) plainText:plainText];
     }
 
