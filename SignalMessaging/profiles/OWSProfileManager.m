@@ -817,7 +817,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                  [[NSNotificationCenter defaultCenter]
                   postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
                   object:nil
-                  userInfo:@ {
+                  userInfo:@{
                       kNSNotificationKey_ProfileAddress : address,
                   }];
              }
@@ -894,7 +894,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     [[NSNotificationCenter defaultCenter]
                         postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
                                            object:nil
-                                         userInfo:@ {
+                                         userInfo:@{
                                              kNSNotificationKey_ProfileAddress : address,
                                          }];
                 }

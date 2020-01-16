@@ -348,13 +348,13 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                           [[NSNotificationCenter defaultCenter]
                                               postNotificationNameAsync:kNSNotificationNameOtherUsersProfileWillChange
                                                                  object:nil
-                                                               userInfo:@ {
+                                                               userInfo:@{
                                                                    kNSNotificationKey_ProfileAddress : self.address,
                                                                }];
                                           [[NSNotificationCenter defaultCenter]
                                               postNotificationNameAsync:kNSNotificationNameOtherUsersProfileDidChange
                                                                  object:nil
-                                                               userInfo:@ {
+                                                               userInfo:@{
                                                                    kNSNotificationKey_ProfileAddress : self.address,
                                                                }];
                                       }
