@@ -188,10 +188,10 @@ public class GroupManager: NSObject {
                                       shouldSendMessage: Bool) -> Promise<TSGroupThread> {
 
         return DispatchQueue.global().async(.promise) {
-            guard let localUuid = self.tsAccountManager.localUuid else {
-                throw OWSErrorMakeAssertionError("Missing localUuid.")
+            guard let localAddress = self.tsAccountManager.localAddress else {
+                throw OWSAssertionError("Missing localAddress.")
             }
-            let members = membersParam + [SignalServiceAddress(uuid: localUuid, phoneNumber: nil)]
+            let members = membersParam + [localAddress]
 
             return try buildGroupModel(groupId: groupId, name: name, members: members, avatarData: avatarData, isCreating: true)
             }.then(on: .global()) { groupModel in
