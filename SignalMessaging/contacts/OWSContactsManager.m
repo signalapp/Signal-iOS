@@ -39,10 +39,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (atomic) NSArray<Contact *> *allContacts;
 @property (atomic) NSDictionary<NSString *, Contact *> *allContactsMap;
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
-@property (atomic) NSDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap;
-@property (atomic) NSDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap;
+
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
-@property (nonatomic, readonly) AnySignalAccountFinder *accountFinder;
 @property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
 @property (nonatomic, readonly) NSCache<SignalServiceAddress *, NSString *> *colorNameCache;
@@ -53,6 +51,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 #pragma mark -
 
 @implementation OWSContactsManager
+
+@synthesize signalAccountReadCache = _signalAccountReadCache;
 
 #pragma mark - Dependencies
 
@@ -81,12 +81,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _avatarCache = [ImageCache new];
     _colorNameCache = [NSCache new];
 
-    _accountFinder = [AnySignalAccountFinder new];
-
     _allContacts = @[];
     _allContactsMap = @{};
-    _phoneNumberSignalAccountMap = @{};
-    _uuidSignalAccountMap = @{};
+    _signalAccountReadCache = [SignalAccountReadCache new];
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
@@ -122,12 +119,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     [self updateSignalAccounts:signalAccounts shouldSetHasLoadedContacts:NO];
 }
 
-- (dispatch_queue_t)serialQueue
+- (dispatch_queue_t)intersectionQueue
 {
     static dispatch_queue_t _serialQueue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _serialQueue = dispatch_queue_create("org.whispersystems.contacts.buildSignalAccount", DISPATCH_QUEUE_SERIAL);
+        _serialQueue = dispatch_queue_create("org.whispersystems.contacts.intersectionQueue", DISPATCH_QUEUE_SERIAL);
     });
 
     return _serialQueue;
@@ -293,7 +290,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertIsOnMainThread();
 
 
-    dispatch_async(self.serialQueue, ^{
+    dispatch_async(self.intersectionQueue, ^{
         __block BOOL isFullIntersection = YES;
         __block BOOL isRegularlyScheduledRun = NO;
         __block NSSet<NSString *> *allContactPhoneNumbers;
@@ -394,7 +391,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertDebug(phoneNumbersForIntersection.count > 0);
 
-    dispatch_async(self.serialQueue, ^{
+    dispatch_async(self.intersectionQueue, ^{
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             if (isFullIntersection) {
                 // replace last known numbers
@@ -502,7 +499,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileWillChange:)
-                                                 name:kNSNotificationName_OtherUsersProfileWillChange
+                                                 name:kNSNotificationNameOtherUsersProfileWillChange
                                                object:nil];
 }
 
@@ -523,7 +520,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
            isUserRequested:(BOOL)isUserRequested
      shouldClearStaleCache:(BOOL)shouldClearStaleCache
 {
-    dispatch_async(self.serialQueue, ^{
+    dispatch_async(self.intersectionQueue, ^{
         NSMutableDictionary<NSString *, Contact *> *allContactsMap = [NSMutableDictionary new];
         for (Contact *contact in contacts) {
             for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
@@ -554,7 +551,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (void)buildSignalAccountsAndClearStaleCache:(BOOL)shouldClearStaleCache didLoad:(BOOL)didLoad
 {
-    dispatch_async(self.serialQueue, ^{
+    dispatch_async(self.intersectionQueue, ^{
         NSMutableArray<SignalAccount *> *systemContactsSignalAccounts = [NSMutableArray new];
         NSArray<Contact *> *contacts = self.allContacts;
 
@@ -714,20 +711,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     NSMutableArray<SignalServiceAddress *> *allAddresses = [NSMutableArray new];
-    NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
-    NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
     for (SignalAccount *signalAccount in signalAccounts) {
-        if (signalAccount.recipientPhoneNumber) {
-            phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
-        }
-        if (signalAccount.recipientUUID) {
-            uuidSignalAccountMap[signalAccount.recipientUUID] = signalAccount;
-        }
         [allAddresses addObject:signalAccount.recipientAddress];
     }
-
-    self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
-    self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
 
     self.signalAccounts = [signalAccounts sortedArrayUsingComparator:self.signalAccountComparator];
 
@@ -1046,25 +1032,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertDebug(address);
 
-    __block SignalAccount *_Nullable signalAccount;
-
-    if (address.uuid) {
-        signalAccount = self.uuidSignalAccountMap[address.uuid];
-    }
-
-    if (!signalAccount && address.phoneNumber) {
-        signalAccount = self.phoneNumberSignalAccountMap[address.phoneNumber];
-    }
-
-    // If contact intersection hasn't completed, it might exist on disk
-    // even if it doesn't exist in memory yet.
-    if (!signalAccount) {
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            signalAccount = [self.accountFinder signalAccountForAddress:address transaction:transaction];
-        }];
-    }
-
-    return signalAccount;
+    return [self.signalAccountReadCache getSignalAccountWithSneakyTransactionWithAddress:address];
 }
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
@@ -1073,23 +1041,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertDebug(address);
     OWSAssertDebug(transaction);
 
-    __block SignalAccount *_Nullable signalAccount;
-
-    if (address.uuid) {
-        signalAccount = self.uuidSignalAccountMap[address.uuid];
-    }
-
-    if (!signalAccount && address.phoneNumber) {
-        signalAccount = self.phoneNumberSignalAccountMap[address.phoneNumber];
-    }
-
-    // If contact intersection hasn't completed, it might exist on disk
-    // even if it doesn't exist in memory yet.
-    if (!signalAccount) {
-        signalAccount = [self.accountFinder signalAccountForAddress:address transaction:transaction];
-    }
-
-    return signalAccount;
+    return [self.signalAccountReadCache getSignalAccountWithAddress:address transaction:transaction];
 }
 
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address

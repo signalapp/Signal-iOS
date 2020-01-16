@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -76,7 +76,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
             self.databaseStorage.asyncWrite { (transaction) in
                 OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, address: untrustedAddress, isUserInitiatedChange: true, transaction: transaction)
 
-                transaction.addCompletion {
+                transaction.addAsyncCompletion {
                     completion(true)
                 }
             }

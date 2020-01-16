@@ -198,7 +198,7 @@ void AssertIsOnDisappearingMessagesQueue()
         [message updateWithExpireStartedAt:expirationStartedAt transaction:transaction];
     }
 
-    [transaction addCompletionWithBlock:^{
+    [transaction addAsyncCompletion:^{
         // Necessary that the async expiration run happens *after* the message is saved with it's new
         // expiration configuration.
         [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:message.expiresAt]];

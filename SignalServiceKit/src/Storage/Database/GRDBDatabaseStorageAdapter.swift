@@ -246,7 +246,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
         deleteDBKeys()
 
-        if (CurrentAppContext().isMainApp) {
+        if CurrentAppContext().isMainApp {
             TSAttachmentStream.deleteAttachmentsFromDisk()
         }
 
@@ -352,7 +352,13 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                 block(transaction)
             }
         }
-        for (queue, block) in transaction.completions {
+
+        // Perform all completions _after_ the write transaction completes.
+        for block in transaction.syncCompletions {
+            block()
+        }
+
+        for (queue, block) in transaction.asyncCompletions {
             queue.async(execute: block)
         }
     }

@@ -214,6 +214,27 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     }
 }
 
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    [self.contactsManager.signalAccountReadCache didInsertOrUpdateSignalAccount:self transaction:transaction];
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
+    [self.contactsManager.signalAccountReadCache didInsertOrUpdateSignalAccount:self transaction:transaction];
+}
+
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidRemoveWithTransaction:transaction];
+
+    [self.contactsManager.signalAccountReadCache didRemoveSignalAccount:self transaction:transaction];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

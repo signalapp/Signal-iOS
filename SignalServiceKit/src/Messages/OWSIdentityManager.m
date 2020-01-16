@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIdentityManager.h"
@@ -438,7 +438,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)fireIdentityStateChangeNotificationAfterTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [transaction addCompletionWithBlock:^{
+    [transaction addAsyncCompletion:^{
         [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_IdentityStateDidChange
                                                             object:nil];
     }];

@@ -70,6 +70,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 #pragma mark -
 
 @synthesize localUserProfile = _localUserProfile;
+@synthesize userProfileReadCache = _userProfileReadCache;
 
 + (instancetype)sharedManager
 {
@@ -96,6 +97,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     _profileAvatarImageCache = [NSCache new];
     _currentAvatarDownloads = [NSMutableSet new];
+    _userProfileReadCache = [UserProfileReadCache new];
 
     OWSSingletonAssert();
 
@@ -814,7 +816,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                  [[NSNotificationCenter defaultCenter]
                   postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
                   object:nil
-                  userInfo:@ {
+                  userInfo:@{
                       kNSNotificationKey_ProfileAddress : address,
                   }];
              }
@@ -891,7 +893,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     [[NSNotificationCenter defaultCenter]
                         postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
                                            object:nil
-                                         userInfo:@ {
+                                         userInfo:@{
                                              kNSNotificationKey_ProfileAddress : address,
                                          }];
                 }
@@ -1178,8 +1180,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssertDebug(address.isValid);
 
     // For "local reads", use the local user profile.
-    return (address.isLocalAddress ? self.localUserProfile
-                                   : [OWSUserProfile getUserProfileForAddress:address transaction:transaction]);
+    if (address.isLocalAddress) {
+        return self.localUserProfile;
+    }
+
+    return [self.userProfileReadCache getUserProfileWithAddress:address transaction:transaction];
 }
 
 - (NSString *)generateAvatarFilename

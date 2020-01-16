@@ -383,7 +383,7 @@ typedef enum : NSUInteger {
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
-                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                                 name:kNSNotificationNameOtherUsersProfileDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileWhitelistDidChange:)
@@ -5384,7 +5384,7 @@ typedef enum : NSUInteger {
 
         [self.thread softDeleteThreadWithTransaction:transaction];
 
-        [transaction addCompletionWithBlock:^{
+        [transaction addAsyncCompletion:^{
             [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
         }];
     }];

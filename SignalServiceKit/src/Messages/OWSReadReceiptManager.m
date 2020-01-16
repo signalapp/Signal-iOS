@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadReceiptManager.h"
@@ -390,7 +390,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                       transaction:transaction];
     }
 
-    [transaction addCompletionWithBlock:^{
+    [transaction addAsyncCompletion:^{
         [self scheduleProcessing];
     }];
 }

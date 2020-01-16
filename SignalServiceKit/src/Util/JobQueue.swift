@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -120,7 +120,7 @@ public extension JobQueue {
 
         jobRecord.anyInsert(transaction: transaction)
 
-        transaction.addCompletion(queue: .global()) {
+        transaction.addAsyncCompletion(queue: .global()) {
             self.startWorkWhenAppIsReady()
         }
     }

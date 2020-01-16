@@ -7,6 +7,7 @@
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 @class TSThread;
+@class UserProfileReadCache;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateProfileForAddress:(SignalServiceAddress *)address;
 
 - (void)warmCaches;
+
+@property (nonatomic, readonly) UserProfileReadCache *userProfileReadCache;
 
 @end
 

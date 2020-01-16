@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageCell.h"
@@ -351,7 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
-                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                                 name:kNSNotificationNameOtherUsersProfileDidChange
                                                object:nil];
 
     return YES;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,11 +30,17 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
         return SDSAnyWriteTransaction(.grdbWrite(self))
     }
 
-    internal var completions: [(DispatchQueue, () -> Void)] = []
+    internal var syncCompletions: [() -> Void] = []
+    internal var asyncCompletions: [(DispatchQueue, () -> Void)] = []
 
     @objc
-    public func addCompletion(queue: DispatchQueue, block: @escaping () -> Void) {
-        completions.append((queue, block))
+    public func addSyncCompletion(block: @escaping () -> Void) {
+        syncCompletions.append(block)
+    }
+
+    @objc
+    public func addAsyncCompletion(queue: DispatchQueue, block: @escaping () -> Void) {
+        asyncCompletions.append((queue, block))
     }
 }
 
@@ -126,19 +132,31 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
         }
     }
 
+    // NOTE: These completions are performed _after_ the write
+    //       transaction has completed.
+    @objc
+    public func addSyncCompletion(_ block: @escaping () -> Void) {
+        switch writeTransaction {
+        case .yapWrite:
+            owsFailDebug("YDB transactions don't support sync completions.")
+        case .grdbWrite(let grdbWrite):
+            grdbWrite.addSyncCompletion(block: block)
+        }
+    }
+
     // Objective-C doesn't honor default arguments.
     @objc
-    public func addCompletion(block: @escaping () -> Void) {
-        addCompletion(queue: DispatchQueue.main, block: block)
+    public func addAsyncCompletion(_ block: @escaping () -> Void) {
+        addAsyncCompletion(queue: DispatchQueue.main, block: block)
     }
 
     @objc
-    public func addCompletion(queue: DispatchQueue = DispatchQueue.main, block: @escaping () -> Void) {
+    public func addAsyncCompletion(queue: DispatchQueue = DispatchQueue.main, block: @escaping () -> Void) {
         switch writeTransaction {
         case .yapWrite(let yapWrite):
             yapWrite.addCompletionQueue(queue, completionBlock: block)
         case .grdbWrite(let grdbWrite):
-            grdbWrite.addCompletion(queue: queue, block: block)
+            grdbWrite.addAsyncCompletion(queue: queue, block: block)
         }
     }
 

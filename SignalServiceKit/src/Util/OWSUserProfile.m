@@ -10,15 +10,18 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
-NSString *const kNSNotificationName_OtherUsersProfileWillChange = @"kNSNotificationName_OtherUsersProfileWillChange";
-NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
+NSNotificationName const kNSNotificationNameLocalProfileDidChange = @"kNSNotificationNameLocalProfileDidChange";
+NSNotificationName const kNSNotificationNameOtherUsersProfileWillChange
+    = @"kNSNotificationNameOtherUsersProfileWillChange";
+NSNotificationName const kNSNotificationNameOtherUsersProfileDidChange
+    = @"kNSNotificationNameOtherUsersProfileDidChange";
 
 NSString *const kNSNotificationKey_ProfileAddress = @"kNSNotificationKey_ProfileAddress";
 NSString *const kNSNotificationKey_ProfileGroupId = @"kNSNotificationKey_ProfileGroupId";
@@ -47,16 +50,24 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 @implementation OWSUserProfile
 
-@synthesize avatarUrlPath = _avatarUrlPath;
-@synthesize avatarFileName = _avatarFileName;
-@synthesize profileName = _profileName;
-@synthesize familyName = _familyName;
+#pragma mark - Dependencies
 
+- (id<ProfileManagerProtocol>)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
+}
 
 - (id<StorageServiceManagerProtocol>)storageServiceManager
 {
     return SSKEnvironment.shared.storageServiceManager;
 }
+
+#pragma mark -
+
+@synthesize avatarUrlPath = _avatarUrlPath;
+@synthesize avatarFileName = _avatarFileName;
+@synthesize profileName = _profileName;
+@synthesize familyName = _familyName;
 
 // --- CODE GENERATION MARKER
 
@@ -305,8 +316,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     }
 
     if (completion) {
-        [transaction addCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                                      block:completion];
+        [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                           block:completion];
     }
 
     if (!didChange) {
@@ -318,36 +329,37 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     BOOL isLocalUserProfile = [self.address.phoneNumber isEqualToString:kLocalProfileUniqueId];
 
-    [transaction addCompletionWithQueue:dispatch_get_main_queue()
-                                  block:^{
-                                      if (isLocalUserProfile) {
-                                          // We populate an initial (empty) profile on launch of a new install, but
-                                          // until we have a registered account, syncing will fail (and there could not
-                                          // be any linked device to sync to at this point anyway).
-                                          if (self.tsAccountManager.isRegisteredPrimaryDevice
-                                              && CurrentAppContext().isMainApp) {
-                                              [[self.syncManager syncLocalContact] retainUntilComplete];
-                                          }
-
-                                          [[NSNotificationCenter defaultCenter]
-                                              postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
-                                                                 object:nil
-                                                               userInfo:nil];
-                                      } else {
-                                          [[NSNotificationCenter defaultCenter]
-                                              postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
-                                                                 object:nil
-                                                               userInfo:@{
-                                                                   kNSNotificationKey_ProfileAddress : self.address,
-                                                               }];
-                                          [[NSNotificationCenter defaultCenter]
-                                              postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
-                                                                 object:nil
-                                                               userInfo:@{
-                                                                   kNSNotificationKey_ProfileAddress : self.address,
-                                                               }];
+    [transaction
+        addAsyncCompletionWithQueue:dispatch_get_main_queue()
+                              block:^{
+                                  if (isLocalUserProfile) {
+                                      // We populate an initial (empty) profile on launch of a new install, but
+                                      // until we have a registered account, syncing will fail (and there could not
+                                      // be any linked device to sync to at this point anyway).
+                                      if (self.tsAccountManager.isRegisteredPrimaryDevice
+                                          && CurrentAppContext().isMainApp) {
+                                          [[self.syncManager syncLocalContact] retainUntilComplete];
                                       }
-                                  }];
+
+                                      [[NSNotificationCenter defaultCenter]
+                                          postNotificationNameAsync:kNSNotificationNameLocalProfileDidChange
+                                                             object:nil
+                                                           userInfo:nil];
+                                  } else {
+                                      [[NSNotificationCenter defaultCenter]
+                                          postNotificationNameAsync:kNSNotificationNameOtherUsersProfileWillChange
+                                                             object:nil
+                                                           userInfo:@ {
+                                                               kNSNotificationKey_ProfileAddress : self.address,
+                                                           }];
+                                      [[NSNotificationCenter defaultCenter]
+                                          postNotificationNameAsync:kNSNotificationNameOtherUsersProfileDidChange
+                                                             object:nil
+                                                           userInfo:@ {
+                                                               kNSNotificationKey_ProfileAddress : self.address,
+                                                           }];
+                                  }
+                              }];
 }
 
 - (void)updateWithGivenName:(nullable NSString *)givenName
@@ -607,6 +619,27 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                               [profileAvatarFilePaths addObject:filePath];
                                           }];
     return [profileAvatarFilePaths copy];
+}
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    [self.profileManager.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
+    [self.profileManager.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
+}
+
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidRemoveWithTransaction:transaction];
+
+    [self.profileManager.userProfileReadCache didRemoveUserProfile:self transaction:transaction];
 }
 
 @end
