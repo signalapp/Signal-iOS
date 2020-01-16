@@ -58,6 +58,9 @@ pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramewor
 pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 'signal-release'
 # pod 'Starscream', path: '../Starscream'
 
+pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS', branch: 'signal-master'
+# pod 'libPhoneNumber-iOS', path: '../libPhoneNumber-iOS'
+
 ###
 # third party pods
 ####

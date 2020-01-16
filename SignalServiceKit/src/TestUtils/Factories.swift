@@ -572,13 +572,11 @@ public class ContactFactory {
         var phoneNumberNameMap: [String: String] = [:]
         var parsedPhoneNumbers: [PhoneNumber] = []
         for (userText, label) in userTextPhoneNumberAndLabelBuilder() {
-            guard let parsedPhoneNumber = PhoneNumber(fromUserSpecifiedText: userText) else {
-                throw OWSAssertionError("unparseable phone number: \(userText)")
+            for parsedPhoneNumber in PhoneNumber.tryParsePhoneNumbers(fromUserSpecifiedText: userText, clientPhoneNumber: localClientPhonenumber) {
+                parsedPhoneNumbers.append(parsedPhoneNumber)
+                phoneNumberNameMap[parsedPhoneNumber.toE164()] = label
+                userTextPhoneNumbers.append(userText)
             }
-
-            parsedPhoneNumbers.append(parsedPhoneNumber)
-            phoneNumberNameMap[parsedPhoneNumber.toE164()] = label
-            userTextPhoneNumbers.append(userText)
         }
 
         return Contact(uniqueId: uniqueIdBuilder(),
@@ -592,6 +590,8 @@ public class ContactFactory {
                        emails: emailsBuilder(),
                        imageDataToHash: imageDataToHashBuilder())
     }
+
+    public var localClientPhonenumber: String = "+13235551234"
 
     public var uniqueIdBuilder: () -> String = {
         return UUID().uuidString

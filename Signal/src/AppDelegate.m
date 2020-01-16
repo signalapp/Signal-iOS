@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -1062,7 +1062,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     }
 
     for (PhoneNumber *phoneNumber in
-        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:handle
+        [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:handle
                                               clientPhoneNumber:[TSAccountManager localNumber]]) {
         return [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber.toE164];
     }
