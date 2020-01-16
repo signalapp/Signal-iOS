@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSIncomingMessage.h"
@@ -221,7 +221,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                                      expirationStartedAt:readTimestamp
                                                              transaction:transaction];
 
-    [transaction addCompletionWithBlock:^{
+    [transaction addAsyncCompletionWithBlock:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
                                                                  object:self];
     }];

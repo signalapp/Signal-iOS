@@ -316,8 +316,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     }
 
     if (completion) {
-        [transaction addCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                                      block:completion];
+        [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                           block:completion];
     }
 
     if (!didChange) {
@@ -329,36 +329,37 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     BOOL isLocalUserProfile = [self.address.phoneNumber isEqualToString:kLocalProfileUniqueId];
 
-    [transaction addCompletionWithQueue:dispatch_get_main_queue()
-                                  block:^{
-                                      if (isLocalUserProfile) {
-                                          // We populate an initial (empty) profile on launch of a new install, but
-                                          // until we have a registered account, syncing will fail (and there could not
-                                          // be any linked device to sync to at this point anyway).
-                                          if (self.tsAccountManager.isRegisteredPrimaryDevice
-                                              && CurrentAppContext().isMainApp) {
-                                              [[self.syncManager syncLocalContact] retainUntilComplete];
-                                          }
-
-                                          [[NSNotificationCenter defaultCenter]
-                                              postNotificationNameAsync:kNSNotificationNameLocalProfileDidChange
-                                                                 object:nil
-                                                               userInfo:nil];
-                                      } else {
-                                          [[NSNotificationCenter defaultCenter]
-                                              postNotificationNameAsync:kNSNotificationNameOtherUsersProfileWillChange
-                                                                 object:nil
-                                                               userInfo:@{
-                                                                   kNSNotificationKey_ProfileAddress : self.address,
-                                                               }];
-                                          [[NSNotificationCenter defaultCenter]
-                                              postNotificationNameAsync:kNSNotificationNameOtherUsersProfileDidChange
-                                                                 object:nil
-                                                               userInfo:@{
-                                                                   kNSNotificationKey_ProfileAddress : self.address,
-                                                               }];
+    [transaction
+        addAsyncCompletionWithQueue:dispatch_get_main_queue()
+                              block:^{
+                                  if (isLocalUserProfile) {
+                                      // We populate an initial (empty) profile on launch of a new install, but
+                                      // until we have a registered account, syncing will fail (and there could not
+                                      // be any linked device to sync to at this point anyway).
+                                      if (self.tsAccountManager.isRegisteredPrimaryDevice
+                                          && CurrentAppContext().isMainApp) {
+                                          [[self.syncManager syncLocalContact] retainUntilComplete];
                                       }
-                                  }];
+
+                                      [[NSNotificationCenter defaultCenter]
+                                          postNotificationNameAsync:kNSNotificationNameLocalProfileDidChange
+                                                             object:nil
+                                                           userInfo:nil];
+                                  } else {
+                                      [[NSNotificationCenter defaultCenter]
+                                          postNotificationNameAsync:kNSNotificationNameOtherUsersProfileWillChange
+                                                             object:nil
+                                                           userInfo:@ {
+                                                               kNSNotificationKey_ProfileAddress : self.address,
+                                                           }];
+                                      [[NSNotificationCenter defaultCenter]
+                                          postNotificationNameAsync:kNSNotificationNameOtherUsersProfileDidChange
+                                                             object:nil
+                                                           userInfo:@ {
+                                                               kNSNotificationKey_ProfileAddress : self.address,
+                                                           }];
+                                  }
+                              }];
 }
 
 - (void)updateWithGivenName:(nullable NSString *)givenName

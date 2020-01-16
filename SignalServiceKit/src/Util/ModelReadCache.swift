@@ -50,7 +50,8 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
     // This method should only be called within performSync().
     private func readValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
         if let value = readBlock(key, transaction) {
-            if !isExcluded(key: key) {
+            if !isExcluded(key: key),
+                canUseCache(transaction: transaction) {
                 // Update cache.
                 nscache.setObject(value, forKey: key)
             }
@@ -104,11 +105,11 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
         updateCacheForWrite(key: key, value: value, transaction: transaction)
     }
 
-    // We use completionQueue to move completions off the main thread.
-    // It's critical that this is a serial queue.
-    private let completionQueue = DispatchQueue(label: "ModelReadCache.completionQueue")
-
     private func updateCacheForWrite(key: KeyType, value: ValueType?, transaction: SDSAnyWriteTransaction) {
+        guard canUseCache(transaction: transaction) else {
+            return
+        }
+
         // Exclude this key from being used in the cache
         // until the write transaction has committed.
         performSync {
@@ -126,10 +127,19 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
             // commits.
             addExclusion(for: key)
         }
-        transaction.addCompletion(queue: completionQueue) {
+        transaction.addSyncCompletion {
             _ = self.performSync {
                 self.removeExclusion(for: key)
             }
+        }
+    }
+
+    private func canUseCache(transaction: SDSAnyReadTransaction) -> Bool {
+        switch transaction.readTransaction {
+        case .yapRead:
+            return false
+        case .grdbRead:
+            return true
         }
     }
 

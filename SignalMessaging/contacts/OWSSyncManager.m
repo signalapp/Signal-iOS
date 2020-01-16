@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncManager.h"
@@ -238,7 +238,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     [self.typingIndicators setTypingIndicatorsEnabledWithValue:syncMessage.typingIndicators transaction:transaction];
     [SSKPreferences setAreLinkPreviewsEnabled:syncMessage.linkPreviews transaction:transaction];
 
-    [transaction addCompletionWithBlock:^{
+    [transaction addAsyncCompletionWithBlock:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSSyncManagerConfigurationSyncDidCompleteNotification
                                                                  object:nil];
     }];

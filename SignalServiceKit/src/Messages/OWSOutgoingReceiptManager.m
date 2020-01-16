@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingReceiptManager.h"
@@ -308,7 +308,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
     [store setObject:newTimestamps key:identifier transaction:transaction];
 
-    [transaction addCompletionWithBlock:^{
+    [transaction addAsyncCompletionWithBlock:^{
         [self process];
     }];
 }

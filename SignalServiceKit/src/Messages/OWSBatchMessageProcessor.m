@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBatchMessageProcessor.h"
@@ -394,10 +394,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     // The new envelope won't be visible to the finder until this transaction commits,
     // so drainQueue in the transaction completion.
-    [transaction addCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                                  block:^{
-                                      [self.processingQueue drainQueue];
-                                  }];
+    [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                       block:^{
+                                           [self.processingQueue drainQueue];
+                                       }];
 }
 
 @end

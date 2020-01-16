@@ -552,7 +552,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: threadId
         ]
 
-        transaction.addCompletion {
+        transaction.addAsyncCompletion {
             let sound = wantsSound ? self.requestSound(thread: thread) : nil
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -566,7 +566,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func notifyUser(for errorMessage: ThreadlessErrorMessage, transaction: SDSAnyWriteTransaction) {
         let notificationBody = errorMessage.previewText(with: transaction)
 
-        transaction.addCompletion {
+        transaction.addAsyncCompletion {
             let sound = self.checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
             self.adaptee.notify(category: .threadlessErrorMessage,
                                 title: nil,
@@ -743,7 +743,7 @@ class NotificationActionHandler {
         // If this happens when the the app is not, visible we skip the animation so the thread
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
-        if (UIApplication.shared.applicationState == .active) {
+        if UIApplication.shared.applicationState == .active {
             signalApp.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadId, animated: true)
         } else {
             // On iOS 13, there is a bug with UISplitViewController that causes the `isCollapsed` state to
