@@ -221,7 +221,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                                      expirationStartedAt:readTimestamp
                                                              transaction:transaction];
 
-    [transaction addAsyncCompletionWithBlock:^{
+    [transaction addAsyncCompletion:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
                                                                  object:self];
     }];

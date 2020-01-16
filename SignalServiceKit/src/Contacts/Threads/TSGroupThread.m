@@ -213,7 +213,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
                                             [thread.groupModel setGroupAvatarDataWithImage:avatarImage];
                                         }];
 
-    [transaction addAsyncCompletionWithBlock:^{
+    [transaction addAsyncCompletion:^{
         [self fireAvatarChangedNotification];
     }];
 
@@ -236,7 +236,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
                                         }];
 
     if (didAvatarChange) {
-        [transaction addAsyncCompletionWithBlock:^{
+        [transaction addAsyncCompletion:^{
             [self fireAvatarChangedNotification];
         }];
     }

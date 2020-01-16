@@ -5384,7 +5384,7 @@ typedef enum : NSUInteger {
 
         [self.thread softDeleteThreadWithTransaction:transaction];
 
-        [transaction addAsyncCompletionWithBlock:^{
+        [transaction addAsyncCompletion:^{
             [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
         }];
     }];

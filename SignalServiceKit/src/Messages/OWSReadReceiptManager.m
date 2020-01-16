@@ -390,7 +390,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                       transaction:transaction];
     }
 
-    [transaction addAsyncCompletionWithBlock:^{
+    [transaction addAsyncCompletion:^{
         [self scheduleProcessing];
     }];
 }

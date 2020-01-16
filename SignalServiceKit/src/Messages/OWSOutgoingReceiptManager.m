@@ -308,7 +308,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
     [store setObject:newTimestamps key:identifier transaction:transaction];
 
-    [transaction addAsyncCompletionWithBlock:^{
+    [transaction addAsyncCompletion:^{
         [self process];
     }];
 }

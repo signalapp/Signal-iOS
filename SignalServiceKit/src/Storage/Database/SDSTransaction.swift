@@ -133,9 +133,9 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
     }
 
     @objc
-    public func addSyncCompletion(block: @escaping () -> Void) {
+    public func addSyncCompletion(_ block: @escaping () -> Void) {
         switch writeTransaction {
-        case .yapWrite(let yapWrite):
+        case .yapWrite:
             owsFailDebug("YDB transactions don't support sync completions.")
         case .grdbWrite(let grdbWrite):
             grdbWrite.addSyncCompletion(block: block)
@@ -144,7 +144,7 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
 
     // Objective-C doesn't honor default arguments.
     @objc
-    public func addAsyncCompletion(block: @escaping () -> Void) {
+    public func addAsyncCompletion(_ block: @escaping () -> Void) {
         addAsyncCompletion(queue: DispatchQueue.main, block: block)
     }
 
