@@ -42,8 +42,10 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
     func didReceiveCrossProcessNotification(_ notification: Notification) {
         AssertIsOnMainThread()
 
-        return performSync {
-            self.nscache.removeAllObjects()
+        DispatchQueue.global().async {
+            self.performSync {
+                self.nscache.removeAllObjects()
+            }
         }
     }
 
