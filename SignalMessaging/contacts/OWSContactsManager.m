@@ -40,8 +40,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (atomic) NSDictionary<NSString *, Contact *> *allContactsMap;
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
 
-@property (nonatomic, readonly) SignalAccountReadCache *signalAccountReadCache;
-
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
@@ -53,6 +51,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 #pragma mark -
 
 @implementation OWSContactsManager
+
+@synthesize signalAccountReadCache = _signalAccountReadCache;
 
 #pragma mark - Dependencies
 

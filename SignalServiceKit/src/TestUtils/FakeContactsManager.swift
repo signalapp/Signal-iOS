@@ -73,7 +73,7 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
     }
 
     private let _signalAccountReadCache = SignalAccountReadCache()
-    public func signalAccountReadCache() -> SignalAccountReadCache {
+    public var signalAccountReadCache: SignalAccountReadCache {
         return _signalAccountReadCache
     }
 }

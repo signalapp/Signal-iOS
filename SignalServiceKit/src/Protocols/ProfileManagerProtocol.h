@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)warmCaches;
 
-- (UserProfileReadCache *)userProfileReadCache;
+@property (nonatomic, readonly) UserProfileReadCache *userProfileReadCache;
 
 @end
 

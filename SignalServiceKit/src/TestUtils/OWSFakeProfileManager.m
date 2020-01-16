@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSMutableSet<SignalServiceAddress *> *recipientWhitelist;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *threadWhitelist;
 @property (nonatomic, readonly) OWSAES256Key *localProfileKey;
-@property (nonatomic, readonly) UserProfileReadCache *userProfileReadCache;
 
 @end
 
@@ -27,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSFakeProfileManager
 
 @synthesize localProfileKey = _localProfileKey;
+@synthesize userProfileReadCache = _userProfileReadCache;
 
 - (instancetype)init
 {

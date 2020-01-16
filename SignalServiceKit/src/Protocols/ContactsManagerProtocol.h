@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
                                  transaction:(SDSAnyReadTransaction *)transaction;
 
-- (SignalAccountReadCache *)signalAccountReadCache;
+@property (nonatomic, readonly) SignalAccountReadCache *signalAccountReadCache;
 
 #pragma mark - CNContacts
 

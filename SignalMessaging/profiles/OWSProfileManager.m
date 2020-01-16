@@ -52,8 +52,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 // This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) NSMutableSet<SignalServiceAddress *> *currentAvatarDownloads;
 
-@property (nonatomic, readonly) UserProfileReadCache *userProfileReadCache;
-
 @end
 
 #pragma mark -
@@ -72,6 +70,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 #pragma mark -
 
 @synthesize localUserProfile = _localUserProfile;
+@synthesize userProfileReadCache = _userProfileReadCache;
 
 + (instancetype)sharedManager
 {
