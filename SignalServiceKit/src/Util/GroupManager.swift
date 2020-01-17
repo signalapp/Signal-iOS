@@ -224,6 +224,9 @@ public class GroupManager: NSObject {
     private static func groupsVersion(for members: [SignalServiceAddress],
                                       transaction: SDSAnyReadTransaction) -> GroupsVersion {
 
+        guard FeatureFlags.tryToCreateNewGroupsV2 else {
+            return .V1
+        }
         let canUseV2 = self.canUseV2(for: members, transaction: transaction)
         return canUseV2 ? defaultGroupsVersion : .V1
     }

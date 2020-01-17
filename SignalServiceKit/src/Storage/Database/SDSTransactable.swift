@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -58,6 +58,19 @@ public extension SDSTransactable {
 // MARK: - Promises
 
 public extension SDSTransactable {
+    @objc
+    func readPromise(_ block: @escaping (SDSAnyReadTransaction) -> Void) -> AnyPromise {
+        return AnyPromise(read(.promise, block) as Promise<Void>)
+    }
+
+    func read<T>(_: PMKNamespacer, _ block: @escaping (SDSAnyReadTransaction) -> T) -> Promise<T> {
+        return Promise { resolver in
+            DispatchQueue.global().async {
+                resolver.fulfill(self.read(block: block))
+            }
+        }
+    }
+
     @objc
     func writePromise(_ block: @escaping (SDSAnyWriteTransaction) -> Void) -> AnyPromise {
         return AnyPromise(write(.promise, block) as Promise<Void>)

@@ -179,17 +179,13 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         } catch {
             return Promise<Void>(error: error)
         }
-        return DispatchQueue.global().async(.promise) { () -> TSGroupThread? in
-            let threadId = TSGroupThread.threadId(fromGroupId: groupId)
-            return self.databaseStorage.read { transaction in
-                return TSGroupThread.anyFetchGroupThread(uniqueId: threadId, transaction: transaction)
-            }
+        return self.databaseStorage.read(.promise) { transaction in
+            return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
         }.then(on: DispatchQueue.global()) { (thread: TSGroupThread?) -> Promise<GroupsProtoGroupChangeActions> in
             guard let thread = thread else {
                 throw OWSAssertionError("Thread does not exist.")
             }
-            let threadModel = thread.groupModel
-            return changeSet.buildGroupChangeProto(currentGroupModel: threadModel)
+            return changeSet.buildGroupChangeProto(currentGroupModel: thread.groupModel)
         }.then(on: DispatchQueue.global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> Promise<NSURLRequest> in
             // GroupsV2 TODO: We should implement retry for all request methods in this class.
             return self.buildUpdateGroupRequest(localUuid: localUuid,
