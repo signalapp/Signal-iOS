@@ -59,8 +59,10 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'PromiseKit', "~> 6.0"
   s.dependency 'YYImage/WebP'
   s.dependency 'blurhash'
+  s.dependency 'Argon2'
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'SignalServiceKit/tests/**/*.{h,m,swift}'
+    test_spec.resources = 'SignalServiceKit/tests/**/*.json'
   end
 end

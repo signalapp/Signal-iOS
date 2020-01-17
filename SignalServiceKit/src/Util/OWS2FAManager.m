@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS2FAManager.h"
@@ -97,7 +97,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 - (OWS2FAMode)mode
 {
     // Identify what version of 2FA we're using
-    if (OWSKeyBackupService.hasLocalKeys) {
+    if (OWSKeyBackupService.hasMasterKey) {
         OWSAssertDebug(SSKFeatureFlags.registrationLockV2);
         return OWS2FAMode_V2;
     } else if (self.pinCode != nil) {

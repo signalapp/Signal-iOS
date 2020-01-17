@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
-import CommonCrypto
+import Argon2
 
 @objc(OWSKeyBackupService)
 public class KeyBackupService: NSObject {
@@ -37,13 +37,12 @@ public class KeyBackupService: NSObject {
 
     // PRAGMA MARK: - Pin Management
 
-    // TODO: Decide what we want this to be
     static let maximumKeyAttempts: UInt32 = 10
 
-    /// Indicates whether or not we have a local copy of your keys to verify your pin
+    /// Indicates whether or not we have a master key stored in KBS
     @objc
-    public static var hasLocalKeys: Bool {
-        return cacheQueue.sync { cachedMasterKey != nil && cachedPinKey2 != nil }
+    public static var hasMasterKey: Bool {
+        return cacheQueue.sync { cachedMasterKey != nil }
     }
 
     /// Indicates whether your pin is valid when compared to your stored keys.
@@ -56,32 +55,21 @@ public class KeyBackupService: NSObject {
                 DispatchQueue.main.async { resultHandler(isValid) }
             }
 
-            guard hasLocalKeys else {
-                owsFailDebug("Attempted to verify pin locally when we don't have KBS keys")
+            guard let encodedVerificationString = cacheQueue.sync(execute: { cachedEncodedVerificationString }) else {
+                owsFailDebug("Attempted to verify pin locally when we don't have a verification string")
                 return
             }
 
-            guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else {
-                owsFailDebug("unexpectedly missing master key")
+            guard let pinData = normalizePin(pin).data(using: .utf8) else {
+                owsFailDebug("failed to determine pin data")
                 return
             }
 
-            guard let pinKey2 = cacheQueue.sync(execute: { cachedPinKey2 }) else {
-                owsFailDebug("unexpectedly missing pinKey2")
-                return
+            do {
+                isValid = try Argon2.verify(encoded: encodedVerificationString, password: pinData, variant: .id)
+            } catch {
+                owsFailDebug("Failed to validate encodedVerificationString with error: \(error)")
             }
-
-            guard let stretchedPin = deriveStretchedPin(from: pin) else {
-                owsFailDebug("failed to derive stretched pin")
-                return
-            }
-
-            guard let pinKey1 = derivePinKey1(from: stretchedPin) else {
-                owsFailDebug("failed to derive pinKey1")
-                return
-            }
-
-            isValid = masterKey == deriveMasterKey(from: pinKey1, and: pinKey2)
         }
     }
 
@@ -92,69 +80,55 @@ public class KeyBackupService: NSObject {
 
     /// Loads the users key, if any, from the KBS into the database.
     public static func restoreKeys(with pin: String, and auth: RemoteAttestationAuth? = nil) -> Promise<Void> {
-        return DispatchQueue.global().async(.promise) { () -> (Data, Data) in
-            guard let stretchedPin = self.deriveStretchedPin(from: pin) else {
-                owsFailDebug("failed to derive stretched pin")
+        return fetchBackupId(auth: auth).map(on: .global()) { backupId in
+            return try deriveEncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
+        }.then { encryptionKey, accessKey in
+            restoreKeyRequest(accessKey: accessKey, with: auth).map { ($0, encryptionKey, accessKey) }
+        }.map(on: .global()) { response, encryptionKey, accessKey -> (Data, Data, Data) in
+            guard let status = response.status else {
+                owsFailDebug("KBS restore is missing status")
                 throw KBSError.assertion
             }
 
-            guard let pinKey1 = derivePinKey1(from: stretchedPin) else {
-                owsFailDebug("failed to derive stretched pin")
+            // As long as the backup exists we should always receive a
+            // new token to use on our next request. Store it now.
+            if status != .missing {
+                guard let tokenData = response.token else {
+                    owsFailDebug("KBS restore is missing token")
+                    throw KBSError.assertion
+                }
+
+                try Token.updateNext(data: tokenData, tries: response.tries)
+            }
+
+            switch status {
+            case .tokenMismatch:
+                // the given token has already been spent. we'll use the new token
+                // on the next attempt.
+                owsFailDebug("attempted restore with spent token")
                 throw KBSError.assertion
+            case .pinMismatch:
+                throw KBSError.invalidPin(triesRemaining: response.tries)
+            case .missing:
+                throw KBSError.backupMissing
+            case .notYetValid:
+                owsFailDebug("the server thinks we provided a `validFrom` in the future")
+                throw KBSError.assertion
+            case .ok:
+                guard let encryptedMasterKey = response.data else {
+                    owsFailDebug("Failed to extract encryptedMasterKey from successful KBS restore response")
+                    throw KBSError.assertion
+                }
+
+                let masterKey = try decryptMasterKey(encryptedMasterKey, encryptionKey: encryptionKey)
+
+                return (masterKey, encryptedMasterKey, accessKey)
             }
-
-            return (stretchedPin, pinKey1)
-        }.then { stretchedPin, pinKey1 in
-            restoreKeyRequest(stretchedPin: stretchedPin, with: auth).map { ($0, stretchedPin, pinKey1) }
-        }.then { response, stretchedPin, pinKey1 in
-            DispatchQueue.global().async(.promise) { () -> (Data, Data, Data) in
-                guard let status = response.status else {
-                    owsFailDebug("KBS restore is missing status")
-                    throw KBSError.assertion
-                }
-
-                // As long as the backup exists we should always receive a
-                // new token to use on our next request. Store it now.
-                if status != .missing {
-                    guard let tokenData = response.token else {
-                        owsFailDebug("KBS restore is missing token")
-                        throw KBSError.assertion
-                    }
-
-                    try Token.updateNext(data: tokenData, tries: response.tries)
-                }
-
-                switch status {
-                case .tokenMismatch:
-                    // the given token has already been spent. we'll use the new token
-                    // on the next attempt.
-                    owsFailDebug("attempted restore with spent token")
-                    throw KBSError.assertion
-                case .pinMismatch:
-                    throw KBSError.invalidPin(triesRemaining: response.tries)
-                case .missing:
-                    throw KBSError.backupMissing
-                case .notYetValid:
-                    owsFailDebug("the server thinks we provided a `validFrom` in the future")
-                    throw KBSError.assertion
-                case .ok:
-                    guard let pinKey2 = response.data else {
-                        owsFailDebug("Failed to extract key from successful KBS restore response")
-                        throw KBSError.assertion
-                    }
-
-                    guard let masterKey = deriveMasterKey(from: pinKey1, and: pinKey2) else {
-                        throw KBSError.assertion
-                    }
-
-                    return (masterKey, stretchedPin, pinKey2)
-                }
-            }
-        }.then { masterKey, stretchedPin, pinKey2 in
+        }.then { masterKey, encryptedMasterKey, accessKey in
             // Backup our keys again, even though we just fetched them.
             // This resets the number of remaining attempts.
-            backupKeyRequest(stretchedPin: stretchedPin, keyData: pinKey2, and: auth).map { ($0, masterKey, pinKey2) }
-        }.done { response, masterKey, pinKey2 in
+            backupKeyRequest(accessKey: accessKey, encryptedMasterKey: encryptedMasterKey, and: auth).map { ($0, masterKey) }
+        }.done(on: .global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
                 throw KBSError.assertion
@@ -166,7 +140,7 @@ public class KeyBackupService: NSObject {
             }
 
             // We should always receive a new token to use on our next request.
-            try Token.updateNext(data: tokenData)
+            let token = try Token.updateNext(data: tokenData)
 
             switch status {
             case .alreadyExists:
@@ -178,9 +152,11 @@ public class KeyBackupService: NSObject {
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw KBSError.assertion
             case .ok:
+                let encodedVerificationString = try deriveEncodedVerificationString(pin: pin, backupId: token.backupId)
+
                 // We successfully stored the new keys in KBS, save them in the database
                 databaseStorage.write { transaction in
-                    store(masterKey, pinKey2: pinKey2, transaction: transaction)
+                    store(masterKey, encodedVerificationString: encodedVerificationString, transaction: transaction)
                 }
             }
         }.recover { error in
@@ -201,28 +177,15 @@ public class KeyBackupService: NSObject {
     /// Generates a new master key for the given pin, backs it up to the KBS,
     /// and stores it locally in the database.
     public static func generateAndBackupKeys(with pin: String) -> Promise<Void> {
-        return DispatchQueue.global().async(.promise) { () -> (Data, Data, Data) in
-            guard let stretchedPin = deriveStretchedPin(from: pin) else {
-                owsFailDebug("failed to derive stretched pin")
-                throw KBSError.assertion
-            }
+        return fetchBackupId(auth: nil).map(on: .global()) { backupId -> (Data, Data, Data) in
+            let masterKey = generateMasterKey()
+            let (encryptionKey, accessKey) = try deriveEncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
+            let encryptedMasterKey = try encryptMasterKey(masterKey, encryptionKey: encryptionKey)
 
-            guard let pinKey1 = derivePinKey1(from: stretchedPin) else {
-                owsFailDebug("failed to derive pinKey1")
-                throw KBSError.assertion
-            }
-
-            let pinKey2 = generatePinKey2().keyData
-
-            guard let masterKey = deriveMasterKey(from: pinKey1, and: pinKey2) else {
-                owsFailDebug("failed to derive master key")
-                throw KBSError.assertion
-            }
-
-            return (stretchedPin, pinKey2, masterKey)
-        }.then { stretchedPin, pinKey2, masterKey in
-            backupKeyRequest(stretchedPin: stretchedPin, keyData: pinKey2).map { ($0, pinKey2, masterKey) }
-        }.done { response, pinKey2, masterKey in
+            return (masterKey, encryptedMasterKey, accessKey)
+        }.then { masterKey, encryptedMasterKey, accessKey in
+            backupKeyRequest(accessKey: accessKey, encryptedMasterKey: encryptedMasterKey).map { ($0, masterKey) }
+        }.done(on: .global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
                 throw KBSError.assertion
@@ -234,7 +197,7 @@ public class KeyBackupService: NSObject {
             }
 
             // We should always receive a new token to use on our next request. Store it now.
-            try Token.updateNext(data: tokenData)
+            let token = try Token.updateNext(data: tokenData)
 
             switch status {
             case .alreadyExists:
@@ -245,9 +208,11 @@ public class KeyBackupService: NSObject {
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw KBSError.assertion
             case .ok:
+                let encodedVerificationString = try deriveEncodedVerificationString(pin: pin, backupId: token.backupId)
+
                 // We successfully stored the new keys in KBS, save them in the database
                 databaseStorage.write { transaction in
-                    store(masterKey, pinKey2: pinKey2, transaction: transaction)
+                    store(masterKey, encodedVerificationString: encodedVerificationString, transaction: transaction)
                 }
             }
         }.recover { error in
@@ -279,7 +244,7 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    // PRAGMA MARK: - Crypto
+    // PRAGMA MARK: - Master Key Encryption
 
     public enum DerivedKey: String, CaseIterable {
         case storageService = "Storage Service Encryption"
@@ -340,91 +305,126 @@ public class KeyBackupService: NSObject {
         return data
     }
 
-    private static func assertIsOnBackgroundQueue() {
-        assertOnQueue(DispatchQueue.global())
-    }
-
-    private static func deriveStretchedPin(from pin: String) -> Data? {
-        if !CurrentAppContext().isRunningTests {
-            assertIsOnBackgroundQueue()
-        }
-
-        guard let pinData = pin.ensureArabicNumerals.data(using: .utf8) else {
-            owsFailDebug("Failed to encode pin data")
-            return nil
-        }
-
-        guard let saltData = "nosalt".data(using: .utf8) else {
-            owsFailDebug("Failed to encode salt data")
-            return nil
-        }
-
-        return Cryptography.pbkdf2Derivation(password: pinData, salt: saltData, iterations: 20000, outputLength: 32)
-    }
-
-    private static func derivePinKey1(from stretchedPin: Data) -> Data? {
-        if !CurrentAppContext().isRunningTests {
-            assertIsOnBackgroundQueue()
-        }
-
-        guard let data = "Master Key Encryption".data(using: .utf8) else {
-            owsFailDebug("Failed to encode data")
-            return nil
-        }
-        return Cryptography.computeSHA256HMAC(data, withHMACKey: stretchedPin)
-    }
-
-    private static func generatePinKey2() -> OWSAES256Key {
-        assertIsOnBackgroundQueue()
-
-        return OWSAES256Key.generateRandom()
-    }
-
-    private static func deriveMasterKey(from pinKey1: Data, and pinKey2: Data) -> Data? {
-        if !CurrentAppContext().isRunningTests {
-            assertIsOnBackgroundQueue()
-        }
-
-        return Cryptography.computeSHA256HMAC(pinKey2, withHMACKey: pinKey1)
-    }
-
     @objc
     static func deriveRegistrationLockToken() -> String? {
         return DerivedKey.registrationLock.data?.hexadecimalString
     }
 
-    @objc
-    static func deriveKBSAccessKey(from stretchedPin: Data) -> Data? {
-        assertIsOnBackgroundQueue()
+    // PRAGMA MARK: - Master Key Management
 
-        guard let data = "KBS Access Key".data(using: .utf8) else {
-            owsFailDebug("Failed to encode data")
-            return nil
-        }
-
-        return Cryptography.computeSHA256HMAC(data, withHMACKey: stretchedPin)
+    private static func assertIsOnBackgroundQueue() {
+        guard !CurrentAppContext().isRunningTests else { return }
+        assertOnQueue(DispatchQueue.global())
     }
 
-    // PRAGMA MARK: - Key Storage
+    static func deriveEncryptionKeyAndAccessKey(pin: String, backupId: Data) throws -> (encryptionKey: Data, accessKey: Data) {
+        assertIsOnBackgroundQueue()
+
+        guard let pinData = normalizePin(pin).data(using: .utf8) else { throw KBSError.assertion }
+        guard backupId.count == 32 else { throw KBSError.assertion }
+
+        let (rawHash, _) = try Argon2.hash(
+            iterations: 16,
+            memoryInKiB: 1024 * 16, // 16MiB
+            threads: 1,
+            password: pinData,
+            salt: backupId,
+            desiredLength: 64,
+            variant: .id
+        )
+
+        guard rawHash.count == 64 else { throw KBSError.assertion }
+
+        return (encryptionKey: rawHash[0...31], accessKey: rawHash[32...63])
+    }
+
+    static func deriveEncodedVerificationString(pin: String, backupId: Data) throws -> String {
+        assertIsOnBackgroundQueue()
+
+        guard let pinData = normalizePin(pin).data(using: .utf8) else { throw KBSError.assertion }
+        guard backupId.count == 32 else { throw KBSError.assertion }
+
+        // TODO: Fine tune what a good value is for local PIN verification
+        let (_, encodedString) = try Argon2.hash(
+            iterations: 2,
+            memoryInKiB: 1024 * 8, // 8MiB
+            threads: 1,
+            password: pinData,
+            salt: backupId,
+            desiredLength: 64,
+            variant: .id
+        )
+
+        return encodedString
+    }
+
+    private static func normalizePin(_ pin: String) -> String {
+        // Trim leading and trailing whitespace
+        var normalizedPin = pin.ows_stripped()
+
+        // If this pin contains only numerals, ensure they are arabic numerals.
+        if pin.digitsOnly() == pin { normalizedPin = pin.ensureArabicNumerals }
+
+        // NFKD unicode normalization.
+        return normalizedPin.decomposedStringWithCompatibilityMapping
+    }
+
+    static func generateMasterKey() -> Data {
+        assertIsOnBackgroundQueue()
+
+        return Cryptography.generateRandomBytes(32)
+    }
+
+    static func encryptMasterKey(_ masterKey: Data, encryptionKey: Data) throws -> Data {
+        assertIsOnBackgroundQueue()
+
+        guard masterKey.count == 32 else { throw KBSError.assertion }
+        guard encryptionKey.count == 32 else { throw KBSError.assertion }
+
+        let (iv, cipherText) = try Cryptography.encryptSHA256HMACSIV(data: masterKey, key: encryptionKey)
+
+        guard iv.count == 16 else { throw KBSError.assertion }
+        guard cipherText.count == 32 else { throw KBSError.assertion }
+
+        return iv + cipherText
+    }
+
+    static func decryptMasterKey(_ ivAndCipher: Data, encryptionKey: Data) throws -> Data {
+        assertIsOnBackgroundQueue()
+
+        guard ivAndCipher.count == 48 else { throw KBSError.assertion }
+
+        let masterKey = try Cryptography.decryptSHA256HMACSIV(
+            iv: ivAndCipher[0...15],
+            cipherText: ivAndCipher[16...47],
+            key: encryptionKey
+        )
+
+        guard masterKey.count == 32 else { throw KBSError.assertion }
+
+        return masterKey
+    }
+
+    // PRAGMA MARK: - Storage
 
     public static var keyValueStore: SDSKeyValueStore {
         return SDSKeyValueStore(collection: "kOWSKeyBackupService_Keys")
     }
 
     private static let masterKeyIdentifer = "masterKey"
-    private static let pinKey2Identifer = "pinKey2"
+    private static let encodedVerificationStringIdentifier = "encodedVerificationStringIdentifier"
     private static let cacheQueue = DispatchQueue(label: "org.signal.KeyBackupService")
 
     @objc
     public static func warmCaches() {
         var masterKey: Data?
-        var pinKey2: Data?
+        var encodedVerificationString: String?
 
         var syncedDerivedKeys = [DerivedKey: Data]()
 
         databaseStorage.read { transaction in
             masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
-            pinKey2 = keyValueStore.getData(pinKey2Identifer, transaction: transaction)
+            encodedVerificationString = keyValueStore.getString(encodedVerificationStringIdentifier, transaction: transaction)
 
             for type in DerivedKey.allCases {
                 syncedDerivedKeys[type] = keyValueStore.getData(type.rawValue, transaction: transaction)
@@ -433,7 +433,7 @@ public class KeyBackupService: NSObject {
 
         cacheQueue.sync {
             cachedMasterKey = masterKey
-            cachedPinKey2 = pinKey2
+            cachedEncodedVerificationString = encodedVerificationString
             cachedSyncedDerivedKeys = syncedDerivedKeys
         }
     }
@@ -445,28 +445,35 @@ public class KeyBackupService: NSObject {
         keyValueStore.removeAll(transaction: transaction)
         cacheQueue.sync {
             cachedMasterKey = nil
-            cachedPinKey2 = nil
+            cachedEncodedVerificationString = nil
+            cachedSyncedDerivedKeys = [:]
         }
     }
 
     // Should only be interacted with on the serial cache queue
     // Always contains an in memory reference to our current masterKey
     private static var cachedMasterKey: Data?
-    // Always contains an in memory reference to our current pinKey2
-    private static var cachedPinKey2: Data?
+    // Always contains an in memory reference to our encoded PIN verification string
+    private static var cachedEncodedVerificationString: String?
     // Always contains an in memory reference to our received derived keys
     static var cachedSyncedDerivedKeys = [DerivedKey: Data]()
 
-    private static func store(_ masterKey: Data, pinKey2: Data, transaction: SDSAnyWriteTransaction) {
-        guard masterKey != cachedMasterKey || pinKey2 != cachedPinKey2 else { return }
+    static func store(_ masterKey: Data, encodedVerificationString: String, transaction: SDSAnyWriteTransaction) {
+        guard masterKey != cachedMasterKey || encodedVerificationString != cachedEncodedVerificationString else { return }
 
         keyValueStore.setData(masterKey, key: masterKeyIdentifer, transaction: transaction)
-        keyValueStore.setData(pinKey2, key: pinKey2Identifer, transaction: transaction)
+        keyValueStore.setString(encodedVerificationString, key: encodedVerificationStringIdentifier, transaction: transaction)
+
+        var oldMasterKey: Data?
 
         cacheQueue.sync {
+            oldMasterKey = cachedMasterKey
             cachedMasterKey = masterKey
-            cachedPinKey2 = pinKey2
+            cachedEncodedVerificationString = encodedVerificationString
         }
+
+        // Only continue if we didn't previously have a master key or our master key has changed
+        guard masterKey != oldMasterKey else { return }
 
         // Trigger a re-creation of the storage manifest, our keys have changed
         storageServiceManager.restoreOrCreateManifestIfNecessary()
@@ -574,21 +581,16 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    private static func backupKeyRequest(stretchedPin: Data, keyData: Data, and auth: RemoteAttestationAuth? = nil) -> Promise<KeyBackupProtoBackupResponse> {
+    private static func backupKeyRequest(accessKey: Data, encryptedMasterKey: Data, and auth: RemoteAttestationAuth? = nil) -> Promise<KeyBackupProtoBackupResponse> {
         return enclaveRequest(with: auth) { token -> KeyBackupProtoBackupRequest in
-            guard let kbsAccessKey = deriveKBSAccessKey(from: stretchedPin) else {
-                owsFailDebug("failed to dervive KBS Access key")
-                throw KBSError.assertion
-            }
-
             guard let serviceId = Data.data(fromHex: TSConstants.keyBackupServiceId) else {
                 owsFailDebug("failed to encode service id")
                 throw KBSError.assertion
             }
 
             let backupRequestBuilder = KeyBackupProtoBackupRequest.builder()
-            backupRequestBuilder.setData(keyData)
-            backupRequestBuilder.setPin(kbsAccessKey)
+            backupRequestBuilder.setData(encryptedMasterKey)
+            backupRequestBuilder.setPin(accessKey)
             backupRequestBuilder.setToken(token.data)
             backupRequestBuilder.setBackupID(token.backupId)
             backupRequestBuilder.setTries(maximumKeyAttempts)
@@ -607,20 +609,15 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    private static func restoreKeyRequest(stretchedPin: Data, with auth: RemoteAttestationAuth? = nil) -> Promise<KeyBackupProtoRestoreResponse> {
+    private static func restoreKeyRequest(accessKey: Data, with auth: RemoteAttestationAuth? = nil) -> Promise<KeyBackupProtoRestoreResponse> {
         return enclaveRequest(with: auth) { token -> KeyBackupProtoRestoreRequest in
-            guard let kbsAccessKey = deriveKBSAccessKey(from: stretchedPin) else {
-                owsFailDebug("failed to dervive KBS Access key")
-                throw KBSError.assertion
-            }
-
             guard let serviceId = Data.data(fromHex: TSConstants.keyBackupServiceId) else {
                 owsFailDebug("failed to encode service id")
                 throw KBSError.assertion
             }
 
             let restoreRequestBuilder = KeyBackupProtoRestoreRequest.builder()
-            restoreRequestBuilder.setPin(kbsAccessKey)
+            restoreRequestBuilder.setPin(accessKey)
             restoreRequestBuilder.setToken(token.data)
             restoreRequestBuilder.setBackupID(token.backupId)
             restoreRequestBuilder.setServiceID(serviceId)
@@ -769,6 +766,14 @@ public class KeyBackupService: NSObject {
                 Token.keyValueStore.setData(self.data, key: Token.dataKey, transaction: transaction)
                 Token.keyValueStore.setUInt32(self.tries, key: Token.triesKey, transaction: transaction)
             }
+        }
+    }
+
+    private static func fetchBackupId(auth: RemoteAttestationAuth?) -> Promise<Data> {
+        if let currentToken = Token.next { return Promise.value(currentToken.backupId) }
+
+        return RemoteAttestation.makePromise(for: .keyBackup, with: auth).then { remoteAttestation in
+            fetchToken(for: remoteAttestation).map { $0.backupId }
         }
     }
 

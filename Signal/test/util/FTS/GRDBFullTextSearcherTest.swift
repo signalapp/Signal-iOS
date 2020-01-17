@@ -11,6 +11,8 @@ import Contacts
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
 class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
+    var signalAccountReadCache = SignalAccountReadCache()
+
     func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
         return self.displayName(for: signalAccount.recipientAddress)
     }
