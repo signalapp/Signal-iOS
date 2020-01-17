@@ -19,6 +19,8 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
 @property (nonatomic, readonly) NSUInteger groupModelSchemaVersion;
 
+@property (nonatomic) uint32_t groupV2Revision;
+
 @end
 
 #pragma mark -
@@ -33,6 +35,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
                            name:(nullable NSString *)name
                      avatarData:(nullable NSData *)avatarData
                         members:(NSArray<SignalServiceAddress *> *)members
+                 administrators:(NSArray<SignalServiceAddress *> *)administrators
                   groupsVersion:(GroupsVersion)groupsVersion
           groupSecretParamsData:(nullable NSData *)groupSecretParamsData
 {
@@ -56,6 +59,17 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
     _groupsVersion = groupsVersion;
     _groupSecretParamsData = groupSecretParamsData;
+
+    _groupsV2MemberRoles = [NSMutableDictionary new];
+    for (SignalServiceAddress *address in administrators) {
+        NSUUID *_Nullable uuid = address.uuid;
+        if (address.uuid == nil) {
+            OWSLogVerbose(@"Address: %@", address);
+            OWSFailDebug(@"Address is missing uuid.");
+            continue;
+        }
+        self.groupsV2MemberRoles[uuid.UUIDString] = @(TSGroupMemberRole_Administrator);
+    }
 
     return self;
 }
@@ -258,6 +272,62 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return [self.groupMembers filter:^(SignalServiceAddress *groupMemberId) {
         return !groupMemberId.isLocalAddress;
     }];
+}
+
+- (TSGroupMemberRole)roleForGroupsV2Member:(SignalServiceAddress *)address
+{
+    TSGroupMemberRole defaultRole = TSGroupMemberRole_Normal;
+
+    NSUUID *_Nullable uuid = address.uuid;
+    if (address.uuid == nil) {
+        OWSLogVerbose(@"Address: %@", address);
+        OWSFailDebug(@"Address is missing uuid.");
+        return defaultRole;
+    }
+    NSNumber *_Nullable nsRole = self.groupsV2MemberRoles[uuid.UUIDString];
+    if (nsRole == nil) {
+        OWSLogVerbose(@"Address: %@", address);
+        OWSFailDebug(@"Address is missing role.");
+        return defaultRole;
+    }
+    return (TSGroupMemberRole)nsRole.unsignedIntegerValue;
+}
+
+- (void)setRoleForGroupsV2Member:(SignalServiceAddress *)address role:(TSGroupMemberRole)role
+{
+    NSUUID *_Nullable uuid = address.uuid;
+    if (address.uuid == nil) {
+        OWSLogVerbose(@"Address: %@", address);
+        OWSFailDebug(@"Address is missing uuid.");
+        return;
+    }
+    if (self.groupsV2MemberRoles == nil) {
+        _groupsV2MemberRoles = [NSMutableDictionary new];
+    }
+    self.groupsV2MemberRoles[uuid.UUIDString] = @(role);
+}
+
+- (BOOL)isAdministrator:(SignalServiceAddress *)address
+{
+    return [self roleForGroupsV2Member:address] == TSGroupMemberRole_Administrator;
+}
+
+// GroupsV2 TODO: This should be done via GroupManager.
+- (void)updateGroupMembers:(NSArray<SignalServiceAddress *> *)groupMembers
+{
+    _groupMembers = [groupMembers copy];
+    // GroupsV2 TODO: Remove stale keys from groupsV2MemberRoles.
+}
+
+- (NSArray<SignalServiceAddress *> *)administrators
+{
+    NSMutableArray<SignalServiceAddress *> *administrators = [NSMutableArray new];
+    for (SignalServiceAddress *address in self.groupMembers) {
+        if ([self isAdministrator:address]) {
+            [administrators addObject:address];
+        }
+    }
+    return administrators;
 }
 
 @end

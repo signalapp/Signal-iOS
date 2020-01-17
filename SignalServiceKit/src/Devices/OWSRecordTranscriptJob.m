@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecordTranscriptJob.h"
@@ -268,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
 
-    if (!AreRecipientUpdatesEnabled()) {
+    if (!SSKFeatureFlags.sendRecipientUpdates) {
         OWSFailDebug(@"Ignoring 'recipient update' transcript; disabled.");
         return;
     }

@@ -320,7 +320,8 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
                 continue;
             }
 
-            TSGroupModel *_Nullable groupModel = [GroupManager fakeGroupModelWithGroupId:groupId];
+            TSGroupModel *_Nullable groupModel = [GroupManager fakeGroupModelWithGroupId:groupId
+                                                                             transaction:transaction];
             if (groupModel != nil) {
                 newGroupMap[groupId] = groupModel;
             } else {

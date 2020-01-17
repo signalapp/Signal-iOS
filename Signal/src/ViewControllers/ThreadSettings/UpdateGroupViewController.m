@@ -293,8 +293,10 @@ NS_ASSUME_NONNULL_BEGIN
     }];
     NSMutableSet<SignalServiceAddress *> *memberSet = [NSMutableSet setWithArray:memberList];
     [memberSet addObject:self.tsAccountManager.localAddress];
+    // GroupsV2 TODO: Persist, diff and handle administrators in this view.
     [self.conversationSettingsViewDelegate updateGroupWithId:self.thread.groupModel.groupId
                                                      members:memberSet.allObjects
+                                              administrators:@[]
                                                         name:self.groupNameTextField.text
                                                   avatarData:self.groupAvatarData];
 }

@@ -17,12 +17,33 @@ public protocol GroupsV2: AnyObject {
     func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress]) -> AnyPromise
 
     func fetchGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise
+
+    func buildGroupContextV2Proto(groupModel: TSGroupModel,
+                                  groupChangeData: Data?) throws -> SSKProtoGroupContextV2
 }
 
 // MARK: -
 
 public protocol GroupsV2Swift {
+    func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void>
+
+    func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
+
     func fetchGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State>
+
+    func buildChangeSet(from oldGroupModel: TSGroupModel,
+    to newGroupModel: TSGroupModel) throws -> GroupsV2ChangeSet
+
+    func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<Void>
+}
+
+// MARK: -
+
+public protocol GroupsV2ChangeSet: AnyObject {
+    var groupId: Data { get }
+    var groupSecretParamsData: Data { get }
+
+    func buildGroupChangeProto(currentGroupModel: TSGroupModel) -> Promise<GroupsProtoGroupChangeActions>
 }
 
 // MARK: -
@@ -48,6 +69,10 @@ public protocol GroupV2State {
 // MARK: -
 
 public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
+    public func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void> {
+        owsFail("Not implemented.")
+    }
+
     public func createNewGroupOnServiceObjc(groupModel: TSGroupModel) -> AnyPromise {
         owsFail("Not implemented.")
     }
@@ -65,11 +90,29 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
+    public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void> {
+        owsFail("Not implemented.")
+    }
+
     public func fetchGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State> {
         owsFail("Not implemented.")
     }
 
     public func fetchGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise {
+        owsFail("Not implemented.")
+    }
+
+    public func buildGroupContextV2Proto(groupModel: TSGroupModel,
+                                         groupChangeData: Data?) throws -> SSKProtoGroupContextV2 {
+        owsFail("Not implemented.")
+    }
+
+    public func buildChangeSet(from oldGroupModel: TSGroupModel,
+    to newGroupModel: TSGroupModel) throws -> GroupsV2ChangeSet {
+        owsFail("Not implemented.")
+    }
+
+    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<Void> {
         owsFail("Not implemented.")
     }
 }

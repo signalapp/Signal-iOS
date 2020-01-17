@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSMessage.h"
@@ -7,11 +7,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SignalServiceAddress;
-
-// Feature flag.
-//
-// TODO: Remove.
-BOOL AreRecipientUpdatesEnabled(void);
 
 typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     // The message is either:

@@ -175,9 +175,9 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 #pragma mark - Groups v2
 
 // GroupsV2 TODO: Improve this name.
-+ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionTime:(uint32_t)fromRedemptionTime
-                                                         toRedemptionTime:(uint32_t)toRedemptionTime
-    NS_SWIFT_NAME(groupAuthenticationCredentialRequest(fromRedemptionTime:toRedemptionTime:));
++ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionDays:(uint32_t)fromRedemptionDays
+                                                         toRedemptionDays:(uint32_t)toRedemptionDays
+    NS_SWIFT_NAME(groupAuthenticationCredentialRequest(fromRedemptionDays:toRedemptionDays:));
 
 @end
 

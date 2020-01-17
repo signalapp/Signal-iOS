@@ -13,6 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const TSGroupThreadAvatarChangedNotification = @"TSGroupThreadAvatarChangedNotification";
 NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_NotificationKey_UniqueId";
 
+@interface TSGroupThread ()
+
+@property (nonatomic) TSGroupModel *groupModel;
+
+@end
+
+#pragma mark -
+
 @implementation TSGroupThread
 
 #define TSGroupThreadPrefix @"g"
@@ -178,7 +186,8 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
                                             NSMutableArray<SignalServiceAddress *> *newGroupMembers =
                                                 [thread.groupModel.groupMembers mutableCopy];
                                             [newGroupMembers removeObject:localAddress];
-                                            thread.groupModel.groupMembers = newGroupMembers;
+                                            [thread.groupModel updateGroupMembers:newGroupMembers];
+                                            
                                         }];
 }
 

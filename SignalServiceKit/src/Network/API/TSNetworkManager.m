@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSNetworkManager.h"
@@ -355,7 +355,7 @@ dispatch_queue_t NetworkManagerQueue()
     [sessionManager performRequest:request canUseAuth:canUseAuth success:success failure:failure];
 }
 
-#ifdef DEBUG
+#if TESTABLE_BUILD
 + (void)logCurlForTask:(NSURLSessionDataTask *)task
 {
     NSMutableArray<NSString *> *curlComponents = [NSMutableArray new];
@@ -380,13 +380,37 @@ dispatch_queue_t NetworkManagerQueue()
     }
     // Body/parameters (e.g. JSON payload)
     if (task.originalRequest.HTTPBody) {
-        NSString *jsonBody =
-            [[NSString alloc] initWithData:task.originalRequest.HTTPBody encoding:NSUTF8StringEncoding];
-        // We don't yet support escaping JSON.
-        // If these asserts trip, we'll need to add that.
-        OWSAssertDebug([jsonBody rangeOfString:@"'"].location == NSNotFound);
-        [curlComponents addObject:@"--data-ascii"];
-        [curlComponents addObject:[NSString stringWithFormat:@"'%@'", jsonBody]];
+        NSString *_Nullable contentType = task.originalRequest.allHTTPHeaderFields[@"Content-Type"];
+        BOOL isJson = [contentType isEqualToString:@"application/json"];
+        BOOL isProtobuf = [contentType isEqualToString:@"application/x-protobuf"];
+        if (isJson) {
+            NSString *jsonBody = [[NSString alloc] initWithData:task.originalRequest.HTTPBody
+                                                       encoding:NSUTF8StringEncoding];
+            // We don't yet support escaping JSON.
+            // If these asserts trip, we'll need to add that.
+            OWSAssertDebug([jsonBody rangeOfString:@"'"].location == NSNotFound);
+            [curlComponents addObject:@"--data-ascii"];
+            [curlComponents addObject:[NSString stringWithFormat:@"'%@'", jsonBody]];
+        } else if (isProtobuf) {
+            NSData *bodyData = task.originalRequest.HTTPBody;
+            NSString *filename = [NSString stringWithFormat:@"%@.tmp", NSUUID.UUID.UUIDString];
+
+            uint8_t bodyBytes[bodyData.length];
+            [bodyData getBytes:bodyBytes length:bodyData.length];
+            NSMutableArray<NSString *> *echoBytes = [NSMutableArray new];
+            for (NSUInteger i = 0; i < bodyData.length; i++) {
+                uint8_t bodyByte = bodyBytes[i];
+                [echoBytes addObject:[NSString stringWithFormat:@"\\\\x%02X", bodyByte]];
+            }
+            NSString *echoCommand =
+                [NSString stringWithFormat:@"echo -n -e %@ > %@", [echoBytes componentsJoinedByString:@""], filename];
+
+            OWSLogVerbose(@"curl for failed request: %@", echoCommand);
+            [curlComponents addObject:@"--data-binary"];
+            [curlComponents addObject:[NSString stringWithFormat:@"@%@", filename]];
+        } else {
+            OWSFailDebug(@"Unknown content type: %@", contentType);
+        }
     }
     // TODO: Add support for cookies.
     [curlComponents addObject:task.originalRequest.URL.absoluteString];

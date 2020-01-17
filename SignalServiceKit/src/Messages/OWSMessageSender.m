@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageSender.h"
@@ -1542,7 +1542,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return success();
     }
 
-    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript);
+    BOOL shouldSendTranscript = (SSKFeatureFlags.sendRecipientUpdates || !message.hasSyncedTranscript);
     if (!shouldSendTranscript) {
         return success();
     }

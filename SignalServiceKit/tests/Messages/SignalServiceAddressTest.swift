@@ -33,30 +33,30 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         // SignalServiceAddress's getters use a cache to fill in the blanks.
         XCTAssertEqual(SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1),
                        SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1))
-        XCTAssertEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: nil),
+        XCTAssertEqual(SignalServiceAddress(uuid: uuid1),
                        SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1))
         XCTAssertEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
                        SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1))
         XCTAssertEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
-                       SignalServiceAddress(uuid: uuid1, phoneNumber: nil))
+                       SignalServiceAddress(uuid: uuid1))
 
         // Single match works, ignores double missing.
         XCTAssertEqual(SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1),
                        SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1))
-        XCTAssertEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: nil),
-                       SignalServiceAddress(uuid: uuid1, phoneNumber: nil))
+        XCTAssertEqual(SignalServiceAddress(uuid: uuid1),
+                       SignalServiceAddress(uuid: uuid1))
 
         // Match fails if no common value.
-        XCTAssertEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: nil),
+        XCTAssertEqual(SignalServiceAddress(uuid: uuid1),
                        SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1))
 
         // Match fails if either value doesn't match.
-        XCTAssertNotEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: nil),
-                          SignalServiceAddress(uuid: uuid2, phoneNumber: nil))
+        XCTAssertNotEqual(SignalServiceAddress(uuid: uuid1),
+                          SignalServiceAddress(uuid: uuid2))
         XCTAssertNotEqual(SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1),
                           SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber2))
         XCTAssertNotEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
-                          SignalServiceAddress(uuid: uuid2, phoneNumber: nil))
+                          SignalServiceAddress(uuid: uuid2))
         XCTAssertNotEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
                           SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber2))
         XCTAssertNotEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
