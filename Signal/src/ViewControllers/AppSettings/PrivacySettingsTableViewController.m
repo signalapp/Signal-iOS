@@ -156,7 +156,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     OWSTableSection *screenLockSection = [OWSTableSection new];
     screenLockSection.headerTitle = NSLocalizedString(
         @"SETTINGS_SCREEN_LOCK_SECTION_TITLE", @"Title for the 'screen lock' section of the privacy settings.");
-    screenLockSection.footerTitle = NSLocalizedString(@"Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed.", @"");
+    screenLockSection.footerTitle = NSLocalizedString(@"Unlock Session's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Session's notification settings allow you to customize the information that is displayed.", @"");
     [screenLockSection
         addItem:[OWSTableItem
                     switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_SWITCH_LABEL",
