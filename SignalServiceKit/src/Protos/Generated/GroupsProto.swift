@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,6 +11,244 @@ import SwiftProtobuf
 public enum GroupsProtoError: Error {
     case invalidProtobuf(description: String)
 }
+
+// MARK: - GroupsProtoAvatarUploadAttributes
+
+public class GroupsProtoAvatarUploadAttributes: NSObject {
+
+    // MARK: - GroupsProtoAvatarUploadAttributesBuilder
+
+    public class func builder() -> GroupsProtoAvatarUploadAttributesBuilder {
+        return GroupsProtoAvatarUploadAttributesBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoAvatarUploadAttributesBuilder {
+        let builder = GroupsProtoAvatarUploadAttributesBuilder()
+        if let _value = key {
+            builder.setKey(_value)
+        }
+        if let _value = credential {
+            builder.setCredential(_value)
+        }
+        if let _value = acl {
+            builder.setAcl(_value)
+        }
+        if let _value = algorithm {
+            builder.setAlgorithm(_value)
+        }
+        if let _value = date {
+            builder.setDate(_value)
+        }
+        if let _value = policy {
+            builder.setPolicy(_value)
+        }
+        if let _value = signature {
+            builder.setSignature(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoAvatarUploadAttributesBuilder: NSObject {
+
+        private var proto = GroupsProtos_AvatarUploadAttributes()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setKey(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.key = valueParam
+        }
+
+        public func setKey(_ valueParam: String) {
+            proto.key = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setCredential(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.credential = valueParam
+        }
+
+        public func setCredential(_ valueParam: String) {
+            proto.credential = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setAcl(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.acl = valueParam
+        }
+
+        public func setAcl(_ valueParam: String) {
+            proto.acl = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setAlgorithm(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.algorithm = valueParam
+        }
+
+        public func setAlgorithm(_ valueParam: String) {
+            proto.algorithm = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setDate(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.date = valueParam
+        }
+
+        public func setDate(_ valueParam: String) {
+            proto.date = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setPolicy(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.policy = valueParam
+        }
+
+        public func setPolicy(_ valueParam: String) {
+            proto.policy = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setSignature(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.signature = valueParam
+        }
+
+        public func setSignature(_ valueParam: String) {
+            proto.signature = valueParam
+        }
+
+        public func build() throws -> GroupsProtoAvatarUploadAttributes {
+            return try GroupsProtoAvatarUploadAttributes.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoAvatarUploadAttributes.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_AvatarUploadAttributes
+
+    public var key: String? {
+        guard hasKey else {
+            return nil
+        }
+        return proto.key
+    }
+    public var hasKey: Bool {
+        return true
+    }
+
+    public var credential: String? {
+        guard hasCredential else {
+            return nil
+        }
+        return proto.credential
+    }
+    public var hasCredential: Bool {
+        return true
+    }
+
+    public var acl: String? {
+        guard hasAcl else {
+            return nil
+        }
+        return proto.acl
+    }
+    public var hasAcl: Bool {
+        return true
+    }
+
+    public var algorithm: String? {
+        guard hasAlgorithm else {
+            return nil
+        }
+        return proto.algorithm
+    }
+    public var hasAlgorithm: Bool {
+        return true
+    }
+
+    public var date: String? {
+        guard hasDate else {
+            return nil
+        }
+        return proto.date
+    }
+    public var hasDate: Bool {
+        return true
+    }
+
+    public var policy: String? {
+        guard hasPolicy else {
+            return nil
+        }
+        return proto.policy
+    }
+    public var hasPolicy: Bool {
+        return true
+    }
+
+    public var signature: String? {
+        guard hasSignature else {
+            return nil
+        }
+        return proto.signature
+    }
+    public var hasSignature: Bool {
+        return true
+    }
+
+    private init(proto: GroupsProtos_AvatarUploadAttributes) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoAvatarUploadAttributes {
+        let proto = try GroupsProtos_AvatarUploadAttributes(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: GroupsProtos_AvatarUploadAttributes) throws -> GroupsProtoAvatarUploadAttributes {
+        // MARK: - Begin Validation Logic for GroupsProtoAvatarUploadAttributes -
+
+        // MARK: - End Validation Logic for GroupsProtoAvatarUploadAttributes -
+
+        let result = GroupsProtoAvatarUploadAttributes(proto: proto)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoAvatarUploadAttributes {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoAvatarUploadAttributes.GroupsProtoAvatarUploadAttributesBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoAvatarUploadAttributes? {
+        return try! self.build()
+    }
+}
+
+#endif
 
 // MARK: - GroupsProtoMemberRole
 
@@ -247,6 +485,143 @@ extension GroupsProtoMember.GroupsProtoMemberBuilder {
 
 #endif
 
+// MARK: - GroupsProtoPendingMember
+
+public class GroupsProtoPendingMember: NSObject {
+
+    // MARK: - GroupsProtoPendingMemberBuilder
+
+    public class func builder() -> GroupsProtoPendingMemberBuilder {
+        return GroupsProtoPendingMemberBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoPendingMemberBuilder {
+        let builder = GroupsProtoPendingMemberBuilder()
+        if let _value = member {
+            builder.setMember(_value)
+        }
+        if let _value = addedByUserID {
+            builder.setAddedByUserID(_value)
+        }
+        if hasTimestamp {
+            builder.setTimestamp(timestamp)
+        }
+        return builder
+    }
+
+    public class GroupsProtoPendingMemberBuilder: NSObject {
+
+        private var proto = GroupsProtos_PendingMember()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setMember(_ valueParam: GroupsProtoMember?) {
+            guard let valueParam = valueParam else { return }
+            proto.member = valueParam.proto
+        }
+
+        public func setMember(_ valueParam: GroupsProtoMember) {
+            proto.member = valueParam.proto
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setAddedByUserID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.addedByUserID = valueParam
+        }
+
+        public func setAddedByUserID(_ valueParam: Data) {
+            proto.addedByUserID = valueParam
+        }
+
+        public func setTimestamp(_ valueParam: UInt64) {
+            proto.timestamp = valueParam
+        }
+
+        public func build() throws -> GroupsProtoPendingMember {
+            return try GroupsProtoPendingMember.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoPendingMember.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_PendingMember
+
+    public let member: GroupsProtoMember?
+
+    public var addedByUserID: Data? {
+        guard hasAddedByUserID else {
+            return nil
+        }
+        return proto.addedByUserID
+    }
+    public var hasAddedByUserID: Bool {
+        return proto.addedByUserID.count > 0
+    }
+
+    public var timestamp: UInt64 {
+        return proto.timestamp
+    }
+    public var hasTimestamp: Bool {
+        return true
+    }
+
+    private init(proto: GroupsProtos_PendingMember,
+                 member: GroupsProtoMember?) {
+        self.proto = proto
+        self.member = member
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoPendingMember {
+        let proto = try GroupsProtos_PendingMember(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: GroupsProtos_PendingMember) throws -> GroupsProtoPendingMember {
+        var member: GroupsProtoMember?
+        if proto.hasMember {
+            member = try GroupsProtoMember.parseProto(proto.member)
+        }
+
+        // MARK: - Begin Validation Logic for GroupsProtoPendingMember -
+
+        // MARK: - End Validation Logic for GroupsProtoPendingMember -
+
+        let result = GroupsProtoPendingMember(proto: proto,
+                                              member: member)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoPendingMember {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoPendingMember.GroupsProtoPendingMemberBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoPendingMember? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - GroupsProtoAccessControlAccessRequired
 
 public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
@@ -315,11 +690,8 @@ public class GroupsProtoAccessControl: NSObject {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> GroupsProtoAccessControlBuilder {
         let builder = GroupsProtoAccessControlBuilder()
-        if let _value = title {
-            builder.setTitle(_value)
-        }
-        if let _value = avatar {
-            builder.setAvatar(_value)
+        if let _value = attributes {
+            builder.setAttributes(_value)
         }
         if let _value = members {
             builder.setMembers(_value)
@@ -333,12 +705,8 @@ public class GroupsProtoAccessControl: NSObject {
 
         fileprivate override init() {}
 
-        public func setTitle(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.title = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
-        }
-
-        public func setAvatar(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.avatar = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+        public func setAttributes(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+            proto.attributes = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
         public func setMembers(_ valueParam: GroupsProtoAccessControlAccessRequired) {
@@ -356,39 +724,21 @@ public class GroupsProtoAccessControl: NSObject {
 
     fileprivate let proto: GroupsProtos_AccessControl
 
-    public var title: GroupsProtoAccessControlAccessRequired? {
-        guard hasTitle else {
+    public var attributes: GroupsProtoAccessControlAccessRequired? {
+        guard hasAttributes else {
             return nil
         }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.title)
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.attributes)
     }
     // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedTitle: GroupsProtoAccessControlAccessRequired {
-        if !hasTitle {
+    public var unwrappedAttributes: GroupsProtoAccessControlAccessRequired {
+        if !hasAttributes {
             // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: AccessControl.title.")
+            owsFailDebug("Unsafe unwrap of missing optional: AccessControl.attributes.")
         }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.title)
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.attributes)
     }
-    public var hasTitle: Bool {
-        return true
-    }
-
-    public var avatar: GroupsProtoAccessControlAccessRequired? {
-        guard hasAvatar else {
-            return nil
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.avatar)
-    }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedAvatar: GroupsProtoAccessControlAccessRequired {
-        if !hasAvatar {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: AccessControl.avatar.")
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.avatar)
-    }
-    public var hasAvatar: Bool {
+    public var hasAttributes: Bool {
         return true
     }
 
@@ -476,6 +826,9 @@ public class GroupsProtoGroup: NSObject {
         if let _value = avatar {
             builder.setAvatar(_value)
         }
+        if let _value = disappearingMessagesTimer {
+            builder.setDisappearingMessagesTimer(_value)
+        }
         if let _value = accessControl {
             builder.setAccessControl(_value)
         }
@@ -483,6 +836,7 @@ public class GroupsProtoGroup: NSObject {
             builder.setVersion(version)
         }
         builder.setMembers(members)
+        builder.setPendingMembers(pendingMembers)
         return builder
     }
 
@@ -513,13 +867,23 @@ public class GroupsProtoGroup: NSObject {
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setAvatar(_ valueParam: Data?) {
+        public func setAvatar(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
             proto.avatar = valueParam
         }
 
-        public func setAvatar(_ valueParam: Data) {
+        public func setAvatar(_ valueParam: String) {
             proto.avatar = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setDisappearingMessagesTimer(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.disappearingMessagesTimer = valueParam
+        }
+
+        public func setDisappearingMessagesTimer(_ valueParam: Data) {
+            proto.disappearingMessagesTimer = valueParam
         }
 
         @available(swift, obsoleted: 1.0)
@@ -546,6 +910,16 @@ public class GroupsProtoGroup: NSObject {
             proto.members = wrappedItems.map { $0.proto }
         }
 
+        public func addPendingMembers(_ valueParam: GroupsProtoPendingMember) {
+            var items = proto.pendingMembers
+            items.append(valueParam.proto)
+            proto.pendingMembers = items
+        }
+
+        public func setPendingMembers(_ wrappedItems: [GroupsProtoPendingMember]) {
+            proto.pendingMembers = wrappedItems.map { $0.proto }
+        }
+
         public func build() throws -> GroupsProtoGroup {
             return try GroupsProtoGroup.parseProto(proto)
         }
@@ -560,6 +934,8 @@ public class GroupsProtoGroup: NSObject {
     public let accessControl: GroupsProtoAccessControl?
 
     public let members: [GroupsProtoMember]
+
+    public let pendingMembers: [GroupsProtoPendingMember]
 
     public var publicKey: Data? {
         guard hasPublicKey else {
@@ -581,14 +957,24 @@ public class GroupsProtoGroup: NSObject {
         return proto.title.count > 0
     }
 
-    public var avatar: Data? {
+    public var avatar: String? {
         guard hasAvatar else {
             return nil
         }
         return proto.avatar
     }
     public var hasAvatar: Bool {
-        return proto.avatar.count > 0
+        return true
+    }
+
+    public var disappearingMessagesTimer: Data? {
+        guard hasDisappearingMessagesTimer else {
+            return nil
+        }
+        return proto.disappearingMessagesTimer
+    }
+    public var hasDisappearingMessagesTimer: Bool {
+        return proto.disappearingMessagesTimer.count > 0
     }
 
     public var version: UInt32 {
@@ -600,10 +986,12 @@ public class GroupsProtoGroup: NSObject {
 
     private init(proto: GroupsProtos_Group,
                  accessControl: GroupsProtoAccessControl?,
-                 members: [GroupsProtoMember]) {
+                 members: [GroupsProtoMember],
+                 pendingMembers: [GroupsProtoPendingMember]) {
         self.proto = proto
         self.accessControl = accessControl
         self.members = members
+        self.pendingMembers = pendingMembers
     }
 
     @objc
@@ -617,7 +1005,7 @@ public class GroupsProtoGroup: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: GroupsProtos_Group) throws -> GroupsProtoGroup {
-        var accessControl: GroupsProtoAccessControl? = nil
+        var accessControl: GroupsProtoAccessControl?
         if proto.hasAccessControl {
             accessControl = try GroupsProtoAccessControl.parseProto(proto.accessControl)
         }
@@ -625,13 +1013,17 @@ public class GroupsProtoGroup: NSObject {
         var members: [GroupsProtoMember] = []
         members = try proto.members.map { try GroupsProtoMember.parseProto($0) }
 
+        var pendingMembers: [GroupsProtoPendingMember] = []
+        pendingMembers = try proto.pendingMembers.map { try GroupsProtoPendingMember.parseProto($0) }
+
         // MARK: - Begin Validation Logic for GroupsProtoGroup -
 
         // MARK: - End Validation Logic for GroupsProtoGroup -
 
         let result = GroupsProtoGroup(proto: proto,
                                       accessControl: accessControl,
-                                      members: members)
+                                      members: members,
+                                      pendingMembers: pendingMembers)
         return result
     }
 
@@ -721,7 +1113,7 @@ public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.AddMemberAction) throws -> GroupsProtoGroupChangeActionsAddMemberAction {
-        var added: GroupsProtoMember? = nil
+        var added: GroupsProtoMember?
         if proto.hasAdded {
             added = try GroupsProtoMember.parseProto(proto.added)
         }
@@ -769,8 +1161,8 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
         let builder = GroupsProtoGroupChangeActionsDeleteMemberActionBuilder()
-        if let _value = deleted {
-            builder.setDeleted(_value)
+        if let _value = deletedUserID {
+            builder.setDeletedUserID(_value)
         }
         return builder
     }
@@ -782,13 +1174,13 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
         fileprivate override init() {}
 
         @available(swift, obsoleted: 1.0)
-        public func setDeleted(_ valueParam: GroupsProtoMember?) {
+        public func setDeletedUserID(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
-            proto.deleted = valueParam.proto
+            proto.deletedUserID = valueParam
         }
 
-        public func setDeleted(_ valueParam: GroupsProtoMember) {
-            proto.deleted = valueParam.proto
+        public func setDeletedUserID(_ valueParam: Data) {
+            proto.deletedUserID = valueParam
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
@@ -802,12 +1194,18 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction
 
-    public let deleted: GroupsProtoMember?
+    public var deletedUserID: Data? {
+        guard hasDeletedUserID else {
+            return nil
+        }
+        return proto.deletedUserID
+    }
+    public var hasDeletedUserID: Bool {
+        return proto.deletedUserID.count > 0
+    }
 
-    private init(proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction,
-                 deleted: GroupsProtoMember?) {
+    private init(proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction) {
         self.proto = proto
-        self.deleted = deleted
     }
 
     @objc
@@ -821,17 +1219,11 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction) throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
-        var deleted: GroupsProtoMember? = nil
-        if proto.hasDeleted {
-            deleted = try GroupsProtoMember.parseProto(proto.deleted)
-        }
-
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsDeleteMemberAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsDeleteMemberAction -
 
-        let result = GroupsProtoGroupChangeActionsDeleteMemberAction(proto: proto,
-                                                                     deleted: deleted)
+        let result = GroupsProtoGroupChangeActionsDeleteMemberAction(proto: proto)
         return result
     }
 
@@ -981,6 +1373,406 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupCh
 
 #endif
 
+// MARK: - GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction
+
+public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject {
+
+    // MARK: - GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder
+
+    public class func builder() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
+        let builder = GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder()
+        if let _value = presentation {
+            builder.setPresentation(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder: NSObject {
+
+        private var proto = GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setPresentation(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.presentation = valueParam
+        }
+
+        public func setPresentation(_ valueParam: Data) {
+            proto.presentation = valueParam
+        }
+
+        public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
+            return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction
+
+    public var presentation: Data? {
+        guard hasPresentation else {
+            return nil
+        }
+        return proto.presentation
+    }
+    public var hasPresentation: Bool {
+        return proto.presentation.count > 0
+    }
+
+    private init(proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction) throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction -
+
+        let result = GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto: proto)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - GroupsProtoGroupChangeActionsAddPendingMemberAction
+
+public class GroupsProtoGroupChangeActionsAddPendingMemberAction: NSObject {
+
+    // MARK: - GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder
+
+    public class func builder() -> GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
+        let builder = GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder()
+        if let _value = added {
+            builder.setAdded(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder: NSObject {
+
+        private var proto = GroupsProtos_GroupChange.Actions.AddPendingMemberAction()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setAdded(_ valueParam: GroupsProtoPendingMember?) {
+            guard let valueParam = valueParam else { return }
+            proto.added = valueParam.proto
+        }
+
+        public func setAdded(_ valueParam: GroupsProtoPendingMember) {
+            proto.added = valueParam.proto
+        }
+
+        public func build() throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
+            return try GroupsProtoGroupChangeActionsAddPendingMemberAction.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupChangeActionsAddPendingMemberAction.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction
+
+    public let added: GroupsProtoPendingMember?
+
+    private init(proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction,
+                 added: GroupsProtoPendingMember?) {
+        self.proto = proto
+        self.added = added
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
+        let proto = try GroupsProtos_GroupChange.Actions.AddPendingMemberAction(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction) throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
+        var added: GroupsProtoPendingMember?
+        if proto.hasAdded {
+            added = try GroupsProtoPendingMember.parseProto(proto.added)
+        }
+
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsAddPendingMemberAction -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsAddPendingMemberAction -
+
+        let result = GroupsProtoGroupChangeActionsAddPendingMemberAction(proto: proto,
+                                                                         added: added)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupChangeActionsAddPendingMemberAction {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangeActionsAddPendingMemberAction.GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddPendingMemberAction? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - GroupsProtoGroupChangeActionsDeletePendingMemberAction
+
+public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject {
+
+    // MARK: - GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder
+
+    public class func builder() -> GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
+        let builder = GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder()
+        if let _value = deletedUserID {
+            builder.setDeletedUserID(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder: NSObject {
+
+        private var proto = GroupsProtos_GroupChange.Actions.DeletePendingMemberAction()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setDeletedUserID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.deletedUserID = valueParam
+        }
+
+        public func setDeletedUserID(_ valueParam: Data) {
+            proto.deletedUserID = valueParam
+        }
+
+        public func build() throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
+            return try GroupsProtoGroupChangeActionsDeletePendingMemberAction.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupChangeActionsDeletePendingMemberAction.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction
+
+    public var deletedUserID: Data? {
+        guard hasDeletedUserID else {
+            return nil
+        }
+        return proto.deletedUserID
+    }
+    public var hasDeletedUserID: Bool {
+        return proto.deletedUserID.count > 0
+    }
+
+    private init(proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
+        let proto = try GroupsProtos_GroupChange.Actions.DeletePendingMemberAction(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction) throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsDeletePendingMemberAction -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsDeletePendingMemberAction -
+
+        let result = GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto: proto)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupChangeActionsDeletePendingMemberAction {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangeActionsDeletePendingMemberAction.GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeletePendingMemberAction? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - GroupsProtoGroupChangeActionsPromotePendingMemberAction
+
+public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject {
+
+    // MARK: - GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder
+
+    public class func builder() -> GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
+        let builder = GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder()
+        if let _value = presentation {
+            builder.setPresentation(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder: NSObject {
+
+        private var proto = GroupsProtos_GroupChange.Actions.PromotePendingMemberAction()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setPresentation(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.presentation = valueParam
+        }
+
+        public func setPresentation(_ valueParam: Data) {
+            proto.presentation = valueParam
+        }
+
+        public func build() throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
+            return try GroupsProtoGroupChangeActionsPromotePendingMemberAction.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupChangeActionsPromotePendingMemberAction.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction
+
+    public var presentation: Data? {
+        guard hasPresentation else {
+            return nil
+        }
+        return proto.presentation
+    }
+    public var hasPresentation: Bool {
+        return proto.presentation.count > 0
+    }
+
+    private init(proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
+        let proto = try GroupsProtos_GroupChange.Actions.PromotePendingMemberAction(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsPromotePendingMemberAction -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsPromotePendingMemberAction -
+
+        let result = GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto: proto)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupChangeActionsPromotePendingMemberAction {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangeActionsPromotePendingMemberAction.GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsPromotePendingMemberAction? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - GroupsProtoGroupChangeActionsModifyTitleAction
 
 public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
@@ -1107,12 +1899,12 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
         fileprivate override init() {}
 
         @available(swift, obsoleted: 1.0)
-        public func setAvatar(_ valueParam: Data?) {
+        public func setAvatar(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
             proto.avatar = valueParam
         }
 
-        public func setAvatar(_ valueParam: Data) {
+        public func setAvatar(_ valueParam: String) {
             proto.avatar = valueParam
         }
 
@@ -1127,14 +1919,14 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction
 
-    public var avatar: Data? {
+    public var avatar: String? {
         guard hasAvatar else {
             return nil
         }
         return proto.avatar
     }
     public var hasAvatar: Bool {
-        return proto.avatar.count > 0
+        return true
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction) {
@@ -1181,65 +1973,63 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAction.GroupsProtoGroupChange
 
 #endif
 
-// MARK: - GroupsProtoGroupChangeActionsModifyTitleAccessControlAction
+// MARK: - GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction
 
-public class GroupsProtoGroupChangeActionsModifyTitleAccessControlAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction: NSObject {
 
-    // MARK: - GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder
+    // MARK: - GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder
 
-    public class func builder() -> GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder()
+    public class func builder() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder {
-        let builder = GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder()
-        if let _value = titleAccess {
-            builder.setTitleAccess(_value)
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
+        let builder = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder()
+        if let _value = timer {
+            builder.setTimer(_value)
         }
         return builder
     }
 
-    public class GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder: NSObject {
+    public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder: NSObject {
 
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyTitleAccessControlAction()
+        private var proto = GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction()
 
         fileprivate override init() {}
 
-        public func setTitleAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.titleAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+        @available(swift, obsoleted: 1.0)
+        public func setTimer(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.timer = valueParam
         }
 
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAccessControlAction {
-            return try GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.parseProto(proto)
+        public func setTimer(_ valueParam: Data) {
+            proto.timer = valueParam
+        }
+
+        public func build() throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
+            return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.parseProto(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyTitleAccessControlAction
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction
 
-    public var titleAccess: GroupsProtoAccessControlAccessRequired? {
-        guard hasTitleAccess else {
+    public var timer: Data? {
+        guard hasTimer else {
             return nil
         }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.titleAccess)
+        return proto.timer
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedTitleAccess: GroupsProtoAccessControlAccessRequired {
-        if !hasTitleAccess {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: ModifyTitleAccessControlAction.titleAccess.")
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.titleAccess)
-    }
-    public var hasTitleAccess: Bool {
-        return true
+    public var hasTimer: Bool {
+        return proto.timer.count > 0
     }
 
-    private init(proto: GroupsProtos_GroupChange.Actions.ModifyTitleAccessControlAction) {
+    private init(proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction) {
         self.proto = proto
     }
 
@@ -1248,17 +2038,17 @@ public class GroupsProtoGroupChangeActionsModifyTitleAccessControlAction: NSObje
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyTitleAccessControlAction {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyTitleAccessControlAction(serializedData: serializedData)
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyTitleAccessControlAction) throws -> GroupsProtoGroupChangeActionsModifyTitleAccessControlAction {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyTitleAccessControlAction -
+    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction) throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction -
 
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyTitleAccessControlAction -
+        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction -
 
-        let result = GroupsProtoGroupChangeActionsModifyTitleAccessControlAction(proto: proto)
+        let result = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto: proto)
         return result
     }
 
@@ -1269,14 +2059,116 @@ public class GroupsProtoGroupChangeActionsModifyTitleAccessControlAction: NSObje
 
 #if DEBUG
 
-extension GroupsProtoGroupChangeActionsModifyTitleAccessControlAction {
+extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
     public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder {
-    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyTitleAccessControlAction? {
+extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction
+
+public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: NSObject {
+
+    // MARK: - GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder
+
+    public class func builder() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
+        let builder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder()
+        if let _value = attributesAccess {
+            builder.setAttributesAccess(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder: NSObject {
+
+        private var proto = GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction()
+
+        fileprivate override init() {}
+
+        public func setAttributesAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+            proto.attributesAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+        }
+
+        public func build() throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
+            return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction
+
+    public var attributesAccess: GroupsProtoAccessControlAccessRequired? {
+        guard hasAttributesAccess else {
+            return nil
+        }
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.attributesAccess)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedAttributesAccess: GroupsProtoAccessControlAccessRequired {
+        if !hasAttributesAccess {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: ModifyAttributesAccessControlAction.attributesAccess.")
+        }
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.attributesAccess)
+    }
+    public var hasAttributesAccess: Bool {
+        return true
+    }
+
+    private init(proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction) throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction -
+
+        let result = GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto: proto)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction? {
         return try! self.build()
     }
 }
@@ -1500,26 +2392,30 @@ public class GroupsProtoGroupChangeActions: NSObject {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> GroupsProtoGroupChangeActionsBuilder {
         let builder = GroupsProtoGroupChangeActionsBuilder()
-        if let _value = source {
-            builder.setSource(_value)
+        if let _value = sourceUuid {
+            builder.setSourceUuid(_value)
         }
         if hasVersion {
             builder.setVersion(version)
         }
         builder.setAddMembers(addMembers)
         builder.setDeleteMembers(deleteMembers)
-        builder.setModifyMembers(modifyMembers)
+        builder.setModifyMemberRoles(modifyMemberRoles)
+        builder.setModifyMemberProfileKeys(modifyMemberProfileKeys)
+        builder.setAddPendingMembers(addPendingMembers)
+        builder.setDeletePendingMembers(deletePendingMembers)
+        builder.setPromotePendingMembers(promotePendingMembers)
         if let _value = modifyTitle {
             builder.setModifyTitle(_value)
         }
         if let _value = modifyAvatar {
             builder.setModifyAvatar(_value)
         }
-        if let _value = modifyTitleAccess {
-            builder.setModifyTitleAccess(_value)
+        if let _value = modifyDisappearingMessagesTimer {
+            builder.setModifyDisappearingMessagesTimer(_value)
         }
-        if let _value = modifyAvatarAccess {
-            builder.setModifyAvatarAccess(_value)
+        if let _value = modifyAttributesAccess {
+            builder.setModifyAttributesAccess(_value)
         }
         if let _value = modifyMemberAccess {
             builder.setModifyMemberAccess(_value)
@@ -1534,13 +2430,13 @@ public class GroupsProtoGroupChangeActions: NSObject {
         fileprivate override init() {}
 
         @available(swift, obsoleted: 1.0)
-        public func setSource(_ valueParam: GroupsProtoMember?) {
+        public func setSourceUuid(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
-            proto.source = valueParam.proto
+            proto.sourceUuid = valueParam
         }
 
-        public func setSource(_ valueParam: GroupsProtoMember) {
-            proto.source = valueParam.proto
+        public func setSourceUuid(_ valueParam: Data) {
+            proto.sourceUuid = valueParam
         }
 
         public func setVersion(_ valueParam: UInt32) {
@@ -1567,14 +2463,54 @@ public class GroupsProtoGroupChangeActions: NSObject {
             proto.deleteMembers = wrappedItems.map { $0.proto }
         }
 
-        public func addModifyMembers(_ valueParam: GroupsProtoGroupChangeActionsModifyMemberRoleAction) {
-            var items = proto.modifyMembers
+        public func addModifyMemberRoles(_ valueParam: GroupsProtoGroupChangeActionsModifyMemberRoleAction) {
+            var items = proto.modifyMemberRoles
             items.append(valueParam.proto)
-            proto.modifyMembers = items
+            proto.modifyMemberRoles = items
         }
 
-        public func setModifyMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsModifyMemberRoleAction]) {
-            proto.modifyMembers = wrappedItems.map { $0.proto }
+        public func setModifyMemberRoles(_ wrappedItems: [GroupsProtoGroupChangeActionsModifyMemberRoleAction]) {
+            proto.modifyMemberRoles = wrappedItems.map { $0.proto }
+        }
+
+        public func addModifyMemberProfileKeys(_ valueParam: GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction) {
+            var items = proto.modifyMemberProfileKeys
+            items.append(valueParam.proto)
+            proto.modifyMemberProfileKeys = items
+        }
+
+        public func setModifyMemberProfileKeys(_ wrappedItems: [GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction]) {
+            proto.modifyMemberProfileKeys = wrappedItems.map { $0.proto }
+        }
+
+        public func addAddPendingMembers(_ valueParam: GroupsProtoGroupChangeActionsAddPendingMemberAction) {
+            var items = proto.addPendingMembers
+            items.append(valueParam.proto)
+            proto.addPendingMembers = items
+        }
+
+        public func setAddPendingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsAddPendingMemberAction]) {
+            proto.addPendingMembers = wrappedItems.map { $0.proto }
+        }
+
+        public func addDeletePendingMembers(_ valueParam: GroupsProtoGroupChangeActionsDeletePendingMemberAction) {
+            var items = proto.deletePendingMembers
+            items.append(valueParam.proto)
+            proto.deletePendingMembers = items
+        }
+
+        public func setDeletePendingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeletePendingMemberAction]) {
+            proto.deletePendingMembers = wrappedItems.map { $0.proto }
+        }
+
+        public func addPromotePendingMembers(_ valueParam: GroupsProtoGroupChangeActionsPromotePendingMemberAction) {
+            var items = proto.promotePendingMembers
+            items.append(valueParam.proto)
+            proto.promotePendingMembers = items
+        }
+
+        public func setPromotePendingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsPromotePendingMemberAction]) {
+            proto.promotePendingMembers = wrappedItems.map { $0.proto }
         }
 
         @available(swift, obsoleted: 1.0)
@@ -1598,23 +2534,23 @@ public class GroupsProtoGroupChangeActions: NSObject {
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setModifyTitleAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyTitleAccessControlAction?) {
+        public func setModifyDisappearingMessagesTimer(_ valueParam: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction?) {
             guard let valueParam = valueParam else { return }
-            proto.modifyTitleAccess = valueParam.proto
+            proto.modifyDisappearingMessagesTimer = valueParam.proto
         }
 
-        public func setModifyTitleAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyTitleAccessControlAction) {
-            proto.modifyTitleAccess = valueParam.proto
+        public func setModifyDisappearingMessagesTimer(_ valueParam: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction) {
+            proto.modifyDisappearingMessagesTimer = valueParam.proto
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setModifyAvatarAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction?) {
+        public func setModifyAttributesAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction?) {
             guard let valueParam = valueParam else { return }
-            proto.modifyAvatarAccess = valueParam.proto
+            proto.modifyAttributesAccess = valueParam.proto
         }
 
-        public func setModifyAvatarAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction) {
-            proto.modifyAvatarAccess = valueParam.proto
+        public func setModifyAttributesAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction) {
+            proto.modifyAttributesAccess = valueParam.proto
         }
 
         @available(swift, obsoleted: 1.0)
@@ -1638,23 +2574,39 @@ public class GroupsProtoGroupChangeActions: NSObject {
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions
 
-    public let source: GroupsProtoMember?
-
     public let addMembers: [GroupsProtoGroupChangeActionsAddMemberAction]
 
     public let deleteMembers: [GroupsProtoGroupChangeActionsDeleteMemberAction]
 
-    public let modifyMembers: [GroupsProtoGroupChangeActionsModifyMemberRoleAction]
+    public let modifyMemberRoles: [GroupsProtoGroupChangeActionsModifyMemberRoleAction]
+
+    public let modifyMemberProfileKeys: [GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction]
+
+    public let addPendingMembers: [GroupsProtoGroupChangeActionsAddPendingMemberAction]
+
+    public let deletePendingMembers: [GroupsProtoGroupChangeActionsDeletePendingMemberAction]
+
+    public let promotePendingMembers: [GroupsProtoGroupChangeActionsPromotePendingMemberAction]
 
     public let modifyTitle: GroupsProtoGroupChangeActionsModifyTitleAction?
 
     public let modifyAvatar: GroupsProtoGroupChangeActionsModifyAvatarAction?
 
-    public let modifyTitleAccess: GroupsProtoGroupChangeActionsModifyTitleAccessControlAction?
+    public let modifyDisappearingMessagesTimer: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction?
 
-    public let modifyAvatarAccess: GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction?
+    public let modifyAttributesAccess: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction?
 
     public let modifyMemberAccess: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction?
+
+    public var sourceUuid: Data? {
+        guard hasSourceUuid else {
+            return nil
+        }
+        return proto.sourceUuid
+    }
+    public var hasSourceUuid: Bool {
+        return proto.sourceUuid.count > 0
+    }
 
     public var version: UInt32 {
         return proto.version
@@ -1664,24 +2616,30 @@ public class GroupsProtoGroupChangeActions: NSObject {
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions,
-                 source: GroupsProtoMember?,
                  addMembers: [GroupsProtoGroupChangeActionsAddMemberAction],
                  deleteMembers: [GroupsProtoGroupChangeActionsDeleteMemberAction],
-                 modifyMembers: [GroupsProtoGroupChangeActionsModifyMemberRoleAction],
+                 modifyMemberRoles: [GroupsProtoGroupChangeActionsModifyMemberRoleAction],
+                 modifyMemberProfileKeys: [GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction],
+                 addPendingMembers: [GroupsProtoGroupChangeActionsAddPendingMemberAction],
+                 deletePendingMembers: [GroupsProtoGroupChangeActionsDeletePendingMemberAction],
+                 promotePendingMembers: [GroupsProtoGroupChangeActionsPromotePendingMemberAction],
                  modifyTitle: GroupsProtoGroupChangeActionsModifyTitleAction?,
                  modifyAvatar: GroupsProtoGroupChangeActionsModifyAvatarAction?,
-                 modifyTitleAccess: GroupsProtoGroupChangeActionsModifyTitleAccessControlAction?,
-                 modifyAvatarAccess: GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction?,
+                 modifyDisappearingMessagesTimer: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction?,
+                 modifyAttributesAccess: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction?,
                  modifyMemberAccess: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction?) {
         self.proto = proto
-        self.source = source
         self.addMembers = addMembers
         self.deleteMembers = deleteMembers
-        self.modifyMembers = modifyMembers
+        self.modifyMemberRoles = modifyMemberRoles
+        self.modifyMemberProfileKeys = modifyMemberProfileKeys
+        self.addPendingMembers = addPendingMembers
+        self.deletePendingMembers = deletePendingMembers
+        self.promotePendingMembers = promotePendingMembers
         self.modifyTitle = modifyTitle
         self.modifyAvatar = modifyAvatar
-        self.modifyTitleAccess = modifyTitleAccess
-        self.modifyAvatarAccess = modifyAvatarAccess
+        self.modifyDisappearingMessagesTimer = modifyDisappearingMessagesTimer
+        self.modifyAttributesAccess = modifyAttributesAccess
         self.modifyMemberAccess = modifyMemberAccess
     }
 
@@ -1696,41 +2654,48 @@ public class GroupsProtoGroupChangeActions: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions) throws -> GroupsProtoGroupChangeActions {
-        var source: GroupsProtoMember? = nil
-        if proto.hasSource {
-            source = try GroupsProtoMember.parseProto(proto.source)
-        }
-
         var addMembers: [GroupsProtoGroupChangeActionsAddMemberAction] = []
         addMembers = try proto.addMembers.map { try GroupsProtoGroupChangeActionsAddMemberAction.parseProto($0) }
 
         var deleteMembers: [GroupsProtoGroupChangeActionsDeleteMemberAction] = []
         deleteMembers = try proto.deleteMembers.map { try GroupsProtoGroupChangeActionsDeleteMemberAction.parseProto($0) }
 
-        var modifyMembers: [GroupsProtoGroupChangeActionsModifyMemberRoleAction] = []
-        modifyMembers = try proto.modifyMembers.map { try GroupsProtoGroupChangeActionsModifyMemberRoleAction.parseProto($0) }
+        var modifyMemberRoles: [GroupsProtoGroupChangeActionsModifyMemberRoleAction] = []
+        modifyMemberRoles = try proto.modifyMemberRoles.map { try GroupsProtoGroupChangeActionsModifyMemberRoleAction.parseProto($0) }
 
-        var modifyTitle: GroupsProtoGroupChangeActionsModifyTitleAction? = nil
+        var modifyMemberProfileKeys: [GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction] = []
+        modifyMemberProfileKeys = try proto.modifyMemberProfileKeys.map { try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.parseProto($0) }
+
+        var addPendingMembers: [GroupsProtoGroupChangeActionsAddPendingMemberAction] = []
+        addPendingMembers = try proto.addPendingMembers.map { try GroupsProtoGroupChangeActionsAddPendingMemberAction.parseProto($0) }
+
+        var deletePendingMembers: [GroupsProtoGroupChangeActionsDeletePendingMemberAction] = []
+        deletePendingMembers = try proto.deletePendingMembers.map { try GroupsProtoGroupChangeActionsDeletePendingMemberAction.parseProto($0) }
+
+        var promotePendingMembers: [GroupsProtoGroupChangeActionsPromotePendingMemberAction] = []
+        promotePendingMembers = try proto.promotePendingMembers.map { try GroupsProtoGroupChangeActionsPromotePendingMemberAction.parseProto($0) }
+
+        var modifyTitle: GroupsProtoGroupChangeActionsModifyTitleAction?
         if proto.hasModifyTitle {
             modifyTitle = try GroupsProtoGroupChangeActionsModifyTitleAction.parseProto(proto.modifyTitle)
         }
 
-        var modifyAvatar: GroupsProtoGroupChangeActionsModifyAvatarAction? = nil
+        var modifyAvatar: GroupsProtoGroupChangeActionsModifyAvatarAction?
         if proto.hasModifyAvatar {
             modifyAvatar = try GroupsProtoGroupChangeActionsModifyAvatarAction.parseProto(proto.modifyAvatar)
         }
 
-        var modifyTitleAccess: GroupsProtoGroupChangeActionsModifyTitleAccessControlAction? = nil
-        if proto.hasModifyTitleAccess {
-            modifyTitleAccess = try GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.parseProto(proto.modifyTitleAccess)
+        var modifyDisappearingMessagesTimer: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction?
+        if proto.hasModifyDisappearingMessagesTimer {
+            modifyDisappearingMessagesTimer = try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.parseProto(proto.modifyDisappearingMessagesTimer)
         }
 
-        var modifyAvatarAccess: GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction? = nil
-        if proto.hasModifyAvatarAccess {
-            modifyAvatarAccess = try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.parseProto(proto.modifyAvatarAccess)
+        var modifyAttributesAccess: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction?
+        if proto.hasModifyAttributesAccess {
+            modifyAttributesAccess = try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.parseProto(proto.modifyAttributesAccess)
         }
 
-        var modifyMemberAccess: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction? = nil
+        var modifyMemberAccess: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction?
         if proto.hasModifyMemberAccess {
             modifyMemberAccess = try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.parseProto(proto.modifyMemberAccess)
         }
@@ -1740,14 +2705,17 @@ public class GroupsProtoGroupChangeActions: NSObject {
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActions -
 
         let result = GroupsProtoGroupChangeActions(proto: proto,
-                                                   source: source,
                                                    addMembers: addMembers,
                                                    deleteMembers: deleteMembers,
-                                                   modifyMembers: modifyMembers,
+                                                   modifyMemberRoles: modifyMemberRoles,
+                                                   modifyMemberProfileKeys: modifyMemberProfileKeys,
+                                                   addPendingMembers: addPendingMembers,
+                                                   deletePendingMembers: deletePendingMembers,
+                                                   promotePendingMembers: promotePendingMembers,
                                                    modifyTitle: modifyTitle,
                                                    modifyAvatar: modifyAvatar,
-                                                   modifyTitleAccess: modifyTitleAccess,
-                                                   modifyAvatarAccess: modifyAvatarAccess,
+                                                   modifyDisappearingMessagesTimer: modifyDisappearingMessagesTimer,
+                                                   modifyAttributesAccess: modifyAttributesAccess,
                                                    modifyMemberAccess: modifyMemberAccess)
         return result
     }
@@ -1890,6 +2858,225 @@ extension GroupsProtoGroupChange {
 
 extension GroupsProtoGroupChange.GroupsProtoGroupChangeBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChange? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - GroupsProtoGroupChangesGroupChangeState
+
+public class GroupsProtoGroupChangesGroupChangeState: NSObject {
+
+    // MARK: - GroupsProtoGroupChangesGroupChangeStateBuilder
+
+    public class func builder() -> GroupsProtoGroupChangesGroupChangeStateBuilder {
+        return GroupsProtoGroupChangesGroupChangeStateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangesGroupChangeStateBuilder {
+        let builder = GroupsProtoGroupChangesGroupChangeStateBuilder()
+        if let _value = groupChange {
+            builder.setGroupChange(_value)
+        }
+        if let _value = groupState {
+            builder.setGroupState(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoGroupChangesGroupChangeStateBuilder: NSObject {
+
+        private var proto = GroupsProtos_GroupChanges.GroupChangeState()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setGroupChange(_ valueParam: GroupsProtoGroupChange?) {
+            guard let valueParam = valueParam else { return }
+            proto.groupChange = valueParam.proto
+        }
+
+        public func setGroupChange(_ valueParam: GroupsProtoGroupChange) {
+            proto.groupChange = valueParam.proto
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setGroupState(_ valueParam: GroupsProtoGroup?) {
+            guard let valueParam = valueParam else { return }
+            proto.groupState = valueParam.proto
+        }
+
+        public func setGroupState(_ valueParam: GroupsProtoGroup) {
+            proto.groupState = valueParam.proto
+        }
+
+        public func build() throws -> GroupsProtoGroupChangesGroupChangeState {
+            return try GroupsProtoGroupChangesGroupChangeState.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupChangesGroupChangeState.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupChanges.GroupChangeState
+
+    public let groupChange: GroupsProtoGroupChange?
+
+    public let groupState: GroupsProtoGroup?
+
+    private init(proto: GroupsProtos_GroupChanges.GroupChangeState,
+                 groupChange: GroupsProtoGroupChange?,
+                 groupState: GroupsProtoGroup?) {
+        self.proto = proto
+        self.groupChange = groupChange
+        self.groupState = groupState
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangesGroupChangeState {
+        let proto = try GroupsProtos_GroupChanges.GroupChangeState(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChanges.GroupChangeState) throws -> GroupsProtoGroupChangesGroupChangeState {
+        var groupChange: GroupsProtoGroupChange?
+        if proto.hasGroupChange {
+            groupChange = try GroupsProtoGroupChange.parseProto(proto.groupChange)
+        }
+
+        var groupState: GroupsProtoGroup?
+        if proto.hasGroupState {
+            groupState = try GroupsProtoGroup.parseProto(proto.groupState)
+        }
+
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChangesGroupChangeState -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupChangesGroupChangeState -
+
+        let result = GroupsProtoGroupChangesGroupChangeState(proto: proto,
+                                                             groupChange: groupChange,
+                                                             groupState: groupState)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupChangesGroupChangeState {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangesGroupChangeState.GroupsProtoGroupChangesGroupChangeStateBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangesGroupChangeState? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - GroupsProtoGroupChanges
+
+public class GroupsProtoGroupChanges: NSObject {
+
+    // MARK: - GroupsProtoGroupChangesBuilder
+
+    public class func builder() -> GroupsProtoGroupChangesBuilder {
+        return GroupsProtoGroupChangesBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangesBuilder {
+        let builder = GroupsProtoGroupChangesBuilder()
+        builder.setGroupChanges(groupChanges)
+        return builder
+    }
+
+    public class GroupsProtoGroupChangesBuilder: NSObject {
+
+        private var proto = GroupsProtos_GroupChanges()
+
+        fileprivate override init() {}
+
+        public func addGroupChanges(_ valueParam: GroupsProtoGroupChangesGroupChangeState) {
+            var items = proto.groupChanges
+            items.append(valueParam.proto)
+            proto.groupChanges = items
+        }
+
+        public func setGroupChanges(_ wrappedItems: [GroupsProtoGroupChangesGroupChangeState]) {
+            proto.groupChanges = wrappedItems.map { $0.proto }
+        }
+
+        public func build() throws -> GroupsProtoGroupChanges {
+            return try GroupsProtoGroupChanges.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupChanges.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupChanges
+
+    public let groupChanges: [GroupsProtoGroupChangesGroupChangeState]
+
+    private init(proto: GroupsProtos_GroupChanges,
+                 groupChanges: [GroupsProtoGroupChangesGroupChangeState]) {
+        self.proto = proto
+        self.groupChanges = groupChanges
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChanges {
+        let proto = try GroupsProtos_GroupChanges(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChanges) throws -> GroupsProtoGroupChanges {
+        var groupChanges: [GroupsProtoGroupChangesGroupChangeState] = []
+        groupChanges = try proto.groupChanges.map { try GroupsProtoGroupChangesGroupChangeState.parseProto($0) }
+
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChanges -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupChanges -
+
+        let result = GroupsProtoGroupChanges(proto: proto,
+                                             groupChanges: groupChanges)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupChanges {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChanges.GroupsProtoGroupChangesBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChanges? {
         return try! self.build()
     }
 }

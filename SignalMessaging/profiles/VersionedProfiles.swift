@@ -173,9 +173,12 @@ public class VersionedProfiles: NSObject {
     // MARK: - Get
 
     private class func serverPublicParamsData() throws -> Data {
-        // TODO:
-        let encodedData = "SuMgznNiYR62ugEvVDnAY3x62QyGtfEWzBU0YZqcZSCWjqlmfAwZUUNNLHSJk5vj+XLygPV50/fG+yBYuPh5XGgEjczpd3VH3TqYvCnapHzqb5jW7OT/+DwT3010IBYvcon18UD4XRlgwERd12dh2Ffg6lOl3V2OMYKJoGKf4GIIR2r5316X4kP/9Nwau9vi4wggk0jGvQmlp3MAqRFvaxCCNz+DGDY4gkoA6JKWlzbOowu5fVpvREQimocRXoohFiAXqDbGhpWc7mcK3SIvEzpYVOHuhDi5/bjlTi+ugEBy+KjbWUpkEwI3lVlZAkpK1PT3rDVg66RApfimK3OLXQ=="
-
+        // GroupsV2 TODO: This if for staging. We need the production values.
+        // We should also move this to TSConstants.
+        //
+        // We need to discard all profile key credentials if these values ever change.
+        // See: VersionedProfiles.clearProfileKeyCredentials(...)
+        let encodedData = "Mmngo/SFRpC5kRLUKE8sXnpUx0QhQGcxUGI3b5eQXUX0kgK6SSL7XWcmjQv2ZsL5qKqyADTfhBakDSSfVEr2dHheAw/6JYMjgXnYZAn1845KOk9gHwWGaISIZWR55u4xpHdqZhZBdUyQ2MuDpIurLWifw8Jq/W6pumywOTg6zAeegHWx9MwyGaQD4R35nAAcPgqWuKrlIBX/z7kCYDwEFCaZwW+KmB0HluyEN362MzuzgGv+zK1SZR2aIpBmtsFYeG7FAV7aXXwB0aqB+5kDBJYCdhrzxWAqnWHC0Gm0JFASX3yaxmIWElacrfYtqLAP9KZcfViLRa4IiBIx3w9OAQ=="
         guard let data = Data(base64Encoded: encodedData),
             data.count > 0 else {
                 throw OWSErrorMakeAssertionError("Invalid server public params")
@@ -184,7 +187,8 @@ public class VersionedProfiles: NSObject {
         return data
     }
 
-    private class func serverPublicParams() throws -> ServerPublicParams {
+    // GroupsV2 TODO: Move this elsewhere, maybe TSConstants?
+    public class func serverPublicParams() throws -> ServerPublicParams {
         let data = try serverPublicParamsData()
         let bytes = [UInt8](data)
         return try ServerPublicParams(contents: bytes)
@@ -219,7 +223,7 @@ public class VersionedProfiles: NSObject {
             if credential == nil {
                 let clientZkProfileOperations = try self.clientZkProfileOperations()
                 let uuidData: Data = withUnsafeBytes(of: uuid.uuid) { Data($0) }
-                let requestUuid = try ZKGroup.ZKGUuid(contents: [UInt8](uuidData))
+                let requestUuid = try ZKGUuid(contents: [UInt8](uuidData))
                 let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(uuid: requestUuid,
                                                                                                      profileKey: profileKey)
                 requestContext = context
@@ -300,6 +304,23 @@ public class VersionedProfiles: NSObject {
         let bytes = [UInt8](data)
         let credential = try ProfileKeyCredential(contents: bytes)
         return credential
+    }
+
+    @objc(clearProfileKeyCredentialForAddress:transaction:)
+    public class func clearProfileKeyCredential(for address: SignalServiceAddress,
+                                                transaction: SDSAnyWriteTransaction) {
+        guard address.isValid else {
+            owsFailDebug("Invalid address: \(address)")
+            return
+        }
+        guard let uuid = address.uuid else {
+            return
+        }
+        credentialStore.removeValue(forKey: uuid.uuidString)
+    }
+
+    public class func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {
+        credentialStore.removeAll(transaction: transaction)
     }
 }
 

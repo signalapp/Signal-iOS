@@ -335,16 +335,16 @@ public class ProfileFetcherJob: NSObject {
         }
 
         let canFailoverUDAuth = true
-        var currentRequest: VersionedProfileRequest?
+        var currentVersionedProfileRequest: VersionedProfileRequest?
         let requestMaker = RequestMaker(label: "Profile Fetch",
                                         requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest? in
                                             // Clear out any existing request.
-                                            currentRequest = nil
+                                            currentVersionedProfileRequest = nil
 
                                             if shouldUseVersionedFetch {
                                                 do {
                                                     let request = try VersionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
-                                                    currentRequest = request
+                                                    currentVersionedProfileRequest = request
                                                     return request.request
                                                 } catch {
                                                     owsFailDebug("Error: \(error)")
@@ -364,8 +364,8 @@ public class ProfileFetcherJob: NSObject {
             .map(on: DispatchQueue.global()) { (result: RequestMakerResult) -> SignalServiceProfile in
                 try SignalServiceProfile(address: address, responseObject: result.responseObject)
         }.map(on: DispatchQueue.global()) { (profile: SignalServiceProfile) -> SignalServiceProfile in
-            if let currentRequest = currentRequest {
-                VersionedProfiles.didFetchProfile(profile: profile, profileRequest: currentRequest)
+            if let profileRequest = currentVersionedProfileRequest {
+                VersionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
             }
             return profile
         }
