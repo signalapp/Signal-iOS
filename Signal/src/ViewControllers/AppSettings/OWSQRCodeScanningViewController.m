@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.capture) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             self.capture = [[ZXCapture alloc] init];
-            self.capture.invert = YES;
+//            self.capture.invert = YES;
             self.capture.camera = self.capture.back;
             self.capture.focusMode = AVCaptureFocusModeContinuousAutoFocus;
             self.capture.delegate = self;
