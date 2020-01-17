@@ -1362,7 +1362,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (groupId.length > 0) {
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
-        NSMutableSet *removedMemberIds = [NSMutableSet setWithArray:dataMessage.group.removedMembers];
+        NSMutableSet *removedMemberIds = [NSMutableSet new];
+        if (dataMessage.group.removedMembers) {
+            removedMemberIds = [NSMutableSet setWithArray:dataMessage.group.removedMembers];
+        }
         //Ryan TODO: validate the recipientId
 //        for (NSString *recipientId in newMemberIds) {
 //            if (!recipientId.isValidE164) {

@@ -955,8 +955,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSOutgoingMessage *message = messageSend.message;
     NSString *contactID = messageSend.recipient.recipientId;
     BOOL isGroupMessage = messageSend.thread.isGroupThread;
+    BOOL isPublicChatMessage = isGroupMessage && ((TSGroupThread *)messageSend.thread).isPublicChat;
     BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
-    if (isGroupMessage || isDeviceLinkMessage) {
+    if (isPublicChatMessage || isDeviceLinkMessage) {
         [self sendMessage:messageSend];
     } else {
         BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];
@@ -983,6 +984,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSArray *slaveDestinations = [destinations filtered:^BOOL(LKDestination *destination) {
                 return [destination.kind isEqual:@"slave"];
             }];
+            OWSLogInfo(@"Slave deveice for %@ %@", contactID, [slaveDestinations count] > 0 ? slaveDestinations[0] : @"None");
             // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
             for (LKDestination *slaveDestination in slaveDestinations) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:slaveDestination.hexEncodedPublicKey];
@@ -1003,7 +1005,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)sendMessage:(OWSMessageSend *)messageSend
 {
-    OWSLogInfo(@"message send here %@ %@", messageSend.message.body, messageSend.recipient.recipientId);
     OWSAssertDebug(messageSend);
     OWSAssertDebug(messageSend.thread || [messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]);
 
