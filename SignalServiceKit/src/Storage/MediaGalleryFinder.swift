@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -149,7 +149,7 @@ public class GRDBMediaGalleryFinder: NSObject {
 
     public class func removeAnyGalleryRecord(attachmentStream: TSAttachmentStream, transaction: GRDBWriteTransaction) throws {
         let sql = """
-        DELETE FROM \(MediaGalleryRecord.databaseTableName) WHERE attachmentId = ?
+            DELETE FROM \(MediaGalleryRecord.databaseTableName) WHERE attachmentId = ?
         """
         guard let attachmentId = attachmentStream.grdbId else {
             owsFailDebug("attachmentId was unexpectedly nil")
@@ -161,7 +161,7 @@ public class GRDBMediaGalleryFinder: NSObject {
             return
         }
 
-        try transaction.database.execute(sql: sql, arguments: [attachmentId.int64Value])
+        transaction.executeUpdate(sql: sql, arguments: [attachmentId.int64Value])
     }
 
     public class func insertGalleryRecord(attachmentStream: TSAttachmentStream, transaction: GRDBWriteTransaction) throws {

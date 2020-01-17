@@ -117,9 +117,8 @@ public class VersionedProfiles: NSObject {
             }
 
             let profileKeyVersion = try localProfileKey.getProfileKeyVersion()
-            let profileKeyVersionData = profileKeyVersion.serialize().asData
-
-            let request = OWSRequestFactory.versionedProfileSetRequest(withName: nameData, hasAvatar: hasAvatar, version: profileKeyVersionData, commitment: commitmentData)
+            let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
+            let request = OWSRequestFactory.versionedProfileSetRequest(withName: nameData, hasAvatar: hasAvatar, version: profileKeyVersionString, commitment: commitmentData)
             return self.networkManager.makePromise(request: request)
         }.then(on: DispatchQueue.global()) { (_: URLSessionDataTask, responseObject: Any?) -> Promise<VersionedProfileUpdate> in
             if let profileAvatarData = profileAvatarData {
@@ -186,7 +185,7 @@ public class VersionedProfiles: NSObject {
         }
 
         var requestContext: ProfileKeyCredentialRequestContext?
-        var profileKeyVersionArg: Data?
+        var profileKeyVersionArg: String?
         var credentialRequestArg: Data?
         try databaseStorage.read { transaction in
             // We try to include the profile key if we have one.
@@ -195,8 +194,7 @@ public class VersionedProfiles: NSObject {
             }
             let profileKey: ProfileKey = try self.parseProfileKey(profileKey: profileKeyForAddress)
             let profileKeyVersion = try profileKey.getProfileKeyVersion()
-            let profileKeyVersionData = profileKeyVersion.serialize().asData
-            profileKeyVersionArg = profileKeyVersionData
+            profileKeyVersionArg = try profileKeyVersion.asHexadecimalString()
 
             // We need to request a credential if we don't have one already.
             let credential = try self.profileKeyCredentialData(for: address, transaction: transaction)

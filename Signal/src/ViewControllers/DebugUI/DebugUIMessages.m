@@ -239,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
                   OWSLogInfo(@"Requesting bogus group info for thread: %@", thread);
                   OWSGroupInfoRequestMessage *groupInfoRequestMessage =
                       [[OWSGroupInfoRequestMessage alloc] initWithThread:thread
-                                                                  groupId:[TSGroupModel generateRandomGroupId]];
+                                                                 groupId:[TSGroupModel generateRandomV1GroupId]];
                   [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
                       [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer
                                                  transaction:transaction];
@@ -4405,6 +4405,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         groupId:nil
         name:groupName
         avatarData:nil
+        newGroupSeed:nil
         shouldSendMessage:YES
         success:^(TSGroupThread *thread) {
             success(thread);

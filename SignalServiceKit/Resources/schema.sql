@@ -839,3 +839,23 @@ CREATE
     ,"callType"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_IncomingGroupsV2MessageJob" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"createdAt" DOUBLE NOT NULL
+            ,"envelopeData" BLOB NOT NULL
+            ,"plaintextData" BLOB
+            ,"wasReceivedByUD" INTEGER NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_IncomingGroupsV2MessageJob_on_uniqueId"
+        ON "model_IncomingGroupsV2MessageJob"("uniqueId"
+)
+;

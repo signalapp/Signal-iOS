@@ -28,6 +28,8 @@ public struct GroupV2StateImpl: GroupV2State {
         let timestamp: UInt64
     }
 
+    public let groupSecretParamsData: Data
+
     public let groupProto: GroupsProtoGroup
 
     public let version: UInt32

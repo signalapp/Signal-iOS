@@ -87,7 +87,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         OWSLinkedDeviceReadReceipt.table,
         OWSDevice.table,
         TestModel.table,
-        OWSReaction.table
+        OWSReaction.table,
+        IncomingGroupsV2MessageJob.table
         // NOTE: We don't include OWSMessageDecryptJob,
         // since we should never use it with GRDB.
     ]

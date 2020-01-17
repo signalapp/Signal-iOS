@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -468,6 +468,6 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
             DELETE FROM \(ReactionRecord.databaseTableName)
             WHERE \(reactionColumn: .uniqueMessageId) = ?
         """
-        try transaction.database.execute(sql: sql, arguments: [uniqueMessageId])
+        transaction.executeUpdate(sql: sql, arguments: [uniqueMessageId])
     }
 }

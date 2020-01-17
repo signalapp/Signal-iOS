@@ -55,6 +55,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createIndexableFTSTable
         case dropContactQuery
         case indexFailedJob
+        case groupsV2MessageJobs
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -306,6 +307,26 @@ public class GRDBSchemaMigrator: NSObject {
             try db.create(index: "index_interaction_on_recordType_and_callType",
                           on: "model_TSInteraction",
                           columns: ["recordType", "callType"])
+        }
+
+        migrator.registerMigration(MigrationId.groupsV2MessageJobs.rawValue) { db in
+            try db.create(table: "model_IncomingGroupsV2MessageJob") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("recordType", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("createdAt", .double)
+                    .notNull()
+                table.column("envelopeData", .blob)
+                    .notNull()
+                table.column("plaintextData", .blob)
+                table.column("wasReceivedByUD", .integer)
+                    .notNull()
+            }
+            try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_uniqueId", on: "model_IncomingGroupsV2MessageJob", columns: ["uniqueId"])
         }
 
         return migrator

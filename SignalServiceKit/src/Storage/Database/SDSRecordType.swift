@@ -13,6 +13,7 @@ import SignalCoreKit
 public enum SDSRecordType: UInt {
     case baseModel = 56
     case experienceUpgrade = 55
+    case incomingGroupsV2MessageJob = 63
     case installedSticker = 24
     case knownStickerPack = 29
     case _100RemoveTSRecipientsMigration = 40

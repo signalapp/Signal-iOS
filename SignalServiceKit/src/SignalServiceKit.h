@@ -8,6 +8,7 @@
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
 #import <SignalServiceKit/ExperienceUpgrade.h>
+#import <SignalServiceKit/GroupsV2MessageProcessor.h>
 #import <SignalServiceKit/InstalledSticker.h>
 #import <SignalServiceKit/KnownStickerPack.h>
 #import <SignalServiceKit/MockSSKEnvironment.h>

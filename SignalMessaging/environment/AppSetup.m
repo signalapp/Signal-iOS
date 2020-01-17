@@ -11,6 +11,7 @@
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
+#import <SignalServiceKit/GroupsV2MessageProcessor.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
@@ -83,6 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
         SSKMessageDecryptJobQueue *messageDecryptJobQueue = [SSKMessageDecryptJobQueue new];
         OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
         OWSMessageReceiver *messageReceiver = [OWSMessageReceiver new];
+        GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
         TSAccountManager *tsAccountManager = [TSAccountManager new];
         OWS2FAManager *ows2FAManager = [OWS2FAManager new];
@@ -138,6 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            messageDecryptJobQueue:messageDecryptJobQueue
                                                             batchMessageProcessor:batchMessageProcessor
                                                                   messageReceiver:messageReceiver
+                                                         groupsV2MessageProcessor:groupsV2MessageProcessor
                                                                     socketManager:socketManager
                                                                  tsAccountManager:tsAccountManager
                                                                     ows2FAManager:ows2FAManager

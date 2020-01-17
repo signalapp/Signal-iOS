@@ -111,7 +111,8 @@ NSString *const kAliceRecipientId = @"+13213214321";
 
 - (void)test_GroupUpdate
 {
-    NSData *groupId = [TSGroupModel generateRandomGroupId];
+    // GroupsV2 TODO: Handle v2 groups.
+    NSData *groupId = [TSGroupModel generateRandomV1GroupId];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         TSGroupThread *_Nullable thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
         XCTAssertNil(thread);
@@ -145,7 +146,8 @@ NSString *const kAliceRecipientId = @"+13213214321";
 
 - (void)test_GroupUpdateWithAvatar
 {
-    NSData *groupId = [TSGroupModel generateRandomGroupId];
+    // GroupsV2 TODO: Handle v2 groups.
+    NSData *groupId = [TSGroupModel generateRandomV1GroupId];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         TSGroupThread *_Nullable thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
         XCTAssertNil(thread);

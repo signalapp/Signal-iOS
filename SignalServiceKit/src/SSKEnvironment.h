@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class AccountServiceClient;
 @class ContactsUpdater;
+@class GroupsV2MessageProcessor;
 @class MessageSenderJobQueue;
 @class OWS2FAManager;
 @class OWSAttachmentDownloads;
@@ -69,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
                  messageDecryptJobQueue:(SSKMessageDecryptJobQueue *)messageDecryptJobQueue
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
                         messageReceiver:(OWSMessageReceiver *)messageReceiver
+               groupsV2MessageProcessor:(GroupsV2MessageProcessor *)groupsV2MessageProcessor
                           socketManager:(TSSocketManager *)socketManager
                        tsAccountManager:(TSAccountManager *)tsAccountManager
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
@@ -117,6 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SSKMessageDecryptJobQueue *messageDecryptJobQueue;
 @property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
 @property (nonatomic, readonly) OWSMessageReceiver *messageReceiver;
+@property (nonatomic, readonly) GroupsV2MessageProcessor *groupsV2MessageProcessor;
 @property (nonatomic, readonly) TSSocketManager *socketManager;
 @property (nonatomic, readonly) TSAccountManager *tsAccountManager;
 @property (nonatomic, readonly) OWS2FAManager *ows2FAManager;

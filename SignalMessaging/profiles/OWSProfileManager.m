@@ -455,7 +455,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (nullable NSData *)groupIdForGroupKey:(NSString *)groupKey {
     NSData *_Nullable groupId = [NSData dataFromHexString:groupKey];
-    if (groupId.length != (NSUInteger)kGroupIdLength) {
+    // Make sure that the group id is a valid v1 or v2 group id.
+    if (![GroupManager isValidGroupIdOfAnyKind:groupId]) {
         OWSFailDebug(@"Parsed group id has unexpected length: %@ (%lu)",
             groupId.hexadecimalString,
             (unsigned long)groupId.length);

@@ -166,6 +166,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.sessionStore;
 }
 
+- (id<GroupsV2>)groupsV2
+{
+    return SSKEnvironment.shared.groupsV2;
+}
+
 #pragma mark -
 
 - (void)startObserving
@@ -217,6 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(dataMessage);
     OWSAssertDebug(envelope);
 
+    // GroupsV2 TODO: Handle groups v2.
     if (dataMessage.group) {
         return [self.blockingManager isGroupIdBlocked:dataMessage.group.id];
     } else {
@@ -512,6 +518,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
         NSString *logMessage =
             [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceAddress];
+        // GroupsV2 TODO: Handle groups v2.
         if (dataMessage.group) {
             logMessage = [logMessage stringByAppendingFormat:@" in group: %@", dataMessage.group.id];
         }
@@ -548,49 +555,38 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (dataMessage.group) {
-        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:dataMessage.group.id
-                                                                   transaction:transaction];
-
-        if (!dataMessage.group.hasType) {
-            OWSFailDebug(@"Group message is missing type.");
-            return;
-        }
-        if (groupThread) {
-            if (dataMessage.group.unwrappedType != SSKProtoGroupContextTypeUpdate) {
-                if (!groupThread.isLocalUserInGroup) {
-                    OWSLogInfo(@"Ignoring messages for left group.");
-                    return;
-                }
-            }
-        } else {
-            // Unknown group.
-            if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeUpdate) {
-                // Accept group updates for unknown groups.
-            } else if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeDeliver) {
-                [self sendGroupInfoRequestWithGroupId:dataMessage.group.id envelope:envelope transaction:transaction];
-                return;
-            } else {
-                OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.sourceAddress);
-                return;
-            }
-        }
+    // Pre-process the data message.  For v1 and v2 group messages this involves
+    // checking group state, possibly creating the group thread, possibly
+    // responding to group info requests, etc.
+    //
+    // If we can and should try to "process" (e.g. generate user-visible interactions)
+    // for the data message, preprocessDataMessage will return a thread.  If not, we
+    // should abort immediately.
+    TSThread *_Nullable thread = [self preprocessDataMessage:dataMessage envelope:envelope transaction:transaction];
+    if (thread == nil) {
+        return;
     }
 
+    // GroupsV2 TODO: Review this, in light of early exit immediately above.
     if ((dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0) {
         [self handleEndSessionMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0) {
-        [self handleExpirationTimerUpdateMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
+        [self handleExpirationTimerUpdateMessageWithEnvelope:envelope
+                                                 dataMessage:dataMessage
+                                                      thread:thread
+                                                 transaction:transaction];
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsProfileKeyUpdate) != 0) {
         [self handleProfileKeyMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if (dataMessage.attachments.count > 0) {
         [self handleReceivedMediaWithEnvelope:envelope
                                   dataMessage:dataMessage
+                                       thread:thread
                               wasReceivedByUD:wasReceivedByUD
                                   transaction:transaction];
     } else {
         [self handleReceivedTextMessageWithEnvelope:envelope
                                         dataMessage:dataMessage
+                                             thread:thread
                                     wasReceivedByUD:wasReceivedByUD
                                         transaction:transaction];
     }
@@ -598,6 +594,153 @@ NS_ASSUME_NONNULL_BEGIN
     // Send delivery receipts for "valid data" messages received via UD.
     if (wasReceivedByUD) {
         [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope transaction:transaction];
+    }
+}
+
+// Returns a thread reference if message processing should proceed.
+// Message processing is generating user-visible interactions, etc.
+// We don't want to do that if:
+//
+// * The data message is malformed.
+// * The data message is a v1 group update, info request, quit -
+//   anything but a "delivery".
+// * The data message corresponds to an unknown v1 group and we are
+//   responding with a group info request.
+// * The local user is not in the group.
+- (nullable TSThread *)preprocessDataMessage:(SSKProtoDataMessage *)dataMessage
+                                    envelope:(SSKProtoEnvelope *)envelope
+                                 transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (dataMessage.group != nil) {
+        // V1 Group.
+        SSKProtoGroupContext *groupContext = dataMessage.group;
+        NSData *_Nullable groupId = groupContext.id;
+        if (![GroupManager isValidGroupId:groupId groupsVersion:GroupsVersionV1]) {
+            OWSFailDebug(@"Invalid group id: %lu.", (unsigned long)groupId.length);
+            return nil;
+        }
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+
+        if (!groupContext.hasType) {
+            OWSFailDebug(@"Group message is missing type.");
+            return nil;
+        }
+        SSKProtoGroupContextType groupContextType = groupContext.unwrappedType;
+        if (groupContextType == SSKProtoGroupContextTypeUpdate) {
+            // Always accept group updates for groups.
+            [self handleGroupStateChangeWithEnvelope:envelope
+                                         dataMessage:dataMessage
+                                        groupContext:groupContext
+                                         transaction:transaction];
+            return nil;
+        }
+        if (groupThread) {
+            if (!groupThread.isLocalUserInGroup) {
+                OWSLogInfo(@"Ignoring messages for left group.");
+                return nil;
+            }
+
+            switch (groupContextType) {
+                case SSKProtoGroupContextTypeUpdate:
+                    OWSFailDebug(@"Unexpected group context type.");
+                    return nil;
+                case SSKProtoGroupContextTypeQuit:
+                    [self handleGroupStateChangeWithEnvelope:envelope
+                                                 dataMessage:dataMessage
+                                                groupContext:groupContext
+                                                 transaction:transaction];
+                    return nil;
+                case SSKProtoGroupContextTypeDeliver:
+                    // At this point, if the group already exists but we have no local details, it likely
+                    // means we previously learned about the group from linked device transcript.
+                    //
+                    // In that case, ask the sender for the group details now so we can learn the
+                    // members, title, and avatar.
+                    if (groupThread.groupModel.groupName == nil && groupThread.groupModel.groupAvatarData == nil
+                        && groupThread.groupModel.nonLocalGroupMembers.count == 0) {
+                        [self sendGroupInfoRequestWithGroupId:groupId envelope:envelope transaction:transaction];
+                    }
+
+                    return groupThread;
+                case SSKProtoGroupContextTypeRequestInfo:
+                    [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
+                    return nil;
+                default:
+                    OWSFailDebug(@"Unknown group context type.");
+                    return nil;
+            }
+        } else {
+            // Unknown group.
+            if (groupContextType == SSKProtoGroupContextTypeUpdate) {
+                OWSFailDebug(@"Unexpected group context type.");
+                return nil;
+            } else if (groupContextType == SSKProtoGroupContextTypeDeliver) {
+                [self sendGroupInfoRequestWithGroupId:groupId envelope:envelope transaction:transaction];
+                return nil;
+            } else {
+                OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.sourceAddress);
+                return nil;
+            }
+        }
+    } else if (dataMessage.groupV2 != nil) {
+        // V2 Group.
+        SSKProtoGroupContextV2 *groupV2 = dataMessage.groupV2;
+        if (!groupV2.hasMasterKey) {
+            OWSFailDebug(@"Missing masterKey.");
+            return nil;
+        }
+        if (!groupV2.hasRevision) {
+            OWSFailDebug(@"Missing revision.");
+            return nil;
+        }
+
+        NSError *_Nullable error;
+        GroupV2ContextInfo *_Nullable groupContextInfo =
+            [self.groupsV2 groupV2ContextInfoForMasterKeyData:groupV2.masterKey error:&error];
+        if (error != nil || groupContextInfo == nil) {
+            OWSFailDebug(@"Invalid group context.");
+            return nil;
+        }
+        NSData *groupId = groupContextInfo.groupId;
+        uint32_t revision = groupV2.revision;
+
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+        if (groupThread == nil) {
+            OWSFailDebug(@"Unknown v2 group.");
+            return nil;
+        }
+        if (groupThread.groupModel.groupV2Revision < revision) {
+            // GroupsV2 TODO: Restore this assert when the Android bug is fixed.
+            OWSLogVerbose(@"sourceAddress: %@", envelope.sourceAddress);
+            OWSLogError(@"Invalid v2 group revision[%@]: %lu < %lu",
+                groupThread.groupModel.groupId.hexadecimalString,
+                (unsigned long)groupThread.groupModel.groupV2Revision,
+                (unsigned long)revision);
+            //            OWSFailDebug(@"Invalid v2 group revision[%@]: %lu < %lu",
+            //                         groupThread.groupModel.groupId.hexadecimalString,
+            //                (unsigned long)groupThread.groupModel.groupV2Revision,
+            //                (unsigned long)revision);
+            // GroupsV2 TODO: Arguably we could process the data message.
+            return nil;
+        }
+
+        // GroupsV2 TODO: Remove Logging
+        OWSLogVerbose(@"%@, %lu >= %lu",
+            groupId.hexadecimalString,
+            (unsigned long)groupThread.groupModel.groupV2Revision,
+            (unsigned long)revision);
+
+        if (!groupThread.isLocalUserInGroup) {
+            OWSLogInfo(@"Ignoring messages for left group.");
+            return nil;
+        }
+
+        return groupThread;
+    } else {
+        // No group context.
+        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
+                                                                           transaction:transaction];
+        return thread;
     }
 }
 
@@ -710,7 +853,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"Ignoring call message for unsupported device.");
         return;
     }
-
+    if (!envelope.sourceAddress.isValid) {
+        OWSFailDebug(@"invalid sourceAddress");
+        return;
+    }
     if ([self isEnvelopeSenderBlocked:envelope]) {
         OWSFailDebug(@"envelope sender is blocked. Shouldn't have gotten this far.");
         return;
@@ -761,6 +907,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (typingMessage.timestamp != envelope.timestamp) {
         OWSFailDebug(@"typingMessage has invalid timestamp.");
+        return;
+    }
+    if (!envelope.sourceAddress.isValid) {
+        OWSFailDebug(@"invalid sourceAddress");
         return;
     }
     if (envelope.sourceAddress.isLocalAddress) {
@@ -823,16 +973,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleGroupStateChangeWithEnvelope:(SSKProtoEnvelope *)envelope
                                dataMessage:(SSKProtoDataMessage *)dataMessage
+                              groupContext:(SSKProtoGroupContext *)groupContext
                                transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (dataMessage.group == nil || dataMessage.group.id == nil) {
-        OWSFailDebug(@"missing group");
+    if (!envelope) {
+        OWSFailDebug(@"Missing envelope.");
+        return;
+    }
+    if (!dataMessage) {
+        OWSFailDebug(@"Missing dataMessage.");
+        return;
+    }
+    if (!groupContext) {
+        OWSFail(@"Missing groupContext.");
+        return;
+    }
+    if (!transaction) {
+        OWSFail(@"Missing transaction.");
+        return;
+    }
+    NSData *_Nullable groupId = groupContext.id;
+    if (![GroupManager isValidGroupId:groupId groupsVersion:GroupsVersionV1]) {
+        OWSFailDebug(@"Invalid group id: %lu.", (unsigned long)groupId.length);
         return;
     }
 
-    NSData *groupId = dataMessage.group.id;
-
-    NSMutableSet<SignalServiceAddress *> *newMembers = [NSMutableSet setWithArray:dataMessage.group.memberAddresses];
+    NSMutableSet<SignalServiceAddress *> *newMembers = [NSMutableSet setWithArray:groupContext.memberAddresses];
 
     for (SignalServiceAddress *address in newMembers) {
         if (!address.isValid) {
@@ -860,7 +1026,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    switch (dataMessage.group.unwrappedType) {
+    switch (groupContext.unwrappedType) {
             // GroupsV2 TODO
         case SSKProtoGroupContextTypeUpdate: {
             // Ensures that the thread exists but doesn't update it.
@@ -869,9 +1035,9 @@ NS_ASSUME_NONNULL_BEGIN
             EnsureGroupResult *_Nullable result =
                 [GroupManager upsertExistingGroupWithMembers:newMembers.allObjects
                                               administrators:@[]
-                                                        name:dataMessage.group.name
+                                                        name:groupContext.name
                                                   avatarData:oldGroupThread.groupModel.groupAvatarData
-                                                     groupId:dataMessage.group.id
+                                                     groupId:groupId
                                                groupsVersion:GroupsVersionV1
                                        groupSecretParamsData:nil
                                            shouldSendMessage:false
@@ -899,7 +1065,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     customMessage:updateDescription];
             [infoMessage anyInsertWithTransaction:transaction];
 
-            if (dataMessage.group.avatar != nil) {
+            if (groupContext.avatar != nil) {
                 OWSLogVerbose(@"Data message had group avatar attachment");
                 [self handleReceivedGroupAvatarUpdateWithEnvelope:envelope
                                                       dataMessage:dataMessage
@@ -941,10 +1107,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
             return;
         }
-        default: {
-            OWSLogWarn(@"Unexpected non state change group message type: %d", (int)dataMessage.group.unwrappedType);
+        default:
+            OWSFailDebug(@"Unexpected non state change group message type: %d", (int)groupContext.unwrappedType);
             return;
-        }
     }
 }
 
@@ -965,6 +1130,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // GroupsV2 TODO: Handle groups v2.
     TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:dataMessage.group.id
                                                                transaction:transaction];
     if (!groupThread) {
@@ -1017,6 +1183,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleReceivedMediaWithEnvelope:(SSKProtoEnvelope *)envelope
                             dataMessage:(SSKProtoDataMessage *)dataMessage
+                                 thread:(TSThread *)thread
                         wasReceivedByUD:(BOOL)wasReceivedByUD
                             transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -1032,15 +1199,14 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
-
-    TSThread *_Nullable thread = [self threadForEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     if (!thread) {
-        OWSFailDebug(@"ignoring media message for unknown group.");
+        OWSFail(@"Missing thread.");
         return;
     }
 
     TSIncomingMessage *_Nullable message = [self handleReceivedEnvelope:envelope
                                                         withDataMessage:dataMessage
+                                                                 thread:thread
                                                         wasReceivedByUD:wasReceivedByUD
                                                             transaction:transaction];
 
@@ -1113,6 +1279,8 @@ NS_ASSUME_NONNULL_BEGIN
         if (dataMessage && destination.isValid && dataMessage.hasProfileKey) {
             // If we observe a linked device sending our profile key to another
             // user, we can infer that that user belongs in our profile whitelist.
+            //
+            // GroupsV2 TODO: Handle groups v2.
             if (dataMessage.group) {
                 [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
             } else {
@@ -1120,27 +1288,32 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        // If the sent transcript represents a group state change, e.g. an update or quit
-        // make sure we reflect that information locally as well.
-        if ([self isDataMessageGroupStateChange:dataMessage]) {
-            [self handleGroupStateChangeWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
+        SSKProtoGroupContext *_Nullable groupContext = dataMessage.group;
+        BOOL isDataMessageGroupStateChange = (groupContext != nil && groupContext.hasType
+            && (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeUpdate
+                || dataMessage.group.unwrappedType == SSKProtoGroupContextTypeQuit));
+
+        if (isDataMessageGroupStateChange) {
+            // GroupsV2 TODO: Handle groups v2.
+            [self handleGroupStateChangeWithEnvelope:envelope
+                                         dataMessage:dataMessage
+                                        groupContext:groupContext
+                                         transaction:transaction];
         } else if (dataMessage.reaction != nil) {
-            TSThread *thread;
-            if (dataMessage.group && dataMessage.group.id.length > 0) {
+            TSThread *_Nullable thread = nil;
+            // GroupsV2 TODO: Handle groups v2.
+            if (groupContext != nil && [GroupManager isValidGroupId:groupContext.id groupsVersion:GroupsVersionV1]) {
                 // GroupsV2 TODO: We may eventually want and be able to create the group here.
-                TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:dataMessage.group.id
-                                                                           transaction:transaction];
-                if (groupThread == nil) {
-                    OWSFailDebug(@"Received reaction for unknown group.");
-                    return;
-                }
-                thread = groupThread;
+                thread = [TSGroupThread fetchWithGroupId:dataMessage.group.id transaction:transaction];
             } else {
                 thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
                                                                   transaction:transaction];
             }
-
-            [OWSReactionManager processIncomingReaction:syncMessage.sent.message.reaction
+            if (thread == nil) {
+                OWSFailDebug(@"Could not process reaction from sync transcript.");
+                return;
+            }
+            [OWSReactionManager processIncomingReaction:dataMessage.reaction
                                                threadId:thread.uniqueId
                                                 reactor:envelope.sourceAddress
                                               timestamp:syncMessage.sent.timestamp
@@ -1273,6 +1446,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                            dataMessage:(SSKProtoDataMessage *)dataMessage
+                                                thread:(TSThread *)thread
                                            transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1287,10 +1461,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
-
-    TSThread *_Nullable thread = [self threadForEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     if (!thread) {
-        OWSFailDebug(@"ignoring expiring messages update for unknown group.");
+        OWSFail(@"Missing thread.");
         return;
     }
 
@@ -1355,6 +1527,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleReceivedTextMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                   dataMessage:(SSKProtoDataMessage *)dataMessage
+                                       thread:(TSThread *)thread
                               wasReceivedByUD:(BOOL)wasReceivedByUD
                                   transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -1370,9 +1543,14 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
+    if (!thread) {
+        OWSFail(@"Missing thread.");
+        return;
+    }
 
     [self handleReceivedEnvelope:envelope
                  withDataMessage:dataMessage
+                          thread:thread
                  wasReceivedByUD:wasReceivedByUD
                      transaction:transaction];
 }
@@ -1413,6 +1591,10 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupThread *_Nullable gThread = [TSGroupThread fetchWithGroupId:dataMessage.group.id transaction:transaction];
     if (!gThread) {
         OWSLogWarn(@"Unknown group: %@", groupId);
+        return;
+    }
+    if (gThread.groupModel.groupsVersion != GroupsVersionV1) {
+        OWSFailDebug(@"Invalid group version: %@", groupId);
         return;
     }
 
@@ -1466,6 +1648,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(SSKProtoEnvelope *)envelope
                                        withDataMessage:(SSKProtoDataMessage *)dataMessage
+                                                thread:(TSThread *)thread
                                        wasReceivedByUD:(BOOL)wasReceivedByUD
                                            transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -1481,160 +1664,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return nil;
     }
-
-    uint64_t timestamp = envelope.timestamp;
-    NSData *groupId = dataMessage.group ? dataMessage.group.id : nil;
-
-    if (groupId.length > 0) {
-        if (!dataMessage.group.hasType) {
-            OWSFailDebug(@"Missing group message type.");
-            return nil;
-        }
-
-        if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeRequestInfo) {
-            [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
-            return nil;
-        }
-
-        // Group messages create the group if it doesn't already exist.
-        //
-        // We distinguish between the old group state (if any) and the new group state.
-        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-
-        if (dataMessage.hasRequiredProtocolVersion
-            && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
-            if (groupThread == nil) {
-                OWSFailDebug(@"ignoring message with invalid protocol version in unknown group.");
-                return nil;
-            }
-
-            [self insertUnknownProtocolVersionErrorInThread:groupThread
-                                            protocolVersion:dataMessage.requiredProtocolVersion
-                                                     sender:envelope.sourceAddress
-                                                transaction:transaction];
-            return nil;
-        }
-
-        switch (dataMessage.group.unwrappedType) {
-            case SSKProtoGroupContextTypeUpdate:
-            case SSKProtoGroupContextTypeQuit:
-                [self handleGroupStateChangeWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
-                return nil;
-            case SSKProtoGroupContextTypeDeliver: {
-                if (!groupThread) {
-                    OWSFailDebug(@"ignoring deliver group message from unknown group.");
-                    return nil;
-                }
-
-                // At this point, if the group already exists but we have no local details, it likely
-                // means we previously learned about the group from linked device transcript.
-                //
-                // In that case, ask the sender for the group details now so we can learn the
-                // members, title, and avatar.
-                if (groupThread.groupModel.groupName == nil && groupThread.groupModel.groupAvatarData == nil
-                    && groupThread.groupModel.externalGroupMembers.count == 0) {
-                    [self sendGroupInfoRequestWithGroupId:groupThread.groupModel.groupId
-                                                 envelope:envelope
-                                              transaction:transaction];
-                }
-
-                if (dataMessage.reaction) {
-                    [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                       threadId:groupThread.uniqueId
-                                                        reactor:envelope.sourceAddress
-                                                      timestamp:timestamp
-                                                    transaction:transaction];
-                    return nil;
-                }
-
-                NSString *messageDescription =
-                    [NSString stringWithFormat:@"Incoming message from: %@ for group: %@ with timestamp: %llu",
-                              envelopeAddress(envelope),
-                              groupId,
-                              timestamp];
-                return [self createIncomingMessageInThread:groupThread
-                                        messageDescription:messageDescription
-                                                  envelope:envelope
-                                               dataMessage:dataMessage
-                                           wasReceivedByUD:wasReceivedByUD
-                                               transaction:transaction];
-            }
-            default: {
-                OWSLogWarn(@"Ignoring unknown group message type: %d", (int)dataMessage.group.unwrappedType);
-                return nil;
-            }
-        }
-    } else {
-        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
-                                                                           transaction:transaction];
-
-        if (dataMessage.hasRequiredProtocolVersion
-            && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
-            [self insertUnknownProtocolVersionErrorInThread:thread
-                                            protocolVersion:dataMessage.requiredProtocolVersion
-                                                     sender:envelope.sourceAddress
-                                                transaction:transaction];
-            return nil;
-        }
-
-        if (dataMessage.reaction) {
-            [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                               threadId:thread.uniqueId
-                                                reactor:envelope.sourceAddress
-                                              timestamp:timestamp
-                                            transaction:transaction];
-            return nil;
-        }
-
-        NSString *messageDescription = [NSString stringWithFormat:@"Incoming 1:1 message from: %@ with timestamp: %llu",
-                                                 envelopeAddress(envelope),
-                                                 timestamp];
-        return [self createIncomingMessageInThread:thread
-                                messageDescription:messageDescription
-                                          envelope:envelope
-                                       dataMessage:dataMessage
-                                   wasReceivedByUD:wasReceivedByUD
-                                       transaction:transaction];
-    }
-}
-
-- (void)insertUnknownProtocolVersionErrorInThread:(TSThread *)thread
-                                  protocolVersion:(NSUInteger)protocolVersion
-                                           sender:(SignalServiceAddress *)sender
-                                      transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(thread);
-    OWSAssertDebug(transaction);
-
-    OWSFailDebug(@"Unknown protocol version: %lu", (unsigned long)protocolVersion);
-
-    if (!sender.isValid) {
-        OWSFailDebug(@"Missing sender.");
-        return;
-    }
-
-    // We convert protocolVersion to a numeric value here.
-    TSInteraction *message =
-        [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                             thread:thread
-                                                             sender:sender
-                                                    protocolVersion:protocolVersion];
-    [message anyInsertWithTransaction:transaction];
-}
-
-- (nullable TSIncomingMessage *)createIncomingMessageInThread:(TSThread *)thread
-                                           messageDescription:(NSString *)messageDescription
-                                                     envelope:(SSKProtoEnvelope *)envelope
-                                                  dataMessage:(SSKProtoDataMessage *)dataMessage
-                                              wasReceivedByUD:(BOOL)wasReceivedByUD
-                                                  transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return nil;
-    }
     if (!thread) {
-        OWSFailDebug(@"Missing thread.");
+        OWSFail(@"Missing thread.");
         return nil;
     }
 
@@ -1644,14 +1675,39 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
+    if (dataMessage.hasRequiredProtocolVersion
+        && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
+        [self insertUnknownProtocolVersionErrorInThread:thread
+                                        protocolVersion:dataMessage.requiredProtocolVersion
+                                                 sender:envelope.sourceAddress
+                                            transaction:transaction];
         return nil;
     }
 
+    uint64_t timestamp = envelope.timestamp;
+    NSString *messageDescription;
+    if (thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        messageDescription = [NSString stringWithFormat:@"Incoming message from: %@ for group: %@ with timestamp: %llu",
+                                       envelopeAddress(envelope),
+                                       groupThread.groupModel.groupId,
+                                       timestamp];
+    } else {
+        messageDescription = [NSString stringWithFormat:@"Incoming 1:1 message from: %@ with timestamp: %llu",
+                                       envelopeAddress(envelope),
+                                       timestamp];
+    }
     OWSLogDebug(@"%@", messageDescription);
 
-    uint64_t timestamp = envelope.timestamp;
+    if (dataMessage.reaction) {
+        [OWSReactionManager processIncomingReaction:dataMessage.reaction
+                                           threadId:thread.uniqueId
+                                            reactor:envelope.sourceAddress
+                                          timestamp:timestamp
+                                        transaction:transaction];
+        return nil;
+    }
+
     NSString *body = dataMessage.body;
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
     if (serverTimestamp != nil && ![SDS fitsInInt64WithNSNumber:serverTimestamp]) {
@@ -1810,56 +1866,27 @@ NS_ASSUME_NONNULL_BEGIN
     return incomingMessage;
 }
 
-#pragma mark - helpers
-
-- (BOOL)isDataMessageGroupStateChange:(SSKProtoDataMessage *)dataMessage
+- (void)insertUnknownProtocolVersionErrorInThread:(TSThread *)thread
+                                  protocolVersion:(NSUInteger)protocolVersion
+                                           sender:(SignalServiceAddress *)sender
+                                      transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (!dataMessage) {
-        OWSFailDebug(@"Missing dataMessage.");
-        return NO;
+    OWSAssertDebug(thread);
+    OWSAssertDebug(transaction);
+
+    OWSFailDebug(@"Unknown protocol version: %lu", (unsigned long)protocolVersion);
+
+    if (!sender.isValid) {
+        OWSFailDebug(@"Missing sender.");
+        return;
     }
 
-    if (dataMessage.group == nil || !dataMessage.group.hasType) {
-        return NO;
-    }
-
-    return dataMessage.group.unwrappedType == SSKProtoGroupContextTypeUpdate
-        || dataMessage.group.unwrappedType == SSKProtoGroupContextTypeQuit;
-}
-
-/**
- * @returns
- *   Group or Contact thread for message, creating a new contact thread if necessary,
- *   but never creating a new group thread.
- */
-- (nullable TSThread *)threadForEnvelope:(SSKProtoEnvelope *)envelope
-                             dataMessage:(SSKProtoDataMessage *)dataMessage
-                             transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return nil;
-    }
-    if (!dataMessage) {
-        OWSFailDebug(@"Missing dataMessage.");
-        return nil;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return nil;
-    }
-
-    if (dataMessage.group) {
-        NSData *groupId = dataMessage.group.id;
-        OWSAssertDebug(groupId.length > 0);
-        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-        // This method should only be called from a code path that has already verified
-        // that this is a "known" group.
-        OWSAssertDebug(groupThread);
-        return groupThread;
-    } else {
-        return [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress transaction:transaction];
-    }
+    TSInteraction *message =
+        [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                             thread:thread
+                                                             sender:sender
+                                                    protocolVersion:protocolVersion];
+    [message anyInsertWithTransaction:transaction];
 }
 
 #pragma mark -

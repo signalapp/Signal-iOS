@@ -160,7 +160,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 }
 
 + (TSRequest *)getVersionedProfileRequestWithAddress:(SignalServiceAddress *)address
-                                   profileKeyVersion:(nullable NSData *)profileKeyVersion
+                                   profileKeyVersion:(nullable NSString *)profileKeyVersion
                                    credentialRequest:(nullable NSData *)credentialRequest
                                          udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
@@ -168,7 +168,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     OWSAssertDebug(address.uuid != nil);
 
     NSString *uuidParam = address.uuid.UUIDString.lowercaseString;
-    NSString *_Nullable profileKeyVersionParam = profileKeyVersion.base64EncodedString.encodeURIComponent;
+    NSString *_Nullable profileKeyVersionParam = profileKeyVersion.lowercaseString;
     NSString *_Nullable credentialRequestParam = credentialRequest.hexadecimalString.lowercaseString;
 
     // GET /v1/profile/{uuid}/{version}/{profile_key_credential_request}
@@ -836,24 +836,26 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)versionedProfileSetRequestWithName:(nullable NSData *)name
                                         hasAvatar:(BOOL)hasAvatar
-                                          version:(NSData *)version
+                                          version:(NSString *)version
                                        commitment:(NSData *)commitment
 {
     OWSAssertDebug(version.length > 0);
     OWSAssertDebug(commitment.length > 0);
-    
-    NSString *base64EncodedVersion = [version base64EncodedString];
+
     NSString *base64EncodedCommitment = [commitment base64EncodedString];
 
     NSMutableDictionary<NSString *, NSObject *> *parameters = [@{
-                                                                 @"version" : base64EncodedVersion,
-                                                                 @"avatar" : @(hasAvatar),
-                                                                 @"commitment" : base64EncodedCommitment,
-                                                                 } mutableCopy];
+        @"version" : version,
+        @"avatar" : @(hasAvatar),
+        @"commitment" : base64EncodedCommitment,
+    } mutableCopy];
     if (name.length > 0) {
         // TODO: Do we need check padded length as we used to with profileNameSetRequestWithEncryptedPaddedName?
         // TODO: Do we need remove "/" from name as we used to with profileNameSetRequestWithEncryptedPaddedName?
+
+        const NSUInteger kEncodedNameLength = 108;
         NSString *base64EncodedName = [name base64EncodedString];
+        OWSAssertDebug(base64EncodedName.length == kEncodedNameLength);
         parameters[@"name"] = base64EncodedName;
     }
 

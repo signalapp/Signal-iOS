@@ -21,6 +21,7 @@
 #import <SignalServiceKit/FunctionalUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -42,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UIImageView *cameraImageView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
-@property (nonatomic, readonly) NSData *groupId;
+@property (nonatomic, readonly) NewGroupSeed *groupSeed;
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
 @property (nonatomic) NSMutableSet<PickedRecipient *> *memberRecipients;
@@ -91,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commonInit
 {
-    _groupId = [TSGroupModel generateRandomGroupId];
+    _groupSeed = [NewGroupSeed new];
 
     _messageSender = SSKEnvironment.shared.messageSender;
     _avatarViewHelper = [AvatarViewHelper new];
@@ -300,9 +301,10 @@ NS_ASSUME_NONNULL_BEGIN
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       [GroupManager createNewGroupObjcWithMembers:members
-                          groupId:self.groupId
+                          groupId:nil
                           name:groupName
                           avatarImage:self.groupAvatar
+                          newGroupSeed:self.groupSeed
                           shouldSendMessage:YES
                           success:^(TSGroupThread *thread) {
                               [self.presentingViewController
@@ -349,8 +351,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.cameraImageView.hidden = groupAvatar != nil;
 
     if (!groupAvatar) {
-        NSString *conversationColorName = [TSGroupThread defaultConversationColorNameForGroupId:self.groupId];
-        groupAvatar = [OWSGroupAvatarBuilder defaultAvatarForGroupId:self.groupId
+        NSData *groupId = self.groupSeed.possibleGroupId;
+        NSString *conversationColorName = [TSGroupThread defaultConversationColorNameForGroupId:groupId];
+        groupAvatar = [OWSGroupAvatarBuilder defaultAvatarForGroupId:groupId
                                                conversationColorName:conversationColorName
                                                             diameter:kLargeAvatarSize];
     }

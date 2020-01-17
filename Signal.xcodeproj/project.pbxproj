@@ -1851,7 +1851,7 @@
 		34480B2F1FD0921000BC14EF /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				34ED559E23D0BF2A00446E39 /* NSItemProvider+Promises.swift */,
+				34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */,
 				4CCB567B23C8D89C004A5731 /* NSItemProvider+TypedAccessors.h */,
 				4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */,
 				34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */,
