@@ -588,7 +588,7 @@ typedef void (^SystemMessageActionBlock)(void);
         return;
     }
 
-    TSInteraction *interaction = self.viewItem.interaction;
+    __unused TSInteraction *interaction = self.viewItem.interaction;
     OWSAssertDebug(interaction);
 
     if (longPress.state == UIGestureRecognizerStateBegan) {

@@ -59,6 +59,7 @@ typedef NS_ENUM(NSUInteger, LaunchFailure) {
     LaunchFailure_UnknownDatabaseVersion,
 };
 
+NSString *NSStringForLaunchFailure(LaunchFailure launchFailure);
 NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 {
     switch (launchFailure) {

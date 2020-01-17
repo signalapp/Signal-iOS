@@ -65,12 +65,6 @@ CG_INLINE CGPoint CGPointScale(CGPoint point, CGFloat factor)
     return CGPointMake(point.x * factor, point.y * factor);
 }
 
-CG_INLINE CGFloat CGPointDistance(CGPoint left, CGPoint right)
-{
-    CGPoint delta = CGPointSubtract(left, right);
-    return sqrt(delta.x * delta.x + delta.y * delta.y);
-}
-
 CG_INLINE CGPoint CGPointMin(CGPoint left, CGPoint right)
 {
     return CGPointMake(MIN(left.x, right.x), MIN(left.y, right.y));

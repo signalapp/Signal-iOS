@@ -39,7 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 const CGFloat kIconViewLength = 24;
 
-@interface OWSConversationSettingsViewController () <ContactsViewHelperDelegate,
+@interface OWSConversationSettingsViewController () <CNContactViewControllerDelegate,
+    ContactsViewHelperDelegate,
 #ifdef SHOW_COLOR_PICKER
     ColorPickerDelegate,
 #endif

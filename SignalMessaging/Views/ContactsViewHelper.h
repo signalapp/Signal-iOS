@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalAccount;
 @class TSThread;
 
-@protocol CNContactViewControllerDelegate;
-
 @protocol ContactsViewHelperDelegate <NSObject>
 
 - (void)contactsViewHelperDidUpdateContacts;

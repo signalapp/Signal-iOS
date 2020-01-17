@@ -500,8 +500,6 @@
 
 - (void)deleteLinkedData
 {
-    __weak AppSettingsViewController *weakSelf = self;
-
     ActionSheetController *actionSheet =
         [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRM_DELETE_LINKED_DATA_TITLE", @"")
                                              message:NSLocalizedString(@"CONFIRM_DELETE_LINKED_DATA_TEXT", @"")];

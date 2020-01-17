@@ -41,7 +41,8 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
     ]
 
     var authorizationStatus: ContactStoreAuthorizationStatus {
-        switch CNContactStore.authorizationStatus(for: CNEntityType.contacts) {
+        let authorizationStatus = CNContactStore.authorizationStatus(for: CNEntityType.contacts)
+        switch authorizationStatus {
         case .notDetermined:
             return .notDetermined
         case .restricted:
@@ -50,6 +51,9 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
             return .denied
         case .authorized:
              return .authorized
+        @unknown default:
+            owsFailDebug("unexpected value: \(authorizationStatus.rawValue)")
+            return .authorized
         }
     }
 
