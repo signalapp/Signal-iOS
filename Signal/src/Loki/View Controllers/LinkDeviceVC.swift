@@ -148,7 +148,7 @@ private final class EnterPublicKeyVC : UIViewController {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Link your device", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -165,14 +165,14 @@ private final class EnterPublicKeyVC : UIViewController {
         linkButton.addTarget(self, action: #selector(requestDeviceLink), for: UIControl.Event.touchUpInside)
         let linkButtonContainer = UIView()
         linkButtonContainer.addSubview(linkButton)
-        linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: 80)
+        linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: isSmallScreen ? 48 : 80)
         linkButton.pin(.top, to: .top, of: linkButtonContainer)
-        linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: 80)
+        linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: isSmallScreen ? 48 : 80)
         linkButtonBottomConstraint = linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: Values.veryLargeSpacing)
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, publicKeyTextField ])
         topStackView.axis = .vertical
-        topStackView.spacing = Values.largeSpacing
+        topStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -216,7 +216,7 @@ private final class EnterPublicKeyVC : UIViewController {
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         bottomConstraint.constant = -newHeight
-        linkButtonBottomConstraint.constant = Values.mediumSpacing
+        linkButtonBottomConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.mediumSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }

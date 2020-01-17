@@ -19,9 +19,9 @@ final class Values : NSObject {
     @objc static let massiveFontSize = CGFloat(50)
     
     // MARK: - Element Sizes
-    @objc static let smallButtonHeight = CGFloat(27)
-    @objc static let mediumButtonHeight = CGFloat(34)
-    @objc static let largeButtonHeight = CGFloat(45)
+    @objc static let smallButtonHeight = isSmallScreen ? CGFloat(24) : CGFloat(27)
+    @objc static let mediumButtonHeight = isSmallScreen ? CGFloat(30) : CGFloat(34)
+    @objc static let largeButtonHeight = isSmallScreen ? CGFloat(40) : CGFloat(45)
     @objc static let accentLineThickness = CGFloat(4)
     @objc static let verySmallProfilePictureSize = CGFloat(26)
     @objc static let smallProfilePictureSize = CGFloat(35)
@@ -31,18 +31,18 @@ final class Values : NSObject {
     @objc static let conversationCellStatusIndicatorSize = CGFloat(14)
     @objc static let searchBarHeight = CGFloat(36)
     @objc static let newConversationButtonSize = CGFloat(45)
-    @objc static let textFieldHeight = CGFloat(80)
+    @objc static let textFieldHeight = isSmallScreen ? CGFloat(48) : CGFloat(80)
     @objc static let textFieldCornerRadius = CGFloat(8)
     @objc static let separatorLabelHeight = CGFloat(24)
     @objc static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
-    @objc static let tabBarHeight = CGFloat(48)
-    @objc static let settingButtonHeight = CGFloat(75)
+    @objc static let tabBarHeight = isSmallScreen ? CGFloat(32) : CGFloat(48)
+    @objc static let settingButtonHeight = isSmallScreen ? CGFloat(52) : CGFloat(75)
     @objc static let modalCornerRadius = CGFloat(10)
     @objc static let modalButtonCornerRadius = CGFloat(5)
     @objc static let fakeChatBubbleWidth = CGFloat(224)
     @objc static let fakeChatBubbleCornerRadius = CGFloat(10)
     @objc static let fakeChatViewHeight = CGFloat(234)
-    @objc static var composeViewTextFieldBorderThickness: CGFloat { return 1 / UIScreen.main.scale }
+    @objc static let composeViewTextFieldBorderThickness = 1 / UIScreen.main.scale
     @objc static let messageBubbleCornerRadius: CGFloat = 10
     @objc static let progressBarThickness: CGFloat = 2
     
@@ -54,7 +54,7 @@ final class Values : NSObject {
     @objc static let veryLargeSpacing = CGFloat(35)
     @objc static let massiveSpacing = CGFloat(64)
     @objc static let newConversationButtonBottomOffset = CGFloat(52)
-    @objc static let onboardingButtonBottomOffset = CGFloat(72)
+    @objc static let onboardingButtonBottomOffset = isSmallScreen ? CGFloat(52) : CGFloat(72)
     
     // MARK: - Animation Values
     @objc static let fakeChatStartDelay: TimeInterval = 2

@@ -58,7 +58,7 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Your Session begins here...", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -79,11 +79,11 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: Values.massiveSpacing)
         linkButton.pin(.top, to: .top, of: linkButtonContainer)
         linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: Values.massiveSpacing)
-        linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: 10)
+        linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: isSmallScreen ? 6 : 10)
         // Set up button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ registerButton, restoreButton ])
         buttonStackView.axis = .vertical
-        buttonStackView.spacing = Values.mediumSpacing
+        buttonStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.mediumSpacing
         buttonStackView.alignment = .fill
         // Set up button stack view container
         let buttonStackViewContainer = UIView()
@@ -93,7 +93,7 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         buttonStackViewContainer.pin(.trailing, to: .trailing, of: buttonStackView, withInset: Values.massiveSpacing)
         buttonStackViewContainer.pin(.bottom, to: .bottom, of: buttonStackView)
         // Set up main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, titleLabelContainer, UIView.spacer(withHeight: Values.mediumSpacing), fakeChatView, bottomSpacer, buttonStackViewContainer, linkButtonContainer ])
+        let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, titleLabelContainer, UIView.spacer(withHeight: isSmallScreen ? Values.smallSpacing : Values.mediumSpacing), fakeChatView, bottomSpacer, buttonStackViewContainer, linkButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
         view.addSubview(mainStackView)

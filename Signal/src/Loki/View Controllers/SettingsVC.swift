@@ -103,7 +103,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
         // Set up public key label
         let publicKeyLabel = UILabel()
         publicKeyLabel.textColor = Colors.text
-        publicKeyLabel.font = Fonts.spaceMono(ofSize: Values.largeFontSize)
+        publicKeyLabel.font = Fonts.spaceMono(ofSize: isSmallScreen ? Values.mediumFontSize : Values.largeFontSize)
         publicKeyLabel.numberOfLines = 0
         publicKeyLabel.textAlignment = .center
         publicKeyLabel.lineBreakMode = .byCharWrapping

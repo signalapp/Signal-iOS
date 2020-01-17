@@ -107,7 +107,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         case .master:
             qrCodeImageView.set(.height, to: 128)
             let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-            qrCodeImageView.image = QRCode.generate(for: hexEncodedPublicKey)
+            qrCodeImageView.image = QRCode.generate(for: hexEncodedPublicKey, hasBackground: true)
         case .slave:
             spinner.set(.height, to: 64)
             spinner.startAnimating()

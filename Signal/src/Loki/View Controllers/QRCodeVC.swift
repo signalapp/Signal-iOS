@@ -160,18 +160,18 @@ private final class ViewMyQRCodeVC : UIViewController {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.massiveFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? CGFloat(40) : Values.massiveFontSize)
         titleLabel.text = NSLocalizedString("Scan Me", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up QR code image view
         let qrCodeImageView = UIImageView()
-        let qrCode = QRCode.generate(for: userHexEncodedPublicKey)
+        let qrCode = QRCode.generate(for: userHexEncodedPublicKey, hasBackground: true)
         qrCodeImageView.image = qrCode
         qrCodeImageView.contentMode = .scaleAspectFit
-        qrCodeImageView.set(.height, to: 240)
-        qrCodeImageView.set(.width, to: 240)
+        qrCodeImageView.set(.height, to: isSmallScreen ? 180 : 240)
+        qrCodeImageView.set(.width, to: isSmallScreen ? 180 : 240)
         // Set up QR code image view container
         let qrCodeImageViewContainer = UIView()
         qrCodeImageViewContainer.addSubview(qrCodeImageView)
@@ -203,7 +203,7 @@ private final class ViewMyQRCodeVC : UIViewController {
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ titleLabel, qrCodeImageViewContainer, explanationLabel, shareButtonContainer, UIView.vStretchingSpacer() ])
         stackView.axis = .vertical
-        stackView.spacing = Values.largeSpacing
+        stackView.spacing = isSmallScreen ? Values.mediumSpacing : Values.largeSpacing
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true

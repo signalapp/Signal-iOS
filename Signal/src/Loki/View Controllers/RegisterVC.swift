@@ -7,7 +7,7 @@ final class RegisterVC : UIViewController {
     private lazy var publicKeyLabel: UILabel = {
         let result = UILabel()
         result.textColor = Colors.text
-        result.font = Fonts.spaceMono(ofSize: Values.largeFontSize)
+        result.font = Fonts.spaceMono(ofSize: isSmallScreen ? Values.mediumFontSize : Values.largeFontSize)
         result.numberOfLines = 0
         result.lineBreakMode = .byCharWrapping
         return result
@@ -60,7 +60,7 @@ final class RegisterVC : UIViewController {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Say hello to your Session ID", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -89,7 +89,7 @@ final class RegisterVC : UIViewController {
         // Set up button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ registerButton, copyPublicKeyButton ])
         buttonStackView.axis = .vertical
-        buttonStackView.spacing = Values.mediumSpacing
+        buttonStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.mediumSpacing
         buttonStackView.alignment = .fill
         // Set up button stack view container
         let buttonStackViewContainer = UIView()
@@ -109,11 +109,11 @@ final class RegisterVC : UIViewController {
         legalLabel.pin(.leading, to: .leading, of: legalLabelContainer, withInset: Values.massiveSpacing)
         legalLabel.pin(.top, to: .top, of: legalLabelContainer)
         legalLabelContainer.pin(.trailing, to: .trailing, of: legalLabel, withInset: Values.massiveSpacing)
-        legalLabelContainer.pin(.bottom, to: .bottom, of: legalLabel, withInset: 10)
+        legalLabelContainer.pin(.bottom, to: .bottom, of: legalLabel, withInset: isSmallScreen ? 6 : 10)
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, publicKeyLabelContainer ])
         topStackView.axis = .vertical
-        topStackView.spacing = Values.veryLargeSpacing
+        topStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.veryLargeSpacing
         topStackView.alignment = .fill
         // Set up top stack view container
         let topStackViewContainer = UIView()

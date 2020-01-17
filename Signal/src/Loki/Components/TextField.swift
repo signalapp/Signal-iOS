@@ -36,7 +36,7 @@ final class TextField : UITextField {
     
     override func textRect(forBounds bounds: CGRect) -> CGRect {
         if usesDefaultHeight {
-            return bounds.insetBy(dx: Values.largeSpacing, dy: Values.largeSpacing)
+            return bounds.insetBy(dx: isSmallScreen ? Values.mediumSpacing : Values.largeSpacing, dy: isSmallScreen ? Values.smallSpacing : Values.largeSpacing)
         } else {
             return bounds.insetBy(dx: Values.mediumSpacing, dy: Values.smallSpacing)
         }
@@ -44,7 +44,7 @@ final class TextField : UITextField {
     
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
         if usesDefaultHeight {
-            return bounds.insetBy(dx: Values.largeSpacing, dy: Values.largeSpacing)
+            return bounds.insetBy(dx: isSmallScreen ? Values.mediumSpacing : Values.largeSpacing, dy: isSmallScreen ? Values.smallSpacing : Values.largeSpacing)
         } else {
             return bounds.insetBy(dx: Values.mediumSpacing, dy: Values.smallSpacing)
         }

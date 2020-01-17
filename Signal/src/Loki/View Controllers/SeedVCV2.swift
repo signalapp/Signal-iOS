@@ -80,7 +80,7 @@ final class SeedVCV2 : UIViewController {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Meet your recovery phrase", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -107,7 +107,7 @@ final class SeedVCV2 : UIViewController {
         // Set up call to action label
         let callToActionLabel = UILabel()
         callToActionLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        callToActionLabel.font = .systemFont(ofSize: Values.mediumFontSize)
+        callToActionLabel.font = .systemFont(ofSize: isSmallScreen ? Values.smallFontSize : Values.mediumFontSize)
         callToActionLabel.text = NSLocalizedString("Hold to reveal", comment: "")
         callToActionLabel.textAlignment = .center
         let callToActionLabelGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(revealMnemonic))
@@ -127,7 +127,7 @@ final class SeedVCV2 : UIViewController {
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, mnemonicLabelContainer, callToActionLabel ])
         topStackView.axis = .vertical
-        topStackView.spacing = Values.largeSpacing
+        topStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
         topStackView.alignment = .fill
         // Set up top stack view container
         let topStackViewContainer = UIView()
@@ -145,7 +145,7 @@ final class SeedVCV2 : UIViewController {
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, copyButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
-        mainStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: Values.mediumSpacing, trailing: 0)
+        mainStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: isSmallScreen ? Values.smallSpacing : Values.mediumSpacing, trailing: 0)
         mainStackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: view)
