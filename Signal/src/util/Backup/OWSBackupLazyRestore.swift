@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -41,7 +41,7 @@ public class BackupLazyRestore: NSObject {
         NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: nil) { _ in
             self.runIfNecessary()
         }
-        NotificationCenter.default.addObserver(forName: .RegistrationStateDidChange, object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: .registrationStateDidChange, object: nil, queue: nil) { _ in
             self.runIfNecessary()
         }
         NotificationCenter.default.addObserver(forName: .reachabilityChanged, object: nil, queue: nil) { _ in

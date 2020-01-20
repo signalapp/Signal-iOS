@@ -47,20 +47,4 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:plaintextData:wasRecei
 
 @end
 
-#pragma mark -
-
-// This class is used to pre-process incoming group v2 messages,
-// ensuring the group state is updated before any message payload
-// is processed.
-@interface GroupsV2MessageProcessor : NSObject
-
-- (void)enqueueEnvelopeData:(NSData *)envelopeData
-              plaintextData:(NSData *_Nullable)plaintextData
-            wasReceivedByUD:(BOOL)wasReceivedByUD
-                transaction:(SDSAnyWriteTransaction *)transaction;
-
-+ (BOOL)isGroupsV2Message:(nullable SSKProtoEnvelope *)envelope plaintextData:(nullable NSData *)plaintextData;
-
-@end
-
 NS_ASSUME_NONNULL_END

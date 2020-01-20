@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSWebSocket.h"
@@ -41,7 +41,7 @@ static const NSTimeInterval kKeepAliveDuration_MakeRequestInBackground = 20.f;
 // d) It has just received the response to a request.
 static const NSTimeInterval kKeepAliveDuration_ReceiveResponse = 5.f;
 
-NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_OWSWebSocketStateDidChange";
+NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificationWebSocketStateDidChange";
 
 @interface TSSocketMessage : NSObject
 
@@ -284,7 +284,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
-                                                 name:RegistrationStateDidChangeNotification
+                                                 name:NSNotificationNameRegistrationStateDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(isCensorshipCircumventionActiveDidChange:)
@@ -448,7 +448,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
 - (void)notifyStatusChange
 {
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotification_OWSWebSocketStateDidChange
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationWebSocketStateDidChange
                                                              object:nil
                                                            userInfo:nil];
 }

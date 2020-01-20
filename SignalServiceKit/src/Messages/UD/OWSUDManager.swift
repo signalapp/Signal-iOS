@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -152,7 +152,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
-                                               name: .RegistrationStateDidChange,
+                                               name: .registrationStateDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -381,7 +381,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                 if isUDVerboseLoggingEnabled() {
                     Logger.info("UD disabled for \(address), no profile key for this recipient.")
                 }
-                if (!CurrentAppContext().isRunningTests) {
+                if !CurrentAppContext().isRunningTests {
                     owsFailDebug("Couldn't find profile key for UD-enabled user.")
                 }
                 return nil

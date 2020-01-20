@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 static void *OWSWebSocketStateObservationContext = &OWSWebSocketStateObservationContext;
 
-extern NSString *const kNSNotification_OWSWebSocketStateDidChange;
+extern NSNotificationName const NSNotificationWebSocketStateDidChange;
 
 typedef NS_ENUM(NSUInteger, OWSWebSocketState) {
     OWSWebSocketStateClosed,

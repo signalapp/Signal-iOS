@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -23,7 +23,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(self.registrationStateDidChange),
-                name: .RegistrationStateDidChange,
+                name: .registrationStateDidChange,
                 object: nil
             )
 

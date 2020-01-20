@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
 NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
-NSString *const RegistrationStateDidChangeNotification = @"RegistrationStateDidChangeNotification";
+NSNotificationName const NSNotificationNameRegistrationStateDidChange = @"NSNotificationNameRegistrationStateDidChange";
 NSString *const TSRemoteAttestationAuthErrorKey = @"TSRemoteAttestationAuth";
 NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
 
@@ -935,7 +935,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 {
     OWSAssertIsOnMainThread();
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameRegistrationStateDidChange
                                                              object:nil
                                                            userInfo:nil];
 }
