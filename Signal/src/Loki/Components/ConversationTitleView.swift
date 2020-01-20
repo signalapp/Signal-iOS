@@ -143,6 +143,7 @@
     
     private func updateSubtitleForCurrentStatus() {
         DispatchQueue.main.async {
+            self.subtitleLabel.isHidden = false
             switch self.currentStatus {
             case .calculatingPoW: self.subtitleLabel.text = NSLocalizedString("Encrypting message", comment: "")
             case .contactingNetwork: self.subtitleLabel.text = NSLocalizedString("Tracing a path", comment: "")
@@ -150,7 +151,6 @@
             case .messageSent: self.subtitleLabel.text = NSLocalizedString("Message sent securely", comment: "")
             case .messageFailed: self.subtitleLabel.text = NSLocalizedString("Message failed to send", comment: "")
             case nil:
-                self.subtitleLabel.isHidden = false
                 let subtitle = NSMutableAttributedString()
                 if let muteEndDate = self.thread.mutedUntilDate {
                     subtitle.append(NSAttributedString(string: "\u{e067}  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.unimportant ]))
