@@ -272,7 +272,7 @@ static NSTimeInterval launchStartedAt;
             [self versionMigrationsDidComplete];
         }];
 
-    [UIUtil setupSignalAppearence];
+    [LKAppearanceUtilities switchToSessionAppearance];
 
     if (CurrentAppContext().isRunningTests) {
         return YES;

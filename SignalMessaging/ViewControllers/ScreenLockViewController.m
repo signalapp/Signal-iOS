@@ -36,8 +36,13 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 - (void)loadView
 {
     [super loadView];
-
-    self.view.backgroundColor = UIColor.lokiDarkestGray;
+    
+    // Loki: Set gradient background
+    self.view.backgroundColor = UIColor.clearColor;
+    CAGradientLayer *layer = [CAGradientLayer new];
+    layer.frame = UIScreen.mainScreen.bounds;
+    layer.colors = @[ (id)[UIColor colorWithRGBHex:0x171717].CGColor, (id)[UIColor colorWithRGBHex:0x121212].CGColor ];
+    [self.view.layer insertSublayer:layer atIndex:0];
 
     UIView *edgesView = [UIView containerView];
     [self.view addSubview:edgesView];
@@ -58,7 +63,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     const CGFloat kButtonHeight = 40.f;
     OWSFlatButton *button =
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"Unlock Session", @"")
-                                  font:[OWSFlatButton fontForHeight:kButtonHeight]
+                                  font:[UIFont boldSystemFontOfSize:15] // Values.mediumFontSize
                             titleColor:UIColor.whiteColor
                        backgroundColor:UIColor.clearColor
                                 target:self

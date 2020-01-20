@@ -192,7 +192,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
     OWSTableSection *screenSecuritySection = [OWSTableSection new];
     screenSecuritySection.headerTitle = NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
-    screenSecuritySection.footerTitle = NSLocalizedString(@"Prevent Loki Messenger previews from appearing in the app switcher.", nil);
+    screenSecuritySection.footerTitle = NSLocalizedString(@"Prevent Session previews from appearing in the app switcher.", nil);
     [screenSecuritySection
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"screen_security"]

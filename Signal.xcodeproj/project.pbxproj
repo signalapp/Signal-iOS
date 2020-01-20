@@ -579,10 +579,12 @@
 		B85357C523A1F13800AAF6CD /* LinkDeviceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C423A1F13800AAF6CD /* LinkDeviceVC.swift */; };
 		B85357C723A1FB5100AAF6CD /* LinkDeviceVCDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C623A1FB5100AAF6CD /* LinkDeviceVCDelegate.swift */; };
 		B8544E3123D16CA500299F14 /* DeviceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8544E3023D16CA500299F14 /* DeviceUtilities.swift */; };
+		B8544E3323D50E4900299F14 /* AppearanceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */; };
+		B8544E3423D51EEF00299F14 /* ProfilePictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */; };
+		B8544E3523D5201400299F14 /* UIView+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
 		B885D5F4233491AB00EE0D8E /* DeviceLinkingModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */; };
-		B885D5F62334A32100EE0D8E /* UIView+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */; };
 		B886B4A72398B23E00211ABE /* QRCodeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B886B4A62398B23E00211ABE /* QRCodeVC.swift */; };
 		B886B4A92398BA1500211ABE /* QRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B886B4A82398BA1500211ABE /* QRCode.swift */; };
 		B891105C2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
@@ -599,7 +601,6 @@
 		B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A4238F627000BA5194 /* HomeVC.swift */; };
 		B8BB82A9238F62FB00BA5194 /* Gradients.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A8238F62FB00BA5194 /* Gradients.swift */; };
 		B8BB82AB238F669C00BA5194 /* ConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82AA238F669C00BA5194 /* ConversationCell.swift */; };
-		B8BB82AD238F734800BA5194 /* ProfilePictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */; };
 		B8BB82B12390C37000BA5194 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82B02390C37000BA5194 /* SearchBar.swift */; };
 		B8BB82B523947F2D00BA5194 /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82B423947F2D00BA5194 /* TextField.swift */; };
 		B8BB82B92394911B00BA5194 /* Separator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82B82394911B00BA5194 /* Separator.swift */; };
@@ -1419,6 +1420,7 @@
 		B85357C423A1F13800AAF6CD /* LinkDeviceVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceVC.swift; sourceTree = "<group>"; };
 		B85357C623A1FB5100AAF6CD /* LinkDeviceVCDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceVCDelegate.swift; sourceTree = "<group>"; };
 		B8544E3023D16CA500299F14 /* DeviceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
+		B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceUtilities.swift; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
 		B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinkingModal.swift; sourceTree = "<group>"; };
@@ -2717,12 +2719,22 @@
 		B846365922B7417900AF1514 /* Loki */ = {
 			isa = PBXGroup;
 			children = (
+				B8544E3623D520F600299F14 /* Jazz Icon */,
+				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,
+				B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */,
+			);
+			path = Loki;
+			sourceTree = "<group>";
+		};
+		B8544E3623D520F600299F14 /* Jazz Icon */ = {
+			isa = PBXGroup;
+			children = (
 				241C630E231F5AAC00B4198E /* JazzIcon.swift */,
 				B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */,
 				241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */,
 				241C6310231F5C4400B4198E /* UIColor+Helper.swift */,
 			);
-			path = Loki;
+			path = "Jazz Icon";
 			sourceTree = "<group>";
 		};
 		B8BB82A3238F356800BA5194 /* Style Guide */ = {
@@ -2764,7 +2776,6 @@
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
 				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
-				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,
 				B8BB82B02390C37000BA5194 /* SearchBar.swift */,
 				B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */,
 				B85357C023A1B81900AAF6CD /* SeedReminderViewDelegate.swift */,
@@ -2778,9 +2789,9 @@
 		B8CCF63C239757DB0091D419 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */,
 				B8544E3023D16CA500299F14 /* DeviceUtilities.swift */,
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
-				B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */,
 				B886B4A82398BA1500211ABE /* QRCode.swift */,
 			);
 			path = Utilities;
@@ -3720,6 +3731,7 @@
 				34BBC85B220C7ADA00857249 /* OrderedDictionary.swift in Sources */,
 				346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
+				B8544E3523D5201400299F14 /* UIView+Constraints.swift in Sources */,
 				34AC09EA211B39B100997B47 /* ModalActivityIndicatorViewController.swift in Sources */,
 				344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
@@ -3808,6 +3820,7 @@
 				4551DB5A205C562300C8AE75 /* Collection+OWS.swift in Sources */,
 				34BBC84F220B8A0100857249 /* ImageEditorCropViewController.swift in Sources */,
 				34AC09ED211B39B100997B47 /* ContactFieldView.swift in Sources */,
+				B8544E3423D51EEF00299F14 /* ProfilePictureView.swift in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
 				34AC09E3211B39B100997B47 /* OWSViewController.m in Sources */,
 				346129C81FD2072E00532771 /* NSAttributedString+OWS.m in Sources */,
@@ -3957,7 +3970,6 @@
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
-				B8BB82AD238F734800BA5194 /* ProfilePictureView.swift in Sources */,
 				B8CCF639239721E20091D419 /* TabBar.swift in Sources */,
 				B8162F0322891AD600D46544 /* FriendRequestView.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
@@ -3965,6 +3977,7 @@
 				B886B4A72398B23E00211ABE /* QRCodeVC.swift in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
+				B8544E3323D50E4900299F14 /* AppearanceUtilities.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */,
 				3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */,
@@ -3977,7 +3990,6 @@
 				B8CCF63F23975CFB0091D419 /* JoinPublicChatVC.swift in Sources */,
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
-				B885D5F62334A32100EE0D8E /* UIView+Constraints.swift in Sources */,
 				34DBF003206BD5A500025978 /* OWSMessageTextView.m in Sources */,
 				34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */,
 				34B3F8821E8DF1700035BE1A /* NewContactThreadViewController.m in Sources */,

@@ -1,12 +1,12 @@
 
 @objc(LKProfilePictureView)
-final class ProfilePictureView : UIView {
+public final class ProfilePictureView : UIView {
     private var imageViewWidthConstraint: NSLayoutConstraint!
     private var imageViewHeightConstraint: NSLayoutConstraint!
-    @objc var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
-    @objc var isRSSFeed = false
-    @objc var hexEncodedPublicKey: String!
-    @objc var additionalHexEncodedPublicKey: String?
+    @objc public var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
+    @objc public var isRSSFeed = false
+    @objc public var hexEncodedPublicKey: String!
+    @objc public var additionalHexEncodedPublicKey: String?
     
     // MARK: Components
     private lazy var imageView = getImageView()
@@ -14,20 +14,20 @@ final class ProfilePictureView : UIView {
     
     private lazy var rssLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
-        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.textColor = UIColor(rgbHex: 0xFFFFFF) // Colors.text
+        result.font = .systemFont(ofSize: 13) // Values.smallFontSize
         result.textAlignment = .center
         result.text = "RSS"
         return result
     }()
     
     // MARK: Lifecycle
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         setUpViewHierarchy()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setUpViewHierarchy()
     }
@@ -41,7 +41,7 @@ final class ProfilePictureView : UIView {
         addSubview(additionalImageView)
         additionalImageView.pin(.trailing, to: .trailing, of: self)
         additionalImageView.pin(.bottom, to: .bottom, of: self)
-        let additionalImageViewSize = Values.smallProfilePictureSize
+        let additionalImageViewSize = CGFloat(35) // Values.smallProfilePictureSize
         additionalImageView.set(.width, to: additionalImageViewSize)
         additionalImageView.set(.height, to: additionalImageViewSize)
         additionalImageView.layer.cornerRadius = additionalImageViewSize / 2
@@ -54,7 +54,7 @@ final class ProfilePictureView : UIView {
     }
     
     // MARK: Updating
-    @objc func update() {
+    @objc public func update() {
         if let imageViewWidthConstraint = imageViewWidthConstraint, let imageViewHeightConstraint = imageViewHeightConstraint {
             imageView.removeConstraint(imageViewWidthConstraint)
             imageView.removeConstraint(imageViewHeightConstraint)
@@ -65,7 +65,7 @@ final class ProfilePictureView : UIView {
         }
         let size: CGFloat
         if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey, !isRSSFeed {
-            size = Values.smallProfilePictureSize
+            size = 35 // Values.smallProfilePictureSize
             imageViewWidthConstraint = imageView.set(.width, to: size)
             imageViewHeightConstraint = imageView.set(.height, to: size)
             additionalImageView.isHidden = false
@@ -78,19 +78,19 @@ final class ProfilePictureView : UIView {
             additionalImageView.image = nil
         }
         imageView.image = isRSSFeed ? nil : getProfilePicture(of: size, for: hexEncodedPublicKey)
-        imageView.backgroundColor = isRSSFeed ? UIColor(hex: 0x353535) : Colors.unimportant
+        imageView.backgroundColor = isRSSFeed ? UIColor(rgbHex: 0x353535) : UIColor(rgbHex: 0xD8D8D8) // UIColor(rgbHex: 0xD8D8D8) = Colors.unimportant
         imageView.layer.cornerRadius = size / 2
         rssLabel.isHidden = !isRSSFeed
-        rssLabel.font = size == (Values.largeProfilePictureSize) ? .systemFont(ofSize: Values.largeFontSize) : .systemFont(ofSize: Values.smallFontSize)
+        rssLabel.font = size == (75) ? .systemFont(ofSize: 20) : .systemFont(ofSize: 13) // Values.largeProfilePictureSize / Values.largeFontSize / Values.smallFontSize
     }
     
     // MARK: Convenience
     private func getImageView() -> UIImageView {
         let result = UIImageView()
         result.layer.masksToBounds = true
-        result.backgroundColor = Colors.unimportant
-        result.layer.borderColor = Colors.border.cgColor
-        result.layer.borderWidth = Values.borderThickness
+        result.backgroundColor = UIColor(rgbHex: 0xD8D8D8) // Colors.unimportant
+        result.layer.borderColor = UIColor(rgbHex: 0x979797).cgColor // Colors.border
+        result.layer.borderWidth = 1 // Values.borderThickness
         result.contentMode = .scaleAspectFit
         return result
     }
