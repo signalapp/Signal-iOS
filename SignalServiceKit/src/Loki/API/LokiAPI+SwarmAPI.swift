@@ -121,7 +121,7 @@ public extension LokiAPI {
 internal extension Promise {
     
     internal func handlingSwarmSpecificErrorsIfNeeded(for target: LokiAPITarget, associatedWith hexEncodedPublicKey: String) -> Promise<T> {
-        return recover(on: DispatchQueue.global()) { error -> Promise<T> in
+        return recover(on: LokiAPI.errorHandlingQueue) { error -> Promise<T> in
             if let error = error as? NetworkManagerError {
                 switch error.statusCode {
                 case 0, 400, 500, 503:
@@ -130,7 +130,6 @@ internal extension Promise {
                     let newFailureCount = oldFailureCount + 1
                     LokiAPI.failureCount[target] = newFailureCount
                     print("[Loki] Couldn't reach snode at: \(target); setting failure count to \(newFailureCount).")
-                    Analytics.shared.track("Unreachable Snode")
                     if newFailureCount >= LokiAPI.failureThreshold {
                         print("[Loki] Failure threshold reached for: \(target); dropping it.")
                         LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
@@ -140,7 +139,6 @@ internal extension Promise {
                 case 421:
                     // The snode isn't associated with the given public key anymore
                     print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
-                    Analytics.shared.track("Migrated Snode")
                     LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
                 case 432:
                     // The PoW difficulty is too low

@@ -5,6 +5,7 @@ public final class LokiAPI : NSObject {
     private static var syncMessageTimestamps: [String:Set<UInt64>] = [:]
     public static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
     @objc public static var userHexEncodedPublicKeyCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
+    public static let errorHandlingQueue = DispatchQueue(label: "errorHandlingQueue")
     
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()
