@@ -150,11 +150,20 @@
             case .messageSent: self.subtitleLabel.text = NSLocalizedString("Message sent securely", comment: "")
             case .messageFailed: self.subtitleLabel.text = NSLocalizedString("Message failed to send", comment: "")
             case nil:
+                self.subtitleLabel.isHidden = false
                 let subtitle = NSMutableAttributedString()
-                if self.thread.isMuted {
+                if let muteEndDate = self.thread.mutedUntilDate {
                     subtitle.append(NSAttributedString(string: "\u{e067}  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.unimportant ]))
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.locale = Locale.current
+                    dateFormatter.timeStyle = .medium
+                    dateFormatter.dateStyle = .medium
+                    subtitle.append(NSAttributedString(string: "Muted until " + dateFormatter.string(from: muteEndDate)))
+                } else if self.thread.isGroupThread() {
+                    subtitle.append(NSAttributedString(string: "26 members")) // TODO: Implement
+                } else {
+                    self.subtitleLabel.isHidden = true
                 }
-                subtitle.append(NSAttributedString(string: "26 members")) // TODO: Implement
                 self.subtitleLabel.attributedText = subtitle
             }
         }
