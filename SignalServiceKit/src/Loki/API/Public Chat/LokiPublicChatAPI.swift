@@ -17,10 +17,6 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     
     @objc public static let defaultChats: [LokiPublicChat] = {
         var result: [LokiPublicChat] = []
-        result.append(LokiPublicChat(channel: 1, server: "https://chat.lokinet.org", displayName: NSLocalizedString("Loki Public Chat", comment: ""), isDeletable: true)!)
-        #if DEBUG
-            result.append(LokiPublicChat(channel: 1, server: "https://chat-dev.lokinet.org", displayName: "Loki Dev Chat", isDeletable: true)!)
-        #endif
         return result
     }()
     
