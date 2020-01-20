@@ -329,16 +329,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                    wasReceivedByUD:job.wasReceivedByUD
                                                        transaction:transaction];
         } else {
-            [self.messageManager processEnvelope:envelope
-                plaintextData:job.plaintextData
-                wasReceivedByUD:job.wasReceivedByUD
-                transaction:transaction
-                success:^{
-                    // Do nothing.
-                }
-                failure:^{
-                    reportFailure(transaction);
-                }];
+            if (![self.messageManager processEnvelope:envelope
+                                        plaintextData:job.plaintextData
+                                      wasReceivedByUD:job.wasReceivedByUD
+                                          transaction:transaction]) {
+                reportFailure(transaction);
+            }
         }
         [processedJobs addObject:job];
 

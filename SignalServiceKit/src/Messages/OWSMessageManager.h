@@ -12,12 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSMessageManager : OWSMessageHandler
 
 // processEnvelope: can be called from any thread.
-- (void)processEnvelope:(SSKProtoEnvelope *)envelope
+//
+// Returns YES on success.
+- (BOOL)processEnvelope:(SSKProtoEnvelope *)envelope
           plaintextData:(NSData *_Nullable)plaintextData
         wasReceivedByUD:(BOOL)wasReceivedByUD
-            transaction:(SDSAnyWriteTransaction *)transaction
-                success:(void (^)(void))success
-                failure:(void (^)(void))failure;
+            transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This should be invoked by the main app when the app is ready.
 - (void)startObserving;

@@ -237,22 +237,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - message handling
 
-- (void)processEnvelope:(SSKProtoEnvelope *)envelope
+- (BOOL)processEnvelope:(SSKProtoEnvelope *)envelope
           plaintextData:(NSData *_Nullable)plaintextData
         wasReceivedByUD:(BOOL)wasReceivedByUD
             transaction:(SDSAnyWriteTransaction *)transaction
-                success:(void (^)(void))success
-                failure:(void (^)(void))failure
 {
     @try {
         [self throws_processEnvelope:envelope
                        plaintextData:plaintextData
                      wasReceivedByUD:wasReceivedByUD
                          transaction:transaction];
-        success();
+        return YES;
     } @catch (NSException *exception) {
         OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
-        failure();
+        return NO;
     }
 }
 

@@ -406,15 +406,12 @@ class IncomingGroupsV2MessageQueue: NSObject {
                     reportFailure(transaction)
                     continue
                 }
-                self.messageManager.processEnvelope(envelope,
-                                                    plaintextData: job.plaintextData,
-                                                    wasReceivedByUD: job.wasReceivedByUD,
-                                                    transaction: transaction,
-                                                    success: {
-                                                        // Do nothing.
-                }, failure: {
+                if !self.messageManager.processEnvelope(envelope,
+                                                        plaintextData: job.plaintextData,
+                                                        wasReceivedByUD: job.wasReceivedByUD,
+                                                        transaction: transaction) {
                     reportFailure(transaction)
-                })
+                }
             }
             processedJobs.append(job)
 
