@@ -44,10 +44,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
     // MARK: -
 
     private let finder = GRDBGroupsV2MessageJobFinder()
-    private var isAppInBackground = false
     private let reachability = Reachability.forInternetConnection()
     // This property should only be accessed on serialQueue.
     private var isDrainingQueue = false
+    private var isAppInBackground = AtomicBool(false)
 
     private typealias BatchCompletionBlock = ([IncomingGroupsV2MessageJob], SDSAnyWriteTransaction) -> Void
 
@@ -90,13 +90,13 @@ class IncomingGroupsV2MessageQueue: NSObject {
     @objc func applicationWillEnterForeground() {
         AssertIsOnMainThread()
 
-        isAppInBackground = false
+        isAppInBackground.set(false)
     }
 
     @objc func applicationDidEnterBackground() {
         AssertIsOnMainThread()
 
-        isAppInBackground = true
+        isAppInBackground.set(true)
     }
 
     @objc func registrationStateDidChange() {
@@ -179,7 +179,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
         // If the app is in the background, use batch size of 1.
         // This reduces the cost of being interrupted and rolled back if
         // app is suspended.
-        let batchSize: UInt = isAppInBackground ? 1 : kIncomingMessageBatchSize
+        let batchSize: UInt = isAppInBackground.get() ? 1 : kIncomingMessageBatchSize
 
         let batchJobs = databaseStorage.read { transaction in
             return self.finder.nextJobs(batchSize: batchSize, transaction: transaction.asGrdbRead)
@@ -415,7 +415,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
             }
             processedJobs.append(job)
 
-            if self.isAppInBackground {
+            if isAppInBackground.get() {
                 // If the app is in the background, stop processing this batch.
                 //
                 // Since this check is done after processing jobs, we'll continue
