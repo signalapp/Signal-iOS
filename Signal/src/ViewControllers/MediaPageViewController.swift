@@ -152,8 +152,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         // Views
-
-        view.backgroundColor = Theme.darkThemeBackgroundColor
+        pagerScrollView.backgroundColor = Colors.navigationBarBackground
+        
+        view.backgroundColor = Colors.navigationBarBackground
 
         captionContainerView.delegate = self
         updateCaptionContainerVisibility()

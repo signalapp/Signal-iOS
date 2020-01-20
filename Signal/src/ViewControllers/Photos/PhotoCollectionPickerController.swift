@@ -34,8 +34,8 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = Colors.navigationBarBackground
-        tableView.backgroundColor = Colors.navigationBarBackground
+        view.backgroundColor = .white
+        tableView.backgroundColor = .white
         tableView.separatorColor = .clear
 
         library.add(delegate: self)
@@ -68,21 +68,21 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     private func buildTableCell(collection: PhotoCollection) -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
-        cell.backgroundColor = Theme.darkThemeBackgroundColor
-        cell.contentView.backgroundColor = Theme.darkThemeBackgroundColor
+        cell.backgroundColor = .white
+        cell.contentView.backgroundColor = .white
         cell.selectedBackgroundView?.backgroundColor = UIColor(white: 0.2, alpha: 1)
 
         let contents = collection.contents()
 
         let titleLabel = UILabel()
         titleLabel.text = collection.localizedTitle()
-        titleLabel.font = UIFont.ows_dynamicTypeBody
-        titleLabel.textColor = Theme.darkThemePrimaryColor
+        titleLabel.font = .systemFont(ofSize: Values.mediumFontSize)
+        titleLabel.textColor = .black
 
         let countLabel = UILabel()
         countLabel.text = numberFormatter.string(for: contents.assetCount)
-        countLabel.font = UIFont.ows_dynamicTypeCaption1
-        countLabel.textColor = Theme.darkThemePrimaryColor
+        countLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        countLabel.textColor = .black
 
         let textStack = UIStackView(arrangedSubviews: [titleLabel, countLabel])
         textStack.axis = .vertical
@@ -98,7 +98,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         let hStackView = UIStackView(arrangedSubviews: [imageView, textStack])
         hStackView.axis = .horizontal
         hStackView.alignment = .center
-        hStackView.spacing = 11
+        hStackView.spacing = Values.mediumSpacing
 
         let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(width: kImageSize, height: kImageSize))
         if let assetItem = contents.lastAssetItem(photoMediaSize: photoMediaSize) {

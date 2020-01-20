@@ -107,15 +107,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
-    self.view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = LKColors.navigationBarBackground;
 
     [self updateContents];
-    
-    // Loki: Set gradient background
-    self.view.backgroundColor = UIColor.clearColor;
-    LKGradient *gradient = LKGradients.defaultLokiBackground;
-    self.view.backgroundColor = UIColor.clearColor;
-    [self.view setGradient:gradient];
     
     // Loki: Set navigation bar background color
     UINavigationBar *navigationBar = self.navigationController.navigationBar;

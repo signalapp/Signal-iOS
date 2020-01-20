@@ -169,7 +169,7 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         canvasView.autoPinEdgesToSuperviewEdges()
 
         let tintView = UIView()
-        tintView.backgroundColor = UIColor(white: 0, alpha: 0.33)
+        tintView.backgroundColor = .clear
         tintView.isOpaque = false
         self.view.addSubview(tintView)
         tintView.autoPinEdgesToSuperviewEdges()

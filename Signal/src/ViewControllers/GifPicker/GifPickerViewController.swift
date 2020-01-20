@@ -115,8 +115,13 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                                 target: self,
                                                                 action: #selector(donePressed))
-        self.navigationItem.title = NSLocalizedString("GIF_PICKER_VIEW_TITLE",
-                                                      comment: "Title for the 'GIF picker' dialog.")
+        
+        // Loki: Customize title
+        let titleLabel = UILabel()
+        titleLabel.text = NSLocalizedString("GIF", comment: "")
+        titleLabel.textColor = Colors.text
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        navigationItem.titleView = titleLabel
 
         createViews()
 
