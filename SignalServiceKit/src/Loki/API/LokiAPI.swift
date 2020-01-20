@@ -180,7 +180,7 @@ public final class LokiAPI : NSObject {
             }
         }
         if let peer = LokiP2PAPI.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
-            let target = LokiAPITarget(address: peer.address, port: peer.port)
+            let target = LokiAPITarget(address: peer.address, port: peer.port, publicKey: nil)
             return Promise.value([ target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
                 LokiP2PAPI.markOnline(destination)
                 onP2PSuccess()
