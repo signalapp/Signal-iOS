@@ -536,7 +536,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
-
+    
+    // Loki - Don't process session request message
+    if ((dataMessage.flags & SSKProtoDataMessageFlagsSessionRequest) != 0) { return; }
+    
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
         NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.source];
         if (dataMessage.group) {
@@ -1767,6 +1770,8 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO: We'll need to fix this up if we ever start using sync messages
     // Currently this uses `envelope.source` but with sync messages we'll need to use the message sender ID
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    // We shouldn't be able to skip from None -> Friends in normal circumstances.
+    if (thread.friendRequestStatus == LKThreadFriendRequestStatusNone) { return; }
     if (thread.isContactFriend) return;
     // Become happy friends and go on great adventures
     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];

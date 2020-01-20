@@ -700,8 +700,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     if (thread.isGroupThread) {
         [self saveInfoMessageForGroupMessage:message inThread:thread];
+        OWSLogInfo(@"group message save here %@ %@ %@", message.customMessage, message.recipientIds.lastObject, message.recipientIds.firstObject);
     }
-    OWSLogInfo(@"group message save here %@ %@", message.customMessage, message.recipientIds.lastObject);
 
     NSError *error;
     NSArray<NSString *> *_Nullable recipientIds = [self unsentRecipientsForMessage:message thread:thread error:&error];
