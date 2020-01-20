@@ -17,4 +17,13 @@
     return NO;
 }
 
+#pragma mark Building
+- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
+{
+    SSKProtoDataMessageBuilder *builder = super.dataMessageBuilder;
+    if (builder == nil) { return nil; }
+    [builder setFlags:SSKProtoDataMessageFlagsSessionRequest];
+    return builder;
+}
+
 @end

@@ -149,6 +149,7 @@ message DataMessage {
     EXPIRATION_TIMER_UPDATE = 2;
     PROFILE_KEY_UPDATE      = 4;
     UNLINK_DEVICE           = 128;
+    SESSION_REQUEST         = 256;
   }
 
   message Quote {

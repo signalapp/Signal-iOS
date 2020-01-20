@@ -950,6 +950,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
 }
 
+- (OWSMessageSend *)getMultiDeviceSessionRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey forThread:(TSThread *)thread
+{
+    LKSessionRequestMessage *message = [[LKSessionRequestMessage alloc]initWithThread:thread];
+    message.skipSave = YES;
+    SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
+}
+
 - (void)sendMessageToDestinationAndLinkedDevices:(OWSMessageSend *)messageSend
 {
     TSOutgoingMessage *message = messageSend.message;
@@ -959,7 +968,35 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
     if (isPublicChatMessage || isDeviceLinkMessage) {
         [self sendMessage:messageSend];
-    } else {
+    }
+    else if (isGroupMessage) {
+        [[LKAPI getDestinationsFor:contactID]
+        .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
+            // Get master destination
+            LKDestination *masterDestination = [destinations filtered:^BOOL(LKDestination *destination) {
+                return [destination.kind isEqual:@"master"];
+            }].firstObject;
+            // Send to master destination
+            if (masterDestination != nil) {
+                OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
+                [self sendMessage:messageSendCopy];
+            }
+            // Get slave destinations
+            NSArray *slaveDestinations = [destinations filtered:^BOOL(LKDestination *destination) {
+                return [destination.kind isEqual:@"slave"];
+            }];
+            OWSLogInfo(@"Slave deveice for %@ %@", contactID, [slaveDestinations count] > 0 ? slaveDestinations[0] : @"None");
+            // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
+//            for (LKDestination *slaveDestination in slaveDestinations) {
+//                OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestinations];
+//                [self sendMessage:messageSendCopy];
+//            }
+        })
+        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
+            [self messageSendDidFail:messageSend deviceMessages:@{} statusCode:0 error:error responseData:nil];
+        }) retainUntilComplete];
+    }
+    else {
         BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];
         BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
         BOOL isSessionRequestMessage = [message isKindOfClass:LKSessionRequestMessage.class];
@@ -984,7 +1021,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSArray *slaveDestinations = [destinations filtered:^BOOL(LKDestination *destination) {
                 return [destination.kind isEqual:@"slave"];
             }];
-            OWSLogInfo(@"Slave deveice for %@ %@", contactID, [slaveDestinations count] > 0 ? slaveDestinations[0] : @"None");
             // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
             for (LKDestination *slaveDestination in slaveDestinations) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:slaveDestination.hexEncodedPublicKey];

@@ -1388,11 +1388,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
-        TSContactThread *thread =
-            [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+//        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
 
         // Only set the display name here, the logic for updating profile pictures is handled when we're setting profile key
-        [self handleProfileNameUpdateIfNeeded:dataMessage recipientId:thread.contactIdentifier transaction:transaction];
+        [self handleProfileNameUpdateIfNeeded:dataMessage recipientId:hexEncodedPublicKey transaction:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
@@ -1662,11 +1661,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     for (NSString *member in members) {
         if ([member isEqualToString:userHexEncodedPublicKey] ) { continue; }
-        TSThread *contactThread = [TSContactThread getThreadWithContactId:member transaction:transaction];
-        if (contactThread == nil || !contactThread.isContactFriend) {
+        __block BOOL hasSession;
+        hasSession = [self.primaryStorage containsSession:member deviceId:1 protocolContext:transaction];
+        if (!hasSession) {
             OWSLogInfo(@"Try to build session with %@", member);
-          LKSessionRequestMessage *message = [[LKSessionRequestMessage alloc] initWithThread:thread];
-          [self.messageSenderJobQueue addMessage:message transaction:transaction];
+            LKSessionRequestMessage *message = [[LKSessionRequestMessage alloc] initWithThread:thread];
+            [self.messageSenderJobQueue addMessage:message transaction:transaction];
         }
         else {
             OWSLogInfo(@"There is session with %@", member);
@@ -1707,12 +1707,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope data:(SSKProtoDataMessage *)data message:(TSIncomingMessage *)message thread:(TSContactThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    OWSLogInfo(@"RYAN: handle friend request from %@ %@", envelope.source, message.body);
+    
     if (envelope.isGroupChatMessage) {
         return NSLog(@"[Loki] Ignoring friend request in group chat.", @"");
     }
     if (envelope.type != SSKProtoEnvelopeTypeFriendRequest) {
         return NSLog(@"[Loki] handleFriendRequestMessageIfNeededWithEnvelope:data:message:thread:transaction was called with an envelope that isn't of type SSKProtoEnvelopeTypeFriendRequest.");
     }
+    
     if ([self canFriendRequestBeAutoAcceptedForThread:thread transaction:transaction]) {
         [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
         __block TSOutgoingMessage *existingFriendRequestMessage;

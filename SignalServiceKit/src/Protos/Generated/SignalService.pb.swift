@@ -882,6 +882,7 @@ struct SignalServiceProtos_DataMessage {
     case expirationTimerUpdate // = 2
     case profileKeyUpdate // = 4
     case unlinkDevice // = 128
+    case sessionRequest // = 256
 
     init() {
       self = .endSession
@@ -893,6 +894,7 @@ struct SignalServiceProtos_DataMessage {
       case 2: self = .expirationTimerUpdate
       case 4: self = .profileKeyUpdate
       case 128: self = .unlinkDevice
+      case 256: self = .sessionRequest
       default: return nil
       }
     }
@@ -903,6 +905,7 @@ struct SignalServiceProtos_DataMessage {
       case .expirationTimerUpdate: return 2
       case .profileKeyUpdate: return 4
       case .unlinkDevice: return 128
+      case .sessionRequest: return 256
       }
     }
 
@@ -3484,6 +3487,7 @@ extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProvidi
     2: .same(proto: "EXPIRATION_TIMER_UPDATE"),
     4: .same(proto: "PROFILE_KEY_UPDATE"),
     128: .same(proto: "UNLINK_DEVICE"),
+    256: .same(proto: "SESSION_REQUEST"),
   ]
 }
 
