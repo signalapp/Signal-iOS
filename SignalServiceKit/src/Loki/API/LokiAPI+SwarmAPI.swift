@@ -47,7 +47,7 @@ public extension LokiAPI {
     }
     
     // MARK: Internal API
-    private static func getRandomSnode() -> Promise<LokiAPITarget> {
+    internal static func getRandomSnode() -> Promise<LokiAPITarget> {
         if randomSnodePool.isEmpty {
             let target = seedNodePool.randomElement()!
             let url = URL(string: "\(target)/json_rpc")!
@@ -59,7 +59,8 @@ public extension LokiAPI {
                     "fields" : [
                         "public_ip" : true,
                         "storage_port" : true,
-                        "pubkey_ed25519": true
+                        "pubkey_ed25519": true,
+                        "pubkey_x25519": true
                     ]
                 ]
             ])
@@ -68,11 +69,11 @@ public extension LokiAPI {
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }
                 randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
-                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, let publicKey = rawTarget["pubkey_ed25519"] as? String, address != "0.0.0.0" else {
+                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, let identificationKey = rawTarget["pubkey_ed25519"] as? String, let encryptionKey = rawTarget["pubkey_x25519"] as? String, address != "0.0.0.0" else {
                         print("Failed to update random snode pool from: \(rawTarget).")
                         return nil
                     }
-                    return LokiAPITarget(address: "https://\(address)", port: UInt16(port), publicKey: publicKey)
+                    return LokiAPITarget(address: "https://\(address)", port: UInt16(port), publicKeys: LokiAPITarget.Keys(identification: identificationKey, encryption: encryptionKey))
                 })
                 return randomSnodePool.randomElement()!
             }.recover(on: DispatchQueue.global()) { error -> Promise<LokiAPITarget> in
@@ -109,11 +110,11 @@ public extension LokiAPI {
             return []
         }
         return rawSnodes.flatMap { rawSnode in
-            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString), let publicKey = rawSnode["pubkey_ed25519"] as? String, address != "0.0.0.0" else {
+            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString), let identificationKey = rawSnode["pubkey_ed25519"] as? String, let encryptionKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
                 print("[Loki] Failed to parse target from: \(rawSnode).")
                 return nil
             }
-            return LokiAPITarget(address: "https://\(address)", port: port, publicKey: publicKey)
+            return LokiAPITarget(address: "https://\(address)", port: port, publicKeys: LokiAPITarget.Keys(identification: identificationKey, encryption: encryptionKey))
         }
     }
 }
@@ -123,7 +124,7 @@ internal extension Promise {
     
     internal func handlingSwarmSpecificErrorsIfNeeded(for target: LokiAPITarget, associatedWith hexEncodedPublicKey: String) -> Promise<T> {
         return recover(on: LokiAPI.errorHandlingQueue) { error -> Promise<T> in
-            if let error = error as? NetworkManagerError {
+            if let error = error as? LokiHttpClient.HttpError {
                 switch error.statusCode {
                 case 0, 400, 500, 503:
                     // The snode is unreachable
@@ -143,9 +144,7 @@ internal extension Promise {
                     LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
                 case 432:
                     // The PoW difficulty is too low
-                    if case NetworkManagerError.taskError(_, let underlyingError) = error, let nsError = underlyingError as? NSError,
-                        let data = nsError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON,
-                        let powDifficulty = json["difficulty"] as? Int {
+                    if case LokiHttpClient.HttpError.networkError(_, let result, _) = error, let json = result as? JSON, let powDifficulty = json["difficulty"] as? Int {
                         print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
                         LokiAPI.powDifficulty = UInt(powDifficulty)
                     } else {

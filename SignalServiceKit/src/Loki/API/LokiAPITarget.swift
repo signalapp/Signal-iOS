@@ -2,7 +2,7 @@
 internal final class LokiAPITarget : NSObject, NSCoding {
     internal let address: String
     internal let port: UInt16
-    internal let publicKey: String?
+    internal let publicKeys: Keys?
     
     // MARK: Types
     internal enum Method : String {
@@ -13,25 +13,37 @@ internal final class LokiAPITarget : NSObject, NSCoding {
         case sendMessage = "store"
     }
     
+    internal struct Keys {
+        let identification: String
+        let encryption: String
+    }
+    
     // MARK: Initialization
-    internal init(address: String, port: UInt16, publicKey: String?) {
+    internal init(address: String, port: UInt16, publicKeys: Keys?) {
         self.address = address
         self.port = port
-        self.publicKey = publicKey
+        self.publicKeys = publicKeys
     }
     
     // MARK: Coding
     internal init?(coder: NSCoder) {
         address = coder.decodeObject(forKey: "address") as! String
         port = coder.decodeObject(forKey: "port") as! UInt16
-        publicKey = coder.decodeObject(forKey: "publicKey") as? String
+        if let identificationKey = coder.decodeObject(forKey: "identificationKey") as? String, let encryptionKey = coder.decodeObject(forKey: "encryptionKey") as? String {
+            publicKeys = Keys(identification: identificationKey, encryption: encryptionKey)
+        } else {
+            publicKeys = nil
+        }
         super.init()
     }
     
     internal func encode(with coder: NSCoder) {
         coder.encode(address, forKey: "address")
         coder.encode(port, forKey: "port")
-        coder.encode(publicKey, forKey: "publicKey")
+        if let keys = publicKeys {
+            coder.encode(keys.identification, forKey: "identificationKey")
+            coder.encode(keys.encryption, forKey: "encryptionKey")
+        }
     }
     
     // MARK: Equality
