@@ -160,7 +160,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable) NSTimer *readTimer;
 @property (nonatomic) NSCache *cellMediaCache;
-@property (nonatomic) ConversationTitleView *headerView;
+@property (nonatomic) LKConversationTitleView *headerView;
 @property (nonatomic, nullable) UIView *bannerView;
 @property (nonatomic, nullable) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
@@ -662,6 +662,19 @@ typedef enum : NSUInteger {
     UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Gear"] style:UIBarButtonItemStylePlain target:self action:@selector(showConversationSettings)];
     settingsButton.tintColor = LKColors.text;
     self.navigationItem.rightBarButtonItem = settingsButton;
+    
+    if (self.thread.isGroupThread) {
+        TSGroupThread *thread = (TSGroupThread *)self.thread;
+        if (thread.isRSSFeed) { return; }
+        __block LKPublicChat *publicChat;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
+        }];
+        [LKPublicChatAPI getUserCountForGroup:publicChat.channel onServer:publicChat.server]
+        .thenOn(dispatch_get_main_queue(), ^(id userCount) {
+            [self.headerView updateSubtitleForCurrentStatus];
+        });
+    }
 }
 
 - (void)createContents
@@ -1410,7 +1423,7 @@ typedef enum : NSUInteger {
 
 - (void)createHeaderViews
 {
-    ConversationTitleView *headerView = [[ConversationTitleView alloc] initWithThread:self.thread];
+    LKConversationTitleView *headerView = [[LKConversationTitleView alloc] initWithThread:self.thread];
     self.headerView = headerView;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, headerView);
 

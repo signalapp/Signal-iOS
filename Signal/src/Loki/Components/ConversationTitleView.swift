@@ -1,5 +1,6 @@
 
-@objc final class ConversationTitleView : UIView {
+@objc(LKConversationTitleView)
+final class ConversationTitleView : UIView {
     private let thread: TSThread
     private var currentStatus: Status? { didSet { updateSubtitleForCurrentStatus() } }
     
@@ -141,7 +142,7 @@
         self.currentStatus = nil
     }
     
-    private func updateSubtitleForCurrentStatus() {
+    @objc func updateSubtitleForCurrentStatus() {
         DispatchQueue.main.async {
             self.subtitleLabel.isHidden = false
             switch self.currentStatus {
@@ -159,13 +160,29 @@
                     dateFormatter.timeStyle = .medium
                     dateFormatter.dateStyle = .medium
                     subtitle.append(NSAttributedString(string: "Muted until " + dateFormatter.string(from: muteEndDate)))
-                } else if self.thread.isGroupThread() {
-                    subtitle.append(NSAttributedString(string: "26 members")) // TODO: Implement
+                } else if self.thread.isGroupThread() && !(self.thread as! TSGroupThread).isRSSFeed {
+                    let storage = OWSPrimaryStorage.shared()
+                    var userCount: Int?
+                    storage.dbReadConnection.readWrite { transaction in
+                        if let publicChat = LokiDatabaseUtilities.getPublicChat(for: self.thread.uniqueId!, in: transaction) {
+                            userCount = storage.getUserCount(for: publicChat, in: transaction)
+                        }
+                    }
+                    if let userCount = userCount {
+                        if userCount > 2500 {
+                            subtitle.append(NSAttributedString(string: "2500+ members"))
+                        } else {
+                            subtitle.append(NSAttributedString(string: "\(userCount) members"))
+                        }
+                    } else {
+                        self.subtitleLabel.isHidden = true
+                    }
                 } else {
                     self.subtitleLabel.isHidden = true
                 }
                 self.subtitleLabel.attributedText = subtitle
             }
+            self.titleLabel.font = .boldSystemFont(ofSize: self.subtitleLabel.isHidden ? Values.veryLargeFontSize : Values.mediumFontSize)
         }
     }
     

@@ -326,6 +326,9 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
                     thread.remove(with: transaction)
                 }
                 NotificationCenter.default.post(name: .threadDeleted, object: nil, userInfo: [ "threadId" : thread.uniqueId! ])
+                if let publicChat = publicChat {
+                    let _ = LokiPublicChatAPI.leave(publicChat.channel, on: publicChat.server)
+                }
             })
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .default) { _ in })
             guard let self = self else { return }

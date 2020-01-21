@@ -153,6 +153,7 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
         .done(on: .main) { [weak self] _ in
             let _ = LokiPublicChatAPI.getMessages(for: channelID, on: urlAsString)
             let _ = LokiPublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
+            let _ = LokiPublicChatAPI.join(channelID, on: urlAsString)
             self?.presentingViewController!.dismiss(animated: true, completion: nil)
         }
         .catch(on: .main) { [weak self] _ in

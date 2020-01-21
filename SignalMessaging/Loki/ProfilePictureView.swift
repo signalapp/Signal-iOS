@@ -12,15 +12,6 @@ public final class ProfilePictureView : UIView {
     private lazy var imageView = getImageView()
     private lazy var additionalImageView = getImageView()
     
-    private lazy var rssLabel: UILabel = {
-        let result = UILabel()
-        result.textColor = UIColor(rgbHex: 0xFFFFFF) // Colors.text
-        result.font = .systemFont(ofSize: 13) // Values.smallFontSize
-        result.textAlignment = .center
-        result.text = "RSS"
-        return result
-    }()
-    
     // MARK: Lifecycle
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -45,12 +36,6 @@ public final class ProfilePictureView : UIView {
         additionalImageView.set(.width, to: additionalImageViewSize)
         additionalImageView.set(.height, to: additionalImageViewSize)
         additionalImageView.layer.cornerRadius = additionalImageViewSize / 2
-        // Set up RSS label
-        addSubview(rssLabel)
-        rssLabel.pin(.leading, to: .leading, of: self)
-        rssLabel.pin(.top, to: .top, of: self)
-        rssLabel.autoPinWidth(toWidthOf: imageView)
-        rssLabel.autoPinHeight(toHeightOf: imageView)
     }
     
     // MARK: Updating
@@ -80,8 +65,10 @@ public final class ProfilePictureView : UIView {
         imageView.image = isRSSFeed ? nil : getProfilePicture(of: size, for: hexEncodedPublicKey)
         imageView.backgroundColor = isRSSFeed ? UIColor(rgbHex: 0x353535) : UIColor(rgbHex: 0xD8D8D8) // UIColor(rgbHex: 0xD8D8D8) = Colors.unimportant
         imageView.layer.cornerRadius = size / 2
-        rssLabel.isHidden = !isRSSFeed
-        rssLabel.font = size == (75) ? .systemFont(ofSize: 20) : .systemFont(ofSize: 13) // Values.largeProfilePictureSize / Values.largeFontSize / Values.smallFontSize
+        imageView.contentMode = isRSSFeed ? .center : .scaleAspectFit
+        if isRSSFeed {
+            imageView.image = #imageLiteral(resourceName: "SessionWhite").resizedImage(to: CGSize(width: (303*24)/337, height: 24))
+        }
     }
     
     // MARK: Convenience

@@ -71,17 +71,6 @@ public final class LokiPublicChatManager : NSObject {
         // Store the group chat mapping
         self.storage.dbReadWriteConnection.readWrite { transaction in
             let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
-            
-            // Mute the thread
-            if let utc = TimeZone(identifier: "UTC") {
-                var calendar = Calendar.current
-               calendar.timeZone = utc
-               var dateComponents = DateComponents()
-               dateComponents.setValue(999, for: .year)
-                if let date = calendar.date(byAdding: dateComponents, to: Date()) {
-                    thread.updateWithMuted(until: date, transaction: transaction)
-                }
-            }
            
             // Save the group chat
             LokiDatabaseUtilities.setPublicChat(chat, for: thread.uniqueId!, in: transaction)
