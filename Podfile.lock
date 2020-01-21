@@ -14,6 +14,8 @@ PODS:
   - AFNetworking/Serialization (3.2.1)
   - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
+  - Argon2 (1.0.0)
+  - Argon2/Tests (1.0.0)
   - AxolotlKit (0.9.0):
     - CocoaLumberjack
     - Curve25519Kit (~> 2.1.0)
@@ -113,6 +115,7 @@ PODS:
     - SignalCoreKit
   - SignalServiceKit (0.9.0):
     - AFNetworking
+    - Argon2
     - AxolotlKit
     - blurhash
     - CocoaLumberjack
@@ -133,6 +136,7 @@ PODS:
     - YYImage/WebP
   - SignalServiceKit/Tests (0.9.0):
     - AFNetworking
+    - Argon2
     - AxolotlKit
     - blurhash
     - CocoaLumberjack
@@ -234,6 +238,8 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
+  - Argon2 (from `https://github.com/signalapp/Argon2.git`)
+  - Argon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - AxolotlKit/Tests (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - blurhash (from `https://github.com/signalapp/blurhash`, branch `addPodspec`)
@@ -282,6 +288,9 @@ SPEC REPOS:
     - YYImage
 
 EXTERNAL SOURCES:
+  Argon2:
+    :git: https://github.com/signalapp/Argon2.git
+    :submodules: true
   AxolotlKit:
     :branch: master
     :git: https://github.com/signalapp/SignalProtocolKit.git
@@ -322,6 +331,10 @@ EXTERNAL SOURCES:
     :git: https://github.com/TheLevelUp/ZXingObjC
 
 CHECKOUT OPTIONS:
+  Argon2:
+    :commit: 658c9c937c5faf94b2a369f47f0f82ddee352260
+    :git: https://github.com/signalapp/Argon2.git
+    :submodules: true
   AxolotlKit:
     :commit: 97bc4ea1014c0cfac539e87444e3d0bb98a264ba
     :git: https://github.com/signalapp/SignalProtocolKit.git
@@ -344,7 +357,7 @@ CHECKOUT OPTIONS:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 85d0a90da6aac105c59bc56068a4d456ba80748d
+    :commit: b053c9ecb1579e34cb9bac89a9947f9eaeb75bfc
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: 33dc101ee66b25ba6f4310dce04d48276a934781
@@ -364,6 +377,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  Argon2: 57ae1b9e6a9be45005dc55671eaa5c4b79de18e5
   AxolotlKit: ac03e4d79486b62d08282c840da410116227683e
   blurhash: 150e9ffe986f028a38f7b469b5a279eab45352df
   CocoaLumberjack: 78b0c238666f4f58db069738ec176f4519557516
@@ -382,7 +396,7 @@ SPEC CHECKSUMS:
   SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
   SignalMetadataKit: a7aacedf262d947c22e2c619f0fd217163d2a637
   SignalRingRTC: a6ebe5dd4e33a747a9ee63c9a99105e074e6344a
-  SignalServiceKit: 71856e789067b45672443a9fdc5152409db2cd19
+  SignalServiceKit: f8fa79a211d0bafa4d8b149b62fdea389b6eafc5
   SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
@@ -392,6 +406,6 @@ SPEC CHECKSUMS:
   ZKGroup: b5fcf00855c58ffa45861d5427621d8a519f4314
   ZXingObjC: 512b34b9b6920e8ef0461a4159d0814c5e48c28a
 
-PODFILE CHECKSUM: 7ae8483815f4ae74a82baf598adffb135234fd8a
+PODFILE CHECKSUM: b90f18f05ce46a76d08e4f05afe57222f426d1f2
 
 COCOAPODS: 1.7.5

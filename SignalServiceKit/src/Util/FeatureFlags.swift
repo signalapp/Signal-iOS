@@ -176,7 +176,7 @@ public class FeatureFlags: NSObject {
     public static let onlyModernNotificationClearance = build.includes(.beta)
 
     @objc
-    public static let registrationLockV2 = build.includes(.dev)
+    public static let registrationLockV2 = false
 
     @objc
     public static var allowUUIDOnlyContacts: Bool {
@@ -189,7 +189,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static var pinsForEveryone = build.includes(.dev)
+    public static var pinsForEveryone = false
 
     @objc
     public static let useOnlyModernContactDiscovery = false
