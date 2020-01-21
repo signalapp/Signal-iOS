@@ -174,6 +174,14 @@ public class PinReminderViewController: OWSViewController {
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
         topSpacer.autoSetDimension(.height, toSize: 20, relation: .greaterThanOrEqual)
 
+        let dismissButton = UIButton()
+        dismissButton.setTemplateImageName("x-24", tintColor: Theme.primaryIconColor)
+        dismissButton.addTarget(self, action: #selector(dismissPressed), for: .touchUpInside)
+        containerView.addSubview(dismissButton)
+        dismissButton.autoSetDimensions(to: CGSize(square: 44))
+        dismissButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
+        dismissButton.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
+
         updateValidationWarnings()
     }
 
@@ -200,6 +208,12 @@ public class PinReminderViewController: OWSViewController {
             self?.presentingViewController?.dismiss(animated: true, completion: nil)
         }
         present(OWSNavigationController(rootViewController: vc), animated: true, completion: nil)
+    }
+
+    @objc func dismissPressed() {
+        Logger.info("")
+        // We'll ask again next time they launch
+        dismiss(animated: true, completion: nil)
     }
 
     @objc func submitPressed() {
