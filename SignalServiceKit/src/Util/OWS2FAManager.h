@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const NSNotificationName_2FAStateDidChange;
 
 extern const NSUInteger kMin2FAPinLength;
+extern const NSUInteger kMin2FAv2PinLength;
 extern const NSUInteger kMax2FAv1PinLength;
 extern const NSUInteger kLegacyTruncated2FAv1PinLength;
 

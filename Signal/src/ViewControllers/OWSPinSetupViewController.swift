@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -8,10 +8,12 @@ import UIKit
 public class PinSetupViewController: OWSViewController {
 
     private let pinTextField = UITextField()
+    private let pinTypeToggle = UIButton()
 
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
     private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
     private let validationWarningLabel = UILabel()
+    private let recommendationLabel = UILabel()
 
     enum Mode {
         case creating
@@ -23,6 +25,11 @@ public class PinSetupViewController: OWSViewController {
             guard case .changing = self else { return false }
             return true
         }
+
+        var isConfirming: Bool {
+            guard case .confirming = self else { return false }
+            return true
+        }
     }
     private let mode: Mode
 
@@ -31,7 +38,6 @@ public class PinSetupViewController: OWSViewController {
     enum ValidationState {
         case valid
         case tooShort
-        case tooLong
         case mismatch
 
         var isInvalid: Bool {
@@ -44,12 +50,19 @@ public class PinSetupViewController: OWSViewController {
         }
     }
 
+    private var pinType: KeyBackupService.PinType {
+        didSet {
+            updatePinType()
+        }
+    }
+
     private let completionHandler: () -> Void
 
-    init(mode: Mode, initialMode: Mode? = nil, completionHandler: @escaping () -> Void) {
+    init(mode: Mode, initialMode: Mode? = nil, pinType: KeyBackupService.PinType = .numeric, completionHandler: @escaping () -> Void) {
         assert(TSAccountManager.sharedInstance().isRegisteredPrimaryDevice)
         self.mode = mode
         self.initialMode = initialMode ?? mode
+        self.pinType = pinType
         self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)
 
@@ -176,8 +189,6 @@ public class PinSetupViewController: OWSViewController {
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
 
-        let placeholderText: String
-
         switch mode {
         case .creating, .changing:
             let explanationText = NSLocalizedString("PIN_CREATION_EXPLANATION",
@@ -189,8 +200,6 @@ public class PinSetupViewController: OWSViewController {
             let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold()])
 
             explanationLabel.attributedText = attributedExplanation
-
-            placeholderText = NSLocalizedString("PIN_CREATION_PIN_CREATION_PLACEHOLDER", comment: "The placeholder when creating a pin in the 'pin creation' view.")
         case .recreating:
             let explanationText = NSLocalizedString("PIN_CREATION_RECREATION_EXPLANATION",
                                                     comment: "The re-creation explanation in the 'pin creation' view.")
@@ -201,13 +210,9 @@ public class PinSetupViewController: OWSViewController {
             let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold()])
 
             explanationLabel.attributedText = attributedExplanation
-
-            placeholderText = NSLocalizedString("PIN_CREATION_PIN_CREATION_PLACEHOLDER", comment: "The placeholder when creating a pin in the 'pin creation' view.")
         case .confirming:
             explanationLabel.text = NSLocalizedString("PIN_CREATION_CONFIRMATION_EXPLANATION",
                                                       comment: "The explanation of confirmation in the 'pin creation' view.")
-
-            placeholderText = NSLocalizedString("PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER", comment: "The placeholder when confirming a pin in the 'pin creation' view.")
         }
 
         explanationLabel.numberOfLines = 0
@@ -218,7 +223,6 @@ public class PinSetupViewController: OWSViewController {
         // Pin text field
 
         pinTextField.delegate = self
-        pinTextField.keyboardType = .numberPad
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
@@ -227,17 +231,23 @@ public class PinSetupViewController: OWSViewController {
         pinTextField.setContentHuggingHorizontalLow()
         pinTextField.setCompressionResistanceHorizontalLow()
         pinTextField.autoSetDimension(.height, toSize: 40)
-        pinTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [.foregroundColor: Theme.placeholderColor])
         pinTextField.accessibilityIdentifier = "pinCreation.pinTextField"
 
         validationWarningLabel.textColor = .ows_accentRed
+        validationWarningLabel.textAlignment = .center
         validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "pinCreation.validationWarningLabel"
+
+        recommendationLabel.textColor = Theme.secondaryTextAndIconColor
+        recommendationLabel.textAlignment = .center
+        recommendationLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+        recommendationLabel.accessibilityIdentifier = "pinCreation.recommendationLabel"
 
         let pinStack = UIStackView(arrangedSubviews: [
             pinTextField,
             UIView.spacer(withHeight: 10),
-            validationWarningLabel
+            validationWarningLabel,
+            recommendationLabel
         ])
         pinStack.axis = .vertical
         pinStack.alignment = .fill
@@ -248,6 +258,11 @@ public class PinSetupViewController: OWSViewController {
         pinStack.autoPinHeightToSuperview()
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
+
+        pinTypeToggle.setTitleColor(.ows_signalBlue, for: .normal)
+        pinTypeToggle.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
+        pinTypeToggle.addTarget(self, action: #selector(togglePinType), for: .touchUpInside)
+        pinTypeToggle.accessibilityIdentifier = "pinCreation.pinTypeToggle"
 
         let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         let buttonHeight = OWSFlatButton.heightForFont(font)
@@ -272,6 +287,8 @@ public class PinSetupViewController: OWSViewController {
             pinStackRow,
             bottomSpacer,
             UIView.spacer(withHeight: 10),
+            pinTypeToggle,
+            UIView.spacer(withHeight: 10),
             primaryButtonView
         ]
 
@@ -293,6 +310,7 @@ public class PinSetupViewController: OWSViewController {
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
 
         updateValidationWarnings()
+        updatePinType()
     }
 
     // MARK: - Events
@@ -316,13 +334,8 @@ public class PinSetupViewController: OWSViewController {
     private func tryToContinue() {
         Logger.info("")
 
-        guard let pin = pinTextField.text?.ows_stripped(), pin.count >= kMin2FAPinLength else {
+        guard let pin = pinTextField.text?.ows_stripped(), pin.count >= kMin2FAv2PinLength else {
             validationState = .tooShort
-            return
-        }
-
-        guard FeatureFlags.registrationLockV2 || pin.count <= kMax2FAv1PinLength else {
-            validationState = .tooLong
             return
         }
 
@@ -336,6 +349,7 @@ public class PinSetupViewController: OWSViewController {
             let confirmingVC = PinSetupViewController(
                 mode: .confirming(pinToMatch: pin),
                 initialMode: initialMode,
+                pinType: pinType,
                 completionHandler: completionHandler
             )
             navigationController?.pushViewController(confirmingVC, animated: true)
@@ -350,19 +364,61 @@ public class PinSetupViewController: OWSViewController {
         pinStrokeNormal.isHidden = validationState.isInvalid
         pinStrokeError.isHidden = !validationState.isInvalid
         validationWarningLabel.isHidden = !validationState.isInvalid
+        recommendationLabel.isHidden = validationState.isInvalid
 
         switch validationState {
         case .tooShort:
             validationWarningLabel.text = NSLocalizedString("PIN_CREATION_TOO_SHORT_ERROR",
                                                             comment: "Label indicating that the attempted PIN is too short")
-        case .tooLong:
-            validationWarningLabel.text = NSLocalizedString("PIN_CREATION_TOO_LONG_ERROR",
-                                                            comment: "Label indicating that the attempted PIN is too long")
         case .mismatch:
             validationWarningLabel.text = NSLocalizedString("PIN_CREATION_MISMATCH_ERROR",
                                                             comment: "Label indicating that the attempted PIN does not match the first PIN")
         default:
             break
+        }
+    }
+
+    private func updatePinType() {
+        AssertIsOnMainThread()
+
+        pinTextField.text = nil
+        validationState = .valid
+
+        let recommendationLabelText: String
+
+        switch pinType {
+        case .numeric:
+            pinTypeToggle.setTitle(NSLocalizedString("PIN_CREATION_CREATE_ALPHANUMERIC",
+                                                     comment: "Button asking if the user would like to create an alphanumeric PIN"), for: .normal)
+            pinTextField.keyboardType = .asciiCapableNumberPad
+            recommendationLabelText = NSLocalizedString("PIN_CREATION_NUMERIC_HINT",
+                                                         comment: "Label indicating the user must use at least 6 digits")
+        case .alphanumeric:
+            pinTypeToggle.setTitle(NSLocalizedString("PIN_CREATION_CREATE_NUMERIC",
+                                                     comment: "Button asking if the user would like to create an numeric PIN"), for: .normal)
+            pinTextField.keyboardType = .default
+            recommendationLabelText = NSLocalizedString("PIN_CREATION_ALPHANUMERIC_HINT",
+                                                         comment: "Label indicating the user must use at least 6 characters")
+        }
+
+        pinTextField.reloadInputViews()
+
+        if mode.isConfirming {
+            pinTypeToggle.isHidden = true
+            recommendationLabel.text = NSLocalizedString("PIN_CREATION_PIN_CONFIRMATION_HINT",
+                                                         comment: "Label indication the user must confirm their PIN.")
+        } else {
+            pinTypeToggle.isHidden = false
+            recommendationLabel.text = recommendationLabelText
+        }
+    }
+
+    @objc func togglePinType() {
+        switch pinType {
+        case .numeric:
+            pinType = .alphanumeric
+        case .alphanumeric:
+            pinType = .numeric
         }
     }
 
@@ -400,12 +456,18 @@ public class PinSetupViewController: OWSViewController {
 
 extension PinSetupViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
+        let hasPendingChanges: Bool
+        if pinType == .numeric {
+            ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
+            hasPendingChanges = false
+        } else {
+            hasPendingChanges = true
+        }
 
         // Reset the validation state to clear errors, since the user is trying again
         validationState = .valid
 
-        // Inform our caller that we took care of performing the change.
-        return false
+        // Inform our caller whether we took care of performing the change.
+        return hasPendingChanges
     }
 }

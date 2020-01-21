@@ -14,6 +14,16 @@ public class KeyBackupService: NSObject {
         case backupMissing
     }
 
+    public enum PinType: Int {
+        case numeric = 1
+        case alphanumeric = 2
+
+        public init(forPin pin: String) {
+            let normalizedPin = KeyBackupService.normalizePin(pin)
+            self = normalizedPin.digitsOnly() == normalizedPin ? .numeric : .alphanumeric
+        }
+    }
+
     // PRAGMA MARK: - Depdendencies
     static var networkManager: TSNetworkManager {
         return TSNetworkManager.shared()
@@ -43,6 +53,10 @@ public class KeyBackupService: NSObject {
     @objc
     public static var hasMasterKey: Bool {
         return cacheQueue.sync { cachedMasterKey != nil }
+    }
+
+    public static var currentPinType: PinType? {
+        return cacheQueue.sync { cachedPinType }
     }
 
     /// Indicates whether your pin is valid when compared to your stored keys.
@@ -156,7 +170,7 @@ public class KeyBackupService: NSObject {
 
                 // We successfully stored the new keys in KBS, save them in the database
                 databaseStorage.write { transaction in
-                    store(masterKey, encodedVerificationString: encodedVerificationString, transaction: transaction)
+                    store(masterKey, pinType: PinType(forPin: pin), encodedVerificationString: encodedVerificationString, transaction: transaction)
                 }
             }
         }.recover { error in
@@ -212,7 +226,7 @@ public class KeyBackupService: NSObject {
 
                 // We successfully stored the new keys in KBS, save them in the database
                 databaseStorage.write { transaction in
-                    store(masterKey, encodedVerificationString: encodedVerificationString, transaction: transaction)
+                    store(masterKey, pinType: PinType(forPin: pin), encodedVerificationString: encodedVerificationString, transaction: transaction)
                 }
             }
         }.recover { error in
@@ -412,18 +426,23 @@ public class KeyBackupService: NSObject {
     }
 
     private static let masterKeyIdentifer = "masterKey"
-    private static let encodedVerificationStringIdentifier = "encodedVerificationStringIdentifier"
+    private static let pinTypeIdentifier = "pinType"
+    private static let encodedVerificationStringIdentifier = "encodedVerificationString"
     private static let cacheQueue = DispatchQueue(label: "org.signal.KeyBackupService")
 
     @objc
     public static func warmCaches() {
         var masterKey: Data?
+        var pinType: PinType?
         var encodedVerificationString: String?
 
         var syncedDerivedKeys = [DerivedKey: Data]()
 
         databaseStorage.read { transaction in
             masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
+            if let rawPinType = keyValueStore.getInt(pinTypeIdentifier, transaction: transaction) {
+                pinType = PinType(rawValue: rawPinType)
+            }
             encodedVerificationString = keyValueStore.getString(encodedVerificationStringIdentifier, transaction: transaction)
 
             for type in DerivedKey.allCases {
@@ -433,6 +452,7 @@ public class KeyBackupService: NSObject {
 
         cacheQueue.sync {
             cachedMasterKey = masterKey
+            cachedPinType = pinType
             cachedEncodedVerificationString = encodedVerificationString
             cachedSyncedDerivedKeys = syncedDerivedKeys
         }
@@ -445,6 +465,7 @@ public class KeyBackupService: NSObject {
         keyValueStore.removeAll(transaction: transaction)
         cacheQueue.sync {
             cachedMasterKey = nil
+            cachedPinType = nil
             cachedEncodedVerificationString = nil
             cachedSyncedDerivedKeys = [:]
         }
@@ -453,27 +474,40 @@ public class KeyBackupService: NSObject {
     // Should only be interacted with on the serial cache queue
     // Always contains an in memory reference to our current masterKey
     private static var cachedMasterKey: Data?
+    // Always contains an in memory reference to our current PIN's type
+    private static var cachedPinType: PinType?
     // Always contains an in memory reference to our encoded PIN verification string
     private static var cachedEncodedVerificationString: String?
     // Always contains an in memory reference to our received derived keys
     static var cachedSyncedDerivedKeys = [DerivedKey: Data]()
 
-    static func store(_ masterKey: Data, encodedVerificationString: String, transaction: SDSAnyWriteTransaction) {
-        guard masterKey != cachedMasterKey || encodedVerificationString != cachedEncodedVerificationString else { return }
-
-        keyValueStore.setData(masterKey, key: masterKeyIdentifer, transaction: transaction)
-        keyValueStore.setString(encodedVerificationString, key: encodedVerificationStringIdentifier, transaction: transaction)
-
-        var oldMasterKey: Data?
+    static func store(_ masterKey: Data, pinType: PinType, encodedVerificationString: String, transaction: SDSAnyWriteTransaction) {
+        var previousMasterKey: Data?
+        var previousPinType: PinType?
+        var previousEncodedVerificationString: String?
 
         cacheQueue.sync {
-            oldMasterKey = cachedMasterKey
+            previousMasterKey = cachedMasterKey
+            previousPinType = cachedPinType
+            previousEncodedVerificationString = cachedEncodedVerificationString
+        }
+
+        guard masterKey != previousMasterKey
+            || pinType != previousPinType
+            || encodedVerificationString != previousEncodedVerificationString else { return }
+
+        keyValueStore.setData(masterKey, key: masterKeyIdentifer, transaction: transaction)
+        keyValueStore.setInt(pinType.rawValue, key: pinTypeIdentifier, transaction: transaction)
+        keyValueStore.setString(encodedVerificationString, key: encodedVerificationStringIdentifier, transaction: transaction)
+
+        cacheQueue.sync {
             cachedMasterKey = masterKey
+            cachedPinType = pinType
             cachedEncodedVerificationString = encodedVerificationString
         }
 
         // Only continue if we didn't previously have a master key or our master key has changed
-        guard masterKey != oldMasterKey else { return }
+        guard masterKey != previousMasterKey else { return }
 
         // Trigger a re-creation of the storage manifest, our keys have changed
         storageServiceManager.restoreOrCreateManifestIfNecessary()

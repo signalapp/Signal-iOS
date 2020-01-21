@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS2FASettingsViewController.h"
@@ -339,7 +339,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    if (!SSKFeatureFlags.registrationLockV2 && self.pinTextfield.text.length > kMax2FAv1PinLength) {
+    if (self.pinTextfield.text.length > kMax2FAv1PinLength) {
         self.errorLabel.hidden = NO;
         self.errorLabel.text = NSLocalizedString(
             @"ENABLE_2FA_VIEW_PIN_TOO_LONG", @"Error indicating that the entered 'two-factor auth PIN' is too long.");

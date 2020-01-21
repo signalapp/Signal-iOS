@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -12,6 +12,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     private let attemptsAlertThreshold = 4
 
     private let pinTextField = UITextField()
+    private let pinTypeToggle = UIButton()
 
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
     private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
@@ -36,6 +37,18 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         didSet {
             updateValidationWarnings()
         }
+    }
+
+    private let isUsingKBS: Bool
+    private var pinType: KeyBackupService.PinType = .numeric {
+        didSet {
+            updatePinType()
+        }
+    }
+
+    public init(onboardingController: OnboardingController, isUsingKBS: Bool) {
+        self.isUsingKBS = isUsingKBS
+        super.init(onboardingController: onboardingController)
     }
 
     override public func loadView() {
@@ -69,7 +82,6 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
         pinTextField.delegate = self
         pinTextField.isSecureTextEntry = true
-        pinTextField.keyboardType = .numberPad
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
@@ -108,6 +120,11 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
 
+        pinTypeToggle.setTitleColor(.ows_signalBlue, for: .normal)
+        pinTypeToggle.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
+        pinTypeToggle.addTarget(self, action: #selector(togglePinType), for: .touchUpInside)
+        pinTypeToggle.accessibilityIdentifier = "pinCreation.pinTypeToggle"
+
         let nextButton = self.primaryButton(title: CommonStrings.nextButton,
                                      selector: #selector(nextPressed))
         nextButton.accessibilityIdentifier = "onboarding.2fa." + "nextButton"
@@ -124,6 +141,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             topSpacer,
             pinStackRow,
             bottomSpacer,
+            pinTypeToggle,
+            UIView.spacer(withHeight: 10),
             primaryButtonView,
             compressableBottomMargin
         ])
@@ -140,6 +159,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
 
         updateValidationWarnings()
+        updatePinType()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -179,7 +199,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             pinToUse = pinToUse?.substring(to: Int(kLegacyTruncated2FAv1PinLength))
         }
 
-        guard let pin = pinToUse?.ows_stripped(), pin.count >= kMin2FAPinLength else {
+        guard let pin = pinToUse?.ows_stripped(), pin.count >= (isUsingKBS ? kMin2FAv2PinLength : kMin2FAPinLength) else {
             // Check if we're already in an invalid state, if so we can do nothing
             guard !attemptState.isInvalid else { return }
             attemptState = .invalid(remainingAttempts: nil)
@@ -278,18 +298,59 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             break
         }
     }
+
+    private func updatePinType() {
+        AssertIsOnMainThread()
+
+        pinTextField.text = nil
+        attemptState = .unattempted
+
+        pinTypeToggle.isHidden = !isUsingKBS
+
+        switch pinType {
+        case .numeric:
+            pinTypeToggle.setTitle(NSLocalizedString("ONBOARDING_2FA_ENTER_ALPHANUMERIC",
+                                                     comment: "Button asking if the user would like to enter an alphanumeric PIN"), for: .normal)
+            pinTextField.keyboardType = .asciiCapableNumberPad
+        case .alphanumeric:
+            pinTypeToggle.setTitle(NSLocalizedString("ONBOARDING_2FA_ENTER_NUMERIC",
+                                                     comment: "Button asking if the user would like to enter an numeric PIN"), for: .normal)
+            pinTextField.keyboardType = .default
+        }
+
+        pinTextField.reloadInputViews()
+    }
+
+    @objc func togglePinType() {
+        guard isUsingKBS else {
+            return owsFailDebug("unexpectedly tried to toggle PIN type when not using KBS")
+        }
+
+        switch pinType {
+        case .numeric:
+            pinType = .alphanumeric
+        case .alphanumeric:
+            pinType = .numeric
+        }
+    }
 }
 
 // MARK: -
 
 extension Onboarding2FAViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
+        let hasPendingChanges: Bool
+        if pinType == .numeric {
+            ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
+            hasPendingChanges = false
+        } else {
+            hasPendingChanges = true
+        }
 
         // Reset the attempt state to clear errors, since the user is trying again
         attemptState = .unattempted
 
-        return false
+        return hasPendingChanges
     }
 
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
