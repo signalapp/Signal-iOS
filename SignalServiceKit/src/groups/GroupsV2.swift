@@ -5,6 +5,15 @@
 import Foundation
 import PromiseKit
 
+public enum GroupsV2Error: Error {
+    // By the time we tried to apply the change, it was irrelevant.
+    //
+    // GroupsV2 TODO: We must handle this.  Not try to retry.
+    case redundant
+    // GroupsV2 TODO: We must handle this.  We've probably been removed from the group.
+    case unauthorized
+}
+
 @objc
 public protocol GroupsV2: AnyObject {
 
@@ -41,9 +50,10 @@ public protocol GroupsV2Swift {
     func fetchGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State>
 
     func buildChangeSet(from oldGroupModel: TSGroupModel,
-    to newGroupModel: TSGroupModel) throws -> GroupsV2ChangeSet
+                        to newGroupModel: TSGroupModel,
+                        transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet
 
-    func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<Void>
+    func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupModel>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
 }
@@ -64,16 +74,16 @@ public protocol GroupV2State {
 
     var debugDescription: String { get }
 
-    var version: UInt32 { get }
+    var revision: UInt32 { get }
 
     var title: String { get }
 
     // GroupsV2 TODO: Avatar.
     // GroupsV2 TODO: DM state.
 
-    // Includes all roles: adminstrators and "default" members.
-    var activeMembers: [SignalServiceAddress] { get }
-    var administrators: [SignalServiceAddress] { get }
+    var groupMembership: GroupMembership { get }
+
+    var groupAccess: GroupAccess { get }
 
     var accessControlForAttributes: GroupsProtoAccessControlAccessRequired { get }
     var accessControlForMembers: GroupsProtoAccessControlAccessRequired { get }
@@ -144,11 +154,12 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func buildChangeSet(from oldGroupModel: TSGroupModel,
-    to newGroupModel: TSGroupModel) throws -> GroupsV2ChangeSet {
+                               to newGroupModel: TSGroupModel,
+                               transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet {
         owsFail("Not implemented.")
     }
 
-    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<Void> {
+    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupModel> {
         owsFail("Not implemented.")
     }
 

@@ -71,6 +71,18 @@ public extension SDSTransactable {
         }
     }
 
+    func read<T>(_: PMKNamespacer, _ block: @escaping (SDSAnyReadTransaction) throws -> T) -> Promise<T> {
+        return Promise { resolver in
+            DispatchQueue.global().async {
+                do {
+                    resolver.fulfill(try self.read(block: block))
+                } catch {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+
     @objc
     func writePromise(_ block: @escaping (SDSAnyWriteTransaction) -> Void) -> AnyPromise {
         return AnyPromise(write(.promise, block) as Promise<Void>)
@@ -80,6 +92,18 @@ public extension SDSTransactable {
         return Promise { resolver in
             DispatchQueue.global().async {
                 resolver.fulfill(self.write(block: block))
+            }
+        }
+    }
+
+    func write<T>(_: PMKNamespacer, _ block: @escaping (SDSAnyWriteTransaction) throws -> T) -> Promise<T> {
+        return Promise { resolver in
+            DispatchQueue.global().async {
+                do {
+                    resolver.fulfill(try self.write(block: block))
+                } catch {
+                    resolver.reject(error)
+                }
             }
         }
     }

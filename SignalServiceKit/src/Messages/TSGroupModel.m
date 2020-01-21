@@ -36,8 +36,11 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
                            name:(nullable NSString *)name
                      avatarData:(nullable NSData *)avatarData
                         members:(NSArray<SignalServiceAddress *> *)members
-                 administrators:(NSArray<SignalServiceAddress *> *)administrators
+            groupsV2MemberRoles:(NSDictionary<NSUUID *, NSNumber *> *)groupsV2MemberRoles
+     groupsV2PendingMemberRoles:(NSDictionary<NSUUID *, NSNumber *> *)groupsV2PendingMemberRoles
+                    groupAccess:(GroupAccess *)groupAccess
                   groupsVersion:(GroupsVersion)groupsVersion
+                groupV2Revision:(uint32_t)groupV2Revision
           groupSecretParamsData:(nullable NSData *)groupSecretParamsData
 {
     OWSAssertDebug(members != nil);
@@ -60,23 +63,10 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
     _groupsVersion = groupsVersion;
     _groupSecretParamsData = groupSecretParamsData;
-
-    NSMutableDictionary<NSString *, NSNumber *> *groupsV2MemberRoles = [NSMutableDictionary new];
-    if (groupsVersion != GroupsVersionV1) {
-        NSSet<SignalServiceAddress *> *administratorsSet = [NSSet setWithArray:administrators];
-        for (SignalServiceAddress *address in members) {
-            NSUUID *_Nullable uuid = address.uuid;
-            if (address.uuid == nil) {
-                OWSLogVerbose(@"Address: %@", address);
-                OWSFailDebug(@"Address is missing uuid.");
-                continue;
-            }
-            BOOL isAdministrator = [administratorsSet containsObject:address];
-            groupsV2MemberRoles[uuid.UUIDString]
-                = (isAdministrator ? @(TSGroupMemberRole_Administrator) : @(TSGroupMemberRole_Normal));
-        }
-    }
     _groupsV2MemberRoles = [groupsV2MemberRoles copy];
+    _groupsV2PendingMemberRoles = [groupsV2PendingMemberRoles copy];
+    _groupAccess = groupAccess;
+    _groupV2Revision = groupV2Revision;
 
     return self;
 }
@@ -109,6 +99,23 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
         UIImage *_Nullable groupImage = [coder decodeObjectForKey:@"groupImage"];
         if ([groupImage isKindOfClass:[UIImage class]]) {
             self.groupAvatarData = [TSGroupModel dataForGroupAvatar:groupImage];
+        }
+    }
+
+    if (self.groupsVersion == GroupsVersionV1) {
+        // Do nothing.
+    } else {
+        if (self.groupAccess == nil) {
+            OWSFailDebug(@"Missing groupAccess.");
+            _groupAccess = GroupAccess.forV1;
+        }
+        if (self.groupsV2MemberRoles == nil) {
+            OWSFailDebug(@"Missing groupsV2MemberRoles.");
+            _groupsV2MemberRoles = @{};
+        }
+        if (self.groupsV2PendingMemberRoles == nil) {
+            OWSFailDebug(@"Missing groupsV2PendingMemberRoles.");
+            _groupsV2PendingMemberRoles = @{};
         }
     }
 
@@ -209,6 +216,9 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![NSObject isNullableObject:self.groupsV2MemberRoles equalTo:other.groupsV2MemberRoles]) {
         return NO;
     }
+    if (![NSObject isNullableObject:self.groupsV2PendingMemberRoles equalTo:other.groupsV2PendingMemberRoles]) {
+        return NO;
+    }
     return YES;
 }
 
@@ -237,7 +247,8 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     }];
 }
 
-- (TSGroupMemberRole)roleForGroupsV2Member:(SignalServiceAddress *)address
+- (TSGroupMemberRole)roleForAddress:(SignalServiceAddress *)address
+                            roleMap:(NSDictionary<NSUUID *, NSNumber *> *)roleMap
 {
     TSGroupMemberRole defaultRole = TSGroupMemberRole_Normal;
 
@@ -247,7 +258,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
         OWSFailDebug(@"Address is missing uuid.");
         return defaultRole;
     }
-    NSNumber *_Nullable nsRole = self.groupsV2MemberRoles[uuid.UUIDString];
+    NSNumber *_Nullable nsRole = roleMap[uuid];
     if (nsRole == nil) {
         OWSLogVerbose(@"Address: %@", address);
         if (self.groupsVersion == GroupsVersionV2) {
@@ -258,27 +269,14 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return (TSGroupMemberRole)nsRole.unsignedIntegerValue;
 }
 
-- (void)setRoleForGroupsV2Member:(SignalServiceAddress *)address role:(TSGroupMemberRole)role
+- (TSGroupMemberRole)roleForGroupsV2Member:(SignalServiceAddress *)address
 {
-    NSUUID *_Nullable uuid = address.uuid;
-    if (address.uuid == nil) {
-        OWSLogVerbose(@"Address: %@", address);
-        OWSFailDebug(@"Address is missing uuid.");
-        return;
-    }
-    NSMutableDictionary<NSString *, NSNumber *> *groupsV2MemberRoles;
-    if (self.groupsV2MemberRoles == nil) {
-        groupsV2MemberRoles = [NSMutableDictionary new];
-    } else {
-        groupsV2MemberRoles = [_groupsV2MemberRoles mutableCopy];
-    }
-    groupsV2MemberRoles[uuid.UUIDString] = @(role);
-    _groupsV2MemberRoles = [groupsV2MemberRoles copy];
+    return [self roleForAddress:address roleMap:self.groupsV2MemberRoles];
 }
 
-- (BOOL)isAdministrator:(SignalServiceAddress *)address
+- (TSGroupMemberRole)roleForGroupsV2PendingMember:(SignalServiceAddress *)address
 {
-    return [self roleForGroupsV2Member:address] == TSGroupMemberRole_Administrator;
+    return [self roleForAddress:address roleMap:self.groupsV2PendingMemberRoles];
 }
 
 // GroupsV2 TODO: This should be done via GroupManager.
@@ -286,20 +284,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 {
     _groupMembers = [groupMembers copy];
     // GroupsV2 TODO: Remove stale keys from groupsV2MemberRoles.
-}
-
-- (NSArray<SignalServiceAddress *> *)administrators
-{
-    if (self.groupsVersion == GroupsVersionV1) {
-        return @[];
-    }
-    NSMutableArray<SignalServiceAddress *> *administrators = [NSMutableArray new];
-    for (SignalServiceAddress *address in self.groupMembers) {
-        if ([self isAdministrator:address]) {
-            [administrators addObject:address];
-        }
-    }
-    return administrators;
 }
 
 @end

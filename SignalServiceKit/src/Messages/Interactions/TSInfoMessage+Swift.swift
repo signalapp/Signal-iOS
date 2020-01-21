@@ -40,6 +40,7 @@ public extension TSInfoMessage {
                                       transaction: transaction)
     }
 
+    // GroupsV2 TODO: Update this to reflect the v2 group properties.
     func groupUpdateDescription(fromGroupState: TSGroupModel?,
                                 toGroupState: TSGroupModel,
                                 groupUpdater: SignalServiceAddress,

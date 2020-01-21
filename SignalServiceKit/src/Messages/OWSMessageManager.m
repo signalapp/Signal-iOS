@@ -799,8 +799,8 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
                                                                 transaction:transaction];
 
-    OWSGroupInfoRequestMessage *groupInfoRequestMessage =
-        [[OWSGroupInfoRequestMessage alloc] initWithThread:thread groupId:groupId];
+    OWSGroupInfoRequestMessage *groupInfoRequestMessage = [[OWSGroupInfoRequestMessage alloc] initWithThread:thread
+                                                                                                     groupId:groupId];
 
     [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer transaction:transaction];
 }
@@ -1056,19 +1056,14 @@ NS_ASSUME_NONNULL_BEGIN
 
             // Ensures that the thread exists but doesn't update it.
             NSError *_Nullable error;
-            // We don't need to set administrators; this is a v1 group.
             EnsureGroupResult *_Nullable result =
-                [GroupManager upsertExistingGroupWithMembers:newMembers.allObjects
-                                              administrators:@[]
-                                                        name:groupContext.name
-                                                  avatarData:oldGroupThread.groupModel.groupAvatarData
-                                                     groupId:groupId
-                                               groupsVersion:GroupsVersionV1
-                                       groupSecretParamsData:nil
-                                           shouldSendMessage:false
-                                    groupUpdateSourceAddress:groupUpdateSourceAddress
-                                                 transaction:transaction
-                                                       error:&error];
+                [GroupManager upsertExistingGroupV1WithGroupId:groupId
+                                                          name:groupContext.name
+                                                    avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                       members:newMembers.allObjects
+                                      groupUpdateSourceAddress:groupUpdateSourceAddress
+                                                   transaction:transaction
+                                                         error:&error];
             if (error != nil || result == nil) {
                 OWSFailDebug(@"Error: %@", error);
                 return;
@@ -1184,8 +1179,8 @@ NS_ASSUME_NONNULL_BEGIN
 
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                 // Eagerly clean up the attachment.
-                TSAttachment *_Nullable attachment =
-                    [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId transaction:transaction];
+                TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId
+                                                                            transaction:transaction];
                 if (attachment == nil) {
                     // In the test case, database storage may be reset by the
                     // time the pointer download fails.
@@ -1278,7 +1273,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Invalid expirationStartTimestamp.");
             return;
         }
-        
+
         OWSIncomingSentMessageTranscript *_Nullable transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent transaction:transaction];
         if (!transcript) {
@@ -1727,8 +1722,9 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    TSQuotedMessage *_Nullable quotedMessage =
-        [TSQuotedMessage quotedMessageForDataMessage:dataMessage thread:thread transaction:transaction];
+    TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
+                                                                                     thread:thread
+                                                                                transaction:transaction];
 
     OWSContact *_Nullable contact;
     OWSLinkPreview *_Nullable linkPreview;

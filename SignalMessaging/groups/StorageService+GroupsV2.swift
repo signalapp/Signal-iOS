@@ -94,7 +94,7 @@ public extension StorageService {
             throw OWSAssertionError("No auth credential for redemption time.")
         }
 
-        let serverPublicParams = try GroupsV2Utils.serverPublicParams()
+        let serverPublicParams = try GroupsV2Protos.serverPublicParams()
         let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
         let authCredentialPresentation = try clientZkAuthOperations.createAuthCredentialPresentation(groupSecretParams: groupParams.groupSecretParams, authCredential: authCredential)
         let authCredentialPresentationData = authCredentialPresentation.serialize().asData

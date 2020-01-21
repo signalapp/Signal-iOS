@@ -59,7 +59,7 @@ public class VersionedProfiles: NSObject {
     // MARK: -
 
     public class func clientZkProfileOperations() throws -> ClientZkProfileOperations {
-        return ClientZkProfileOperations(serverPublicParams: try GroupsV2Utils.serverPublicParams())
+        return ClientZkProfileOperations(serverPublicParams: try GroupsV2Protos.serverPublicParams())
     }
 
     // MARK: - Update

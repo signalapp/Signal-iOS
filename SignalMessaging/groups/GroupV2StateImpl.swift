@@ -11,7 +11,7 @@ import ZKGroup
 // start to apply it.
 public struct GroupV2StateImpl: GroupV2State {
 
-    struct Member {
+    public struct Member {
         let userID: Data
         let uuid: UUID
         var address: SignalServiceAddress {
@@ -22,22 +22,26 @@ public struct GroupV2StateImpl: GroupV2State {
         let joinedAtVersion: UInt32
     }
 
-    struct PendingMember {
+    public struct PendingMember {
         let userID: Data
         let uuid: UUID
+        var address: SignalServiceAddress {
+            return SignalServiceAddress(uuid: uuid)
+        }
         let timestamp: UInt64
+        let role: GroupsProtoMemberRole
     }
 
     public let groupSecretParamsData: Data
 
     public let groupProto: GroupsProtoGroup
 
-    public let version: UInt32
+    public let revision: UInt32
 
     public let title: String
 
-    let members: [Member]
-    let pendingMembers: [PendingMember]
+    private let members: [Member]
+    private let pendingMembers: [PendingMember]
 
     public let accessControlForAttributes: GroupsProtoAccessControlAccessRequired
     public let accessControlForMembers: GroupsProtoAccessControlAccessRequired
@@ -46,16 +50,56 @@ public struct GroupV2StateImpl: GroupV2State {
         return groupProto.debugDescription
     }
 
-    public var activeMembers: [SignalServiceAddress] {
-        return members.map { $0.address }
+    public init(groupSecretParamsData: Data,
+                groupProto: GroupsProtoGroup,
+                revision: UInt32,
+                title: String,
+                members: [Member],
+                pendingMembers: [PendingMember],
+                accessControlForAttributes: GroupsProtoAccessControlAccessRequired,
+                accessControlForMembers: GroupsProtoAccessControlAccessRequired) {
+
+        self.groupSecretParamsData = groupSecretParamsData
+        self.groupProto = groupProto
+        self.revision = revision
+        self.title = title
+        self.members = members
+        self.pendingMembers = pendingMembers
+        self.accessControlForAttributes = accessControlForAttributes
+        self.accessControlForMembers = accessControlForMembers
     }
 
-    public var administrators: [SignalServiceAddress] {
-        return members.compactMap { member in
-            guard member.role == .administrator else {
-                return nil
+    public var groupMembership: GroupMembership {
+        var nonAdminMembers = Set<SignalServiceAddress>()
+        var administrators = Set<SignalServiceAddress>()
+        for member in members {
+            switch member.role {
+            case .administrator:
+                administrators.insert(member.address)
+            default:
+                nonAdminMembers.insert(member.address)
             }
-            return member.address
         }
+
+        var pendingNonAdminMembers = Set<SignalServiceAddress>()
+        var pendingAdministrators = Set<SignalServiceAddress>()
+        for member in pendingMembers {
+            switch member.role {
+            case .administrator:
+                pendingAdministrators.insert(member.address)
+            default:
+                pendingNonAdminMembers.insert(member.address)
+            }
+        }
+
+        return GroupMembership(nonAdminMembers: nonAdminMembers,
+                               administrators: administrators,
+                               pendingNonAdminMembers: pendingNonAdminMembers,
+                               pendingAdministrators: pendingAdministrators)
+    }
+
+    public var groupAccess: GroupAccess {
+        return GroupAccess(member: GroupAccess.groupV2Access(forProtoAccess: accessControlForMembers),
+                           attributes: GroupAccess.groupV2Access(forProtoAccess: accessControlForAttributes))
     }
 }
