@@ -188,11 +188,11 @@ public class KeyBackupService: NSObject {
         return AnyPromise(generateAndBackupKeys(with: pin))
     }
 
-    /// Generates a new master key for the given pin, backs it up to the KBS,
-    /// and stores it locally in the database.
+    /// Backs up the user's master key to KBS and stores it locally in the database.
+    /// If the user doesn't have a master key already a new one is generated.
     public static func generateAndBackupKeys(with pin: String) -> Promise<Void> {
         return fetchBackupId(auth: nil).map(on: .global()) { backupId -> (Data, Data, Data) in
-            let masterKey = generateMasterKey()
+            let masterKey = cacheQueue.sync { cachedMasterKey } ?? generateMasterKey()
             let (encryptionKey, accessKey) = try deriveEncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
             let encryptedMasterKey = try encryptMasterKey(masterKey, encryptionKey: encryptionKey)
 
