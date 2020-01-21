@@ -110,7 +110,9 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        fakeChatView.contentOffset = fakeChatViewContentOffset
+        if let fakeChatViewContentOffset = fakeChatViewContentOffset {
+            fakeChatView.contentOffset = fakeChatViewContentOffset
+        }
     }
     
     // MARK: Interaction
