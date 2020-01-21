@@ -313,6 +313,15 @@ public class PinSetupViewController: OWSViewController {
         updatePinType()
     }
 
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Don't allow interactive dismissal.
+        if #available(iOS 13, *) {
+            isModalInPresentation = true
+        }
+    }
+
     // MARK: - Events
 
     @objc func navigateBack() {

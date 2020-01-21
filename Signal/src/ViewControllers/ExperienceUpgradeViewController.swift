@@ -118,9 +118,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         return ows2FAManager.is2FAEnabled() && !ows2FAManager.needsLegacyPinMigration()
     }
 
-    override var canDismissWithGesture: Bool {
-        return hasPinAlready
-    }
+    override var canDismissWithGesture: Bool { return false }
 
     // MARK: - View lifecycle
 
