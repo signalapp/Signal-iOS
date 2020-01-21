@@ -58,14 +58,22 @@
 
 +(NSString *)getDecodedGroupId:(NSData *)groupId
 {
+    OWSAssertDebug(groupId.length > 0);
     NSString *encodedGroupId = [[NSString alloc]initWithData:groupId encoding:NSUTF8StringEncoding];
-    return [encodedGroupId componentsSeparatedByString:@"!"][1];
+    if ([encodedGroupId componentsSeparatedByString:@"1"].count > 1) {
+        return [encodedGroupId componentsSeparatedByString:@"!"][1];
+    }
+    return [encodedGroupId componentsSeparatedByString:@"!"][0];
 }
 
 +(NSData *)getDecodedGroupIdAsData:(NSData *)groupId
 {
+    OWSAssertDebug(groupId.length > 0);
     NSString *encodedGroupId = [[NSString alloc]initWithData:groupId encoding:NSUTF8StringEncoding];
-    NSString *decodedGroupId = [encodedGroupId componentsSeparatedByString:@"!"][1];
+    NSString *decodedGroupId = [encodedGroupId componentsSeparatedByString:@"!"][0];
+    if ([encodedGroupId componentsSeparatedByString:@"!"].count > 1) {
+        decodedGroupId =[encodedGroupId componentsSeparatedByString:@"!"][1];
+    }
     OWSLogInfo(@"RYAN: %@", decodedGroupId);
     return [decodedGroupId dataUsingEncoding:NSUTF8StringEncoding];
 }

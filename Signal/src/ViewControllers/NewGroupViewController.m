@@ -530,7 +530,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
     //Test: Add Ryan to a new group. Should be deleted!!!!!
-    [recipientIds addObject:@"051840538244095e5f65e3d8da773a3a86d976cff66c304f74df9fb3798b25567c"];
+    [recipientIds addObject:@"057fffb55430abb2df5be80fab693ffe4db26a8b76e590c1748a47baef7c483604"];
     [recipientIds addObject:@"050c159f0d46c40ec6306bb0b8470972af3f67b5cb1e24b6460a6f692275c8b57f"];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
     //Loki - Add the creator as the admin

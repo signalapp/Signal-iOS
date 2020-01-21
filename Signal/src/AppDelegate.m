@@ -1569,16 +1569,6 @@ static NSTimeInterval launchStartedAt;
             }];
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
         }
-        else {
-            [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtil getEncodedPublichChatGroupIdAsData:chat.id] transaction:transaction];
-                if (!thread.groupModel.groupType) {
-                    [thread.groupModel updateGroupId:[LKGroupUtil getEncodedPublichChatGroupIdAsData:chat.id]];
-                    thread.groupModel.groupType = PUBLIC_CHAT;
-                    [thread saveWithTransaction:transaction];
-                }
-            }];
-        }
     }
 }
 
@@ -1597,16 +1587,6 @@ static NSTimeInterval launchStartedAt;
             }];
             [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
-        }
-        else {
-            [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSGroupThread *thread = [TSGroupThread threadWithGroupId: [LKGroupUtil getEncodedRssFeedGroupIdAsData:feed.id] transaction:transaction];
-                if (!thread.groupModel.groupType) {
-                    [thread.groupModel updateGroupId:[LKGroupUtil getEncodedRssFeedGroupIdAsData:feed.id]];
-                    thread.groupModel.groupType = RSS_FEED;
-                    [thread saveWithTransaction:transaction];
-                }
-            }];
         }
     }
 }
