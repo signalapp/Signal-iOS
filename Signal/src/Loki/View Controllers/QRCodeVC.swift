@@ -84,7 +84,7 @@ final class QRCodeVC : UIViewController, UIPageViewControllerDataSource, UIPageV
         if #available(iOS 13, *) {
             height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
         } else {
-            let statusBarHeight: CGFloat = 20
+            let statusBarHeight = UIApplication.shared.statusBarFrame.height
             height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight - statusBarHeight
         }
         pageVCView.set(.height, to: height)
@@ -211,7 +211,7 @@ private final class ViewMyQRCodeVC : UIViewController {
         stackView.axis = .vertical
         stackView.spacing = isSmallScreen ? Values.mediumSpacing : Values.largeSpacing
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
+        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view)

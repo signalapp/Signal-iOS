@@ -94,7 +94,7 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
         if #available(iOS 13, *) {
             height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
         } else {
-            let statusBarHeight: CGFloat = 20
+            let statusBarHeight = UIApplication.shared.statusBarFrame.height
             height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight - statusBarHeight
         }
         pageVCView.set(.height, to: height)
@@ -180,7 +180,7 @@ private final class EnterPublicKeyVC : UIViewController {
         linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: isSmallScreen ? 48 : 80)
         linkButton.pin(.top, to: .top, of: linkButtonContainer)
         linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: isSmallScreen ? 48 : 80)
-        linkButtonBottomConstraint = linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: Values.veryLargeSpacing)
+        linkButtonBottomConstraint = linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: Values.largeSpacing)
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, publicKeyTextField ])
         topStackView.axis = .vertical
@@ -236,7 +236,7 @@ private final class EnterPublicKeyVC : UIViewController {
     
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
         bottomConstraint.constant = 0
-        linkButtonBottomConstraint.constant = Values.veryLargeSpacing
+        linkButtonBottomConstraint.constant = Values.largeSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
