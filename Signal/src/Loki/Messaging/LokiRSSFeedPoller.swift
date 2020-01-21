@@ -48,7 +48,7 @@ public final class LokiRSSFeedPoller : NSObject {
                 guard let bodyAsData = bodyAsHTML.data(using: String.Encoding.unicode) else { return }
                 let options = [ NSAttributedString.DocumentReadingOptionKey.documentType : NSAttributedString.DocumentType.html ]
                 guard let body = try? NSAttributedString(data: bodyAsData, options: options, documentAttributes: nil).string else { return }
-                let id = feed.id.data(using: String.Encoding.utf8)!
+                let id = LKGroupUtil.getEncodedRssFeedGroupId(asData: feed.id)
                 let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
                 groupContext.setName(feed.displayName)
                 let dataMessage = SSKProtoDataMessage.builder()

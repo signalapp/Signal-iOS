@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commonInit
 {
-    _groupId = [Randomness generateRandomBytes:kGroupIdLength];
+    _groupId = [LKGroupUtil getEncodedSignalGroupIdAsData:[[Randomness generateRandomBytes:kGroupIdLength] hexadecimalString]];
     _groupType = SIGNAL;
 
     _messageSender = SSKEnvironment.shared.messageSender;
@@ -530,9 +530,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
     //Test: Add Ryan to a new group. Should be deleted!!!!!
-    [recipientIds addObject:@"055a7f102ee3af057e4b69bfc8d4327a83d21bf14f794dbf3432d122a10a51fe55"];
-    [recipientIds addObject:@"054106150be20c398fc7ba30baa97e3e4a1abfb7067510f187c03d9b3b07fae448"];
+    [recipientIds addObject:@"051840538244095e5f65e3d8da773a3a86d976cff66c304f74df9fb3798b25567c"];
+    [recipientIds addObject:@"050c159f0d46c40ec6306bb0b8470972af3f67b5cb1e24b6460a6f692275c8b57f"];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
+    //Loki - Add the creator as the admin
+    [self.adminIds addObject:[self.contactsViewHelper localNumber]];
     TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:groupName
                                                     memberIds:recipientIds
                                                         image:self.groupAvatar

@@ -970,31 +970,43 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self sendMessage:messageSend];
     }
     else if (isGroupMessage) {
-        [[LKAPI getDestinationsFor:contactID]
-        .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
-            // Get master destination
-            LKDestination *masterDestination = [destinations filtered:^BOOL(LKDestination *destination) {
-                return [destination.kind isEqual:@"master"];
-            }].firstObject;
-            // Send to master destination
-            if (masterDestination != nil) {
-                OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
-                [self sendMessage:messageSendCopy];
-            }
-            // Get slave destinations
-            NSArray *slaveDestinations = [destinations filtered:^BOOL(LKDestination *destination) {
-                return [destination.kind isEqual:@"slave"];
-            }];
-            OWSLogInfo(@"Slave deveice for %@ %@", contactID, [slaveDestinations count] > 0 ? slaveDestinations[0] : @"None");
-            // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
-//            for (LKDestination *slaveDestination in slaveDestinations) {
-//                OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestinations];
+        [self sendMessage:messageSend];
+//        [[LKAPI getDestinationsFor:contactID]
+//        .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
+//            // Get master destination
+//            LKDestination *masterDestination = [destinations filtered:^BOOL(LKDestination *destination) {
+//                return [destination.kind isEqual:@"master"];
+//            }].firstObject;
+//            // Send to master destination
+//            if (masterDestination != nil) {
+//                OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
 //                [self sendMessage:messageSendCopy];
 //            }
-        })
-        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
-            [self messageSendDidFail:messageSend deviceMessages:@{} statusCode:0 error:error responseData:nil];
-        }) retainUntilComplete];
+//            // Get slave destinations
+//            NSArray *slaveDestinations = [destinations filtered:^BOOL(LKDestination *destination) {
+//                return [destination.kind isEqual:@"slave"];
+//            }];
+//            // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
+//            __block BOOL hasSession;
+//            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//                for (LKDestination *slaveDestination in slaveDestinations) {
+//                    hasSession = [self.primaryStorage containsSession:slaveDestination.hexEncodedPublicKey deviceId:1 protocolContext:transaction];
+//                    if (hasSession) {
+//                        OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestinations];
+//                        [self sendMessage:messageSendCopy];
+//                    }
+//                    else {
+//                        //RYAN TODO: If current device has no session with the slave device try to build a session with the slave device.
+//                        OWSMessageSend *sessionRequestMessage = [self getMultiDeviceSessionRequestMessageForHexEncodedPublicKey:slaveDestination.hexEncodedPublicKey forThread:messageSend.thread];
+//                        [self sendMessage:sessionRequestMessage];
+//                    }
+//                }
+//
+//            }];
+//        })
+//        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
+//            [self messageSendDidFail:messageSend deviceMessages:@{} statusCode:0 error:error responseData:nil];
+//        }) retainUntilComplete];
     }
     else {
         BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];

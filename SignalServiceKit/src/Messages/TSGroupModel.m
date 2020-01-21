@@ -32,8 +32,8 @@ const int32_t kGroupIdLength = 16;
     _groupName              = title;
     _groupMemberIds         = [memberIds copy];
     _groupImage = image; // image is stored in DB
-    _groupId                = groupId;
     _groupType              = groupType;
+    _groupId                = groupId;
 
     return self;
 }
@@ -188,6 +188,11 @@ const int32_t kGroupIdLength = 16;
 - (void)setRemovedMembers:(NSMutableSet<NSString *> *)removedMembers
 {
     _removedMembers = removedMembers;
+}
+
+- (void)updateGroupId: (NSData *)newGroupId
+{
+    _groupId = newGroupId;
 }
 
 @end

@@ -38,6 +38,7 @@ extern const int32_t kGroupIdLength;
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;
 - (NSString *)getInfoStringAboutUpdateTo:(TSGroupModel *)model contactsManager:(id<ContactsManagerProtocol>)contactsManager;
+- (void)updateGroupId: (NSData *)newGroupId;
 #endif
 
 @end

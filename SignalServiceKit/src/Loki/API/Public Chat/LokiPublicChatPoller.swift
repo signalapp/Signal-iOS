@@ -84,7 +84,7 @@ public final class LokiPublicChatPoller : NSObject {
                     } else {
                         senderDisplayName = generateDisplayName(from: message.displayName)
                     }
-                    let id = publicChat.idAsData
+                    let id = LKGroupUtil .getEncodedPublichChatGroupId(asData: publicChat.id)
                     let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
                     groupContext.setName(publicChat.displayName)
                     let dataMessage = SSKProtoDataMessage.builder()

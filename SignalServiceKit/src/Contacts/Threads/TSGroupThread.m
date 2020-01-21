@@ -17,9 +17,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 @implementation TSGroupThread
 
 #define TSGroupThreadPrefix @"g"
-//#define TSGroupThreadPrefix @"__signal_mms_group__!"
-//#define TSPublicChatGroupThreadPrefix @"__loki_public_chat_group__!"
-//#define TSRssFeedGroupThreadPrefix @"__loki_rss_feed_group__!"
 
 - (instancetype)initWithGroupModel:(TSGroupModel *)groupModel
 {
@@ -126,17 +123,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 + (NSString *)threadIdFromGroupId:(NSData *)groupId
 {
     OWSAssertDebug(groupId.length > 0);
-    
-//    switch (groupType) {
-//        case PUBLIC_CHAT:
-//            return [TSPublicChatGroupThreadPrefix stringByAppendingString:[groupId base64EncodedString]];
-//        case RSS_FEED:
-//            return [TSRssFeedGroupThreadPrefix stringByAppendingString:[groupId base64EncodedString]];
-//        default:
-//            return [TSGroupThreadPrefix stringByAppendingString:[groupId base64EncodedString]];
-//    }
-
-    return [TSGroupThreadPrefix stringByAppendingString:[groupId base64EncodedString]];
+    return [TSGroupThreadPrefix stringByAppendingString:[[LKGroupUtil getDecodedGroupIdAsData:groupId] base64EncodedString]];
 }
 
 + (NSData *)groupIdFromThreadId:(NSString *)threadId

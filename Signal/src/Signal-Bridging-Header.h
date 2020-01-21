@@ -126,6 +126,7 @@
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/LKGroupUtil.h>
 #import <SignalServiceKit/UIImage+OWS.h>
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>

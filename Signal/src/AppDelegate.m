@@ -1564,19 +1564,19 @@ static NSTimeInterval launchStartedAt;
         if (!isChatSetUp || !chat.isDeletable) {
             [LKPublicChatManager.shared addChatWithServer:chat.server channel:chat.channel name:chat.displayName];
             [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSGroupThread *thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
+                TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtil getEncodedPublichChatGroupIdAsData:chat.id] transaction:transaction];
                 if (thread != nil) { [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread]; }
             }];
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
         }
         else {
             [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSGroupThread *thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
+                TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtil getEncodedPublichChatGroupIdAsData:chat.id] transaction:transaction];
                 if (!thread.groupModel.groupType) {
+                    [thread.groupModel updateGroupId:[LKGroupUtil getEncodedPublichChatGroupIdAsData:chat.id]];
                     thread.groupModel.groupType = PUBLIC_CHAT;
                     [thread saveWithTransaction:transaction];
                 }
-//                OWSLogInfo(@"GROUP MODEL TYPE %d", thread.groupModel.groupType);
             }];
         }
     }
@@ -1590,7 +1590,7 @@ static NSTimeInterval launchStartedAt;
         NSString *userDefaultsKey = [@"isRSSFeedSetUp." stringByAppendingString:feed.id];
         BOOL isFeedSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
         if (!isFeedSetUp || !feed.isDeletable) {
-            TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:feed.displayName memberIds:@[ userHexEncodedPublicKey, feed.server ] image:nil groupId:[feed.id dataUsingEncoding:NSUTF8StringEncoding] groupType:RSS_FEED];
+            TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:feed.displayName memberIds:@[ userHexEncodedPublicKey, feed.server ] image:nil groupId:[LKGroupUtil getEncodedRssFeedGroupIdAsData:feed.id] groupType:RSS_FEED];
             __block TSGroupThread *thread;
             [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
@@ -1600,12 +1600,12 @@ static NSTimeInterval launchStartedAt;
         }
         else {
             [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSGroupThread *thread = [TSGroupThread threadWithGroupId: [feed.id dataUsingEncoding:NSUTF8StringEncoding] transaction:transaction];
+                TSGroupThread *thread = [TSGroupThread threadWithGroupId: [LKGroupUtil getEncodedRssFeedGroupIdAsData:feed.id] transaction:transaction];
                 if (!thread.groupModel.groupType) {
+                    [thread.groupModel updateGroupId:[LKGroupUtil getEncodedRssFeedGroupIdAsData:feed.id]];
                     thread.groupModel.groupType = RSS_FEED;
                     [thread saveWithTransaction:transaction];
                 }
-//                OWSLogInfo(@"GROUP MODEL TYPE %d", thread.groupModel.groupType);
             }];
         }
     }
@@ -1616,7 +1616,7 @@ static NSTimeInterval launchStartedAt;
     // Only create the RSS feed pollers if their threads aren't deleted
     __block TSGroupThread *lokiNewsFeedThread;
     [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        lokiNewsFeedThread = [TSGroupThread threadWithGroupId:[self.lokiNewsFeed.id dataUsingEncoding:NSUTF8StringEncoding] transaction:transaction];
+        lokiNewsFeedThread = [TSGroupThread threadWithGroupId:[LKGroupUtil getEncodedRssFeedGroupIdAsData:self.lokiNewsFeed.id] transaction:transaction];
     }];
     if (lokiNewsFeedThread != nil && self.lokiNewsFeedPoller == nil) {
         self.lokiNewsFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiNewsFeed];
@@ -1638,7 +1638,7 @@ static NSTimeInterval launchStartedAt;
     NSDictionary *userInfo = notification.userInfo;
     NSString *threadID = (NSString *)userInfo[@"threadId"];
     if (threadID == nil) { return; }
-    if ([threadID isEqualToString:[TSGroupThread threadIdFromGroupId:[self.lokiNewsFeed.id dataUsingEncoding:NSUTF8StringEncoding]]] && self.lokiNewsFeedPoller != nil) {
+    if ([threadID isEqualToString:[TSGroupThread threadIdFromGroupId:[LKGroupUtil getEncodedRssFeedGroupIdAsData:self.lokiNewsFeed.id]]] && self.lokiNewsFeedPoller != nil) {
         [self.lokiNewsFeedPoller stop];
         self.lokiNewsFeedPoller = nil;
     }

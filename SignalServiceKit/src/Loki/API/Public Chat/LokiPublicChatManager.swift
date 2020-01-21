@@ -66,7 +66,7 @@ public final class LokiPublicChatManager : NSObject {
     @objc(addChatWithServer:channel:name:)
     public func addChat(server: String, channel: UInt64, name: String) -> LokiPublicChat? {
         guard let chat = LokiPublicChat(channel: channel, server: server, displayName: name, isDeletable: true) else { return nil }
-        let model = TSGroupModel(title: chat.displayName, memberIds: [userHexEncodedPublicKey!, chat.server], image: nil, groupId: chat.idAsData, groupType: .PUBLIC_CHAT)
+        let model = TSGroupModel(title: chat.displayName, memberIds: [userHexEncodedPublicKey!, chat.server], image: nil, groupId: LKGroupUtil .getEncodedPublichChatGroupId(asData: chat.id), groupType: .PUBLIC_CHAT)
         
         // Store the group chat mapping
         self.storage.dbReadWriteConnection.readWrite { transaction in

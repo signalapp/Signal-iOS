@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
         for (LKPublicChat *chat in LKPublicChatAPI.defaultChats) {
-            TSGroupThread *thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
+            TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtil getEncodedPublichChatGroupIdAsData:chat.id] transaction:transaction];
             if (thread != nil) {
                 [LKDatabaseUtilities setPublicChat:chat threadID:thread.uniqueId transaction:transaction];
             }
