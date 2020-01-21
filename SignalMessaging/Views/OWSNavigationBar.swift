@@ -75,7 +75,9 @@ public class OWSNavigationBar: UINavigationBar {
             return
         }
 
-        backgroundColor = UIColor(rgbHex: 0x161616)
+        backgroundColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
+        
+        tintColor = UIColor(rgbHex: 0xFFFFFF) // Colors.text
         
         if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true

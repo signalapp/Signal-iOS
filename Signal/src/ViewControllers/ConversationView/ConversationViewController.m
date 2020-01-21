@@ -4235,9 +4235,15 @@ typedef enum : NSUInteger {
     [searchBar setImage:searchImage forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
     UIImage *clearImage = [[UIImage imageNamed:@"searchbar_clear"] asTintedImageWithColor:LKColors.searchBarPlaceholder];
     [searchBar setImage:clearImage forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
-    searchBar.searchTextField.backgroundColor = LKColors.searchBarBackground;
-    searchBar.searchTextField.textColor = LKColors.text;
-    searchBar.searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Search", @"") attributes:@{ NSForegroundColorAttributeName : LKColors.searchBarPlaceholder }];
+    UITextField *searchTextField;
+    if (@available(iOS 13, *)) {
+        searchTextField = searchBar.searchTextField;
+    } else {
+        searchTextField = (UITextField *)[searchBar valueForKey:@"_searchField"];
+    }
+    searchTextField.backgroundColor = LKColors.searchBarBackground;
+    searchTextField.textColor = LKColors.text;
+    searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Search", @"") attributes:@{ NSForegroundColorAttributeName : LKColors.searchBarPlaceholder }];
     searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
     [searchBar setPositionAdjustment:UIOffsetMake(4, 0) forSearchBarIcon:UISearchBarIconSearch];
     [searchBar setSearchTextPositionAdjustment:UIOffsetMake(2, 0)];

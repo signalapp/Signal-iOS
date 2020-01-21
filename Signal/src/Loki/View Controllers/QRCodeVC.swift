@@ -69,7 +69,7 @@ final class QRCodeVC : UIViewController, UIPageViewControllerDataSource, UIPageV
         // Set up tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
-        tabBarTopConstraint = tabBar.pin(.top, to: .top, of: view)
+        tabBarTopConstraint = tabBar.autoPinEdge(toSuperviewSafeArea: .top)
         view.pin(.trailing, to: .trailing, of: tabBar)
         // Set up page VC constraints
         let pageVCView = pageVC.view!
@@ -80,7 +80,13 @@ final class QRCodeVC : UIViewController, UIPageViewControllerDataSource, UIPageV
         view.pin(.bottom, to: .bottom, of: pageVCView)
         let screen = UIScreen.main.bounds
         pageVCView.set(.width, to: screen.width)
-        let height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
+        let height: CGFloat
+        if #available(iOS 13, *) {
+            height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
+        } else {
+            let statusBarHeight: CGFloat = 20
+            height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight - statusBarHeight
+        }
         pageVCView.set(.height, to: height)
         viewMyQRCodeVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)

@@ -12,9 +12,20 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     // MARK: Components
     private lazy var spinner = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
     
+    private lazy var qrCodeImageViewContainer: UIView = {
+        let result = UIView()
+        result.addSubview(qrCodeImageView)
+        qrCodeImageView.pin(.top, to: .top, of: result)
+        qrCodeImageView.pin(.bottom, to: .bottom, of: result)
+        qrCodeImageView.center(.horizontal, in: result)
+        return result
+    }()
+    
     private lazy var qrCodeImageView: UIImageView = {
         let result = UIImageView()
         result.contentMode = .scaleAspectFit
+        result.set(.width, to: 128)
+        result.set(.height, to: 128)
         return result
     }()
     
@@ -97,7 +108,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     override func populateContentView() {
         let stackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel, mnemonicLabel, buttonStackView ])
         switch mode {
-        case .master: stackView.insertArrangedSubview(qrCodeImageView, at: 0)
+        case .master: stackView.insertArrangedSubview(qrCodeImageViewContainer, at: 0)
         case .slave: stackView.insertArrangedSubview(spinner, at: 0)
         }
         contentView.addSubview(stackView)
@@ -105,7 +116,6 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         stackView.axis = .vertical
         switch mode {
         case .master:
-            qrCodeImageView.set(.height, to: 128)
             let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
             qrCodeImageView.image = QRCode.generate(for: hexEncodedPublicKey, hasBackground: true)
         case .slave:

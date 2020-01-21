@@ -73,7 +73,13 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
         // Set up tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
-        tabBar.pin(.top, to: .top, of: view, withInset: navigationBar.height())
+        let tabBarInset: CGFloat
+        if #available(iOS 13, *) {
+            tabBarInset = navigationBar.height()
+        } else {
+            tabBarInset = 0
+        }
+        tabBar.pin(.top, to: .top, of: view, withInset: tabBarInset)
         view.pin(.trailing, to: .trailing, of: tabBar)
         // Set up page VC constraints
         let pageVCView = pageVC.view!
@@ -84,7 +90,13 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
         view.pin(.bottom, to: .bottom, of: pageVCView)
         let screen = UIScreen.main.bounds
         pageVCView.set(.width, to: screen.width)
-        let height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
+        let height: CGFloat
+        if #available(iOS 13, *) {
+            height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
+        } else {
+            let statusBarHeight: CGFloat = 20
+            height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight - statusBarHeight
+        }
         pageVCView.set(.height, to: height)
         enterPublicKeyVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)

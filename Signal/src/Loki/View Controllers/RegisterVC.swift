@@ -16,6 +16,7 @@ final class RegisterVC : UIViewController {
     private lazy var copyPublicKeyButton: Button = {
         let result = Button(style: .prominentOutline, size: .large)
         result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
+        result.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         return result
     }()
