@@ -122,8 +122,12 @@ public class VersionedProfiles: NSObject {
             return self.networkManager.makePromise(request: request)
         }.then(on: DispatchQueue.global()) { (_: URLSessionDataTask, responseObject: Any?) -> Promise<VersionedProfileUpdate> in
             if let profileAvatarData = profileAvatarData {
+                let profileKey: OWSAES256Key = self.profileManager.localProfileKey()
+                guard let encryptedProfileAvatarData = OWSProfileManager.shared().encrypt(profileData: profileAvatarData, profileKey: profileKey) else {
+                    throw OWSAssertionError("Could not encrypt profile avatar.")
+                }
                 return self.parseFormAndUpload(formResponseObject: responseObject,
-                                               profileAvatarData: profileAvatarData)
+                                               profileAvatarData: encryptedProfileAvatarData)
             }
             return Promise.value(VersionedProfileUpdate())
         }
