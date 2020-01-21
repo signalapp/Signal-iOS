@@ -445,7 +445,21 @@ public class PinSetupViewController: OWSViewController {
                 OWS2FAManager.shared().disable2FA(success: nil, failure: nil)
 
                 modalVC.dismiss {
-                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA", comment: "Error indicating that attempt to enable 'two-factor auth' failed."))
+                    // If this is the first time the user is trying to create a PIN, it's a blocking flow.
+                    // If for some reason they hit an error, notify them that we'll try again later and
+                    // dismiss the flow so they aren't stuck.
+                    if case .creating = self.initialMode {
+                        OWSActionSheets.showActionSheet(
+                            title: NSLocalizedString("PIN_CREATION_ERROR_TITLE",
+                                                     comment: "Error title indicating that the attempt to create a PIN failed."),
+                            message: NSLocalizedString("PIN_CREATION_ERROR_MESSAGE",
+                                                       comment: "Error body indicating that the attempt to create a PIN failed.")
+                        ) { _ in
+                            self.dismiss(animated: true, completion: nil)
+                        }
+                    } else {
+                        OWSActionSheets.showErrorAlert(message: NSLocalizedString("ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA", comment: "Error indicating that attempt to enable 'two-factor auth' failed."))
+                    }
                 }
             })
         }
