@@ -1728,6 +1728,12 @@
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Nieprawidłowy kod PIN. Brak dostępnych prób.";
 
+/* Button asking if the user would like to enter an alphanumeric PIN */
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+
+/* Button asking if the user would like to enter an numeric PIN */
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Ten numer telefonu ma włączoną blokadę rejestracji. Wprowadź kod PIN blokady rejestracji.";
 
@@ -1953,6 +1959,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album bez nazwy";
 
+/* Label indicating the user must use at least 6 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "Nie ma sposobu na odzyskanie Twojego numeru PIN, więc go zapamiętaj.";
 
@@ -1962,17 +1971,29 @@
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Potwierdź swój nowy PIN.";
 
+/* Button asking if the user would like to create an alphanumeric PIN */
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+
+/* Button asking if the user would like to create an numeric PIN */
+"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+
+/* Error body indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+
+/* Error title indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Twój PIN zapewnia dodatkową ochronę i możliwość odzyskania konta.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Numery PIN się różnią. Spróbuj ponownie.";
 
-/* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Ponownie wpisz PIN";
+/* Label indicating the user must use at least 6 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
 
-/* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN musi mieć przynajmniej 4 cyfry";
+/* Label indication the user must confirm their PIN. */
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Ponownie wpisz PIN";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Gdy jesteś wylogowany(a), nie ma sposobu na odzyskanie twojego numeru PIN.";
@@ -1986,11 +2007,8 @@
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Utwórz swój PIN";
 
-/* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN nie może mieć więcej niż 20 cyfr.";
-
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN musi mieć przynajmniej 4 cyfry";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Aby pomóc Ci zapamiętać Twój numer PIN, będziemy co jakiś czas o niego pytać. Z czasem pytania będą coraz rzadsze.";
@@ -2005,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "Wpisz swój PIN Signal";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN musi mieć przynajmniej 4 cyfry";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Odtwórz";
@@ -2070,23 +2088,35 @@
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Utwórz nazwę użytkownika";
 
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Twoja nazwa profilowa jest zbyt długa.";
+/* Error message shown when user tries to update profile with a family name that is too long. */
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
 
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Aktualizacja profilu nie powiodła się.";
+/* Error message shown when user tries to update profile without a given name */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
 
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Podaj swoje imię";
+/* Error message shown when user tries to update profile with a given name that is too long. */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+
+/* Default text for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+
+/* Label for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+
+/* Default text for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+
+/* Label for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+
+/* Error shown when the user tries to update their profile when the app is not connected to the internet. */
+"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Twój Profil Signal będzie widoczny dla twoich kontaktów, gdy rozpoczniesz nowe konwersacje, a także gdy udostępnisz go innym użytkownikom i grupom.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Dowiedz się więcej";
-
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Nazwa profilu";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Zapisz";
@@ -3049,13 +3079,13 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Sprawdź kod zabezpieczenia";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Już widziałeś(aś) tę wiadomość.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Stuknij tutaj, aby ta wiadomość znikła po obejrzeniu.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Wychodzące wiadomości jednorazowe są automatycznie usuwane po wysłaniu.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Przesuń, aby anulować";

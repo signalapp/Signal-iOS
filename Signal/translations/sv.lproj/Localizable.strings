@@ -1728,6 +1728,12 @@
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Felaktig PIN-kod. Försök förbrukade.";
 
+/* Button asking if the user would like to enter an alphanumeric PIN */
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+
+/* Button asking if the user would like to enter an numeric PIN */
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Detta mobilnummer har registreringslåset påslaget. Ange PIN-koden för registreringslåset.";
 
@@ -1882,16 +1888,16 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Fel med att hantera inkommande meddelande";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Visa-engångsmedia";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Visa-en-gång media";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Visa-engångsfoto";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Visa-en-gång foto";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Visa-engångsvideo";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Visa-en-gång video";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Visa foto";
@@ -1953,6 +1959,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Namnlösa album";
 
+/* Label indicating the user must use at least 6 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "Det finns inget sätt att återställa din PIN-kod, så kom ihåg det.";
 
@@ -1962,17 +1971,29 @@
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Bekräfta din nya PIN-kod.";
 
+/* Button asking if the user would like to create an alphanumeric PIN */
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+
+/* Button asking if the user would like to create an numeric PIN */
+"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+
+/* Error body indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+
+/* Error title indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Din PIN-kod lägger till ett extra lager av säkerhet och skyddar ditt konto.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-koder matchar inte. Försök igen.";
 
-/* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Ange PIN-kod igen";
+/* Label indicating the user must use at least 6 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
 
-/* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN-koden måste vara 4+ siffror";
+/* Label indication the user must confirm their PIN. */
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Ange PIN-kod igen";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "När du är utloggad finns det inget sätt att återställa din PIN-kod.";
@@ -1986,11 +2007,8 @@
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Skapa din PIN-kod";
 
-/* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN-koden får inte vara mer än 20 siffror.";
-
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN-koden måste vara minst 4 siffror.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "För att hjälpa dig att memorera din PIN-kod ber vi dig att skriva in den regelbundet. Vi frågar mindre med tiden.";
@@ -2005,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "Ange din Signal PIN-kod";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koden måste vara minst 4 siffror.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spela media";
@@ -2070,23 +2088,35 @@
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Skapa användarnamn";
 
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Namnet på din profil är för långt.";
+/* Error message shown when user tries to update profile with a family name that is too long. */
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
 
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Kunde inte uppdatera profilen.";
+/* Error message shown when user tries to update profile without a given name */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
 
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Ange ditt namn";
+/* Error message shown when user tries to update profile with a given name that is too long. */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+
+/* Default text for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+
+/* Label for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+
+/* Default text for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+
+/* Label for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+
+/* Error shown when the user tries to update their profile when the app is not connected to the internet. */
+"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dina kontakter kommer att kunna se din Signal-profil när du startar nya konversationer och när du delar den med andra användare eller grupper.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tryck här för att läsa mer. ";
-
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profilnamn";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Spara";
@@ -3049,13 +3079,13 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Granska säkerhetsnummer";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Du har redan sett det här meddelandet.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Tryck här för att få detta meddelande att försvinna efter att det har visats.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Filer för utgående visa-en-gång media raderas automatiskt efter att de har skickats";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Dra för att avbryta";

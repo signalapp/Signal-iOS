@@ -672,7 +672,7 @@
 "CONVERSATION_SEARCH_ONE_RESULT" = "1 találat";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d/%dtalálat";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "találat: %d/%d";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Beszélgetés beállítások";
@@ -729,7 +729,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Új kontakt";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Beszélgetés keresése";
+"CONVERSATION_SETTINGS_SEARCH" = "Keresés a beszélgetésben";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Koppints a változtatáshoz";
@@ -1240,7 +1240,7 @@
 "IN_CALL_TERMINATED" = "Hívás vége";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ezek a beszélgetések archiválva vannak, ezért csak akkor jelennek meg újra a bejövő üzenet közt, ha újabb üzenet érkezik.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ezek a beszélgetések archiválva vannak, ezért csak akkor jelennek meg újra a bejövő beszélgetések közt, ha újabb üzenet érkezik.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Dobj a postaládádba valamit, hogy ne legyen olyan magányos! Láss hozzá, és üzenj egy barátodnak!";
@@ -1294,7 +1294,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Több felhasználó egyidejű meghívása egyben csoportos csevegés indítását is jelenti, aminek során a címzettek látni fogják egymást a csoportlistában.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Üzenetek eltűnése ennyi idő után: %@.";
+"KEEP_MESSAGES_DURATION" = "Üzenetek eltűnési ideje: %@";
 
 /* Slider label when disappearing messages is off */
 "KEEP_MESSAGES_FOREVER" = "Eltűnő üzenetek funkció kikapcsolva.";
@@ -1708,7 +1708,7 @@
 "NOTIFICATIONS_NONE" = "Nincs név vagy üzenet";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Lejátszás előtérben lévő alkalmazás esetén is";
+"NOTIFICATIONS_SECTION_INAPP" = "Hang megnyitott alkalmazásnál";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Hangok";
@@ -1727,6 +1727,12 @@
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Hibás PIN. Nincs több lehetőség.";
+
+/* Button asking if the user would like to enter an alphanumeric PIN */
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+
+/* Button asking if the user would like to enter an numeric PIN */
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Ehhez a telefonszámhoz bekapcsolták a regisztrációs zárat. Kérlek add meg a regisztrációs zár PIN kódot!";
@@ -1953,6 +1959,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Névtelen album";
 
+/* Label indicating the user must use at least 6 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "Jól jegyezd meg, mert nincs lehetőség a PIN visszaállítására.";
 
@@ -1962,17 +1971,29 @@
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "PIN megerősítése";
 
+/* Button asking if the user would like to create an alphanumeric PIN */
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+
+/* Button asking if the user would like to create an numeric PIN */
+"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+
+/* Error body indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+
+/* Error title indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "A PIN egy extra védelmi réteget, valamint a fiókod mentését biztosítja.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kódok nem egyeznek. Próbáld újra.";
 
-/* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "PIN újraellenőrzése";
+/* Label indicating the user must use at least 6 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
 
-/* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "A PIN minimum 4 karakter hosszú";
+/* Label indication the user must confirm their PIN. */
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "PIN újraellenőrzése";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Kijelentkezés után nincs lehetőség a PIN visszaállítására.";
@@ -1986,11 +2007,8 @@
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "PIN létrehozása";
 
-/* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "A PIN maximum 20 szám hosszú lehet";
-
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "A PIN kódnak legalább 4 számjegyből kell állnia.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "A PIN megjegyzéséhez segítségül időnként be kell majd gépelned. Egyre kevesebbszer az idő haladtával.";
@@ -2005,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "Add meg Signal PIN kódodat";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "A PIN kódnak legalább 4 számjegyből kell állnia.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Média lejátszása";
@@ -2023,7 +2041,7 @@
 "PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Tudj meg többet";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Koppints a leolvasáshoz";
+"PRIVACY_TAP_TO_SCAN" = "Koppints a beolvasáshoz";
 
 /* Button that lets user mark another user's identity as unverified. */
 "PRIVACY_UNVERIFY_BUTTON" = "Ellenőrzött állapot törlése";
@@ -2050,7 +2068,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "A beolvasott QR kód nem hasonlít biztonsági számra. Mindketten a Signal legújabb verzióját használjátok?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ha szeretnéd ellenőrizni a végpontok közti titkosítást biztonságát %@ ismerősöddel, hasonlítsd össze a fenti számokat az ő készülékén található számokkal. Gyorsabb alternatívaként, be is olvashatod a QR kódot a telefonján, vagy megkérheted, hogy olvassa be ő a te kódodat.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ha szeretnéd ellenőrizni a végpontok közti titkosítás biztonságát %@ ismerősöddel, hasonlítsd össze a fenti számokat az ő készülékén található számokkal. Gyorsabb alternatívaként, be is olvashatod a QR kódot a telefonján, vagy megkérheted, hogy olvassa be ő a te kódodat.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Biztonsági szám ellenőrzése";
@@ -2070,23 +2088,35 @@
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Felhasználónév létrehozása";
 
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Túl hosszú a profil neved.";
+/* Error message shown when user tries to update profile with a family name that is too long. */
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
 
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "A Profil frissítése sikertelen.";
+/* Error message shown when user tries to update profile without a given name */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
 
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Név megadása";
+/* Error message shown when user tries to update profile with a given name that is too long. */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+
+/* Default text for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+
+/* Label for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+
+/* Default text for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+
+/* Label for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+
+/* Error shown when the user tries to update their profile when the app is not connected to the internet. */
+"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "A Signal profilod a kontaktjaid számára látható, amikor új beszélgetést kezdeményezel, illetve ha megosztod más felhasználókkal vagy csoporotokkal.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Bővebben a profilokról";
-
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profil név";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Mentés";
@@ -2434,7 +2464,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "A cenzúra megkerülés funkció csak aktív internetkapcsolat esetén aktiválható.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Cenzúra megkerülés funkció nem szükséges; A Signal szolgáltatás aktív.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Cenzúra megkerülés funkció nem szükséges; a Signal szolgáltatás aktív.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Cenzúra megkerülés funkció";
@@ -2530,7 +2560,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Beszélgetés előzményeinek törlése";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licenc típusa: GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nLicenc típusa: GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Fiók törlése";
@@ -2563,10 +2593,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Üzenet hang";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Adatvédelmi és Általános Szerződési Feltételek";
+"SETTINGS_LEGAL_TERMS_CELL" = "Adatvédelmi & Ált. Szerződési Feltételek";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Hivatkozások előnézetének küldése";
+"SETTINGS_LINK_PREVIEWS" = "Link előnézetének küldése";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Az alábbi oldalak link előnézete támogatott: Imgur, Instagram, Pinterest, Reddit és YouTube.";
@@ -2584,7 +2614,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Értesítés tartalma";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Ismerős csatlakozott a Signal-hoz";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Ismerős csatlakozott a Signalhoz";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Események";
@@ -2608,7 +2638,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "A Signal hívások meg fognak jelenni az iOS hívás Előzményekben.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Hívások mutatása az Előzményekben";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Hívások az Előzményekben";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS hívás integráció";
@@ -2620,7 +2650,7 @@
 "SETTINGS_READ_RECEIPT" = "Olv. nyugták küldése";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Amikor ez be van kapcsolva, mások értesítést kapnak ha Ön elolvasta az üzenetüket. Ez a beállítás opcionális és minden beszélgetésre vonatkozik.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Bekapcsolt állapotban ismerőseid értesítést kapnak, amint elolvastad az üzenetüket. Ez a beállítás opcionális és minden beszélgetésre vonatkozik.";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Újratársítás";
@@ -2632,7 +2662,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Kijelző zárolási ideje";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Oldd fel a Signal zárolási képernyőjét Touch ID, Face ID, vagy iOS jelkóddal. Hívásokat fogadni, üzenet- és hívási értesítőket kapni aktív képernyőzár mellett is tudni fogsz. A Signal értesítési beállításainak finomhangolásával később is eldöntheted, hogy mit engedj megjelenni a kijelzőn.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Oldd fel a Signal zárolási képernyőjét Touch ID, Face ID, vagy iOS jelkód segítségével. Hívásokat fogadni, üzenet- és hívási értesítőket kapni aktív képernyőzár mellett is tudni fogsz. A Signal értesítési beállításainak finomhangolásával később is eldöntheted, hogy mit engedj megjelenni a kijelzőn.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Kijelző zárolás";
@@ -2641,7 +2671,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Kijelző zárolás";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Biztonságos képernyő engedélyezése";
+"SETTINGS_SCREEN_SECURITY" = "Képernyővédelem engedélyezése";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Nem jelenik meg a Signal képernyőjének tartalma az appok közötti váltáskor.";
@@ -2680,7 +2710,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Gépelés mutatása";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Ezzel az opcióval láthatja, ha a másik fél éppen gépel. A funkció bekapcsolásával az Ön gépelése is láthatóvá válik a másik fél számára. Opcionális funkció, és az összes beszélgetésre érvényes lesz.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Ezzel az opcióval láthatod, ha a másik fél éppen gépel. A funkció bekapcsolásával az te gépelésed is láthatóvá válik a másik fél számára. Opcionális funkció, és az összes beszélgetésre érvényes lesz.";
 
 /* Label for a link to more info about unidentified delivery. */
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Tudj meg többet";
@@ -2698,7 +2728,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Engedélyezés mindenkitől";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Rejtett feladóval érkező üzenetek engedélyezése olyan nem-kontaktoktól és személyektől is, akikkel nem osztottad meg profilod.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Rejtett feladóval érkező üzenetek engedélyezése olyan ismeretlen kontaktoktól és személyektől is, akikkel nem osztottad meg profilod.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Verzió";
@@ -3049,13 +3079,13 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Biztonsági számok áttekintése";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Már megnézted ezt az üzenetet.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Koppints ide, hogy az üzenet olvasás után azonnal törlődő típusú legyen.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Az egyszer-megjelenő médiafájlok küldésük után a te oldaladon azonnal törlődnek.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Elvetés csúsztatással";

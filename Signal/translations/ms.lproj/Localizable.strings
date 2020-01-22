@@ -1728,6 +1728,12 @@
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN tidak betul. Percubaan habis digunakan.";
 
+/* Button asking if the user would like to enter an alphanumeric PIN */
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+
+/* Button asking if the user would like to enter an numeric PIN */
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Kunci Pendaftaran untuk nombor telefon tersebut didayakan. Sila masukkan PIN Kunci Pendaftaran.";
 
@@ -1953,6 +1959,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album Tidak Dinamakan";
 
+/* Label indicating the user must use at least 6 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "Tidak ada cara untuk memulihkan PIN anda, jadi ingatlah.";
 
@@ -1962,17 +1971,29 @@
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Sahkan PIN baru anda";
 
+/* Button asking if the user would like to create an alphanumeric PIN */
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+
+/* Button asking if the user would like to create an numeric PIN */
+"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+
+/* Error body indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+
+/* Error title indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "PIN anda menambah lapisan tambahan keselamatan dan menyokong akaun anda.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN tidak sepadan. Cuba lagi.";
 
-/* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Masukkan semula PIN";
+/* Label indicating the user must use at least 6 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
 
-/* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN mesti 4+ digit.";
+/* Label indication the user must confirm their PIN. */
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Masukkan semula PIN";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Apabila anda dilog keluar, tidak ada cara untuk memulihkan PIN anda.";
@@ -1986,11 +2007,8 @@
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Cipta PIN anda";
 
-/* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN tidak boleh panjang daripada 20 digit.";
-
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN mesti sekurang-kurangnya dalam 4 digit.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Untuk membantu anda menghafal PIN anda, kami akan meminta anda memasukinya secara berkala. Kami akan tanya dari masa ke masa.";
@@ -2005,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "Masukkan PIN Signal anda";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN mesti sekurang-kurangnya dalam 4 digit.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Mainkan Media";
@@ -2070,23 +2088,35 @@
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Cipta Nama Pengguna";
 
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Nama profil anda terlalu panjang.";
+/* Error message shown when user tries to update profile with a family name that is too long. */
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
 
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Kemas kini profil gagal";
+/* Error message shown when user tries to update profile without a given name */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
 
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Masukkan nama anda";
+/* Error message shown when user tries to update profile with a given name that is too long. */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+
+/* Default text for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+
+/* Label for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+
+/* Default text for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+
+/* Label for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+
+/* Error shown when the user tries to update their profile when the app is not connected to the internet. */
+"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profil Signal anda akan dapat dilihat oleh kenalan anda, apabila anda memulakan perbualan baru, dan apabila anda membaginya dengan pengguna dan kumpulan lain.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Ketik sini untuk ketahui dengan lebih lanjut.";
-
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Nama profil";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Simpan";

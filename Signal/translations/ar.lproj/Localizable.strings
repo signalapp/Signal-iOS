@@ -108,7 +108,7 @@
 "APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "فاتح";
 
 /* Name indicating that the system theme is enabled. */
-"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "System";
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "نظام التشغيل";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -363,7 +363,7 @@
 "BUTTON_NEXT" = "التالي\n";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
+"BUTTON_OKAY" = "حسنًا";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "حدد";
@@ -519,7 +519,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "البحث عن طريق رقم الهاتف";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Username search";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "البحث عن طريق اسم المستخدم";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
@@ -1728,6 +1728,12 @@
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
 
+/* Button asking if the user would like to enter an alphanumeric PIN */
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+
+/* Button asking if the user would like to enter an numeric PIN */
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "يوجد رقم تعريفي شخصي لحماية التسجيل مصاحب لهذا الرقم. رجاء إدخاله.";
 
@@ -1879,25 +1885,25 @@
 "PDF_VIEW_TITLE" = "PDF";
 
 /* Label for view-once messages that have invalid content. */
-"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Error handling incoming message";
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "خطأ فى التعامل مع الرسالة الواردة";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "وسيط لمشاهدة لمرة واحدة";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "الوسائط";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "صورة لمشاهدة لمرة واحدة";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "فيديو لمشاهدة لمرة واحدة";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "مشاهدة الصورة";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "مشاهدة الفيديو";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "تمت المشاهدة";
@@ -1953,6 +1959,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
 
+/* Label indicating the user must use at least 6 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
 
@@ -1962,17 +1971,29 @@
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
 
+/* Button asking if the user would like to create an alphanumeric PIN */
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+
+/* Button asking if the user would like to create an numeric PIN */
+"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+
+/* Error body indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+
+/* Error title indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
 
-/* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Re-enter PIN";
+/* Label indicating the user must use at least 6 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
 
-/* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN must be 4+ digits";
+/* Label indication the user must confirm their PIN. */
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Re-enter PIN";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
@@ -1986,11 +2007,8 @@
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Create your PIN";
 
-/* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
-
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
@@ -2005,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "Enter your Signal PIN";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
@@ -2070,23 +2088,35 @@
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Create Username";
 
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "اسم ملفك الشخصي طويل جدا.";
+/* Error message shown when user tries to update profile with a family name that is too long. */
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
 
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "أخفقت عملية تحديث الملف الشخصي.";
+/* Error message shown when user tries to update profile without a given name */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
 
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "أدخل إسمك";
+/* Error message shown when user tries to update profile with a given name that is too long. */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+
+/* Default text for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+
+/* Label for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+
+/* Default text for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+
+/* Label for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+
+/* Error shown when the user tries to update their profile when the app is not connected to the internet. */
+"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "سيكون ملف سيجنال الخاص بك مرئيا لجهات اتصالك عند بدء محادثات جديدة، وعند مشاركتها مع مستخدمين آخرين أو المجموعات.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "انقر هنا لمعرفة المزيد.";
-
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "اسم الشخصية";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "حفظ";
@@ -2095,7 +2125,7 @@
 "PROFILE_VIEW_TITLE" = "الملف الشخصي";
 
 /* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "Username";
+"PROFILE_VIEW_USERNAME_FIELD" = "اسم المستخدم";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "وضع علامة \"مقروء\"";
@@ -2686,7 +2716,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "أعرف أكثر";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sealed Sender";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "الراسل المغلق";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "عرض المؤشرات";
@@ -2698,7 +2728,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "السماح من كل أحد";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "اسمح بخاصية الراسل المغلق للرسائل القادمة من أشخاص ليسوا فى جهات اتصالك و الذين لم تشارك ملفك الشخصى معهم.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "النسخة";
@@ -2971,7 +3001,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
 
 /* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Why use words when you can use stickers? Tap this icon on your keyboard:";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "لماذا تستخدم الكلمات بينما يمكن أن تستخدم الملصقات؟ انقر هذه الأيقونة على لوحة المفاتيح:";
 
 /* Header for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducing Stickers";
@@ -2986,7 +3016,7 @@
 "USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
 
 /* Label for the username field in the username view. */
-"USERNAME_FIELD" = "Username";
+"USERNAME_FIELD" = "اسم المستخدم";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
@@ -3010,7 +3040,7 @@
 "USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
 
 /* The title for the username view. */
-"USERNAME_TITLE" = "Username";
+"USERNAME_TITLE" = "اسم المستخدم";
 
 /* An error indicating that the supplied username is too short. */
 "USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
@@ -3052,7 +3082,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "انقر هنا لجعل هذه الرسالة تختفي بعد أن تشاهد.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";

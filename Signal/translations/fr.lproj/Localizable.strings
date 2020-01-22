@@ -51,7 +51,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Voulez-vous partager votre profil avec cet utilisateur ?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "D’accord";
+"ALERT_ACTION_ACKNOWLEDGE" = "Compris";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Abandonner";
@@ -69,7 +69,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Répondre";
 
 /* notification body */
-"APN_Message" = "Nouveau message !";
+"APN_Message" = "Nouveau message";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ne peut pas démarrer. Veuillez envoyer un journal de débogage à support@signal.org afin que nous cherchions la cause de ce problème.";
@@ -354,7 +354,7 @@
 "BROWSE_FILES_BUTTON" = "Parcourir";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continuer";
+"BUTTON_CONTINUE" = "Poursuivre";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Terminé";
@@ -519,22 +519,22 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Recherche par numéro de téléphone";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Recherche par identifiant";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Recherche par nom d’utilisateur";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour voir qui de vos contacts utilise Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "L’application sera réinitialisée en supprimant vos messages et en vous désinscrivant du serveur. L’appli se fermera une fois le processus terminé.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Cela réinitialisera l’application en supprimant vos messages et en vous désinscrivant du serveur. L’appli se fermera une fois le processus terminé.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Voulez-vous vraiment supprimer votre compte ?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "L'application sera réinitialisée en supprimant tous vos messages de cet appareil. Vous pourrez encore relier votre téléphone, mais cela ne rechargera pas les messages supprimés. L'application se fermera une fois le processus terminé.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Cela réinitialisera l’application en supprimant tous vos messages de cet appareil. Vous pourrez encore relier votre téléphone de nouveau, mais cela ne récupérera pas les messages supprimés. L’appli se fermera une fois le processus terminé.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Êtes-vous sûr(e) de vouloir supprimer toutes les données ?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Voulez-vous vraiment supprimer toutes les données ?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Vous ne pourrez plus recevoir ni envoyer de messages dans ce groupe.";
@@ -732,7 +732,7 @@
 "CONVERSATION_SETTINGS_SEARCH" = "Chercher dans la conversation";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Toucher pour modifier";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Touchez pour modifier";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Réactiver les notifications";
@@ -913,7 +913,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Copier";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Bonjour,\n\nDernièrement, j’ai utilisé Signal pour assurer la confidentialité des conversations sur mon iPhone. J’aimerais que vous l’installiez aussi afin que nous puissions être sûrs que seuls vous et moi pouvons lire nos messages ou entendre nos appels.\n\nSignal est proposée pour iPhone et Android. Obtenez-le ici : %@\n\nSignal fonctionne comme votre appli de messagerie existante. Nous pouvons envoyer des photos et des vidéos, effectuer des appels et lancer des conversations de groupe. Le grand intérêt est que personne d’autre ne peut rien voir de tout cela, pas même les créateurs de Signal !\n\nVous pouvez en savoir davantage sur « Open Whisper Systems », les personnes derrière Signal, ici : %@.";
+"EMAIL_INVITE_BODY" = "Bonjour,\n\nDernièrement, j’ai utilisé Signal pour assurer la confidentialité des conversations sur mon iPhone. J’aimerais que vous l’installiez aussi afin que nous puissions être sûrs que seuls vous et moi pouvons lire nos messages ou entendre nos appels.\n\nSignal est proposée pour iPhone et Android. Obtenez-le ici : %@\n\nSignal fonctionne comme votre appli de messagerie existante. Nous pouvons envoyer des photos et des vidéos, effectuer des appels et lancer des conversations de groupe. Le grand intérêt est que personne d’autre ne peut rien voir de tout cela, pas même les créateurs de Signal.\n\nVous pouvez en savoir davantage sur « Open Whisper Systems », les personnes derrière Signal, ici : %@.";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Passons à Signal";
@@ -949,7 +949,7 @@
 "ENABLE_2FA_VIEW_PIN_TOO_LONG" = "Le NIP ne peut contenir plus de 20 chiffres.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Le NIP doit faire au moins 4 chiffres.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Le NIP doit comporter au moins quatre chiffres.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Saisissez un NIP de blocage de l’inscription. Il vous sera demandé de saisir ce NIP la prochaine fois que vous inscrirez ce numéro de téléphone à Signal.";
@@ -1066,7 +1066,7 @@
 "EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Allons-y";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Votre version de Signal est expirée ! Les messages ne seront plus envoyés. Appuyez pour la mettre à jour vers la version la plus récente.";
+"EXPIRATION_ERROR" = "Votre version de Signal est expirée. Les messages ne seront plus envoyés correctement. Touchez pour passer à la version la plus récente.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Votre version de Signal expirera dans %d jours. Touchez pour mettre à jour vers la version la plus récente.";
@@ -1081,7 +1081,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Votre numéro de sécurité avec %@ a changé récemment. Vous devriez peut-être le vérifier avant de le renvoyer.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Échec de vérification du numéro de sécurité !";
+"FAILED_VERIFICATION_TITLE" = "Échec de vérification du numéro de sécurité.";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marquer comme vérifié";
@@ -1135,7 +1135,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Saisir votre recherche";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "Cette version de Signal inclut des optimisations de la base de données et des améliorations de performance. Vous devrez peut-être ouvrir l’application pour mener à bien le processus.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Cette version de Signal comprend des optimisations de la base de données et des améliorations des performances. Vous devrez peut-être ouvrir l’appli pour terminer le processus.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimisation de la base de données";
@@ -1261,10 +1261,10 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "L’appel a été manqué, car le numéro de sécurité de l’appelant a changé.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Vous pouvez envoyer ou recevoir des messages synchronisés depuis votre téléphone ou iPad.\nPour votre sécurité, l'historique de conversation n'est pas transféré vers les appareils nouvellement reliés.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Vous pouvez envoyer ou recevoir des messages synchronisés à partir de votre téléphone ou de votre iPad.\nPour votre sécurité, l’historique des conversations n’est pas transféré vers les appareils nouvellement reliés.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ est sur Signal !";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ est sur Signal.";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Autocollants";
@@ -1438,7 +1438,7 @@
 "MESSAGE_ACTION_REPLY" = "Répondre à ce message";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Partager un média";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
@@ -1507,13 +1507,13 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Vous devez partager votre profil afin de poursuivre votre conversation dans %@.";
 
 /* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "En apprendre davantage";
+"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "En savoir plus";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Souhaitez-vous autoriser %@ à vous joindre par message ? Ils ne sauront pas que vous avez lu leurs messages tant que vous n’aurez pas accepté.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Souhaitez-vous autoriser %@ à vous envoyer des messages ? L’utilisateur ne saura pas que vous avez lu ses messages tant que vous n’aurez pas accepté.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Voulez-vous rejoindre le groupe %@ ? Ils ne sauront pas que vous avez lu leurs message tant que vous n’aurez pas accepté.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Voulez-vous vous joindre au groupe %@ ? Ils ne sauront pas que vous avez lu leurs messages tant que vous n’aurez pas accepté.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Partager le profil";
@@ -1693,7 +1693,7 @@
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Nouveau message pour :";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Aucun utilisateur trouvé. Inviter par texto ?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Aucun utilisateur n’a été trouvé. Inviter par texto ?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Note à mon intention";
@@ -1728,6 +1728,12 @@
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "NIP erroné. Tentatives épuisées.";
 
+/* Button asking if the user would like to enter an alphanumeric PIN */
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+
+/* Button asking if the user would like to enter an numeric PIN */
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Un NIP de blocage de l’inscription est activé pour ce numéro de téléphone. Veuillez saisir le NIP de blocage de l’inscription.";
 
@@ -1735,7 +1741,7 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "Votre NIP de blocage de l’inscription est différent du code automatisé de vérification qui a été envoyé à votre téléphone dans la dernière étape.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Vous avez oublié votre NIP ?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Avez-vous oublié votre NIP ?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "NIP erroné";
@@ -1762,16 +1768,16 @@
 "ONBOARDING_CAPTCHA_TITLE" = "Ajoutez une touche d’humanité à vos messages";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Inscrire un iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Inscrire l’iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Relier un iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Relier l’iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "En appuyant sur « Inscrire un iPad », vous pourrez créer un tout nouveau compte Signal ou transférer un compte existant vers cet iPad. Ceci désactivera Signal sur tout autre appareil actuellement inscrit le même numéro de téléphone.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Toucher « Inscrire l’iPad », vous permettra de créer un tout nouveau compte Signal ou de transférer un compte existant vers cet iPad. Cela désactivera Signal sur tout autre appareil actuellement inscrit avec le même numéro de téléphone.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "En appuyant sur « Relier un iPhone », vous pourrez connecter votre téléphone à un compte existant. Relier votre téléphone n’est généralement pas recommandé et limitera certaines fonctionnalités comme les appels.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Toucher « Relier l’iPhone », vous permettra de connecter votre téléphone à un compte existant. Il n’est généralement pas recommandé de relier votre téléphone et cela limitera certaines fonctions telles que les appels.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Inscrire cet iPad";
@@ -1819,7 +1825,7 @@
 "ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Je n’ai pas reçu de code (disponible dans %@)";
 
 /* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
-"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Contacter l'assistance Signal";
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Contacter l’assistance de Signal";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Ce code est erroné";
@@ -1882,22 +1888,22 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Erreur de traitement du message entrant";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Média éphémère";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Médias";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Photo éphémère";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Vidéo éphémère";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Afficher la photo";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Voir la vidéo";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Vu";
@@ -1942,10 +1948,10 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Télécopieur travail";
 
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "Impossible de capturer l’image.";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Impossible de prendre la photo.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Impossible de capturer l’image.";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Impossible de prendre la photo.";
 
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Échec de configuration de l’appareil photo";
@@ -1953,8 +1959,11 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album sans nom";
 
+/* Label indicating the user must use at least 6 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+
 /* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "Il n'est pas possible de retrouver votre NIP, vous devez donc vous en souvenir.";
+"PIN_CREATION_BOLD_EXPLANATION" = "Il est impossible de récupérer votre NIP, donc souvenez-vous-en.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Changer votre NIP";
@@ -1962,23 +1971,35 @@
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirmez votre nouveau NIP.";
 
+/* Button asking if the user would like to create an alphanumeric PIN */
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+
+/* Button asking if the user would like to create an numeric PIN */
+"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+
+/* Error body indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+
+/* Error title indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Votre NIP ajoute une couche supplémentaire de sécurité et sauvegarde votre compte.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Le NIP ne correspond pas. Essayez encore.";
 
-/* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Saisissez à nouveau votre NIP.";
+/* Label indicating the user must use at least 6 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
 
-/* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "Le NIP doit faire au moins 4 chiffres";
+/* Label indication the user must confirm their PIN. */
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Saisissez à nouveau votre NIP.";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Lorsque vous êtes déconnecté, il n’ya aucun moyen de récupérer votre code NIP.";
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Si vous êtes déconnecté, il est impossible de récupérer votre NIP.";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Parce que vous êtes encore connecté(e), vous pouvez créer un nouveau NIP.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Comme vous êtes encore connecté, vous pouvez créer un nouveau NIP.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Créer un nouveau NIP";
@@ -1986,17 +2007,14 @@
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Créer votre NIP";
 
-/* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "Le NIP ne peut contenir plus de 20 chiffres.";
-
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "Le NIP doit faire au moins 4 chiffres.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "Pour vous aider à mémoriser votre code NIP, nous vous demanderons de le saisir régulièrement. Nous le demanderons de moins en moins souvent.";
+"PIN_REMINDER_EXPLANATION" = "Pour vous aider à mémoriser votre NIP, nous vous demanderons de le saisir régulièrement. Nous vous le demanderons de moins en moins souvent.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Vous avez oublié votre NIP ?";
+"PIN_REMINDER_FORGOT_PIN" = "Avez-vous oublié votre NIP ?";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "NIP invalide, essayez encore.";
@@ -2005,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "Saisissez votre NIP Signal";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "Le NIP doit faire au moins 4 chiffres.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Jouez le contenu multimédia";
@@ -2020,7 +2038,7 @@
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ est vérifié";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "En apprendre davantage";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "En savoir plus";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Toucher pour balayer";
@@ -2070,23 +2088,35 @@
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Créer un nom d’utilisateur";
 
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Votre nom de profil est trop long.";
+/* Error message shown when user tries to update profile with a family name that is too long. */
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
 
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Échec de mise à jour du profil";
+/* Error message shown when user tries to update profile without a given name */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
 
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Saisir votre nom";
+/* Error message shown when user tries to update profile with a given name that is too long. */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+
+/* Default text for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+
+/* Label for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+
+/* Default text for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+
+/* Label for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+
+/* Error shown when the user tries to update their profile when the app is not connected to the internet. */
+"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Votre profil Signal sera visible pour vos contacts, quand vous lancez de nouvelles conversations et quand vous le partagez avec d’autres utilisateurs et groupes.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Touchez ici pour en savoir davantage.";
-
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Nom de profil";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Enregistrer";
@@ -2146,16 +2176,16 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Vidéo";
 
 /* notification body */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "A réagi par 1%@ à votre message";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "J’ai oublié mon code NIP.";
+"REGISTER_2FA_FORGOT_PIN" = "J’ai oublié mon NIP.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Pour des raisons de sécurité et de protection de vos données personnelles, il n’y a aucun moyen de récupérer votre NIP. Si vous l’avez oublié, vous pourrez revérifier votre numéro par texto après 7 jours d’inactivité. Dans ce cas, votre compte sera effacé et toutes ses données supprimées.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Vous avez oublié votre NIP ?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Avez-vous oublié votre NIP ?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Il vous reste %lu tentatives. Si vous atteignez le nombre limite de tentatives, votre compte sera verrouillé. Après 7 jours d’inactivité, vous pourrez vous réenregistrer sans votre NIP. Votre compte sera effacé et toutes ses données supprimées.";
@@ -2170,7 +2200,7 @@
 "REGISTER_2FA_SUBMIT_BUTTON" = "Envoyer";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_WELCOME" = "Bienvenue !";
+"REGISTER_CONTACTS_WELCOME" = "Bienvenue.";
 
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "Ressayer";
@@ -2308,7 +2338,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Déverrouiller Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nom, identifiant ou numéro de téléphone";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nom, nom d’utilisateur ou numéro";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Recherche par nom ou numéro";
@@ -2329,13 +2359,13 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Impossible de récupérer le code de liaison";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Votre autre appareil exécute une ancienne version de Signal qui ne prend pas en charge le balayage des QR codes iPad. Veuillez installer la dernière version de Signal et réessayer.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Votre autre appareil exécute une ancienne version de Signal qui ne prend pas en charge le balayage des codes QR d’iPad. Veuillez installer la dernière version de Signal et ressayer.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Mettre à jour l'appareil lecteur";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Mettre à jour l’appareil de balayage";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Échec de la liaison avec votre appareil";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Échec de liaison de votre appareil";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choisissez un nom pour cet appareil";
@@ -2362,7 +2392,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installer Signal sur votre téléphone";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Appuyez sur votre image de profil pour accéder aux paramètres de Signal sur votre téléphone, puis sur « Appareils reliés » et « Relier un nouvel appareil » afin de balayer ce code avec votre téléphone :";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Touchez sur votre image de profil pour accéder aux paramètres de Signal sur votre téléphone, puis « Appareils reliés » et « Relier un nouvel appareil » afin de balayer ce code avec votre téléphone :";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obtenez de l’aide pour relier votre iPad ici";
@@ -2392,7 +2422,7 @@
 "SEND_INVITE_FAILURE" = "Échec d’envoi de l’invitation. Veuillez ressayer ultérieurement.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Vous avez invité votre ami à utiliser Signal !";
+"SEND_INVITE_SUCCESS" = "Vous avez invité votre ami à utiliser Signal.";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Abandonner le média";
@@ -2578,13 +2608,13 @@
 "SETTINGS_NAV_BAR_TITLE" = "Paramètres";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Les notifications d’appels et de messages peuvent apparaître lorsque votre téléphone est verrouillé. Vous souhaiterez peut-être limiter ce qui est indiqué dans ces notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Des notifications d’appels et de messages peuvent apparaître quand votre téléphone est verrouillé. Vous souhaiterez peut-être limiter ce qui est indiqué dans ces notifications.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenu des notifications";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Un contact a rejoint Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Un contact s’est joint à Signal";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Évènements";
@@ -2596,7 +2626,7 @@
 "SETTINGS_PINS_FOOTER" = "Votre NIP ajoute une couche supplémentaire de sécurité et sauvegarde votre compte. Il vous sera demandé quand vous inscrirez votre numéro de téléphone avec Signal. Si vous oubliez votre NIP, votre compte sera verrouillé pendant 7 jours.";
 
 /* Label for the 'pins' item of the privacy settings. */
-"SETTINGS_PINS_ITEM" = "Changer votre code PIN";
+"SETTINGS_PINS_ITEM" = "Changer votre NIP";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "NIP";
@@ -2749,7 +2779,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Afficher la conversation";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Je vous invite à installer Signal ! Voici le lien :";
+"SMS_INVITE_BODY" = "Je t’invite à installer Signal. Voici le lien :";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Aucun";
@@ -2773,7 +2803,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Autocollants que vous avez reçus";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Certains paquets d’autocollants n’ont pas pu être chargés.";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Échec de chargement de certains paquets d’autocollants.";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Autocollants installés";
@@ -2809,7 +2839,7 @@
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Votre numéro de sécurité avec %@ correspond. Vous pouvez marquer ce contact comme vérifié.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Le numéro de sécurité correspond !";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Le numéro de sécurité correspond.";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Vérifier le numéro de sécurité";
@@ -2953,22 +2983,22 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Créer votre NIP";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "En apprendre plus sur NIP ";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "En savoir plus sur les NIP";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Votre code de verrouillage s’améliore. Avec le NIP, vous pouvez emporter vos contacts avec vous lorsque vous changez d’appareil.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Votre blocage de l’inscription s’améliore. Avec des NIP, vous pouvez emporter vos contacts avec vous si vous changez d’appareil.";
 
 /* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Code de verrouillage = NIP";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Blocage de l’inscription = NIP";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Ajoutez encore plus de sécurité à votre compte et emportez vos contacts avec vous quand vous changez de téléphone.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Présentations des NIP";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Nous présentons les NIP";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Dois-je créer un NIP ?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Dois-je créer un NIP ?";
 
 /* Body text for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Pourquoi utiliser des mots quand vous pouvez utiliser des autocollants ? Touchez cette icône sur votre clavier :";
@@ -2983,25 +3013,25 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Mettez iOS à niveau";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Sur Signal, les identifiants sont facultatifs. Si vous choisissez de créer un identifiant, d’autres utilisateurs de Signal pourront vous trouver sous cet identifiant et vous contacter sans connaître votre numéro de téléphone.";
+"USERNAME_DESCRIPTION" = "Sur Signal, les noms d’utilisateur sont facultatifs. Si vous choisissez de créer un nom d’utilisateur, les autres utilisateurs de Signal pourront vous trouver avec ce nom d’utilisateur et vous contacter sans connaître votre numéro de téléphone.";
 
 /* Label for the username field in the username view. */
-"USERNAME_FIELD" = "Identifiant";
+"USERNAME_FIELD" = "Nom d’utilisateur";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Les identifiants ne peuvent contenir que a-z, 0-9 et _.";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Les noms d’utilisateur ne peuvent comprendre que a à z, 0 à 9 et a-z, 0-9 et _.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Une erreur s’est produite lors de la recherche de l’identifiant. Veuillez ressayer ultérieurement.";
+"USERNAME_LOOKUP_ERROR" = "Une erreur s’est produite lors de la recherche du nom d’utilisateur. Veuillez ressayer ultérieurement.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ n’utilise pas Signal. Assurez-vous d’avoir saisi l’identifiant en entier.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ n’est pas un utilisateur de Signal. Assurez-vous d’avoir saisi le nom d’utilisateur en entier.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "Utilisateur non trouvé";
+"USERNAME_NOT_FOUND_TITLE" = "L’utilisateur est introuvable";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Saisir un identifiant";
+"USERNAME_PLACEHOLDER" = "Saisir un nom d’utilisateur";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
@@ -3010,16 +3040,16 @@
 "USERNAME_STARTS_WITH_NUMBER_ERROR" = "Les noms d’utilisateur ne peuvent pas commencer par un numéro.";
 
 /* The title for the username view. */
-"USERNAME_TITLE" = "Identifiant";
+"USERNAME_TITLE" = "Nom d’utilisateur";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Les identifiants doivent contenir au moins 4 caractères.";
+"USERNAME_TOO_SHORT_ERROR" = "Les noms d’utilisateur doivent comporter au moins quatre caractères.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ est pris.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Échec de la mise à jour de l’identifiant.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Échec de mise à jour du nom d’utilisateur.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Le nom de l’appareil ne peut pas être vide";
@@ -3049,13 +3079,13 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Examiner les numéros de sécurité";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Vous avez déjà vu ce message.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Touchez ici pour que ce message disparaisse après qu’il a été vu.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Les fichiers multimédias éphémères sortants sont supprimés automatiquement après l’envoi.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Faire glisser pour annuler";

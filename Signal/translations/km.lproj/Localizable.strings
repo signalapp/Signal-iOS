@@ -129,7 +129,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "ចំណងជើង";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "នាំចេញឯកសារភ្ជាប់បរាជ័យ។";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "បរាជ័យក្នុងការរក្សាទុក";
@@ -351,7 +351,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "អ្នកប្រើប្រាស់ដែលបានហាមឃាត់ នឹងមិនអាចហៅ ឬផ្ញើសារមកអ្នកបានទេ។";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "រុករក";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "បន្ត";
@@ -504,10 +504,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "ប្រៀបធៀបជាមួយ ក្តាចុច";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "ជ្រើសរើស ឬស្វែងរកអ្នកប្រើប្រាស់ Signal ដើម្បីចាប់ផ្តើមការសន្ទនាជាមួយ។";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "បង្កើតសារ";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "បញ្ជីទំនាក់ទំនង";
@@ -531,10 +531,10 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "តើអ្នកប្រាកដទេថា ចង់លុបគណនីរបស់អ្នក?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "វានឹងកំណត់កម្មវិធីឡើងវិញដោយលុបរាល់សាររបស់អ្នកចេញពីឧបករណ៍នេះ។ អ្នកតែងតែភ្ជាប់ជាមួយទូរស័ព្ទរបស់អ្នកម្តងទៀត ប៉ុន្តែនោះនឹងមិនស្តារសារដែលបានលុបចោលទេ។ កម្មវិធីនឹងបិទបន្ទាប់ពីដំណើរការនេះចប់។";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "តើអ្នកច្បាស់ថាចង់លុបទិន្នន័យទាំងអស់?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "អ្នកនឹងមិនអាចផ្ញើ ឬទទួលសារក្នុងក្រុមនេះទៀតទេ។";
@@ -681,7 +681,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "បន្ថែមទៅបញ្ជីទំនាក់ទំនងដែលមានស្រាប់";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "បន្ថែមទៅទំនាក់ទំនងប្រព័ន្ធ";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "ហាមឃាត់ក្រុមនេះ";
@@ -976,7 +976,7 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "មិនអាចចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង។";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "មិនអាចរក្សាទុកវីដេអូ។";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "បរាជ័យក្នុងការផ្ញើសារ។";
@@ -1048,10 +1048,10 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "លេខសុវត្ថិភាពបានផ្លាស់ប្តូរ។";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "ឧបករណ៍របស់អ្នកលែងបានតភ្ជាប់។ សូមតភ្ជាប់ឡើងវិញ ដើម្បីផ្ញើសារបន្ថែម។";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "ឧបករណ៍របស់អ្នកលែងបានចុះឈ្មោះ។ សូមតភ្ជាប់ឡើងវិញ ដើម្បីផ្ញើសារបន្ថែម។";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "ជំនាន់ Signal របស់អ្នកបានផុតកំណត់។ សូមធ្វើបច្ចុប្បន្នភាព ដើម្បីផ្ញើសារផ្សេងៗ។";
@@ -1093,10 +1093,10 @@
 "FINISH_GROUP_CREATION_LABEL" = "ការបង្កើតក្រុមរួចរាល់ហើយ";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "បញ្ជូនលេខទំនាក់ទំនងបន្ត";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "បញ្ជូនសារបន្ត";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "អ្នកមិនមានឯកសារមេឌាក្នុងការសន្ទនានេះទេ។";
@@ -1135,7 +1135,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "បញ្ចូលការស្វែងរករបស់អ្នក";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "ជំនាន់ Signal នេះ រួមមាន ការបង្កើនប្រសិទ្ធភាពទិន្នន័យនិងការកែលម្អការល្បឿន។ អ្នកអាចនឹងត្រូវបើកកម្មវិធីនេះ ដើម្បីបញ្ចប់ដំណើរការ។";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "កំពុងធ្វើឲ្យទិន្នន័យប្រសើរឡើង";
@@ -1261,7 +1261,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "ខកខានការហៅចូល ដោយសារលេខសុវត្ថិភាពបានផ្លាស់ប្តូរ។";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "អ្នកអាចផ្ញើ ឬទទួលសារសមកាលកម្ម ពីទូរស័ព្ទរបស់អ្នក ឬ iPad. ↵សម្រាប់សុវត្ថិភាព ប្រវត្តិការសន្ទនាមិនត្រូវបានបញ្ជូនទៅកាន់ឧបករណ៍ថ្មីដែលបានតភ្ជាប់នោះទេ។";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ នៅលើ Signal!";
@@ -1300,22 +1300,22 @@
 "KEEP_MESSAGES_FOREVER" = "សារ នឹងមិនរលុប។";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "ទៅកាន់ឯកសារមេឌាទាំងអស់";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "បណ្ណសារការសន្ទនា";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "បង្ហាញឯកសារភ្ជាប់";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "ទៅកាន់ព័ត៌មានការសន្ទនា";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "ផ្តោតលើរបារបញ្ចូល";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "ទៅកាន់ការស្វែងរក GIF";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "ក្រុមថ្មី";
@@ -1324,10 +1324,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "សារថ្មី";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "ទៅកាន់ការសន្ទនាខាងមុខ";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "ទៅកាន់ការសន្ទនាខាងក្រោយ";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "ស្វែងរក";
@@ -1336,10 +1336,10 @@
 "KEY_COMMAND_SETTINGS" = "ការកំណត់";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "បង្ហាញ ស្ទីកគ័រ";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "មិនប័ណ្ណសារ ការសន្ទនា";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "ចាកចេញ";
@@ -1384,7 +1384,7 @@
 "LIST_GROUP_MEMBERS_ACTION" = "សមាជិកក្រុម";
 
 /* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (អ្នក)";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "ស្វែងរកតាមឈ្មោះ ឬ អសយដ្ឋាន";
@@ -1432,13 +1432,13 @@
 "MESSAGE_ACTION_DETAILS" = "ព័ត៌មានបន្ថែម";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "បញ្ជូនសារនេះបន្ត";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "ឆ្លើយតបទៅកាន់សារនេះ";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "ចែករំលែកមេឌា";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "សារ";
@@ -1624,7 +1624,7 @@
 "NETWORK_STATUS_CONNECTING" = "កំពុងភ្ជាប់";
 
 /* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
+"NETWORK_STATUS_DELINKED" = "លែងបានតភ្ជាប់";
 
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "មិនអាចចុះឈ្មោះទៀតបានទេ";
@@ -1642,13 +1642,13 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "កំណត់រូបថតក្រុម";
 
 /* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+"NEW_GROUP_BUTTON_LABEL" = "បង្កើតក្រុមថ្មី";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "បង្កើត";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "ក្រុមថ្មីមិនអាចបង្កើតបាន។";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "ក្រុមថ្មី";
@@ -1702,7 +1702,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "អ្នកប្រហែលបានទទួលសារ នៅពេល %@ របស់អ្នក កំពុងបើកឡើងវិញ។";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "សកម្មភាពរួមមាន “ដាក់ថាបានអាន” “ឆ្លើយតប,” និង “ហៅទៅវិញ។”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "គ្មានឈ្មោះ ឬ ខ្លឹមសារ";
@@ -1714,7 +1714,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "សំឡេង";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "ឈ្មោះ, ខ្លឹមសារ, និងសកម្មភាព";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "មានតែឈ្មោះ";
@@ -1727,6 +1727,12 @@
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "លេខ PIN មិនត្រឹមត្រូវ។ ការសាកល្បងហួសកំណត់។";
+
+/* Button asking if the user would like to enter an alphanumeric PIN */
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+
+/* Button asking if the user would like to enter an numeric PIN */
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "លេខទូរស័ព្ទនេះ បានបើកការចាក់សោរចុះឈ្មោះ។ សូមមេត្តាបញ្ចូលលេខPIN សម្រាប់ចាក់សោរការចុះឈ្មោះ។";
@@ -1762,37 +1768,37 @@
 "ONBOARDING_CAPTCHA_TITLE" = "បន្ថែមការប៉ះមនុស្សជាតិទៅសាររបស់អ្នក";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "ចុះឈ្មោះ iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "តភ្ជាប់ iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "ការចុចលើ “ចុះឈ្មោះ iPad” នឹងអនុញ្ញាតអ្នកបង្កើតគណនី Signal ថ្មីមួយ ឬផ្លាស់ប្តូរគណនីដែលមានស្រាប់មក iPad នេះ។ នេះនឹងបិទ Signal នៅលើឧបករណ៍ផ្សេងដែលបានចុះឈ្មោះ ជាមួយលេខទូរស័ព្ទដូចគ្នា។";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "ការចុចលើ “តភ្ជាប់ iPhone” នឹងអនុញ្ញាតអ្នក តភ្ជាប់ទូរស័ព្ទរបស់អ្នកទៅកាន់គណនីដែលមានស្រាប់។ ការតភ្ជាប់ទូរស័ព្ទរបស់អ្នក ជាទូទៅមិនណែនាំទេ និងរិតត្បិតមុខងារខ្លះ ដូចជា ការហៅ។";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "ចុះឈ្មោះ iPad នេះ";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "តភ្ជាប់ iPhone នេះ";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "ការចុះឈ្មោះ iPad នេះ នឹងបិទ Signal នៅលើឧបករណ៍ផ្សេង ដែលបានចុះឈ្មោះជាមួយនឹងលេខទូរស័ព្ទដូចគ្នា។";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "ការតភ្ជាប់ iPhone របស់អ្នកមិនណែនាំទេ និងអាចរិតត្បិតមុខងារសំខាន់ៗ។";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "បើកការអនុញ្ញាត";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "ការជូនដំណឹង អនុញ្ញាតអោយអ្នកមើល ពេលសារមកដល់ និងទទួលបច្ចុប្បន្នភាពអំពីសកម្មភាពការសន្ទនាថ្មី។";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
+"ONBOARDING_PERMISSIONS_TITLE" = "ទទួលសារ";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "បញ្ចូលលេខទូរស័ព្ទរបស់អ្នកដើម្បីចាប់ផ្ដើម";
@@ -1882,22 +1888,22 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "បញ្ហាទទួលសារផ្ញើចូល";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "បង្ហាញ-ម្តង មេឌា";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "ព័ត៌មាន";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "បង្ហាញ-ម្តង រូបភាព";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "បង្ហាញ-ម្តង វីដេអូ";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "បើកមើលរូបភាព";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "បង្ហាញវីដេអូ";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "បានបើកមើល";
@@ -1953,6 +1959,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "អាល់បុមគ្មានឈ្មោះ";
 
+/* Label indicating the user must use at least 6 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "មិនមានវិធីស្តារលេខ PIN របស់អ្នកវិញទេ ដូចនេះសូមចងចាំវា។";
 
@@ -1962,17 +1971,29 @@
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "ផ្ទៀងផ្ទាត់លេខ PIN ថ្មីរបស់អ្នក។";
 
+/* Button asking if the user would like to create an alphanumeric PIN */
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+
+/* Button asking if the user would like to create an numeric PIN */
+"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+
+/* Error body indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+
+/* Error title indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "លេខ PIN បន្ថែមស្រទាប់សុវត្ថិភាព និងបម្រុងទុកគណនីរបស់អ្នក។";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "លេខPIN  មិនត្រូវគ្នា។ ព្យាយាមម្តងទៀត។";
 
-/* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "បញ្ចូលលេខ PIN ម្តងទៀត";
+/* Label indicating the user must use at least 6 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
 
-/* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "លេខ PIN ត្រូវមានចាប់ពី 4 ខ្ទង់";
+/* Label indication the user must confirm their PIN. */
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "បញ្ចូលលេខ PIN ម្តងទៀត";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "ពេលអ្នកចាកចេញពីគណនី មិនមានវិធីណាស្តារលេខ PIN របស់អ្នកទេ។";
@@ -1986,11 +2007,8 @@
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "បង្កើតលេខ PIN របស់អ្នក";
 
-/* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "លេខ PIN មិនត្រូវច្រើនជាង 20 ខ្ទង់។";
-
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "លេខ PIN ត្រូវមានយ៉ាងហោច 4 ខ្ទង់។";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "ដើម្បីជួយការចង់ចាំលេខ PIN របស់អ្នក យើងនឹងសួរអ្នក ឲ្យបញ្ចូលវាជាប្រចាំ។យើងនឹងសួរតិចជាងមុនលើកក្រោយ។";
@@ -2005,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "បញ្ចូលលេខ Signal PIN របស់អ្នក";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "លេខ PIN ត្រូវមានយ៉ាងហោច 20 ខ្ទង់។";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "ចាក់មេឌា";
@@ -2070,23 +2088,35 @@
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "បង្កើតឈ្មោះអ្នកប្រើប្រាស់";
 
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "ឈ្មោះប្រវត្តិរូបអ្នកវែងពេក។";
+/* Error message shown when user tries to update profile with a family name that is too long. */
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
 
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "បរាជ័យការធ្វើបច្ចុប្បន្នភាពរូបតំណាងរបស់អ្នក។";
+/* Error message shown when user tries to update profile without a given name */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
 
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "បញ្ចូលឈ្មោះរបស់អ្នក";
+/* Error message shown when user tries to update profile with a given name that is too long. */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+
+/* Default text for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+
+/* Label for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+
+/* Default text for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+
+/* Label for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+
+/* Error shown when the user tries to update their profile when the app is not connected to the internet. */
+"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "ប្រវត្តិរូបSignalរបស់អ្នកនឹងបង្ហាញទៅបញ្ជីទំនាក់ទំនងរបស់អ្នក នៅពេលចាប់ផ្តើមសន្ទនាថ្មី និងពេលអ្នកចែករំលែកវាជាមួយអ្នកប្រើប្រាស់និងក្រុមផ្សេង។";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "ចុចទីនេះ ដើម្បីស្វែងយល់បន្ថែម។";
-
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "ឈ្មោះប្រវត្តិរូប";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "រក្សា";
@@ -2146,7 +2176,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "វីដេអូ";
 
 /* notification body */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅសាររបស់អ្នក";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ខ្ញុំបានភ្លេចលេខPIN ។";
@@ -2326,49 +2356,49 @@
 "SEARCH_SECTION_MESSAGES" = "សារ";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "មិនអាចទាញយកកូដតភ្ជាប់";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "ឧបករណ៍ដទៃរបស់អ្នកកំពុងដំណើរការ Signal ជំនាន់ចាស់ដែលមិនគាំទ្រការស្កេនកូដ iPad QR ។ សូមដំឡើង Signal ជំនាន់ចុងក្រោយបង្អស់ និងសាកល្បងម្តងទៀត។";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "ធ្វើបច្ចុប្បន្នភាពឧបករណ៍ស្កេន";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "បរាជ័យក្នុងការតភ្ជាប់ឧបករណ៍របស់អ្នក";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "ជ្រើសរើសឈ្មោះមួយសម្រាប់ឧបករណ៍នេះ";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "អ្នកនឹងឃើញឈ្មោះនេះនៅក្រោម \"ឧបករណ៍ដែលបានតភ្ជាប់។\"";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "ជ្រើសរើសឈ្មោះមួយ";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "បញ្ចប់ការតភ្ជាប់";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "បើក Signal នៅលើទូរស័ព្ទរបស់អ្នក ដើម្បីតភ្ជាប់ iPad នេះទៅកាន់គណនីរបស់អ្នក";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ខ្ញុំមិនមាន Signal នៅលើទូរស័ព្ទរបស់ខ្ញុំទេ...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "ទៅកាន់ App Store នៅលើទូរស័ព្ទរបស់អ្នក,​ ដំឡើង Signal, បញ្ចប់ដំណើរការចុះឈ្មោះ, និងបន្ទាប់មក អ្នកអាចតភ្ជាប់ iPad របស់អ្នក ទៅគណនីដូចគ្នា។";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "ដំឡើង Signal នៅលើទូរស័ព្ទរបស់អ្នក";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "ចុចលើ រូបប្រវត្តិរូបរបស់អ្នក ដើម្បីបើកការកំណត់ Signal នៅលើទូរស័ព្ទរបស់អ្នក។ បន្ទាប់មក \"ឧបករណ៍ដែលបានតភ្ជាប់\" និង \"តភ្ជាប់ឧបករណ៍ថ្មី\" ដើម្បីស្កេនកូដនេះជាមួយទូរស័ព្ទរបស់អ្នក៖";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "ទទួលជំនួយ ការតភ្ជាប់ iPad របស់អ្នកនៅទីនេះ";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code with your phone";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "ស្កេនកូដ QR ជាមួយទូរស័ព្ទរបស់អ្នក";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "កាលប្រើប្រាស់សុវត្ថិភាពត្រូវបានកំណត់ឡើងវិញ។";
@@ -2623,7 +2653,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "មើល និងចែករំលែកនៅពេលសារបានអាន។ ការកំណត់នេះ ជាជម្រើសនិងអនុវត្តទៅលើគ្រប់សារសន្ទនាទាំងអស់។";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Re-link";
+"SETTINGS_RELINK_BUTTON" = "តភ្ជាប់-ម្តងទៀត";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "ចុះឈ្មោះម្តងទៀត";
@@ -2632,7 +2662,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "រយៈពេលចាក់សោរអេក្រង់";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "ដោះសោរអេក្រង់ Signal ដោយប្រើប្រាស់ Touch ID, Face ID, ឬ លេខកូដលើឧបករណ៍ iOS របស់អ្នក។ អ្នកនៅតែអាចទទួលការហៅចូល និងសារជូនដំណឹង នៅពេលអេក្រង់ចាក់សោរត្រូវបានបើក។ ការកំណត់ការជូនដំណឹង Signal អនុញ្ញាតអ្នកឲ្យកំណត់ព័ត៌មានដែលត្រូវបង្ហាញ។";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "អេក្រង់ចាក់សោរ";
@@ -2821,7 +2851,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "សមាជិកនៃ %@, %@, និង %lu ក្រុមផ្សេងទៀត";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "អ្នកនៅតែអាចបន្ថែមកំណត់ត្រាសម្រាប់ខ្លួនអ្នកក្នុងការសន្ទនានេះ។ បើគណនីរបស់អ្នក មានឧបករណ៍ច្រើនបានតភ្ជាប់ កំណត់ត្រាថ្មីនឹងត្រូវធ្វើសមកាលកម្មផងដែរ។";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "សមាជិកនៃ %@";
@@ -2926,7 +2956,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "ផ្តាច់ \"%@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "ឧបករណ៍លែងបានតភ្ជាប់។ សូមតភ្ជាប់ Signal ជាមួយទូរស័ព្ទរបស់អ្នកឡើងវិញ ដើម្បីផ្ញើសារបន្ថែម។";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signalមិនអាចផ្តាច់ឧបករណ៍របស់អ្នកបានទេ។";
@@ -3007,7 +3037,7 @@
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "ឈ្មោះអ្នកប្រើប្រាស់មិនអាចចាប់ផ្តើមពីលេខ។";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "ឈ្មោះអ្នកប្រើប្រាស់";
@@ -3022,10 +3052,10 @@
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "ឈ្មោះអ្នកប្រើប្រាស់ ធ្វើបច្ចុប្បន្នភាពបរាជ័យ។";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "ឈ្មោះឧបករណ៍មិនអាចទុកទំនេរ";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "ឈ្មោះឧបករណ៍វែងពេក";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "អ្នកបានដាក់ ​%@ មិនបានផ្ទៀងផ្ទាត់។";
@@ -3049,13 +3079,13 @@
 "VERIFY_PRIVACY_MULTIPLE" = "ពិនិត្យលេខសុវត្ថិភាព";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "អ្នកបានមើលសារនេះហើយ។";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "ចុចទីនេះ ដើម្បីកំណត់សារបាត់ទៅវិញ បន្ទាប់ពីបានបើកមើល។";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "ឯកសារមេឌាមើល-ម្តង ដែលផ្ញើចេញ ត្រូវលុបចោលដោយស្វ័យប្រវត្តិបន្ទាប់ពីបានផ្ញើចេញ។";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "អូសដើម្បីបោះបង់";

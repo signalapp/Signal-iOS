@@ -20,7 +20,7 @@
 "ACCESSIBILITY_LABEL_MESSAGE" = "Message";
 
 /* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "You";
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "Ikaw";
 
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Sticker";
@@ -51,7 +51,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Would you like to share your profile with this user?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "Got it";
+"ALERT_ACTION_ACKNOWLEDGE" = "Nakuha na";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Discard";
@@ -63,7 +63,7 @@
 "ALERT_ERROR_TITLE" = "Error";
 
 /* The label for the 'save' button in action sheets. */
-"ALERT_SAVE" = "Save";
+"ALERT_SAVE" = "I-save";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Sagutin";
@@ -198,7 +198,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Location";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Lokasyon";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
@@ -306,10 +306,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blocked Users";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Huwag hadlangan";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Existing members will be able to add you to the group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Ang naririyan nang mga kasapi ay magagawang idagdag kang muli sa grupo.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
@@ -516,10 +516,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grupo";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Phone number search";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Paghanap ng phone number";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Username search";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Paghanap ng Username";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
@@ -603,10 +603,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Prefix";
+"CONTACT_FIELD_NAME_PREFIX" = "Unlapi";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
+"CONTACT_FIELD_NAME_SUFFIX" = "Hulapi";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Organization";
@@ -732,7 +732,7 @@
 "CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Pindutin para Baguhin";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
@@ -795,7 +795,7 @@
 "DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Ngayon";
 
 /* The current day. */
 "DATE_TODAY" = "Ngayon";
@@ -862,7 +862,7 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Failed to update device list.";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Disappearing Messages";
+"DISAPPEARING_MESSAGES" = "Naglalahong mga Mensahe";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
@@ -934,7 +934,7 @@
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "Disable";
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Huwag paganahin";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_ENABLE_2FA" = "Enable";
@@ -1186,7 +1186,7 @@
 "GROUP_YOU_LEFT" = "You have left the group.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Sinupan ng mga pag-uusap";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Blocked";
@@ -1318,7 +1318,7 @@
 "KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
 
 /* A keyboard command to present the new group dialog. */
-"KEY_COMMAND_NEW_GROUP" = "New Group";
+"KEY_COMMAND_NEW_GROUP" = "Bagong Grupo";
 
 /* A keyboard command to present the new message dialog. */
 "KEY_COMMAND_NEW_MESSAGE" = "New Message";
@@ -1405,7 +1405,7 @@
 "MEDIA_FROM_CAMERA_BUTTON" = "Camera";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Library ng mga Larawan";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
@@ -1417,7 +1417,7 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "Ikaw";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
@@ -1453,19 +1453,19 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Tapos ng ipadala";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Nabasa na";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Ipinapadala";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Naipadala na";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
@@ -1483,7 +1483,7 @@
 "MESSAGE_METADATA_VIEW_SENDER" = "Sender";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Sent";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Naipadala na";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
@@ -1519,7 +1519,7 @@
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Share Profile";
 
 /* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_STATUS_DELIVERED" = "Tapos ng ipadala";
 
 /* message status while message is downloading. */
 "MESSAGE_STATUS_DOWNLOADING" = "Downloading";
@@ -1531,7 +1531,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Failed";
 
 /* status message for read messages */
-"MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_STATUS_READ" = "Nabasa na";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
@@ -1543,7 +1543,7 @@
 "MESSAGE_STATUS_SENDING" = "Sending…";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "Naipadala na";
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Uploading…";
@@ -1573,7 +1573,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Dito pindutin para sa settings ";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "New Messages";
@@ -1618,7 +1618,7 @@
 "NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censorship Circumvention: On";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTED" = "Connected";
+"NETWORK_STATUS_CONNECTED" = "Konektado";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTING" = "Connecting";
@@ -1645,16 +1645,16 @@
 "NEW_GROUP_BUTTON_LABEL" = "Create a new group";
 
 /* The title for the 'create group' button. */
-"NEW_GROUP_CREATE_BUTTON" = "Create";
+"NEW_GROUP_CREATE_BUTTON" = "Gumawa";
 
 /* Error indicating that a new group could not be created. */
 "NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
 
 /* Used in place of the group name when a group has not yet been named. */
-"NEW_GROUP_DEFAULT_TITLE" = "New Group";
+"NEW_GROUP_DEFAULT_TITLE" = "Bagong Grupo";
 
 /* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Member";
+"NEW_GROUP_MEMBER_LABEL" = "Kasapi";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
@@ -1696,7 +1696,7 @@
 "NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Mensahe para sa sarili";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
@@ -1727,6 +1727,12 @@
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+
+/* Button asking if the user would like to enter an alphanumeric PIN */
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+
+/* Button asking if the user would like to enter an numeric PIN */
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.";
@@ -1936,7 +1942,7 @@
 "PHONE_NUMBER_TYPE_UNKNOWN" = "Unknown";
 
 /* Label for 'Work' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK" = "Work";
+"PHONE_NUMBER_TYPE_WORK" = "Trabaho";
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
@@ -1953,6 +1959,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
 
+/* Label indicating the user must use at least 6 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
 
@@ -1962,17 +1971,29 @@
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
 
+/* Button asking if the user would like to create an alphanumeric PIN */
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+
+/* Button asking if the user would like to create an numeric PIN */
+"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+
+/* Error body indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+
+/* Error title indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
 
-/* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Re-enter PIN";
+/* Label indicating the user must use at least 6 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
 
-/* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN must be 4+ digits";
+/* Label indication the user must confirm their PIN. */
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Re-enter PIN";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
@@ -1986,11 +2007,8 @@
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Create your PIN";
 
-/* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
-
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
@@ -2005,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "Enter your Signal PIN";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
@@ -2014,7 +2032,7 @@
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verified";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Beripikado";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ is verified.";
@@ -2070,14 +2088,29 @@
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Create Username";
 
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Your profile name is too long.";
+/* Error message shown when user tries to update profile with a family name that is too long. */
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
 
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profile update failed.";
+/* Error message shown when user tries to update profile without a given name */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
 
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name";
+/* Error message shown when user tries to update profile with a given name that is too long. */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+
+/* Default text for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+
+/* Label for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+
+/* Default text for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+
+/* Label for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+
+/* Error shown when the user tries to update their profile when the app is not connected to the internet. */
+"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible to your contacts, when you initiate new conversations, and when you share it with other users and groups.";
@@ -2085,11 +2118,8 @@
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
 
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profile Name";
-
 /* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "Save";
+"PROFILE_VIEW_SAVE_BUTTON" = "I-save";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profile";
@@ -2140,7 +2170,7 @@
 "QUOTED_REPLY_TYPE_GIF" = "GIF";
 
 /* Indicates this message is a quoted reply to an image file. */
-"QUOTED_REPLY_TYPE_IMAGE" = "Image";
+"QUOTED_REPLY_TYPE_IMAGE" = "Imahe";
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
@@ -2752,13 +2782,13 @@
 "SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Wala";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Sticker Message";
 
 /* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Sticker pack installed";
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Pakete ng sticker installed na";
 
 /* Label for a sticker that failed to download. */
 "STICKERS_FAILED_DOWNLOAD" = "Sticker";
@@ -2971,7 +3001,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
 
 /* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Why use words when you can use stickers? Tap this icon on your keyboard:";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Bakit gagamit ng mga salita kung maaari kang gumamit ng mga sticker? Pindutin ang icon na ito sa iyong keyboard:";
 
 /* Header for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducing Stickers";
@@ -3058,7 +3088,7 @@
 "VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "I-slide o Kanselahin";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Voice Message";

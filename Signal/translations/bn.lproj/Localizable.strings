@@ -1384,7 +1384,7 @@
 "LIST_GROUP_MEMBERS_ACTION" = "গ্রুপের সদস্যগণ";
 
 /* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (আপনি)";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "নাম বা ঠিকানা অনুসন্ধান করুন";
@@ -1642,7 +1642,7 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "গ্রুপ ফটো সেট করুন";
 
 /* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+"NEW_GROUP_BUTTON_LABEL" = "একটি নতুন গ্রুপ তৈরি করুন";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "সৃষ্টি করুন";
@@ -1727,6 +1727,12 @@
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "পিনটি ভুল। প্রচেষ্টা শেষ ।";
+
+/* Button asking if the user would like to enter an alphanumeric PIN */
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+
+/* Button asking if the user would like to enter an numeric PIN */
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "এই ফোন নাম্বারে রেজিস্ট্রেশন লক সক্রিয় আছে। দয়া করে রেজিস্ট্রেশন লক কোডটি প্রবেশ করুন।";
@@ -1882,22 +1888,22 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "আগত বার্তা পরিচালনা করার সময় ত্রুটি";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "একবার দেখা যাবে এমন মিডিয়া";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "মিডিয়া";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "একবার দেখার যোগ্য ছবি";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "একবার দেখার যোগ্য ভিডিও";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "ছবি দেখুন";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "ভিডিও দেখুন";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "দেখা হয়েছে";
@@ -1953,6 +1959,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "নামবিহীন অ্যালবাম";
 
+/* Label indicating the user must use at least 6 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "আপনার পিনটি পুনরুদ্ধার করার কোনও উপায় নেই, তাই এটি অবশ্যই মনে রাখবেন।";
 
@@ -1962,17 +1971,29 @@
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "আপনার নতুন পিনটি নিশ্চিত করুন।";
 
+/* Button asking if the user would like to create an alphanumeric PIN */
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+
+/* Button asking if the user would like to create an numeric PIN */
+"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+
+/* Error body indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+
+/* Error title indicating that the attempt to create a PIN failed. */
+"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "আপনার পিন সুরক্ষার অতিরিক্ত একটি স্তর যুক্ত করে এবং আপনার অ্যাকাউন্ট  সুরক্ষিত করে।";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "পিনগুলি মেলে না। আবার চেষ্টা করুন।";
 
-/* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "পূনরায় পিন প্রবেশ করান";
+/* Label indicating the user must use at least 6 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
 
-/* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "পিনটি কমপক্ষে 4 টি সংখ্যার বেশি হতে হবে।";
+/* Label indication the user must confirm their PIN. */
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "পূনরায় পিন প্রবেশ করান";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "আপনি যখন লগ আউট অবস্থায় আছেন, তখন আপনার পিনটি পুনরুদ্ধার করার কোনও উপায় নেই।";
@@ -1986,11 +2007,8 @@
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "আপনার পিন তৈরি করুন";
 
-/* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "পিনটি 20 সংখ্যার বেশি হতে পারবে না।";
-
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "পিনটি কমপক্ষে 4 টি সংখ্যার হতে হবে।";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "আপনাকে আপনার পিন মুখস্ত করতে সহায়তা করতে আমরা আপনাকে মাঝে মাঝে এটি প্রবেশ করাতে বলব। আমরা সময়ের সাথে সাথে  জিজ্ঞাসা করা কমিয়ে দেব।";
@@ -2005,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "আপনার Signal পিন প্রবেশ করান";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "পিনটি কমপক্ষে 4 টি সংখ্যার হতে হবে।";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "মিডিয়া চালান";
@@ -2070,23 +2088,35 @@
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "ইউজারনেম তৈরি করুন";
 
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "আপনার প্রোফাইলের নামটি অনেক দীর্ঘ।";
+/* Error message shown when user tries to update profile with a family name that is too long. */
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
 
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "প্রোফাইল আপডেট ব্যর্থ হয়েছে।";
+/* Error message shown when user tries to update profile without a given name */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
 
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "আপনার নাম প্রবেশ করুন";
+/* Error message shown when user tries to update profile with a given name that is too long. */
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+
+/* Default text for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+
+/* Label for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+
+/* Default text for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+
+/* Label for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+
+/* Error shown when the user tries to update their profile when the app is not connected to the internet. */
+"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "আপনি যখন নতুন কথোপকথনসমুহ শুরু করবেন এবং যখন আপনি এটি অন্য ব্যবহারকারী এবং গ্রুপের সাথে শেয়ার করবেন তখন আপনার Signal প্রোফাইলটি আপনার পরিচিতি সমূহের কাছে দৃশ্যমান হবে।";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "আরও জানতে এখানে আলতো চাপুন।";
-
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "প্রোফাইল নাম";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "সংরক্ষ";
@@ -3052,7 +3082,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "এই বার্তাটি দেখার পরে অদৃশ্য হয়ে যাওয়ার জন্য এখানে আলতো চাপুন।";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
