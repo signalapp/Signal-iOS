@@ -59,4 +59,22 @@ extension NSItemProvider {
             }
         }
     }
+
+    func loadImage(forTypeIdentifier typeIdentifier: String, options: [AnyHashable: Any]?) -> Promise<UIImage> {
+        return Promise { resolver in
+            self.ows_loadImage(forTypeIdentifier: typeIdentifier, options: options) { image, error in
+                if let error = error {
+                    resolver.reject(error)
+                    return
+                }
+
+                guard let image = image else {
+                    resolver.reject(OWSAssertionError("image was unexpectedly nil"))
+                    return
+                }
+
+                resolver.fulfill(image)
+            }
+        }
+    }
 }

@@ -697,6 +697,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     struct LoadedItem {
         enum LoadedItemPayload {
             case fileUrl(_ fileUrl: URL)
+            case inMemoryImage(_ image: UIImage)
             case webUrl(_ webUrl: URL)
             case contact(_ contactData: Data)
             case text(_ text: String)
@@ -758,6 +759,17 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return itemProvider.loadUrl(forTypeIdentifier: kUTTypeImage as String, options: nil).map { fileUrl in
                 LoadedItem(itemProvider: unloadedItem.itemProvider,
                            payload: .fileUrl(fileUrl))
+            }.recover { error -> Promise<LoadedItem> in
+                let nsError = error as NSError
+                assert(nsError.domain == NSItemProvider.errorDomain)
+                assert(nsError.code == NSItemProvider.ErrorCode.unexpectedValueClassError.rawValue)
+
+                // If a URL wasn't available, fall back to an in-memory image.
+                // One place this happens is when sharing from the screenshot app on iOS13.
+                return itemProvider.loadImage(forTypeIdentifier: kUTTypeImage as String, options: nil).map { image in
+                    LoadedItem(itemProvider: unloadedItem.itemProvider,
+                               payload: .inMemoryImage(image))
+                }
             }
         case .webUrl:
             return itemProvider.loadUrl(forTypeIdentifier: kUTTypeURL as String, options: nil).map { url in
@@ -856,6 +868,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
 
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: utiType, imageQuality: .medium)
+            return Promise.value(attachment)
+        case .inMemoryImage(let image):
+            guard let pngData = image.pngData() else {
+                return Promise(error: OWSAssertionError("pngData was unexpectedly nil"))
+            }
+            let dataSource = DataSourceValue.dataSource(with: pngData, fileExtension: "png")
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypePNG as String, imageQuality: .medium)
             return Promise.value(attachment)
         }
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -749,32 +749,6 @@ public class SignalAttachment: NSObject {
             return true
         }
         return false
-    }
-
-    // Factory method for an image attachment.
-    //
-    // NOTE: The attachment returned by this method may nil or not be valid.
-    //       Check the attachment's error property.
-    @objc
-    public class func imageAttachment(image: UIImage?, dataUTI: String, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
-        assert(dataUTI.count > 0)
-
-        guard let image = image else {
-            let dataSource = DataSourceValue.emptyDataSource()
-            dataSource.sourceFilename = filename
-            let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
-            attachment.error = .missingData
-            return attachment
-        }
-
-        // Make a placeholder attachment on which to hang errors if necessary.
-        let dataSource = DataSourceValue.emptyDataSource()
-        dataSource.sourceFilename = filename
-        let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
-        attachment.cachedImage = image
-
-        Logger.verbose("Writing \(attachment.mimeType) as image/jpeg")
-        return compressImageAsJPEG(image: image, attachment: attachment, filename: filename, imageQuality: imageQuality)
     }
 
     private class func compressImageAsJPEG(image: UIImage, attachment: SignalAttachment, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
