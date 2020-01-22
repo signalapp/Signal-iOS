@@ -864,6 +864,14 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                           parameters:parameters];
 }
 
+#pragma mark - Remote Config
+
++ (TSRequest *)getRemoteConfigRequest
+{
+    NSURL *url = [NSURL URLWithString:@"/v1/config/"];
+    return [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];
+}
+
 #pragma mark - Groups v2
 
 + (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionDays:(uint32_t)fromRedemptionDays
