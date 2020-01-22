@@ -83,7 +83,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         jobQueue.setup()
 
-        switch sendGroup.wait(timeout: .now() + 100.0) {
+        switch sendGroup.wait(timeout: .now() + 1.0) {
         case .timedOut:
             XCTFail("timed out waiting for sends")
         case .success:
