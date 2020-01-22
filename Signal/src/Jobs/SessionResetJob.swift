@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +25,7 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     }
     public static let maxRetries: UInt = 10
     public let requiresInternet: Bool = true
-    public var runningOperations: [SessionResetOperation] = []
+    public var runningOperations = AtomicArray<SessionResetOperation>()
 
     @objc
     public override init() {
@@ -41,7 +41,7 @@ public class SessionResetJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public var isSetup: Bool = false
+    public var isSetup = AtomicBool(false)
 
     public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
         // no special handling

@@ -78,10 +78,10 @@ public protocol JobQueue: DurableOperationDelegate {
 
     // MARK: Required
 
-    var runningOperations: [DurableOperationType] { get set }
+    var runningOperations: AtomicArray<DurableOperationType> { get set }
     var jobRecordLabel: String { get }
 
-    var isSetup: Bool { get set }
+    var isSetup: AtomicBool { get set }
     func setup()
     func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction)
 
@@ -134,7 +134,7 @@ public extension JobQueue {
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            guard self.isSetup else {
+            guard self.isSetup.get() else {
                 return
             }
             DispatchQueue.global().async {
@@ -151,7 +151,7 @@ public extension JobQueue {
             return
         }
 
-        guard isSetup else {
+        guard isSetup.get() else {
             if !CurrentAppContext().isRunningTests {
                 owsFailDebug("not setup")
             }
@@ -228,14 +228,14 @@ public extension JobQueue {
     /// `setup` is called from objc, and default implementations from a protocol
     /// cannot be marked as @objc.
     func defaultSetup() {
-        guard !isSetup else {
+        guard !isSetup.get() else {
             owsFailDebug("already ready already")
             return
         }
 
         DispatchQueue.global().async(.promise) {
             self.restartOldJobs()
-        }.done { [weak self] in
+        }.done(on: .global() ) { [weak self] in
             guard let self = self else {
                 return
             }
@@ -253,7 +253,7 @@ public extension JobQueue {
                 }
             }
 
-            self.isSetup = true
+            self.isSetup.set(true)
             self.startWorkWhenAppIsReady()
         }.retainUntilComplete()
     }
@@ -290,7 +290,7 @@ public extension JobQueue {
     // MARK: DurableOperationDelegate
 
     func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: SDSAnyWriteTransaction) {
-        self.runningOperations = self.runningOperations.filter { $0 !== operation }
+        runningOperations.remove(operation)
         operation.jobRecord.anyRemove(transaction: transaction)
     }
 
@@ -304,7 +304,7 @@ public extension JobQueue {
     }
 
     func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: SDSAnyWriteTransaction) {
-        self.runningOperations = self.runningOperations.filter { $0 !== operation }
+        runningOperations.remove(operation)
         operation.jobRecord.saveAsPermanentlyFailed(transaction: transaction)
     }
 }

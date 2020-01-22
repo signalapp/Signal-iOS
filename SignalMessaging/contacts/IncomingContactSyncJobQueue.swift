@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,8 +27,8 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
         return type(of: self).jobRecordLabel
     }
 
-    public var runningOperations: [IncomingContactSyncOperation] = []
-    public var isSetup: Bool = false
+    public var runningOperations = AtomicArray<IncomingContactSyncOperation>()
+    public var isSetup = AtomicBool(false)
 
     @objc
     public override init() {
@@ -73,7 +73,7 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
 public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     public typealias JobRecordType = OWSIncomingContactSyncJobRecord
     public typealias DurableOperationDelegateType = IncomingContactSyncJobQueue
-    public var durableOperationDelegate: IncomingContactSyncJobQueue?
+    public weak var durableOperationDelegate: IncomingContactSyncJobQueue?
     public var jobRecord: OWSIncomingContactSyncJobRecord
     public var operation: OWSOperation {
         return self
