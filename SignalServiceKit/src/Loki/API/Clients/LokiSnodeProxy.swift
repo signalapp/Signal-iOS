@@ -2,6 +2,7 @@ import PromiseKit
 
 internal class LokiSnodeProxy: LokiHttpClient {
     internal let target: LokiAPITarget
+    private let keyPair: ECKeyPair
     
     internal enum Error : LocalizedError {
         case invalidPublicKeys
@@ -30,26 +31,13 @@ internal class LokiSnodeProxy: LokiHttpClient {
         return manager
     }()
     
-    // MARK: - Ephemeral key
-    private var _kp: ECKeyPair
-    private var _lastGenerated: TimeInterval
-    private let keyPairRefreshTime: TimeInterval = 3 * 60 * 1000 // 3 minutes
     
     // MARK: - Class functions
     
     init(target: LokiAPITarget) {
         self.target = target
-        _kp = Curve25519.generateKeyPair()
-        _lastGenerated = Date().timeIntervalSince1970
+        keyPair = Curve25519.generateKeyPair()
         super.init()
-    }
-    
-    private func getKeyPair() -> ECKeyPair {
-        if (Date().timeIntervalSince1970 > _lastGenerated + keyPairRefreshTime) {
-            _kp = Curve25519.generateKeyPair()
-            _lastGenerated = Date().timeIntervalSince1970
-        }
-        return _kp
     }
     
     override func perform(_ request: TSRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> Promise<Any> {
@@ -57,7 +45,6 @@ internal class LokiSnodeProxy: LokiHttpClient {
             return Promise(error: Error.invalidPublicKeys)
         }
         
-        let keyPair = getKeyPair()
         guard let symmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: Data(hex: targetHexEncodedPublicKeys.encryption), privateKey: keyPair.privateKey) else {
             return Promise(error: Error.failedToEncryptRequest)
         }
@@ -65,13 +52,18 @@ internal class LokiSnodeProxy: LokiHttpClient {
         return LokiAPI.getRandomSnode().then { snode -> Promise<Any> in
             let url = "\(snode.address):\(snode.port)/proxy"
             print("[Loki][Snode proxy] Proxy request to \(self.target) via \(snode).")
-            var peepee = request.parameters
-            let jsonBodyData = try JSONSerialization.data(withJSONObject: peepee, options: [])
-            let jsonBodyString = String(bytes: jsonBodyData, encoding: .utf8)
-            let params: [String : Any] = [ "method" : request.httpMethod, "body" : jsonBodyString, "headers" : self.getHeaders(request: request) ]
-            let jsonParams = try JSONSerialization.data(withJSONObject: params, options: [])
-            let ivAndCipherText = try DiffieHellman.encrypt(jsonParams, using: symmetricKey)
-            let headers = [ "X-Sender-Public-Key" : keyPair.publicKey.hexadecimalString, "X-Target-Snode-Key" : targetHexEncodedPublicKeys.identification]
+            let requestParams = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
+            let params: [String : Any] = [
+                "method" : request.httpMethod,
+                "body" : String(bytes: requestParams, encoding: .utf8),
+                "headers" : self.getHeaders(request: request)
+            ]
+            let proxyParams = try JSONSerialization.data(withJSONObject: params, options: [])
+            let ivAndCipherText = try DiffieHellman.encrypt(proxyParams, using: symmetricKey)
+            let headers = [
+                "X-Sender-Public-Key" : self.keyPair.publicKey.hexadecimalString,
+                "X-Target-Snode-Key" : targetHexEncodedPublicKeys.identification
+            ]
             return self.post(url: url, body: ivAndCipherText, headers: headers, timeoutInterval: request.timeoutInterval)
         }.map { response in
             guard response is Data, let cipherText = Data(base64Encoded: response as! Data) else {
@@ -89,10 +81,9 @@ internal class LokiSnodeProxy: LokiHttpClient {
             let success = (200..<300).contains(code)
             var body: Any? = nil
             if let string = json["body"] as? String {
+                body = string
                 if let jsonBody = try? JSONSerialization.jsonObject(with: string.data(using: .utf8)!, options: .allowFragments) as? [String: Any] {
                     body = jsonBody
-                } else {
-                    body = string
                 }
             }
             
@@ -106,6 +97,8 @@ internal class LokiSnodeProxy: LokiHttpClient {
             throw HttpError.from(error: error) ?? error
         }
     }
+    
+    // MARK:- Private functions
     
     private func getHeaders(request: TSRequest) -> [String: Any] {
         guard let headers = request.allHTTPHeaderFields else {
