@@ -806,10 +806,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(nullable NSData *)encryptedPaddedName
 {
-    const NSUInteger kLegacyEncodedNameLength = 72;
     const NSUInteger kEncodedNameLength = 108;
 
-    NSUInteger encodedNameLength = SSKFeatureFlags.profileFamilyName ? kEncodedNameLength : kLegacyEncodedNameLength;
+    NSUInteger encodedNameLength = kEncodedNameLength;
 
     NSString *urlString;
     

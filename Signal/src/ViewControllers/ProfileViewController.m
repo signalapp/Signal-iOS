@@ -279,11 +279,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         [familyNameRow addArrangedSubview:familyNameTextField];
     };
 
-    if (!SSKFeatureFlags.profileFamilyName) {
-        addGivenNameRow();
-
     // For CJKV locales, display family name field first.
-    } else if (NSLocale.currentLocale.isCJKV) {
+    if (NSLocale.currentLocale.isCJKV) {
         addFamilyNameRow();
         addSeparator(YES);
         addGivenNameRow();
@@ -632,9 +629,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    if (!SSKFeatureFlags.profileFamilyName) {
-        [textField resignFirstResponder];
-    } else if (textField == self.firstTextField) {
+    if (textField == self.firstTextField) {
         [self.secondTextField becomeFirstResponder];
     } else {
         [textField resignFirstResponder];

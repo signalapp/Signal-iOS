@@ -261,9 +261,6 @@ public class FeatureFlags: NSObject {
     public static let versionedProfiledUpdate = false
 
     @objc
-    public static let profileFamilyName = !isUsingProductionService
-
-    @objc
     public static let useOrphanDataCleaner = true
 
     @objc
