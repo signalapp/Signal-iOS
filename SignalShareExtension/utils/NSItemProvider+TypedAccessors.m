@@ -29,6 +29,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self loadItemForTypeIdentifier:typeIdentifier options:options completionHandler:completionHandler];
 }
 
+- (void)ows_loadImageForTypeIdentifier:(NSString *)typeIdentifier
+                               options:(nullable NSDictionary *)options
+                     completionHandler:(void (^_Nullable)(UIImage *_Nullable, NSError *_Nullable))completionHandler
+{
+    [self loadItemForTypeIdentifier:typeIdentifier options:options completionHandler:completionHandler];
+}
+
 NS_ASSUME_NONNULL_END
 
 @end
