@@ -1,3 +1,4 @@
+import PromiseKit
 
 // TODO: Move away from polling
 
@@ -47,10 +48,15 @@ public final class LokiPublicChatPoller : NSObject {
     }
     
     // MARK: Polling
-    private func pollForNewMessages() {
+    @objc(pollForNewMessages)
+    public func objc_pollForNewMessages() -> AnyPromise {
+        AnyPromise.from(pollForNewMessages())
+    }
+    
+    public func pollForNewMessages() -> Promise<Void> {
         let publicChat = self.publicChat
         let userHexEncodedPublicKey = self.userHexEncodedPublicKey
-        let _ = LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global()) { messages in
+        return LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global()) { messages in
             let uniqueHexEncodedPublicKeys = Set(messages.map { $0.hexEncodedPublicKey })
             func proceed() {
                 let storage = OWSPrimaryStorage.shared()
