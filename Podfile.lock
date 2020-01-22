@@ -238,8 +238,8 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
-  - Argon2 (from `../Argon2`)
-  - Argon2/Tests (from `../Argon2`)
+  - Argon2 (from `https://github.com/signalapp/Argon2.git`)
+  - Argon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - AxolotlKit/Tests (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - blurhash (from `https://github.com/signalapp/blurhash`, branch `addPodspec`)
@@ -289,7 +289,8 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   Argon2:
-    :path: "../Argon2"
+    :git: https://github.com/signalapp/Argon2.git
+    :submodules: true
   AxolotlKit:
     :branch: master
     :git: https://github.com/signalapp/SignalProtocolKit.git
@@ -330,6 +331,10 @@ EXTERNAL SOURCES:
     :git: https://github.com/TheLevelUp/ZXingObjC
 
 CHECKOUT OPTIONS:
+  Argon2:
+    :commit: 6da4513f13d60b8ae00348284d02f714c481d4d4
+    :git: https://github.com/signalapp/Argon2.git
+    :submodules: true
   AxolotlKit:
     :commit: 97bc4ea1014c0cfac539e87444e3d0bb98a264ba
     :git: https://github.com/signalapp/SignalProtocolKit.git
@@ -372,7 +377,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  Argon2: fdcbb25274851c7b73888c05f2337bf9d802d729
+  Argon2: b11fcfa58057e2522356ddc6a817cd875297edfe
   AxolotlKit: ac03e4d79486b62d08282c840da410116227683e
   blurhash: 150e9ffe986f028a38f7b469b5a279eab45352df
   CocoaLumberjack: 78b0c238666f4f58db069738ec176f4519557516
@@ -401,6 +406,6 @@ SPEC CHECKSUMS:
   ZKGroup: b5fcf00855c58ffa45861d5427621d8a519f4314
   ZXingObjC: 512b34b9b6920e8ef0461a4159d0814c5e48c28a
 
-PODFILE CHECKSUM: 7dce5a6279144f3026ecc82d82389b7bd3b9802f
+PODFILE CHECKSUM: b90f18f05ce46a76d08e4f05afe57222f426d1f2
 
 COCOAPODS: 1.7.5
