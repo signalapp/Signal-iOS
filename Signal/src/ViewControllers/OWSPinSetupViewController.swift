@@ -3,12 +3,14 @@
 //
 
 import UIKit
+import Lottie
 
 @objc(OWSPinSetupViewController)
 public class PinSetupViewController: OWSViewController {
 
     private let pinTextField = UITextField()
     private let pinTypeToggle = UIButton()
+    private let nextButton = OWSFlatButton()
 
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
     private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
@@ -223,6 +225,7 @@ public class PinSetupViewController: OWSViewController {
         // Pin text field
 
         pinTextField.delegate = self
+        pinTextField.textAlignment = .center
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
@@ -266,16 +269,12 @@ public class PinSetupViewController: OWSViewController {
 
         let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         let buttonHeight = OWSFlatButton.heightForFont(font)
-        let nextButton = OWSFlatButton.button(
-            title: CommonStrings.nextButton,
-            font: font,
-            titleColor: .white,
-            backgroundColor: .ows_signalBlue,
-            target: self,
-            selector: #selector(nextPressed)
-        )
+        nextButton.setTitle(title: CommonStrings.nextButton, font: font, titleColor: .white)
+        nextButton.setBackgroundColors(upColor: .ows_signalBlue)
+        nextButton.addTarget(target: self, selector: #selector(nextPressed))
         nextButton.autoSetDimension(.height, toSize: buttonHeight)
         nextButton.accessibilityIdentifier = "pinCreation.nextButton"
+        nextButton.useDefaultCornerRadius()
         let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer()
@@ -436,42 +435,60 @@ public class PinSetupViewController: OWSViewController {
 
         pinTextField.resignFirstResponder()
 
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalVC in
-            OWS2FAManager.shared().requestEnable2FA(withPin: pin, success: { [weak self] in
-                AssertIsOnMainThread()
+        let progressView = ProgressView(
+            loadingText: NSLocalizedString("PIN_CREATION_PIN_PROGRESS",
+                                           comment: "Indicates the work we are doing while creating the user's pin")
+        )
+        view.addSubview(progressView)
+        progressView.autoPinWidthToSuperview()
+        progressView.autoVCenterInSuperview()
 
-                modalVC.dismiss {
-                    self?.completionHandler()
-                }
-            }, failure: { error in
-                AssertIsOnMainThread()
-
-                Logger.error("Failed to enable 2FA with error: \(error)")
-
-                // The client may have fallen out of sync with the service.
-                // Try to get back to a known good state by disabling 2FA
-                // whenever enabling it fails.
-                OWS2FAManager.shared().disable2FA(success: nil, failure: nil)
-
-                modalVC.dismiss {
-                    // If this is the first time the user is trying to create a PIN, it's a blocking flow.
-                    // If for some reason they hit an error, notify them that we'll try again later and
-                    // dismiss the flow so they aren't stuck.
-                    if case .creating = self.initialMode {
-                        OWSActionSheets.showActionSheet(
-                            title: NSLocalizedString("PIN_CREATION_ERROR_TITLE",
-                                                     comment: "Error title indicating that the attempt to create a PIN failed."),
-                            message: NSLocalizedString("PIN_CREATION_ERROR_MESSAGE",
-                                                       comment: "Error body indicating that the attempt to create a PIN failed.")
-                        ) { _ in
-                            self.dismiss(animated: true, completion: nil)
-                        }
-                    } else {
-                        OWSActionSheets.showErrorAlert(message: NSLocalizedString("ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA", comment: "Error indicating that attempt to enable 'two-factor auth' failed."))
-                    }
-                }
-            })
+        progressView.startLoading {
+            self.view.isUserInteractionEnabled = false
+            self.nextButton.alpha = 0.5
         }
+
+        OWS2FAManager.shared().requestEnable2FA(withPin: pin, success: {
+            AssertIsOnMainThread()
+
+            // The completion handler always dismisses this view, so we don't want to animate anything.
+            progressView.loadingComplete(success: true, animated: false, completion: self.completionHandler)
+        }, failure: { error in
+            AssertIsOnMainThread()
+
+            Logger.error("Failed to enable 2FA with error: \(error)")
+
+            // The client may have fallen out of sync with the service.
+            // Try to get back to a known good state by disabling 2FA
+            // whenever enabling it fails.
+            OWS2FAManager.shared().disable2FA(success: nil, failure: nil)
+
+            progressView.loadingComplete(success: false, animateAlongside: {
+                self.nextButton.alpha = 1
+            }) {
+                self.view.isUserInteractionEnabled = true
+                progressView.removeFromSuperview()
+
+                // If this is the first time the user is trying to create a PIN, it's a blocking flow.
+                // If for some reason they hit an error, notify them that we'll try again later and
+                // dismiss the flow so they aren't stuck.
+                if case .creating = self.initialMode {
+                    OWSActionSheets.showActionSheet(
+                        title: NSLocalizedString("PIN_CREATION_ERROR_TITLE",
+                                                 comment: "Error title indicating that the attempt to create a PIN failed."),
+                        message: NSLocalizedString("PIN_CREATION_ERROR_MESSAGE",
+                                                   comment: "Error body indicating that the attempt to create a PIN failed.")
+                    ) { _ in
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                } else {
+                    OWSActionSheets.showErrorAlert(
+                        message: NSLocalizedString("ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
+                                                   comment: "Error indicating that attempt to enable 'two-factor auth' failed.")
+                    )
+                }
+            }
+        })
     }
 }
 
@@ -492,5 +509,123 @@ extension PinSetupViewController: UITextFieldDelegate {
 
         // Inform our caller whether we took care of performing the change.
         return hasPendingChanges
+    }
+}
+
+private class ProgressView: UIView {
+    private let label = UILabel()
+    private let progressAnimation = AnimationView(name: "pinCreationInProgress")
+    private let errorAnimation = AnimationView(name: "pinCreationFail")
+    private let successAnimation = AnimationView(name: "pinCreationSuccess")
+
+    required init(loadingText: String) {
+        super.init(frame: .zero)
+
+        backgroundColor = Theme.backgroundColor
+
+        let animationContainer = UIView()
+        addSubview(animationContainer)
+        animationContainer.autoPinWidthToSuperview()
+        animationContainer.autoPinEdge(toSuperviewEdge: .top)
+
+        progressAnimation.backgroundBehavior = .pauseAndRestore
+        progressAnimation.loopMode = .playOnce
+        progressAnimation.contentMode = .scaleAspectFit
+        animationContainer.addSubview(progressAnimation)
+        progressAnimation.autoPinEdgesToSuperviewEdges()
+
+        errorAnimation.isHidden = true
+        errorAnimation.backgroundBehavior = .pauseAndRestore
+        errorAnimation.loopMode = .playOnce
+        errorAnimation.contentMode = .scaleAspectFit
+        animationContainer.addSubview(errorAnimation)
+        errorAnimation.autoPinEdgesToSuperviewEdges()
+
+        successAnimation.isHidden = true
+        successAnimation.backgroundBehavior = .pauseAndRestore
+        successAnimation.loopMode = .playOnce
+        successAnimation.contentMode = .scaleAspectFit
+        animationContainer.addSubview(successAnimation)
+        successAnimation.autoPinEdgesToSuperviewEdges()
+
+        label.font = .ows_dynamicTypeBodyClamped
+        label.textColor = Theme.primaryTextColor
+        label.textAlignment = .center
+        label.text = loadingText
+
+        addSubview(label)
+        label.autoPinWidthToSuperview(withMargin: 8)
+        label.autoPinEdge(.top, to: .bottom, of: animationContainer, withOffset: 12)
+        label.autoPinBottomToSuperviewMargin()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func reset() {
+        progressAnimation.isHidden = false
+        progressAnimation.stop()
+        successAnimation.isHidden = true
+        successAnimation.stop()
+        errorAnimation.isHidden = true
+        errorAnimation.stop()
+        completedSuccessfully = nil
+        completionHandler = nil
+        alpha = 0
+    }
+
+    func startLoading(animateAlongside: @escaping () -> Void) {
+        reset()
+
+        progressAnimation.play { [weak self] _ in self?.startNextLoopOrFinish() }
+
+        UIView.animate(withDuration: 0.15) {
+            self.alpha = 1
+            animateAlongside()
+        }
+    }
+
+    func loadingComplete(success: Bool, animated: Bool = true, animateAlongside: (() -> Void)? = nil, completion: @escaping () -> Void) {
+        // Marking loading complete does not immediately stop the loading indicator,
+        // instead it sets this flag which waits until the animation is at the point
+        // it can transition to the next state.
+        completedSuccessfully = success
+        completionHandler = { [weak self] in
+            guard animated else {
+                self?.reset()
+                return completion()
+            }
+
+            UIView.animate(withDuration: 0.15, animations: {
+                self?.alpha = 0
+                animateAlongside?()
+            }) { _ in
+                self?.reset()
+                completion()
+            }
+        }
+    }
+
+    private var completedSuccessfully: Bool?
+    private var completionHandler: (() -> Void)?
+
+    private func startNextLoopOrFinish() {
+        // If we haven't yet completed, start another loop of the progress animation.
+        // We'll check again when it's done.
+        guard let completedSuccessfully = completedSuccessfully else {
+            return progressAnimation.play { [weak self] _ in self?.startNextLoopOrFinish() }
+        }
+
+        progressAnimation.stop()
+        progressAnimation.isHidden = true
+
+        if completedSuccessfully {
+            successAnimation.isHidden = false
+            successAnimation.play { [weak self] _ in self?.completionHandler?() }
+        } else {
+            errorAnimation.isHidden = false
+            errorAnimation.play { [weak self] _ in self?.completionHandler?() }
+        }
     }
 }
