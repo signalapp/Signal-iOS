@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -94,7 +94,7 @@ public class PinReminderViewController: OWSViewController {
         // Pin text field
 
         pinTextField.delegate = self
-        pinTextField.keyboardType = .numberPad
+        pinTextField.keyboardType = KeyBackupService.currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
@@ -104,6 +104,9 @@ public class PinReminderViewController: OWSViewController {
         pinTextField.setCompressionResistanceHorizontalLow()
         pinTextField.autoSetDimension(.height, toSize: 40)
         pinTextField.accessibilityIdentifier = "pinReminder.pinTextField"
+
+        // Every time the text changes, try and verify the pin
+        pinTextField.addTarget(self, action: #selector(verifySilently), for: .editingChanged)
 
         validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
@@ -171,6 +174,14 @@ public class PinReminderViewController: OWSViewController {
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
         topSpacer.autoSetDimension(.height, toSize: 20, relation: .greaterThanOrEqual)
 
+        let dismissButton = UIButton()
+        dismissButton.setTemplateImageName("x-24", tintColor: Theme.primaryIconColor)
+        dismissButton.addTarget(self, action: #selector(dismissPressed), for: .touchUpInside)
+        containerView.addSubview(dismissButton)
+        dismissButton.autoSetDimensions(to: CGSize(square: 44))
+        dismissButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
+        dismissButton.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
+
         updateValidationWarnings()
     }
 
@@ -199,11 +210,17 @@ public class PinReminderViewController: OWSViewController {
         present(OWSNavigationController(rootViewController: vc), animated: true, completion: nil)
     }
 
+    @objc func dismissPressed() {
+        Logger.info("")
+        // We'll ask again next time they launch
+        dismiss(animated: true, completion: nil)
+    }
+
     @objc func submitPressed() {
         verifyAndDismissOnSuccess(pinTextField.text)
     }
 
-    private func verifySilently() {
+    @objc func verifySilently() {
         verifyAndDismissOnSuccess(pinTextField.text, silent: true)
     }
 
@@ -314,14 +331,20 @@ extension PinReminderViewController: UIViewControllerTransitioningDelegate {
 
 extension PinReminderViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
+        let hasPendingChanges: Bool
+        if KeyBackupService.currentPinType == .alphanumeric {
+            hasPendingChanges = true
+        } else {
+            ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
+            hasPendingChanges = false
+
+            // Every time the text changes, try and verify the pin
+            verifySilently()
+        }
 
         validationState = .valid
 
-        // Every time the text changes, try and verify the pin
-        verifySilently()
-
         // Inform our caller that we took care of performing the change.
-        return false
+        return hasPendingChanges
     }
 }

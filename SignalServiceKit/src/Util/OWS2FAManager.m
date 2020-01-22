@@ -23,6 +23,7 @@ const NSUInteger kHourSecs = 60 * 60;
 const NSUInteger kDaySecs = kHourSecs * 24;
 
 const NSUInteger kMin2FAPinLength = 4;
+const NSUInteger kMin2FAv2PinLength = 6;
 const NSUInteger kMax2FAv1PinLength = 20; // v2 doesn't have a max length
 const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 

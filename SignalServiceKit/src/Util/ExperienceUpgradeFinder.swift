@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import Reachability
 
 public enum ExperienceUpgradeId: String {
     case introducingStickers = "008"
@@ -41,8 +42,11 @@ public enum ExperienceUpgradeId: String {
             upgrades.append(stickers)
         }
 
+        // The PIN setup flow requires an internet connection
+        // and should only be run on the primary device.
         if FeatureFlags.pinsForEveryone,
-            TSAccountManager.sharedInstance().isRegisteredPrimaryDevice {
+            TSAccountManager.sharedInstance().isRegisteredPrimaryDevice,
+            SSKEnvironment.shared.reachabilityManager.isReachable {
             upgrades.append(pins)
         }
 

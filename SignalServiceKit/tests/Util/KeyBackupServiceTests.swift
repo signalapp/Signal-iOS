@@ -50,7 +50,7 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
             XCTAssertEqual(vector.masterKey, decryptedMasterKey)
 
             databaseStorage.write { transaction in
-                KeyBackupService.store(vector.masterKey, encodedVerificationString: "", transaction: transaction)
+                KeyBackupService.store(vector.masterKey, pinType: .init(forPin: vector.pin), encodedVerificationString: "", transaction: transaction)
             }
 
             let registrationLockToken = KeyBackupService.deriveRegistrationLockToken()
@@ -71,7 +71,7 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
         XCTAssertEqual(expectedEncodedVerificationString, encodedVerificationString)
 
         databaseStorage.write { transaction in
-            KeyBackupService.store(Data(repeating: 0x00, count: 32), encodedVerificationString: encodedVerificationString, transaction: transaction)
+            KeyBackupService.store(Data(repeating: 0x00, count: 32), pinType: .init(forPin: pin), encodedVerificationString: encodedVerificationString, transaction: transaction)
         }
 
         // The correct PIN returns as valid.

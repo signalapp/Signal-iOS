@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -118,9 +118,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         return ows2FAManager.is2FAEnabled() && !ows2FAManager.needsLegacyPinMigration()
     }
 
-    override var canDismissWithGesture: Bool {
-        return hasPinAlready
-    }
+    override var canDismissWithGesture: Bool { return false }
 
     // MARK: - View lifecycle
 
@@ -223,14 +221,10 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
 
     @objc
     func didTapPrimaryButton(_ sender: UIButton) {
-        if hasPinAlready {
-            dismiss(animated: true)
-        } else {
-            let vc = PinSetupViewController { [weak self] in
-                self?.dismiss(animated: true)
-            }
-            navigationController?.pushViewController(vc, animated: true)
+        let vc = PinSetupViewController { [weak self] in
+            self?.dismiss(animated: true)
         }
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     @objc
@@ -241,13 +235,8 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
     }
 
     func primaryButtonTitle() -> String {
-        if hasPinAlready {
-            return NSLocalizedString("BUTTON_OKAY",
-                                     comment: "Label for the 'okay' button.")
-        } else {
-            return NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON",
-                                     comment: "Button to start a create pin flow from the one time splash screen that appears after upgrading")
-        }
+        return NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON",
+                                 comment: "Button to start a create pin flow from the one time splash screen that appears after upgrading")
     }
 
     func secondaryButtonTitle() -> String {
