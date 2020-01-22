@@ -581,7 +581,6 @@ NS_ASSUME_NONNULL_BEGIN
             // Unknown group.
             if (dataMessage.group.type == SSKProtoGroupContextTypeUpdate) {
                 // Accept group updates for unknown groups.
-                OWSLogInfo(@"RYAN: Group update message for unknown groups, %@", dataMessage.body);
             } else if (dataMessage.group.type == SSKProtoGroupContextTypeDeliver) {
                 [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
@@ -1301,8 +1300,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogWarn(@"Ignoring 'Request Group Info' message for group we no longer belong to.");
         return;
     }
-    
-    gThread.groupModel.removedMembers = [NSMutableSet setWithArray:dataMessage.group.removedMembers];
 
     NSString *updateGroupInfo =
         [gThread.groupModel getInfoStringAboutUpdateTo:gThread.groupModel contactsManager:self.contactsManager];
@@ -1366,9 +1363,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (groupId.length > 0) {
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
         NSMutableSet *removedMemberIds = [NSMutableSet new];
-        if (dataMessage.group.removedMembers) {
-            removedMemberIds = [NSMutableSet setWithArray:dataMessage.group.removedMembers];
-        }
         //Ryan TODO: validate the recipientId
 //        for (NSString *recipientId in newMemberIds) {
 //            if (!recipientId.isValidE164) {
@@ -1387,7 +1381,12 @@ NS_ASSUME_NONNULL_BEGIN
             // Don't trust other clients; ensure all known group members remain in the
             // group unless it is a "quit" message in which case we should only remove
             // the quiting member below.
-            [newMemberIds addObjectsFromArray:oldGroupThread.groupModel.groupMemberIds];
+            //[newMemberIds addObjectsFromArray:oldGroupThread.groupModel.groupMemberIds];
+            
+            //Loki - Try to figure out removed members
+            removedMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
+            [removedMemberIds minusSet:newMemberIds];
+            [removedMemberIds removeObject:envelope.source];
         }
 
         NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
@@ -1398,6 +1397,10 @@ NS_ASSUME_NONNULL_BEGIN
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
+                if (oldGroupThread && ![oldGroupThread.groupModel.groupAdminIds containsObject:envelope.source]) {
+                    OWSLogWarn(@"Loki - Received a group update message from a non-admin user for %@ %@", [LKGroupUtil getEncodedGroupId:groupId], @". Ignoring.");
+                    return nil;
+                }
                 // Ensures that the thread exists but doesn't update it.
                 TSGroupThread *newGroupThread =
                 [TSGroupThread getOrCreateThreadWithGroupId:groupId groupType:oldGroupThread.groupModel.groupType transaction:transaction];
@@ -1406,7 +1409,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         memberIds:newMemberIds.allObjects
                                                                             image:oldGroupThread.groupModel.groupImage
                                                                           groupId:dataMessage.group.id
-                                                                        groupType:oldGroupThread.groupModel.groupType];
+                                                                        groupType:oldGroupThread.groupModel.groupType
+                                                                         adminIds:dataMessage.group.admins];
                 newGroupModel.removedMembers = removedMemberIds;
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
@@ -1710,7 +1714,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope data:(SSKProtoDataMessage *)data message:(TSIncomingMessage *)message thread:(TSContactThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    OWSLogInfo(@"RYAN: handle friend request from %@ %@", envelope.source, message.body);
     
     if (envelope.isGroupChatMessage) {
         return NSLog(@"[Loki] Ignoring friend request in group chat.", @"");

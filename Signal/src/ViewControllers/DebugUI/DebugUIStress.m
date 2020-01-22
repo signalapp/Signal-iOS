@@ -536,7 +536,8 @@ NS_ASSUME_NONNULL_BEGIN
                                           memberIds:groupThread.groupModel.groupMemberIds
                                               image:groupThread.groupModel.groupImage
                                             groupId:[Randomness generateRandomBytes:kGroupIdLength]
-                                          groupType:SIGNAL];
+                                          groupType:SIGNAL
+                                           adminIds:groupThread.groupModel.groupAdminIds];
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         }];
     OWSAssertDebug(thread);
@@ -565,7 +566,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              memberIds:recipientIds
                                                                  image:nil
                                                                groupId:[Randomness generateRandomBytes:kGroupIdLength]
-                                                             groupType:SIGNAL];
+                                                             groupType:SIGNAL adminIds:@[ self.tsAccountManager.localNumber ]];
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
     }];
     OWSAssertDebug(thread);

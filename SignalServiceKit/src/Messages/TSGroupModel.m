@@ -26,6 +26,7 @@ const int32_t kGroupIdLength = 16;
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId
                     groupType:(GroupType)groupType
+                     adminIds:(NSArray<NSString *> *)adminIds
 {
     OWSAssertDebug(memberIds);
 
@@ -34,6 +35,7 @@ const int32_t kGroupIdLength = 16;
     _groupImage = image; // image is stored in DB
     _groupType              = groupType;
     _groupId                = groupId;
+    _groupAdminIds          = [adminIds copy];
 
     return self;
 }
@@ -178,11 +180,6 @@ const int32_t kGroupIdLength = 16;
 - (nullable NSString *)groupName
 {
     return _groupName.filterStringForDisplay;
-}
-
-- (void)setGroupAdminIds:(NSArray<NSString *> *)groupAdminIds
-{
-    _groupAdminIds = groupAdminIds;
 }
 
 - (void)setRemovedMembers:(NSMutableSet<NSString *> *)removedMembers

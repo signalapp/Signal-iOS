@@ -2312,11 +2312,6 @@ struct SignalServiceProtos_GroupContext {
     get {return _storage._members}
     set {_uniqueStorage()._members = newValue}
   }
-    
-    var removedMembers: [String] {
-        get {return _storage._removedMembers}
-        set {_uniqueStorage()._removedMembers = newValue}
-    }
 
   var avatar: SignalServiceProtos_AttachmentPointer {
     get {return _storage._avatar ?? SignalServiceProtos_AttachmentPointer()}
@@ -2326,6 +2321,11 @@ struct SignalServiceProtos_GroupContext {
   var hasAvatar: Bool {return _storage._avatar != nil}
   /// Clears the value of `avatar`. Subsequent reads from it will return its default value.
   mutating func clearAvatar() {_uniqueStorage()._avatar = nil}
+    
+  var admins: [String] {
+    get {return _storage._admins}
+    set {_uniqueStorage()._admins = newValue}
+  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -4945,6 +4945,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
     3: .same(proto: "name"),
     4: .same(proto: "members"),
     5: .same(proto: "avatar"),
+    6: .same(proto: "admins")
   ]
 
   fileprivate class _StorageClass {
@@ -4952,8 +4953,8 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
     var _type: SignalServiceProtos_GroupContext.TypeEnum? = nil
     var _name: String? = nil
     var _members: [String] = []
-    var _removedMembers: [String] = []
     var _avatar: SignalServiceProtos_AttachmentPointer? = nil
+    var _admins: [String] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -4965,7 +4966,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
       _name = source._name
       _members = source._members
       _avatar = source._avatar
-      _removedMembers = source._removedMembers
+      _admins = source._admins
     }
   }
 
@@ -4986,7 +4987,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
         case 3: try decoder.decodeSingularStringField(value: &_storage._name)
         case 4: try decoder.decodeRepeatedStringField(value: &_storage._members)
         case 5: try decoder.decodeSingularMessageField(value: &_storage._avatar)
-        case 6: try decoder.decodeRepeatedStringField(value: &_storage._removedMembers)
+        case 6: try decoder.decodeRepeatedStringField(value: &_storage._admins)
         default: break
         }
       }
@@ -5010,6 +5011,9 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
       if let v = _storage._avatar {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
       }
+      if !_storage._admins.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._admins, fieldNumber: 6)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5024,6 +5028,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._name != rhs_storage._name {return false}
         if _storage._members != rhs_storage._members {return false}
         if _storage._avatar != rhs_storage._avatar {return false}
+        if _storage._admins != rhs_storage._admins {return false}
         return true
       }
       if !storagesAreEqual {return false}

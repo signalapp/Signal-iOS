@@ -383,7 +383,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                          memberIds:self.memberRecipientIds.allObjects
                                                              image:self.groupAvatar
                                                            groupId:self.thread.groupModel.groupId
-                                                         groupType:self.thread.groupModel.groupType];
+                                                         groupType:self.thread.groupModel.groupType
+                                                          adminIds:self.thread.groupModel.groupAdminIds];
     groupModel.removedMembers = self.removedRecipientIds;
     [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
 }

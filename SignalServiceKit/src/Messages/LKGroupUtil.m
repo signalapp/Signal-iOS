@@ -74,7 +74,6 @@
     if ([encodedGroupId componentsSeparatedByString:@"!"].count > 1) {
         decodedGroupId =[encodedGroupId componentsSeparatedByString:@"!"][1];
     }
-    OWSLogInfo(@"RYAN: %@", decodedGroupId);
     return [decodedGroupId dataUsingEncoding:NSUTF8StringEncoding];
 }
 

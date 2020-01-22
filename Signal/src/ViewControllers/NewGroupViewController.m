@@ -97,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
     _avatarViewHelper.delegate = self;
 
     self.memberRecipientIds = [NSMutableSet new];
+    self.adminIds = [NSMutableSet new];
 }
 
 #pragma mark - View Lifecycle
@@ -529,18 +530,19 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
+    NSMutableArray<NSString *> *adminIds = [self.adminIds.allObjects mutableCopy];
     //Test: Add Ryan to a new group. Should be deleted!!!!!
     [recipientIds addObject:@"057fffb55430abb2df5be80fab693ffe4db26a8b76e590c1748a47baef7c483604"];
     [recipientIds addObject:@"050c159f0d46c40ec6306bb0b8470972af3f67b5cb1e24b6460a6f692275c8b57f"];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
     //Loki - Add the creator as the admin
-    [self.adminIds addObject:[self.contactsViewHelper localNumber]];
+    [adminIds addObject:[self.contactsViewHelper localNumber]];
     TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:groupName
                                                     memberIds:recipientIds
                                                         image:self.groupAvatar
                                                       groupId:self.groupId
-                                                    groupType:self.groupType];
-    [group setGroupAdminIds:[self.adminIds.allObjects copy]];
+                                                    groupType:self.groupType
+                                                     adminIds:adminIds];
     return group;
 }
 

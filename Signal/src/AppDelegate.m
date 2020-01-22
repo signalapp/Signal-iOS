@@ -1580,7 +1580,7 @@ static NSTimeInterval launchStartedAt;
         NSString *userDefaultsKey = [@"isRSSFeedSetUp." stringByAppendingString:feed.id];
         BOOL isFeedSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
         if (!isFeedSetUp || !feed.isDeletable) {
-            TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:feed.displayName memberIds:@[ userHexEncodedPublicKey, feed.server ] image:nil groupId:[LKGroupUtil getEncodedRssFeedGroupIdAsData:feed.id] groupType:RSS_FEED];
+            TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:feed.displayName memberIds:@[ userHexEncodedPublicKey, feed.server ] image:nil groupId:[LKGroupUtil getEncodedRssFeedGroupIdAsData:feed.id] groupType:RSS_FEED adminIds:@[ userHexEncodedPublicKey, feed.server ]];
             __block TSGroupThread *thread;
             [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];

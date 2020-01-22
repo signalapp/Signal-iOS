@@ -33,7 +33,8 @@ extern const int32_t kGroupIdLength;
                     memberIds:(NSArray<NSString *> *)memberIds
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId
-                    groupType:(GroupType)groupType;
+                    groupType:(GroupType)groupType
+                     adminIds:(NSArray<NSString *> *)adminIds;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;

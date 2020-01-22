@@ -5677,7 +5677,7 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         if let _value = avatar {
             builder.setAvatar(_value)
         }
-        builder.setRemovedMembers(removedMembers)
+        builder.setAdmins(admins)
         return builder
     }
 
@@ -5712,23 +5712,18 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
             proto.members = items
         }
         
-        @objc public func removeMembers(_ valueParam: String) {
-            var items = proto.members
-            var removed = proto.removedMembers
-            if let index = items.index(of: valueParam) {
-                items.remove(at: index)
-                proto.members = items
-                removed.append(valueParam)
-                proto.removedMembers = removed
-            }
+        @objc public func addAdmins(_ valueParam: String) {
+            var items = proto.admins
+            items.append(valueParam)
+            proto.admins = items
         }
 
         @objc public func setMembers(_ wrappedItems: [String]) {
             proto.members = wrappedItems
         }
         
-        @objc public func setRemovedMembers(_ wrappedItems: [String]) {
-            proto.removedMembers = wrappedItems
+        @objc public func setAdmins(_ wrappedItems: [String]) {
+            proto.admins = wrappedItems
         }
 
         @objc public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
@@ -5766,8 +5761,8 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         return proto.members
     }
     
-    @objc public var removedMembers: [String] {
-        return proto.removedMembers
+    @objc public var admins: [String] {
+        return proto.admins
     }
 
     private init(proto: SignalServiceProtos_GroupContext,
