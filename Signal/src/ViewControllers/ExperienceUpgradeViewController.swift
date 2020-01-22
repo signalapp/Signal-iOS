@@ -333,17 +333,17 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
     @objc
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        markAsSeen()
+        markAsComplete()
         super.dismiss(animated: flag, completion: completion)
     }
 
-    func markAsSeen() {
+    func markAsComplete() {
         // Blocking write before dismiss, to be sure they're marked as complete
         // before ConversationList.didAppear is re-fired.
         databaseStorage.write { transaction in
             Logger.info("marking all upgrades as seen.")
-            ExperienceUpgradeFinder.shared.markAsSeen(experienceUpgrade: self.experienceUpgrade,
-                                                      transaction: transaction)
+            ExperienceUpgradeFinder.shared.markAsComplete(experienceUpgrade: self.experienceUpgrade,
+                                                          transaction: transaction.unwrapGrdbWrite)
         }
     }
 
@@ -370,6 +370,6 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
 extension ExperienceUpgradeViewController: UIAdaptivePresentationControllerDelegate {
     public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        markAsSeen()
+        markAsComplete()
     }
 }
