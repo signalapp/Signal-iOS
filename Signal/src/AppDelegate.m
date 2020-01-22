@@ -1313,7 +1313,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         OWSLogInfo(@"localAddress: %@", [self.tsAccountManager localAddress]);
 
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
+            [ExperienceUpgradeFinder.sharedManager markAllCompleteWithTransaction:transaction.unwrapGrdbWrite];
         }];
 
         // Start running the disappearing messages job in case the newly registered user
