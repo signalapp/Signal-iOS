@@ -28,6 +28,9 @@ public final class ProfilePictureView : UIView {
         addSubview(imageView)
         imageView.pin(.leading, to: .leading, of: self)
         imageView.pin(.top, to: .top, of: self)
+        let imageViewSize = CGFloat(45) // Values.mediumProfilePictureSize
+        imageViewWidthConstraint = imageView.set(.width, to: imageViewSize)
+        imageViewHeightConstraint = imageView.set(.height, to: imageViewSize)
         // Set up additional image view
         addSubview(additionalImageView)
         additionalImageView.pin(.trailing, to: .trailing, of: self)
@@ -40,10 +43,6 @@ public final class ProfilePictureView : UIView {
     
     // MARK: Updating
     @objc public func update() {
-        if let imageViewWidthConstraint = imageViewWidthConstraint, let imageViewHeightConstraint = imageViewHeightConstraint {
-            imageView.removeConstraint(imageViewWidthConstraint)
-            imageView.removeConstraint(imageViewHeightConstraint)
-        }
         func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage? {
             guard !hexEncodedPublicKey.isEmpty else { return nil }
             return OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) ?? Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
@@ -51,14 +50,14 @@ public final class ProfilePictureView : UIView {
         let size: CGFloat
         if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey, !isRSSFeed {
             size = 35 // Values.smallProfilePictureSize
-            imageViewWidthConstraint = imageView.set(.width, to: size)
-            imageViewHeightConstraint = imageView.set(.height, to: size)
+            imageViewWidthConstraint.constant = size
+            imageViewHeightConstraint.constant = size
             additionalImageView.isHidden = false
             additionalImageView.image = getProfilePicture(of: size, for: additionalHexEncodedPublicKey)
         } else {
             size = self.size
-            imageViewWidthConstraint = imageView.pin(.trailing, to: .trailing, of: self)
-            imageViewHeightConstraint = imageView.pin(.bottom, to: .bottom, of: self)
+            imageViewWidthConstraint.constant = size
+            imageViewHeightConstraint.constant = size
             additionalImageView.isHidden = true
             additionalImageView.image = nil
         }
@@ -67,7 +66,8 @@ public final class ProfilePictureView : UIView {
         imageView.layer.cornerRadius = size / 2
         imageView.contentMode = isRSSFeed ? .center : .scaleAspectFit
         if isRSSFeed {
-            imageView.image = #imageLiteral(resourceName: "SessionWhite").resizedImage(to: CGSize(width: (303*24)/337, height: 24))
+            let iconSize: CGFloat = (size == 45) ? 24 : 40
+            imageView.image = #imageLiteral(resourceName: "SessionWhite").resizedImage(to: CGSize(width: (303*iconSize)/337, height: iconSize))
         }
     }
     
