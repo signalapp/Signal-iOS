@@ -80,7 +80,7 @@ public class KeyBackupService: NSObject {
             }
 
             do {
-                isValid = try Argon2.verify(encoded: encodedVerificationString, password: pinData, variant: .id)
+                isValid = try Argon2.verify(encoded: encodedVerificationString, password: pinData, variant: .i)
             } catch {
                 owsFailDebug("Failed to validate encodedVerificationString with error: \(error)")
             }
@@ -154,7 +154,7 @@ public class KeyBackupService: NSObject {
             }
 
             // We should always receive a new token to use on our next request.
-            let token = try Token.updateNext(data: tokenData)
+            try Token.updateNext(data: tokenData)
 
             switch status {
             case .alreadyExists:
@@ -166,7 +166,7 @@ public class KeyBackupService: NSObject {
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw KBSError.assertion
             case .ok:
-                let encodedVerificationString = try deriveEncodedVerificationString(pin: pin, backupId: token.backupId)
+                let encodedVerificationString = try deriveEncodedVerificationString(pin: pin)
 
                 // We successfully stored the new keys in KBS, save them in the database
                 databaseStorage.write { transaction in
@@ -211,7 +211,7 @@ public class KeyBackupService: NSObject {
             }
 
             // We should always receive a new token to use on our next request. Store it now.
-            let token = try Token.updateNext(data: tokenData)
+            try Token.updateNext(data: tokenData)
 
             switch status {
             case .alreadyExists:
@@ -222,7 +222,7 @@ public class KeyBackupService: NSObject {
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw KBSError.assertion
             case .ok:
-                let encodedVerificationString = try deriveEncodedVerificationString(pin: pin, backupId: token.backupId)
+                let encodedVerificationString = try deriveEncodedVerificationString(pin: pin)
 
                 // We successfully stored the new keys in KBS, save them in the database
                 databaseStorage.write { transaction in
@@ -338,41 +338,40 @@ public class KeyBackupService: NSObject {
         guard backupId.count == 32 else { throw KBSError.assertion }
 
         let (rawHash, _) = try Argon2.hash(
-            iterations: 16,
+            iterations: 32,
             memoryInKiB: 1024 * 16, // 16MiB
             threads: 1,
             password: pinData,
             salt: backupId,
             desiredLength: 64,
-            variant: .id
+            variant: .id,
+            version: .v13
         )
-
-        guard rawHash.count == 64 else { throw KBSError.assertion }
 
         return (encryptionKey: rawHash[0...31], accessKey: rawHash[32...63])
     }
 
-    static func deriveEncodedVerificationString(pin: String, backupId: Data) throws -> String {
+    static func deriveEncodedVerificationString(pin: String, salt: Data = Cryptography.generateRandomBytes(16)) throws -> String {
         assertIsOnBackgroundQueue()
 
         guard let pinData = normalizePin(pin).data(using: .utf8) else { throw KBSError.assertion }
-        guard backupId.count == 32 else { throw KBSError.assertion }
+        guard salt.count == 16 else { throw KBSError.assertion }
 
-        // TODO: Fine tune what a good value is for local PIN verification
         let (_, encodedString) = try Argon2.hash(
-            iterations: 2,
-            memoryInKiB: 1024 * 8, // 8MiB
+            iterations: 64,
+            memoryInKiB: 512,
             threads: 1,
             password: pinData,
-            salt: backupId,
-            desiredLength: 64,
-            variant: .id
+            salt: salt,
+            desiredLength: 32,
+            variant: .i,
+            version: .v13
         )
 
         return encodedString
     }
 
-    private static func normalizePin(_ pin: String) -> String {
+    static func normalizePin(_ pin: String) -> String {
         // Trim leading and trailing whitespace
         var normalizedPin = pin.ows_stripped()
 

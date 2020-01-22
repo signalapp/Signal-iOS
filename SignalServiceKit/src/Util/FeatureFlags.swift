@@ -201,7 +201,7 @@ public class FeatureFlags: NSObject {
     public static let phoneNumberPrivacy = false
 
     @objc
-    public static let socialGraphOnServer = registrationLockV2 && build.includes(.dev)
+    public static let socialGraphOnServer = false
 
     @objc
     public static let cameraFirstCaptureFlow = true

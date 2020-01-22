@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -113,15 +113,17 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         // Migrate to 2FA v2 if they've proved they know their pin
         if let pinCode = ows2FAManager.pinCode, FeatureFlags.registrationLockV2, ows2FAManager.mode == .V1 {
             // enabling 2fa v2 automatically disables v1 on the server
-            ows2FAManager.enable2FAPromise(with: pinCode)
-                .ensure {
-                    self.dismiss(animated: true)
-                }.catch { error in
-                    // We don't need to bubble this up to the user, since they
-                    // don't know / care that something is changing in this moment.
-                    // We can try and migrate them again during their next reminder.
-                    owsFailDebug("Unexpected error \(error) while migrating to reg lock v2")
-                }.retainUntilComplete()
+            ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { _ in
+                self.ows2FAManager.enable2FAPromise(with: pinCode)
+                    .ensure {
+                        self.presentingViewController?.dismiss(animated: true)
+                    }.catch { error in
+                        // We don't need to bubble this up to the user, since they
+                        // don't know / care that something is changing in this moment.
+                        // We can try and migrate them again during their next reminder.
+                        owsFailDebug("Unexpected error \(error) while migrating to reg lock v2")
+                    }.retainUntilComplete()
+            }
         } else {
             self.dismiss(animated: true)
         }
