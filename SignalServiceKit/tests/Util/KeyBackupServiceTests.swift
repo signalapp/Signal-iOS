@@ -8,16 +8,6 @@ import XCTest
 @testable import SignalServiceKit
 
 class KeyBackupServiceTests: SSKBaseTestSwift {
-    struct Vector: Codable {
-        let pin: String
-        let backupId: Data
-        let argon2Hash: Data
-        let masterKey: Data
-        let kbsAccessKey: Data
-        let ivAndCipher: Data
-        let registrationLock: String
-    }
-
     lazy var decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -31,6 +21,16 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
     }()
 
     func test_vectors() throws {
+        struct Vector: Codable {
+            let pin: String
+            let backupId: Data
+            let argon2Hash: Data
+            let masterKey: Data
+            let kbsAccessKey: Data
+            let ivAndCipher: Data
+            let registrationLock: String
+        }
+
         let vectorsUrl = Bundle(for: type(of: self)).url(forResource: "kbs_vectors", withExtension: "json")!
         let jsonData = try Data(contentsOf: vectorsUrl)
         let vectors = try decoder.decode([Vector].self, from: jsonData)
@@ -59,14 +59,31 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
         }
     }
 
+    func test_pinNormalization() throws {
+        struct Vector: Codable {
+            let name: String
+            let pin: String
+            let bytes: Data
+        }
+
+        let vectorsUrl = Bundle(for: type(of: self)).url(forResource: "kbs_pin_sanitation_vectors", withExtension: "json")!
+        let jsonData = try Data(contentsOf: vectorsUrl)
+        let vectors = try decoder.decode([Vector].self, from: jsonData)
+
+        for vector in vectors {
+            let normalizedPin = KeyBackupService.normalizePin(vector.pin)
+            XCTAssertEqual(vector.bytes, normalizedPin.data(using: .utf8)!, vector.name)
+        }
+    }
+
     func test_pinVerification() throws {
         let pin = "apassword"
-        let backupId = Data.data(
-            fromHex: "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F"
+        let salt = Data.data(
+            fromHex: "202122232425262728292A2B2C2D2E2F"
         )!
-        let expectedEncodedVerificationString = "$argon2id$v=19$m=8192,t=2,p=1$ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8$EQqNdaL3vwVMfYiZz10pMuaDq6x6VRuCfDlNEvSVBLllb5nfddllVooJtJ/LcFRXmQJXcV47OBoTraq5LXZCnw"
+        let expectedEncodedVerificationString = "$argon2i$v=19$m=512,t=64,p=1$ICEiIyQlJicoKSorLC0uLw$NeZzhiNv4cRmRMct9scf7d838bzmHJvrZtU/0BH0v/U"
 
-        let encodedVerificationString = try KeyBackupService.deriveEncodedVerificationString(pin: pin, backupId: backupId)
+        let encodedVerificationString = try KeyBackupService.deriveEncodedVerificationString(pin: pin, salt: salt)
 
         XCTAssertEqual(expectedEncodedVerificationString, encodedVerificationString)
 
