@@ -174,9 +174,13 @@ final class ConversationTitleView : UIView {
                         } else {
                             subtitle.append(NSAttributedString(string: "\(userCount) members"))
                         }
+                    } else if let hexEncodedPublicKey = (self.thread as? TSContactThread)?.contactIdentifier(), ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
+                        subtitle.append(NSAttributedString(string: hexEncodedPublicKey))
                     } else {
                         self.subtitleLabel.isHidden = true
                     }
+                } else if let hexEncodedPublicKey = (self.thread as? TSContactThread)?.contactIdentifier(), ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
+                    subtitle.append(NSAttributedString(string: hexEncodedPublicKey))
                 } else {
                     self.subtitleLabel.isHidden = true
                 }
