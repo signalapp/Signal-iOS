@@ -75,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSMessageManager *messageManager = [OWSMessageManager new];
         OWSBlockingManager *blockingManager = [OWSBlockingManager new];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
+        id<RemoteConfigManager> remoteConfigManager = [ServiceRemoteConfigManager new];
         SSKSessionStore *sessionStore = [SSKSessionStore new];
         SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
         SSKPreKeyStore *preKeyStore = [SSKPreKeyStore new];
@@ -131,6 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    messageManager:messageManager
                                                                   blockingManager:blockingManager
                                                                   identityManager:identityManager
+                                                              remoteConfigManager:remoteConfigManager
                                                                      sessionStore:sessionStore
                                                                 signedPreKeyStore:signedPreKeyStore
                                                                       preKeyStore:preKeyStore

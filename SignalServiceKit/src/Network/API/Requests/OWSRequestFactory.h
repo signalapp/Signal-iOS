@@ -172,6 +172,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                           version:(NSString *)version
                                        commitment:(NSData *)commitment;
 
+#pragma mark - Remote Config
+
++ (TSRequest *)getRemoteConfigRequest;
+
 #pragma mark - Groups v2
 
 // GroupsV2 TODO: Improve this name.

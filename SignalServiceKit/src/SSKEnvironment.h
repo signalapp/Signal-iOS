@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol NotificationsProtocol;
 @protocol OWSCallMessageHandler;
 @protocol ProfileManagerProtocol;
+@protocol RemoteConfigManager;
 @protocol OWSUDManager;
 @protocol SSKReachabilityManager;
 @protocol SyncManagerProtocol;
@@ -62,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
+                    remoteConfigManager:(id<RemoteConfigManager>)remoteConfigManager
                            sessionStore:(SSKSessionStore *)sessionStore
                       signedPreKeyStore:(SSKSignedPreKeyStore *)signedPreKeyStore
                             preKeyStore:(SSKPreKeyStore *)preKeyStore
@@ -111,6 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageManager *messageManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
+@property (nonatomic, readonly) id<RemoteConfigManager> remoteConfigManager;
 @property (nonatomic, readonly) SSKSessionStore *sessionStore;
 @property (nonatomic, readonly) SSKSignedPreKeyStore *signedPreKeyStore;
 @property (nonatomic, readonly) SSKPreKeyStore *preKeyStore;
