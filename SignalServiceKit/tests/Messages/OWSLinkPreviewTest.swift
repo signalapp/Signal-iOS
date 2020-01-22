@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -302,13 +302,13 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData3() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.reddit.com/r/androiddev/comments/a7gctz/androidx_release_notes_this_is_the_first_release/")
+        linkPreviewManager.downloadLink(url: "https://www.reddit.com/r/memes/comments/c3p3dy/i_drew_all_the_boys_together_and_i_did_it_for_the/")
             .done { (linkData) in
                 let content = try! self.linkPreviewManager.parse(linkData: linkData)
                 XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.title, "r/androiddev - AndroidX release notes | This is the first release of SavedState")
-                XCTAssertEqual(content.imageUrl, "https://external-preview.redd.it/j5lhdY0huShdzyrbSEdKzOb09BKhNreyEZOLDu1UzBA.jpg?auto=webp&s=2cb8bdb5ac5b54fc9514719030c0c9f08a03f684")
+                XCTAssertEqual(content.title, "r/memes - I drew all the boys together and i did it for the internet")
+                XCTAssertEqual(content.imageUrl, "https://preview.redd.it/yb3996njhw531.jpg?auto=webp&s=f8977087ab74e57063fff19c5df9534f22c0f521")
 
                 expectation.fulfill()
             }.catch { (error) in
@@ -317,7 +317,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 10.0, handler: nil)
     }
 
     func testLinkParsingWithRealData4() {
@@ -466,7 +466,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 let content = try! self.linkPreviewManager.parse(linkData: linkData)
                 XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.title, "2232 Best Recipes images in 2019 | Food recipes, Food, Food drink")
+                XCTAssertEqual(content.title, "2351 Best Recipes images in 2020 | Food recipes, Food, Food drink")
                 XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/51/a0/b5/51a0b59e4980fdcddec7c3d322cc148f.jpg")
 
                 expectation.fulfill()

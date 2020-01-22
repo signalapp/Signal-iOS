@@ -265,4 +265,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let sendRecipientUpdates = false
+
+    @objc
+    public static let useZKGroups = false
 }
