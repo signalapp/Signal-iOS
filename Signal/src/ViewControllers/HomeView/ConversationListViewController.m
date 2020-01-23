@@ -756,7 +756,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [super viewDidAppear:animated];
 
-    [self displayAnyUnseenUpgradeExperience];
+    [self displayNextExperienceUpgradeIfNecessary];
     [self applyDefaultBackButton];
 
     if (self.hasThemeChanged) {
@@ -1189,27 +1189,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - startup
 
-- (NSArray<ExperienceUpgrade *> *)unseenUpgradeExperiences
+- (void)displayNextExperienceUpgradeIfNecessary
 {
     OWSAssertIsOnMainThread();
 
-    __block NSArray<ExperienceUpgrade *> *unseenUpgrades;
+    __block ExperienceUpgrade *_Nullable nextUpgrade;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        unseenUpgrades = [ExperienceUpgradeFinder.sharedManager allUnseenWithTransaction:transaction];
+        nextUpgrade = [ExperienceUpgradeFinder.sharedManager nextWithTransaction:transaction.unwrapGrdbRead];
     }];
-    return unseenUpgrades;
-}
 
-- (void)displayAnyUnseenUpgradeExperience
-{
-    OWSAssertIsOnMainThread();
-
-    NSArray<ExperienceUpgrade *> *unseenUpgrades = [self unseenUpgradeExperiences];
-
-    if (unseenUpgrades.count > 0) {
-        ExperienceUpgrade *firstUpgrade = unseenUpgrades.firstObject;
+    if (nextUpgrade) {
         UIViewController *_Nullable viewController =
-            [ExperienceUpgradeViewController viewControllerForExperienceUpgrade:firstUpgrade];
+            [ExperienceUpgradeViewController viewControllerForExperienceUpgrade:nextUpgrade];
         if (viewController == nil) {
             OWSFailDebug(@"Could not display experience upgrade.");
             return;

@@ -276,6 +276,9 @@ CREATE
             ,"recordType" INTEGER NOT NULL
             ,"uniqueId" TEXT NOT NULL UNIQUE
                 ON CONFLICT FAIL
+            ,"firstViewedTimestamp" DOUBLE
+            ,"lastSnoozedTimestamp" DOUBLE
+            ,"isComplete" BOOLEAN
         )
 ;
 

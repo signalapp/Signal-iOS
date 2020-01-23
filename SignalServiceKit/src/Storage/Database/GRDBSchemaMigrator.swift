@@ -56,6 +56,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dropContactQuery
         case indexFailedJob
         case groupsV2MessageJobs
+        case experienceUpgradeSnooze
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -327,6 +328,19 @@ public class GRDBSchemaMigrator: NSObject {
                     .notNull()
             }
             try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_uniqueId", on: "model_IncomingGroupsV2MessageJob", columns: ["uniqueId"])
+        }
+
+        migrator.registerMigration(MigrationId.experienceUpgradeSnooze.rawValue) { db in
+            try db.alter(table: ExperienceUpgradeRecord.databaseTableName, body: { alteration in
+                alteration.add(column: "firstViewedTimestamp", .double)
+                alteration.add(column: "lastSnoozedTimestamp", .double)
+                alteration.add(column: "isComplete", .boolean)
+            })
+
+            // Mark all legacy experience upgrades as complete. This is not
+            // strictly necessary since we only check a subset of ids that should
+            // be active at a given time, but it's nice to keep things tidy.
+            try db.execute(sql: "UPDATE model_ExperienceUpgrade SET isComplete = 1")
         }
 
         return migrator
