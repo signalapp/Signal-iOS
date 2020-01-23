@@ -1602,12 +1602,12 @@ static NSTimeInterval launchStartedAt;
 
 - (LKRSSFeed *)lokiNewsFeed
 {
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki News", @"") isDeletable:true];
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:@"Loki News" isDeletable:true];
 }
 
 - (LKRSSFeed *)lokiMessengerUpdatesFeed
 {
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Loki Messenger Updates", @"") isDeletable:false];
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:@"Loki Messenger Updates" isDeletable:false];
 }
 
 - (void)setUpDefaultPublicChatsIfNeeded
