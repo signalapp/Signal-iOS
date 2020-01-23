@@ -52,23 +52,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-                     createdAt:(NSDate *)createdAt
-                  envelopeData:(NSData *)envelopeData
-                 plaintextData:(nullable NSData *)plaintextData
-               wasReceivedByUD:(BOOL)wasReceivedByUD
+                       createdAt:(NSDate *)createdAt
+                    envelopeData:(NSData *)envelopeData
+                   plaintextData:(nullable NSData *)plaintextData
+                 wasReceivedByUD:(BOOL)wasReceivedByUD
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
-    
+
     if (!self) {
         return self;
     }
-    
+
     _createdAt = createdAt;
     _envelopeData = envelopeData;
     _plaintextData = plaintextData;
     _wasReceivedByUD = wasReceivedByUD;
-    
+
     return self;
 }
 

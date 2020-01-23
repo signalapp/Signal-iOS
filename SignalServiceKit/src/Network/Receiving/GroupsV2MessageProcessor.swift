@@ -127,7 +127,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                              transaction: SDSAnyWriteTransaction) {
 
         // We need to persist the decrypted envelope data ASAP to prevent data loss.
-        finder.addJob(envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, transaction: transaction.asGrdbWrite)
+        finder.addJob(envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, transaction: transaction.unwrapGrdbWrite)
     }
 
     fileprivate func drainQueueWhenMainAppIsReady() {
@@ -182,7 +182,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
         let batchSize: UInt = isAppInBackground.get() ? 1 : kIncomingMessageBatchSize
 
         let batchJobs = databaseStorage.read { transaction in
-            return self.finder.nextJobs(batchSize: batchSize, transaction: transaction.asGrdbRead)
+            return self.finder.nextJobs(batchSize: batchSize, transaction: transaction.unwrapGrdbRead)
         }
         guard batchJobs.count > 0 else {
             self.isDrainingQueue = false
@@ -199,7 +199,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                                 //       in the "sync" case but a different transaction in the "async" case.
                                 let uniqueIds = processedJobs.map { $0.uniqueId }
                                 self.finder.removeJobs(withUniqueIds: uniqueIds,
-                                                       transaction: completionTransaction.asGrdbWrite)
+                                                       transaction: completionTransaction.unwrapGrdbWrite)
 
                                 let jobCount: UInt = self.finder.jobCount(transaction: completionTransaction)
 
@@ -309,6 +309,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
     // * The first message that has to be processed "remotely"
     private func canJobBeProcessedInLocalBatch(jobInfo: IncomingGroupsV2MessageJobInfo,
                                                transaction: SDSAnyReadTransaction) -> Bool {
+        // We cannot ignoreIfNotLocalMember here because we might have been
+        // added to the group and not yet know it.  We might learn of that
+        // while fetching changes from the service OR while applying
+        // changes embedded in the incoming message.
         if canJobBeDiscarded(jobInfo: jobInfo, ignoreIfNotLocalMember: false, transaction: transaction) {
             return true
         }
@@ -396,6 +400,12 @@ class IncomingGroupsV2MessageQueue: NSObject {
         var processedJobs = [IncomingGroupsV2MessageJob]()
         for jobInfo in jobInfos {
             let job = jobInfo.job
+
+            // GroupsV2 TODO: Try to apply embedded group changes, if any.
+
+            // We can now ignoreIfNotLocalMember because local group state
+            // should now reflect the revision at which this message was
+            // sent.  If we're not a member, we can discard this message.
             if canJobBeDiscarded(jobInfo: jobInfo,
                                  ignoreIfNotLocalMember: true, transaction: transaction) {
                 // Do nothing.

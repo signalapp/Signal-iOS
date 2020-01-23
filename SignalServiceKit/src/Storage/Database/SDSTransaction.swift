@@ -224,7 +224,7 @@ public extension GRDBWriteTransaction {
 
 @objc
 public extension SDSAnyReadTransaction {
-    var asGrdbRead: GRDBReadTransaction {
+    var unwrapGrdbRead: GRDBReadTransaction {
         switch readTransaction {
         case .yapRead:
             owsFail("Invalid transaction type.")
@@ -238,7 +238,7 @@ public extension SDSAnyReadTransaction {
 
 @objc
 public extension SDSAnyWriteTransaction {
-    var asGrdbWrite: GRDBWriteTransaction {
+    var unwrapGrdbWrite: GRDBWriteTransaction {
         switch writeTransaction {
         case .yapWrite:
             owsFail("Invalid transaction type.")
