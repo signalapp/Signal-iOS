@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
@@ -68,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
+             infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
@@ -95,6 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
                      quotedMessage:quotedMessage
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
                      customMessage:customMessage
+               infoMessageUserInfo:infoMessageUserInfo
                        messageType:messageType
                               read:read
                unregisteredAddress:unregisteredAddress];

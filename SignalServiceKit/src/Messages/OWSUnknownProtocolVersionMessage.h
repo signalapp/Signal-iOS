@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInfoMessage.h"
@@ -49,12 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
+             infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                  protocolVersion:(NSUInteger)protocolVersion
                           sender:(nullable SignalServiceAddress *)sender
-NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:customMessage:messageType:read:unregisteredAddress:protocolVersion:sender:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:customMessage:infoMessageUserInfo:messageType:read:unregisteredAddress:protocolVersion:sender:));
 
 // clang-format on
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -28,11 +28,19 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageSyncedThread
 };
 
+
+typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;
+
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldGroupModel;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyNewGroupModel;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyGroupUpdateSourceAddress;
+
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
 
-@property (atomic, readonly) TSInfoMessageType messageType;
-@property (atomic, readonly, nullable) NSString *customMessage;
-@property (atomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
+@property (nonatomic, readonly) TSInfoMessageType messageType;
+@property (nonatomic, readonly, nullable) NSString *customMessage;
+@property (nonatomic, readonly, nullable) NSDictionary<InfoMessageUserInfoKey, id> *infoMessageUserInfo;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(TSThread *)thread
@@ -71,10 +79,11 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
+             infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
-NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:customMessage:messageType:read:unregisteredAddress:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:customMessage:infoMessageUserInfo:messageType:read:unregisteredAddress:));
 
 // clang-format on
 
@@ -91,10 +100,14 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
                       messageType:(TSInfoMessageType)infoMessage
                     customMessage:(NSString *)customMessage;
 
+- (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)infoMessage
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
-          unregisteredAddress:(SignalServiceAddress *)unregisteredAddress;
+              unregisteredAddress:(SignalServiceAddress *)unregisteredAddress;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread

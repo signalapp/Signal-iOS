@@ -796,24 +796,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                             }];
 }
 
-- (void)updateWithCustomMessage:(NSString *)customMessage transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(customMessage);
-    OWSAssertDebug(transaction);
-
-    [self anyUpdateOutgoingMessageWithTransaction:transaction
-                                            block:^(TSOutgoingMessage *message) {
-                                                [message setCustomMessage:customMessage];
-                                            }];
-}
-
-- (void)updateWithCustomMessage:(NSString *)customMessage
-{
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self updateWithCustomMessage:customMessage transaction:transaction];
-    }];
-}
-
 - (void)updateWithSentRecipient:(SignalServiceAddress *)recipientAddress
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction

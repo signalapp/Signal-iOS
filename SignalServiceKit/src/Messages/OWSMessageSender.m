@@ -779,10 +779,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return;
     }
 
-    if (thread.isGroupThread) {
-        [self saveInfoMessageForGroupMessage:message inThread:thread];
-    }
-
     NSError *error;
     NSArray<SignalServiceAddress *> *_Nullable recipientAddresses = [self unsentRecipientsForMessage:message
                                                                                               thread:thread
@@ -1923,40 +1919,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return TSPreKeyWhisperMessageType;
         default:
             return TSUnknownMessageType;
-    }
-}
-
-- (void)saveInfoMessageForGroupMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread
-{
-    OWSAssertDebug(message);
-    OWSAssertDebug(thread);
-
-    if (message.groupMetaMessage == TSGroupMetaMessageDeliver) {
-        // TODO: Why is this necessary?
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [message anyUpsertWithTransaction:transaction];
-        }];
-    } else if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
-        // MJK TODO - remove senderTimestamp
-        TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                                                     inThread:thread
-                                                                  messageType:TSInfoMessageTypeGroupQuit
-                                                                customMessage:message.customMessage];
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            // Only show the group quit message if there are other messages still in the group
-            if ([thread numberOfInteractionsWithTransaction:transaction] > 0) {
-                [infoMessage anyInsertWithTransaction:transaction];
-            }
-        }];
-    } else {
-        // MJK TODO - remove senderTimestamp
-        TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                                                     inThread:thread
-                                                                  messageType:TSInfoMessageTypeGroupUpdate
-                                                                customMessage:message.customMessage];
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [infoMessage anyInsertWithTransaction:transaction];
-        }];
     }
 }
 

@@ -348,15 +348,19 @@ public class GroupManager: NSObject {
                                                 transaction: transaction)
             }
             return self.createNewGroupOnServiceIfNecessary(groupModel: groupModel)
-        }.map(on: .global()) { (groupModel: TSGroupModel) -> TSGroupThread in
-            let thread = try databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
-                // GroupsV2 TODO: Should we addCreatedMessageIfNecessary here?
-                return try self.upsertGroupThread(groupModel: groupModel,
-                                                  addCreatedMessageIfNecessary: false,
-                                                  transaction: transaction)
+        }.then(on: .global()) { (groupModel: TSGroupModel) -> Promise<TSGroupThread> in
+            let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
+                let thread = TSGroupThread(groupModelPrivate: groupModel)
+                thread.anyInsert(transaction: transaction)
+                let infoMessage = TSInfoMessage(thread: thread,
+                                                messageType: .typeGroupUpdate,
+                                                infoMessageUserInfo: [.newGroupModel: groupModel,
+                                                                      .groupUpdateSourceAddress: localAddress])
+                infoMessage.anyInsert(transaction: transaction)
+
+                return thread
             }
-            return thread
-        }.then(on: .global()) { (thread: TSGroupThread) -> Promise<TSGroupThread> in
+
             self.profileManager.addThread(toProfileWhitelist: thread)
 
             if shouldSendMessage {
@@ -487,6 +491,7 @@ public class GroupManager: NSObject {
                                        groupsVersion: model.groupsVersion,
                                        groupSecretParamsData: model.groupSecretParamsData,
                                        shouldSendMessage: false,
+                                       groupUpdateSourceAddress: tsAccountManager.localAddress!,
                                        transaction: transaction).thread
     }
 
@@ -496,7 +501,7 @@ public class GroupManager: NSObject {
     //
     // "Existing" groups have already been created, we just need to make sure they're in the database.
 
-    @objc(upsertExistingGroupWithMembers:administrators:name:avatarData:groupId:groupsVersion:groupSecretParamsData:shouldSendMessage:transaction:error:)
+    @objc(upsertExistingGroupWithMembers:administrators:name:avatarData:groupId:groupsVersion:groupSecretParamsData:shouldSendMessage:groupUpdateSourceAddress:transaction:error:)
     public static func upsertExistingGroup(members: [SignalServiceAddress],
                                            administrators: [SignalServiceAddress],
                                            name: String? = nil,
@@ -505,6 +510,7 @@ public class GroupManager: NSObject {
                                            groupsVersion: GroupsVersion,
                                            groupSecretParamsData: Data? = nil,
                                            shouldSendMessage: Bool,
+                                           groupUpdateSourceAddress: SignalServiceAddress?,
                                            transaction: SDSAnyWriteTransaction) throws -> EnsureGroupResult {
 
         // GroupsV2 TODO: Audit all callers too see if they should include local uuid.
@@ -528,12 +534,25 @@ public class GroupManager: NSObject {
                                                         name: name,
                                                         avatarData: avatarData,
                                                         shouldSendMessage: shouldSendMessage,
+                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                         transaction: transaction)
             return EnsureGroupResult(action: .updated, thread: updatedThread)
         } else {
             // GroupsV2 TODO: Can we use upsertGroupThread(...) here and above?
             let thread = TSGroupThread(groupModelPrivate: groupModel)
             thread.anyInsert(transaction: transaction)
+
+            var userInfo: [InfoMessageUserInfoKey: Any] = [
+                .newGroupModel: groupModel
+            ]
+            if let groupUpdateSourceAddress = groupUpdateSourceAddress {
+                userInfo[.groupUpdateSourceAddress] = groupUpdateSourceAddress
+            }
+            let infoMessage = TSInfoMessage(thread: thread,
+                                            messageType: .typeGroupUpdate,
+                                            infoMessageUserInfo: userInfo)
+            infoMessage.anyInsert(transaction: transaction)
+
             return EnsureGroupResult(action: .inserted, thread: thread)
         }
     }
@@ -547,6 +566,7 @@ public class GroupManager: NSObject {
                                            name: String? = nil,
                                            avatarData: Data? = nil,
                                            shouldSendMessage: Bool,
+                                           groupUpdateSourceAddress: SignalServiceAddress?,
                                            transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
         // Always ensure we're a member of any group we're updating.
@@ -574,6 +594,18 @@ public class GroupManager: NSObject {
             // Skip redundant update.
             return thread
         }
+
+        var userInfo: [InfoMessageUserInfoKey: Any] = [
+            .oldGroupModel: oldGroupModel,
+            .newGroupModel: newGroupModel
+        ]
+        if let groupUpdateSourceAddress = groupUpdateSourceAddress {
+            userInfo[.groupUpdateSourceAddress] = groupUpdateSourceAddress
+        }
+        let infoMessage = TSInfoMessage(thread: thread,
+                                        messageType: .typeGroupUpdate,
+                                        infoMessageUserInfo: userInfo)
+        infoMessage.anyInsert(transaction: transaction)
 
         // GroupsV2 TODO: Convert this method and callers to return a promise.
         //                We need to audit usage of upsertExistingGroup();
@@ -620,14 +652,11 @@ public class GroupManager: NSObject {
                                               oldGroupModel: TSGroupModel,
                                               newGroupModel: TSGroupModel,
                                               transaction: SDSAnyWriteTransaction) -> Promise<Void> {
-        let updateDescription = oldGroupModel.getInfoStringAboutUpdate(to: newGroupModel, contactsManager: self.contactsManager)
-
         // GroupsV2 TODO: This behavior will change for v2 groups.
         let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
         let message = TSOutgoingMessage(in: thread,
                                         groupMetaMessage: .update,
                                         expiresInSeconds: expiresInSeconds)
-        message.update(withCustomMessage: updateDescription, transaction: transaction)
 
         if let avatarData = newGroupModel.groupAvatarData,
             avatarData.count > 0 {
@@ -652,9 +681,10 @@ public class GroupManager: NSObject {
         // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
         // which causes this code to be called. Once we're more aggressive about durable sending retry,
         // we could get rid of this "retryable tappable error message".
-        return self.messageSender.sendMessage(.promise, message.asPreparer)
-            .done(on: .global()) { _ in
-                Logger.debug("Successfully sent group update")
+        return firstly {
+            self.messageSender.sendMessage(.promise, message.asPreparer)
+        }.done(on: .global()) { _ in
+            Logger.debug("Successfully sent group update")
         }.recover(on: .global()) { error in
             owsFailDebug("Failed to send group update with error: \(error)")
             throw error
@@ -666,67 +696,54 @@ public class GroupManager: NSObject {
     // This method only updates the local database.
     // It doesn't interact with service, create interactions, etc.
     @objc
-    public static func upsertGroupThread(groupModel: TSGroupModel,
-                                         addCreatedMessageIfNecessary: Bool,
-                                         transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
+    public static func upsertGroupV2Thread(groupModel: TSGroupModel,
+                                           transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
+        guard groupModel.groupsVersion == .V2 else {
+            throw OWSAssertionError("unexpected v1 group")
+        }
+
         if let thread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
-            guard thread.groupModel.groupsVersion == groupModel.groupsVersion else {
+            guard thread.groupModel.groupsVersion == .V2 else {
                 throw OWSAssertionError("Invalid groupsVersion.")
             }
-            if groupModel.groupsVersion == .V2 {
-                guard thread.groupModel.groupV2Revision <= groupModel.groupV2Revision else {
-                    throw OWSAssertionError("Invalid groupV2Revision.")
-                }
-            }
+
+            // GroupsV2 TODO: how to plumb through .groupUpdateSourceAddress to get richer group update messages?
+            let userInfo: [InfoMessageUserInfoKey: Any] = [
+                .oldGroupModel: thread.groupModel,
+                .newGroupModel: groupModel
+            ]
+            let infoMessage = TSInfoMessage(thread: thread,
+                                            messageType: .typeGroupUpdate,
+                                            infoMessageUserInfo: userInfo)
+            infoMessage.anyInsert(transaction: transaction)
+
             thread.update(with: groupModel, transaction: transaction)
             return thread
         } else {
             let thread = TSGroupThread(groupModelPrivate: groupModel)
             thread.anyInsert(transaction: transaction)
 
-            // GroupsV2 TODO: This isn't right - we may have been added to an existing group.
-            if addCreatedMessageIfNecessary {
-                let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                            in: thread,
+            // GroupsV2 TODO: how to plumb through .groupUpdateSourceAddress to get richer group update messages?
+            let userInfo: [InfoMessageUserInfoKey: Any] = [
+                .newGroupModel: groupModel
+            ]
+            let infoMessage = TSInfoMessage(thread: thread,
                                             messageType: .typeGroupUpdate,
-                                            customMessage: NSLocalizedString("GROUP_CREATED", comment: ""))
-                message.anyInsert(transaction: transaction)
-            }
-
+                                            infoMessageUserInfo: userInfo)
+            infoMessage.anyInsert(transaction: transaction)
             return thread
         }
     }
 
     // MARK: - Messages
 
-    private static func buildNewGroupMessage(forThread thread: TSGroupThread,
-                                             transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
-        let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
-        message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""), transaction: transaction)
-        return message
-    }
-
     private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
         assert(thread.groupModel.groupAvatarData == nil)
 
-        return DispatchQueue.global().async(.promise) { () -> Void in
-            self.databaseStorage.write { transaction in
-                let message = self.buildNewGroupMessage(forThread: thread, transaction: transaction)
-                self.messageSenderJobQueue.add(message: message.asPreparer,
-                                               transaction: transaction)
-            }
+        return databaseStorage.write(.promise) { transaction in
+            let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
+            self.messageSenderJobQueue.add(message: message.asPreparer,
+                                           transaction: transaction)
         }
-    }
-
-    // success and failure are invoked on the main thread.
-    @objc
-    private static func sendDurableNewGroupMessageObjc(forThread thread: TSGroupThread,
-                                                       success: @escaping () -> Void,
-                                                       failure: @escaping (Error) -> Void) {
-        sendDurableNewGroupMessage(forThread: thread).done { _ in
-            success()
-        }.catch { error in
-            failure(error)
-        }.retainUntilComplete()
     }
 }

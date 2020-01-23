@@ -54,9 +54,28 @@
 		"OWSReceiptsForSenderMessage",
 		"OWSUnknownDBObject"
 	],
-	"enum_properties": [
-		"TSThread.conversationColorName"
-	],
+	"manually_typed_fields": {
+		"TSThread.conversationColorName": {
+			"swift_type": "ConversationColorName",
+			"objc_initializer_type": "ConversationColorName",
+			"is_objc_codable": true,
+			"is_enum": true,
+			"column_type": ".unicodeString",
+			"record_swift_type": "String",
+			"serialize_record_invocation": "%s.rawValue",
+			"should_use_blob": false
+		},
+		"TSInfoMessage.infoMessageUserInfo": {
+			"swift_type": "[InfoMessageUserInfoKey: AnyObject]",
+			"objc_initializer_type": "NSDictionary<InfoMessageUserInfoKey, id> *",
+			"is_objc_codable": false,
+			"is_enum": false,
+			"column_type": ".blob",
+			"record_swift_type": "Data",
+			"serialize_record_invocation": "optionalArchive(%s)",
+			"should_use_blob": true
+		}
+	},
 	"custom_accessors": {
 		"TSInfoMessage.read": "wasRead",
 		"TSErrorMessage.read": "wasRead",
