@@ -2067,10 +2067,10 @@
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "Introducing PINs";
 
-/* Action text for PIN megaphone when user already has a PIN */
+/* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
 
-/* Body for PIN megaphone when user already has a PIN */
+/* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
