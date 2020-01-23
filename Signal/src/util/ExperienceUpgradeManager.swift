@@ -151,12 +151,12 @@ private class IntroducingPinsMegaphone: MegaphoneView {
             : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_TITLE", comment: "Title for PIN megaphone when user doesn't have a PIN")
         bodyText = hasPinAlready
             ? NSLocalizedString("PINS_MEGAPHONE_HAS_PIN_BODY", comment: "Body for PIN megaphone when user already has a PIN")
-            : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_BODY", comment: "Body for PIN megaphone when user already has a PIN")
+            : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_BODY", comment: "Body for PIN megaphone when user doesn't have a PIN")
         imageName = "PIN_megaphone"
 
         let primaryButtonTitle = hasPinAlready
             ? NSLocalizedString("PINS_MEGAPHONE_HAS_PIN_ACTION", comment: "Action text for PIN megaphone when user already has a PIN")
-            : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_ACTION", comment: "Action text for PIN megaphone when user already has a PIN")
+            : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
 
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
             let vc = PinSetupViewController {
