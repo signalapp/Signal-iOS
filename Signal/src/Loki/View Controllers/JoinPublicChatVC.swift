@@ -11,7 +11,7 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("Enter Channel URL", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("Open Group URL", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
@@ -36,7 +36,7 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Scan the QR code of the channel you'd like to join", comment: "")
+        let message = NSLocalizedString("Scan the QR code of the open group you'd like to join", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -60,7 +60,7 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
         navigationItem.leftBarButtonItem = closeButton
         // Customize title
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("Join Channel", comment: "")
+        titleLabel.text = NSLocalizedString("Join Open Group", comment: "")
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
@@ -190,7 +190,7 @@ private final class EnterChatURLVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Enter the URL of the channel you'd like to join", comment: "")
+        explanationLabel.text = NSLocalizedString("Enter an open group URL", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping

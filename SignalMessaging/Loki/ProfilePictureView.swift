@@ -66,8 +66,7 @@ public final class ProfilePictureView : UIView {
         imageView.layer.cornerRadius = size / 2
         imageView.contentMode = isRSSFeed ? .center : .scaleAspectFit
         if isRSSFeed {
-            let iconSize: CGFloat = (size == 45) ? 24 : 40
-            imageView.image = #imageLiteral(resourceName: "SessionWhite").resizedImage(to: CGSize(width: (303*iconSize)/337, height: iconSize))
+            imageView.image = (size == 45) ? #imageLiteral(resourceName: "SessionWhite24") : #imageLiteral(resourceName: "SessionWhite40")
         }
     }
     

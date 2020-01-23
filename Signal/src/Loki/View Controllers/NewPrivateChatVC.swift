@@ -35,7 +35,7 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Users can share their QR code by going into their account settings and tapping \"Share QR Code\".", comment: "")
+        let message = NSLocalizedString("Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings.", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -59,7 +59,7 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
         navigationItem.leftBarButtonItem = closeButton
         // Customize title
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("New Conversation", comment: "")
+        titleLabel.text = NSLocalizedString("New Session", comment: "")
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
@@ -140,7 +140,7 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
     
     fileprivate func startNewPrivateChatIfPossible(with hexEncodedPublicKey: String) {
         if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
-            let alert = UIAlertController(title: NSLocalizedString("Invalid Session ID", comment: ""), message: NSLocalizedString("Please check the Session ID you entered and try again.", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("Invalid Session ID", comment: ""), message: NSLocalizedString("Please check the Session ID and try again", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         } else {
@@ -163,7 +163,7 @@ private final class EnterPublicKeyVC : UIViewController {
     }()
     
     // MARK: Components
-    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter Session ID of recipient", comment: ""))
+    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter a Session ID", comment: ""))
     
     private lazy var copyButton: Button = {
         let result = Button(style: .unimportant, size: .medium)
@@ -180,7 +180,7 @@ private final class EnterPublicKeyVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Users can share their Session ID by going into their account settings and tapping \"Share Session ID\", or by sharing their QR code.", comment: "")
+        explanationLabel.text = NSLocalizedString("Users can share their Session ID from their account settings, or by sharing their QR code.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping

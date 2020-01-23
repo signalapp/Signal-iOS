@@ -30,7 +30,7 @@ final class SeedVCV2 : UIViewController {
         let attributedTitle = NSMutableAttributedString(string: title)
         attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "90%"))
         result.title = attributedTitle
-        result.subtitle = NSLocalizedString("Press the redacted words to view your recovery phrase and secure your account", comment: "")
+        result.subtitle = NSLocalizedString("Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID.", comment: "")
         result.setProgress(0.9, animated: false)
         return result
     }()
@@ -88,7 +88,7 @@ final class SeedVCV2 : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Think of this as the crypto-equivalent of a social security number. This allows whomever has it complete access to your account.", comment: "")
+        explanationLabel.text = NSLocalizedString("Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone. To restore your Session ID, launch Session and tap Continue your Session.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up mnemonic label
@@ -100,7 +100,7 @@ final class SeedVCV2 : UIViewController {
         // Set up mnemonic label container
         let mnemonicLabelContainer = UIView()
         mnemonicLabelContainer.addSubview(mnemonicLabel)
-        mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: Values.mediumSpacing)
+        mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isSmallScreen ? Values.smallSpacing : Values.mediumSpacing)
         mnemonicLabelContainer.layer.cornerRadius = Values.textFieldCornerRadius
         mnemonicLabelContainer.layer.borderWidth = Values.borderThickness
         mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor

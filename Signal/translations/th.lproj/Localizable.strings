@@ -2211,7 +2211,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "หมดเวลาการล็อกหน้าจอ";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Session's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Session's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Require Touch ID, Face ID or your device passcode to unlock Session’s screen. You can still receive notifications when Screen Lock is enabled. Use Session’s notification settings to customise the information displayed in notifications.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "ล็อกหน้าจอ";

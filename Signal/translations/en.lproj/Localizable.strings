@@ -2175,7 +2175,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Settings";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "The information shown in notifications when your phone is locked.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
@@ -2211,7 +2211,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Session's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Session's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Require Touch ID, Face ID or your device passcode to unlock Session’s screen. You can still receive notifications when Screen Lock is enabled. Use Session’s notification settings to customise the information displayed in notifications.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
@@ -2589,17 +2589,17 @@
 "Your message request to %@ has expired" = "Your message request to %@ has expired";
 "Show Seed" = "Show Seed";
 "Your Seed" = "Your Seed";
-"Unlock Session's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Session's notification settings allow you to customize the information that is displayed." = "Unlock Session's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Session's notification settings allow you to customize the information that is displayed.";
+"Require Touch ID, Face ID or your device passcode to unlock Session’s screen. You can still receive notifications when Screen Lock is enabled. Use Session’s notification settings to customise the information displayed in notifications." = "Require Touch ID, Face ID or your device passcode to unlock Session’s screen. You can still receive notifications when Screen Lock is enabled. Use Session’s notification settings to customise the information displayed in notifications.";
 "Prevent Session previews from appearing in the app switcher." = "Prevent Session previews from appearing in the app switcher.";
 "Session" = "Session";
 "Privacy Policy" = "Privacy Policy";
-"New Conversation" = "New Conversation";
+"New Session" = "New Session";
 "Add Public Chat Server" = "Add Public Chat Server";
 "Enter a Public Key" = "Enter a Public Key";
 "Enter a Server URL" = "Enter a Server URL";
 "For example: 059abcf223aa8c10e3dc2d623688b75dd25896794717e4a9c486772664fc95e41e." = "For example: 059abcf223aa8c10e3dc2d623688b75dd25896794717e4a9c486772664fc95e41e.";
 "Invalid Session ID" = "Invalid Session ID";
-"Please check the Session ID you entered and try again." = "Please check the Session ID you entered and try again.";
+"Please check the Session ID and try again" = "Please check the Session ID and try again";
 "Looks like you don't have any conversations yet. Get started by messaging a friend." = "Looks like you don't have any conversations yet. Get started by messaging a friend.";
 "Enter the public key of the person you'd like to securely message. They can share their public key with you by going into Session's in-app settings and clicking \"Share Public Key\"." = "Enter the public key of the person you'd like to securely message. They can share their public key with you by going into Session's in-app settings and clicking \"Share Public Key\".";
 "Unlock Session" = "Unlock Session";
@@ -2654,8 +2654,8 @@
 "Clear Profile Picture" = "Clear Profile Picture";
 "Invalid QR Code" = "Invalid QR Code";
 "Please make sure the QR code you scanned is correct and try again." = "Please make sure the QR code you scanned is correct and try again.";
-"Linked Devices" = "Linked Devices";
-"You don't have any linked devices yet" = "You don't have any linked devices yet";
+"Devices" = "Devices";
+"You haven't linked any devices yet" = "You haven't linked any devices yet";
 "Link a Device" = "Link a Device";
 "Unlink" = "Unlink";
 "Change Name" = "Change Name";
@@ -2678,10 +2678,10 @@
 "New Group" = "New Group";
 "Delete" = "Delete";
 "Search" = "Search";
-"New Conversation" = "New Conversation";
-"Enter Session ID of recipient" = "Enter Session ID of recipient";
-"Users can share their Session ID by going into their account settings and tapping \"Share Session ID\", or by sharing their QR code." = "Users can share their Session ID by going into their account settings and tapping \"Share Session ID\", or by sharing their QR code.";
-"Users can share their QR code by going into their account settings and tapping \"Share QR Code\"." = "Users can share their QR code by going into their account settings and tapping \"Share QR Code\".";
+"New Session" = "New Session";
+"Enter a Session ID" = "Enter a Session ID";
+"Users can share their Session ID from their account settings, or by sharing their QR code." = "Users can share their Session ID from their account settings, or by sharing their QR code.";
+"Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings." = "Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings.";
 "Your Session ID" = "Your Session ID";
 "Copy" = "Copy";
 "Copied" = "Copied";
@@ -2691,31 +2691,31 @@
 "Enable Camera Access" = "Enable Camera Access";
 "Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Session's in-app settings and tapping \"Show QR Code\"." = "Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Session's in-app settings and tapping \"Show QR Code\".";
 "Enter Session ID" = "Enter Session ID";
-"Enter Channel URL" = "Enter Channel URL";
+"Open Group URL" = "Open Group URL";
 "Scan QR Code" = "Scan QR Code";
-"Scan the QR code of the channel you'd like to join" = "Scan the QR code of the channel you'd like to join";
-"Join Channel" = "Join Channel";
-"Enter the URL of the channel you'd like to join" = "Enter the URL of the channel you'd like to join";
+"Scan the QR code of the open group you'd like to join" = "Scan the QR code of the open group you'd like to join";
+"Join Open Group" = "Join Open Group";
+"Enter an open group URL" = "Enter an open group URL";
 "Invalid URL" = "Invalid URL";
 "Please check the URL you entered and try again" = "Please check the URL you entered and try again";
 "Couldn't Join" = "Couldn't Join";
 "Settings" = "Settings";
 "Privacy" = "Privacy";
 "Notifications" = "Notifications";
-"Linked Devices" = "Linked Devices";
-"Show Recovery Phrase" = "Show Recovery Phrase";
+"Devices" = "Devices";
+"Recovery Phrase" = "Recovery Phrase";
 "Clear All Data" = "Clear All Data";
-"This will delete your entire account, including all data, any messages currently linked to your Session ID, as well as your personal key pair." = "This will delete your entire account, including all data, any messages currently linked to your Session ID, as well as your personal key pair.";
+"This will permanently delete your Session ID, including all messages, sessions, and contacts." = "This will permanently delete your Session ID, including all messages, sessions, and contacts.";
 "Delete" = "Delete";
-"This is your personal recovery phrase. It can be used to restore your account or migrate your account to a new device." = "This is your personal recovery phrase. It can be used to restore your account or migrate your account to a new device.";
-"Notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications." = "Notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device." = "This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device.";
+"The information shown in notifications when your phone is locked." = "The information shown in notifications when your phone is locked.";
 "Notifications" = "Notifications";
 "Back" = "Back";
 "View My QR Code" = "View My QR Code";
 "Scan someone's QR code to start a conversation with them" = "Scan someone's QR code to start a conversation with them";
 "QR Code" = "QR Code";
 "Scan Me" = "Scan Me";
-"This is your unique public QR code. Other users can scan this to start a conversation with you." = "This is your unique public QR code. Other users can scan this to start a conversation with you.";
+"This is your QR code. Other users can scan it to start a session with you." = "This is your QR code. Other users can scan it to start a session with you.";
 "Privacy" = "Privacy";
 "Unlock Session's screen using Touch ID, Face ID, or your iOS device passcode. You can still receive message notifications while Screen Lock is enabled. Session's notification settings allow you to customize the information that is displayed." = "Unlock Session's screen using Touch ID, Face ID, or your iOS device passcode. You can still receive message notifications while Screen Lock is enabled. Session's notification settings allow you to customize the information that is displayed.";
 "Sound" = "Sound";
@@ -2726,11 +2726,11 @@
 "Enter a display name" = "Enter a display name";
 "Your Session begins here..." = "Your Session begins here...";
 "What's Session?" = "What's Session?";
-"It's a secure, decentralized private messaging app" = "It's a secure, decentralized private messaging app";
+"It's a decentralized, encrypted messaging app." = "It's a decentralized, encrypted messaging app.";
 "So it doesn't collect my personal information or my conversation metadata? How does it work?" = "So it doesn't collect my personal information or my conversation metadata? How does it work?";
 "Using a combination of advanced anonymous routing and end-to-end encryption technologies." = "Using a combination of advanced anonymous routing and end-to-end encryption technologies.";
 "Friends don't let friends use compromised messengers. You're welcome." = "Friends don't let friends use compromised messengers. You're welcome.";
-"Create Account" = "Create Account";
+"Create Session ID" = "Create Session ID";
 "Continue your Session" = "Continue your Session";
 "Say hello to your Session ID" = "Say hello to your Session ID";
 "Continue" = "Continue";
@@ -2750,16 +2750,16 @@
 "Continue" = "Continue";
 "Your Recovery Phrase" = "Your Recovery Phrase";
 "Meet your recovery phrase" = "Meet your recovery phrase";
-"Think of this as the crypto-equivalent of a social security number. This allows whomever has it complete access to your account." = "Think of this as the crypto-equivalent of a social security number. This allows whomever has it complete access to your account.";
-"Press the redacted words to view your recovery phrase and secure your account" = "Press the redacted words to view your recovery phrase and secure your account";
+"Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone. To restore your Session ID, launch Session and tap Continue your Session." = "Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone. To restore your Session ID, launch Session and tap Continue your Session.";
+"Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID." = "Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID.";
 "Hold to reveal" = "Hold to reveal";
 "Make sure to store your recovery phrase in a safe place" = "Make sure to store your recovery phrase in a safe place";
 "Link to an existing account" = "Link to an existing account";
 "Enter your public key" = "Enter your public key";
-"Link to your existing account by going into your in-app settings and clicking \"Linked Devices\"." = "Link to your existing account by going into your in-app settings and clicking \"Linked Devices\".";
-"Create a new account on your other device and click \"Link to an existing account\" to start the linking process" = "Create a new account on your other device and click \"Link to an existing account\" to start the linking process";
+"Link to your existing account by going into your in-app settings and clicking \"Devices\"." = "Link to your existing account by going into your in-app settings and clicking \"Devices\".";
+"Open Session on your secondary device and tap \"Link to an existing account\"" = "Open Session on your secondary device and tap \"Link to an existing account\"";
 "Group Settings" = "Group Settings";
-"Your Session ID is the unique address that people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design." = "Your Session ID is the unique address that people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design.";
+"Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design." = "Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design.";
 "Enter the recovery phrase that was given to you when you signed up to restore your account." = "Enter the recovery phrase that was given to you when you signed up to restore your account.";
 "Enter Session ID" = "Enter Session ID";
 "Link your device" = "Link your device";
@@ -2767,3 +2767,8 @@
 "Enter your Session ID" = "Enter your Session ID";
 "Recent Chats" = "Recent Chats";
 "Other Chats" = "Other Chats";
+"See and share when messages are being typed (applies to all sessions)." = "See and share when messages are being typed (applies to all sessions).";
+"Disable Preview in App Switcher" = "Disable Preview in App Switcher";
+"Are you sure? This cannot be undone." = "Are you sure? This cannot be undone.";
+"When enabled, messages between you and %@ will disappear after they have been seen." = "When enabled, messages between you and %@ will disappear after they have been seen.";
+"This will be your name when you use Session." = "This will be your name when you use Session.";

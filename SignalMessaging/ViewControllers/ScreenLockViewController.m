@@ -50,15 +50,15 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [edgesView autoPinWidthToSuperview];
 
-    UIImage *image = [UIImage imageNamed:@"Session"];
+    UIImage *image = [UIImage imageNamed:@"SessionGreen64"];
     UIImageView *imageView = [UIImageView new];
     imageView.image = image;
     imageView.contentMode = UIViewContentModeScaleAspectFit;
     [edgesView addSubview:imageView];
     [imageView autoHCenterInSuperview];
 
-    [imageView autoSetDimension:ALDimensionWidth toSize:75];
-    [imageView autoSetDimension:ALDimensionHeight toSize:75];
+    [imageView autoSetDimension:ALDimensionWidth toSize:64];
+    [imageView autoSetDimension:ALDimensionHeight toSize:64];
 
     const CGFloat kButtonHeight = 40.f;
     OWSFlatButton *button =

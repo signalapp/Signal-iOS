@@ -19,11 +19,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Session" translatesAutoresizingMaskIntoConstraints="NO" id="b92-yg-YYQ">
-                                <rect key="frame" x="169.5" y="410.5" width="75" height="75"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SessionGreen64" translatesAutoresizingMaskIntoConstraints="NO" id="b92-yg-YYQ">
+                                <rect key="frame" x="175" y="416" width="64" height="64"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="75" id="edg-p1-IeH"/>
-                                    <constraint firstAttribute="height" constant="75" id="sRe-w6-smO"/>
+                                    <constraint firstAttribute="width" constant="64" id="edg-p1-IeH"/>
+                                    <constraint firstAttribute="height" constant="64" id="sRe-w6-smO"/>
                                 </constraints>
                             </imageView>
                         </subviews>
@@ -40,6 +40,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Session" width="303" height="337"/>
+        <image name="SessionGreen64" width="57.5" height="64"/>
     </resources>
 </document>

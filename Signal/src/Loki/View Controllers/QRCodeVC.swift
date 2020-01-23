@@ -136,7 +136,7 @@ final class QRCodeVC : UIViewController, UIPageViewControllerDataSource, UIPageV
     
     fileprivate func startNewPrivateChatIfPossible(with hexEncodedPublicKey: String) {
         if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
-            let alert = UIAlertController(title: NSLocalizedString("Invalid Session ID", comment: ""), message: NSLocalizedString("Please check the Session ID you entered and try again.", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("Invalid Session ID", comment: ""), message: NSLocalizedString("Please check the Session ID and try again.", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         } else {
@@ -188,10 +188,11 @@ private final class ViewMyQRCodeVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.mediumFontSize)
-        let text = NSLocalizedString("This is your unique public QR code. Other users can scan this to start a conversation with you.", comment: "")
-        let attributedText = NSMutableAttributedString(string: text)
-        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.mediumFontSize), range: (text as NSString).range(of: "your unique public QR code"))
-        explanationLabel.attributedText = attributedText
+//        let text = NSLocalizedString("This is your QR code. Other users can scan it to start a session with you.", comment: "")
+//        let attributedText = NSMutableAttributedString(string: text)
+//        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.mediumFontSize), range: (text as NSString).range(of: "your unique public QR code"))
+//        explanationLabel.attributedText = attributedText
+        explanationLabel.text = NSLocalizedString("This is your QR code. Other users can scan it to start a session with you.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
