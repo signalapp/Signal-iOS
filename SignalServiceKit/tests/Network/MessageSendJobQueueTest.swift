@@ -83,12 +83,20 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         jobQueue.setup()
 
-        switch sendGroup.wait(timeout: .now() + 1.0) {
-        case .timedOut:
-            XCTFail("timed out waiting for sends")
-        case .success:
-            XCTAssertEqual([message1, message2, message3].map { $0.uniqueId }, sentMessages.map { $0.uniqueId })
+        let expectation = self.expectation(description: "sent messages")
+        // Block on self.wait(), use sendGroup.wait() off the main thread.
+        // self.wait() will process the main run loop.
+        DispatchQueue.global().async {
+            switch sendGroup.wait(timeout: .now() + 1.0) {
+            case .timedOut:
+                XCTFail("timed out waiting for sends")
+            case .success:
+                expectation.fulfill()
+            }
         }
+        self.wait(for: [expectation], timeout: 1.0)
+
+        XCTAssertEqual([message1, message2, message3].map { $0.uniqueId }, sentMessages.map { $0.uniqueId })
     }
 
     func test_sendingInvisibleMessage() {

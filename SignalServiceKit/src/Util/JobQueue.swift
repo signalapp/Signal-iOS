@@ -235,7 +235,7 @@ public extension JobQueue {
 
         DispatchQueue.global().async(.promise) {
             self.restartOldJobs()
-        }.done(on: .global() ) { [weak self] in
+        }.done { [weak self] in
             guard let self = self else {
                 return
             }

@@ -51,12 +51,9 @@ public class AtomicBool: NSObject {
 
 // MARK: -
 
-private class AtomicArrayQueue {
-    // All instances can share a single queue.
-    fileprivate static let serialQueue = DispatchQueue(label: "AtomicArray")
-}
-
 public class AtomicArray<T: AnyObject> {
+    private let serialQueue = DispatchQueue(label: "AtomicArray")
+
     private var values = [T]()
 
     public required init() {
@@ -67,13 +64,13 @@ public class AtomicArray<T: AnyObject> {
     }
 
     public func append(_ value: T) {
-        AtomicArrayQueue.serialQueue.sync {
+        serialQueue.sync {
             return self.values.append(value)
         }
     }
 
     public func remove(_ valueToRemove: T) {
-        AtomicArrayQueue.serialQueue.sync {
+        serialQueue.sync {
             self.values = self.values.filter { (value: T) -> Bool in
                 valueToRemove !== value
             }
@@ -81,7 +78,7 @@ public class AtomicArray<T: AnyObject> {
     }
 
     public var first: T? {
-        return AtomicArrayQueue.serialQueue.sync {
+        return serialQueue.sync {
             return self.values.first
         }
     }
