@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 private struct IncomingGroupsV2MessageJobInfo {
     let job: IncomingGroupsV2MessageJob
@@ -245,7 +246,6 @@ class IncomingGroupsV2MessageQueue: NSObject {
     }
 
     private func canJobBeDiscarded(jobInfo: IncomingGroupsV2MessageJobInfo,
-                                   ignoreIfNotLocalMember: Bool,
                                    transaction: SDSAnyReadTransaction) -> Bool {
         // We want to discard asap to avoid problems with batching.
         guard let envelope = jobInfo.envelope else {
@@ -275,45 +275,26 @@ class IncomingGroupsV2MessageQueue: NSObject {
             return true
         }
 
-        if ignoreIfNotLocalMember {
-            let groupId = groupContextInfo.groupId
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                return true
-            }
-            guard groupThread.isLocalUserInGroup() else {
-                // This could happen due to:
-                //
-                // * A bug.
-                // * A race between message sending and leaving a group.
-                //   We already know that we've left the group, but the
-                //   sender didn't at the time they sent.
-                // * A race between message sending and a group update.
-                //   We already know that we've been kicked out of the group,
-                //   but the sender didn't at the time they sent.
-                return true
-            }
-        }
         return false
     }
 
     // Like non-v2 group messages, we want to do batch processing
     // wherever possible for perf reasons (to reduce view updates).
-    // We should be able to mostly do that. However, there will be
-    // some edge cases where we'll need to interact with the service
-    // before we can process the message. Those messages should be
-    // processed alone in a batch of their own.
+    // We should be able to mostly do that. However, in some cases
+    // we need to update the group  before we can process the
+    // message. Such messages should be processed in a batch
+    // of their own.
     //
-    // Therefore, when trying to process we try to take either:
+    // Therefore, when trying to process we try to process either:
     //
-    // * The first N messages that can be processed "locally".
-    // * The first message that has to be processed "remotely"
-    private func canJobBeProcessedInLocalBatch(jobInfo: IncomingGroupsV2MessageJobInfo,
-                                               transaction: SDSAnyReadTransaction) -> Bool {
-        // We cannot ignoreIfNotLocalMember here because we might have been
-        // added to the group and not yet know it.  We might learn of that
-        // while fetching changes from the service OR while applying
-        // changes embedded in the incoming message.
-        if canJobBeDiscarded(jobInfo: jobInfo, ignoreIfNotLocalMember: false, transaction: transaction) {
+    // * The first N messages that can be processed "without update".
+    // * The first message, which has to be processed "with update".
+    //
+    // Which type of batch we try to process is determined by the
+    // message at the head of the queue.
+    private func canJobBeProcessedWithoutUpdate(jobInfo: IncomingGroupsV2MessageJobInfo,
+                                                transaction: SDSAnyReadTransaction) -> Bool {
+        if canJobBeDiscarded(jobInfo: jobInfo, transaction: transaction) {
             return true
         }
         guard let groupContext = jobInfo.groupContext else {
@@ -333,54 +314,56 @@ class IncomingGroupsV2MessageQueue: NSObject {
         if messageRevision <= modelRevision {
             return true
         }
-        // GroupsV2 TODO: Try to apply any embedded change if only
-        //                missing a single revision.
+        // The incoming message indicates that there is a new group revision.
+        // We'll update our group model in a standalone batch using either
+        // the change proto embedded in the group context or by fetching
+        // latest state from the service.
         return false
     }
 
-    // NOTE: This method might do its work synchronously (in the "local" case)
-    //       or asynchronously (in the "remote" case).  It may only process
+    // NOTE: This method might do its work synchronously (in the "no update" case)
+    //       or asynchronously (in the "update" case).  It may only process
     //       a subset of the jobs.
     private func processJobs(jobs: [IncomingGroupsV2MessageJob],
                              transaction: SDSAnyWriteTransaction,
                              completion: @escaping BatchCompletionBlock) {
 
         // 1. Gather info for each job.
-        // 2. Decide whether we'll process 1 "remote" job or N "local" jobs.
+        // 2. Decide whether we'll process 1 "update" job or N "no update" jobs.
         //
-        // Remote jobs require interaction with the service, namely fetching latest
-        // group state.
-        var isLocalBatch = true
+        // "Update" jobs may require interaction with the service, namely
+        // fetching group changes or latest group state.
+        var isUpdateBatch = false
         var jobInfos = [IncomingGroupsV2MessageJobInfo]()
         for job in jobs {
             let jobInfo = self.jobInfo(forJob: job, transaction: transaction)
-            let canJobBeProcessedInLocalBatch = self.canJobBeProcessedInLocalBatch(jobInfo: jobInfo, transaction: transaction)
-            if !canJobBeProcessedInLocalBatch {
+            let canJobBeProcessedWithoutUpdate = self.canJobBeProcessedWithoutUpdate(jobInfo: jobInfo, transaction: transaction)
+            if !canJobBeProcessedWithoutUpdate {
                 if jobInfos.count > 0 {
                     // Can't add "remote" job to "local" batch, abort and process jobs
                     // already added to batch.
                     break
                 }
                 // Remote batches should only contain a single job.
-                isLocalBatch = false
+                isUpdateBatch = true
                 jobInfos.append(jobInfo)
                 break
             }
             jobInfos.append(jobInfo)
         }
 
-        if isLocalBatch {
-            let processedJobs = performLocalProcessingSync(jobInfos: jobInfos,
-                                                           transaction: transaction)
-            completion(processedJobs, transaction)
-        } else {
+        if isUpdateBatch {
             assert(jobInfos.count == 1)
             guard let jobInfo = jobInfos.first else {
                 owsFailDebug("Missing job")
                 completion([], transaction)
                 return
             }
-            performRemoteProcessingAsync(jobInfo: jobInfo, completion: completion)
+            updateGroupAndProcessJobAsync(jobInfo: jobInfo, completion: completion)
+        } else {
+            let processedJobs = performLocalProcessingSync(jobInfos: jobInfos,
+                                                           transaction: transaction)
+            completion(processedJobs, transaction)
         }
     }
 
@@ -401,13 +384,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
         for jobInfo in jobInfos {
             let job = jobInfo.job
 
-            // GroupsV2 TODO: Try to apply embedded group changes, if any.
-
-            // We can now ignoreIfNotLocalMember because local group state
-            // should now reflect the revision at which this message was
-            // sent.  If we're not a member, we can discard this message.
-            if canJobBeDiscarded(jobInfo: jobInfo,
-                                 ignoreIfNotLocalMember: true, transaction: transaction) {
+            if canJobBeDiscarded(jobInfo: jobInfo, transaction: transaction) {
                 // Do nothing.
                 Logger.verbose("Discarding job.")
             } else {
@@ -437,6 +414,155 @@ class IncomingGroupsV2MessageQueue: NSObject {
         return processedJobs
     }
 
+    private enum UpdateOutcome {
+        case successShouldProcess
+        case failureShouldDiscard
+        case failureShouldRetry
+        case failureShouldFailoverToService
+    }
+
+    private func updateGroupAndProcessJobAsync(jobInfo: IncomingGroupsV2MessageJobInfo,
+                                               completion: @escaping BatchCompletionBlock) {
+
+        updateGroupPromise(jobInfo: jobInfo)
+            .map(on: DispatchQueue.global()) { (updateOutcome: UpdateOutcome) throws -> Void in
+                switch updateOutcome {
+                case .successShouldProcess:
+                    self.databaseStorage.write { transaction in
+                        let processedJobs = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)
+                        completion(processedJobs, transaction)
+                    }
+                case .failureShouldDiscard:
+                    throw GroupsV2Error.shouldDiscard
+                case .failureShouldRetry:
+                    throw GroupsV2Error.shouldRetry
+                case .failureShouldFailoverToService:
+                    owsFailDebug("Invalid embeddedUpdateOutcome: .failureShouldFailoverToService.")
+                    throw GroupsV2Error.shouldDiscard
+                }
+        }.recover(on: .global()) { error in
+            Logger.warn("error: \(type(of: error)) \(error)")
+
+            switch error {
+            case GroupsV2Error.shouldRetry:
+            // GroupsV2 TODO: We need to handle retry.
+                break
+            default:
+                break
+            }
+
+            // Default to discarding jobs on failure.
+            self.databaseStorage.write { transaction in
+                completion([jobInfo.job], transaction)
+            }
+        }.retainUntilComplete()
+    }
+
+    private func updateGroupPromise(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
+
+        // First, we try to update the group locally using changes embedded in
+        // the group context (if any).
+        return databaseStorage.write(.promise) { (transaction) -> UpdateOutcome in
+            return self.tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: jobInfo,
+                                                            transaction: transaction)
+        }.then(on: DispatchQueue.global()) { (embeddedUpdateOutcome) -> Promise<UpdateOutcome> in
+            if embeddedUpdateOutcome == .failureShouldFailoverToService {
+                return self.tryToUpdateUsingService(jobInfo: jobInfo)
+            } else {
+                return Promise.value(embeddedUpdateOutcome)
+            }
+        }
+    }
+
+    // We only try to apply one embedded update per batch.
+    //
+    // If applying the embedded update fails, we fail
+    // over to fetching latest state from service.
+    //
+    // This method should:
+    //
+    // * Return .successShouldProcess if message processing should proceed. Either:
+    //   * ...the group didn't need to be updated (some other component beat us to it).
+    //   * ...the group was successfully updated to the target revision.
+    // * Return .failureShouldFailoverToService if the group could not be updated
+    //   to the target revision and we should fail over to fetching group changes
+    //   and/or latest group state from the service.
+    // * Return .failureShouldDiscard if this message should be discarded.
+    //
+    // This method should never return .failureShouldRetry.
+    private func tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: IncomingGroupsV2MessageJobInfo,
+                                                     transaction: SDSAnyWriteTransaction) -> UpdateOutcome {
+        guard let groupContextInfo = jobInfo.groupContextInfo,
+            let groupContext = jobInfo.groupContext else {
+                owsFailDebug("Missing jobInfo properties.")
+                return .failureShouldDiscard
+        }
+        let groupId = groupContextInfo.groupId
+        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            owsFailDebug("Missing group.")
+            return .failureShouldDiscard
+        }
+        let oldGroupModel = groupThread.groupModel
+        guard oldGroupModel.groupsVersion == .V2 else {
+            owsFailDebug("Invalid groupsVersion.")
+            return .failureShouldDiscard
+        }
+        guard groupContext.hasRevision else {
+            owsFailDebug("Missing revision.")
+            return .failureShouldDiscard
+        }
+        let contextRevision = groupContext.revision
+        guard contextRevision > oldGroupModel.groupV2Revision else {
+            // Group is already updated.
+            // No need to apply embedded change from the group context; it is obsolete.
+            // This can happen due to races.
+            return .successShouldProcess
+        }
+        guard contextRevision == oldGroupModel.groupV2Revision + 1 else {
+            // We can only apply embedded changes if we're behind exactly
+            // one revision.
+            return .failureShouldFailoverToService
+        }
+        guard let groupChangeProtoData = groupContext.groupChange else {
+            // No embedded group change.
+            return .failureShouldFailoverToService
+        }
+        let changeActionsProto: GroupsProtoGroupChangeActions
+        do {
+            changeActionsProto = try groupsV2.parseAndVerifyChangeProtoActions(groupChangeProtoData)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return .failureShouldFailoverToService
+        }
+
+        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
+            owsFailDebug("Invalid groupsV2 instance.")
+            return .failureShouldDiscard
+        }
+
+        let changedGroupModel: ChangedGroupModel
+        do {
+            changedGroupModel = try groupsV2Swift.applyChangesToGroupModel(groupThread: groupThread,
+                                                                           changeActionsProto: changeActionsProto,
+                                                                           transaction: transaction)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return .failureShouldFailoverToService
+        }
+
+        guard changedGroupModel.newGroupModel.groupV2Revision >= contextRevision else {
+            owsFailDebug("Invalid revision.")
+            return .failureShouldFailoverToService
+        }
+        guard changedGroupModel.newGroupModel.groupV2Revision == contextRevision else {
+            // We expect the embedded changes to update us to the target
+            // revision.  If we update past that, assert but proceed in production.
+            owsFailDebug("Unexpected revision.")
+            return .successShouldProcess
+        }
+        return .successShouldProcess
+    }
+
     // Fetch group state from service and apply.
     //
     // * Try to fetch and apply incremental "changes".
@@ -449,30 +575,37 @@ class IncomingGroupsV2MessageQueue: NSObject {
     //   immediately.
     //
     // GroupsV2 TODO: Ensure comment above is implemented.
-    private func performRemoteProcessingAsync(jobInfo: IncomingGroupsV2MessageJobInfo,
-                                              completion: @escaping BatchCompletionBlock) {
+    private func tryToUpdateUsingService(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
         guard let groupContextInfo = jobInfo.groupContextInfo,
             let groupContext = jobInfo.groupContext else {
                 owsFailDebug("Missing jobInfo properties.")
-                databaseStorage.write { transaction in
-                    completion([jobInfo.job], transaction)
-                }
-                return
+                return Promise(error: GroupsV2Error.shouldDiscard)
         }
-        groupsV2.fetchAndApplyGroupV2UpdatesFromServiceObjc(groupId: groupContextInfo.groupId,
-                                                            groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                            upToRevision: groupContext.revision)
+        return groupsV2.fetchAndApplyGroupV2UpdatesFromServiceObjc(groupId: groupContextInfo.groupId,
+                                                                   groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                   upToRevision: groupContext.revision)
             .then(on: DispatchQueue.global()) { _ in
                 return self.databaseStorage.write(.promise) { transaction in
-                    let processedJobs = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)
-                    completion(processedJobs, transaction)
+                    _ = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)
                 }
-        }.catch(on: .global()) { (_) in
+        }.map(on: .global()) { (_) in
+            return UpdateOutcome.successShouldProcess
+        }.recover(on: .global()) { error -> Guarantee<UpdateOutcome> in
             // GroupsV2 TODO: We need to distinguish network errors from other (un-retryable errors).
-            self.databaseStorage.write { transaction in
-                completion([jobInfo.job], transaction)
+            Logger.warn("error: \(type(of: error)) \(error)")
+
+            switch error {
+            case let networkManagerError as NetworkManagerError:
+                guard networkManagerError.isNetworkError else {
+                    return Guarantee.value(UpdateOutcome.failureShouldDiscard)
+                }
+
+                // GroupsV2 TODO: Consult networkManagerError.statusCode.
+                return Guarantee.value(UpdateOutcome.failureShouldRetry)
+            default:
+                return Guarantee.value(UpdateOutcome.failureShouldDiscard)
             }
-        }.retainUntilComplete()
+        }
     }
 }
 

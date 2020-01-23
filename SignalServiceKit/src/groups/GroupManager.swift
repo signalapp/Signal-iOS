@@ -99,18 +99,16 @@ public class GroupManager: NSObject {
 
     // MARK: - Group Models
 
-    // allMembers includes normal and administrator members.
-    // allPendingMembers includes normal and administrator "pending members".
-    private static func buildGroupModel(groupId groupIdParam: Data?,
-                                        name nameParam: String?,
-                                        avatarData: Data?,
-                                        groupMembership: GroupMembership,
-                                        groupAccess: GroupAccess,
-                                        groupsVersion groupsVersionParam: GroupsVersion? = nil,
-                                        groupV2Revision: UInt32,
-                                        groupSecretParamsData groupSecretParamsDataParam: Data? = nil,
-                                        newGroupSeed newGroupSeedParam: NewGroupSeed? = nil,
-                                        transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
+    public static func buildGroupModel(groupId groupIdParam: Data?,
+                                       name nameParam: String?,
+                                       avatarData: Data?,
+                                       groupMembership: GroupMembership,
+                                       groupAccess: GroupAccess,
+                                       groupsVersion groupsVersionParam: GroupsVersion? = nil,
+                                       groupV2Revision: UInt32,
+                                       groupSecretParamsData groupSecretParamsDataParam: Data? = nil,
+                                       newGroupSeed newGroupSeedParam: NewGroupSeed? = nil,
+                                       transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
 
         let newGroupSeed: NewGroupSeed
         if let newGroupSeedParam = newGroupSeedParam {
@@ -604,7 +602,7 @@ public class GroupManager: NSObject {
         }
 
         guard !groupModel.isEqual(to: thread.groupModel) else {
-            // GroupsV2 TODO: We might want to throw GroupsV2Error.redundant
+            // GroupsV2 TODO: We might want to throw GroupsV2Error.redundantChange
             return EnsureGroupResult(action: .unchanged, thread: thread)
         }
 
@@ -635,12 +633,81 @@ public class GroupManager: NSObject {
                                            avatarData: Data? = nil,
                                            groupMembership: GroupMembership,
                                            groupAccess: GroupAccess,
-                                           shouldSendMessage: Bool,
+                                           groupsVersion: GroupsVersion,
                                            groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
+
+        let shouldSendMessage = true
+
+        switch groupsVersion {
+        case .V1:
+            return updateExistingGroupV1(groupId: groupId,
+                                         name: name,
+                                         avatarData: avatarData,
+                                         groupMembership: groupMembership,
+                                         groupAccess: groupAccess,
+                                         shouldSendMessage: shouldSendMessage,
+                                         groupUpdateSourceAddress: groupUpdateSourceAddress)
+        case .V2:
+            return updateExistingGroupV2(groupId: groupId,
+                                         name: name,
+                                         avatarData: avatarData,
+                                         groupMembership: groupMembership,
+                                         groupAccess: groupAccess,
+                                         shouldSendMessage: shouldSendMessage,
+                                         groupUpdateSourceAddress: groupUpdateSourceAddress)
+
+        }
+    }
+
+    private static func updateExistingGroupV1(groupId: Data,
+                                              name: String? = nil,
+                                              avatarData: Data? = nil,
+                                              groupMembership: GroupMembership,
+                                              groupAccess: GroupAccess,
+                                              shouldSendMessage: Bool,
+                                              groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
+
+        return self.databaseStorage.write(.promise) { (transaction) throws -> (UpdateInfo, TSGroupThread) in
+            let updateInfo = try self.updateInfo(groupId: groupId,
+                                                 name: name,
+                                                 avatarData: avatarData,
+                                                 groupMembership: groupMembership,
+                                                 groupAccess: groupAccess,
+                                                 transaction: transaction)
+            guard updateInfo.changeSet == nil else {
+                throw OWSAssertionError("Unexpected changeSet.")
+            }
+            let newGroupModel = updateInfo.newGroupModel
+            let groupThread = try self.updateGroupThreadInDatabase(newGroupModel: newGroupModel,
+                                                                   groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                   transaction: transaction)
+            return (updateInfo, groupThread)
+        }.then(on: .global()) { (updateInfo: UpdateInfo, groupThread: TSGroupThread) throws -> Promise<TSGroupThread> in
+            guard shouldSendMessage else {
+                return Promise.value(groupThread)
+            }
+
+            return self.sendGroupUpdateMessage(thread: groupThread,
+                                               oldGroupModel: updateInfo.oldGroupModel,
+                                               newGroupModel: updateInfo.newGroupModel)
+                .map(on: .global()) { _ in
+                    return groupThread
+            }
+        }
+    }
+
+    private static func updateExistingGroupV2(groupId: Data,
+                                              name: String? = nil,
+                                              avatarData: Data? = nil,
+                                              groupMembership: GroupMembership,
+                                              groupAccess: GroupAccess,
+                                              shouldSendMessage: Bool,
+                                              groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
         guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
             return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
         }
+
         return DispatchQueue.global().async(.promise) { () throws -> UpdateInfo in
             let updateInfo: UpdateInfo = try databaseStorage.read { transaction in
                 return try self.updateInfo(groupId: groupId,
@@ -651,31 +718,42 @@ public class GroupManager: NSObject {
                                            transaction: transaction)
             }
             return updateInfo
-        }.then(on: .global()) { (updateInfo: UpdateInfo) throws -> Promise<(UpdateInfo, TSGroupModel)> in
-
+        }.then(on: .global()) { (updateInfo: UpdateInfo) throws -> Promise<(UpdateInfo, ChangedGroupModel)> in
             guard let changeSet = updateInfo.changeSet else {
-                return Promise.value((updateInfo, updateInfo.newGroupModel))
+                throw OWSAssertionError("Missing changeSet.")
             }
             return groupsV2Swift.updateExistingGroupOnService(changeSet: changeSet)
-                .map(on: .global()) { (groupModel) -> (UpdateInfo, TSGroupModel) in
-                    return (updateInfo, groupModel)
+                .map(on: .global()) { (changedGroupModel) -> (UpdateInfo, ChangedGroupModel) in
+                    return (updateInfo, changedGroupModel)
             }
-        }.map(on: .global()) { (updateInfo: UpdateInfo, _: TSGroupModel) throws -> (UpdateInfo, TSGroupThread) in
-
+        }.map(on: .global()) { (updateInfo: UpdateInfo, changedGroupModel: ChangedGroupModel) throws -> ChangedGroupModel in
+            let newGroupModel = changedGroupModel.newGroupModel
+            guard newGroupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
+                throw OWSAssertionError("Invalid groupV2Revision: \(newGroupModel.groupV2Revision).")
+            }
+            guard newGroupModel.groupV2Revision > updateInfo.oldGroupModel.groupV2Revision else {
+                throw OWSAssertionError("Invalid groupV2Revision: \(newGroupModel.groupV2Revision).")
+            }
+            guard newGroupModel.groupV2Revision >= updateInfo.newGroupModel.groupV2Revision else {
+                throw OWSAssertionError("Invalid groupV2Revision: \(newGroupModel.groupV2Revision).")
+            }
             // GroupsV2 TODO: v2 groups must be modified in step-wise fashion,
             //                creating local messages for each revision.
-            // GroupsV2 TODO: We should use updatedGroupModel here once it reflects the updated state.
-            let groupThread = try self.updateGroupThreadInDatabase(newGroupModel: updateInfo.newGroupModel,
-                                                                   groupUpdateSourceAddress: groupUpdateSourceAddress)
-            return (updateInfo, groupThread)
-        }.then(on: .global()) { (updateInfo: UpdateInfo, groupThread: TSGroupThread) throws -> Promise<TSGroupThread> in
+            return changedGroupModel
+        }.then(on: .global()) { (changedGroupModel: ChangedGroupModel) throws -> Promise<TSGroupThread> in
+            let groupThread = changedGroupModel.groupThread
+
+            // We need to plumb through the _actual_ "old" and "new" group models
+            // to sendGroupUpdateMessage(), e.g. the copies from ChangedGroupModel
+            // which reflect the actual update rather than from UpdateInfo()
+            // which reflect the proposed update.
             guard shouldSendMessage else {
                 return Promise.value(groupThread)
             }
 
             return self.sendGroupUpdateMessage(thread: groupThread,
-                                               oldGroupModel: updateInfo.oldGroupModel,
-                                               newGroupModel: updateInfo.newGroupModel)
+                                               oldGroupModel: changedGroupModel.oldGroupModel,
+                                               newGroupModel: changedGroupModel.newGroupModel)
                 .map(on: .global()) { _ in
                     return groupThread
             }
@@ -728,7 +806,7 @@ public class GroupManager: NSObject {
                                                 transaction: transaction)
         if oldGroupModel.isEqual(to: newGroupModel) {
             // Skip redundant update.
-            throw GroupsV2Error.redundant
+            throw GroupsV2Error.redundantChange
         }
 
         // GroupsV2 TODO: Convert this method and callers to return a promise.
@@ -746,18 +824,17 @@ public class GroupManager: NSObject {
     }
 
     private static func updateGroupThreadInDatabase(newGroupModel: TSGroupModel,
-                                                    groupUpdateSourceAddress: SignalServiceAddress?) throws -> TSGroupThread {
-        let groupThread = try self.databaseStorage.write { (transaction) throws -> TSGroupThread in
-            let groupId = newGroupModel.groupId
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                throw OWSAssertionError("Missing groupThread.")
-            }
-            return self.updateExistingGroupThreadAndCreateInfoMessage(groupThread: groupThread,
-                                                                      newGroupModel: newGroupModel,
-                                                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                      transaction: transaction)
+                                                    groupUpdateSourceAddress: SignalServiceAddress?,
+                                                    transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
+        let groupId = newGroupModel.groupId
+        let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+        guard let groupThread = thread else {
+            throw OWSAssertionError("Missing groupThread.")
         }
-        return groupThread
+        return self.updateExistingGroupThreadAndCreateInfoMessage(groupThread: groupThread,
+                                                                  newGroupModel: newGroupModel,
+                                                                  groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                  transaction: transaction)
     }
 
     @objc
@@ -871,10 +948,10 @@ public class GroupManager: NSObject {
         return groupThread
     }
 
-    private static func updateExistingGroupThreadAndCreateInfoMessage(groupThread: TSGroupThread,
-                                                                      newGroupModel: TSGroupModel,
-                                                                      groupUpdateSourceAddress: SignalServiceAddress?,
-                                                                      transaction: SDSAnyWriteTransaction) -> TSGroupThread {
+    public static func updateExistingGroupThreadAndCreateInfoMessage(groupThread: TSGroupThread,
+                                                                     newGroupModel: TSGroupModel,
+                                                                     groupUpdateSourceAddress: SignalServiceAddress?,
+                                                                     transaction: SDSAnyWriteTransaction) -> TSGroupThread {
 
         let oldGroupModel = groupThread.groupModel
         groupThread.update(with: newGroupModel, transaction: transaction)

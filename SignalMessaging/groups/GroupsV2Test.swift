@@ -125,8 +125,7 @@ public class GroupsV2Test: NSObject {
 
             var groupMembershipBuilder = groupModel.groupMembership.asBuilder
             for address in otherAddresses {
-                groupMembershipBuilder.remove(address)
-                groupMembershipBuilder.add(address, isAdministrator: false, isPending: false)
+                groupMembershipBuilder.replace(address, isAdministrator: false, isPending: false)
             }
             let groupMembership = groupMembershipBuilder.build()
 
@@ -134,12 +133,12 @@ public class GroupsV2Test: NSObject {
             // GroupsV2 TODO: Add and remove members, change avatar, etc.
 
             return GroupManager.updateExistingGroup(groupId: groupId,
-                                                   name: title1,
-                                                   avatarData: nil,
-                                                   groupMembership: groupMembership,
-                                                   groupAccess: groupAccess,
-                                                   shouldSendMessage: true,
-                                                   groupUpdateSourceAddress: localAddress)
+                                                    name: title1,
+                                                    avatarData: nil,
+                                                    groupMembership: groupMembership,
+                                                    groupAccess: groupAccess,
+                                                    groupsVersion: groupModel.groupsVersion,
+                                                    groupUpdateSourceAddress: localAddress)
                 .then(on: .global()) { (groupThread) -> Promise<GroupV2State> in
                     // GroupsV2 TODO: This should reflect the new group.
                     return groupsV2Swift.fetchGroupState(groupModel: groupThread.groupModel)
@@ -208,7 +207,7 @@ public class GroupsV2Test: NSObject {
                                                     avatarData: nil,
                                                     groupMembership: groupMembership,
                                                     groupAccess: groupAccess,
-                                                    shouldSendMessage: true,
+                                                    groupsVersion: groupModel.groupsVersion,
                                                     groupUpdateSourceAddress: localAddress)
                 .then(on: .global()) { (_) -> Promise<GroupV2State> in
                     // GroupsV2 TODO: This should reflect the new group.

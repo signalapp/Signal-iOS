@@ -59,16 +59,25 @@ public extension GroupParams {
     }
 
     func uuid(forUserId userId: Data) throws -> UUID {
-        let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
-
         let uuidCiphertext = try UuidCiphertext(contents: [UInt8](userId))
+        return try uuid(forUuidCiphertext: uuidCiphertext)
+    }
+
+    func uuid(forUuidCiphertext uuidCiphertext: UuidCiphertext) throws -> UUID {
+        let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
         let zkgUuid = try clientZkGroupCipher.decryptUuid(uuidCiphertext: uuidCiphertext)
-        return try zkgUuid.asUUID()
+        return zkgUuid.asUUID()
     }
 
     func userId(forUuid uuid: UUID) throws -> Data {
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
         let uuidCiphertext = try clientZkGroupCipher.encryptUuid(uuid: try uuid.asZKGUuid())
         return uuidCiphertext.serialize().asData
+    }
+
+    func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext) throws -> Data {
+        let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
+        let profileKey = try clientZkGroupCipher.decryptProfileKey(profileKeyCiphertext: profileKeyCiphertext)
+        return profileKey.serialize().asData
     }
 }
