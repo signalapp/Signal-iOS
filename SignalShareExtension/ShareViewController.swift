@@ -140,7 +140,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
-                                               name: .RegistrationStateDidChange,
+                                               name: .registrationStateDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(owsApplicationWillEnterForeground),

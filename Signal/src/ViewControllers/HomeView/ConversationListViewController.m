@@ -199,7 +199,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
-                                                 name:RegistrationStateDidChangeNotification
+                                                 name:NSNotificationNameRegistrationStateDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(outageStateDidChange:)

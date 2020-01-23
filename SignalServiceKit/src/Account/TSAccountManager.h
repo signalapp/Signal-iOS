@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSConstants.h"
@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const TSRegistrationErrorDomain;
 extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
-extern NSString *const RegistrationStateDidChangeNotification;
+extern NSNotificationName const NSNotificationNameRegistrationStateDidChange;
 extern NSString *const TSRemoteAttestationAuthErrorKey;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 

@@ -618,7 +618,7 @@
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(socketStateDidChange)
-                                                 name:kNSNotification_OWSWebSocketStateDidChange
+                                                 name:NSNotificationWebSocketStateDidChange
                                                object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self

@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
-                                                 name:RegistrationStateDidChangeNotification
+                                                 name:NSNotificationNameRegistrationStateDidChange
                                                object:nil];
 
     // Start processing.
@@ -243,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
         self.isDrainingQueue = YES;
-
+        
         [self drainQueueWorkStep];
     });
 }
@@ -281,9 +281,9 @@ NS_ASSUME_NONNULL_BEGIN
     __block NSUInteger jobCount;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         processedJobs = [self processJobs:batchJobs transaction:transaction];
-
+        
         [self.finder removeJobsWithUniqueIds:processedJobs.uniqueIds transaction:transaction];
-
+        
         jobCount = [self.finder jobCountWithTransaction:transaction];
     }];
 
@@ -320,24 +320,21 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                 transaction:transaction];
         };
 
-        @try {
-            SSKProtoEnvelope *_Nullable envelope = job.envelope;
-            if (!envelope) {
-                reportFailure(transaction);
-            } else if ([GroupsV2MessageProcessor isGroupsV2Message:envelope plaintextData:job.plaintextData]) {
-                [self.groupsV2MessageProcessor enqueueEnvelopeData:job.envelopeData
+        SSKProtoEnvelope *_Nullable envelope = job.envelope;
+        if (!envelope) {
+            reportFailure(transaction);
+        } else if ([GroupsV2MessageProcessor isGroupsV2MessageWithEnvelope:envelope plaintextData:job.plaintextData]) {
+            [self.groupsV2MessageProcessor enqueueWithEnvelopeData:job.envelopeData
                                                      plaintextData:job.plaintextData
                                                    wasReceivedByUD:job.wasReceivedByUD
                                                        transaction:transaction];
-            } else {
-                [self.messageManager throws_processEnvelope:envelope
-                                              plaintextData:job.plaintextData
-                                            wasReceivedByUD:job.wasReceivedByUD
-                                                transaction:transaction];
+        } else {
+            if (![self.messageManager processEnvelope:envelope
+                                        plaintextData:job.plaintextData
+                                      wasReceivedByUD:job.wasReceivedByUD
+                                          transaction:transaction]) {
+                reportFailure(transaction);
             }
-        } @catch (NSException *exception) {
-            OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
-            reportFailure(transaction);
         }
         [processedJobs addObject:job];
 

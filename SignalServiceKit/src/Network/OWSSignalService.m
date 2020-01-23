@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSignalService.h"
@@ -86,7 +86,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
-                                                 name:RegistrationStateDidChangeNotification
+                                                 name:NSNotificationNameRegistrationStateDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localNumberDidChange:)

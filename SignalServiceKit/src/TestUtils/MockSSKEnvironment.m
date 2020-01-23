@@ -3,7 +3,6 @@
 //
 
 #import "MockSSKEnvironment.h"
-#import "GroupsV2MessageProcessor.h"
 #import "OWS2FAManager.h"
 #import "OWSAttachmentDownloads.h"
 #import "OWSBatchMessageProcessor.h"
