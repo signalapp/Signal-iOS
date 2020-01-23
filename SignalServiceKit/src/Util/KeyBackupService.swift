@@ -376,7 +376,7 @@ public class KeyBackupService: NSObject {
         var normalizedPin = pin.ows_stripped()
 
         // If this pin contains only numerals, ensure they are arabic numerals.
-        if pin.digitsOnly() == pin { normalizedPin = pin.ensureArabicNumerals }
+        if pin.digitsOnly() == normalizedPin { normalizedPin = normalizedPin.ensureArabicNumerals }
 
         // NFKD unicode normalization.
         return normalizedPin.decomposedStringWithCompatibilityMapping

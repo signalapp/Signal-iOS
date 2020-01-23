@@ -199,7 +199,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             pinToUse = pinToUse?.substring(to: Int(kLegacyTruncated2FAv1PinLength))
         }
 
-        guard let pin = pinToUse?.ows_stripped(), pin.count >= (isUsingKBS ? kMin2FAv2PinLength : kMin2FAPinLength) else {
+        guard let pin = pinToUse?.ows_stripped(), pin.count >= kMin2FAPinLength else {
             // Check if we're already in an invalid state, if so we can do nothing
             guard !attemptState.isInvalid else { return }
             attemptState = .invalid(remainingAttempts: nil)
