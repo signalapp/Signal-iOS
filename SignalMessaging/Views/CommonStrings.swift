@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -139,4 +139,12 @@ public class NotificationStrings: NSObject {
     @objc
     static public let confirmSendButton = NSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
                                                       comment: "button title to confirm sending to a recipient whose safety number recently changed")
+}
+
+@objc public class MegaphoneStrings: NSObject {
+    @objc
+    static public let remindMeLater = NSLocalizedString("MEGAPHONE_REMIND_LATER", comment: "button title to snooze a megaphone")
+
+    @objc
+    static public let weWillRemindYouLater = NSLocalizedString("MEGAPHONE_WILL_REMIND_LATER", comment: "toast indicating that we will remind the user later")
 }

@@ -7,7 +7,7 @@ import SignalMessaging
 import SafariServices
 import Lottie
 
-private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgradeViewController {
+class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
     private let animationView = AnimationView(name: "stickerSplashComplete")
 
@@ -106,7 +106,7 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
     }
 }
 
-private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeViewController {
+class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
     var ows2FAManager: OWS2FAManager {
         return .shared()
@@ -271,27 +271,6 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
     required init?(coder aDecoder: NSCoder) {
         notImplemented()
-    }
-
-    // MARK: - Factory
-
-    @objc
-    public class func viewController(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> UIViewController? {
-        guard let identifier = ExperienceUpgradeId(rawValue: experienceUpgrade.uniqueId) else {
-            owsFailDebug("unknown experience upgrade. skipping")
-            return nil
-        }
-
-        switch identifier {
-        case .introducingStickers:
-            return IntroducingStickersExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade)
-        case .introducingPins:
-            let vc = IntroducingPinsExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade)
-            return OWSNavigationController(rootViewController: vc)
-        @unknown default:
-            owsFailDebug("Unknown identifier: \(identifier)")
-            return nil
-        }
     }
 
     // MARK: - View lifecycle
