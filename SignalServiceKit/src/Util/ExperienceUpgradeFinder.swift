@@ -79,22 +79,23 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     @objc
     public func markAsViewed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as seen \(experienceUpgrade.uniqueId)")
-        experienceUpgrade.firstViewedTimestamp = Date().timeIntervalSince1970
-        experienceUpgrade.anyUpsert(transaction: transaction.asAnyWrite)
+        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { experienceUpgrade in
+            // Only mark as viewed if it has yet to be viewed.
+            guard experienceUpgrade.firstViewedTimestamp == 0 else { return }
+            experienceUpgrade.firstViewedTimestamp = Date().timeIntervalSince1970
+        }
     }
 
     @objc
     public func markAsSnoozed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as snoozed \(experienceUpgrade.uniqueId)")
-        experienceUpgrade.lastSnoozedTimestamp = Date().timeIntervalSince1970
-        experienceUpgrade.anyUpsert(transaction: transaction.asAnyWrite)
+        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.lastSnoozedTimestamp = Date().timeIntervalSince1970 }
     }
 
     @objc
     public func markAsComplete(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as complete \(experienceUpgrade.uniqueId)")
-        experienceUpgrade.isComplete = true
-        experienceUpgrade.anyUpsert(transaction: transaction.asAnyWrite)
+        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.isComplete = true }
     }
 
     @objc
@@ -146,8 +147,11 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     }
 }
 
-@objc
 public extension ExperienceUpgrade {
+    var id: ExperienceUpgradeId! {
+        return ExperienceUpgradeId(rawValue: uniqueId)
+    }
+
     var isSnoozed: Bool {
         guard lastSnoozedTimestamp > 0 else { return false }
         // If it hasn't been two days since we were snoozed, wait to show again.
@@ -156,9 +160,15 @@ public extension ExperienceUpgrade {
 
     var daysSinceFirstViewed: Int {
         guard firstViewedTimestamp > 0 else { return 0 }
-        let secondsSinceFirstView = -Date(timeIntervalSince1970: lastSnoozedTimestamp).timeIntervalSinceNow
+        let secondsSinceFirstView = -Date(timeIntervalSince1970: firstViewedTimestamp).timeIntervalSinceNow
         return Int(secondsSinceFirstView / kDayInterval)
     }
 
     var hasViewed: Bool { firstViewedTimestamp > 0 }
+
+    func upsertWith(transaction: SDSAnyWriteTransaction, changeBlock: (ExperienceUpgrade) -> Void) {
+        let experienceUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
+        changeBlock(experienceUpgrade)
+        experienceUpgrade.anyUpsert(transaction: transaction)
+    }
 }

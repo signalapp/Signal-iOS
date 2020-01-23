@@ -756,7 +756,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [super viewDidAppear:animated];
 
-    [self displayNextExperienceUpgradeIfNecessary];
+    if (![ExperienceUpgradeManager presentNextFromViewController:self]) {
+        [OWSActionSheets showIOSUpgradeNagIfNecessary];
+    }
+
     [self applyDefaultBackButton];
 
     if (self.hasThemeChanged) {
@@ -1188,28 +1191,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 }
 
 #pragma mark - startup
-
-- (void)displayNextExperienceUpgradeIfNecessary
-{
-    OWSAssertIsOnMainThread();
-
-    __block ExperienceUpgrade *_Nullable nextUpgrade;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        nextUpgrade = [ExperienceUpgradeFinder.sharedManager nextWithTransaction:transaction.unwrapGrdbRead];
-    }];
-
-    if (nextUpgrade) {
-        UIViewController *_Nullable viewController =
-            [ExperienceUpgradeViewController viewControllerForExperienceUpgrade:nextUpgrade];
-        if (viewController == nil) {
-            OWSFailDebug(@"Could not display experience upgrade.");
-            return;
-        }
-        [self presentFormSheetViewController:viewController animated:YES completion:nil];
-    } else {
-        [OWSActionSheets showIOSUpgradeNagIfNecessary];
-    }
-}
 
 - (void)tableViewSetUp
 {
