@@ -68,6 +68,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
+                    remoteConfigManager:(id<RemoteConfigManager>)remoteConfigManager
                            sessionStore:(SSKSessionStore *)sessionStore
                       signedPreKeyStore:(SSKSignedPreKeyStore *)signedPreKeyStore
                             preKeyStore:(SSKPreKeyStore *)preKeyStore
@@ -111,6 +112,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(messageManager);
     OWSAssertDebug(blockingManager);
     OWSAssertDebug(identityManager);
+    OWSAssertDebug(remoteConfigManager);
     OWSAssertDebug(sessionStore);
     OWSAssertDebug(signedPreKeyStore);
     OWSAssertDebug(preKeyStore);
@@ -150,6 +152,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageManager = messageManager;
     _blockingManager = blockingManager;
     _identityManager = identityManager;
+    _remoteConfigManager = remoteConfigManager;
     _sessionStore = sessionStore;
     _signedPreKeyStore = signedPreKeyStore;
     _preKeyStore = preKeyStore;

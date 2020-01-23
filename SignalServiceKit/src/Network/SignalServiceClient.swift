@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,6 +22,7 @@ public protocol SignalServiceClient: SignalServiceClientObjC {
     func updateAccountAttributes() -> Promise<Void>
     func getAccountUuid() -> Promise<UUID>
     func requestStorageAuth() -> Promise<(username: String, password: String)>
+    func getRemoteConfig() -> Promise<[String: Bool]>
 }
 
 /// Based on libsignal-service-java's PushServiceSocket class
@@ -158,6 +159,32 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
             let deviceId: UInt32 = try parser.required(key: "deviceId")
             return deviceId
+        }
+    }
+
+    // yields a map of ["feature_name": isEnabled]
+    public func getRemoteConfig() -> Promise<[String: Bool]> {
+        let request = OWSRequestFactory.getRemoteConfigRequest()
+
+        return networkManager.makePromise(request: request).map { _, responseObject in
+            guard let parser = ParamParser(responseObject: responseObject) else {
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            let config: [[String: Any]] = try parser.required(key: "config")
+
+            return try config.reduce([:]) { accum, item in
+                var accum = accum
+                guard let itemParser = ParamParser(responseObject: item) else {
+                    throw OWSErrorMakeUnableToProcessServerResponseError()
+                }
+
+                let name: String = try itemParser.required(key: "name")
+                let isEnabled: Bool = try itemParser.required(key: "enabled")
+                accum[name] = isEnabled
+
+                return accum
+            }
         }
     }
 
