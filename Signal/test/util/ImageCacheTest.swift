@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -9,16 +9,17 @@ class ImageCacheTest: SignalBaseTest {
 
     var imageCache: ImageCache!
 
-    let firstVariation = UIImage()
-    let secondVariation = UIImage()
-    let otherImage = UIImage()
+    let firstVariation = UIImage(color: .red, size: CGSize(width: 1, height: 1))
+    let secondVariation = UIImage(color: .blue, size: CGSize(width: 1, height: 1))
+    let otherImage = UIImage(color: .green, size: CGSize(width: 1, height: 1))
 
     let cacheKey1 = "cache-key-1" as NSString
     let cacheKey2 = "cache-key-2" as NSString
 
     override func setUp() {
         super.setUp()
-         self.imageCache = ImageCache()
+
+        self.imageCache = ImageCache()
         imageCache.setImage(firstVariation, forKey: cacheKey1, diameter: 100)
         imageCache.setImage(secondVariation, forKey: cacheKey1, diameter: 200)
         imageCache.setImage(otherImage, forKey: cacheKey2, diameter: 100)
@@ -30,6 +31,9 @@ class ImageCacheTest: SignalBaseTest {
     }
 
     func testSetGet() {
+        XCTAssertEqual(UIImage(), UIImage())
+        XCTAssertTrue(UIImage() == UIImage())
+
         XCTAssertEqual(firstVariation, imageCache.image(forKey: cacheKey1, diameter: 100))
         XCTAssertEqual(secondVariation, imageCache.image(forKey: cacheKey1, diameter: 200))
         XCTAssertNotEqual(secondVariation, imageCache.image(forKey: cacheKey1, diameter: 100))

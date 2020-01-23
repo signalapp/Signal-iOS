@@ -286,7 +286,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
 }
 
 class TestContactsManager: NSObject, ContactsManagerProtocol {
-    var signalAccountReadCache = SignalAccountReadCache()
+    let signalAccountReadCache = SignalAccountReadCache()
 
     func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
         return signalAccount.recipientAddress.stringForDisplay
