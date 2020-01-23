@@ -18,14 +18,14 @@ public class ConversationStyle: NSObject {
         }
     }
 
-    @objc public let contentMarginTop: CGFloat = 24
-    @objc public let contentMarginBottom: CGFloat = 24
+    @objc public let contentMarginTop: CGFloat = 24 // Values.largeSpacing
+    @objc public let contentMarginBottom: CGFloat = 24 // Values.largeSpacing
 
     @objc public var gutterLeading: CGFloat = 0
     @objc public var gutterTrailing: CGFloat = 0
 
-    @objc public var headerGutterLeading: CGFloat = 28
-    @objc public var headerGutterTrailing: CGFloat = 28
+    @objc public var headerGutterLeading: CGFloat = 35 // Values.veryLargeSpacing
+    @objc public var headerGutterTrailing: CGFloat = 35 // Values.veryLargeSpacing
 
     // These are the gutters used by "full width" views
     // like "contact offer" and "info message".
@@ -91,23 +91,32 @@ public class ConversationStyle: NSObject {
     @objc
     public func updateProperties() {
         if thread.isGroupThread() {
-            gutterLeading = 52
-            gutterTrailing = 16
+            if let thread = thread as? TSGroupThread, thread.isRSSFeed {
+                gutterLeading = 16
+                gutterTrailing = 16
+            } else {
+                gutterLeading = 16 + 35 + 24 // Values.mediumSpacing + Values.smallProfilePictureSize + Values.largeSpacing
+                gutterTrailing = 16
+            }
         } else {
             gutterLeading = 16
             gutterTrailing = 16
         }
         fullWidthGutterLeading = 16
         fullWidthGutterTrailing = 16
-        headerGutterLeading = 28
-        headerGutterTrailing = 28
+        headerGutterLeading = 16
+        headerGutterTrailing = 16
         errorGutterTrailing = 16
 
-        maxMessageWidth = floor(contentWidth - 32)
+        if let thread = thread as? TSGroupThread, thread.isRSSFeed {
+            maxMessageWidth = floor(contentWidth)
+        } else {
+            maxMessageWidth = floor(contentWidth - 32)
+        }
 
-        let messageTextFont = UIFont.ows_dynamicTypeBody
+        let messageTextFont = UIFont.systemFont(ofSize: 13) // Values.smallFontSize
 
-        let baseFontOffset: CGFloat = 11
+        let baseFontOffset: CGFloat = 16
 
         // Don't include the distance from the "cap height" to the top of the UILabel
         // in the top margin.
@@ -117,12 +126,7 @@ public class ConversationStyle: NSObject {
         // negative value.
         textInsetBottom = max(0, round(baseFontOffset - abs(messageTextFont.descender)))
 
-        if _isDebugAssertConfiguration(), UIFont.ows_dynamicTypeBody.pointSize == 17 {
-//            assert(textInsetTop == 7)
-//            assert(textInsetBottom == 7)
-        }
-
-        textInsetHorizontal = 12
+        textInsetHorizontal = 16
 
         lastTextLineAxis = CGFloat(round(baseFontOffset + messageTextFont.capHeight * 0.5))
 
@@ -142,17 +146,17 @@ public class ConversationStyle: NSObject {
 
     @objc
     private static var defaultBubbleColorIncoming: UIColor {
-        return UIColor.lokiDarkGray()
+        return UIColor(rgbHex: 0x222325) // Colors.receivedMessageBackground
     }
 
     @objc
-    public let bubbleColorOutgoingFailed = UIColor.lokiGreen()
+    public let bubbleColorOutgoingFailed = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
 
     @objc
-    public let bubbleColorOutgoingSending = UIColor.lokiGreen()
+    public let bubbleColorOutgoingSending = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
 
     @objc
-    public let bubbleColorOutgoingSent = UIColor.lokiGreen()
+    public let bubbleColorOutgoingSent = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
 
     @objc
     public let dateBreakTextColor = UIColor.ows_gray60
@@ -187,12 +191,12 @@ public class ConversationStyle: NSObject {
 
     @objc
     public static var bubbleTextColorIncoming: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
+        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
     }
 
     @objc
     public static var bubbleTextColorOutgoing: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_white
+        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
     }
 
     @objc
@@ -218,62 +222,40 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
-        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(0.7)
+        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(0.6) // Values.unimportantElementOpacity
     }
 
     @objc
     public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
-        if Theme.isDarkThemeEnabled {
-            if isIncoming {
-                return UIColor.lokiGreen().withAlphaComponent(0.75)
-            } else {
-                return UIColor.lokiDarkestGray().withAlphaComponent(0.4)
-            }
-        } else if isIncoming {
-            return bubbleColorOutgoingSent.withAlphaComponent(0.25)
+        if isIncoming {
+            return UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
         } else {
-            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.75)
+            return UIColor(rgbHex: 0x222325) // Colors.receivedMessageBackground
         }
     }
 
     @objc
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
-        if Theme.isDarkThemeEnabled {
-            if isIncoming {
-                return UIColor.lokiGreen()
-            } else {
-                return UIColor.lokiDarkestGray()
-            }
-        } else if isIncoming {
-            return bubbleColorOutgoingSent
-        } else {
-            return UIColor.white
-        }
+        return UIColor(rgbHex: 0x00F782) // Colors.accent
     }
 
     @objc
     public func quotingSelfHighlightColor() -> UIColor {
-        // TODO:
         return UIColor.init(rgbHex: 0xB5B5B5)
     }
 
     @objc
     public func quotedReplyAuthorColor() -> UIColor {
-        return quotedReplyTextColor()
+        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
     }
 
     @objc
     public func quotedReplyTextColor() -> UIColor {
-        if Theme.isDarkThemeEnabled {
-            return UIColor.ows_gray05
-        } else {
-            return UIColor.ows_gray90
-        }
+        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
     }
 
     @objc
     public func quotedReplyAttachmentColor() -> UIColor {
-        // TODO:
-        return UIColor.white
+        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
     }
 }

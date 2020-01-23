@@ -65,13 +65,13 @@ typedef void (^SystemMessageActionBlock)(void);
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        [self commontInit];
+        [self commonInit];
     }
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     OWSAssertDebug(!self.iconView);
 
@@ -100,10 +100,12 @@ typedef void (^SystemMessageActionBlock)(void);
     contentStackView.spacing = self.iconVSpacing;
     contentStackView.alignment = UIStackViewAlignmentCenter;
 
-    self.button = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.button = [UIButton new];
     [self.button setTitleColor:[UIColor ows_darkSkyBlueColor] forState:UIControlStateNormal];
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.button.layer.cornerRadius = 4.f;
+    self.button.layer.cornerRadius = LKValues.modalButtonCornerRadius;
+    self.button.backgroundColor = LKColors.buttonBackground;
+    self.button.titleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.button autoSetDimension:ALDimensionHeight toSize:self.buttonHeight];
 
@@ -132,17 +134,17 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (CGFloat)buttonVSpacing
 {
-    return 7.f;
+    return 12.f;
 }
 
 - (CGFloat)iconVSpacing
 {
-    return 9.f;
+    return LKValues.smallSpacing;
 }
 
 - (CGFloat)buttonHeight
 {
-    return 40.f;
+    return LKValues.mediumButtonHeight;
 }
 
 - (CGFloat)buttonHPadding
@@ -153,7 +155,7 @@ typedef void (^SystemMessageActionBlock)(void);
 - (void)configureFonts
 {
     // Update cell to reflect changes in dynamic text.
-    self.titleLabel.font = UIFont.ows_dynamicTypeSubheadlineFont;
+    self.titleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
 }
 
 + (NSString *)cellReuseIdentifier
@@ -166,9 +168,9 @@ typedef void (^SystemMessageActionBlock)(void);
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.viewItem);
 
-    self.cellBackgroundView.backgroundColor = [Theme backgroundColor];
+    self.cellBackgroundView.backgroundColor = UIColor.clearColor;
 
-    [self.button setBackgroundColor:Theme.conversationButtonBackgroundColor];
+    [self.button setBackgroundColor:LKColors.buttonBackground];
 
     TSInteraction *interaction = self.viewItem.interaction;
 
@@ -178,7 +180,7 @@ typedef void (^SystemMessageActionBlock)(void);
     if (icon) {
         self.iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         self.iconView.hidden = NO;
-        self.iconView.tintColor = [self iconColorForInteraction:interaction];
+        self.iconView.tintColor = LKColors.text;
     } else {
         self.iconView.hidden = YES;
     }
@@ -189,9 +191,9 @@ typedef void (^SystemMessageActionBlock)(void);
 
     if (self.action) {
         [self.button setTitle:self.action.title forState:UIControlStateNormal];
-        UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+        UIFont *buttonFont = [UIFont systemFontOfSize:LKValues.smallFontSize];
         self.button.titleLabel.font = buttonFont;
-        [self.button setTitleColor:UIColor.lokiGreen forState:UIControlStateNormal];
+        [self.button setTitleColor:LKColors.text forState:UIControlStateNormal];
         self.button.hidden = NO;
     } else {
         self.button.hidden = YES;
@@ -234,14 +236,12 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (UIColor *)textColor
 {
-    return Theme.secondaryColor;
+    return LKColors.text;
 }
 
 - (UIColor *)iconColorForInteraction:(TSInteraction *)interaction
 {
-    // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
-    // are less dark for balance.
-    return Theme.secondaryColor;
+    return LKColors.text;
 }
 
 - (nullable UIImage *)iconForInteraction:(TSInteraction *)interaction
@@ -326,17 +326,17 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (CGFloat)topVMargin
 {
-    return 5.f;
+    return LKValues.smallSpacing;
 }
 
 - (CGFloat)bottomVMargin
 {
-    return 5.f;
+    return LKValues.smallSpacing;
 }
 
 - (CGFloat)hSpacing
 {
-    return 8.f;
+    return LKValues.mediumSpacing;
 }
 
 - (CGFloat)iconSize

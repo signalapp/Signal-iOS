@@ -921,12 +921,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     __block TSContactThread *thread;
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
-        // Force hide secondary device thread
+        // Force hide slave device thread
         NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction];
         thread.isForceHidden = masterHexEncodedPublicKey != nil && ![masterHexEncodedPublicKey isEqualToString:hexEncodedPublicKey];
         [thread saveWithTransaction:transaction];
     }];
-    if (!thread) { return nil; }
+    if (thread == nil) { return nil; }
     LKSessionRestoreMessage *message = [[LKSessionRestoreMessage alloc] initWithThread:thread];
     message.skipSave = YES;
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
@@ -939,7 +939,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     __block TSContactThread *thread;
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
-        // Force hide secondary device thread
+        // Force hide slave device thread
         NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction];
         thread.isForceHidden = masterHexEncodedPublicKey != nil && ![masterHexEncodedPublicKey isEqualToString:hexEncodedPublicKey];
         [thread saveWithTransaction:transaction];
@@ -1326,7 +1326,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [promise
                 .thenOn(OWSDispatch.sendingQueue, ^(id result) {
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
-                    [LKAnalytics.shared track:@"Sent Message Using Swarm API"];
+                    [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageSent object:[[NSNumber alloc] initWithUnsignedLongLong:signalMessage.timestamp]];
                     isSuccess = YES;
                     if (signalMessage.type == TSFriendRequestMessageType) {
                         if (!message.skipSave) {
@@ -1351,7 +1351,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
                     errorCount += 1;
                     if (errorCount != promiseCount) { return; } // Only error out if all promises failed
-                    [LKAnalytics.shared track:@"Failed to Send Message Using Swarm API"];
+                    [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageFailed object:[[NSNumber alloc] initWithUnsignedLongLong:signalMessage.timestamp]];
                     handleError(error);
                 }) retainUntilComplete];
             }

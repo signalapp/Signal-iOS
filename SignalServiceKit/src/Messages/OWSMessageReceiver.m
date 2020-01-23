@@ -407,7 +407,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     // Loki: Ignore any friend requests that we got before restoration
     uint64_t restorationTime = [NSNumber numberWithDouble:[OWSPrimaryStorage.sharedManager getRestorationTime]].unsignedLongLongValue;
     if (envelope.type == SSKProtoEnvelopeTypeFriendRequest && envelope.timestamp < restorationTime * 1000) {
-        OWSLogDebug(@"Ignoring friend request that was received before restoration.");
+        [LKLogger print:@"[Loki] Ignoring friend request received before restoration."];
         dispatch_async(self.serialQueue, ^{
             completion(YES);
         });

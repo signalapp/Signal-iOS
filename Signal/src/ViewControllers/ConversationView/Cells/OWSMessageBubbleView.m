@@ -74,12 +74,12 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    [self commontInit];
+    [self commonInit];
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     // Ensure only called once.
     OWSAssertDebug(!self.bodyTextView);
@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 
-    return UIFont.ows_dynamicTypeBodyFont;
+    return [UIFont systemFontOfSize:LKValues.mediumFontSize];
 }
 
 #pragma mark - Convenience Accessors
@@ -497,7 +497,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)senderNameBottomSpacing
 {
-    return 2.f;
+    return 0.f;
 }
 
 - (OWSDirectionalRectCorner)sharpCorners
@@ -623,7 +623,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)textViewVSpacing
 {
-    return 2.f;
+    return 4.f;
 }
 
 - (CGFloat)bodyMediaQuotedReplyVSpacing
@@ -633,7 +633,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)quotedReplyTopMargin
 {
-    return 6.f;
+    return 22.f;
 }
 
 - (nullable LinkPreviewSent *)linkPreviewState
@@ -717,8 +717,8 @@ NS_ASSUME_NONNULL_BEGIN
         for (NSTextCheckingResult *match in
             [regex matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
             OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
-            [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.yellowColor range:match.range];
-            [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_blackColor range:match.range];
+            [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.whiteColor range:match.range];
+            [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.blackColor range:match.range];
         }
     }
 
@@ -741,15 +741,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.senderNameLabel);
     OWSAssertDebug(self.shouldShowSenderName);
 
-    self.senderNameLabel.textColor = self.bodyTextColor;
+    self.senderNameLabel.textColor = [LKColors.text colorWithAlphaComponent:LKValues.unimportantElementOpacity];
     self.senderNameLabel.font = OWSMessageBubbleView.senderNameFont;
-    self.senderNameLabel.attributedText = self.viewItem.senderName;
+    self.senderNameLabel.text = self.viewItem.senderName.string;
     self.senderNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 }
 
 + (UIFont *)senderNameFont
 {
-    return UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+    return [UIFont boldSystemFontOfSize:LKValues.smallFontSize];
 }
 
 + (NSDictionary *)senderNamePrimaryAttributes
@@ -789,7 +789,7 @@ NS_ASSUME_NONNULL_BEGIN
     tapForMoreLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
         @"Indicator on truncated text messages that they can be tapped to see the entire text message.");
     tapForMoreLabel.font = [self tapForMoreFont];
-    tapForMoreLabel.textColor = [self.bodyTextColor colorWithAlphaComponent:0.85];
+    tapForMoreLabel.textColor = [self.bodyTextColor colorWithAlphaComponent:0.8];
     tapForMoreLabel.textAlignment = [tapForMoreLabel textAlignmentUnnatural];
 
     return tapForMoreLabel;
@@ -1153,7 +1153,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
 }
 
-- (DisplayableText *)getDisplayableQuotedText
+- (DisplayableText *_Nullable)getDisplayableQuotedText
 {
     if (!self.viewItem.hasQuotedText) { return nil; }
     NSString *rawText = self.viewItem.displayableQuotedText.fullText;

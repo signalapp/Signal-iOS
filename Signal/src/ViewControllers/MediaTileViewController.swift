@@ -84,15 +84,30 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-
-        self.title = MediaStrings.allMedia
+        
+        // Loki: Set gradient background
+        view.backgroundColor = .clear
+        let gradient = Gradients.defaultLokiBackground
+        view.setGradient(gradient)
+        // Loki: Set navigation bar background color
+        let navigationBar = navigationController!.navigationBar
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = Colors.navigationBarBackground
+        // Loki: Customize title
+        let titleLabel = UILabel()
+        titleLabel.text = MediaStrings.allMedia
+        titleLabel.textColor = Colors.text
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        navigationItem.titleView = titleLabel
 
         guard let collectionView = self.collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
 
-        collectionView.backgroundColor = Theme.darkThemeBackgroundColor
+        collectionView.backgroundColor = Colors.navigationBarBackground
 
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
         collectionView.register(MediaGallerySectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier)

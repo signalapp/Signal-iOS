@@ -22,7 +22,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *profileNameLabel;
-@property (nonatomic) UIImageView *avatarView;
+@property (nonatomic) LKProfilePictureView *profilePictureView;
 @property (nonatomic) UILabel *subtitleLabel;
 @property (nonatomic) UILabel *accessoryLabel;
 @property (nonatomic) UIStackView *nameContainerView;
@@ -76,9 +76,11 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     self.layoutMargins = UIEdgeInsetsZero;
 
-    _avatarView = [AvatarImageView new];
-    [_avatarView autoSetDimension:ALDimensionWidth toSize:kStandardAvatarSize];
-    [_avatarView autoSetDimension:ALDimensionHeight toSize:kStandardAvatarSize];
+    _profilePictureView = [LKProfilePictureView new];
+    CGFloat profilePictureSize = 45; // Values.mediumProfilePictureSize
+    [self.profilePictureView autoSetDimension:ALDimensionWidth toSize:profilePictureSize];
+    [self.profilePictureView autoSetDimension:ALDimensionHeight toSize:profilePictureSize];
+    self.profilePictureView.size = profilePictureSize;
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -100,14 +102,13 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     ]];
     self.nameContainerView.axis = UILayoutConstraintAxisVertical;
 
-    [self.avatarView setContentHuggingHorizontalHigh];
     [self.nameContainerView setContentHuggingHorizontalLow];
     [self.accessoryViewContainer setContentHuggingHorizontalHigh];
 
     self.axis = UILayoutConstraintAxisHorizontal;
-    self.spacing = kContactCellAvatarTextMargin;
+    self.spacing = 16; // Values.mediumSpacing
     self.alignment = UIStackViewAlignmentCenter;
-    [self addArrangedSubview:self.avatarView];
+    [self addArrangedSubview:self.profilePictureView];
     [self addArrangedSubview:self.nameContainerView];
     [self addArrangedSubview:self.accessoryViewContainer];
 
@@ -116,7 +117,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)configureFontsAndColors
 {
-    self.nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
+    self.nameLabel.font = [UIFont boldSystemFontOfSize:15];
     self.profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.accessoryLabel.font = [UIFont ows_mediumFontWithSize:13.f];
@@ -187,12 +188,12 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         threadName = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
     }
 
-    NSAttributedString *attributedText =
-        [[NSAttributedString alloc] initWithString:threadName
-                                        attributes:@{
-                                            NSForegroundColorAttributeName : [Theme primaryColor],
-                                        }];
-    self.nameLabel.attributedText = attributedText;
+//    NSAttributedString *attributedText =
+//        [[NSAttributedString alloc] initWithString:threadName
+//                                        attributes:@{
+//                                            NSForegroundColorAttributeName : [Theme primaryColor],
+//                                        }];
+//    self.nameLabel.attributedText = attributedText;
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
         self.recipientId = thread.contactIdentifier;
@@ -203,7 +204,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                                                    object:nil];
         [self updateProfileName];
     }
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread diameter:kStandardAvatarSize];
+    
+    [self updateAvatar];
 
     if (self.accessoryMessage) {
         self.accessoryLabel.text = self.accessoryMessage;
@@ -216,25 +218,21 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateAvatar
 {
-    NSString *recipientId = self.recipientId;
-    if (recipientId.length == 0) {
-        OWSFailDebug(@"recipientId should not be nil");
-        self.avatarView.image = nil;
-        return;
-    }
-
-    ConversationColorName colorName = ^{
-        if (self.thread) {
-            return self.thread.conversationColorName;
-        } else {
-            OWSAssertDebug(self.recipientId);
-            return [TSThread stableColorNameForNewConversationWithString:self.recipientId];
+    if (self.thread.isGroupThread) {
+        NSMutableArray<NSString *> *sortedUsers = @[].mutableCopy;
+        NSSet<NSString *> *users = LKAPI.userHexEncodedPublicKeyCache[self.thread.uniqueId];
+        if (users != nil) {
+            for (NSString *user in users) {
+                [sortedUsers addObject:user];
+            }
         }
-    }();
-
-    self.avatarView.image =
-        [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId colorName:colorName diameter:kStandardAvatarSize]
-            build];
+        sortedUsers = [sortedUsers sortedArrayUsingSelector:@selector(compare:)].mutableCopy;
+        self.profilePictureView.hexEncodedPublicKey = (sortedUsers.count > 0) ? sortedUsers[0] : @"";
+        self.profilePictureView.isRSSFeed = ((TSGroupThread *)self.thread).isRSSFeed;
+    } else {
+        self.profilePictureView.hexEncodedPublicKey = self.thread.contactIdentifier;
+    }
+    [self.profilePictureView update];
 }
 
 - (void)updateProfileName
@@ -242,26 +240,31 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     OWSContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
         OWSFailDebug(@"contactsManager should not be nil");
-        self.profileNameLabel.text = nil;
+        self.nameLabel.text = self.recipientId;
         return;
     }
 
     NSString *recipientId = self.recipientId;
     if (recipientId.length == 0) {
         OWSFailDebug(@"recipientId should not be nil");
-        self.profileNameLabel.text = nil;
+        self.nameLabel.text = nil;
         return;
     }
 
     if ([contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
         // Don't display profile name when we have a veritas name in system Contacts
-        self.profileNameLabel.text = nil;
+        self.nameLabel.text = nil;
     } else {
-        // Use profile name, if any is available
-        self.profileNameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
+        
+        BOOL isNoteToSelf = (!self.thread.isGroupThread && [self.thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+        if (isNoteToSelf) {
+            self.nameLabel.text = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
+        } else {
+            self.nameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
+        }
     }
 
-    [self.profileNameLabel setNeedsLayout];
+    [self.nameLabel setNeedsLayout];
 }
 
 - (void)prepareForReuse

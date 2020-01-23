@@ -5,6 +5,7 @@ public final class LokiAPI : NSObject {
     private static var syncMessageTimestamps: [String:Set<UInt64>] = [:]
     public static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
     @objc public static var userHexEncodedPublicKeyCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
+    public static let errorHandlingQueue = DispatchQueue(label: "errorHandlingQueue")
     
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()
@@ -151,16 +152,20 @@ public final class LokiAPI : NSObject {
     
     public static func sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
         guard let lokiMessage = LokiMessage.from(signalMessage: signalMessage) else { return Promise(error: Error.messageConversionFailed) }
+        let notificationCenter = NotificationCenter.default
         let destination = lokiMessage.destination
         func sendLokiMessage(_ lokiMessage: LokiMessage, to target: LokiAPITarget) -> RawResponsePromise {
             let parameters = lokiMessage.toJSON()
             return invoke(.sendMessage, on: target, associatedWith: destination, parameters: parameters)
         }
         func sendLokiMessageUsingSwarmAPI() -> Promise<Set<RawResponsePromise>> {
-            return lokiMessage.calculatePoW().then(on: DispatchQueue.global()) { lokiMessageWithPoW in
+            notificationCenter.post(name: .calculatingPoW, object: NSNumber(value: signalMessage.timestamp))
+            return lokiMessage.calculatePoW().then(on: DispatchQueue.global()) { lokiMessageWithPoW -> Promise<Set<RawResponsePromise>> in
+                notificationCenter.post(name: .contactingNetwork, object: NSNumber(value: signalMessage.timestamp))
                 return getTargetSnodes(for: destination).map { swarm in
                     return Set(swarm.map { target in
-                        sendLokiMessage(lokiMessageWithPoW, to: target).map { rawResponse in
+                        notificationCenter.post(name: .sendingMessage, object: NSNumber(value: signalMessage.timestamp))
+                        return sendLokiMessage(lokiMessageWithPoW, to: target).map { rawResponse in
                             if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
                                 guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
                                 print("[Loki] Setting proof of work difficulty to \(powDifficulty).")

@@ -27,26 +27,19 @@
 
 + (void)setupSignalAppearence
 {
-    UINavigationBar.appearance.barTintColor = Theme.navbarBackgroundColor;
-    UINavigationBar.appearance.tintColor = Theme.navbarIconColor;
-    UIToolbar.appearance.barTintColor = Theme.navbarBackgroundColor;
-    UIToolbar.appearance.tintColor = Theme.navbarIconColor;
-
-    UIBarButtonItem.appearance.tintColor = Theme.navbarIconColor;
-
-    // Using the keyboardAppearance causes crashes due to a bug in UIKit.
-    //    UITextField.appearance.keyboardAppearance = (Theme.isDarkThemeEnabled
-    //                                                 ? UIKeyboardAppearanceDark
-    //                                                 : UIKeyboardAppearanceDefault);
-    //    UITextView.appearance.keyboardAppearance = (Theme.isDarkThemeEnabled
-    //                                                 ? UIKeyboardAppearanceDark
-    //                                                 : UIKeyboardAppearanceDefault);
-
-    [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
-    [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
+    UINavigationBar.appearance.barTintColor = UIColor.whiteColor;
+    UINavigationBar.appearance.translucent = NO;
+    UINavigationBar.appearance.tintColor = UIColor.blackColor;
+    UIToolbar.appearance.barTintColor = UIColor.blackColor;
+    UIToolbar.appearance.translucent = NO;
+    UIToolbar.appearance.tintColor = UIColor.whiteColor;
+    
+    UIBarButtonItem.appearance.tintColor = UIColor.blackColor;
+    [UISwitch.appearance setOnTintColor:[UIColor colorWithRGBHex:0x00F782]]; // Colors.accent
+    [UIToolbar.appearance setTintColor:[UIColor colorWithRGBHex:0x00F782]]; // Colors.accent
     
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
-    UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : Theme.navbarTitleColor };
+    UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : UIColor.blackColor };
 }
 
 @end

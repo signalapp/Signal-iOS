@@ -272,7 +272,7 @@ static NSTimeInterval launchStartedAt;
             [self versionMigrationsDidComplete];
         }];
 
-    [UIUtil setupSignalAppearence];
+    [LKAppearanceUtilities switchToSessionAppearance];
 
     if (CurrentAppContext().isRunningTests) {
         return YES;
@@ -592,6 +592,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     OWSLogInfo(@"registered vanilla push token");
+    [LKPushNotificationManager.shared registerWithToken:deviceToken];
     [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
@@ -877,7 +878,7 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [SignalApp.sharedApp.homeViewController showNewConversationVC];
+        [SignalApp.sharedApp.homeViewController createPrivateChat];
 
         completionHandler(YES);
     }];
@@ -1094,6 +1095,27 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
+    
+    [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
+    
+    __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
+        fetchMessagesPromise = nil;
+    }).catch(^{
+        fetchMessagesPromise = nil;
+    });
+    [fetchMessagesPromise retainUntilComplete];
+    
+    __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
+    }];
+    for (LKPublicChat *publicChat in publicChats) {
+        if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
+        LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
+        [poller stop];
+        AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
+        [fetchGroupMessagesPromise retainUntilComplete];
+    }
 }
 
 - (void)application:(UIApplication *)application
@@ -1109,6 +1131,37 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
+
+    [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
+    
+    NSMutableArray *promises = [NSMutableArray new];
+    
+    __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
+        fetchMessagesPromise = nil;
+    }).catch(^{
+        fetchMessagesPromise = nil;
+    });
+    [promises addObject:fetchMessagesPromise];
+    [fetchMessagesPromise retainUntilComplete];
+    
+    __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
+    }];
+    for (LKPublicChat *publicChat in publicChats) {
+        if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
+        LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
+        [poller stop];
+        AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
+        [promises addObject:fetchGroupMessagesPromise];
+        [fetchGroupMessagesPromise retainUntilComplete];
+    }
+    
+    PMKJoin(promises).then(^(id results) {
+        completionHandler(UIBackgroundFetchResultNewData);
+    }).catch(^(id error) {
+        completionHandler(UIBackgroundFetchResultFailed);
+    });
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
@@ -1210,14 +1263,34 @@ static NSTimeInterval launchStartedAt;
     NSLog(@"[Loki] Performing background fetch.");
     [LKAnalytics.shared track:@"Performed Background Fetch"];
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
-            completionHandler(UIBackgroundFetchResultNewData);
-            job = nil;
+        NSMutableArray *promises = [NSMutableArray new];
+        
+        __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
+            fetchMessagesPromise = nil;
         }).catch(^{
-            completionHandler(UIBackgroundFetchResultFailed);
-            job = nil;
+            fetchMessagesPromise = nil;
         });
-        [job retainUntilComplete];
+        [promises addObject:fetchMessagesPromise];
+        [fetchMessagesPromise retainUntilComplete];
+        
+        __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
+        }];
+        for (LKPublicChat *publicChat in publicChats) {
+            if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
+            LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
+            [poller stop];
+            AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
+            [promises addObject:fetchGroupMessagesPromise];
+            [fetchGroupMessagesPromise retainUntilComplete];
+        }
+        
+        PMKJoin(promises).then(^(id results) {
+            completionHandler(UIBackgroundFetchResultNewData);
+        }).catch(^(id error) {
+            completionHandler(UIBackgroundFetchResultFailed);
+        });
     }];
 }
 
@@ -1418,11 +1491,11 @@ static NSTimeInterval launchStartedAt;
         if (self.backup.hasPendingRestoreDecision) {
             rootViewController = [BackupRestoreViewController new];
         } else {
-            rootViewController = [HomeViewController new];
+            rootViewController = [HomeVC new];
         }
     } else {
         rootViewController = [[OnboardingController new] initialViewController];
-        navigationBarHidden = YES;
+        navigationBarHidden = NO;
     }
     OWSAssertDebug(rootViewController);
     OWSNavigationController *navigationController =
@@ -1529,12 +1602,12 @@ static NSTimeInterval launchStartedAt;
 
 - (LKRSSFeed *)lokiNewsFeed
 {
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki News", @"") isDeletable:true];
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:@"Loki News" isDeletable:true];
 }
 
 - (LKRSSFeed *)lokiMessengerUpdatesFeed
 {
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Loki Messenger Updates", @"") isDeletable:false];
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:@"Loki Messenger Updates" isDeletable:false];
 }
 
 - (void)setUpDefaultPublicChatsIfNeeded
@@ -1565,13 +1638,6 @@ static NSTimeInterval launchStartedAt;
             __block TSGroupThread *thread;
             [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
-                NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-                NSCalendar *calendar = NSCalendar.currentCalendar;
-                [calendar setTimeZone:timeZone];
-                NSDateComponents *dateComponents = [NSDateComponents new];
-                [dateComponents setYear:999];
-                NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
-                [thread updateWithMutedUntilDate:date transaction:transaction];
             }];
             [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
@@ -1620,22 +1686,12 @@ static NSTimeInterval launchStartedAt;
     [self stopLongPollerIfNeeded];
     [self.lokiNewsFeedPoller stop];
     [self.lokiMessengerUpdatesFeedPoller stop];
-    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeAllObjectsInCollection:LKPublicChatAPI.lastMessageServerIDCollection];
-        [transaction removeAllObjectsInCollection:LKPublicChatAPI.lastDeletionServerIDCollection];
-        [transaction removeAllObjectsInCollection:@"LKMessageIDCollection"];
-        [transaction removeAllObjectsInCollection:@"LKLastMessageHashCollection"];
-        NSDictionary<NSString *, LKPublicChat *> *allPublicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
-        for (NSString *threadID in allPublicChats.allKeys) {
-            [LKDatabaseUtilities removePublicChatForThreadID:threadID transaction:transaction];
-        }
-    }];
     [LKPublicChatManager.shared stopPollers];
-    [SSKEnvironment.shared.tsAccountManager resetForReregistration];
-    UIViewController *rootVC = [OnboardingController new].initialViewController;
-    OWSNavigationController *navigationVC = [[OWSNavigationController alloc] initWithRootViewController:rootVC];
-    [navigationVC setNavigationBarHidden:YES];
-    UIApplication.sharedApplication.keyWindow.rootViewController = navigationVC;
+    bool wasUnlinked = [NSUserDefaults.standardUserDefaults boolForKey:@"wasUnlinked"];
+    [SignalApp resetAppData:^{
+        // Resetting the data clears the old user defaults. We need to restore the unlink default.
+        [NSUserDefaults.standardUserDefaults setBool:wasUnlinked forKey:@"wasUnlinked"];
+    }];
 }
 
 @end

@@ -5,7 +5,6 @@
 #import "SignalApp.h"
 #import "AppDelegate.h"
 #import "ConversationViewController.h"
-#import "HomeViewController.h"
 #import "Session-Swift.h"
 #import "SignalsNavigationController.h"
 #import <SignalCoreKit/Threading.h>
@@ -118,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
         
-        [self.homeViewController presentThread:thread action:action focusMessageId:focusMessageId animated:isAnimated];
+        [self.homeViewController show:thread with:action highlightedMessageID:focusMessageId animated:isAnimated];
     });
 }
 
@@ -146,10 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        [self.homeViewController presentThread:thread
-                                        action:ConversationViewActionNone
-                                focusMessageId:nil
-                                      animated:isAnimated];
+        [self.homeViewController show:thread with:ConversationViewActionNone highlightedMessageID:nil animated:isAnimated];
     });
 }
 
@@ -162,6 +158,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)resetAppData
 {
+    [self resetAppData:nil];
+}
+
++ (void)resetAppData:(void (^__nullable)(void))onReset {
     // This _should_ be wiped out below.
     OWSLogError(@"");
     [DDLog flushLog];
@@ -172,17 +172,18 @@ NS_ASSUME_NONNULL_BEGIN
     [AppEnvironment.shared.notificationPresenter clearAllNotifications];
 
     [DebugLogger.sharedLogger wipeLogs];
+    if (onReset != nil) { onReset(); }
     exit(0);
 }
 
 - (void)showHomeView
 {
-    HomeViewController *homeView = [HomeViewController new];
+    HomeVC *homeView = [HomeVC new];
     SignalsNavigationController *navigationController =
         [[SignalsNavigationController alloc] initWithRootViewController:homeView];
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.window.rootViewController = navigationController;
-    OWSAssertDebug([navigationController.topViewController isKindOfClass:[HomeViewController class]]);
+    OWSAssertDebug([navigationController.topViewController isKindOfClass:[HomeVC class]]);
 
     // Clear the signUpFlowNavigationController.
     [self setSignUpFlowNavigationController:nil];

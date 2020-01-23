@@ -115,7 +115,7 @@ NSString *const TSContactThreadPrefix = @"c";
 {
     NSMutableSet *set = [[NSMutableSet alloc] initWithArray:_sessionRestoreDevices];
     [set addObject:hexEncodedPublicKey];
-    [self setSessionRestoreDevices:[set allObjects] transaction:transaction];
+    [self setSessionRestoreDevices:set.allObjects transaction:transaction];
 }
 
 - (void)removeAllSessionRestoreDevicesWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
@@ -123,7 +123,7 @@ NSString *const TSContactThreadPrefix = @"c";
     [self setSessionRestoreDevices:@[] transaction:transaction];
 }
 
-- (void)setSessionRestoreDevices:(NSArray<NSString *> * _Nonnull)sessionRestoreDevices transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction {
+- (void)setSessionRestoreDevices:(NSArray<NSString *> *)sessionRestoreDevices transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction {
     _sessionRestoreDevices = sessionRestoreDevices;
      void (^postNotification)() = ^() {
          [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.threadSessionRestoreDevicesChanged object:self.uniqueId];

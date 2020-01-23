@@ -51,13 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    self.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-                                                      target:self
-                                                      action:@selector(dismissPressed:)];
-
-    self.view.backgroundColor = Theme.backgroundColor;
-
+    UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"X"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissPressed:)];
+    closeButton.tintColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+    self.navigationItem.leftBarButtonItem = closeButton;
+    
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _fullTextSearcher = FullTextSearcher.shared;
     _threadViewHelper = [ThreadViewHelper new];
@@ -78,6 +75,21 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
 
     [self createViews];
+    
+    // Loki: Set gradient background
+    self.tableViewController.tableView.backgroundColor = UIColor.clearColor;
+    self.tableViewController.view.backgroundColor = UIColor.clearColor;
+    CAGradientLayer *layer = [CAGradientLayer new];
+    layer.frame = UIScreen.mainScreen.bounds;
+    layer.colors = @[ (id)[UIColor colorWithRGBHex:0x171717].CGColor, (id)[UIColor colorWithRGBHex:0x121212].CGColor ];
+    [self.tableViewController.view.layer insertSublayer:layer atIndex:0];
+    
+    // Loki: Set navigation bar background color
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navigationBar.shadowImage = [UIImage new];
+    [navigationBar setTranslucent:NO];
+    navigationBar.barTintColor = [UIColor colorWithRGBHex:0x161616]; // Colors.navigationBarBackground
 
     [self updateTableContents];
 }
@@ -87,6 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.selectThreadViewDelegate);
 
     // Search
+    /*
     UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
     searchBar.delegate = self;
@@ -102,6 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
     [header autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [header setCompressionResistanceVerticalHigh];
     [header setContentHuggingVerticalHigh];
+     */
 
     // Table
     _tableViewController = [OWSTableViewController new];
@@ -109,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:self.tableViewController.view];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-    [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
+    [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
@@ -168,6 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
     ContactsViewHelper *helper = self.contactsViewHelper;
     OWSTableContents *contents = [OWSTableContents new];
 
+    /*
     OWSTableSection *findByPhoneSection = [OWSTableSection new];
     [findByPhoneSection
         addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
@@ -182,11 +197,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                       animated:YES];
                                          }]];
     [contents addSection:findByPhoneSection];
+     */
 
     // Existing threads are listed first, ordered by most recently active
     OWSTableSection *recentChatsSection = [OWSTableSection new];
-    recentChatsSection.headerTitle = NSLocalizedString(
-        @"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE", @"Table section header for recently active conversations");
+    recentChatsSection.headerTitle = NSLocalizedString(@"Recent Chats", @"");
     for (TSThread *thread in [self filteredThreadsWithSearchText]) {
         [recentChatsSection
             addItem:[OWSTableItem
@@ -221,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         [[DisappearingTimerConfigurationView alloc]
                                             initWithDurationSeconds:disappearingMessagesConfiguration.durationSeconds];
 
-                                    disappearingTimerConfigurationView.tintColor = Theme.middleGrayColor;
+                                    disappearingTimerConfigurationView.tintColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
                                     [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
 
                                     [cell ows_setAccessoryView:disappearingTimerConfigurationView];
@@ -262,8 +277,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Contacts who don't yet have a thread are listed last
     OWSTableSection *otherContactsSection = [OWSTableSection new];
-    otherContactsSection.headerTitle = NSLocalizedString(
-        @"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE", @"Table section header for conversations you haven't recently used.");
+    otherContactsSection.headerTitle = NSLocalizedString(@"Other Chats", @"");
     NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccountsWithSearchText];
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         [otherContactsSection

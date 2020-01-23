@@ -516,18 +516,18 @@ public class LinkPreviewView: UIStackView {
 
     private let sentMinimumHeroSize: CGFloat = 200
 
-    private let sentTitleFontSizePoints: CGFloat = 17
-    private let sentDomainFontSizePoints: CGFloat = 12
+    private let sentTitleFontSizePoints: CGFloat = Values.mediumFontSize
+    private let sentDomainFontSizePoints: CGFloat = Values.verySmallFontSize
     private let sentVSpacing: CGFloat = 4
 
     // The "sent message" mode has two submodes: "hero" and "non-hero".
-    private let sentNonHeroHMargin: CGFloat = 6
-    private let sentNonHeroVMargin: CGFloat = 6
+    private let sentNonHeroHMargin: CGFloat = Values.mediumSpacing
+    private let sentNonHeroVMargin: CGFloat = Values.mediumSpacing
     private let sentNonHeroImageSize: CGFloat = 72
     private let sentNonHeroHSpacing: CGFloat = 8
 
-    private let sentHeroHMargin: CGFloat = 12
-    private let sentHeroVMargin: CGFloat = 7
+    private let sentHeroHMargin: CGFloat = Values.mediumSpacing
+    private let sentHeroVMargin: CGFloat = Values.mediumSpacing
 
     private func sentIsHero(state: LinkPreviewSent) -> Bool {
         let imageSize = state.imageSize
@@ -553,9 +553,9 @@ public class LinkPreviewView: UIStackView {
         let label = UILabel()
         if let displayDomain = state.displayDomain(),
             displayDomain.count > 0 {
-            label.text = displayDomain.uppercased()
+            label.text = displayDomain
         } else {
-            label.text = NSLocalizedString("LINK_PREVIEW_UNKNOWN_DOMAIN", comment: "Label for link previews with an unknown host.").uppercased()
+            label.text = NSLocalizedString("LINK_PREVIEW_UNKNOWN_DOMAIN", comment: "Label for link previews with an unknown host.")
         }
         label.font = UIFont.systemFont(ofSize: sentDomainFontSizePoints)
         label.textColor = Theme.secondaryColor
@@ -571,7 +571,7 @@ public class LinkPreviewView: UIStackView {
         self.distribution = .fill
         self.spacing = 8
         self.isLayoutMarginsRelativeArrangement = true
-
+        
         self.layoutConstraints.append(self.autoSetDimension(.height, toSize: draftHeight + draftMarginTop))
 
         // Image
@@ -620,16 +620,16 @@ public class LinkPreviewView: UIStackView {
             title.count > 0 {
             let label = UILabel()
             label.text = title
-            label.textColor = Theme.primaryColor
-            label.font = UIFont.ows_dynamicTypeBody
+            label.textColor = Colors.text
+            label.font = .systemFont(ofSize: Values.mediumFontSize)
             textStack.addArrangedSubview(label)
         }
         if let displayDomain = state.displayDomain(),
             displayDomain.count > 0 {
             let label = UILabel()
-            label.text = displayDomain.uppercased()
-            label.textColor = Theme.secondaryColor
-            label.font = UIFont.ows_dynamicTypeCaption1
+            label.text = displayDomain
+            label.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+            label.font = .systemFont(ofSize: Values.verySmallFontSize)
             textStack.addArrangedSubview(label)
         }
 

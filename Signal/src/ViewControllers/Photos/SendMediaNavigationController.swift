@@ -257,13 +257,13 @@ class SendMediaNavigationController: OWSNavigationController {
 
 extension SendMediaNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if let navbarTheme = preferredNavbarTheme(viewController: viewController) {
-            if let owsNavBar = navigationBar as? OWSNavigationBar {
-                owsNavBar.overrideTheme(type: navbarTheme)
-            } else {
-                owsFailDebug("unexpected navigationBar: \(navigationBar)")
-            }
-        }
+//        if let navbarTheme = preferredNavbarTheme(viewController: viewController) {
+//            if let owsNavBar = navigationBar as? OWSNavigationBar {
+//                owsNavBar.overrideTheme(type: navbarTheme)
+//            } else {
+//                owsFailDebug("unexpected navigationBar: \(navigationBar)")
+//            }
+//        }
 
         switch viewController {
         case is PhotoCaptureViewController:
@@ -286,13 +286,13 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
     // In case back navigation was canceled, we re-apply whatever is showing.
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        if let navbarTheme = preferredNavbarTheme(viewController: viewController) {
-            if let owsNavBar = navigationBar as? OWSNavigationBar {
-                owsNavBar.overrideTheme(type: navbarTheme)
-            } else {
-                owsFailDebug("unexpected navigationBar: \(navigationBar)")
-            }
-        }
+//        if let navbarTheme = preferredNavbarTheme(viewController: viewController) {
+//            if let owsNavBar = navigationBar as? OWSNavigationBar {
+//                owsNavBar.overrideTheme(type: navbarTheme)
+//            } else {
+//                owsFailDebug("unexpected navigationBar: \(navigationBar)")
+//            }
+//        }
         self.updateButtons(topViewController: viewController)
     }
 

@@ -25,13 +25,29 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     [super viewDidLoad];
 
-    self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
-
     [self observeNotifications];
 
     [self updateTableContents];
     
-    [LKAnalytics.shared track:@"Privacy Settings Opened"];
+    // Loki: Set gradient background
+    self.tableView.backgroundColor = UIColor.clearColor;
+    LKGradient *gradient = LKGradients.defaultLokiBackground;
+    self.view.backgroundColor = UIColor.clearColor;
+    [self.view setGradient:gradient];
+    
+    // Loki: Set navigation bar background color
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navigationBar.shadowImage = [UIImage new];
+    [navigationBar setTranslucent:NO];
+    navigationBar.barTintColor = LKColors.navigationBarBackground;
+    
+    // Loki: Customize title
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.text = NSLocalizedString(@"Privacy", @"");
+    titleLabel.textColor = LKColors.text;
+    titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
+    self.navigationItem.titleView = titleLabel;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -121,8 +137,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     OWSTableSection *typingIndicatorsSection = [OWSTableSection new];
     typingIndicatorsSection.headerTitle
         = NSLocalizedString(@"SETTINGS_TYPING_INDICATORS", @"Label for the 'typing indicators' setting.");
-    typingIndicatorsSection.footerTitle = NSLocalizedString(
-        @"SETTINGS_TYPING_INDICATORS_FOOTER", @"An explanation of the 'typing indicators' setting.");
+    typingIndicatorsSection.footerTitle = NSLocalizedString(@"See and share when messages are being typed (applies to all sessions).", @"");
     [typingIndicatorsSection
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_TYPING_INDICATORS",
                                                      @"Label for the 'typing indicators' setting.")
@@ -140,7 +155,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     OWSTableSection *screenLockSection = [OWSTableSection new];
     screenLockSection.headerTitle = NSLocalizedString(
         @"SETTINGS_SCREEN_LOCK_SECTION_TITLE", @"Title for the 'screen lock' section of the privacy settings.");
-    screenLockSection.footerTitle = NSLocalizedString(@"Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed.", @"");
+    screenLockSection.footerTitle = NSLocalizedString(@"Require Touch ID, Face ID or your device passcode to unlock Session’s screen. You can still receive notifications when Screen Lock is enabled. Use Session’s notification settings to customise the information displayed in notifications.", @"");
     [screenLockSection
         addItem:[OWSTableItem
                     switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_SWITCH_LABEL",
@@ -176,9 +191,9 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
     OWSTableSection *screenSecuritySection = [OWSTableSection new];
     screenSecuritySection.headerTitle = NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
-    screenSecuritySection.footerTitle = NSLocalizedString(@"Prevent Loki Messenger previews from appearing in the app switcher.", nil);
+    screenSecuritySection.footerTitle = NSLocalizedString(@"Prevent Session previews from appearing in the app switcher.", nil);
     [screenSecuritySection
-        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
+        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"Disable Preview in App Switcher", @"")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"screen_security"]
                     isOnBlock:^{
                         return [Environment.shared.preferences screenSecurityIsEnabled];
@@ -425,7 +440,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:nil
-                                            message:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
+                                            message:NSLocalizedString(@"Are you sure? This cannot be undone.",
                                                         @"Alert message before user confirms clearing history")
                                      preferredStyle:UIAlertControllerStyleAlert];
 

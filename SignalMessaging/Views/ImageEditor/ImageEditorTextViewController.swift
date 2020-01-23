@@ -161,7 +161,7 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
     public override func loadView() {
         self.view = UIView()
-        self.view.backgroundColor = .black
+        self.view.backgroundColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
         self.view.isOpaque = true
 
         canvasView.configureSubviews()
@@ -169,7 +169,7 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         canvasView.autoPinEdgesToSuperviewEdges()
 
         let tintView = UIView()
-        tintView.backgroundColor = UIColor(white: 0, alpha: 0.33)
+        tintView.backgroundColor = .clear
         tintView.isOpaque = false
         self.view.addSubview(tintView)
         tintView.autoPinEdgesToSuperviewEdges()

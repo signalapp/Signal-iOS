@@ -108,18 +108,20 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (void)configureCell:(UITableViewCell *)cell
 {
-    cell.backgroundColor = [Theme backgroundColor];
+    cell.backgroundColor = [UIColor colorWithRGBHex:0x1B1B1B]; // Colors.cellBackground
     if (@available(iOS 13, *)) {
         cell.contentView.backgroundColor = UIColor.clearColor;
     } else {
-        cell.contentView.backgroundColor = Theme.backgroundColor;
+        cell.contentView.backgroundColor = [UIColor colorWithRGBHex:0x1B1B1B]; // Colors.cellBackground
     }
-    cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-    cell.textLabel.textColor = [Theme primaryColor];
-    cell.detailTextLabel.textColor = [Theme secondaryColor];
+    
+    cell.textLabel.font = [UIFont systemFontOfSize:15]; // Values.mediumFontSize
+    cell.textLabel.textColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:15]; // Values.mediumFontSize
+    cell.detailTextLabel.textColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
 
     UIView *selectedBackgroundView = [UIView new];
-    selectedBackgroundView.backgroundColor = Theme.cellSelectedColor;
+    selectedBackgroundView.backgroundColor = [UIColor colorWithRGBHex:0x0C0C0C]; // Colors.cellSelected
     cell.selectedBackgroundView = selectedBackgroundView;
 }
 
@@ -181,7 +183,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return [self itemWithText:text
         accessibilityIdentifier:accessibilityIdentifier
                     actionBlock:actionBlock
-                  accessoryType:UITableViewCellAccessoryDisclosureIndicator];
+                  accessoryType:UITableViewCellAccessoryNone];
 }
 
 + (OWSTableItem *)checkmarkItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock
@@ -221,7 +223,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         cell.textLabel.text = text;
         cell.accessoryType = accessoryType;
         cell.accessibilityIdentifier = accessibilityIdentifier;
-        cell.tintColor = UIColor.lokiGreen;
+        cell.tintColor = [UIColor colorWithRGBHex:0x00F782]; // Colors.accent
         return cell;
     };
     return item;
@@ -273,7 +275,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         [OWSTableItem configureCell:cell];
         cell.textLabel.text = text;
         cell.detailTextLabel.text = detailText;
-        [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         cell.accessibilityIdentifier = accessibilityIdentifier;
         return cell;
     };
@@ -299,7 +300,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     item.customCellBlock = ^{
         UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;
     };
     return item;
@@ -350,10 +350,10 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         // These cells look quite different.
         //
         // Smaller font.
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
+        cell.textLabel.font = [UIFont systemFontOfSize:15]; // Values.mediumFontSize
         // Soft color.
         // TODO: Theme, review with design.
-        cell.textLabel.textColor = Theme.middleGrayColor;
+        cell.textLabel.textColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
         // Centered.
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.userInteractionEnabled = NO;
@@ -397,8 +397,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
         UILabel *accessoryLabel = [UILabel new];
         accessoryLabel.text = accessoryText;
-        accessoryLabel.textColor = [Theme secondaryColor];
-        accessoryLabel.font = [UIFont ows_regularFontWithSize:16.0f];
+        accessoryLabel.textColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+        accessoryLabel.font = [UIFont systemFontOfSize:15]; // Values.mediumFontSize
         accessoryLabel.textAlignment = NSTextAlignmentRight;
         [accessoryLabel sizeToFit];
         cell.accessoryView = accessoryLabel;
@@ -420,7 +420,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         cell.textLabel.text = text;
         cell.textLabel.numberOfLines = 0;
         cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
         return cell;
     };
@@ -476,6 +475,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
         UISwitch *cellSwitch = [UISwitch new];
         cell.accessoryView = cellSwitch;
+        cellSwitch.onTintColor = [UIColor colorWithRGBHex:0x00F782]; // Colors.accent
         [cellSwitch setOn:isOnBlock()];
         [cellSwitch addTarget:weakTarget action:selector forControlEvents:UIControlEventValueChanged];
         cellSwitch.enabled = isEnabledBlock();

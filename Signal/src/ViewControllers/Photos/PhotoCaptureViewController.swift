@@ -56,7 +56,7 @@ class PhotoCaptureViewController: OWSViewController {
 
     override func loadView() {
         self.view = UIView()
-        self.view.backgroundColor = Theme.darkThemeBackgroundColor
+        self.view.backgroundColor = Colors.navigationBarBackground
 
         let audioActivity = AudioActivity(audioDescription: "PhotoCaptureViewController", behavior: .playAndRecord)
         self.audioActivity = audioActivity
@@ -69,7 +69,7 @@ class PhotoCaptureViewController: OWSViewController {
         super.viewDidLoad()
         setupPhotoCapture()
         setupOrientationMonitoring()
-
+        
         updateNavigationItems()
         updateFlashModeControl()
 
@@ -147,7 +147,7 @@ class PhotoCaptureViewController: OWSViewController {
     }
 
     private lazy var dismissControl: PhotoControl = {
-        return PhotoControl(imageName: "ic_x_with_shadow") { [weak self] in
+        return PhotoControl(imageName: "X") { [weak self] in
             self?.didTapClose()
         }
     }()

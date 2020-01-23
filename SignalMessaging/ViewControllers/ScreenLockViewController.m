@@ -36,8 +36,13 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 - (void)loadView
 {
     [super loadView];
-
-    self.view.backgroundColor = UIColor.lokiDarkestGray;
+    
+    // Loki: Set gradient background
+    self.view.backgroundColor = UIColor.clearColor;
+    CAGradientLayer *layer = [CAGradientLayer new];
+    layer.frame = UIScreen.mainScreen.bounds;
+    layer.colors = @[ (id)[UIColor colorWithRGBHex:0x171717].CGColor, (id)[UIColor colorWithRGBHex:0x121212].CGColor ];
+    [self.view.layer insertSublayer:layer atIndex:0];
 
     UIView *edgesView = [UIView containerView];
     [self.view addSubview:edgesView];
@@ -45,19 +50,20 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [edgesView autoPinWidthToSuperview];
 
-    UIImage *image = [UIImage imageNamed:@"Loki"];
+    UIImage *image = [UIImage imageNamed:@"SessionGreen64"];
     UIImageView *imageView = [UIImageView new];
     imageView.image = image;
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
     [edgesView addSubview:imageView];
     [imageView autoHCenterInSuperview];
 
-    [imageView autoSetDimension:ALDimensionWidth toSize:75];
-    [imageView autoSetDimension:ALDimensionHeight toSize:71];
+    [imageView autoSetDimension:ALDimensionWidth toSize:64];
+    [imageView autoSetDimension:ALDimensionHeight toSize:64];
 
     const CGFloat kButtonHeight = 40.f;
     OWSFlatButton *button =
-        [OWSFlatButton buttonWithTitle:NSLocalizedString(@"Unlock Loki Messenger", @"")
-                                  font:[OWSFlatButton fontForHeight:kButtonHeight]
+        [OWSFlatButton buttonWithTitle:NSLocalizedString(@"Unlock Session", @"")
+                                  font:[UIFont boldSystemFontOfSize:15] // Values.mediumFontSize
                             titleColor:UIColor.whiteColor
                        backgroundColor:UIColor.clearColor
                                 target:self

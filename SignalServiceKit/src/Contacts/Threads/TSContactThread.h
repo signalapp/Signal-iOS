@@ -51,7 +51,6 @@ extern NSString *const TSContactThreadPrefix;
 #pragma mark - Loki Session Restore
 
 - (void)addSessionRestoreDevice:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
-
 - (void)removeAllSessionRestoreDevicesWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 @end

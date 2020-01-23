@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic) ZXCapture *capture;
 @property (nonatomic) BOOL captureEnabled;
 @property (nonatomic) UIView *maskingView;
+@property (nonatomic) dispatch_queue_t captureQueue;
 
 @end
 
@@ -34,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _captureEnabled = NO;
+    _captureQueue = dispatch_get_main_queue();
 
     return self;
 }
@@ -46,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _captureEnabled = NO;
+    _captureQueue = dispatch_get_main_queue();
 
     return self;
 }
@@ -102,8 +105,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.captureEnabled = YES;
     if (!self.capture) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(self.captureQueue, ^{
             self.capture = [[ZXCapture alloc] init];
+//            self.capture.invert = YES;
             self.capture.camera = self.capture.back;
             self.capture.focusMode = AVCaptureFocusModeContinuousAutoFocus;
             self.capture.delegate = self;
@@ -123,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stopCapture
 {
     self.captureEnabled = NO;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(self.captureQueue, ^{
         [self.capture stop];
     });
 }

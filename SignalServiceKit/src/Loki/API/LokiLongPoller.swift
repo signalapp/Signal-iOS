@@ -69,7 +69,7 @@ public final class LokiLongPoller : NSObject {
             let nextSnode = unusedSnodes.randomElement()!
             usedSnodes.insert(nextSnode)
             print("[Loki] Opening long polling connection to \(nextSnode).")
-            longPoll(nextSnode, seal: seal).catch(on: DispatchQueue.global()) { [weak self] error in
+            longPoll(nextSnode, seal: seal).catch(on: LokiAPI.errorHandlingQueue) { [weak self] error in
                 print("[Loki] Long polling connection to \(nextSnode) failed; dropping it and switching to next snode.")
                 LokiAPI.dropIfNeeded(nextSnode, hexEncodedPublicKey: userHexEncodedPublicKey)
                 self?.openConnectionToNextSnode(seal: seal)

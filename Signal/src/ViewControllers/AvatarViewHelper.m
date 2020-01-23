@@ -12,6 +12,7 @@
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -69,6 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
 
+    [LKAppearanceUtilities switchToImagePickerAppearance];
+    
     [self.delegate.fromViewController ows_askForCameraPermissions:^(BOOL granted) {
         if (!granted) {
             OWSLogWarn(@"Camera permission denied.");
@@ -90,6 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
 
+    [LKAppearanceUtilities switchToImagePickerAppearance];
+    
     [self.delegate.fromViewController ows_askForMediaLibraryPermissions:^(BOOL granted) {
         if (!granted) {
             OWSLogWarn(@"Media Library permission denied.");
@@ -114,6 +119,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
 
+    [LKAppearanceUtilities switchToSessionAppearance];
+    
     [self.delegate.fromViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -125,6 +132,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
 
+    [LKAppearanceUtilities switchToSessionAppearance];
+    
     UIImage *rawAvatar = [info objectForKey:UIImagePickerControllerOriginalImage];
 
     [self.delegate.fromViewController

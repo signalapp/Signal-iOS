@@ -252,12 +252,14 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         // attachment approval provides it's own play button to keep it
         // at the proper zoom scale.
         if mode != .attachmentApproval {
-            let videoPlayIcon = UIImage(named: "play_button")!
+            let videoPlayIcon = UIImage(named: "CirclePlay")!
             let videoPlayButton = UIImageView(image: videoPlayIcon)
             self.videoPlayButton = videoPlayButton
             videoPlayButton.contentMode = .scaleAspectFit
             self.addSubview(videoPlayButton)
             videoPlayButton.autoCenterInSuperview()
+            videoPlayButton.autoSetDimension(.width, toSize: 72)
+            videoPlayButton.autoSetDimension(.height, toSize: 72)
         }
     }
 
@@ -332,7 +334,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     private var controlTintColor: UIColor {
         switch mode {
         case .small, .large:
-            return UIColor.ows_materialBlue
+            return UIColor(rgbHex: 0x00F782) // Colors.accent
         case .attachmentApproval:
             return UIColor.white
         }

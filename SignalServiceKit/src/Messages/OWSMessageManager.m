@@ -448,13 +448,12 @@ NS_ASSUME_NONNULL_BEGIN
             }
             [self.primaryStorage setPreKeyBundle:bundle forContact:envelope.source transaction:transaction];
             
-            // If we got a friend request and we were friends with this user then we need to reset our session
+            // Loki: If we received a friend request, but we were already friends with this user, then reset the session
             if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
                 TSContactThread *thread = [TSContactThread getThreadWithContactId:envelope.source transaction:transaction];
                 if (thread && thread.isContactFriend) {
                     [self resetSessionWithContact:envelope.source transaction:transaction];
-                    
-                    // Let our other devices know that we have reset session
+                    // Let our other devices know that we have reset the session
                     [SSKEnvironment.shared.syncManager syncContact:envelope.source transaction:transaction];
                 }
             }
@@ -547,7 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    // Loki - Don't process session restore message
+    // Loki: Don't process session restore messages
     if ((dataMessage.flags & SSKProtoDataMessageFlagsSessionRestore) != 0) { return; }
     
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
@@ -1162,7 +1161,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
-    NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source transaction:transaction];
+    NSString *name = [dataMessage.profile displayName] ?: [self.contactsManager displayNameForPhoneIdentifier:envelope.source transaction:transaction];
 
     // MJK TODO - safe to remove senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *message =

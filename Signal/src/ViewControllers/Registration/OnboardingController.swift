@@ -90,9 +90,7 @@ public class OnboardingController: NSObject {
     @objc
     public func initialViewController() -> UIViewController {
         AssertIsOnMainThread()
-
-        let view = OnboardingSplashViewController(onboardingController: self)
-        return view
+        return LandingVC()
     }
 
     // MARK: - Transitions
@@ -118,15 +116,15 @@ public class OnboardingController: NSObject {
     }
     
     public func pushSeedVC(from viewController: UIViewController) {
-        AssertIsOnMainThread()
-        let seedVC = SeedVC(onboardingController: self)
-        viewController.navigationController?.pushViewController(seedVC, animated: true)
+//        AssertIsOnMainThread()
+//        let seedVC = SeedVC(onboardingController: self)
+//        viewController.navigationController?.pushViewController(seedVC, animated: true)
     }
     
     public func pushDisplayNameVC(from viewController: UIViewController) {
-        AssertIsOnMainThread()
-        let displayNameVC = DisplayNameVC(onboardingController: self)
-        viewController.navigationController?.pushViewController(displayNameVC, animated: true)
+//        AssertIsOnMainThread()
+//        let displayNameVC = DisplayNameVC(onboardingController: self)
+//        viewController.navigationController?.pushViewController(displayNameVC, animated: true)
     }
 
     public func onboardingRegistrationSucceeded(viewController: UIViewController) {

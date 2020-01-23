@@ -7,6 +7,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Theme.h>
+#import "Session-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,8 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.circleView = circleView;
     circleView.userInteractionEnabled = NO;
     circleView.layer.cornerRadius = circleSize * 0.5f;
-    circleView.layer.borderColor = UIColor.whiteColor.CGColor;
-    circleView.layer.borderWidth = 1 / UIScreen.mainScreen.scale;
+    circleView.layer.borderColor = [LKColors.text colorWithAlphaComponent:LKValues.composeViewTextFieldBorderOpacity].CGColor;
+    circleView.layer.borderWidth = LKValues.composeViewTextFieldBorderThickness;
     [circleView autoSetDimension:ALDimensionWidth toSize:circleSize];
     [circleView autoSetDimension:ALDimensionHeight toSize:circleSize];
 
@@ -79,22 +80,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateColors
 {
-    UIColor *foregroundColor;
-    UIColor *backgroundColor;
-    if (self.hasUnreadMessages) {
-        foregroundColor = UIColor.whiteColor;
-        backgroundColor = UIColor.ows_materialBlueColor;
-    } else {
-        foregroundColor = UIColor.ows_materialBlueColor;
-        backgroundColor = Theme.scrollButtonBackgroundColor;
-    }
+    UIColor *foregroundColor = LKColors.text;
+    UIColor *backgroundColor = LKColors.composeViewBackground;
 
     const CGFloat circleSize = self.class.circleSize;
     self.circleView.backgroundColor = backgroundColor;
     self.iconLabel.attributedText =
         [[NSAttributedString alloc] initWithString:self.iconText
                                         attributes:@{
-                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:circleSize * 0.8f],
+                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:circleSize * 0.75f],
                                             NSForegroundColorAttributeName : foregroundColor,
                                             NSBaselineOffsetAttributeName : @(-0.5f),
                                         }];

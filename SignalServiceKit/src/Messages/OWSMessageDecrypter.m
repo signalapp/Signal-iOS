@@ -695,8 +695,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
    if (errorMessage.errorType == TSErrorMessageNoSession ||
        errorMessage.errorType == TSErrorMessageInvalidMessage ||
        errorMessage.errorType == TSErrorMessageInvalidKeyException) {
-       // We want to store the source device pubkey into the session restore incase it's a secondary device message
-       [((TSContactThread *) contactThread) addSessionRestoreDevice:envelope.source transaction:transaction];
+       // We want to store the source device's public key into the session restore in case it's a secondary device message
+       [((TSContactThread *)contactThread) addSessionRestoreDevice:envelope.source transaction:transaction];
    }
 }
 
