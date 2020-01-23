@@ -614,11 +614,14 @@
 		8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */; };
 		8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */; };
 		8835DE08230E092F00DC6B66 /* FindByPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */; };
+		8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */ = {isa = PBXBuildFile; fileRef = 8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */; };
 		8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */; };
 		8855DF89238F2E690066D96F /* EmojiCountsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */; };
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
 		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
 		886F08A7234958970085C27F /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */; };
+		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
+		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
@@ -1473,6 +1476,7 @@
 		8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewController.swift; sourceTree = "<group>"; };
 		8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToBlockListViewController.swift; sourceTree = "<group>"; };
 		8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByPhoneNumberViewController.swift; sourceTree = "<group>"; };
+		8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationSuccess.json; sourceTree = "<group>"; };
 		8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiReactorsTableView.swift; sourceTree = "<group>"; };
 		8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCountsCollectionView.swift; sourceTree = "<group>"; };
 		88594E592335B08000390B19 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
@@ -1481,6 +1485,8 @@
 		886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccessoryViewPlaceholder.swift; sourceTree = "<group>"; };
 		887D5880236773240048B8FB /* ta */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ta; path = translations/ta.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887D5881236773410048B8FB /* te */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = te; path = translations/te.lproj/Localizable.strings; sourceTree = "<group>"; };
+		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
+		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
 		88A357B823639384009D6B9A /* MemberActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberActionSheet.swift; sourceTree = "<group>"; };
 		88A358252363FF63009D6B9A /* mr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mr; path = translations/mr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2891,6 +2897,9 @@
 				34123C61239AB71600782788 /* stickerSplashComplete.json */,
 				4C0CF6F92386295400C9F818 /* tap_to_focus.json */,
 				88BFD4722335C2B3001797D7 /* waveformLoading.json */,
+				888C827F23D795F90059464B /* pinCreationFail.json */,
+				888C828023D795FA0059464B /* pinCreationInProgress.json */,
+				8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */,
 			);
 			path = Lottie;
 			sourceTree = "<group>";
@@ -3524,6 +3533,7 @@
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
+				8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */,
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
 				34123C62239AB71600782788 /* stickerSplashComplete.json in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
@@ -3541,6 +3551,7 @@
 				45B74A7A2044AAB600CD42F8 /* keys.aifc in Resources */,
 				45B74A762044AAB600CD42F8 /* keys-quiet.aifc in Resources */,
 				45B74A862044AAB600CD42F8 /* note.aifc in Resources */,
+				888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */,
 				45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */,
 				4C9D349B2369F11F006A4307 /* img_1.png in Resources */,
 				45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */,
@@ -3549,6 +3560,7 @@
 				4C9D349D2369F11F006A4307 /* img_2.png in Resources */,
 				45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
+				888C828223D795FA0059464B /* pinCreationFail.json in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
