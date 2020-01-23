@@ -169,8 +169,8 @@ final class ConversationTitleView : UIView {
                         }
                     }
                     if let userCount = userCount {
-                        if userCount > 2500 {
-                            subtitle.append(NSAttributedString(string: "2500+ members"))
+                        if userCount >= 200 {
+                            subtitle.append(NSAttributedString(string: "200+ members"))
                         } else {
                             subtitle.append(NSAttributedString(string: "\(userCount) members"))
                         }
