@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSystemMessageCell.h"
@@ -277,9 +277,10 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageAddToContactsOffer:
             case TSInfoMessageAddUserToProfileWhitelistOffer:
             case TSInfoMessageAddGroupToProfileWhitelistOffer:
+                return nil;
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
-                return nil;
+                return [Theme iconImage:ThemeIconGroupMessage];
             case TSInfoMessageUnknownProtocolVersion:
                 OWSAssertDebug([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]);
                 if ([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {

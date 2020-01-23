@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BlockListUIUtils.h"
@@ -17,6 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
 @implementation BlockListUIUtils
+
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
 
 #pragma mark - Block
 
@@ -233,11 +240,11 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     // block the group regardless of the ability to deliver the "leave group" message.
     [blockingManager addBlockedGroup:groupThread.groupModel wasLocallyInitiated:YES];
 
-    // blockingManager.addBlocked* creates sneaky transactions, so we can't pass in a transaction
-    // via params and instead have to create our own sneaky transaction here.
-    [groupThread leaveGroupWithSneakyTransaction];
-
-    [ThreadUtil enqueueLeaveGroupMessageInThread:groupThread];
+    // blockingManager.addBlocked* creates several sneaky transactions, so we can't pass one
+    // via params and instead have to create our own.
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [ThreadUtil leaveGroupThread:groupThread transaction:transaction];
+    }];
 
     NSString *alertTitle
         = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE", @"The title of the 'group blocked' alert.");

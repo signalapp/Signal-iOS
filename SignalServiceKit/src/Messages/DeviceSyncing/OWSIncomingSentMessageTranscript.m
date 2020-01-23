@@ -117,6 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                          groupsVersion:GroupsVersionV1
                                                  groupSecretParamsData:nil
                                                      shouldSendMessage:NO
+                                              groupUpdateSourceAddress:localAddress
                                                            transaction:transaction
                                                                  error:&groupError]
                               .thread;

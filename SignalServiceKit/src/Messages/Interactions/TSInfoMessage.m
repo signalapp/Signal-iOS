@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInfoMessage.h"
@@ -9,6 +9,11 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyOldGroupModel = @"InfoMessageUserInfoKeyOldGroupModel";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewGroupModel = @"InfoMessageUserInfoKeyNewGroupModel";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceAddress
+    = @"InfoMessageUserInfoKeyGroupUpdateSourceAddress";
 
 NSUInteger TSInfoMessageSchemaVersion = 2;
 
@@ -94,6 +99,20 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     return self;
 }
 
+- (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)infoMessageType
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
+{
+    self = [self initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageType:infoMessageType];
+    if (!self) {
+        return self;
+    }
+
+    _infoMessageUserInfo = infoMessageUserInfo;
+
+    return self;
+}
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
@@ -131,6 +150,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
+             infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
@@ -159,6 +179,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     }
 
     _customMessage = customMessage;
+    _infoMessageUserInfo = infoMessageUserInfo;
     _messageType = messageType;
     _read = read;
     _unregisteredAddress = unregisteredAddress;
@@ -229,7 +250,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageTypeGroupQuit:
             return NSLocalizedString(@"GROUP_YOU_LEFT", nil);
         case TSInfoMessageTypeGroupUpdate:
-            return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", nil);
+            return [self groupUpdateDescriptionWithTransaction:transaction];
         case TSInfoMessageAddToContactsOffer:
             return NSLocalizedString(@"ADD_TO_CONTACTS_OFFER",
                 @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.");

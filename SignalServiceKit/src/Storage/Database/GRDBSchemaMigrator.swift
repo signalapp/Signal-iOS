@@ -57,6 +57,7 @@ public class GRDBSchemaMigrator: NSObject {
         case indexFailedJob
         case groupsV2MessageJobs
         case experienceUpgradeSnooze
+        case addUserInfoToInteractions
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -341,6 +342,12 @@ public class GRDBSchemaMigrator: NSObject {
             // strictly necessary since we only check a subset of ids that should
             // be active at a given time, but it's nice to keep things tidy.
             try db.execute(sql: "UPDATE model_ExperienceUpgrade SET isComplete = 1")
+        }
+
+        migrator.registerMigration(MigrationId.addUserInfoToInteractions.rawValue) { db in
+            try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "infoMessageUserInfo", .blob)
+            }
         }
 
         return migrator
