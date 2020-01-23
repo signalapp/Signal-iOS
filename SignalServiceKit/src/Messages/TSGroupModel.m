@@ -340,6 +340,9 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
 - (NSArray<SignalServiceAddress *> *)administrators
 {
+    if (self.groupsVersion == GroupsVersionV1) {
+        return @[];
+    }
     NSMutableArray<SignalServiceAddress *> *administrators = [NSMutableArray new];
     for (SignalServiceAddress *address in self.groupMembers) {
         if ([self isAdministrator:address]) {
