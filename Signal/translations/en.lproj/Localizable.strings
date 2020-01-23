@@ -1995,6 +1995,9 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Re-enter PIN";
 
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Encrypting PIN...";
+
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
 
