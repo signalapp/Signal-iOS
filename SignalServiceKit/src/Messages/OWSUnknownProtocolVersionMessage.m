@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUnknownProtocolVersionMessage.h"
@@ -91,6 +91,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
+             infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
@@ -116,6 +117,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
                      quotedMessage:quotedMessage
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
                      customMessage:customMessage
+               infoMessageUserInfo:infoMessageUserInfo
                        messageType:messageType
                               read:read
                unregisteredAddress:unregisteredAddress];

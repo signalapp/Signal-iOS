@@ -66,6 +66,7 @@
     "InteractionRecord.groupMetaMessage": 21, 
     "InteractionRecord.hasLegacyMessageState": 22, 
     "InteractionRecord.hasSyncedTranscript": 23, 
+    "InteractionRecord.infoMessageUserInfo": 50, 
     "InteractionRecord.isFromLinkedDevice": 24, 
     "InteractionRecord.isLocalChange": 25, 
     "InteractionRecord.isViewOnceComplete": 26, 
