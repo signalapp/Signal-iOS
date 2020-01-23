@@ -261,4 +261,11 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let notificationServiceExtension = build.includes(.dev)
+
+    // DEBUG builds won't receive push notifications, which prevents receiving messages
+    // while the app is backgrounded or the system call screen is active.
+    //
+    // Set this flag to true to be able to download messages even when the app is in the background.
+    @objc
+    public static let keepWebSocketOpenInBackground = false
 }
