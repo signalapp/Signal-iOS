@@ -1075,6 +1075,10 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
 {
+    if (CurrentAppContext().isRunningTests) {
+        return UIInterfaceOrientationMaskPortrait;
+    }
+
     if (self.didAppLaunchFail) {
         return UIInterfaceOrientationMaskPortrait;
     }

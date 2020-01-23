@@ -305,6 +305,7 @@
 		34C758DA2289DDDD00802527 /* StickerSharingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C758D92289DDDC00802527 /* StickerSharingViewController.swift */; };
 		34C758DD228DD81C00802527 /* StickerTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C758DC228DD81C00802527 /* StickerTooltip.swift */; };
 		34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA631A2097806E00E526A0 /* OWSContactShareView.m */; };
+		34CCC08223D762DE00022FC6 /* GroupsV2MiscTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CCC08123D762DE00022FC6 /* GroupsV2MiscTest.swift */; };
 		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
 		34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
 		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
@@ -1127,6 +1128,7 @@
 		34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageDetailViewController.swift; sourceTree = "<group>"; };
 		34CA63192097806E00E526A0 /* OWSContactShareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareView.h; sourceTree = "<group>"; };
 		34CA631A2097806E00E526A0 /* OWSContactShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareView.m; sourceTree = "<group>"; };
+		34CCC08123D762DE00022FC6 /* GroupsV2MiscTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2MiscTest.swift; sourceTree = "<group>"; };
 		34CE88E51F2FB9A10098030F /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		34CE88E61F2FB9A10098030F /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
 		34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = busy_tone_ansi.caf; path = Signal/AudioFiles/busy_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
@@ -2329,6 +2331,15 @@
 			path = Tooltips;
 			sourceTree = "<group>";
 		};
+		34CCC08023D762DE00022FC6 /* groups */ = {
+			isa = PBXGroup;
+			children = (
+				34CCC08123D762DE00022FC6 /* GroupsV2MiscTest.swift */,
+			);
+			name = groups;
+			path = Signal/src/groups;
+			sourceTree = SOURCE_ROOT;
+		};
 		34D1F0951F867BFC0066283D /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -2925,6 +2936,7 @@
 				4C10B1C523176DB00099396B /* PerformanceTests */,
 				34C6B0A41FA0E46F00D35993 /* Assets */,
 				B660F6751C29867F00687D6E /* contact */,
+				34CCC08023D762DE00022FC6 /* groups */,
 				34843B29214FE295004DED45 /* mocks */,
 				458E38381D6699110094BD24 /* Models */,
 				34843B2321432293004DED45 /* SignalBaseTest.h */,
@@ -4429,6 +4441,7 @@
 				4C4BC6C32102D697004040C9 /* ContactDiscoveryOperationTest.swift in Sources */,
 				455AC69E1F4F8B0300134004 /* ImageCacheTest.swift in Sources */,
 				34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */,
+				34CCC08223D762DE00022FC6 /* GroupsV2MiscTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

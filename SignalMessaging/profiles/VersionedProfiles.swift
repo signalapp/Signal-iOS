@@ -222,7 +222,7 @@ public class VersionedProfiles: NSObject {
 
     // MARK: -
 
-    private class func parseProfileKey(profileKey: OWSAES256Key) throws -> ProfileKey {
+    public class func parseProfileKey(profileKey: OWSAES256Key) throws -> ProfileKey {
         let profileKeyData: Data = profileKey.keyData
         let profileKeyDataBytes = [UInt8](profileKeyData)
         return try ProfileKey(contents: profileKeyDataBytes)
