@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -34,7 +34,7 @@ public class ToastController: NSObject, ToastViewDelegate {
         view.addSubview(toastView)
         toastView.setCompressionResistanceHigh()
         toastView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -inset)
-        toastView.autoPinWidthToSuperview(withMargin: 24)
+        toastView.autoPinWidthToSuperview(withMargin: 8)
 
         if let currentToastController = type(of: self).currentToastController {
             currentToastController.dismissToastView()
@@ -42,7 +42,7 @@ public class ToastController: NSObject, ToastViewDelegate {
         }
         type(of: self).currentToastController = self
 
-        UIView.animate(withDuration: 0.1) {
+        UIView.animate(withDuration: 0.2) {
             self.toastView.alpha = 1
         }
 
@@ -80,7 +80,7 @@ public class ToastController: NSObject, ToastViewDelegate {
             type(of: self).currentToastController = nil
         }
 
-        UIView.animate(withDuration: 0.1,
+        UIView.animate(withDuration: 0.2,
                        animations: {
             self.toastView.alpha = 0
         },
@@ -115,12 +115,20 @@ class ToastView: UIView {
         label = UILabel()
         super.init(frame: frame)
 
-        self.layer.cornerRadius = 4
-        self.backgroundColor = Theme.toastBackgroundColor
+        self.layer.cornerRadius = 12
+        self.clipsToBounds = true
         self.layoutMargins = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
 
+        if UIAccessibility.isReduceTransparencyEnabled {
+            backgroundColor = .ows_blackAlpha80
+        } else {
+            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+            addSubview(blurEffectView)
+            blurEffectView.autoPinEdgesToSuperviewEdges()
+        }
+
         label.textAlignment = .center
-        label.textColor = Theme.toastForegroundColor
+        label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.ows_dynamicTypeBody
         label.numberOfLines = 0
         self.addSubview(label)

@@ -66,8 +66,8 @@ public extension ExperienceUpgradeRecord {
         recordType = row[1]
         uniqueId = row[2]
         firstViewedTimestamp = row[3]
-        isComplete = row[4]
-        lastSnoozedTimestamp = row[5]
+        lastSnoozedTimestamp = row[4]
+        isComplete = row[5]
     }
 }
 

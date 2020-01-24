@@ -615,6 +615,7 @@
 		8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */; };
 		8835DE08230E092F00DC6B66 /* FindByPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */; };
 		8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */ = {isa = PBXBuildFile; fileRef = 8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */; };
+		8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8837F74023DA0B0F00772A32 /* MegaphoneView.swift */; };
 		8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */; };
 		8855DF89238F2E690066D96F /* EmojiCountsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */; };
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
@@ -624,6 +625,7 @@
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
+		88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */; };
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
@@ -1477,6 +1479,7 @@
 		8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToBlockListViewController.swift; sourceTree = "<group>"; };
 		8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationSuccess.json; sourceTree = "<group>"; };
+		8837F74023DA0B0F00772A32 /* MegaphoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MegaphoneView.swift; sourceTree = "<group>"; };
 		8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiReactorsTableView.swift; sourceTree = "<group>"; };
 		8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCountsCollectionView.swift; sourceTree = "<group>"; };
 		88594E592335B08000390B19 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
@@ -1493,6 +1496,7 @@
 		88A358262364020B009D6B9A /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = translations/uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A3582723640240009D6B9A /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = translations/vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A35828236402D3009D6B9A /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/bn.lproj/Localizable.strings; sourceTree = "<group>"; };
+		88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManager.swift; sourceTree = "<group>"; };
 		88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformProgressView.swift; sourceTree = "<group>"; };
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
@@ -2817,6 +2821,7 @@
 				8811CF832295D8DA00FF6549 /* VolumeButtons.swift */,
 				340CCB6923032762005243B3 /* YDBLegacyMigration.h */,
 				340CCB6823032762005243B3 /* YDBLegacyMigration.m */,
+				88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2834,6 +2839,7 @@
 				886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */,
 				34129B8521EF8779005457A8 /* LinkPreviewView.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
+				8837F74023DA0B0F00772A32 /* MegaphoneView.swift */,
 				34386A53207D271C009F5D9C /* NeverClearView.swift */,
 				34F308A01ECB469700BB7697 /* OWSBezierPathView.h */,
 				34F308A11ECB469700BB7697 /* OWSBezierPathView.m */,
@@ -4226,6 +4232,7 @@
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
 				34129B8621EF877A005457A8 /* LinkPreviewView.swift in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
+				88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */,
 				8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */,
 				88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
@@ -4300,6 +4307,7 @@
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
 				34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */,
 				3448E15C22133274004B052E /* OnboardingPermissionsViewController.swift in Sources */,
+				8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */,
 				34D920E720E179C200D51158 /* OWSMessageFooterView.m in Sources */,
 				341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
