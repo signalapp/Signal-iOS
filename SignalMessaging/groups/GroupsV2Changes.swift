@@ -8,6 +8,22 @@ import ZKGroup
 
 public class GroupsV2Changes {
 
+    // GroupsV2Changes has one responsibility: applying incremental
+    // changes to group models. It should exactly mimic the behavior
+    // of the service. Applying these "diffs" allow us to do two things:
+    //
+    // * Update groups without the burden of contacting the service.
+    // * Stay aligned with service state... mostly.
+    //
+    // We can always deviate due to a bug or due to new "change actions"
+    // that the local client doesn't know about. We're not versioning
+    // the changes so if we introduce a breaking changes to the "change
+    // actions" we'll need to roll out support for the new actions
+    // before they go live.
+    //
+    // This method applies a single set of "change actions" to a group
+    // model, thereby deriving a new group model whose revision is
+    // exactly 1 higher.
     class func applyChangesToGroupModel(groupThread: TSGroupThread,
                                         changeActionsProto: GroupsProtoGroupChangeActions,
                                         changeActionsProtoData: Data,
