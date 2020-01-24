@@ -1446,6 +1446,12 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
 
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
 
@@ -2051,6 +2057,27 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Update PIN";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Introducing PINs";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN created.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
