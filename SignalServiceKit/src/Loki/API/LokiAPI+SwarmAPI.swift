@@ -69,11 +69,11 @@ public extension LokiAPI {
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }
                 randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
-                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, let identificationKey = rawTarget["pubkey_ed25519"] as? String, let encryptionKey = rawTarget["pubkey_x25519"] as? String, address != "0.0.0.0" else {
-                        print("Failed to update random snode pool from: \(rawTarget).")
+                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, let idKey = rawTarget["pubkey_ed25519"] as? String, let encryptionKey = rawTarget["pubkey_x25519"] as? String, address != "0.0.0.0" else {
+                        print("[Loki] Failed to parse target from: \(rawTarget).")
                         return nil
                     }
-                    return LokiAPITarget(address: "https://\(address)", port: UInt16(port), publicKeys: LokiAPITarget.Keys(identification: identificationKey, encryption: encryptionKey))
+                    return LokiAPITarget(address: "https://\(address)", port: UInt16(port), publicKeySet: LokiAPITarget.KeySet(idKey: idKey, encryptionKey: encryptionKey))
                 })
                 return randomSnodePool.randomElement()!
             }.recover(on: DispatchQueue.global()) { error -> Promise<LokiAPITarget> in
@@ -105,16 +105,16 @@ public extension LokiAPI {
     
     // MARK: Parsing
     private static func parseTargets(from rawResponse: Any) -> [LokiAPITarget] {
-        guard let json = rawResponse as? JSON, let rawSnodes = json["snodes"] as? [JSON] else {
+        guard let json = rawResponse as? JSON, let rawTargets = json["snodes"] as? [JSON] else {
             print("[Loki] Failed to parse targets from: \(rawResponse).")
             return []
         }
-        return rawSnodes.flatMap { rawSnode in
-            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString), let identificationKey = rawSnode["pubkey_ed25519"] as? String, let encryptionKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
-                print("[Loki] Failed to parse target from: \(rawSnode).")
+        return rawTargets.flatMap { rawTarget in
+            guard let address = rawTarget["ip"] as? String, let portAsString = rawTarget["port"] as? String, let port = UInt16(portAsString), let idKey = rawTarget["pubkey_ed25519"] as? String, let encryptionKey = rawTarget["pubkey_x25519"] as? String, address != "0.0.0.0" else {
+                print("[Loki] Failed to parse target from: \(rawTarget).")
                 return nil
             }
-            return LokiAPITarget(address: "https://\(address)", port: port, publicKeys: LokiAPITarget.Keys(identification: identificationKey, encryption: encryptionKey))
+            return LokiAPITarget(address: "https://\(address)", port: port, publicKeySet: LokiAPITarget.KeySet(idKey: idKey, encryptionKey: encryptionKey))
         }
     }
 }

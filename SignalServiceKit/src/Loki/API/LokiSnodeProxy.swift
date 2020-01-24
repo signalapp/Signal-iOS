@@ -41,11 +41,11 @@ internal class LokiSnodeProxy: LokiHttpClient {
     }
     
     override func perform(_ request: TSRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> Promise<Any> {
-        guard let targetHexEncodedPublicKeys = target.publicKeys else {
+        guard let targetHexEncodedPublicKeys = target.publicKeySet else {
             return Promise(error: Error.invalidPublicKeys)
         }
         
-        guard let symmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: Data(hex: targetHexEncodedPublicKeys.encryption), privateKey: keyPair.privateKey) else {
+        guard let symmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: Data(hex: targetHexEncodedPublicKeys.encryptionKey), privateKey: keyPair.privateKey) else {
             return Promise(error: Error.failedToEncryptRequest)
         }
                 
@@ -62,7 +62,7 @@ internal class LokiSnodeProxy: LokiHttpClient {
             let ivAndCipherText = try DiffieHellman.encrypt(proxyParams, using: symmetricKey)
             let headers = [
                 "X-Sender-Public-Key" : self.keyPair.publicKey.hexadecimalString,
-                "X-Target-Snode-Key" : targetHexEncodedPublicKeys.identification
+                "X-Target-Snode-Key" : targetHexEncodedPublicKeys.idKey
             ]
             return self.post(url: url, body: ivAndCipherText, headers: headers, timeoutInterval: request.timeoutInterval)
         }.map { response in
