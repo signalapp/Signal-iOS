@@ -254,7 +254,7 @@
 		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
 		34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
-		34B3F87B1E8DF1700035BE1A /* ExperienceUpgradeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradeViewController.swift */; };
+		34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* SplashViewController.swift */; };
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
 		34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
@@ -626,6 +626,7 @@
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */; };
+		88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F923DBA1360005C012 /* IntroducingPINs.swift */; };
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
@@ -1077,7 +1078,7 @@
 		34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentSharing.m; sourceTree = "<group>"; };
 		34B3F83B1E8DF1700035BE1A /* CallViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallViewController.swift; sourceTree = "<group>"; };
 		34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPicker.swift; sourceTree = "<group>"; };
-		34B3F8441E8DF1700035BE1A /* ExperienceUpgradeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeViewController.swift; sourceTree = "<group>"; };
+		34B3F8441E8DF1700035BE1A /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
 		34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGroupViewController.h; sourceTree = "<group>"; };
 		34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
@@ -1497,6 +1498,7 @@
 		88A3582723640240009D6B9A /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = translations/vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A35828236402D3009D6B9A /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/bn.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManager.swift; sourceTree = "<group>"; };
+		88A505F923DBA1360005C012 /* IntroducingPINs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroducingPINs.swift; sourceTree = "<group>"; };
 		88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformProgressView.swift; sourceTree = "<group>"; };
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
@@ -2203,7 +2205,6 @@
 				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
 				346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */,
 				34D8C0221ED3673300188D7C /* DebugUI */,
-				34B3F8441E8DF1700035BE1A /* ExperienceUpgradeViewController.swift */,
 				340E9ABF235F876800FA362C /* ForwardMessageNavigationController.swift */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				34386A4C207D0C01009F5D9C /* HomeView */,
@@ -2460,6 +2461,7 @@
 		450DF2061E0DD28D003D14BE /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
+				88A505F523DBA0C70005C012 /* Experience Upgrades */,
 				4CC613352227A00400E21A3A /* ConversationSearch.swift */,
 				4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */,
 				450DF2071E0DD29E003D14BE /* Notifications */,
@@ -2821,7 +2823,6 @@
 				8811CF832295D8DA00FF6549 /* VolumeButtons.swift */,
 				340CCB6923032762005243B3 /* YDBLegacyMigration.h */,
 				340CCB6823032762005243B3 /* YDBLegacyMigration.m */,
-				88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2839,7 +2840,6 @@
 				886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */,
 				34129B8521EF8779005457A8 /* LinkPreviewView.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
-				8837F74023DA0B0F00772A32 /* MegaphoneView.swift */,
 				34386A53207D271C009F5D9C /* NeverClearView.swift */,
 				34F308A01ECB469700BB7697 /* OWSBezierPathView.h */,
 				34F308A11ECB469700BB7697 /* OWSBezierPathView.m */,
@@ -2892,6 +2892,17 @@
 				8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */,
 			);
 			path = "Reactions Details";
+			sourceTree = "<group>";
+		};
+		88A505F523DBA0C70005C012 /* Experience Upgrades */ = {
+			isa = PBXGroup;
+			children = (
+				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
+				88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */,
+				34B3F8441E8DF1700035BE1A /* SplashViewController.swift */,
+				8837F74023DA0B0F00772A32 /* MegaphoneView.swift */,
+			);
+			path = "Experience Upgrades";
 			sourceTree = "<group>";
 		};
 		88BFD4712335C2A4001797D7 /* Lottie */ = {
@@ -4273,7 +4284,7 @@
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				3496957221A301A100DCFE74 /* OWSBackup.m in Sources */,
-				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradeViewController.swift in Sources */,
+				34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */,
 				3448E1622213585C004B052E /* OnboardingBaseViewController.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
@@ -4282,6 +4293,7 @@
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
 				34A4C61E221613D00042EF2E /* OnboardingVerificationViewController.swift in Sources */,
 				4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */,
+				88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */,
 				340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */,
 				452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,

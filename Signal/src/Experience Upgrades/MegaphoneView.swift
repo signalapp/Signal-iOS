@@ -4,7 +4,9 @@
 
 import Foundation
 
-class MegaphoneView: UIView {
+class MegaphoneView: UIView, ExperienceUpgradeView {
+    let experienceUpgrade: ExperienceUpgrade
+
     enum ImageSize {
         case large, small
     }
@@ -42,8 +44,10 @@ class MegaphoneView: UIView {
     }
 
     private let stackView = UIStackView()
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(experienceUpgrade: ExperienceUpgrade) {
+        self.experienceUpgrade = experienceUpgrade
+
+        super.init(frame: .zero)
 
         layer.cornerRadius = 12
         clipsToBounds = true
@@ -232,5 +236,14 @@ class MegaphoneView: UIView {
         dismissButton.autoSetDimensions(to: CGSize(square: 40))
         dismissButton.autoPinEdge(toSuperviewEdge: .trailing)
         dismissButton.autoPinEdge(toSuperviewEdge: .top)
+    }
+
+    func snoozeButton(fromViewController: UIViewController) -> Button {
+        return Button(title: MegaphoneStrings.remindMeLater) { [weak self] in
+            self?.markAsSnoozed()
+            self?.dismiss {
+                self?.presentToast(text: MegaphoneStrings.weWillRemindYouLater, fromViewController: fromViewController)
+            }
+        }
     }
 }

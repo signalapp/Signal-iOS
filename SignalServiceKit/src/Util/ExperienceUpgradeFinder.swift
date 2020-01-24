@@ -6,13 +6,10 @@ import Foundation
 import Reachability
 
 public enum ExperienceUpgradeId: String, CaseIterable {
-    case introducingStickers = "008"
     case introducingPins = "009"
 
     var hasLaunched: Bool {
         switch self {
-        case .introducingStickers:
-            return FeatureFlags.stickerSend
         case .introducingPins:
             // The PIN setup flow requires an internet connection
             // and should only be run on the primary device.
@@ -25,59 +22,28 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     // Some upgrades stop running after a certain date. This lets
     // us know if we're still before that end date.
     var hasExpired: Bool {
-        var expirationTimestamp: TimeInterval?
-        switch self {
-        case .introducingStickers:
-            // January 20, 2020 @ 12am UTC
-            expirationTimestamp = 1579478400
-        default:
-            break
-        }
-
-        if let expirationTimestamp = expirationTimestamp {
-            return expirationTimestamp < Date().timeIntervalSince1970
-        }
-
         return false
     }
 }
 
-@objc public class ExperienceUpgradeFinder: NSObject {
-
-    // MARK: - Singleton class
-
-    @objc(sharedManager)
-    public static let shared = ExperienceUpgradeFinder()
-
-    private override init() {
-        super.init()
-
-        SwiftSingletons.register(self)
-    }
-
-    @objc
-    public var pins: ExperienceUpgrade {
-        return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingPins.rawValue)
-    }
+@objc
+public class ExperienceUpgradeFinder: NSObject {
 
     // MARK: - Instance Methods
 
-    @objc
-    public func next(transaction: GRDBReadTransaction) -> ExperienceUpgrade? {
+    public class func next(transaction: GRDBReadTransaction) -> ExperienceUpgrade? {
         return allActiveExperienceUpgrades(transaction: transaction).first { !$0.isSnoozed }
     }
 
-    @objc
-    public func allUnviewed(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
+    public class func allUnviewed(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
         return allActiveExperienceUpgrades(transaction: transaction).filter { $0.hasViewed }
     }
 
-    public func hasUnviewed(experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBReadTransaction) -> Bool {
+    public class func hasUnviewed(experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBReadTransaction) -> Bool {
         return allUnviewed(transaction: transaction).contains { experienceUpgradeId.rawValue == $0.uniqueId }
     }
 
-    @objc
-    public func markAsViewed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
+    public class func markAsViewed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as seen \(experienceUpgrade.uniqueId)")
         experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { experienceUpgrade in
             // Only mark as viewed if it has yet to be viewed.
@@ -86,31 +52,29 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         }
     }
 
-    @objc
-    public func markAsSnoozed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
+    public class func markAsSnoozed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as snoozed \(experienceUpgrade.uniqueId)")
         experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.lastSnoozedTimestamp = Date().timeIntervalSince1970 }
     }
 
-    @objc
-    public func markAsComplete(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
+    public class func markAsComplete(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as complete \(experienceUpgrade.uniqueId)")
         experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.isComplete = true }
     }
 
     @objc
-    public func markAllComplete(transaction: GRDBWriteTransaction) {
+    public class func markAllComplete(transaction: GRDBWriteTransaction) {
         allActiveExperienceUpgrades(transaction: transaction).forEach { markAsComplete(experienceUpgrade: $0, transaction: transaction) }
     }
 
     @objc
-    public func hasPendingPinExperienceUpgrade(transaction: GRDBReadTransaction) -> Bool {
+    public class func hasPendingPinExperienceUpgrade(transaction: GRDBReadTransaction) -> Bool {
         return hasUnviewed(experienceUpgradeId: .introducingPins, transaction: transaction)
     }
 
     /// Returns an array of all experience upgrades currently being run that have
     /// yet to be completed. Sorted by the order of the `ExperienceUpgradeId` enumeration.
-    private func allActiveExperienceUpgrades(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
+    private class func allActiveExperienceUpgrades(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
         // Only the primary device will ever see experience upgrades.
         // TODO: We may eventually sync these and show them on linked devices.
         guard SSKEnvironment.shared.tsAccountManager.isRegisteredPrimaryDevice else { return [] }
@@ -132,7 +96,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
 
         while true {
             guard let experienceUpgrade = try? cursor.next() else { break }
-            experienceUpgrades.append(experienceUpgrade)
+            if !experienceUpgrade.isComplete { experienceUpgrades.append(experienceUpgrade) }
             unsavedIds.removeAll { $0 == experienceUpgrade.uniqueId }
         }
 
@@ -140,7 +104,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             experienceUpgrades.append(ExperienceUpgrade(uniqueId: id))
         }
 
-        return experienceUpgrades.filter { !$0.isComplete }.sorted { lhs, rhs in
+        return experienceUpgrades.sorted { lhs, rhs in
             guard let lhsIndex = activeIds.firstIndex(of: lhs.uniqueId),
                 let rhsIndex = activeIds.firstIndex(of: rhs.uniqueId) else {
                 owsFailDebug("failed to find index for uniqueIds \(lhs.uniqueId) \(rhs.uniqueId)")
@@ -149,6 +113,11 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return lhsIndex < rhsIndex
         }
     }
+}
+
+@objc
+extension OWS2FAManager {
+
 }
 
 public extension ExperienceUpgrade {
