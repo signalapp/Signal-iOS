@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .internalPreview
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
 
 // MARK: -
 
@@ -176,7 +176,7 @@ public class FeatureFlags: NSObject {
     public static let onlyModernNotificationClearance = build.includes(.beta)
 
     @objc
-    public static let registrationLockV2 = true
+    public static let registrationLockV2 = false
 
     @objc
     public static var allowUUIDOnlyContacts: Bool {
@@ -247,7 +247,7 @@ public class FeatureFlags: NSObject {
     public static let reactionReceive = true
 
     @objc
-    public static let reactionSend = true
+    public static let reactionSend = build.includes(.qa)
 
     @objc
     public static let isUsingProductionService = true
