@@ -34,7 +34,7 @@ final class SeedModal : Modal {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("This is your personal recovery phrase. It can be used to restore your account or migrate your account to a new device.", comment: "")
+        explanationLabel.text = NSLocalizedString("This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center

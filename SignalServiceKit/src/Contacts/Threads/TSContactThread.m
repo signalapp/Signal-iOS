@@ -8,6 +8,7 @@
 #import "NotificationsProtocol.h"
 #import "OWSIdentityManager.h"
 #import "SSKEnvironment.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -26,6 +27,7 @@ NSString *const TSContactThreadPrefix = @"c";
     
     // No session reset ongoing
     _sessionResetState = TSContactThreadSessionResetStateNone;
+    _sessionRestoreDevices = @[];
 
     return self;
 }
@@ -105,6 +107,34 @@ NSString *const TSContactThreadPrefix = @"c";
         return contactThread.conversationColorName;
     }
     return [self stableColorNameForNewConversationWithString:recipientId];
+}
+
+#pragma mark - Loki Session Restore
+
+- (void)addSessionRestoreDevice:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+{
+    NSMutableSet *set = [[NSMutableSet alloc] initWithArray:_sessionRestoreDevices];
+    [set addObject:hexEncodedPublicKey];
+    [self setSessionRestoreDevices:set.allObjects transaction:transaction];
+}
+
+- (void)removeAllSessionRestoreDevicesWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+{
+    [self setSessionRestoreDevices:@[] transaction:transaction];
+}
+
+- (void)setSessionRestoreDevices:(NSArray<NSString *> *)sessionRestoreDevices transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction {
+    _sessionRestoreDevices = sessionRestoreDevices;
+     void (^postNotification)() = ^() {
+         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.threadSessionRestoreDevicesChanged object:self.uniqueId];
+    };
+    if (transaction == nil) {
+        [self save];
+        [self.dbReadWriteConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
+    } else {
+        [self saveWithTransaction:transaction];
+        [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
+    }
 }
 
 @end

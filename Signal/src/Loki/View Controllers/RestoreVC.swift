@@ -45,7 +45,7 @@ final class RestoreVC : UIViewController {
         navigationBar.barTintColor = Colors.navigationBarBackground
         // Set up logo image view
         let logoImageView = UIImageView()
-        logoImageView.image = #imageLiteral(resourceName: "Session")
+        logoImageView.image = #imageLiteral(resourceName: "SessionGreen32")
         logoImageView.contentMode = .scaleAspectFit
         logoImageView.set(.width, to: 32)
         logoImageView.set(.height, to: 32)
@@ -176,6 +176,7 @@ final class RestoreVC : UIViewController {
             databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
             databaseConnection.setObject(keyPair, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
             TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair.hexEncodedPublicKey
+            OWSPrimaryStorage.shared().setRestorationTime(Date().timeIntervalSince1970)
             mnemonicTextField.resignFirstResponder()
             Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in
                 let displayNameVC = DisplayNameVC()

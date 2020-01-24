@@ -130,7 +130,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         }()
         subtitleLabel.text = {
             switch mode {
-            case .master: return NSLocalizedString("Create a new account on your other device and click \"Link to an existing account\" to start the linking process", comment: "")
+            case .master: return NSLocalizedString("Open Session on your secondary device and tap \"Link to an existing account\"", comment: "")
             case .slave: return NSLocalizedString("Please check that the words below match those shown on your other device", comment: "")
             }
         }()

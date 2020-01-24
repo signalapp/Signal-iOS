@@ -23,7 +23,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center
-        explanationLabel.text = NSLocalizedString("You don't have any linked devices yet", comment: "")
+        explanationLabel.text = NSLocalizedString("You haven't linked any devices yet", comment: "")
         let linkNewDeviceButton = Button(style: .prominentOutline, size: .medium)
         linkNewDeviceButton.setTitle(NSLocalizedString("Link a Device", comment: ""), for: UIControl.State.normal)
         linkNewDeviceButton.addTarget(self, action: #selector(linkNewDevice), for: UIControl.Event.touchUpInside)
@@ -49,7 +49,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
         navigationBar.barTintColor = Colors.navigationBarBackground
         // Customize title
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("Linked Devices", comment: "")
+        titleLabel.text = NSLocalizedString("Devices", comment: "")
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel

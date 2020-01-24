@@ -323,12 +323,20 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
                 guard let self = self else { return }
                 self.editingDatabaseConnection.readWrite { transaction in
+                    if let publicChat = publicChat {
+                        var messageIDs: Set<String> = []
+                        thread.enumerateInteractions(with: transaction) { interaction, _ in
+                            messageIDs.insert(interaction.uniqueId!)
+                        }
+                        OWSPrimaryStorage.shared().updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, in: transaction)
+                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: LokiPublicChatAPI.lastMessageServerIDCollection)
+                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: LokiPublicChatAPI.lastDeletionServerIDCollection)
+                        let _ = LokiPublicChatAPI.leave(publicChat.channel, on: publicChat.server)
+                    }
+                    thread.removeAllThreadInteractions(with: transaction)
                     thread.remove(with: transaction)
                 }
                 NotificationCenter.default.post(name: .threadDeleted, object: nil, userInfo: [ "threadId" : thread.uniqueId! ])
-                if let publicChat = publicChat {
-                    let _ = LokiPublicChatAPI.leave(publicChat.channel, on: publicChat.server)
-                }
             })
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .default) { _ in })
             guard let self = self else { return }

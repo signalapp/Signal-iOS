@@ -183,9 +183,9 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
         let isMasterDevice = (UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") == nil)
         if isMasterDevice {
             result.append(getSeparator())
-            result.append(getSettingButton(withTitle: NSLocalizedString("Linked Devices", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)))
+            result.append(getSettingButton(withTitle: NSLocalizedString("Devices", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)))
             result.append(getSeparator())
-            result.append(getSettingButton(withTitle: NSLocalizedString("Show Recovery Phrase", comment: ""), color: Colors.text, action: #selector(showSeed)))
+            result.append(getSettingButton(withTitle: NSLocalizedString("Recovery Phrase", comment: ""), color: Colors.text, action: #selector(showSeed)))
         }
         result.append(getSeparator())
         result.append(getSettingButton(withTitle: NSLocalizedString("Clear All Data", comment: ""), color: Colors.destructive, action: #selector(clearAllData)))

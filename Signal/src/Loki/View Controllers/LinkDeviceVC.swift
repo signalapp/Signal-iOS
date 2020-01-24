@@ -36,7 +36,7 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Link to your existing account by going into your in-app settings and clicking \"Linked Devices\".", comment: "")
+        let message = NSLocalizedString("Link to your existing account by going into your in-app settings and clicking \"Devices\".", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result

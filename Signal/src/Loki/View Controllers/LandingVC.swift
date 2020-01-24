@@ -11,7 +11,7 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
     
     private lazy var registerButton: Button = {
         let result = Button(style: .prominentFilled, size: .large)
-        result.setTitle(NSLocalizedString("Create Account", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("Create Session ID", comment: ""), for: UIControl.State.normal)
         result.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         return result
@@ -50,7 +50,7 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         navigationBar.barTintColor = Colors.navigationBarBackground
         // Set up logo image view
         let logoImageView = UIImageView()
-        logoImageView.image = #imageLiteral(resourceName: "Session")
+        logoImageView.image = #imageLiteral(resourceName: "SessionGreen32")
         logoImageView.contentMode = .scaleAspectFit
         logoImageView.set(.width, to: 32)
         logoImageView.set(.height, to: 32)

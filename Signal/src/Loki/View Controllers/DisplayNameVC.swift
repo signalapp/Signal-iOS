@@ -29,7 +29,7 @@ final class DisplayNameVC : UIViewController {
         navigationBar.barTintColor = Colors.navigationBarBackground
         // Set up logo image view
         let logoImageView = UIImageView()
-        logoImageView.image = #imageLiteral(resourceName: "Session")
+        logoImageView.image = #imageLiteral(resourceName: "SessionGreen32")
         logoImageView.contentMode = .scaleAspectFit
         logoImageView.set(.width, to: 32)
         logoImageView.set(.height, to: 32)
@@ -45,7 +45,7 @@ final class DisplayNameVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "This is how others will be able to recognize you."
+        explanationLabel.text = "This will be your name when you use Session."
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up spacers

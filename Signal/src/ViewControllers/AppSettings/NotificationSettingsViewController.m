@@ -106,7 +106,7 @@
                                     [weakSelf.navigationController pushViewController:vc animated:YES];
                                 }]];
     backgroundSection.footerTitle
-        = NSLocalizedString(@"Notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.", @"");
+        = NSLocalizedString(@"The information shown in notifications when your phone is locked.", @"");
     [contents addSection:backgroundSection];
 
     self.contents = contents;

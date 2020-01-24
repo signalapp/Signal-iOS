@@ -175,4 +175,27 @@
     return [transaction objectForKey:key inCollection:LKMessageIDCollection];
 }
 
+- (void)updateMessageIDCollectionByPruningMessagesWithIDs:(NSSet<NSString *> *)targetMessageIDs in:(YapDatabaseReadWriteTransaction *)transaction {
+    NSMutableArray<NSString *> *serverIDs = [NSMutableArray new];
+    [transaction enumerateRowsInCollection:LKMessageIDCollection usingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+        if (![object isKindOfClass:NSString.class]) { return; }
+        NSString *messageID = (NSString *)object;
+        if (![targetMessageIDs containsObject:messageID]) { return; }
+        [serverIDs addObject:key];
+    }];
+    [transaction removeObjectsForKeys:serverIDs inCollection:LKMessageIDCollection];
+}
+
+# pragma mark - Restoration
+
+#define LKGeneralCollection @"Loki"
+
+- (void)setRestorationTime:(NSTimeInterval)time {
+    [self.dbReadWriteConnection setDouble:time forKey:@"restoration_time" inCollection:LKGeneralCollection];
+}
+
+- (NSTimeInterval)getRestorationTime {
+    return [self.dbReadConnection doubleForKey:@"restoration_time" inCollection:LKGeneralCollection defaultValue:0];
+}
+
 @end
