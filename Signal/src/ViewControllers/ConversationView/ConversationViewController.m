@@ -1015,12 +1015,12 @@ typedef enum : NSUInteger {
     if (isContactThread) {
         TSContactThread *thread = (TSContactThread *)self.thread;
         if (thread.sessionRestoreDevices.count > 0) {
-            if (!self.restoreSessionBannerView) {
-                LKSessionRestoreBannerView *bannerView = [[LKSessionRestoreBannerView alloc] initWithThread:thread];
+            if (self.restoreSessionBannerView == nil) {
+                LKSessionRestorationView *bannerView = [[LKSessionRestorationView alloc] initWithThread:thread];
                 [self.view addSubview:bannerView];
-                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
-                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:LKValues.mediumSpacing];
+                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:LKValues.largeSpacing];
+                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:LKValues.mediumSpacing];
                 [self.view layoutSubviews];
                 self.restoreSessionBannerView = bannerView;
                 [bannerView setOnRestore:^{
@@ -1674,7 +1674,7 @@ typedef enum : NSUInteger {
         isAttachmentButtonHidden = false;
     }
     [self.inputToolbar setUserInteractionEnabled:isEnabled];
-    NSString *placeholderText = isEnabled ? NSLocalizedString(@"Message", "") : NSLocalizedString(@"Pending message request", "");
+    NSString *placeholderText = isEnabled ? NSLocalizedString(@"Message", "") : NSLocalizedString(@"Pending session request", "");
     [self.inputToolbar setPlaceholderText:placeholderText];
     [self.inputToolbar setAttachmentButtonHidden:isAttachmentButtonHidden];
 }

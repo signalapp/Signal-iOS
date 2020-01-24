@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2400888E239F30A600305217 /* SessionRestoreBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2400888D239F30A600305217 /* SessionRestoreBannerView.swift */; };
+		2400888E239F30A600305217 /* SessionRestorationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2400888D239F30A600305217 /* SessionRestorationView.swift */; };
 		241C6314231F64C000B4198E /* JazzIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C630E231F5AAC00B4198E /* JazzIcon.swift */; };
 		241C6315231F64CE00B4198E /* CGFloat+Rounding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */; };
 		241C6316231F64CE00B4198E /* UIColor+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6310231F5C4400B4198E /* UIColor+Helper.swift */; };
@@ -710,7 +710,7 @@
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
-		2400888D239F30A600305217 /* SessionRestoreBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestoreBannerView.swift; sourceTree = "<group>"; };
+		2400888D239F30A600305217 /* SessionRestorationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestorationView.swift; sourceTree = "<group>"; };
 		241C630E231F5AAC00B4198E /* JazzIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JazzIcon.swift; sourceTree = "<group>"; };
 		241C6310231F5C4400B4198E /* UIColor+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Helper.swift"; sourceTree = "<group>"; };
 		241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Rounding.swift"; sourceTree = "<group>"; };
@@ -2785,7 +2785,7 @@
 				B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */,
 				B85357C023A1B81900AAF6CD /* SeedReminderViewDelegate.swift */,
 				B8BB82B82394911B00BA5194 /* Separator.swift */,
-				2400888D239F30A600305217 /* SessionRestoreBannerView.swift */,
+				2400888D239F30A600305217 /* SessionRestorationView.swift */,
 				B8CCF638239721E20091D419 /* TabBar.swift */,
 				B8BB82B423947F2D00BA5194 /* TextField.swift */,
 			);
@@ -3983,7 +3983,7 @@
 				B8162F0322891AD600D46544 /* FriendRequestView.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
-				2400888E239F30A600305217 /* SessionRestoreBannerView.swift in Sources */,
+				2400888E239F30A600305217 /* SessionRestorationView.swift in Sources */,
 				B886B4A72398B23E00211ABE /* QRCodeVC.swift in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
