@@ -111,6 +111,10 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     /// Returns an array of all experience upgrades currently being run that have
     /// yet to be completed. Sorted by the order of the `ExperienceUpgradeId` enumeration.
     private func allActiveExperienceUpgrades(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
+        // Only the primary device will ever see experience upgrades.
+        // TODO: We may eventually sync these and show them on linked devices.
+        guard SSKEnvironment.shared.tsAccountManager.isRegisteredPrimaryDevice else { return [] }
+
         let activeIds = ExperienceUpgradeId.allCases.filter { $0.hasLaunched && !$0.hasExpired }.map { $0.rawValue }
 
         // We don't include `isComplete` in the query as we want to initialize
