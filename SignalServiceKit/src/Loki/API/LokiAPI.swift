@@ -89,8 +89,9 @@ public final class LokiAPI : NSObject {
         let headers = request.allHTTPHeaderFields ?? [:]
         let headersDescription = headers.isEmpty ? "no custom headers specified" : headers.prettifiedDescription
         print("[Loki] Invoking \(method.rawValue) on \(target) with \(parameters.prettifiedDescription) (\(headersDescription)).")
-        return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }
-            .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
+        return LokiSnodeProxy(target: target).perform(request, withCompletionQueue: DispatchQueue.global())
+            .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
+            .recoveringNetworkErrorsIfNeeded()
     }
     
     internal static func getRawMessages(from target: LokiAPITarget, usingLongPolling useLongPolling: Bool) -> RawResponsePromise {
@@ -180,7 +181,7 @@ public final class LokiAPI : NSObject {
             }
         }
         if let peer = LokiP2PAPI.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
-            let target = LokiAPITarget(address: peer.address, port: peer.port)
+            let target = LokiAPITarget(address: peer.address, port: peer.port, publicKeySet: nil)
             return Promise.value([ target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
                 LokiP2PAPI.markOnline(destination)
                 onP2PSuccess()
@@ -386,6 +387,7 @@ private extension Promise {
         return recover(on: DispatchQueue.global()) { error -> Promise<T> in
             switch error {
             case NetworkManagerError.taskError(_, let underlyingError): throw underlyingError
+            case LokiHttpClient.HttpError.networkError(_, _, let underlyingError): throw underlyingError ?? error
             default: throw error
             }
         }
