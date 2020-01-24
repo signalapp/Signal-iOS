@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,7 +17,7 @@ class TestJobQueue: JobQueue {
     typealias DurableOperationType = TestDurableOperation
     var jobRecordLabel: String = kJobRecordLabel
     static var maxRetries: UInt = 1
-    var runningOperations: [TestDurableOperation] = []
+    public var runningOperations = AtomicArray<TestDurableOperation>()
     var requiresInternet: Bool = false
 
     func setup() {
@@ -28,7 +28,7 @@ class TestJobQueue: JobQueue {
         // no special handling
     }
 
-    var isSetup: Bool = false
+    public var isSetup = AtomicBool(false)
 
     let operationQueue = OperationQueue()
 
@@ -139,7 +139,7 @@ class JobQueueTest: SSKBaseTestSwift {
         }
 
         // Verify re-queue
-        jobQueue.isSetup = false
+        jobQueue.isSetup.set(false)
         jobQueue.setup()
 
         self.write { transaction in
@@ -158,7 +158,7 @@ class JobQueueTest: SSKBaseTestSwift {
             rerunGroup.leave()
         }
 
-        jobQueue.isSetup = true
+        jobQueue.isSetup.set(true)
 
         switch rerunGroup.wait(timeout: .now() + 1.0) {
         case .timedOut:

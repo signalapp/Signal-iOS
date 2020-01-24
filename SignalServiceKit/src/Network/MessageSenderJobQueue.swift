@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -74,7 +74,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     public static let jobRecordLabel: String = "MessageSender"
     public static let maxRetries: UInt = 30
     public let requiresInternet: Bool = true
-    public var runningOperations: [MessageSenderOperation] = []
+    public var runningOperations = AtomicArray<MessageSenderOperation>()
 
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -85,7 +85,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public var isSetup: Bool = false
+    public var isSetup = AtomicBool(false)
 
     public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord, transaction: SDSAnyWriteTransaction) {
         if let messageId = oldJobRecord.messageId, let message = TSOutgoingMessage.anyFetch(uniqueId: messageId, transaction: transaction) as? TSOutgoingMessage {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -83,12 +83,20 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         jobQueue.setup()
 
-        switch sendGroup.wait(timeout: .now() + 1.0) {
-        case .timedOut:
-            XCTFail("timed out waiting for sends")
-        case .success:
-            XCTAssertEqual([message1, message2, message3].map { $0.uniqueId }, sentMessages.map { $0.uniqueId })
+        let expectation = self.expectation(description: "sent messages")
+        // Block on self.wait(), use sendGroup.wait() off the main thread.
+        // self.wait() will process the main run loop.
+        DispatchQueue.global().async {
+            switch sendGroup.wait(timeout: .now() + 1.0) {
+            case .timedOut:
+                XCTFail("timed out waiting for sends")
+            case .success:
+                expectation.fulfill()
+            }
         }
+        self.wait(for: [expectation], timeout: 1.0)
+
+        XCTAssertEqual([message1, message2, message3].map { $0.uniqueId }, sentMessages.map { $0.uniqueId })
     }
 
     func test_sendingInvisibleMessage() {
@@ -127,7 +135,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         error.isRetryable = true
         self.messageSender.stubbedFailingError = error
         let expectation = sentExpectation(message: message) {
-            jobQueue.isSetup = false
+            jobQueue.isSetup.set(false)
         }
 
         jobQueue.setup()
@@ -202,10 +210,10 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         error.isRetryable = false
         self.messageSender.stubbedFailingError = error
         let expectation = sentExpectation(message: message) {
-            jobQueue.isSetup = false
+            jobQueue.isSetup.set(false)
         }
         jobQueue.setup()
-        self.wait(for: [expectation], timeout: 0.1)
+        self.wait(for: [expectation], timeout: 1)
 
         self.read { transaction in
             jobRecord.anyReload(transaction: transaction)

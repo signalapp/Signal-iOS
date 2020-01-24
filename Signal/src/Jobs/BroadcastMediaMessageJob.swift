@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,8 +16,8 @@ public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
         return type(of: self).jobRecordLabel
     }
 
-    public var runningOperations: [BroadcastMediaMessageOperation] = []
-    public var isSetup: Bool = false
+    public var runningOperations = AtomicArray<BroadcastMediaMessageOperation>()
+    public var isSetup = AtomicBool(false)
 
     @objc
     public override init() {
@@ -62,7 +62,7 @@ public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
 public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
     public typealias JobRecordType = OWSBroadcastMediaMessageJobRecord
     public typealias DurableOperationDelegateType = BroadcastMediaMessageJobQueue
-    public var durableOperationDelegate: BroadcastMediaMessageJobQueue?
+    public weak var durableOperationDelegate: BroadcastMediaMessageJobQueue?
     public var jobRecord: OWSBroadcastMediaMessageJobRecord
     public var operation: OWSOperation {
         return self

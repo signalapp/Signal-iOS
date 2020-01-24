@@ -21,8 +21,8 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
         return type(of: self).jobRecordLabel
     }
 
-    public var runningOperations: [IncomingGroupSyncOperation] = []
-    public var isSetup: Bool = false
+    public var runningOperations = AtomicArray<IncomingGroupSyncOperation>()
+    public var isSetup = AtomicBool(false)
 
     @objc
     public override init() {

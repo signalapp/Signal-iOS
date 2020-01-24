@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -43,7 +43,7 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
     public static let jobRecordLabel: String = "SSKMessageDecrypt"
     public static let maxRetries: UInt = 1
     public let requiresInternet: Bool = false
-    public var runningOperations: [SSKMessageDecryptOperation] = []
+    public var runningOperations = AtomicArray<SSKMessageDecryptOperation>()
 
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -66,7 +66,7 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public var isSetup: Bool = false
+    public var isSetup = AtomicBool(false)
 
     public func didMarkAsReady(oldJobRecord: SSKMessageDecryptJobRecord, transaction: SDSAnyWriteTransaction) {
 
