@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .internalPreview
 
 // MARK: -
 
@@ -247,7 +247,7 @@ public class FeatureFlags: NSObject {
     public static let reactionReceive = true
 
     @objc
-    public static let reactionSend = build.includes(.qa)
+    public static let reactionSend = true
 
     @objc
     public static let isUsingProductionService = true
