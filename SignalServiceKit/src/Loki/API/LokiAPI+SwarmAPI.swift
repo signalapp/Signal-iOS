@@ -124,7 +124,7 @@ internal extension Promise {
     
     internal func handlingSwarmSpecificErrorsIfNeeded(for target: LokiAPITarget, associatedWith hexEncodedPublicKey: String) -> Promise<T> {
         return recover(on: LokiAPI.errorHandlingQueue) { error -> Promise<T> in
-            if let error = error as? LokiHttpClient.HttpError {
+            if let error = error as? LokiHTTPClient.HTTPError {
                 switch error.statusCode {
                 case 0, 400, 500, 503:
                     // The snode is unreachable
@@ -144,7 +144,7 @@ internal extension Promise {
                     LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
                 case 432:
                     // The PoW difficulty is too low
-                    if case LokiHttpClient.HttpError.networkError(_, let result, _) = error, let json = result as? JSON, let powDifficulty = json["difficulty"] as? Int {
+                    if case LokiHTTPClient.HTTPError.networkError(_, let result, _) = error, let json = result as? JSON, let powDifficulty = json["difficulty"] as? Int {
                         print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
                         LokiAPI.powDifficulty = UInt(powDifficulty)
                     } else {

@@ -89,7 +89,7 @@ public final class LokiAPI : NSObject {
         let headers = request.allHTTPHeaderFields ?? [:]
         let headersDescription = headers.isEmpty ? "no custom headers specified" : headers.prettifiedDescription
         print("[Loki] Invoking \(method.rawValue) on \(target) with \(parameters.prettifiedDescription) (\(headersDescription)).")
-        return LokiSnodeProxy(target: target).perform(request, withCompletionQueue: DispatchQueue.global())
+        return LokiSnodeProxy(for: target).perform(request, withCompletionQueue: DispatchQueue.global())
             .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
             .recoveringNetworkErrorsIfNeeded()
     }
@@ -387,7 +387,7 @@ private extension Promise {
         return recover(on: DispatchQueue.global()) { error -> Promise<T> in
             switch error {
             case NetworkManagerError.taskError(_, let underlyingError): throw underlyingError
-            case LokiHttpClient.HttpError.networkError(_, _, let underlyingError): throw underlyingError ?? error
+            case LokiHTTPClient.HTTPError.networkError(_, _, let underlyingError): throw underlyingError ?? error
             default: throw error
             }
         }
