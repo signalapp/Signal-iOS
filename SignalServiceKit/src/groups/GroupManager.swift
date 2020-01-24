@@ -753,7 +753,8 @@ public class GroupManager: NSObject {
 
             return self.sendGroupUpdateMessage(thread: groupThread,
                                                oldGroupModel: changedGroupModel.oldGroupModel,
-                                               newGroupModel: changedGroupModel.newGroupModel)
+                                               newGroupModel: changedGroupModel.newGroupModel,
+                                               changeActionsProtoData: changedGroupModel.changeActionsProtoData)
                 .map(on: .global()) { _ in
                     return groupThread
             }
@@ -823,6 +824,8 @@ public class GroupManager: NSObject {
         }
     }
 
+    // MARK: - Messages
+
     @objc
     public static func sendGroupUpdateMessageObjc(thread: TSGroupThread,
                                                   oldGroupModel: TSGroupModel,
@@ -834,9 +837,10 @@ public class GroupManager: NSObject {
 
     public static func sendGroupUpdateMessage(thread: TSGroupThread,
                                               oldGroupModel: TSGroupModel,
-                                              newGroupModel: TSGroupModel) -> Promise<Void> {
+                                              newGroupModel: TSGroupModel,
+                                              changeActionsProtoData: Data? = nil) -> Promise<Void> {
 
-        return databaseStorage.write(.promise) { transaction in
+        return databaseStorage.read(.promise) { transaction in
             // GroupsV2 TODO: This behavior will change for v2 groups.
             let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
             let message = TSOutgoingMessage(in: thread,
@@ -877,8 +881,6 @@ public class GroupManager: NSObject {
             }
         }
     }
-
-    // MARK: - Messages
 
     private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
         assert(thread.groupModel.groupAvatarData == nil)

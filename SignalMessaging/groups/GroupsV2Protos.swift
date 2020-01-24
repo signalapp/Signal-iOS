@@ -137,7 +137,7 @@ public class GroupsV2Protos {
     }
 
     public class func buildGroupContextV2Proto(groupModel: TSGroupModel,
-                                               groupChangeData: Data?) throws -> SSKProtoGroupContextV2 {
+                                               changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
 
         guard let groupSecretParamsData = groupModel.groupSecretParamsData else {
             throw OWSAssertionError("Missing groupSecretParamsData.")
@@ -148,9 +148,9 @@ public class GroupsV2Protos {
         builder.setMasterKey(try groupSecretParams.getMasterKey().serialize().asData)
         builder.setRevision(groupModel.groupV2Revision)
 
-        if let groupChangeData = groupChangeData {
-            assert(groupChangeData.count > 0)
-            builder.setGroupChange(groupChangeData)
+        if let changeActionsProtoData = changeActionsProtoData {
+            assert(changeActionsProtoData.count > 0)
+            builder.setGroupChange(changeActionsProtoData)
         }
 
         return try builder.build()
@@ -159,7 +159,7 @@ public class GroupsV2Protos {
     // MARK: -
 
     // This method throws if verification fails.
-    public class func parseAndVerifyChangeProtoActions(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
+    public class func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
         let changeProto = try GroupsProtoGroupChange.parseData(changeProtoData)
 
         guard let serverSignatureData = changeProto.serverSignature else {

@@ -99,7 +99,12 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
-                               isViewOnceMessage:(BOOL)isViewOnceMessage NS_DESIGNATED_INITIALIZER;
+                               isViewOnceMessage:(BOOL)isViewOnceMessage
+                          changeActionsProtoData:(nullable NSData *)changeActionsProtoData NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initOutgoingMessageWithThread:(TSThread *)thread
+                                  messageBody:(nullable NSString *)body NS_DESIGNATED_INITIALIZER
+    NS_SWIFT_NAME(init(outgoingMessageWithThread:messageBody:));
 
 // --- CODE GENERATION MARKER
 
@@ -165,6 +170,11 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
+                       groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+                       expiresInSeconds:(uint32_t)expiresInSeconds
+                 changeActionsProtoData:(nullable NSData *)changeActionsProtoData;
+
 - (void)removeTemporaryAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) TSOutgoingMessageState messageState;
@@ -186,6 +196,10 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
 @property (nonatomic, readonly) BOOL isSilent;
 
 @property (nonatomic, readonly) BOOL isOnline;
+
+// NOTE: We do not persist this property; it is only used for
+//       group updates which we don't insert into the database.
+@property (nonatomic, readonly, nullable) NSData *changeActionsProtoData;
 
 /**
  * The data representation of this message, to be encrypted, before being sent.

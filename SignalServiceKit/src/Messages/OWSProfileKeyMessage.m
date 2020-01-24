@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProfileKeyMessage.h"
@@ -14,19 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
 {
-    return [super initOutgoingMessageWithTimestamp:timestamp
-                                          inThread:thread
-                                       messageBody:nil
-                                     attachmentIds:[NSMutableArray new]
-                                  expiresInSeconds:0
-                                   expireStartedAt:0
-                                    isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMetaMessageUnspecified
-                                     quotedMessage:nil
-                                      contactShare:nil
-                                       linkPreview:nil
-                                    messageSticker:nil
-                                 isViewOnceMessage:NO];
+    return [super initOutgoingMessageWithThread:thread messageBody:nil];
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder

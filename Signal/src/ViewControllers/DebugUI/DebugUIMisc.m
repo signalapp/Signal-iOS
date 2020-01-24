@@ -601,21 +601,9 @@ NS_ASSUME_NONNULL_BEGIN
         [[[SSKMessageDecryptJobRecord alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
                                                             label:SSKMessageDecryptJobQueue.jobRecordLabel]
             anyInsertWithTransaction:transaction];
+        TSOutgoingMessage *queuedMessage = [[[TSOutgoingMessageBuilder alloc] initWithThread:thread
+                                                                                 messageBody:@"some body"] build];
         NSError *_Nullable error;
-        TSOutgoingMessage *queuedMessage =
-            [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                               inThread:thread
-                                                            messageBody:@"some body"
-                                                          attachmentIds:[NSMutableArray new]
-                                                       expiresInSeconds:0
-                                                        expireStartedAt:0
-                                                         isVoiceMessage:NO
-                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                          quotedMessage:nil
-                                                           contactShare:nil
-                                                            linkPreview:nil
-                                                         messageSticker:nil
-                                                      isViewOnceMessage:NO];
         [queuedMessage anyInsertWithTransaction:transaction];
         [[[SSKMessageSenderJobRecord alloc] initWithMessage:queuedMessage
                                   removeMessageAfterSending:NO

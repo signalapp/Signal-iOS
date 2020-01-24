@@ -34,7 +34,8 @@
 		"SignalAccount.accountSchemaVersion",
 		"OWSUserProfile.userProfileSchemaVersion",
 		"TSRecipientReadReceipt.recipientReadReceiptSchemaVersion",
-		"OWSLinkedDeviceReadReceipt.linkedDeviceReadReceiptSchemaVersion"
+		"OWSLinkedDeviceReadReceipt.linkedDeviceReadReceiptSchemaVersion",
+		"TSOutgoingMessage.changeActionsProtoData"
 	],
 	"custom_property_column_sources": {
 		"TSInteraction.sortId": "id",

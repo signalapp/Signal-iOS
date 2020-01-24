@@ -523,13 +523,13 @@ class IncomingGroupsV2MessageQueue: NSObject {
             // one revision.
             return .failureShouldFailoverToService
         }
-        guard let groupChangeProtoData = groupContext.groupChange else {
+        guard let changeActionsProtoData = groupContext.groupChange else {
             // No embedded group change.
             return .failureShouldFailoverToService
         }
         let changeActionsProto: GroupsProtoGroupChangeActions
         do {
-            changeActionsProto = try groupsV2.parseAndVerifyChangeProtoActions(groupChangeProtoData)
+            changeActionsProto = try groupsV2.parseAndVerifyChangeActionsProto(changeActionsProtoData)
         } catch {
             owsFailDebug("Error: \(error)")
             return .failureShouldFailoverToService
@@ -544,6 +544,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
         do {
             changedGroupModel = try groupsV2Swift.applyChangesToGroupModel(groupThread: groupThread,
                                                                            changeActionsProto: changeActionsProto,
+                                                                           changeActionsProtoData: changeActionsProtoData,
                                                                            transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")

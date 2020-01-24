@@ -33,11 +33,11 @@ public protocol GroupsV2: AnyObject {
     func fetchGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise
 
     func buildGroupContextV2Proto(groupModel: TSGroupModel,
-                                  groupChangeData: Data?) throws -> SSKProtoGroupContextV2
+                                  changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2
 
     func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo
 
-    func parseAndVerifyChangeProtoActions(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions
+    func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions
 }
 
 // MARK: -
@@ -59,6 +59,7 @@ public protocol GroupsV2Swift {
 
     func applyChangesToGroupModel(groupThread: TSGroupThread,
                                   changeActionsProto: GroupsProtoGroupChangeActions,
+                                  changeActionsProtoData: Data,
                                   transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel
 
     func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
@@ -123,15 +124,18 @@ public struct ChangedGroupModel {
     public let oldGroupModel: TSGroupModel
     public let newGroupModel: TSGroupModel
     public let changeAuthorUuid: UUID
+    public let changeActionsProtoData: Data
 
     public init(groupThread: TSGroupThread,
                 oldGroupModel: TSGroupModel,
                 newGroupModel: TSGroupModel,
-                changeAuthorUuid: UUID) {
+                changeAuthorUuid: UUID,
+                changeActionsProtoData: Data) {
         self.groupThread = groupThread
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
         self.changeAuthorUuid = changeAuthorUuid
+        self.changeActionsProtoData = changeActionsProtoData
     }
 }
 
@@ -177,7 +181,7 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func buildGroupContextV2Proto(groupModel: TSGroupModel,
-                                         groupChangeData: Data?) throws -> SSKProtoGroupContextV2 {
+                                         changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
         owsFail("Not implemented.")
     }
 
@@ -205,12 +209,13 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func parseAndVerifyChangeProtoActions(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
+    public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
         owsFail("Not implemented.")
     }
 
     public func applyChangesToGroupModel(groupThread: TSGroupThread,
                                          changeActionsProto: GroupsProtoGroupChangeActions,
+                                         changeActionsProtoData: Data,
                                          transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
         owsFail("Not implemented.")
     }

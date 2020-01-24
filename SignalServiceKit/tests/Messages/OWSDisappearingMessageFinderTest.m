@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
@@ -132,19 +132,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSThread *thread = [self threadWithTransaction:transaction];
 
-        message = [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                     inThread:thread
-                                                                  messageBody:body
-                                                                attachmentIds:[NSMutableArray new]
-                                                             expiresInSeconds:expiresInSeconds
-                                                              expireStartedAt:expireStartedAt
-                                                               isVoiceMessage:NO
-                                                             groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                                quotedMessage:nil
-                                                                 contactShare:nil
-                                                                  linkPreview:nil
-                                                               messageSticker:nil
-                                                            isViewOnceMessage:NO];
+        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
+                                                                                        messageBody:body];
+        messageBuilder.expiresInSeconds = expiresInSeconds;
+        messageBuilder.expireStartedAt = expireStartedAt;
+        message = [messageBuilder build];
         [message anyInsertWithTransaction:transaction];
     }];
     return message;

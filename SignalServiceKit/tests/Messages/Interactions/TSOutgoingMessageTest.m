@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKBaseTestObjC.h"
@@ -28,21 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddress *otherAddress = [CommonGenerator address];
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:otherAddress
                                                                            transaction:transaction];
-        TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:100
-                                                           inThread:thread
-                                                        messageBody:nil
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:0
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                  isViewOnceMessage:NO];
-        
+        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
+                                                                                        messageBody:nil];
+        messageBuilder.timestamp = 100;
+        TSOutgoingMessage *message = [messageBuilder build];
+
         XCTAssertFalse([message shouldStartExpireTimer]);
     }];
 }
@@ -53,21 +43,12 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddress *otherAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:otherAddress
                                                                            transaction:transaction];
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:100
-                                                           inThread:thread
-                                                        messageBody:nil
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:10
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                  isViewOnceMessage:NO];
-        
+        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
+                                                                                        messageBody:nil];
+        messageBuilder.timestamp = 100;
+        messageBuilder.expiresInSeconds = 10;
+        TSOutgoingMessage *message = [messageBuilder build];
+
         [message updateWithSentRecipient:otherAddress wasSentByUD:NO transaction:transaction];
         
         XCTAssertTrue([message shouldStartExpireTimer]);
@@ -80,20 +61,11 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddress *otherAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:otherAddress
                                                                            transaction:transaction];
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:100
-                                                           inThread:thread
-                                                        messageBody:nil
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:10
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                  isViewOnceMessage:NO];
+        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
+                                                                                        messageBody:nil];
+        messageBuilder.timestamp = 100;
+        messageBuilder.expiresInSeconds = 10;
+        TSOutgoingMessage *message = [messageBuilder build];
 
         XCTAssertFalse([message shouldStartExpireTimer]);
     }];
@@ -105,20 +77,11 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddress *otherAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:otherAddress
                                                                            transaction:transaction];
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:100
-                                                           inThread:thread
-                                                        messageBody:nil
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:10
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                  isViewOnceMessage:NO];
+        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
+                                                                                        messageBody:nil];
+        messageBuilder.timestamp = 100;
+        messageBuilder.expiresInSeconds = 10;
+        TSOutgoingMessage *message = [messageBuilder build];
 
         [message updateAllUnsentRecipientsAsSendingWithTransaction:transaction];
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDynamicOutgoingMessage.h"
@@ -28,19 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  timestamp:(uint64_t)timestamp
                                     thread:(TSThread *)thread
 {
-    self = [super initOutgoingMessageWithTimestamp:timestamp
-                                          inThread:thread
-                                       messageBody:nil
-                                     attachmentIds:[NSMutableArray new]
-                                  expiresInSeconds:0
-                                   expireStartedAt:0
-                                    isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMetaMessageUnspecified
-                                     quotedMessage:nil
-                                      contactShare:nil
-                                       linkPreview:nil
-                                    messageSticker:nil
-                                 isViewOnceMessage:NO];
+    self = [super initOutgoingMessageWithThread:thread messageBody:nil];
 
     if (self) {
         _block = block;

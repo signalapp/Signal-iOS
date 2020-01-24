@@ -128,20 +128,11 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:nil
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:expiresInSeconds
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:contactShare
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                  isViewOnceMessage:NO];
+
+    TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    builder.expiresInSeconds = expiresInSeconds;
+    builder.contactShare = contactShare;
+    TSOutgoingMessage *message = [builder build];
 
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [message anyInsertWithTransaction:transaction];
@@ -211,19 +202,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
 
-    return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                              inThread:thread
-                                                           messageBody:nil
-                                                         attachmentIds:[NSMutableArray new]
-                                                      expiresInSeconds:expiresInSeconds
-                                                       expireStartedAt:0
-                                                        isVoiceMessage:NO
-                                                      groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                         quotedMessage:nil
-                                                          contactShare:nil
-                                                           linkPreview:nil
-                                                        messageSticker:nil
-                                                     isViewOnceMessage:NO];
+    TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    builder.expiresInSeconds = expiresInSeconds;
+    return [builder build];
 }
 
 + (void)enqueueMessage:(TSOutgoingMessage *)message
@@ -249,6 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
+// GroupsV2 TODO: Move to GroupManager.
 + (void)leaveGroupThread:(TSGroupThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
@@ -350,20 +332,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSDisappearingMessagesConfiguration *configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
         // MJK TODO - remove senderTimestamp
-        message =
-            [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                               inThread:thread
-                                                            messageBody:nil
-                                                          attachmentIds:[NSMutableArray new]
-                                                       expiresInSeconds:expiresInSeconds
-                                                        expireStartedAt:0
-                                                         isVoiceMessage:NO
-                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                          quotedMessage:nil
-                                                           contactShare:contactShare
-                                                            linkPreview:nil
-                                                         messageSticker:nil
-                                                      isViewOnceMessage:NO];
+        TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+        builder.expiresInSeconds = expiresInSeconds;
+        builder.contactShare = contactShare;
+        message = [builder build];
         [message anyInsertWithTransaction:transaction];
     }];
 

@@ -88,9 +88,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                                              sessionManager: sessionManager)
         }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
             return self.performServiceRequest(request: request, sessionManager: sessionManager)
-        }.map(on: DispatchQueue.global()) { (_: ServiceResponse) -> Void in
-            // GroupsV2 TODO: We need to process the response data.
-        }
+        }.asVoid()
     }
 
     private func buildNewGroupRequest(groupModel: TSGroupModel,
@@ -148,10 +146,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             return self.performServiceRequest(request: request, sessionManager: sessionManager)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> ChangedGroupModel in
 
-            guard let protoData = response.responseObject as? Data else {
+            guard let changeActionsProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
-            let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeProtoActions(protoData)
+            let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeActionsProtoData)
 
             // GroupsV2 TODO: Instead of loading the group model from the database,
             // we should use exactly the same group model that was used to construct
@@ -162,6 +160,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                 }
                 let changedGroupModel = try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
                                                                                      changeActionsProto: changeActionsProto,
+                                                                                     changeActionsProtoData: changeActionsProtoData,
                                                                                      transaction: transaction)
                 // GroupsV2 TODO: Set groupUpdateSourceAddress.
                 _ = GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
@@ -686,19 +685,21 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     // MARK: - Protos
 
     public func buildGroupContextV2Proto(groupModel: TSGroupModel,
-                                         groupChangeData: Data?) throws -> SSKProtoGroupContextV2 {
-        return try GroupsV2Protos.buildGroupContextV2Proto(groupModel: groupModel, groupChangeData: groupChangeData)
+                                         changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
+        return try GroupsV2Protos.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: changeActionsProtoData)
     }
 
-    public func parseAndVerifyChangeProtoActions(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
-        return try GroupsV2Protos.parseAndVerifyChangeProtoActions(changeProtoData)
+    public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
+        return try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeProtoData)
     }
 
     public func applyChangesToGroupModel(groupThread: TSGroupThread,
                                          changeActionsProto: GroupsProtoGroupChangeActions,
+                                         changeActionsProtoData: Data,
                                          transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
         return try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
                                                             changeActionsProto: changeActionsProto,
+                                                            changeActionsProtoData: changeActionsProtoData,
                                                             transaction: transaction)
     }
 

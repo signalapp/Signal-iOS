@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingReactionMessage.h"
@@ -42,7 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
                                       contactShare:nil
                                        linkPreview:nil
                                     messageSticker:nil
-                                 isViewOnceMessage:NO];
+                                 isViewOnceMessage:NO
+                            changeActionsProtoData:nil];
     if (!self) {
         return self;
     }

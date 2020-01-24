@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -498,19 +498,8 @@ private class MockIncomingMessage: TSIncomingMessage {
 
 private class MockOutgoingMessage: TSOutgoingMessage {
     init(messageBody: String, thread: TSThread) {
-        super.init(outgoingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(),
-                   in: thread,
-                   messageBody: messageBody,
-                   attachmentIds: [],
-                   expiresInSeconds: 0,
-                   expireStartedAt: 0,
-                   isVoiceMessage: false,
-                   groupMetaMessage: .unspecified,
-                   quotedMessage: nil,
-                   contactShare: nil,
-                   linkPreview: nil,
-                   messageSticker: nil,
-                   isViewOnceMessage: false)
+        super.init(outgoingMessageWithThread: thread,
+                   messageBody: messageBody)
     }
 
     required init?(coder: NSCoder) {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -21,19 +21,8 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
                 action: TypingIndicatorAction) {
         self.action = action
 
-        super.init(outgoingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(),
-                   in: thread,
-                   messageBody: nil,
-                   attachmentIds: NSMutableArray(),
-                   expiresInSeconds: 0,
-                   expireStartedAt: 0,
-                   isVoiceMessage: false,
-                   groupMetaMessage: .unspecified,
-                   quotedMessage: nil,
-                   contactShare: nil,
-                   linkPreview: nil,
-                   messageSticker: nil,
-                   isViewOnceMessage: false)
+        super.init(outgoingMessageWithThread: thread,
+                   messageBody: nil)
     }
 
     @objc

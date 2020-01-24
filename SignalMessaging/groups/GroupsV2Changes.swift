@@ -10,6 +10,7 @@ public class GroupsV2Changes {
 
     class func applyChangesToGroupModel(groupThread: TSGroupThread,
                                         changeActionsProto: GroupsProtoGroupChangeActions,
+                                        changeActionsProtoData: Data,
                                         transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
         let oldGroupModel = groupThread.groupModel
         let groupId = oldGroupModel.groupId
@@ -236,6 +237,7 @@ public class GroupsV2Changes {
         return ChangedGroupModel(groupThread: groupThread,
                                  oldGroupModel: oldGroupModel,
                                  newGroupModel: newGroupModel,
-                                 changeAuthorUuid: changeAuthorUuid)
+                                 changeAuthorUuid: changeAuthorUuid,
+                                 changeActionsProtoData: changeActionsProtoData)
     }
 }
