@@ -196,5 +196,6 @@
 
 - (NSTimeInterval)getRestorationTime {
     return [self.dbReadConnection doubleForKey:@"restoration_time" inCollection:LKGeneralCollection defaultValue:0];
+}
 
 @end

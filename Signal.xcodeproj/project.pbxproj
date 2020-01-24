@@ -2785,6 +2785,7 @@
 				B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */,
 				B85357C023A1B81900AAF6CD /* SeedReminderViewDelegate.swift */,
 				B8BB82B82394911B00BA5194 /* Separator.swift */,
+				2400888D239F30A600305217 /* SessionRestoreBannerView.swift */,
 				B8CCF638239721E20091D419 /* TabBar.swift */,
 				B8BB82B423947F2D00BA5194 /* TextField.swift */,
 			);
@@ -2824,7 +2825,6 @@
 				B82B408B239A068800A248E7 /* RegisterVC.swift */,
 				B82B408F239DD75000A248E7 /* RestoreVC.swift */,
 				B893063E2383961A005EAA8E /* ScanQRCodeWrapperVC.swift */,
-				2400888D239F30A600305217 /* SessionRestoreBannerView.swift */,
 				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
 				B85357C223A1BD1200AAF6CD /* SeedVCV2.swift */,
 				B8CCF6422397711F0091D419 /* SettingsVC.swift */,
