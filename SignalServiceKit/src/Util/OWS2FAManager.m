@@ -316,8 +316,8 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
     __block BOOL hasPendingPinExperienceUpgrade = NO;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasPendingPinExperienceUpgrade = [ExperienceUpgradeFinder.sharedManager
-            hasPendingPinExperienceUpgradeWithTransaction:transaction.unwrapGrdbRead];
+        hasPendingPinExperienceUpgrade =
+            [ExperienceUpgradeFinder hasPendingPinExperienceUpgradeWithTransaction:transaction.unwrapGrdbRead];
     }];
 
     // If we require pins AND we don't have a pin AND we're not going to setup a pin through the upgrade interstitial
