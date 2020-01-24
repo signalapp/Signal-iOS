@@ -22,6 +22,7 @@ extern NSString *const TSContactThreadPrefix;
 
 // Loki: The current session reset state for this thread
 @property (atomic) TSContactThreadSessionResetState sessionResetState;
+@property (atomic, readonly) NSArray<NSString *> *sessionRestoreDevices;
 
 @property (nonatomic) BOOL hasDismissedOffers;
 
@@ -46,6 +47,11 @@ extern NSString *const TSContactThreadPrefix;
 // contact thread.
 + (NSString *)conversationColorNameForRecipientId:(NSString *)recipientId
                                       transaction:(YapDatabaseReadTransaction *)transaction;
+
+#pragma mark - Loki Session Restore
+
+- (void)addSessionRestoreDevice:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+- (void)removeAllSessionRestoreDevicesWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 @end
 

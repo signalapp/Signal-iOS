@@ -89,8 +89,9 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
+    NSString *source = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source;
     TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+        [TSContactThread getOrCreateThreadWithContactId:source transaction:transaction];
 
     // Legit usage of senderTimestamp. We don't actually currently surface it in the UI, but it serves as
     // a reference to the envelope which we failed to process.

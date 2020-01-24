@@ -114,10 +114,10 @@ final class FriendRequestView : UIView {
             let format: String = {
                 switch (message.friendRequestStatus) {
                 case .none, .sendingOrFailed: preconditionFailure()
-                case .pending: return NSLocalizedString("%@ sent you a message request", comment: "")
-                case .accepted: return NSLocalizedString("You've accepted %@'s message request", comment: "")
-                case .declined: return NSLocalizedString("You've declined %@'s message request", comment: "")
-                case .expired: return NSLocalizedString("%@'s message request has expired", comment: "")
+                case .pending: return NSLocalizedString("%@ sent you a session request", comment: "")
+                case .accepted: return NSLocalizedString("You've accepted %@'s session request", comment: "")
+                case .declined: return NSLocalizedString("You've declined %@'s session request", comment: "")
+                case .expired: return NSLocalizedString("%@'s session request has expired", comment: "")
                 default: preconditionFailure()
                 }
             }()
@@ -130,10 +130,10 @@ final class FriendRequestView : UIView {
                 switch (message.friendRequestStatus) {
                 case .none: preconditionFailure()
                 case .sendingOrFailed: return nil
-                case .pending: return NSLocalizedString("You've sent %@ a message request", comment: "")
-                case .accepted: return NSLocalizedString("%@ accepted your message request", comment: "")
+                case .pending: return NSLocalizedString("You've sent %@ a session request", comment: "")
+                case .accepted: return NSLocalizedString("%@ accepted your session request", comment: "")
                 case .declined: preconditionFailure()
-                case .expired: return NSLocalizedString("Your message request to %@ has expired", comment: "")
+                case .expired: return NSLocalizedString("Your session request to %@ has expired", comment: "")
                 default: preconditionFailure()
                 }
             }()

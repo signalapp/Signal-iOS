@@ -37,6 +37,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *_Nullable)getIDForMessageWithServerID:(NSUInteger)serverID in:(YapDatabaseReadTransaction *)transaction;
 - (void)updateMessageIDCollectionByPruningMessagesWithIDs:(NSSet<NSString *> *)targetMessageIDs in:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(updateMessageIDCollectionByPruningMessagesWithIDs(_:in:));
 
+# pragma mark - Restoration
+
+- (void)setRestorationTime:(NSTimeInterval)time;
+- (NSTimeInterval)getRestorationTime;
+
 @end
 
 NS_ASSUME_NONNULL_END

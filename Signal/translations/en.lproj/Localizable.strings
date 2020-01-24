@@ -2573,20 +2573,20 @@
 "Calculating proof of work" = "Calculating proof of work";
 "Failed to calculate proof of work." = "Failed to calculate proof of work.";
 "Share Public Key" = "Share Public Key";
-"%@ sent you a message request" = "%@ sent you a message request";
+"%@ sent you a session request" = "%@ sent you a session request";
 "Accept" = "Accept";
 "Decline" = "Decline";
-"Pending message request" = "Pending message request";
+"Pending session request" = "Pending session request";
 "New Message" = "New Message";
 "Secure session reset in progress" = "Secure session reset in progress";
 "Secure session reset done" = "Secure session reset done";
 "Session" = "Session";
-"You've sent %@ a message request" = "You've sent %@ a message request";
-"You've declined %@'s message request" = "You've declined %@'s message request";
-"You've accepted %@'s message request" = "You've accepted %@'s message request";
-"%@ accepted your message request" = "%@ accepted your message request";
-"%@'s message request has expired" = "%@'s message request has expired";
-"Your message request to %@ has expired" = "Your message request to %@ has expired";
+"You've sent %@ a session request" = "You've sent %@ a session request";
+"You've declined %@'s session request" = "You've declined %@'s session request";
+"You've accepted %@'s session request" = "You've accepted %@'s session request";
+"%@ accepted your session request" = "%@ accepted your session request";
+"%@'s session request has expired" = "%@'s session request has expired";
+"Your session request to %@ has expired" = "Your session request to %@ has expired";
 "Show Seed" = "Show Seed";
 "Your Seed" = "Your Seed";
 "Require Touch ID, Face ID or your device passcode to unlock Session’s screen. You can still receive notifications when Screen Lock is enabled. Use Session’s notification settings to customise the information displayed in notifications." = "Require Touch ID, Face ID or your device passcode to unlock Session’s screen. You can still receive notifications when Screen Lock is enabled. Use Session’s notification settings to customise the information displayed in notifications.";
@@ -2671,6 +2671,8 @@
 "Your device was unlinked successfully" = "Your device was unlinked successfully";
 "Unnamed Device" = "Unnamed Device";
 "Linked device (%@)" = "Linked device (%@)";
+"Restore session" = "Restore session";
+"Would you like to start a new session with %@?" = "Would you like to start a new session with %@?";
 
 // MARK: - Redesign
 "Messages" = "Messages";
@@ -2772,3 +2774,8 @@
 "Are you sure? This cannot be undone." = "Are you sure? This cannot be undone.";
 "When enabled, messages between you and %@ will disappear after they have been seen." = "When enabled, messages between you and %@ will disappear after they have been seen.";
 "This will be your name when you use Session." = "This will be your name when you use Session.";
+"Session Out of Sync" = "Session Out of Sync";
+"Would you like to restore your session?" = "Would you like to restore your session?";
+"Would you like to restore your session with %@?" = "Would you like to restore your session with %@?";
+"Restore" = "Restore";
+"Dismiss" = "Dismiss";
