@@ -128,12 +128,16 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
         return nil;
     }
     const CGFloat kMaxDimension = 800;
-    if (image.pixelWidth > kMaxDimension || image.pixelHeight > kMaxDimension) {
+    if (image.pixelWidth > kMaxDimension ||
+        image.pixelHeight > kMaxDimension) {
         CGFloat thumbnailSizePixels = MIN(kMaxDimension, MIN(image.pixelWidth, image.pixelHeight));
         image = [image resizedImageToFillPixelSize:CGSizeMake(thumbnailSizePixels, thumbnailSizePixels)];
 
-        if (image == nil || image.pixelWidth > kMaxDimension || image.pixelHeight > kMaxDimension) {
-            OWSLogVerbose(@"Could not resize group avatar: %@", NSStringFromCGSize(image.pixelSize));
+        if (image == nil ||
+            image.pixelWidth > kMaxDimension ||
+            image.pixelHeight > kMaxDimension) {
+            OWSLogVerbose(@"Could not resize group avatar: %@",
+                          NSStringFromCGSize(image.pixelSize));
             OWSFailDebug(@"Could not resize group avatar.");
             return nil;
         }
@@ -146,8 +150,9 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     // We should never hit this limit, given the max dimension above.
     const NSUInteger kMaxLength = 500 * 1000;
     if (data.length > kMaxLength) {
-        OWSLogVerbose(
-            @"Group avatar data length: %lu (%@)", (unsigned long)data.length, NSStringFromCGSize(image.pixelSize));
+        OWSLogVerbose(@"Group avatar data length: %lu (%@)",
+                      (unsigned long)data.length,
+                      NSStringFromCGSize(image.pixelSize));
         OWSFailDebug(@"Group avatar data has invalid length.");
         return nil;
     }
@@ -164,8 +169,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return [UIImage imageWithData:self.groupAvatarData];
 }
 
-- (void)setGroupAvatarData:(nullable NSData *)groupAvatarData
-{
+- (void)setGroupAvatarData:(nullable NSData *)groupAvatarData {
     if (_groupAvatarData.length > 0 && groupAvatarData.length < 1) {
         OWSFailDebug(@"We should never remove an avatar from a group with an avatar.");
         return;
@@ -173,8 +177,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     _groupAvatarData = groupAvatarData;
 }
 
-- (BOOL)isEqual:(id)other
-{
+- (BOOL)isEqual:(id)other {
     if (other == self) {
         return YES;
     }
@@ -184,8 +187,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return [self isEqualToGroupModel:other];
 }
 
-- (BOOL)isEqualToGroupModel:(TSGroupModel *)other
-{
+- (BOOL)isEqualToGroupModel:(TSGroupModel *)other {
     if (self == other)
         return YES;
     if (![_groupId isEqualToData:other.groupId]) {
