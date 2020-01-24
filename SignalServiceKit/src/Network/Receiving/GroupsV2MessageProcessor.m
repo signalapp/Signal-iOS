@@ -267,6 +267,11 @@ typedef void (^BatchCompletionBlock)(NSArray<IncomingGroupsV2MessageJob *> *, SD
     OWSAssertDebug(envelopeData);
     OWSAssertDebug(transaction);
 
+    if (!SSKFeatureFlags.incomingGroupsV2) {
+        // Discard envelope.
+        return;
+    }
+
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.finder addJobWithEnvelopeData:envelopeData
                           plaintextData:plaintextData
