@@ -841,12 +841,12 @@ public class GroupManager: NSObject {
                                               changeActionsProtoData: Data? = nil) -> Promise<Void> {
 
         return databaseStorage.read(.promise) { transaction in
-            // GroupsV2 TODO: This behavior will change for v2 groups.
             let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
-            let message = TSOutgoingMessage(in: thread,
-                                            groupMetaMessage: .update,
-                                            expiresInSeconds: expiresInSeconds)
-            return message
+            let messageBuilder = TSOutgoingMessage.Builder(thread: thread)
+            messageBuilder.groupMetaMessage = .update
+            messageBuilder.expiresInSeconds = expiresInSeconds
+            messageBuilder.changeActionsProtoData = changeActionsProtoData
+            return messageBuilder.build()
         }.then(on: .global()) { (message: TSOutgoingMessage) throws -> Promise<Void> in
             if let avatarData = newGroupModel.groupAvatarData,
                 avatarData.count > 0 {
@@ -894,9 +894,9 @@ public class GroupManager: NSObject {
 
     // MARK: -
 
-    private static func insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: TSGroupModel,
-                                                                        groupUpdateSourceAddress: SignalServiceAddress?,
-                                                                        transaction: SDSAnyWriteTransaction) -> TSGroupThread {
+    public static func insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: TSGroupModel,
+                                                                       groupUpdateSourceAddress: SignalServiceAddress?,
+                                                                       transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let groupThread = TSGroupThread(groupModelPrivate: groupModel)
         groupThread.anyInsert(transaction: transaction)
         insertGroupUpdateInfoMessage(groupThread: groupThread,

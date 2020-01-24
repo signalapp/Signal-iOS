@@ -72,7 +72,7 @@ public class GroupsV2Test: NSObject {
                 guard groupModel.groupsVersion == .V2 else {
                     throw OWSAssertionError("Not a V2 group.")
                 }
-                return groupsV2Swift.fetchGroupState(groupModel: groupModel)
+                return groupsV2Swift.fetchCurrentGroupState(groupModel: groupModel)
                     .map(on: .global()) { (groupV2State: GroupV2State) -> (Data, GroupV2State) in
                         return (groupThread.groupModel.groupId, groupV2State)
                 }
@@ -141,7 +141,7 @@ public class GroupsV2Test: NSObject {
                                                     groupUpdateSourceAddress: localAddress)
                 .then(on: .global()) { (groupThread) -> Promise<GroupV2State> in
                     // GroupsV2 TODO: This should reflect the new group.
-                    return groupsV2Swift.fetchGroupState(groupModel: groupThread.groupModel)
+                    return groupsV2Swift.fetchCurrentGroupState(groupModel: groupThread.groupModel)
             }.map(on: .global()) { (groupV2State: GroupV2State) -> (Data, GroupV2State) in
                 return (groupId, groupV2State)
             }
@@ -211,7 +211,7 @@ public class GroupsV2Test: NSObject {
                                                     groupUpdateSourceAddress: localAddress)
                 .then(on: .global()) { (_) -> Promise<GroupV2State> in
                     // GroupsV2 TODO: This should reflect the new group.
-                    return groupsV2Swift.fetchGroupState(groupModel: groupModel)
+                    return groupsV2Swift.fetchCurrentGroupState(groupModel: groupModel)
             }.map(on: .global()) { (groupV2State: GroupV2State) -> (Data, GroupV2State) in
                 return (groupId, groupV2State)
             }

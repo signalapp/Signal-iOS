@@ -30,7 +30,7 @@ public protocol GroupsV2: AnyObject {
 
     func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress]) -> AnyPromise
 
-    func fetchGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise
+    func fetchCurrentGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise
 
     func buildGroupContextV2Proto(groupModel: TSGroupModel,
                                   changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2
@@ -47,7 +47,7 @@ public protocol GroupsV2Swift {
 
     func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
 
-    func fetchGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State>
+    func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State>
 
     func buildChangeSet(from oldGroupModel: TSGroupModel,
                         to newGroupModel: TSGroupModel,
@@ -172,11 +172,11 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func fetchGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State> {
+    public func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State> {
         owsFail("Not implemented.")
     }
 
-    public func fetchGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise {
+    public func fetchCurrentGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise {
         owsFail("Not implemented.")
     }
 

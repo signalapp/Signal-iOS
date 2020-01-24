@@ -219,11 +219,11 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     // MARK: - Fetch Group State
 
     @objc
-    public func fetchGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise {
-        return AnyPromise(fetchGroupState(groupModel: groupModel))
+    public func fetchCurrentGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise {
+        return AnyPromise(fetchCurrentGroupState(groupModel: groupModel))
     }
 
-    public func fetchGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State> {
+    public func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State> {
         guard groupModel.groupsVersion == .V2 else {
             return Promise(error: OWSAssertionError("Invalid groupsVersion."))
         }
@@ -231,10 +231,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             return Promise(error: OWSAssertionError("Missing groupSecretParamsData."))
         }
 
-        return self.fetchGroupState(groupSecretParamsData: groupSecretParamsData)
+        return self.fetchCurrentGroupState(groupSecretParamsData: groupSecretParamsData)
     }
 
-    public func fetchGroupState(groupSecretParamsData: Data) -> Promise<GroupV2State> {
+    public func fetchCurrentGroupState(groupSecretParamsData: Data) -> Promise<GroupV2State> {
         // GroupsV2 TODO: Should we make sure we have a local profile credential?
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise<GroupV2State>(error: OWSAssertionError("Missing localUuid."))
@@ -242,7 +242,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         return DispatchQueue.global().async(.promise) { () -> GroupParams in
             return try GroupParams(groupSecretParamsData: groupSecretParamsData)
         }.then(on: DispatchQueue.global()) { (groupParams: GroupParams) -> Promise<GroupV2State> in
-            return self.fetchGroupState(groupParams: groupParams,
+            return self.fetchCurrentGroupState(groupParams: groupParams,
                                         localUuid: localUuid)
         }.map(on: DispatchQueue.global()) { (groupState: GroupV2State) -> GroupV2State in
             // GroupsV2 TODO: Remove this logging.
@@ -251,7 +251,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }
     }
 
-    private func fetchGroupState(groupParams: GroupParams,
+    private func fetchCurrentGroupState(groupParams: GroupParams,
                                  localUuid: UUID) -> Promise<GroupV2State> {
         let sessionManager = self.sessionManager
         return self.buildFetchGroupStateRequest(localUuid: localUuid,
@@ -381,7 +381,8 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
     // Fetch group state from service and apply.
     //
-    // * Try to fetch and apply incremental "changes".
+    // * Try to fetch and apply incremental "changes" -
+    //   if the group already existing in the database.
     // * Failover to fetching and applying latest state.
     // * We need to distinguish between retryable (network) errors
     //   and non-retryable errors.
@@ -390,23 +391,32 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     // * If reachability changes, we should retry network errors
     //   immediately.
     //
-    // It should have no effect if the group thread has been
-    // deleted in the meantime.
+    // It should upsert the group thread if it does not exist.
+    //
     // GroupsV2 TODO: Implement properly.
     public func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
                                                        groupSecretParamsData: Data,
                                                        upToRevision: UInt32) -> Promise<TSGroupThread> {
-        return self.fetchGroupState(groupSecretParamsData: groupSecretParamsData)
+        return self.fetchCurrentGroupState(groupSecretParamsData: groupSecretParamsData)
             .map(on: DispatchQueue.global()) { (groupState: GroupV2State) throws in
                 let groupThread = try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
                     // GroupsV2 TODO: We could make this a single GroupManager method.
                     let groupModel = try GroupManager.buildGroupModel(groupV2State: groupState,
                                                                       transaction: transaction)
                     // GroupsV2 TODO: Set groupUpdateSourceAddress.
-                    let groupThread = try GroupManager.tryToUpdateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: groupModel,
-                                                                                                                    groupUpdateSourceAddress: nil,
-                                                                                                                    transaction: transaction)
-                    return groupThread
+                    let groupUpdateSourceAddress: SignalServiceAddress? = nil
+
+                    let groupId = groupModel.groupId
+                    if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+                        return GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
+                                                                                            newGroupModel: groupModel,
+                                                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                            transaction: transaction)
+                    } else {
+                        return GroupManager.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: groupModel,
+                                                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                            transaction: transaction)
+                    }
                 }
                 // GroupsV2 TODO: Remove this logging.
                 Logger.verbose("GroupV2State: \(groupState.debugDescription)")

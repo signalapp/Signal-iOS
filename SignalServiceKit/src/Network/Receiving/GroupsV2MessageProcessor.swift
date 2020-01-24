@@ -499,8 +499,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
         }
         let groupId = groupContextInfo.groupId
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-            owsFailDebug("Missing group.")
-            return .failureShouldDiscard
+            // We might be learning of a group for the first time
+            // in which case we should fetch current group state from the
+            // service.
+            return .failureShouldFailoverToService
         }
         let oldGroupModel = groupThread.groupModel
         guard oldGroupModel.groupsVersion == .V2 else {
@@ -561,6 +563,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
             owsFailDebug("Unexpected revision.")
             return .successShouldProcess
         }
+        Logger.info("Successfully applied embedded change proto from group context.")
         return .successShouldProcess
     }
 
