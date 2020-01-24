@@ -191,7 +191,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 //    uint64_t sortId1 = self.sortId;
 //    uint64_t sortId2 = other.sortId;
     
-    //Loki - Sort the messages by sender's timestamp
+    // Loki: Sort the messages by sender's timestamp
     uint64_t sortId1 = self.timestamp;
     uint64_t sortId2 = other.timestamp;
 
