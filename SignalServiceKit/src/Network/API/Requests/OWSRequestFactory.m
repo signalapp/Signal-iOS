@@ -723,6 +723,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                  authUsername:(NSString *)authUsername
                                  authPassword:(NSString *)authPassword
                                       cookies:(NSArray<NSHTTPCookie *> *)cookies
+                                  requestType:(NSString *)requestType
 {
     NSString *path = [NSString stringWithFormat:@"v1/backup/%@", enclaveName];
 
@@ -733,6 +734,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                             @"data" : data.base64EncodedString,
                                             @"iv" : cryptIv.base64EncodedString,
                                             @"mac" : cryptMac.base64EncodedString,
+                                            @"type" : requestType
                                         }];
 
     request.authUsername = authUsername;

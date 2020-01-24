@@ -151,7 +151,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                   enclaveName:(NSString *)enclaveName
                                  authUsername:(NSString *)authUsername
                                  authPassword:(NSString *)authPassword
-                                      cookies:(NSArray<NSHTTPCookie *> *)cookies;
+                                      cookies:(NSArray<NSHTTPCookie *> *)cookies
+                                  requestType:(NSString *)requestType;
 
 #pragma mark - UD
 

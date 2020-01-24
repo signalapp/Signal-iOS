@@ -562,7 +562,8 @@ public class KeyBackupService: NSObject {
                 enclaveName: remoteAttestation.enclaveName,
                 authUsername: remoteAttestation.auth.username,
                 authPassword: remoteAttestation.auth.password,
-                cookies: remoteAttestation.cookies
+                cookies: remoteAttestation.cookies,
+                requestType: RequestType.stringRepresentation
             )
 
             return (request, remoteAttestation)
@@ -850,6 +851,8 @@ private protocol KBSRequestOption {
     associatedtype ResponseOptionType
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType?
     func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder)
+
+    static var stringRepresentation: String { get }
 }
 
 extension KeyBackupProtoBackupRequest: KBSRequestOption {
@@ -860,6 +863,7 @@ extension KeyBackupProtoBackupRequest: KBSRequestOption {
     func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
         builder.setBackup(self)
     }
+    static var stringRepresentation: String { "backup" }
 }
 extension KeyBackupProtoRestoreRequest: KBSRequestOption {
     typealias ResponseOptionType = KeyBackupProtoRestoreResponse
@@ -869,6 +873,7 @@ extension KeyBackupProtoRestoreRequest: KBSRequestOption {
     func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
         builder.setRestore(self)
     }
+    static var stringRepresentation: String { "restore" }
 }
 extension KeyBackupProtoDeleteRequest: KBSRequestOption {
     typealias ResponseOptionType = KeyBackupProtoDeleteResponse
@@ -878,4 +883,5 @@ extension KeyBackupProtoDeleteRequest: KBSRequestOption {
     func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
         builder.setDelete(self)
     }
+    static var stringRepresentation: String { "delete" }
 }
