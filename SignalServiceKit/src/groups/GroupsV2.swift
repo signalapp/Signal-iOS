@@ -37,10 +37,6 @@ public protocol GroupsV2: AnyObject {
 
     func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo
 
-    func fetchAndApplyGroupV2UpdatesFromServiceObjc(groupId: Data,
-                                                    groupSecretParamsData: Data,
-                                                    upToRevision: UInt32) -> AnyPromise
-
     func parseAndVerifyChangeProtoActions(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions
 }
 
@@ -64,6 +60,10 @@ public protocol GroupsV2Swift {
     func applyChangesToGroupModel(groupThread: TSGroupThread,
                                   changeActionsProto: GroupsProtoGroupChangeActions,
                                   transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel
+
+    func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
+                                                groupSecretParamsData: Data,
+                                                upToRevision: UInt32) -> Promise<TSGroupThread>
 }
 
 // MARK: -
@@ -199,9 +199,9 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func fetchAndApplyGroupV2UpdatesFromServiceObjc(groupId: Data,
-                                                           groupSecretParamsData: Data,
-                                                           upToRevision: UInt32) -> AnyPromise {
+    public func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
+                                                       groupSecretParamsData: Data,
+                                                       upToRevision: UInt32) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 

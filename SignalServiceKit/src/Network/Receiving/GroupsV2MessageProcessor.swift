@@ -581,9 +581,13 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 owsFailDebug("Missing jobInfo properties.")
                 return Promise(error: GroupsV2Error.shouldDiscard)
         }
-        return groupsV2.fetchAndApplyGroupV2UpdatesFromServiceObjc(groupId: groupContextInfo.groupId,
-                                                                   groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                   upToRevision: groupContext.revision)
+        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
+            return Promise(error: OWSAssertionError("Missing groupsV2Swift."))
+        }
+
+        return groupsV2Swift.fetchAndApplyGroupV2UpdatesFromService(groupId: groupContextInfo.groupId,
+                                                                    groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                    upToRevision: groupContext.revision)
             .then(on: DispatchQueue.global()) { _ in
                 return self.databaseStorage.write(.promise) { transaction in
                     _ = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)

@@ -164,10 +164,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                                                                                      changeActionsProto: changeActionsProto,
                                                                                      transaction: transaction)
                 // GroupsV2 TODO: Set groupUpdateSourceAddress.
-                _ = GroupManager.updateExistingGroupThreadAndCreateInfoMessage(groupThread: groupThread,
-                                                                                   newGroupModel: changedGroupModel.newGroupModel,
-                                                                                   groupUpdateSourceAddress: nil,
-                                                                                   transaction: transaction)
+                _ = GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
+                                                                                         newGroupModel: changedGroupModel.newGroupModel,
+                                                                                         groupUpdateSourceAddress: nil,
+                                                                                         transaction: transaction)
                 return changedGroupModel
             }
 
@@ -380,14 +380,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
     // MARK: - Updates
 
-    public func fetchAndApplyGroupV2UpdatesFromServiceObjc(groupId: Data,
-                                                           groupSecretParamsData: Data,
-                                                           upToRevision: UInt32) -> AnyPromise {
-        return AnyPromise(fetchAndApplyGroupV2UpdatesFromService(groupId: groupId,
-                                                                 groupSecretParamsData: groupSecretParamsData,
-                                                                 upToRevision: upToRevision))
-    }
-
     // Fetch group state from service and apply.
     //
     // * Try to fetch and apply incremental "changes".
@@ -399,21 +391,27 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     // * If reachability changes, we should retry network errors
     //   immediately.
     //
+    // It should have no effect if the group thread has been
+    // deleted in the meantime.
     // GroupsV2 TODO: Implement properly.
     public func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
                                                        groupSecretParamsData: Data,
-                                                       upToRevision: UInt32) -> Promise<Void> {
+                                                       upToRevision: UInt32) -> Promise<TSGroupThread> {
         return self.fetchGroupState(groupSecretParamsData: groupSecretParamsData)
-            .done(on: DispatchQueue.global()) { (groupState: GroupV2State) throws in
-                try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) throws in
+            .map(on: DispatchQueue.global()) { (groupState: GroupV2State) throws in
+                let groupThread = try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
                     // GroupsV2 TODO: We could make this a single GroupManager method.
                     let groupModel = try GroupManager.buildGroupModel(groupV2State: groupState,
                                                                       transaction: transaction)
-                    _ = try GroupManager.upsertGroupV2Thread(groupModel: groupModel,
-                                                             transaction: transaction)
+                    // GroupsV2 TODO: Set groupUpdateSourceAddress.
+                    let groupThread = try GroupManager.tryToUpdateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: groupModel,
+                                                                                                                    groupUpdateSourceAddress: nil,
+                                                                                                                    transaction: transaction)
+                    return groupThread
                 }
                 // GroupsV2 TODO: Remove this logging.
                 Logger.verbose("GroupV2State: \(groupState.debugDescription)")
+                return groupThread
         }
     }
 
