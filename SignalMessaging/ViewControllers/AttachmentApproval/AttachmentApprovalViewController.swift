@@ -130,6 +130,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     @objc
     public class func wrappedInNavController(attachments: [SignalAttachment],
+                                             initialMessageText: String?,
                                              approvalDelegate: AttachmentApprovalViewControllerDelegate)
         -> OWSNavigationController {
 
@@ -137,6 +138,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         let vc = AttachmentApprovalViewController(options: [.hasCancel],
                                                   sendButtonImageName: "send-solid-24",
                                                   attachmentApprovalItems: attachmentApprovalItems)
+        vc.messageText = initialMessageText
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
         navController.ows_prefersStatusBarHidden = true
