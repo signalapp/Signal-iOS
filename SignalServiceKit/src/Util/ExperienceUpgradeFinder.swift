@@ -7,6 +7,7 @@ import Reachability
 
 public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"
+    case reactions = "010"
 
     var hasLaunched: Bool {
         switch self {
@@ -16,13 +17,25 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return FeatureFlags.pinsForEveryone &&
                 TSAccountManager.sharedInstance().isRegisteredPrimaryDevice &&
                 SSKEnvironment.shared.reachabilityManager.isReachable
+        case .reactions:
+            return FeatureFlags.reactionSend
         }
     }
 
     // Some upgrades stop running after a certain date. This lets
     // us know if we're still before that end date.
     var hasExpired: Bool {
-        return false
+        let expirationDate: TimeInterval
+
+        switch self {
+        case .reactions:
+            // March 5, 2020 @ 12am UTC
+            expirationDate = 1583366400
+        default:
+            expirationDate = Date.distantFuture.timeIntervalSince1970
+        }
+
+        return Date().timeIntervalSince1970 > expirationDate
     }
 }
 

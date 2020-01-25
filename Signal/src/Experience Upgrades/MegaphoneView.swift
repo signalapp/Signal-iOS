@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import Lottie
 
 class MegaphoneView: UIView, ExperienceUpgradeView {
     let experienceUpgrade: ExperienceUpgrade
@@ -14,6 +15,35 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         willSet { assert(!hasPresented) }
     }
     var imageName: String?
+
+    var animation: Animation?
+    struct Animation {
+        let name: String
+        let backgroundImageName: String?
+        let backgroundImageInset: CGFloat
+        let speed: CGFloat
+        let loopMode: LottieLoopMode
+        let backgroundBehavior: LottieBackgroundBehavior
+        let contentMode: UIView.ContentMode
+
+        init(
+            name: String,
+            backgroundImageName: String? = nil,
+            backgroundImageInset: CGFloat = 0,
+            speed: CGFloat = 1,
+            loopMode: LottieLoopMode = .playOnce,
+            backgroundBehavior: LottieBackgroundBehavior = .forceFinish,
+            contentMode: UIView.ContentMode = .scaleAspectFit
+        ) {
+            self.name = name
+            self.speed = speed
+            self.loopMode = loopMode
+            self.backgroundBehavior = backgroundBehavior
+            self.contentMode = contentMode
+            self.backgroundImageName = backgroundImageName
+            self.backgroundImageInset = backgroundImageInset
+        }
+    }
 
     enum ButtonOrientation {
         case horizontal, vertical
@@ -28,8 +58,6 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     var bodyText: String? {
         willSet { assert(!hasPresented) }
     }
-
-    var didDismiss: (() -> Void)?
 
     struct Button {
         let title: String
@@ -75,16 +103,16 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
 
         guard !hasPresented else { return owsFailDebug("can only present once") }
 
-        guard let imageName = imageName, titleText != nil, bodyText != nil else {
+        guard titleText != nil, bodyText != nil, (imageName != nil || animation != nil) else {
             return owsFailDebug("megaphone is not prepared for presentation")
         }
 
         // Top section
 
         let labelStack = createLabelStack()
-        let imageView = createImageView(imageName: imageName)
+        let imageContainer = createImageContainer()
 
-        let topStackView = UIStackView(arrangedSubviews: [imageView, labelStack])
+        let topStackView = UIStackView(arrangedSubviews: [imageContainer, labelStack])
 
         switch imageSize {
         case .small:
@@ -114,6 +142,8 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         autoPinWidthToSuperview(withMargin: 8)
         autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
 
+        animationView?.play()
+
         alpha = 0
         UIView.animate(withDuration: 0.2) {
             self.alpha = 1
@@ -122,12 +152,15 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         hasPresented = true
     }
 
-    @objc func dismiss(animated: Bool = true, completionHandler: (() -> Void)? = nil) {
+    @objc func tappedDismiss() {
+        dismiss()
+    }
+
+    func dismiss(animated: Bool = true, completionHandler: (() -> Void)? = nil) {
         UIView.animate(withDuration: animated ? 0.2 : 0, animations: {
             self.alpha = 0
         }) { _ in
             self.removeFromSuperview()
-            self.didDismiss?()
             completionHandler?()
         }
     }
@@ -158,20 +191,50 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         return labelStack
     }
 
-    func createImageView(imageName: String) -> UIImageView {
-        let imageView = UIImageView()
-        imageView.clipsToBounds = true
-        imageView.image = UIImage(named: imageName)
-        imageView.contentMode = .scaleAspectFit
+    private var animationView: AnimationView?
+    func createImageContainer() -> UIView {
+        let container: UIView
+        if let imageName = imageName {
+            let imageView = UIImageView()
+            imageView.image = UIImage(named: imageName)
+            imageView.contentMode = .scaleAspectFit
+            container = imageView
+        } else if let animation = animation {
+            container = UIView()
+
+            if let backgroundImageName = animation.backgroundImageName {
+                let backgroundImageView = UIImageView()
+                backgroundImageView.image = UIImage(named: backgroundImageName)
+                backgroundImageView.contentMode = .scaleAspectFill
+                container.addSubview(backgroundImageView)
+                backgroundImageView.autoPinWidthToSuperview(withMargin: animation.backgroundImageInset)
+                backgroundImageView.autoVCenterInSuperview()
+            }
+
+            let animationView = AnimationView(name: animation.name)
+            self.animationView = animationView
+            animationView.contentMode = animation.contentMode
+            animationView.animationSpeed = animation.speed
+            animationView.loopMode = animation.loopMode
+            animationView.backgroundBehavior = animation.backgroundBehavior
+
+            container.addSubview(animationView)
+            animationView.autoPinEdgesToSuperviewEdges()
+        } else {
+            owsFailDebug("unexpectedly missing animation and image")
+            container = UIView()
+        }
+
+        container.clipsToBounds = true
 
         switch imageSize {
         case .small:
-            imageView.autoSetDimensions(to: CGSize(square: 64))
+            container.autoSetDimensions(to: CGSize(square: 64))
         case .large:
-            imageView.autoSetDimension(.height, toSize: 128)
+            container.autoSetDimension(.height, toSize: 128)
         }
 
-        return imageView
+        return container
     }
 
     func createButtonsStack() -> UIStackView {
@@ -229,7 +292,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     func addDismissButton() {
         let dismissButton = UIButton()
         dismissButton.setTemplateImageName("x-24", tintColor: Theme.darkThemePrimaryColor)
-        dismissButton.addTarget(self, action: #selector(dismiss), for: .touchUpInside)
+        dismissButton.addTarget(self, action: #selector(tappedDismiss), for: .touchUpInside)
 
         addSubview(dismissButton)
 

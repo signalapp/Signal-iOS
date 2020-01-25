@@ -78,7 +78,8 @@ class ExperienceUpgradeManager: NSObject {
 
     private static func hasMegaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
         switch experienceUpgrade.id {
-        case .introducingPins:
+        case .introducingPins,
+             .reactions:
             return true
         default:
             return false
@@ -89,6 +90,8 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins:
             return IntroducingPinsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .reactions:
+            return ReactionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }
