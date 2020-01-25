@@ -79,6 +79,11 @@ public class PinSetupViewController: OWSViewController {
     }
 
     @objc
+    class func creating(completionHandler: @escaping () -> Void) -> PinSetupViewController {
+        return .init(mode: .creating, completionHandler: completionHandler)
+    }
+
+    @objc
     class func changing(completionHandler: @escaping () -> Void) -> PinSetupViewController {
         return .init(mode: .changing, completionHandler: completionHandler)
     }

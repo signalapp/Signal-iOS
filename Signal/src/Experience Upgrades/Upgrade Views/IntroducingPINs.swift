@@ -190,4 +190,18 @@ class IntroducingPinsSplash: SplashViewController {
                                      comment: "Button to open a help document explaining more about why a PIN is required")
         }
     }
+
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        guard let fromViewController = presentingViewController else {
+            return owsFailDebug("Trying to dismiss while not presented.")
+        }
+
+        super.dismiss(animated: flag) { [weak self] in
+            self?.presentToast(
+                text: NSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created."),
+                fromViewController: fromViewController
+            )
+            completion?()
+        }
+    }
 }

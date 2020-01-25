@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "PrivacySettingsTableViewController.h"
@@ -154,11 +154,20 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         pinsSection.footerTitle
             = NSLocalizedString(@"SETTINGS_PINS_FOOTER", @"Footer for the 'PINs' section of the privacy settings.");
         [pinsSection
-            addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PINS_ITEM",
-                                                             @"Label for the 'pins' item of the privacy settings.")
+            addItem:[OWSTableItem disclosureItemWithText:([OWS2FAManager.sharedManager is2FAEnabled]
+                                                                 ? NSLocalizedString(@"SETTINGS_PINS_ITEM",
+                                                                     @"Label for the 'pins' item of the privacy "
+                                                                     @"settings when the user does have a pin.")
+                                                                 : NSLocalizedString(@"SETTINGS_PINS_ITEM_CREATE",
+                                                                     @"Label for the 'pins' item of the privacy "
+                                                                     @"settings when the user doesn't have a pin."))
                                  accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"pin"]
                                              actionBlock:^{
-                                                 [weakSelf showChangePin];
+                                                 if ([OWS2FAManager.sharedManager is2FAEnabled]) {
+                                                     [weakSelf showChangePin];
+                                                 } else {
+                                                     [weakSelf showCreatePin];
+                                                 }
                                              }]];
         [contents addSection:pinsSection];
     }
@@ -586,6 +595,17 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
     __weak PrivacySettingsTableViewController *weakSelf = self;
     OWSPinSetupViewController *vc = [OWSPinSetupViewController changingWithCompletionHandler:^{
+        [weakSelf.navigationController popToViewController:weakSelf animated:YES];
+    }];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showCreatePin
+{
+    OWSLogInfo(@"");
+
+    __weak PrivacySettingsTableViewController *weakSelf = self;
+    OWSPinSetupViewController *vc = [OWSPinSetupViewController creatingWithCompletionHandler:^{
         [weakSelf.navigationController popToViewController:weakSelf animated:YES];
     }];
     [self.navigationController pushViewController:vc animated:YES];
