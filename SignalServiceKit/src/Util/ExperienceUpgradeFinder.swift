@@ -60,12 +60,12 @@ public class ExperienceUpgradeFinder: NSObject {
         return allActiveExperienceUpgrades(transaction: transaction).first { !$0.isSnoozed }
     }
 
-    public class func allUnviewed(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
-        return allActiveExperienceUpgrades(transaction: transaction).filter { $0.hasViewed }
+    public class func allIncomplete(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
+        return allActiveExperienceUpgrades(transaction: transaction).filter { !$0.isComplete }
     }
 
-    public class func hasUnviewed(experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBReadTransaction) -> Bool {
-        return allUnviewed(transaction: transaction).contains { experienceUpgradeId.rawValue == $0.uniqueId }
+    public class func hasIncomplete(experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBReadTransaction) -> Bool {
+        return allIncomplete(transaction: transaction).contains { experienceUpgradeId.rawValue == $0.uniqueId }
     }
 
     public class func markAsViewed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
