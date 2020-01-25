@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)presentForAppSettings:(UINavigationController *)navigationController;
 + (void)presentForRegistration:(UINavigationController *)navigationController;
++ (instancetype)forExperienceUpgradeWithCompletionHandler:(void (^)(void))completionHandler;
 
 @end
 

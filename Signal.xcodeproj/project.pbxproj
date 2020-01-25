@@ -628,6 +628,8 @@
 		8889007123DBB39B00F40186 /* reactionMegaphone_6.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006923DBB39B00F40186 /* reactionMegaphone_6.png */; };
 		8889007223DBB39B00F40186 /* reactionMegaphone_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006A23DBB39B00F40186 /* reactionMegaphone_4.png */; };
 		8889007323DBB39B00F40186 /* reactionMegaphone_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006B23DBB39B00F40186 /* reactionMegaphone_5.png */; };
+		8889007523DBD0B400F40186 /* RequiredProfileNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8889007423DBD0B400F40186 /* RequiredProfileNames.swift */; };
+		8889007723DBD61200F40186 /* requiredProfileNamesSplash.json in Resources */ = {isa = PBXBuildFile; fileRef = 8889007623DBD61200F40186 /* requiredProfileNamesSplash.json */; };
 		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
@@ -1504,6 +1506,8 @@
 		8889006923DBB39B00F40186 /* reactionMegaphone_6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_6.png; sourceTree = "<group>"; };
 		8889006A23DBB39B00F40186 /* reactionMegaphone_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_4.png; sourceTree = "<group>"; };
 		8889006B23DBB39B00F40186 /* reactionMegaphone_5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_5.png; sourceTree = "<group>"; };
+		8889007423DBD0B400F40186 /* RequiredProfileNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequiredProfileNames.swift; sourceTree = "<group>"; };
+		8889007623DBD61200F40186 /* requiredProfileNamesSplash.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = requiredProfileNamesSplash.json; sourceTree = "<group>"; };
 		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
 		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
@@ -2949,6 +2953,7 @@
 			children = (
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
 				88A505FB23DBAE4F0005C012 /* Reactions.swift */,
+				8889007423DBD0B400F40186 /* RequiredProfileNames.swift */,
 			);
 			path = "Upgrade Views";
 			sourceTree = "<group>";
@@ -2965,6 +2970,7 @@
 				888C827F23D795F90059464B /* pinCreationFail.json */,
 				888C828023D795FA0059464B /* pinCreationInProgress.json */,
 				8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */,
+				8889007623DBD61200F40186 /* requiredProfileNamesSplash.json */,
 			);
 			path = Lottie;
 			sourceTree = "<group>";
@@ -3626,6 +3632,7 @@
 				45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */,
 				4C9D349B2369F11F006A4307 /* notificationPermission1.png in Resources */,
 				45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */,
+				8889007723DBD61200F40186 /* requiredProfileNamesSplash.json in Resources */,
 				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
 				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,
 				4C9D349D2369F11F006A4307 /* notificationPermission2.png in Resources */,
@@ -4393,6 +4400,7 @@
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */,
+				8889007523DBD0B400F40186 /* RequiredProfileNames.swift in Sources */,
 				3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */,
 				34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */,
 				4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */,
