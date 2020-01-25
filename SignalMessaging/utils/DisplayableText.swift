@@ -157,7 +157,7 @@ import Foundation
         let truncatedContent: Content?
         if fullText.count > kMaxTextDisplayLength {
             // Trim whitespace before _AND_ after slicing the snipper from the string.
-            let snippet = String(fullText.prefix(kMaxTextDisplayLength)).ows_stripped()
+            let snippet = fullText.safePrefix(kMaxTextDisplayLength).ows_stripped()
             let truncatedText = String(format: NSLocalizedString("OVERSIZE_TEXT_DISPLAY_FORMAT", comment:
                 "A display format for oversize text messages."),
                 snippet)
