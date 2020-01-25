@@ -9,6 +9,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"
     case reactions = "010"
 
+    // Until this flag is true the upgrade won't display to users.
     var hasLaunched: Bool {
         switch self {
         case .introducingPins:
@@ -36,6 +37,17 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         }
 
         return Date().timeIntervalSince1970 > expirationDate
+    }
+
+    // If false, this will be marked complete after registration
+    // without ever presenting to the user.
+    var showNewUsers: Bool {
+        switch self {
+        case .reactions:
+            return true
+        default:
+            return false
+        }
     }
 }
 
@@ -76,13 +88,16 @@ public class ExperienceUpgradeFinder: NSObject {
     }
 
     @objc
-    public class func markAllComplete(transaction: GRDBWriteTransaction) {
-        allActiveExperienceUpgrades(transaction: transaction).forEach { markAsComplete(experienceUpgrade: $0, transaction: transaction) }
+    public class func markAllCompleteForNewUser(transaction: GRDBWriteTransaction) {
+        allActiveExperienceUpgrades(transaction: transaction)
+            .lazy
+            .filter { !$0.id.showNewUsers }
+            .forEach { markAsComplete(experienceUpgrade: $0, transaction: transaction) }
     }
 
     @objc
     public class func hasPendingPinExperienceUpgrade(transaction: GRDBReadTransaction) -> Bool {
-        return hasUnviewed(experienceUpgradeId: .introducingPins, transaction: transaction)
+        return hasIncomplete(experienceUpgradeId: .introducingPins, transaction: transaction)
     }
 
     /// Returns an array of all experience upgrades currently being run that have
