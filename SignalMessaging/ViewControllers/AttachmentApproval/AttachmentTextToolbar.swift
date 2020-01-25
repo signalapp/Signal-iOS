@@ -62,7 +62,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     // Layout Constants
 
     let kMinToolbarItemHeight: CGFloat = 40
-    let kMinTextViewHeight: CGFloat = 38
+    let kMinTextViewHeight: CGFloat = 36
     var maxTextViewHeight: CGFloat {
         // About ~4 lines in portrait and ~3 lines in landscape.
         // Otherwise we risk obscuring too much of the content.

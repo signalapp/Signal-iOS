@@ -30,7 +30,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, KeyboardType) { KeyboardType_System, Keyboard
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 
-const CGFloat kMinTextViewHeight = 38;
+const CGFloat kMinTextViewHeight = 36;
 const CGFloat kMinToolbarItemHeight = 44;
 const CGFloat kMaxTextViewHeight = 98;
 const CGFloat kMaxIPadTextViewHeight = 142;
