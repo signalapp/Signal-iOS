@@ -761,7 +761,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [super viewDidAppear:animated];
 
-    if (![ExperienceUpgradeManager presentNextFromViewController:self]) {
+    if (!self.hasEverAppeared && ![ExperienceUpgradeManager presentNextFromViewController:self]) {
         [OWSActionSheets showIOSUpgradeNagIfNecessary];
     }
 
@@ -1188,6 +1188,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     [self updateShouldObserveDBModifications];
+
+    if (![ExperienceUpgradeManager presentNextFromViewController:self]) {
+        [OWSActionSheets showIOSUpgradeNagIfNecessary];
+    }
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
