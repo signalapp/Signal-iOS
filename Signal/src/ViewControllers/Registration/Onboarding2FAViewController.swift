@@ -62,7 +62,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         let titleText: String
         let explanationText: String
 
-        if FeatureFlags.pinsForEveryone {
+        if RemoteConfig.pinsForEveryone {
             titleText = NSLocalizedString("ONBOARDING_PIN_TITLE", comment: "Title of the 'onboarding PIN' view.")
             explanationText = NSLocalizedString("ONBOARDING_PIN_EXPLANATION", comment: "Title of the 'onboarding PIN' view.")
         } else {

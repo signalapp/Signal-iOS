@@ -321,7 +321,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     }];
 
     // If we require pins AND we don't have a pin AND we're not going to setup a pin through the upgrade interstitial
-    return SSKFeatureFlags.pinsForEveryone && !self.is2FAEnabled && !hasPendingPinExperienceUpgrade;
+    return RemoteConfig.pinsForEveryone && !self.is2FAEnabled && !hasPendingPinExperienceUpgrade;
 }
 
 - (BOOL)needsLegacyPinMigration

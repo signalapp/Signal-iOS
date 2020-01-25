@@ -14,9 +14,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         switch self {
         case .introducingPins:
             // The PIN setup flow requires an internet connection
-            // and should only be run on the primary device.
-            return FeatureFlags.pinsForEveryone &&
-                TSAccountManager.sharedInstance().isRegisteredPrimaryDevice &&
+            return RemoteConfig.pinsForEveryone &&
                 SSKEnvironment.shared.reachabilityManager.isReachable
         case .reactions:
             return FeatureFlags.reactionSend
