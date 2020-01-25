@@ -742,7 +742,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                 OWSAssertDebug(frontmostViewController);
 
                 UIViewController *reminderVC;
-                if (SSKFeatureFlags.pinsForEveryone) {
+                if (RemoteConfig.pinsForEveryone) {
                     reminderVC = [OWSPinReminderViewController new];
                 } else {
                     reminderVC = [OWS2FAReminderViewController wrappedInNavController];
