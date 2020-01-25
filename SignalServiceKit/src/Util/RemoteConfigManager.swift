@@ -21,6 +21,11 @@ public class RemoteConfig: NSObject {
         return isEnabled("ios.pinsForEveryone")
     }
 
+    @objc
+    public static var requiredProfileNames: Bool {
+        return isEnabled("ios.requiredProfileNames")
+    }
+
     private static func isEnabled(_ key: String, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
             return defaultValue

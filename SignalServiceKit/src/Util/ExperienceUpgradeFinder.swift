@@ -8,6 +8,7 @@ import Reachability
 public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"
     case reactions = "010"
+    case requiredProfileNames = "011"
 
     // Until this flag is true the upgrade won't display to users.
     var hasLaunched: Bool {
@@ -18,6 +19,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
                 SSKEnvironment.shared.reachabilityManager.isReachable
         case .reactions:
             return FeatureFlags.reactionSend
+        case .requiredProfileNames:
+            return RemoteConfig.requiredProfileNames
         }
     }
 
