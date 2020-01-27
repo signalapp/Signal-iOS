@@ -55,7 +55,10 @@ public protocol GroupsV2Swift {
                         to newGroupModel: TSGroupModel,
                         transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet
 
-    func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<ChangedGroupModel>
+    // On success returns a group thread model that reflects the
+    // latest state in the service, which (due to races) might
+    // reflect changes after the change set.
+    func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
 
@@ -92,6 +95,11 @@ public enum GroupUpdateMode {
 @objc
 public protocol GroupUpdates: AnyObject {
     func tryToRefreshGroupThreadToLatestStateWithThrottling(_ thread: TSThread)
+
+    func updateGroupWithChangeActions(groupId: Data,
+                                             changeActionsProto: GroupsProtoGroupChangeActions,
+                                             changeActionsProtoData: Data,
+                                             transaction: SDSAnyWriteTransaction) throws -> TSGroupThread
 }
 
 // MARK: -
@@ -159,6 +167,19 @@ public struct ChangedGroupModel {
 
 // MARK: -
 
+public struct UpdatedV2Group {
+    public let groupThread: TSGroupThread
+    public let changeActionsProtoData: Data
+
+    public init(groupThread: TSGroupThread,
+                changeActionsProtoData: Data) {
+        self.groupThread = groupThread
+        self.changeActionsProtoData = changeActionsProtoData
+    }
+}
+
+// MARK: -
+
 public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
 
     public func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void> {
@@ -213,7 +234,7 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<ChangedGroupModel> {
+    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> {
         owsFail("Not implemented.")
     }
 
@@ -248,6 +269,13 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
 
 public class MockGroupUpdates: NSObject, GroupUpdates {
     public func tryToRefreshGroupThreadToLatestStateWithThrottling(_ thread: TSThread) {
+        owsFail("Not implemented.")
+    }
+
+    public func updateGroupWithChangeActions(groupId: Data,
+                                             changeActionsProto: GroupsProtoGroupChangeActions,
+                                             changeActionsProtoData: Data,
+                                             transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
         owsFail("Not implemented.")
     }
 }

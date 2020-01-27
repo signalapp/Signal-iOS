@@ -683,14 +683,12 @@ public class GroupManager: NSObject {
                                                                                                     canInsert: false,
                                                                                                     transaction: transaction)
             return (updateInfo, groupThread)
-        }.then(on: .global()) { (updateInfo: UpdateInfo, groupThread: TSGroupThread) throws -> Promise<TSGroupThread> in
+        }.then(on: .global()) { (_: UpdateInfo, groupThread: TSGroupThread) throws -> Promise<TSGroupThread> in
             guard shouldSendMessage else {
                 return Promise.value(groupThread)
             }
 
-            return self.sendGroupUpdateMessage(thread: groupThread,
-                                               oldGroupModel: updateInfo.oldGroupModel,
-                                               newGroupModel: updateInfo.newGroupModel)
+            return self.sendGroupUpdateMessage(thread: groupThread)
                 .map(on: .global()) { _ in
                     return groupThread
             }
@@ -719,45 +717,25 @@ public class GroupManager: NSObject {
                                            transaction: transaction)
             }
             return updateInfo
-        }.then(on: .global()) { (updateInfo: UpdateInfo) throws -> Promise<(UpdateInfo, ChangedGroupModel)> in
+        }.then(on: .global()) { (updateInfo: UpdateInfo) throws -> Promise<UpdatedV2Group> in
             guard let changeSet = updateInfo.changeSet else {
                 throw OWSAssertionError("Missing changeSet.")
             }
             return groupsV2Swift.updateExistingGroupOnService(changeSet: changeSet)
-                .map(on: .global()) { (changedGroupModel) -> (UpdateInfo, ChangedGroupModel) in
-                    return (updateInfo, changedGroupModel)
-            }
-        }.map(on: .global()) { (updateInfo: UpdateInfo, changedGroupModel: ChangedGroupModel) throws -> ChangedGroupModel in
-            let newGroupModel = changedGroupModel.newGroupModel
-            guard newGroupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
-                throw OWSAssertionError("Invalid groupV2Revision: \(newGroupModel.groupV2Revision).")
-            }
-            guard newGroupModel.groupV2Revision > updateInfo.oldGroupModel.groupV2Revision else {
-                throw OWSAssertionError("Invalid groupV2Revision: \(newGroupModel.groupV2Revision).")
-            }
-            guard newGroupModel.groupV2Revision >= updateInfo.newGroupModel.groupV2Revision else {
-                throw OWSAssertionError("Invalid groupV2Revision: \(newGroupModel.groupV2Revision).")
-            }
-            // GroupsV2 TODO: v2 groups must be modified in step-wise fashion,
-            //                creating local messages for each revision.
-            return changedGroupModel
-        }.then(on: .global()) { (changedGroupModel: ChangedGroupModel) throws -> Promise<TSGroupThread> in
-            let groupThread = changedGroupModel.groupThread
+        }.then(on: .global()) { (updatedV2Group: UpdatedV2Group) throws -> Promise<TSGroupThread> in
 
             // We need to plumb through the _actual_ "old" and "new" group models
             // to sendGroupUpdateMessage(), e.g. the copies from ChangedGroupModel
             // which reflect the actual update rather than from UpdateInfo()
             // which reflect the proposed update.
             guard shouldSendMessage else {
-                return Promise.value(groupThread)
+                return Promise.value(updatedV2Group.groupThread)
             }
 
-            return self.sendGroupUpdateMessage(thread: groupThread,
-                                               oldGroupModel: changedGroupModel.oldGroupModel,
-                                               newGroupModel: changedGroupModel.newGroupModel,
-                                               changeActionsProtoData: changedGroupModel.changeActionsProtoData)
+            return self.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
+                                               changeActionsProtoData: updatedV2Group.changeActionsProtoData)
                 .map(on: .global()) { _ in
-                    return groupThread
+                    return updatedV2Group.groupThread
             }
         }
         // GroupsV2 TODO: Handle redundant change error.
@@ -828,17 +806,11 @@ public class GroupManager: NSObject {
     // MARK: - Messages
 
     @objc
-    public static func sendGroupUpdateMessageObjc(thread: TSGroupThread,
-                                                  oldGroupModel: TSGroupModel,
-                                                  newGroupModel: TSGroupModel) -> AnyPromise {
-        return AnyPromise(self.sendGroupUpdateMessage(thread: thread,
-                                                      oldGroupModel: oldGroupModel,
-                                                      newGroupModel: newGroupModel))
+    public static func sendGroupUpdateMessageObjc(thread: TSGroupThread) -> AnyPromise {
+        return AnyPromise(self.sendGroupUpdateMessage(thread: thread))
     }
 
     public static func sendGroupUpdateMessage(thread: TSGroupThread,
-                                              oldGroupModel: TSGroupModel,
-                                              newGroupModel: TSGroupModel,
                                               changeActionsProtoData: Data? = nil) -> Promise<Void> {
 
         return databaseStorage.read(.promise) { transaction in
@@ -849,7 +821,8 @@ public class GroupManager: NSObject {
             messageBuilder.changeActionsProtoData = changeActionsProtoData
             return messageBuilder.build()
         }.then(on: .global()) { (message: TSOutgoingMessage) throws -> Promise<Void> in
-            if let avatarData = newGroupModel.groupAvatarData,
+            let groupModel = thread.groupModel
+            if let avatarData = groupModel.groupAvatarData,
                 avatarData.count > 0 {
                 if let dataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: "png") {
 

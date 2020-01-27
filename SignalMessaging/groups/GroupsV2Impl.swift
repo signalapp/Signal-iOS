@@ -37,6 +37,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         return OWSProfileManager.shared()
     }
 
+    fileprivate var groupUpdates: GroupUpdates {
+        return SSKEnvironment.shared.groupUpdates
+    }
+
     // MARK: -
 
     public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
@@ -115,7 +119,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
     // MARK: - Update Group
 
-    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<ChangedGroupModel> {
+    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> {
         let groupId = changeSet.groupId
 
         // GroupsV2 TODO: Should we make sure we have a local profile credential?
@@ -144,7 +148,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                                                 sessionManager: sessionManager)
         }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
             return self.performServiceRequest(request: request, sessionManager: sessionManager)
-        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> ChangedGroupModel in
+        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> UpdatedV2Group in
 
             guard let changeActionsProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -154,24 +158,11 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             // GroupsV2 TODO: Instead of loading the group model from the database,
             // we should use exactly the same group model that was used to construct
             // the update request - which should reflect pre-update service state.
-            let changedGroupModel = try self.databaseStorage.write { transaction throws -> ChangedGroupModel in
-                guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                    throw OWSAssertionError("Missing groupThread.")
-                }
-                let changedGroupModel = try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
-                                                                                     changeActionsProto: changeActionsProto,
-                                                                                     changeActionsProtoData: changeActionsProtoData,
-                                                                                     transaction: transaction)
-                // GroupsV2 TODO: Set groupUpdateSourceAddress.
-                let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
-                                                                                             newGroupModel: changedGroupModel.newGroupModel,
-                                                                                             groupUpdateSourceAddress: nil,
-                                                                                             transaction: transaction)
-                return changedGroupModel
-            }
-
-            guard changedGroupModel.newGroupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
-                throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
+            let updatedGroupThread = try self.databaseStorage.write { transaction throws -> TSGroupThread in
+                return try self.groupUpdates.updateGroupWithChangeActions(groupId: groupId,
+                                                                          changeActionsProto: changeActionsProto,
+                                                                          changeActionsProtoData: changeActionsProtoData,
+                                                                          transaction: transaction)
             }
 
             // GroupsV2 TODO: Handle conflicts.
@@ -196,7 +187,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
              
              */
 
-            return changedGroupModel
+            return UpdatedV2Group(groupThread: updatedGroupThread, changeActionsProtoData: changeActionsProtoData)
         }
     }
 

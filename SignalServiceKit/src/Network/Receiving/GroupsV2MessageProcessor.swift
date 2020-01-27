@@ -34,6 +34,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
         return SSKEnvironment.shared.groupsV2
     }
 
+    private var groupUpdates: GroupUpdates {
+        return SSKEnvironment.shared.groupUpdates
+    }
+
     private var blockingManager: OWSBlockingManager {
         return SSKEnvironment.shared.blockingManager
     }
@@ -536,27 +540,24 @@ class IncomingGroupsV2MessageQueue: NSObject {
             return .failureShouldFailoverToService
         }
 
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            owsFailDebug("Invalid groupsV2 instance.")
-            return .failureShouldDiscard
-        }
-
-        let changedGroupModel: ChangedGroupModel
+        let updatedGroupThread: TSGroupThread
         do {
-            changedGroupModel = try groupsV2Swift.applyChangesToGroupModel(groupThread: groupThread,
-                                                                           changeActionsProto: changeActionsProto,
-                                                                           changeActionsProtoData: changeActionsProtoData,
-                                                                           transaction: transaction)
+            updatedGroupThread = try groupUpdates.updateGroupWithChangeActions(groupId: groupId,
+                                                                               changeActionsProto: changeActionsProto,
+                                                                               changeActionsProtoData: changeActionsProtoData,
+                                                                               transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
+            // GroupsV2 TODO: Make sure this is still correct behavior.
             return .failureShouldFailoverToService
         }
+        let updatedGroupModel = updatedGroupThread.groupModel
 
-        guard changedGroupModel.newGroupModel.groupV2Revision >= contextRevision else {
+        guard updatedGroupModel.groupV2Revision >= contextRevision else {
             owsFailDebug("Invalid revision.")
             return .failureShouldFailoverToService
         }
-        guard changedGroupModel.newGroupModel.groupV2Revision == contextRevision else {
+        guard updatedGroupModel.groupV2Revision == contextRevision else {
             // We expect the embedded changes to update us to the target
             // revision.  If we update past that, assert but proceed in production.
             owsFailDebug("Unexpected revision.")

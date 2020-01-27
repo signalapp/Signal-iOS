@@ -31,6 +31,7 @@
 		340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872D922397FEB00CB25B0 /* AttachmentTextView.swift */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */; };
+		340B870E23DF3E3A00BE0AFC /* GroupUpdatesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B870D23DF3E3A00BE0AFC /* GroupUpdatesImpl.swift */; };
 		340CCB6A23032762005243B3 /* YDBLegacyMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CCB6823032762005243B3 /* YDBLegacyMigration.m */; };
 		340CCB712305962B005243B3 /* YDBToGRDBMigrationKeyValueTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340CCB6F2305962A005243B3 /* YDBToGRDBMigrationKeyValueTest.swift */; };
 		340CCB722305962B005243B3 /* YDBToGRDBMigrationModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340CCB702305962B005243B3 /* YDBToGRDBMigrationModelTest.swift */; };
@@ -806,6 +807,7 @@
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StorageService+GroupsV2.swift"; sourceTree = "<group>"; };
+		340B870D23DF3E3A00BE0AFC /* GroupUpdatesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupUpdatesImpl.swift; sourceTree = "<group>"; };
 		340CCB6823032762005243B3 /* YDBLegacyMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBLegacyMigration.m; sourceTree = "<group>"; };
 		340CCB6923032762005243B3 /* YDBLegacyMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBLegacyMigration.h; sourceTree = "<group>"; };
 		340CCB6F2305962A005243B3 /* YDBToGRDBMigrationKeyValueTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YDBToGRDBMigrationKeyValueTest.swift; sourceTree = "<group>"; };
@@ -2285,6 +2287,7 @@
 				3456A73123D63EBE00947219 /* GroupsV2Protos.swift */,
 				3456A73323D741E300947219 /* GroupsV2Test.swift */,
 				34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */,
+				340B870D23DF3E3A00BE0AFC /* GroupUpdatesImpl.swift */,
 				34BB3C5A23C6644B001651FC /* GroupV2StateImpl.swift */,
 				340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */,
 			);
@@ -4129,6 +4132,7 @@
 				340872CA2239563500CB25B0 /* AttachmentApprovalViewController.swift in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
 				34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */,
+				340B870E23DF3E3A00BE0AFC /* GroupUpdatesImpl.swift in Sources */,
 				340872D02239787F00CB25B0 /* AttachmentTextToolbar.swift in Sources */,
 				3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */,
 				3416BCAE2277A24000E761B4 /* StickerPackDataSource.swift in Sources */,

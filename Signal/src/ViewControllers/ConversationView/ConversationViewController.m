@@ -4116,16 +4116,14 @@ typedef enum : NSUInteger {
     OWSAssertDebug(message);
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    [[GroupManager sendGroupUpdateMessageObjcWithThread:groupThread
-                                          oldGroupModel:groupThread.groupModel
-                                          newGroupModel:groupThread.groupModel]
-            .thenOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSLogInfo(@"Group updated, removing group creation error.");
+    [[GroupManager sendGroupUpdateMessageObjcWithThread:groupThread].thenOn(
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            OWSLogInfo(@"Group updated, removing group creation error.");
 
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                    [message anyRemoveWithTransaction:transaction];
-                }];
-            }) retainUntilComplete];
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                [message anyRemoveWithTransaction:transaction];
+            }];
+        }) retainUntilComplete];
 }
 
 - (void)conversationColorWasUpdated
