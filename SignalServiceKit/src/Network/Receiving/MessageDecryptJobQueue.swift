@@ -51,8 +51,7 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
 
     @objc
     public func setup() {
-        // Don't decrypt messages in app extensions.
-        if !CurrentAppContext().isMainApp {
+        guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
 
@@ -69,7 +68,11 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
     public var isSetup = AtomicBool(false)
 
     public func didMarkAsReady(oldJobRecord: SSKMessageDecryptJobRecord, transaction: SDSAnyWriteTransaction) {
+        // Do nothing.
+    }
 
+    public func didFlushQueue(transaction: SDSAnyWriteTransaction) {
+        NotificationCenter.default.postNotificationNameAsync(.messageDecryptionDidFlushQueue, object: nil, userInfo: nil)
     }
 
     public func buildOperation(jobRecord: SSKMessageDecryptJobRecord, transaction: SDSAnyReadTransaction) throws -> SSKMessageDecryptOperation {
@@ -86,6 +89,11 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
 
     public func operationQueue(jobRecord: SSKMessageDecryptJobRecord) -> OperationQueue {
         return defaultQueue
+    }
+
+    @objc
+    public func hasPendingJobsObjc(transaction: SDSAnyReadTransaction) -> Bool {
+        return hasPendingJobs(transaction: transaction)
     }
 }
 

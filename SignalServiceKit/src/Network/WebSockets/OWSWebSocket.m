@@ -167,6 +167,8 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 //
 // We only ever access this state on the main thread.
 @property (nonatomic) OWSWebSocketState state;
+@property (nonatomic) BOOL hasEmptiedInitialQueue;
+@property (nonatomic) BOOL willEmptyInitialQueue;
 
 #pragma mark -
 
@@ -215,6 +217,8 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     OWSAssertIsOnMainThread();
 
     _state = OWSWebSocketStateClosed;
+    _hasEmptiedInitialQueue = NO;
+    _willEmptyInitialQueue = NO;
     _socketMessageMap = [NSMutableDictionary new];
 
     return self;
@@ -365,6 +369,11 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 - (void)setState:(OWSWebSocketState)state
 {
     OWSAssertIsOnMainThread();
+
+    if (state != OWSWebSocketStateOpen) {
+        self.hasEmptiedInitialQueue = NO;
+        self.willEmptyInitialQueue = NO;
+    }
 
     // If this state update is redundant, verify that
     // class state and socket state are aligned.
@@ -815,6 +824,31 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         // Queue is drained.
 
         [self sendWebSocketMessageAcknowledgement:message];
+
+        if (!self.hasEmptiedInitialQueue) {
+
+            self.willEmptyInitialQueue = YES;
+
+            // We need to flush the serial queue to ensure that
+            // all received messages are enqueued by the message
+            // receiver before we: a) mark the queue as empty.
+            // b) notify.
+            //
+            // The socket might close and re-open while we're
+            // flushing the queue. We use willEmptyInitialQueue
+            // to detect this case.
+            dispatch_async(self.serialQueue, ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!self.willEmptyInitialQueue) {
+                        return;
+                    }
+                    self.willEmptyInitialQueue = NO;
+                    self.hasEmptiedInitialQueue = YES;
+
+                    [self notifyStatusChange];
+                });
+            });
+        }
     } else {
         OWSLogWarn(@"Unsupported WebSocket Request");
 

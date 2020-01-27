@@ -27,7 +27,7 @@ public class MediaUploadView: UIView {
         layer.addSublayer(shapeLayer1)
         layer.addSublayer(shapeLayer2)
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name.attachmentUploadProgress, object: nil, queue: nil) { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: .attachmentUploadProgress, object: nil, queue: nil) { [weak self] notification in
             guard let strongSelf = self else { return }
             guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
                 return

@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *censorshipSection = [OWSTableSection new];
     censorshipSection.headerTitle = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER",
         @"Table header for the 'censorship circumvention' section.");
-    BOOL isAnySocketOpen = TSSocketManager.shared.highestSocketState == OWSWebSocketStateOpen;
+    BOOL isAnySocketOpen = TSSocketManager.shared.socketState == OWSWebSocketStateOpen;
     if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
         if (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyDisabled) {
             censorshipSection.footerTitle
@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
             return YES;
         } else if (service.hasCensoredPhoneNumber && service.isCensorshipCircumventionManuallyDisabled) {
             return YES;
-        } else if (TSSocketManager.shared.highestSocketState == OWSWebSocketStateOpen) {
+        } else if (TSSocketManager.shared.socketState == OWSWebSocketStateOpen) {
             return NO;
         } else {
             return reachability.isReachable;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSSocketManager.h"
@@ -68,9 +68,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self.websocket cycleSocket];
 }
 
-- (OWSWebSocketState)highestSocketState
+- (OWSWebSocketState)socketState
 {
     return self.websocket.state;
+}
+
+- (BOOL)hasEmptiedInitialQueue
+{
+    return self.websocket.hasEmptiedInitialQueue;
 }
 
 @end

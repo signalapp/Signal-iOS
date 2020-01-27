@@ -125,6 +125,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 - (BOOL)canPresentNotifications;
 
+@property (nonatomic, readonly) BOOL shouldProcessIncomingMessages;
+
 @end
 
 id<AppContext> CurrentAppContext(void);

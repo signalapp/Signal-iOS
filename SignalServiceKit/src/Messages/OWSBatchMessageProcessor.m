@@ -6,6 +6,7 @@
 #import "AppContext.h"
 #import "AppReadiness.h"
 #import "NSArray+OWS.h"
+#import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
@@ -17,6 +18,9 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
+    = @"kNSNotificationNameMessageProcessingDidFlushQueue";
 
 @implementation OWSMessageContentJob
 
@@ -137,9 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Start processing.
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (CurrentAppContext().isMainApp) {
-            [self drainQueue];
-        }
+        [self drainQueue];
     }];
 
     return self;
@@ -193,9 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (CurrentAppContext().isMainApp) {
-            [self drainQueue];
-        }
+        [self drainQueue];
     }];
 }
 
@@ -226,12 +226,16 @@ NS_ASSUME_NONNULL_BEGIN
                             transaction:transaction];
 }
 
+- (BOOL)hasPendingJobsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.finder jobCountWithTransaction:transaction] > 0;
+}
+
 - (void)drainQueue
 {
     OWSAssertDebugUnlessRunningTests(AppReadiness.isAppReady);
 
-    // Don't process incoming messages in app extensions.
-    if (!CurrentAppContext().isMainApp) {
+    if (!CurrentAppContext().shouldProcessIncomingMessages) {
         return;
     }
     if (!self.tsAccountManager.isRegisteredAndReady) {
@@ -272,6 +276,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (batchJobs.count < 1) {
         self.isDrainingQueue = NO;
         OWSLogVerbose(@"Queue is drained");
+
+        [[NSNotificationCenter defaultCenter]
+            postNotificationNameAsync:kNSNotificationNameMessageProcessingDidFlushQueue
+                               object:nil
+                             userInfo:nil];
+
         return;
     }
 
@@ -376,9 +386,7 @@ NS_ASSUME_NONNULL_BEGIN
     _processingQueue = [OWSMessageContentQueue new];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (CurrentAppContext().isMainApp) {
-            [self.processingQueue drainQueue];
-        }
+        [self.processingQueue drainQueue];
     }];
 
     return self;
@@ -409,6 +417,11 @@ NS_ASSUME_NONNULL_BEGIN
                                        block:^{
                                            [self.processingQueue drainQueue];
                                        }];
+}
+
+- (BOOL)hasPendingJobsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.processingQueue hasPendingJobsWithTransaction:transaction];
 }
 
 @end

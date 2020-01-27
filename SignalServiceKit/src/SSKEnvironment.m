@@ -46,6 +46,8 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) StorageCoordinator *storageCoordinator;
 @property (nonatomic) SSKPreferences *sskPreferences;
 @property (nonatomic) id<GroupsV2> groupsV2;
+@property (nonatomic) MessageProcessing *messageProcessing;
+@property (nonatomic) MessageFetcherJob *messageFetcherJob;
 
 @end
 
@@ -96,6 +98,8 @@ static SSKEnvironment *sharedSSKEnvironment;
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
                          sskPreferences:(SSKPreferences *)sskPreferences
                                groupsV2:(id<GroupsV2>)groupsV2
+                      messageProcessing:(MessageProcessing *)messageProcessing
+                      messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
 {
     self = [super init];
     if (!self) {
@@ -140,6 +144,8 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(storageCoordinator);
     OWSAssertDebug(sskPreferences);
     OWSAssertDebug(groupsV2);
+    OWSAssertDebug(messageProcessing);
+    OWSCAssertDebug(messageFetcherJob);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -180,6 +186,8 @@ static SSKEnvironment *sharedSSKEnvironment;
     _storageCoordinator = storageCoordinator;
     _sskPreferences = sskPreferences;
     _groupsV2 = groupsV2;
+    _messageProcessing = messageProcessing;
+    _messageFetcherJob = messageFetcherJob;
 
     return self;
 }

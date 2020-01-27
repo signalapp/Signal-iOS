@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -7,8 +7,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSStorage;
+@class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
+
+extern NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue;
 
 @interface OWSMessageContentJob : BaseModel
 
@@ -22,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
                      wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
@@ -57,6 +61,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:plaintextData:wasRecei
               plaintextData:(NSData *_Nullable)plaintextData
             wasReceivedByUD:(BOOL)wasReceivedByUD
                 transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (BOOL)hasPendingJobsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

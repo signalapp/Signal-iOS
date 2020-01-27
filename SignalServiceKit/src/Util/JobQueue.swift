@@ -84,6 +84,7 @@ public protocol JobQueue: DurableOperationDelegate {
     var isSetup: AtomicBool { get set }
     func setup()
     func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction)
+    func didFlushQueue(transaction: SDSAnyWriteTransaction)
 
     func operationQueue(jobRecord: JobRecordType) -> OperationQueue
     func buildOperation(jobRecord: JobRecordType, transaction: SDSAnyReadTransaction) throws -> DurableOperationType
@@ -125,6 +126,10 @@ public extension JobQueue {
         }
     }
 
+    func hasPendingJobs(transaction: SDSAnyReadTransaction) -> Bool {
+        return nil != finder.getNextReady(label: self.jobRecordLabel, transaction: transaction)
+    }
+
     func startWorkWhenAppIsReady() {
         guard !CurrentAppContext().isRunningTests else {
             DispatchQueue.global().async {
@@ -162,6 +167,7 @@ public extension JobQueue {
         self.databaseStorage.write { transaction in
             guard let nextJob: JobRecordType = self.finder.getNextReady(label: self.jobRecordLabel, transaction: transaction) else {
                 Logger.verbose("nothing left to enqueue")
+                self.didFlushQueue(transaction: transaction)
                 return
             }
 
@@ -292,6 +298,8 @@ public extension JobQueue {
     func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: SDSAnyWriteTransaction) {
         runningOperations.remove(operation)
         operation.jobRecord.anyRemove(transaction: transaction)
+
+        notifyFlushQueueIfPossible(transaction: transaction)
     }
 
     func durableOperation(_ operation: DurableOperationType, didReportError: Error, transaction: SDSAnyWriteTransaction) {
@@ -306,6 +314,15 @@ public extension JobQueue {
     func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: SDSAnyWriteTransaction) {
         runningOperations.remove(operation)
         operation.jobRecord.saveAsPermanentlyFailed(transaction: transaction)
+
+        notifyFlushQueueIfPossible(transaction: transaction)
+    }
+
+    func notifyFlushQueueIfPossible(transaction: SDSAnyWriteTransaction) {
+        guard nil == finder.getNextReady(label: jobRecordLabel, transaction: transaction) else {
+            return
+        }
+        self.didFlushQueue(transaction: transaction)
     }
 }
 

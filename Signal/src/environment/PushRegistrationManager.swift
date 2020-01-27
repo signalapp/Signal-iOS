@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,7 +22,7 @@ public enum PushRegistrationError: Error {
     // MARK: - Dependencies
 
     private var messageFetcherJob: MessageFetcherJob {
-        return AppEnvironment.shared.messageFetcherJob
+        return SSKEnvironment.shared.messageFetcherJob
     }
 
     private var notificationPresenter: NotificationPresenter {
@@ -110,7 +110,7 @@ public enum PushRegistrationError: Error {
                 preauthChallengeResolver.fulfill(challenge)
                 self.preauthChallengeResolver = nil
             } else {
-                (self.messageFetcherJob.run() as Promise<Void>).retainUntilComplete()
+                self.messageFetcherJob.run().promise.retainUntilComplete()
             }
         }
     }

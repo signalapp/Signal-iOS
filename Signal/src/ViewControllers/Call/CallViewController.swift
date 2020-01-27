@@ -206,7 +206,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               name: .OWSApplicationDidBecomeActive,
                                                object: nil)
     }
 

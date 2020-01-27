@@ -36,7 +36,7 @@ public class OWSVideoPlayer: NSObject {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerItemDidPlayToCompletion(_:)),
-                                               name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+                                               name: .AVPlayerItemDidPlayToEndTime,
                                                object: avPlayer.currentItem)
     }
 

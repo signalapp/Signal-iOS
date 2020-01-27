@@ -81,7 +81,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
-                                               name: NSNotification.Name.ThemeDidChange,
+                                               name: .ThemeDidChange,
                                                object: nil)
 
         applyTheme()

@@ -109,6 +109,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
+        MessageProcessing *messageProcessing = [MessageProcessing new];
+        MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -159,7 +161,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                             storageServiceManager:storageServiceManager
                                                                storageCoordinator:storageCoordinator
                                                                    sskPreferences:sskPreferences
-                                                                         groupsV2:groupsV2]];
+                                                                         groupsV2:groupsV2
+                                                                messageProcessing:messageProcessing
+                                                                messageFetcherJob:messageFetcherJob]];
 
         appSpecificSingletonBlock();
 

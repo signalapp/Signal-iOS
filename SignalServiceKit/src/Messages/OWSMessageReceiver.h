@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
+
+extern NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueue;
 
 @interface OWSMessageDecryptJob : BaseModel
 
@@ -70,6 +72,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:));
 + (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;
 
 - (void)handleReceivedEnvelopeData:(NSData *)envelopeData;
+
+- (BOOL)hasPendingJobsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 
