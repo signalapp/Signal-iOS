@@ -724,10 +724,6 @@ public class GroupManager: NSObject {
             return groupsV2Swift.updateExistingGroupOnService(changeSet: changeSet)
         }.then(on: .global()) { (updatedV2Group: UpdatedV2Group) throws -> Promise<TSGroupThread> in
 
-            // We need to plumb through the _actual_ "old" and "new" group models
-            // to sendGroupUpdateMessage(), e.g. the copies from ChangedGroupModel
-            // which reflect the actual update rather than from UpdateInfo()
-            // which reflect the proposed update.
             guard shouldSendMessage else {
                 return Promise.value(updatedV2Group.groupThread)
             }

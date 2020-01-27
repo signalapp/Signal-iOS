@@ -6,6 +6,25 @@ import Foundation
 import SignalServiceKit
 import ZKGroup
 
+public struct ChangedGroupModel {
+    public let groupThread: TSGroupThread
+    public let oldGroupModel: TSGroupModel
+    public let newGroupModel: TSGroupModel
+    public let changeAuthorUuid: UUID
+
+    public init(groupThread: TSGroupThread,
+                oldGroupModel: TSGroupModel,
+                newGroupModel: TSGroupModel,
+                changeAuthorUuid: UUID) {
+        self.groupThread = groupThread
+        self.oldGroupModel = oldGroupModel
+        self.newGroupModel = newGroupModel
+        self.changeAuthorUuid = changeAuthorUuid
+    }
+}
+
+// MARK: -
+
 public class GroupsV2Changes {
 
     // GroupsV2Changes has one responsibility: applying incremental
@@ -26,7 +45,6 @@ public class GroupsV2Changes {
     // exactly 1 higher.
     class func applyChangesToGroupModel(groupThread: TSGroupThread,
                                         changeActionsProto: GroupsProtoGroupChangeActions,
-                                        changeActionsProtoData: Data,
                                         transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
         let oldGroupModel = groupThread.groupModel
         let groupId = oldGroupModel.groupId
@@ -255,7 +273,6 @@ public class GroupsV2Changes {
         return ChangedGroupModel(groupThread: groupThread,
                                  oldGroupModel: oldGroupModel,
                                  newGroupModel: newGroupModel,
-                                 changeAuthorUuid: changeAuthorUuid,
-                                 changeActionsProtoData: changeActionsProtoData)
+                                 changeAuthorUuid: changeAuthorUuid)
     }
 }

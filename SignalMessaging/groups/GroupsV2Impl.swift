@@ -696,16 +696,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         return try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeProtoData)
     }
 
-    public func applyChangesToGroupModel(groupThread: TSGroupThread,
-                                         changeActionsProto: GroupsProtoGroupChangeActions,
-                                         changeActionsProtoData: Data,
-                                         transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
-        return try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
-                                                            changeActionsProto: changeActionsProto,
-                                                            changeActionsProtoData: changeActionsProtoData,
-                                                            transaction: transaction)
-    }
-
     // MARK: - Profiles
 
     public func reuploadLocalProfilePromise() -> Promise<Void> {

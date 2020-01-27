@@ -62,11 +62,6 @@ public protocol GroupsV2Swift {
 
     func reuploadLocalProfilePromise() -> Promise<Void>
 
-    func applyChangesToGroupModel(groupThread: TSGroupThread,
-                                  changeActionsProto: GroupsProtoGroupChangeActions,
-                                  changeActionsProtoData: Data,
-                                  transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel
-
     // GroupsV2 TODO: Move to GroupUpdates?
     func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
                                                 groupSecretParamsData: Data,
@@ -140,28 +135,6 @@ public class GroupV2ContextInfo: NSObject {
         self.masterKeyData = masterKeyData
         self.groupSecretParamsData = groupSecretParamsData
         self.groupId = groupId
-    }
-}
-
-// MARK: -
-
-public struct ChangedGroupModel {
-    public let groupThread: TSGroupThread
-    public let oldGroupModel: TSGroupModel
-    public let newGroupModel: TSGroupModel
-    public let changeAuthorUuid: UUID
-    public let changeActionsProtoData: Data
-
-    public init(groupThread: TSGroupThread,
-                oldGroupModel: TSGroupModel,
-                newGroupModel: TSGroupModel,
-                changeAuthorUuid: UUID,
-                changeActionsProtoData: Data) {
-        self.groupThread = groupThread
-        self.oldGroupModel = oldGroupModel
-        self.newGroupModel = newGroupModel
-        self.changeAuthorUuid = changeAuthorUuid
-        self.changeActionsProtoData = changeActionsProtoData
     }
 }
 
@@ -254,13 +227,6 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
-        owsFail("Not implemented.")
-    }
-
-    public func applyChangesToGroupModel(groupThread: TSGroupThread,
-                                         changeActionsProto: GroupsProtoGroupChangeActions,
-                                         changeActionsProtoData: Data,
-                                         transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
         owsFail("Not implemented.")
     }
 }
