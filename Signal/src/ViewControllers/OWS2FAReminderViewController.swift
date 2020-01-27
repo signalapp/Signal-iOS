@@ -111,7 +111,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         Logger.info("noWrongGuesses: \(noWrongGuesses)")
 
         // Migrate to 2FA v2 if they've proved they know their pin
-        if let pinCode = ows2FAManager.pinCode, FeatureFlags.registrationLockV2, ows2FAManager.mode == .V1 {
+        if let pinCode = ows2FAManager.pinCode, RemoteConfig.kbs, ows2FAManager.mode == .V1 {
             // enabling 2fa v2 automatically disables v1 on the server
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { _ in
                 self.ows2FAManager.enable2FAPromise(with: pinCode)

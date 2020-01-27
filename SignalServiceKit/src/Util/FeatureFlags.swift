@@ -176,9 +176,6 @@ public class FeatureFlags: NSObject {
     public static let onlyModernNotificationClearance = build.includes(.beta)
 
     @objc
-    public static let registrationLockV2 = true
-
-    @objc
     public static var allowUUIDOnlyContacts: Bool {
         // TODO UUID: Remove production check once this rolls out to prod service
         if OWSIsDebugBuild() && !isUsingProductionService {
