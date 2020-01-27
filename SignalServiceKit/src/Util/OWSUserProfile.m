@@ -81,6 +81,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                   avatarFileName:(nullable NSString *)avatarFileName
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       familyName:(nullable NSString *)familyName
+                   isUuidCapable:(BOOL)isUuidCapable
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
@@ -97,6 +98,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     _avatarFileName = avatarFileName;
     _avatarUrlPath = avatarUrlPath;
     _familyName = familyName;
+    _isUuidCapable = isUuidCapable;
     _profileKey = profileKey;
     _profileName = profileName;
     _recipientPhoneNumber = recipientPhoneNumber;

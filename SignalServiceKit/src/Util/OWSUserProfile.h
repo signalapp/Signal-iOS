@@ -47,12 +47,13 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
                   avatarFileName:(nullable NSString *)avatarFileName
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       familyName:(nullable NSString *)familyName
+                   isUuidCapable:(BOOL)isUuidCapable
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
                         username:(nullable NSString *)username
-NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:isUuidCapable:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on
 
