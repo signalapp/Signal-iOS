@@ -161,8 +161,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             let updatedGroupThread = try self.databaseStorage.write { transaction throws -> TSGroupThread in
                 return try self.groupUpdates.updateGroupWithChangeActions(groupId: groupId,
                                                                           changeActionsProto: changeActionsProto,
-                                                                          changeActionsProtoData: changeActionsProtoData,
-                                                                          transaction: transaction)
+                                                                            transaction: transaction)
             }
 
             // GroupsV2 TODO: Handle conflicts.
@@ -210,12 +209,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     // MARK: - Fetch Current Group State
 
     // GroupsV2 TODO: We should be able to clean this up eventually?
-    @objc
-    public func fetchCurrentGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise {
-        return AnyPromise(fetchCurrentGroupState(groupModel: groupModel))
-    }
-
-    public func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State> {
+    public func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot> {
         guard groupModel.groupsVersion == .V2 else {
             return Promise(error: OWSAssertionError("Invalid groupsVersion."))
         }
@@ -226,32 +220,38 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         return self.fetchCurrentGroupState(groupSecretParamsData: groupSecretParamsData)
     }
 
-    public func fetchCurrentGroupState(groupSecretParamsData: Data) -> Promise<GroupV2State> {
+    public func fetchCurrentGroupState(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot> {
         // GroupsV2 TODO: Should we make sure we have a local profile credential?
         guard let localUuid = tsAccountManager.localUuid else {
-            return Promise<GroupV2State>(error: OWSAssertionError("Missing localUuid."))
+            return Promise<GroupV2Snapshot>(error: OWSAssertionError("Missing localUuid."))
         }
         return DispatchQueue.global().async(.promise) { () -> GroupParams in
             return try GroupParams(groupSecretParamsData: groupSecretParamsData)
-        }.then(on: DispatchQueue.global()) { (groupParams: GroupParams) -> Promise<GroupV2State> in
+        }.then(on: DispatchQueue.global()) { (groupParams: GroupParams) -> Promise<GroupV2Snapshot> in
             return self.fetchCurrentGroupState(groupParams: groupParams,
-                                        localUuid: localUuid)
-        }.map(on: DispatchQueue.global()) { (groupState: GroupV2State) -> GroupV2State in
+                                               localUuid: localUuid)
+        }.map(on: DispatchQueue.global()) { (groupState: GroupV2Snapshot) -> GroupV2Snapshot in
             // GroupsV2 TODO: Remove this logging.
-            Logger.verbose("GroupV2State: \(groupState.debugDescription)")
+            Logger.verbose("GroupV2Snapshot: \(groupState.debugDescription)")
             return groupState
         }
     }
 
     private func fetchCurrentGroupState(groupParams: GroupParams,
-                                 localUuid: UUID) -> Promise<GroupV2State> {
+                                        localUuid: UUID) -> Promise<GroupV2Snapshot> {
         let sessionManager = self.sessionManager
-        return self.buildFetchGroupStateRequest(localUuid: localUuid,
-                                                groupParams: groupParams,
-                                                sessionManager: sessionManager)
-            .then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
+        return firstly {
+            self.retrieveCredentials(localUuid: localUuid)
+        }.map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) -> NSURLRequest in
+
+                let redemptionTime = self.daysSinceEpoch
+                return try StorageService.buildFetchCurrentGroupStateRequest(groupParams: groupParams,
+                                                                             sessionManager: sessionManager,
+                                                                             authCredentialMap: authCredentialMap,
+                                                                             redemptionTime: redemptionTime)
+        }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
                 return self.performServiceRequest(request: request, sessionManager: sessionManager)
-        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupV2State in
+        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupV2Snapshot in
             guard let groupProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
@@ -260,18 +260,44 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }
     }
 
-    private func buildFetchGroupStateRequest(localUuid: UUID,
-                                             groupParams: GroupParams,
-                                             sessionManager: AFHTTPSessionManager) -> Promise<NSURLRequest> {
+    // MARK: - Fetch Group Change Actions
 
-        return retrieveCredentials(localUuid: localUuid)
-            .map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) -> NSURLRequest in
+    public func fetchGroupChangeActions(groupSecretParamsData: Data,
+                                        fromRevision: UInt32) -> Promise<[GroupV2Change]> {
+        // GroupsV2 TODO: Should we make sure we have a local profile credential?
+        guard let localUuid = tsAccountManager.localUuid else {
+            return Promise(error: OWSAssertionError("Missing localUuid."))
+        }
+        return DispatchQueue.global().async(.promise) { () -> GroupParams in
+            return try GroupParams(groupSecretParamsData: groupSecretParamsData)
+        }.then(on: DispatchQueue.global()) { (groupParams: GroupParams) -> Promise<[GroupV2Change]> in
+            return self.fetchGroupChangeActions(groupParams: groupParams,
+                                                fromRevision: fromRevision,
+                                                localUuid: localUuid)
+        }
+    }
 
-                let redemptionTime = self.daysSinceEpoch
-                return try StorageService.buildFetchGroupStateRequest(groupParams: groupParams,
-                                                                      sessionManager: sessionManager,
-                                                                      authCredentialMap: authCredentialMap,
-                                                                      redemptionTime: redemptionTime)
+    private func fetchGroupChangeActions(groupParams: GroupParams,
+                                         fromRevision: UInt32,
+                                        localUuid: UUID) -> Promise<[GroupV2Change]> {
+        let sessionManager = self.sessionManager
+        return firstly {
+            self.retrieveCredentials(localUuid: localUuid)
+        }.map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) -> NSURLRequest in
+            let redemptionTime = self.daysSinceEpoch
+            return try StorageService.buildFetchGroupChangeActionsRequest(groupParams: groupParams,
+                                                                          fromRevision: fromRevision,
+                                                                          sessionManager: sessionManager,
+                                                                          authCredentialMap: authCredentialMap,
+                                                                          redemptionTime: redemptionTime)
+        }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
+            return self.performServiceRequest(request: request, sessionManager: sessionManager)
+        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> [GroupV2Change] in
+            guard let groupChangesProtoData = response.responseObject as? Data else {
+                throw OWSAssertionError("Invalid responseObject.")
+            }
+            let groupChangesProto = try GroupsProtoGroupChanges.parseData(groupChangesProtoData)
+            return try GroupsV2Protos.parse(groupChangesProto: groupChangesProto, groupParams: groupParams)
         }
     }
 
@@ -297,10 +323,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                                                        upToRevision: UInt32,
                                                        waitForMessageProcessing: Bool) -> Promise<TSGroupThread> {
         return self.fetchCurrentGroupState(groupSecretParamsData: groupSecretParamsData)
-            .map(on: DispatchQueue.global()) { (groupState: GroupV2State) throws in
+            .map(on: DispatchQueue.global()) { (groupState: GroupV2Snapshot) throws in
                 let groupThread = try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
                     // GroupsV2 TODO: We could make this a single GroupManager method.
-                    let groupModel = try GroupManager.buildGroupModel(groupV2State: groupState,
+                    let groupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupState,
                                                                       transaction: transaction)
                     // GroupsV2 TODO: Set groupUpdateSourceAddress.
                     let groupUpdateSourceAddress: SignalServiceAddress? = nil
@@ -318,7 +344,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                     }
                 }
                 // GroupsV2 TODO: Remove this logging.
-                Logger.verbose("GroupV2State: \(groupState.debugDescription)")
+                Logger.verbose("GroupV2Snapshot: \(groupState.debugDescription)")
                 return groupThread
         }
     }

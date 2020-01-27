@@ -30,8 +30,6 @@ public protocol GroupsV2: AnyObject {
 
     func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress]) -> AnyPromise
 
-    func fetchCurrentGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise
-
     func buildGroupContextV2Proto(groupModel: TSGroupModel,
                                   changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2
 
@@ -47,9 +45,12 @@ public protocol GroupsV2Swift {
 
     func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
 
-    func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State>
+    func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot>
 
-    func fetchCurrentGroupState(groupSecretParamsData: Data) -> Promise<GroupV2State>
+    func fetchCurrentGroupState(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
+
+    func fetchGroupChangeActions(groupSecretParamsData: Data,
+                                 fromRevision: UInt32) -> Promise<[GroupV2Change]>
 
     func buildChangeSet(from oldGroupModel: TSGroupModel,
                         to newGroupModel: TSGroupModel,
@@ -92,14 +93,14 @@ public protocol GroupUpdates: AnyObject {
     func tryToRefreshGroupThreadToLatestStateWithThrottling(_ thread: TSThread)
 
     func updateGroupWithChangeActions(groupId: Data,
-                                             changeActionsProto: GroupsProtoGroupChangeActions,
-                                             transaction: SDSAnyWriteTransaction) throws -> TSGroupThread
+                                      changeActionsProto: GroupsProtoGroupChangeActions,
+                                      transaction: SDSAnyWriteTransaction) throws -> TSGroupThread
 }
 
 // MARK: -
 
 // GroupsV2 TODO: Can we eventually remove this and just use TSGroupModel?
-public protocol GroupV2State {
+public protocol GroupV2Snapshot {
     var groupSecretParamsData: Data { get }
 
     var debugDescription: String { get }
@@ -117,6 +118,19 @@ public protocol GroupV2State {
 
     var accessControlForAttributes: GroupsProtoAccessControlAccessRequired { get }
     var accessControlForMembers: GroupsProtoAccessControlAccessRequired { get }
+}
+
+// MARK: -
+
+public struct GroupV2Change {
+    public let snapshot: GroupV2Snapshot
+    public let changeActionsProto: GroupsProtoGroupChangeActions
+
+    public init(snapshot: GroupV2Snapshot,
+                changeActionsProto: GroupsProtoGroupChangeActions) {
+        self.snapshot = snapshot
+        self.changeActionsProto = changeActionsProto
+    }
 }
 
 // MARK: -
@@ -183,15 +197,16 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State> {
+    public func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot> {
         owsFail("Not implemented.")
     }
 
-    public func fetchCurrentGroupState(groupSecretParamsData: Data) -> Promise<GroupV2State> {
+    public func fetchCurrentGroupState(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot> {
         owsFail("Not implemented.")
     }
 
-    public func fetchCurrentGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise {
+    public func fetchGroupChangeActions(groupSecretParamsData: Data,
+                                        fromRevision: UInt32) -> Promise<[GroupV2Change]> {
         owsFail("Not implemented.")
     }
 

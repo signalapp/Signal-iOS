@@ -67,29 +67,29 @@ public class GroupsV2Test: NSObject {
         GroupManager.createNewGroup(members: members,
                                     name: title0,
                                     shouldSendMessage: true)
-            .then(on: .global()) { (groupThread: TSGroupThread) -> Promise<(Data, GroupV2State)> in
+            .then(on: .global()) { (groupThread: TSGroupThread) -> Promise<(Data, GroupV2Snapshot)> in
                 let groupModel = groupThread.groupModel
                 guard groupModel.groupsVersion == .V2 else {
                     throw OWSAssertionError("Not a V2 group.")
                 }
                 return groupsV2Swift.fetchCurrentGroupState(groupModel: groupModel)
-                    .map(on: .global()) { (groupV2State: GroupV2State) -> (Data, GroupV2State) in
-                        return (groupThread.groupModel.groupId, groupV2State)
+                    .map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
+                        return (groupThread.groupModel.groupId, groupV2Snapshot)
                 }
-        }.map(on: .global()) { (groupId: Data, groupV2State: GroupV2State) throws -> Data in
+        }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
 
             let groupModel = try self.databaseStorage.read { transaction in
-                return try GroupManager.buildGroupModel(groupV2State: groupV2State, transaction: transaction)
+                return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
             }
             guard groupModel.groupV2Revision == 0 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
             }
 
-            guard groupV2State.revision == 0 else {
-                throw OWSAssertionError("Unexpected group version: \(groupV2State.revision).")
+            guard groupV2Snapshot.revision == 0 else {
+                throw OWSAssertionError("Unexpected group version: \(groupV2Snapshot.revision).")
             }
-            guard groupV2State.title == title0 else {
-                throw OWSAssertionError("Unexpected group title: \(groupV2State.title).")
+            guard groupV2Snapshot.title == title0 else {
+                throw OWSAssertionError("Unexpected group title: \(groupV2Snapshot.title).")
             }
 
             let groupMembership = groupModel.groupMembership
@@ -103,14 +103,14 @@ public class GroupsV2Test: NSObject {
             guard groupMembership.administrators == expectedAdministrators else {
                 throw OWSAssertionError("Unexpected administrators: \(groupMembership.administrators).")
             }
-            guard groupV2State.accessControlForMembers == .member else {
-                throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2State.accessControlForMembers).")
+            guard groupV2Snapshot.accessControlForMembers == .member else {
+                throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2Snapshot.accessControlForMembers).")
             }
-            guard groupV2State.accessControlForAttributes == .member else {
-                throw OWSAssertionError("Unexpected accessControlForAttributes: \(groupV2State.accessControlForAttributes).")
+            guard groupV2Snapshot.accessControlForAttributes == .member else {
+                throw OWSAssertionError("Unexpected accessControlForAttributes: \(groupV2Snapshot.accessControlForAttributes).")
             }
             return groupId
-        }.then(on: .global()) { (groupId: Data) throws -> Promise<(Data, GroupV2State)> in
+        }.then(on: .global()) { (groupId: Data) throws -> Promise<(Data, GroupV2Snapshot)> in
             let groupThread = try self.fetchGroupThread(groupId: groupId)
             let groupModel = groupThread.groupModel
             guard groupModel.groupMembership.administrators == localAddressSet else {
@@ -139,26 +139,26 @@ public class GroupsV2Test: NSObject {
                                                     groupAccess: groupAccess,
                                                     groupsVersion: groupModel.groupsVersion,
                                                     groupUpdateSourceAddress: localAddress)
-                .then(on: .global()) { (groupThread) -> Promise<GroupV2State> in
+                .then(on: .global()) { (groupThread) -> Promise<GroupV2Snapshot> in
                     // GroupsV2 TODO: This should reflect the new group.
                     return groupsV2Swift.fetchCurrentGroupState(groupModel: groupThread.groupModel)
-            }.map(on: .global()) { (groupV2State: GroupV2State) -> (Data, GroupV2State) in
-                return (groupId, groupV2State)
+            }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
+                return (groupId, groupV2Snapshot)
             }
-        }.map(on: .global()) { (groupId: Data, groupV2State: GroupV2State) throws -> Data in
+        }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
 
             let groupModel = try self.databaseStorage.read { transaction in
-                return try GroupManager.buildGroupModel(groupV2State: groupV2State, transaction: transaction)
+                return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
             }
             guard groupModel.groupV2Revision == 1 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
             }
 
-            guard groupV2State.revision == 1 else {
-                throw OWSAssertionError("Unexpected group version: \(groupV2State.revision).")
+            guard groupV2Snapshot.revision == 1 else {
+                throw OWSAssertionError("Unexpected group version: \(groupV2Snapshot.revision).")
             }
-            guard groupV2State.title == title1 else {
-                throw OWSAssertionError("Unexpected group title: \(groupV2State.title).")
+            guard groupV2Snapshot.title == title1 else {
+                throw OWSAssertionError("Unexpected group title: \(groupV2Snapshot.title).")
             }
 
             let groupMembership = groupModel.groupMembership
@@ -173,14 +173,14 @@ public class GroupsV2Test: NSObject {
             guard groupMembership.administrators == expectedAdministrators else {
                 throw OWSAssertionError("Unexpected administrators: \(groupMembership.administrators).")
             }
-            guard groupV2State.accessControlForMembers == .member else {
-                throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2State.accessControlForMembers).")
+            guard groupV2Snapshot.accessControlForMembers == .member else {
+                throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2Snapshot.accessControlForMembers).")
             }
-            guard groupV2State.accessControlForAttributes == .member else {
-                throw OWSAssertionError("Unexpected accessControlForAttributes: \(groupV2State.accessControlForAttributes).")
+            guard groupV2Snapshot.accessControlForAttributes == .member else {
+                throw OWSAssertionError("Unexpected accessControlForAttributes: \(groupV2Snapshot.accessControlForAttributes).")
             }
             return groupId
-        }.then(on: .global()) { (groupId: Data) throws -> Promise<(Data, GroupV2State)> in
+        }.then(on: .global()) { (groupId: Data) throws -> Promise<(Data, GroupV2Snapshot)> in
             let groupThread = try self.fetchGroupThread(groupId: groupId)
             let groupModel = groupThread.groupModel
             guard groupModel.groupMembership.administrators == localAddressSet else {
@@ -209,26 +209,26 @@ public class GroupsV2Test: NSObject {
                                                     groupAccess: groupAccess,
                                                     groupsVersion: groupModel.groupsVersion,
                                                     groupUpdateSourceAddress: localAddress)
-                .then(on: .global()) { (_) -> Promise<GroupV2State> in
+                .then(on: .global()) { (_) -> Promise<GroupV2Snapshot> in
                     // GroupsV2 TODO: This should reflect the new group.
                     return groupsV2Swift.fetchCurrentGroupState(groupModel: groupModel)
-            }.map(on: .global()) { (groupV2State: GroupV2State) -> (Data, GroupV2State) in
-                return (groupId, groupV2State)
+            }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
+                return (groupId, groupV2Snapshot)
             }
-        }.map(on: .global()) { (groupId: Data, groupV2State: GroupV2State) throws -> Data in
+        }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
 
             let groupModel = try self.databaseStorage.read { transaction in
-                return try GroupManager.buildGroupModel(groupV2State: groupV2State, transaction: transaction)
+                return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
             }
             guard groupModel.groupV2Revision == 2 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
             }
 
-            guard groupV2State.revision == 2 else {
-                throw OWSAssertionError("Unexpected group version: \(groupV2State.revision).")
+            guard groupV2Snapshot.revision == 2 else {
+                throw OWSAssertionError("Unexpected group version: \(groupV2Snapshot.revision).")
             }
-            guard groupV2State.title == title1 else {
-                throw OWSAssertionError("Unexpected group title: \(groupV2State.title).")
+            guard groupV2Snapshot.title == title1 else {
+                throw OWSAssertionError("Unexpected group title: \(groupV2Snapshot.title).")
             }
 
             let groupMembership = groupModel.groupMembership
@@ -243,11 +243,11 @@ public class GroupsV2Test: NSObject {
             guard groupMembership.administrators == expectedAdministrators else {
                 throw OWSAssertionError("Unexpected administrators: \(groupMembership.administrators).")
             }
-            guard groupV2State.accessControlForMembers == .member else {
-                throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2State.accessControlForMembers).")
+            guard groupV2Snapshot.accessControlForMembers == .member else {
+                throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2Snapshot.accessControlForMembers).")
             }
-            guard groupV2State.accessControlForAttributes == .member else {
-                throw OWSAssertionError("Unexpected accessControlForAttributes: \(groupV2State.accessControlForAttributes).")
+            guard groupV2Snapshot.accessControlForAttributes == .member else {
+                throw OWSAssertionError("Unexpected accessControlForAttributes: \(groupV2Snapshot.accessControlForAttributes).")
             }
             return groupId
         }.map(on: .global()) { (groupId: Data) throws -> Data in

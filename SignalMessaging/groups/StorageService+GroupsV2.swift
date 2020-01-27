@@ -42,18 +42,34 @@ public extension StorageService {
                                             redemptionTime: redemptionTime)
     }
 
-    static func buildFetchGroupStateRequest(groupParams: GroupParams,
-                                            sessionManager: AFHTTPSessionManager,
-                                            authCredentialMap: [UInt32: AuthCredential],
-                                            redemptionTime: UInt32) throws -> NSURLRequest {
+    static func buildFetchCurrentGroupStateRequest(groupParams: GroupParams,
+                                                   sessionManager: AFHTTPSessionManager,
+                                                   authCredentialMap: [UInt32: AuthCredential],
+                                                   redemptionTime: UInt32) throws -> NSURLRequest {
 
         return try buildGroupV2Request(protoData: nil,
-                                            urlPath: "/v1/groups/",
-                                            httpMethod: "GET",
-                                            groupParams: groupParams,
-                                            sessionManager: sessionManager,
-                                            authCredentialMap: authCredentialMap,
-                                            redemptionTime: redemptionTime)
+                                       urlPath: "/v1/groups/",
+                                       httpMethod: "GET",
+                                       groupParams: groupParams,
+                                       sessionManager: sessionManager,
+                                       authCredentialMap: authCredentialMap,
+                                       redemptionTime: redemptionTime)
+    }
+
+    static func buildFetchGroupChangeActionsRequest(groupParams: GroupParams,
+                                                    fromRevision: UInt32,
+                                                    sessionManager: AFHTTPSessionManager,
+                                                    authCredentialMap: [UInt32: AuthCredential],
+                                                    redemptionTime: UInt32) throws -> NSURLRequest {
+
+        let urlPath = "/v1/groups/\(OWSFormat.formatInt(Int32(fromRevision)))"
+        return try buildGroupV2Request(protoData: nil,
+                                       urlPath: urlPath,
+                                       httpMethod: "GET",
+                                       groupParams: groupParams,
+                                       sessionManager: sessionManager,
+                                       authCredentialMap: authCredentialMap,
+                                       redemptionTime: redemptionTime)
     }
 
     private static func buildGroupV2Request(protoData: Data?,

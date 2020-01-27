@@ -116,7 +116,7 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
         }
     }
 
-    private func refreshGroupV2StateFromService(groupSecretParamsData: Data,
+    private func refreshGroupV2SnapshotFromService(groupSecretParamsData: Data,
                                                 groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         // GroupsV2 TODO: Try to use individual changes.
 
@@ -125,7 +125,7 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
         }
         return groupsV2Swift.fetchCurrentGroupState(groupSecretParamsData: groupSecretParamsData)
             .then(on: .global()) { groupState in
-                return self.tryToApplyCurrentGroupV2StateFromService(groupState: groupState,
+                return self.tryToApplyCurrentGroupV2SnapshotFromService(groupState: groupState,
                                                                      groupUpdateMode: groupUpdateMode)
         }
     }
@@ -166,34 +166,34 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
 
     // MARK: - Current State
 
-    private func fetchAndApplyCurrentGroupV2StateFromService(groupSecretParamsData: Data,
+    private func fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: Data,
                                                              groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
             return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
         }
         return groupsV2Swift.fetchCurrentGroupState(groupSecretParamsData: groupSecretParamsData)
             .then(on: .global()) { groupState in
-                return self.tryToApplyCurrentGroupV2StateFromService(groupState: groupState,
+                return self.tryToApplyCurrentGroupV2SnapshotFromService(groupState: groupState,
                                                                      groupUpdateMode: groupUpdateMode)
         }
     }
 
-    private func tryToApplyCurrentGroupV2StateFromService(groupState: GroupV2State,
+    private func tryToApplyCurrentGroupV2SnapshotFromService(groupState: GroupV2Snapshot,
                                                           groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         switch groupUpdateMode {
         case .upToRevisionImmediately:
-            return tryToApplyCurrentGroupV2StateFromServiceNow(groupState: groupState)
+            return tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupState: groupState)
         case .upToLatestAfterMessageProcess:
             return messageProcessing.allMessageFetchingAndProcessingPromise()
                 .then(on: .global()) { _ in
-                    return self.tryToApplyCurrentGroupV2StateFromServiceNow(groupState: groupState)
+                    return self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupState: groupState)
             }
         }
     }
 
-    private func tryToApplyCurrentGroupV2StateFromServiceNow(groupState: GroupV2State) -> Promise<TSGroupThread> {
+    private func tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupState: GroupV2Snapshot) -> Promise<TSGroupThread> {
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
-            let newGroupModel = try GroupManager.buildGroupModel(groupV2State: groupState,
+            let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupState,
                                                                  transaction: transaction)
             // GroupsV2 TODO: Set groupUpdateSourceAddress.
             let groupUpdateSourceAddress: SignalServiceAddress? = nil

@@ -202,17 +202,17 @@ public class GroupManager: NSObject {
 
     // Convert a group state proto received from the service
     // into a group model.
-    public static func buildGroupModel(groupV2State: GroupV2State,
+    public static func buildGroupModel(groupV2Snapshot: GroupV2Snapshot,
                                        transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
-        let groupSecretParamsData = groupV2State.groupSecretParamsData
+        let groupSecretParamsData = groupV2Snapshot.groupSecretParamsData
         let groupId = try groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
-        let name: String = groupV2State.title
-        let groupMembership = groupV2State.groupMembership
-        let groupAccess = groupV2State.groupAccess
+        let name: String = groupV2Snapshot.title
+        let groupMembership = groupV2Snapshot.groupMembership
+        let groupAccess = groupV2Snapshot.groupAccess
         // GroupsV2 TODO: Avatar.
         let avatarData: Data? = nil
         let groupsVersion = GroupsVersion.V2
-        let revision = groupV2State.revision
+        let revision = groupV2Snapshot.revision
 
         return try buildGroupModel(groupId: groupId,
                                    name: name,

@@ -161,7 +161,11 @@ public class GroupsV2Protos {
     // This method throws if verification fails.
     public class func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
         let changeProto = try GroupsProtoGroupChange.parseData(changeProtoData)
+        return try parseAndVerifyChangeActionsProto(changeProto)
+    }
 
+    // This method throws if verification fails.
+    public class func parseAndVerifyChangeActionsProto(_ changeProto: GroupsProtoGroupChange) throws -> GroupsProtoGroupChangeActions {
         guard let serverSignatureData = changeProto.serverSignature else {
             throw OWSAssertionError("Missing serverSignature.")
         }
@@ -180,7 +184,7 @@ public class GroupsV2Protos {
 
     // GroupsV2 TODO: How can we make this parsing less brittle?
     public class func parse(groupProto: GroupsProtoGroup,
-                            groupParams: GroupParams) throws -> GroupV2State {
+                            groupParams: GroupParams) throws -> GroupV2Snapshot {
 
         // GroupsV2 TODO: Is GroupsProtoAccessControl required?
         guard let accessControl = groupProto.accessControl else {
@@ -193,7 +197,7 @@ public class GroupsV2Protos {
             throw OWSAssertionError("Missing accessControl.members.")
         }
 
-        var members = [GroupV2StateImpl.Member]()
+        var members = [GroupV2SnapshotImpl.Member]()
         for memberProto in groupProto.members {
             guard let userID = memberProto.userID else {
                 throw OWSAssertionError("Group member missing userID.")
@@ -212,7 +216,7 @@ public class GroupsV2Protos {
             let joinedAtVersion = memberProto.joinedAtVersion
 
             let uuid = try groupParams.uuid(forUserId: userID)
-            let member = GroupV2StateImpl.Member(userID: userID,
+            let member = GroupV2SnapshotImpl.Member(userID: userID,
                                                  uuid: uuid,
                                                  role: role,
                                                  profileKey: profileKey,
@@ -220,7 +224,7 @@ public class GroupsV2Protos {
             members.append(member)
         }
 
-        var pendingMembers = [GroupV2StateImpl.PendingMember]()
+        var pendingMembers = [GroupV2SnapshotImpl.PendingMember]()
         for pendingMemberProto in groupProto.pendingMembers {
             guard let userID = pendingMemberProto.addedByUserID else {
                 throw OWSAssertionError("Group pending member missing userID.")
@@ -236,7 +240,7 @@ public class GroupsV2Protos {
             guard memberProto.hasRole, let role = memberProto.role else {
                 throw OWSAssertionError("Group member missing role.")
             }
-            let pendingMember = GroupV2StateImpl.PendingMember(userID: userID,
+            let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userID,
                                                                uuid: uuid,
                                                                timestamp: timestamp,
                                                                role: role)
@@ -262,7 +266,7 @@ public class GroupsV2Protos {
 
         let revision = groupProto.version
         let groupSecretParamsData = groupParams.groupSecretParamsData
-        return GroupV2StateImpl(groupSecretParamsData: groupSecretParamsData,
+        return GroupV2SnapshotImpl(groupSecretParamsData: groupSecretParamsData,
                                 groupProto: groupProto,
                                 revision: revision,
                                 title: title,
@@ -270,5 +274,29 @@ public class GroupsV2Protos {
                                 pendingMembers: pendingMembers,
                                 accessControlForAttributes: accessControlForAttributes,
                                 accessControlForMembers: accessControlForMembers)
+    }
+
+    // MARK: -
+
+    public class func parse(groupChangesProto: GroupsProtoGroupChanges,
+                            groupParams: GroupParams) throws -> [GroupV2Change] {
+        let groupChanges = groupChangesProto.groupChanges
+        guard groupChanges.count > 0 else {
+            throw OWSAssertionError("Missing groupChanges.")
+        }
+        var result = [GroupV2Change]()
+        for changeStateProto in groupChanges {
+            guard let snapshotProto = changeStateProto.groupState else {
+                throw OWSAssertionError("Missing groupState proto.")
+            }
+            let snapshot = try parse(groupProto: snapshotProto,
+                                     groupParams: groupParams)
+            guard let changeProto = changeStateProto.groupChange else {
+                throw OWSAssertionError("Missing groupChange proto.")
+            }
+            let changeActionsProto: GroupsProtoGroupChangeActions = try parseAndVerifyChangeActionsProto(changeProto)
+            result.append(GroupV2Change(snapshot: snapshot, changeActionsProto: changeActionsProto))
+        }
+        return result
     }
 }

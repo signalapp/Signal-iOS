@@ -9,7 +9,7 @@ import ZKGroup
 
 // GroupsV2 TODO: This class is likely to be reworked heavily as we
 // start to apply it.
-public struct GroupV2StateImpl: GroupV2State {
+public struct GroupV2SnapshotImpl: GroupV2Snapshot {
 
     public struct Member {
         let userID: Data
