@@ -42,10 +42,6 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
         // no special handling
     }
 
-    public func didFlushQueue(transaction: SDSAnyWriteTransaction) {
-        // Do nothing.
-    }
-
     let defaultQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "IncomingGroupSyncJobQueue"
