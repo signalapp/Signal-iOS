@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SharingThreadPickerViewController.h"
@@ -151,7 +151,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     }
 
     OWSNavigationController *approvalModal =
-        [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:self.attachments approvalDelegate:self];
+        [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:self.attachments
+                                                             initialMessageText:nil
+                                                               approvalDelegate:self];
     [self presentViewController:approvalModal animated:YES completion:nil];
 }
 
