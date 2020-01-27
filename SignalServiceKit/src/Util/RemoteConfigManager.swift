@@ -26,6 +26,8 @@ public class RemoteConfig: NSObject {
 
     @objc
     public static var requiredProfileNames: Bool {
+        // Block this off until we're ready to be turning this on for the public.
+        guard FeatureFlags.requiredProfileNames else { return false }
         return isEnabled("ios.requiredProfileNames")
     }
 
