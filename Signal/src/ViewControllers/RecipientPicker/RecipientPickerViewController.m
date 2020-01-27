@@ -166,7 +166,7 @@ const NSUInteger kMinimumSearchLength = 2;
     [pullToRefreshView addTarget:self
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
-    [self.tableViewController.tableView insertSubview:pullToRefreshView atIndex:0];
+    self.tableViewController.tableView.refreshControl = pullToRefreshView;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, pullToRefreshView);
 
     [self updateTableContents];

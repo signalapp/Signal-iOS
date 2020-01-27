@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -117,12 +117,12 @@ public class ReactionManager: NSObject {
             )
 
             // If this is a reaction to a message we sent, notify the user.
-            if message is TSOutgoingMessage, !reactor.isLocalAddress {
+            if let message = message as? TSOutgoingMessage, !reactor.isLocalAddress {
                 guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
                     return owsFailDebug("Failed to lookup thread for reaction notification.")
                 }
 
-                SSKEnvironment.shared.notificationsManager.notifyUser(for: reaction, in: thread, transaction: transaction)
+                SSKEnvironment.shared.notificationsManager.notifyUser(for: reaction, on: message, in: thread, transaction: transaction)
             }
         }
     }
