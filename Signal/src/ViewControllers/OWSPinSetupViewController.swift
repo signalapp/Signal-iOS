@@ -79,6 +79,11 @@ public class PinSetupViewController: OWSViewController {
     }
 
     @objc
+    class func creating(completionHandler: @escaping () -> Void) -> PinSetupViewController {
+        return .init(mode: .creating, completionHandler: completionHandler)
+    }
+
+    @objc
     class func changing(completionHandler: @escaping () -> Void) -> PinSetupViewController {
         return .init(mode: .changing, completionHandler: completionHandler)
     }
@@ -193,25 +198,11 @@ public class PinSetupViewController: OWSViewController {
 
         switch mode {
         case .creating, .changing:
-            let explanationText = NSLocalizedString("PIN_CREATION_EXPLANATION",
+            explanationLabel.text = NSLocalizedString("PIN_CREATION_EXPLANATION",
                                                       comment: "The explanation in the 'pin creation' view.")
-
-            let explanationBoldText = NSLocalizedString("PIN_CREATION_BOLD_EXPLANATION",
-                                                        comment: "The bold portion of the explanation in the 'pin creation' view.")
-
-            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold()])
-
-            explanationLabel.attributedText = attributedExplanation
         case .recreating:
-            let explanationText = NSLocalizedString("PIN_CREATION_RECREATION_EXPLANATION",
-                                                    comment: "The re-creation explanation in the 'pin creation' view.")
-
-            let explanationBoldText = NSLocalizedString("PIN_CREATION_RECREATION_BOLD_EXPLANATION",
-                                                        comment: "The bold portion of the re-creation explanation in the 'pin creation' view.")
-
-            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold()])
-
-            explanationLabel.attributedText = attributedExplanation
+            explanationLabel.text = NSLocalizedString("PIN_CREATION_RECREATION_EXPLANATION",
+                                                      comment: "The re-creation explanation in the 'pin creation' view.")
         case .confirming:
             explanationLabel.text = NSLocalizedString("PIN_CREATION_CONFIRMATION_EXPLANATION",
                                                       comment: "The explanation of confirmation in the 'pin creation' view.")

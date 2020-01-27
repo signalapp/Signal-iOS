@@ -17,16 +17,24 @@ public class RemoteConfig: NSObject {
     private let config: [String: Bool]
 
     @objc
-    public var isSomeExampleFeatureEnabled: Bool {
-        if let value = config["example-value"] {
-            return value
-        } else {
-            // default to false in this example case
-            return false
+    public static var pinsForEveryone: Bool {
+        return isEnabled("ios.pinsForEveryone")
+    }
+
+    @objc
+    public static var requiredProfileNames: Bool {
+        return isEnabled("ios.requiredProfileNames")
+    }
+
+    private static func isEnabled(_ key: String, defaultValue: Bool = false) -> Bool {
+        guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
+            return defaultValue
         }
+        return remoteConfig.config[key] ?? defaultValue
     }
 }
 
+@objc
 public protocol RemoteConfigManager: AnyObject {
     var cachedConfig: RemoteConfig? { get }
 }

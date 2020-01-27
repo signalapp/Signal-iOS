@@ -58,7 +58,6 @@
 		340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8C4204DE223007AEB0F /* DebugUIBackup.m */; };
 		34123C5E239AA3E900782788 /* TooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34123C5D239AA3E900782788 /* TooltipView.swift */; };
 		34123C60239AA93B00782788 /* ViewOnceTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34123C5F239AA93A00782788 /* ViewOnceTooltip.swift */; };
-		34123C62239AB71600782788 /* stickerSplashComplete.json in Resources */ = {isa = PBXBuildFile; fileRef = 34123C61239AB71600782788 /* stickerSplashComplete.json */; };
 		34129B8621EF877A005457A8 /* LinkPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34129B8521EF8779005457A8 /* LinkPreviewView.swift */; };
 		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
 		341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 341341EE2187467900192D59 /* ConversationViewModel.m */; };
@@ -254,7 +253,7 @@
 		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
 		34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
-		34B3F87B1E8DF1700035BE1A /* ExperienceUpgradeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradeViewController.swift */; };
+		34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* SplashViewController.swift */; };
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
 		34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
@@ -564,9 +563,9 @@
 		4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
 		4C9D34952369EFC7006A4307 /* launchApp.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34942369EFC7006A4307 /* launchApp.json */; };
 		4C9D34972369F0FC006A4307 /* notificationPermission.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34962369F0FC006A4307 /* notificationPermission.json */; };
-		4C9D349B2369F11F006A4307 /* img_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34982369F11E006A4307 /* img_1.png */; };
-		4C9D349C2369F11F006A4307 /* img_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34992369F11E006A4307 /* img_0.png */; };
-		4C9D349D2369F11F006A4307 /* img_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D349A2369F11F006A4307 /* img_2.png */; };
+		4C9D349B2369F11F006A4307 /* notificationPermission1.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34982369F11E006A4307 /* notificationPermission1.png */; };
+		4C9D349C2369F11F006A4307 /* notificationPermission0.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34992369F11E006A4307 /* notificationPermission0.png */; };
+		4C9D349D2369F11F006A4307 /* notificationPermission2.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D349A2369F11F006A4307 /* notificationPermission2.png */; };
 		4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA46F4B219CCC630038ABDE /* CaptionView.swift */; };
 		4CA46F4D219CFDAA0038ABDE /* GalleryRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA46F49219C78050038ABDE /* GalleryRailView.swift */; };
 		4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */; };
@@ -621,11 +620,23 @@
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
 		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
 		886F08A7234958970085C27F /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */; };
+		8889006C23DBB39B00F40186 /* reactionsMegaphone.json in Resources */ = {isa = PBXBuildFile; fileRef = 8889006323DBB39A00F40186 /* reactionsMegaphone.json */; };
+		8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006523DBB39B00F40186 /* reactionMegaphone_1.png */; };
+		8889006E23DBB39B00F40186 /* reactionMegaphone_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006623DBB39B00F40186 /* reactionMegaphone_0.png */; };
+		8889006F23DBB39B00F40186 /* reactionMegaphone_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006723DBB39B00F40186 /* reactionMegaphone_2.png */; };
+		8889007023DBB39B00F40186 /* reactionMegaphone_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006823DBB39B00F40186 /* reactionMegaphone_3.png */; };
+		8889007123DBB39B00F40186 /* reactionMegaphone_6.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006923DBB39B00F40186 /* reactionMegaphone_6.png */; };
+		8889007223DBB39B00F40186 /* reactionMegaphone_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006A23DBB39B00F40186 /* reactionMegaphone_4.png */; };
+		8889007323DBB39B00F40186 /* reactionMegaphone_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006B23DBB39B00F40186 /* reactionMegaphone_5.png */; };
+		8889007523DBD0B400F40186 /* RequiredProfileNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8889007423DBD0B400F40186 /* RequiredProfileNames.swift */; };
+		8889007723DBD61200F40186 /* requiredProfileNamesSplash.json in Resources */ = {isa = PBXBuildFile; fileRef = 8889007623DBD61200F40186 /* requiredProfileNamesSplash.json */; };
 		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */; };
+		88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F923DBA1360005C012 /* IntroducingPINs.swift */; };
+		88A505FC23DBAE4F0005C012 /* Reactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505FB23DBAE4F0005C012 /* Reactions.swift */; };
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
@@ -841,7 +852,6 @@
 		340FC8C4204DE223007AEB0F /* DebugUIBackup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIBackup.m; sourceTree = "<group>"; };
 		34123C5D239AA3E900782788 /* TooltipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TooltipView.swift; sourceTree = "<group>"; };
 		34123C5F239AA93A00782788 /* ViewOnceTooltip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceTooltip.swift; sourceTree = "<group>"; };
-		34123C61239AB71600782788 /* stickerSplashComplete.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = stickerSplashComplete.json; sourceTree = "<group>"; };
 		34129B8521EF8779005457A8 /* LinkPreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkPreviewView.swift; sourceTree = "<group>"; };
 		3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadPerformanceTest.swift; sourceTree = "<group>"; };
 		341341ED2187467900192D59 /* ConversationViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewModel.h; sourceTree = "<group>"; };
@@ -1077,7 +1087,7 @@
 		34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentSharing.m; sourceTree = "<group>"; };
 		34B3F83B1E8DF1700035BE1A /* CallViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallViewController.swift; sourceTree = "<group>"; };
 		34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPicker.swift; sourceTree = "<group>"; };
-		34B3F8441E8DF1700035BE1A /* ExperienceUpgradeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeViewController.swift; sourceTree = "<group>"; };
+		34B3F8441E8DF1700035BE1A /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
 		34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGroupViewController.h; sourceTree = "<group>"; };
 		34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
@@ -1417,9 +1427,9 @@
 		4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingContactSyncJobQueue.swift; sourceTree = "<group>"; };
 		4C9D34942369EFC7006A4307 /* launchApp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = launchApp.json; sourceTree = "<group>"; };
 		4C9D34962369F0FC006A4307 /* notificationPermission.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = notificationPermission.json; sourceTree = "<group>"; };
-		4C9D34982369F11E006A4307 /* img_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = img_1.png; sourceTree = "<group>"; };
-		4C9D34992369F11E006A4307 /* img_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = img_0.png; sourceTree = "<group>"; };
-		4C9D349A2369F11F006A4307 /* img_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = img_2.png; sourceTree = "<group>"; };
+		4C9D34982369F11E006A4307 /* notificationPermission1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notificationPermission1.png; sourceTree = "<group>"; };
+		4C9D34992369F11E006A4307 /* notificationPermission0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notificationPermission0.png; sourceTree = "<group>"; };
+		4C9D349A2369F11F006A4307 /* notificationPermission2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notificationPermission2.png; sourceTree = "<group>"; };
 		4CA46F49219C78050038ABDE /* GalleryRailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryRailView.swift; sourceTree = "<group>"; };
 		4CA46F4B219CCC630038ABDE /* CaptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionView.swift; sourceTree = "<group>"; };
 		4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureViewController.swift; sourceTree = "<group>"; };
@@ -1488,6 +1498,16 @@
 		886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccessoryViewPlaceholder.swift; sourceTree = "<group>"; };
 		887D5880236773240048B8FB /* ta */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ta; path = translations/ta.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887D5881236773410048B8FB /* te */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = te; path = translations/te.lproj/Localizable.strings; sourceTree = "<group>"; };
+		8889006323DBB39A00F40186 /* reactionsMegaphone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = reactionsMegaphone.json; sourceTree = "<group>"; };
+		8889006523DBB39B00F40186 /* reactionMegaphone_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_1.png; sourceTree = "<group>"; };
+		8889006623DBB39B00F40186 /* reactionMegaphone_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_0.png; sourceTree = "<group>"; };
+		8889006723DBB39B00F40186 /* reactionMegaphone_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_2.png; sourceTree = "<group>"; };
+		8889006823DBB39B00F40186 /* reactionMegaphone_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_3.png; sourceTree = "<group>"; };
+		8889006923DBB39B00F40186 /* reactionMegaphone_6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_6.png; sourceTree = "<group>"; };
+		8889006A23DBB39B00F40186 /* reactionMegaphone_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_4.png; sourceTree = "<group>"; };
+		8889006B23DBB39B00F40186 /* reactionMegaphone_5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_5.png; sourceTree = "<group>"; };
+		8889007423DBD0B400F40186 /* RequiredProfileNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequiredProfileNames.swift; sourceTree = "<group>"; };
+		8889007623DBD61200F40186 /* requiredProfileNamesSplash.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = requiredProfileNamesSplash.json; sourceTree = "<group>"; };
 		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
 		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
@@ -1497,6 +1517,8 @@
 		88A3582723640240009D6B9A /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = translations/vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A35828236402D3009D6B9A /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/bn.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManager.swift; sourceTree = "<group>"; };
+		88A505F923DBA1360005C012 /* IntroducingPINs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroducingPINs.swift; sourceTree = "<group>"; };
+		88A505FB23DBAE4F0005C012 /* Reactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactions.swift; sourceTree = "<group>"; };
 		88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformProgressView.swift; sourceTree = "<group>"; };
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
@@ -2203,7 +2225,6 @@
 				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
 				346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */,
 				34D8C0221ED3673300188D7C /* DebugUI */,
-				34B3F8441E8DF1700035BE1A /* ExperienceUpgradeViewController.swift */,
 				340E9ABF235F876800FA362C /* ForwardMessageNavigationController.swift */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				34386A4C207D0C01009F5D9C /* HomeView */,
@@ -2460,6 +2481,7 @@
 		450DF2061E0DD28D003D14BE /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
+				88A505F523DBA0C70005C012 /* Experience Upgrades */,
 				4CC613352227A00400E21A3A /* ConversationSearch.swift */,
 				4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */,
 				450DF2071E0DD29E003D14BE /* Notifications */,
@@ -2724,9 +2746,9 @@
 		4C9D348B2369EA69006A4307 /* images */ = {
 			isa = PBXGroup;
 			children = (
-				4C9D34992369F11E006A4307 /* img_0.png */,
-				4C9D34982369F11E006A4307 /* img_1.png */,
-				4C9D349A2369F11F006A4307 /* img_2.png */,
+				4C9D34992369F11E006A4307 /* notificationPermission0.png */,
+				4C9D34982369F11E006A4307 /* notificationPermission1.png */,
+				4C9D349A2369F11F006A4307 /* notificationPermission2.png */,
 			);
 			path = images;
 			sourceTree = "<group>";
@@ -2821,7 +2843,6 @@
 				8811CF832295D8DA00FF6549 /* VolumeButtons.swift */,
 				340CCB6923032762005243B3 /* YDBLegacyMigration.h */,
 				340CCB6823032762005243B3 /* YDBLegacyMigration.m */,
-				88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2839,7 +2860,6 @@
 				886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */,
 				34129B8521EF8779005457A8 /* LinkPreviewView.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
-				8837F74023DA0B0F00772A32 /* MegaphoneView.swift */,
 				34386A53207D271C009F5D9C /* NeverClearView.swift */,
 				34F308A01ECB469700BB7697 /* OWSBezierPathView.h */,
 				34F308A11ECB469700BB7697 /* OWSBezierPathView.m */,
@@ -2894,18 +2914,63 @@
 			path = "Reactions Details";
 			sourceTree = "<group>";
 		};
+		8889006223DBB38700F40186 /* Reactions Megaphone */ = {
+			isa = PBXGroup;
+			children = (
+				8889006423DBB39B00F40186 /* images */,
+				8889006323DBB39A00F40186 /* reactionsMegaphone.json */,
+			);
+			path = "Reactions Megaphone";
+			sourceTree = "<group>";
+		};
+		8889006423DBB39B00F40186 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				8889006523DBB39B00F40186 /* reactionMegaphone_1.png */,
+				8889006623DBB39B00F40186 /* reactionMegaphone_0.png */,
+				8889006723DBB39B00F40186 /* reactionMegaphone_2.png */,
+				8889006823DBB39B00F40186 /* reactionMegaphone_3.png */,
+				8889006923DBB39B00F40186 /* reactionMegaphone_6.png */,
+				8889006A23DBB39B00F40186 /* reactionMegaphone_4.png */,
+				8889006B23DBB39B00F40186 /* reactionMegaphone_5.png */,
+			);
+			path = images;
+			sourceTree = "<group>";
+		};
+		88A505F523DBA0C70005C012 /* Experience Upgrades */ = {
+			isa = PBXGroup;
+			children = (
+				88A505FE23DBAE640005C012 /* Upgrade Views */,
+				88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */,
+				34B3F8441E8DF1700035BE1A /* SplashViewController.swift */,
+				8837F74023DA0B0F00772A32 /* MegaphoneView.swift */,
+			);
+			path = "Experience Upgrades";
+			sourceTree = "<group>";
+		};
+		88A505FE23DBAE640005C012 /* Upgrade Views */ = {
+			isa = PBXGroup;
+			children = (
+				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
+				88A505FB23DBAE4F0005C012 /* Reactions.swift */,
+				8889007423DBD0B400F40186 /* RequiredProfileNames.swift */,
+			);
+			path = "Upgrade Views";
+			sourceTree = "<group>";
+		};
 		88BFD4712335C2A4001797D7 /* Lottie */ = {
 			isa = PBXGroup;
 			children = (
+				8889006223DBB38700F40186 /* Reactions Megaphone */,
 				4C9D34942369EFC7006A4307 /* launchApp.json */,
 				4C9D34842369EA3E006A4307 /* NotificationPermission */,
 				880C0FF6233D3F7C00386FB8 /* playPauseButton.json */,
-				34123C61239AB71600782788 /* stickerSplashComplete.json */,
 				4C0CF6F92386295400C9F818 /* tap_to_focus.json */,
 				88BFD4722335C2B3001797D7 /* waveformLoading.json */,
 				888C827F23D795F90059464B /* pinCreationFail.json */,
 				888C828023D795FA0059464B /* pinCreationInProgress.json */,
 				8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */,
+				8889007623DBD61200F40186 /* requiredProfileNamesSplash.json */,
 			);
 			path = Lottie;
 			sourceTree = "<group>";
@@ -3516,6 +3581,7 @@
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
+				8889006C23DBB39B00F40186 /* reactionsMegaphone.json in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
@@ -3527,11 +3593,13 @@
 				34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */,
 				34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
+				8889007123DBB39B00F40186 /* reactionMegaphone_6.png in Resources */,
 				34C3C78D20409F320000134C /* Opening.m4r in Resources */,
 				4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
-				4C9D349C2369F11F006A4307 /* img_0.png in Resources */,
+				8889006F23DBB39B00F40186 /* reactionMegaphone_2.png in Resources */,
+				4C9D349C2369F11F006A4307 /* notificationPermission0.png in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
@@ -3540,10 +3608,12 @@
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
 				8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */,
+				8889006E23DBB39B00F40186 /* reactionMegaphone_0.png in Resources */,
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
-				34123C62239AB71600782788 /* stickerSplashComplete.json in Resources */,
+				8889007223DBB39B00F40186 /* reactionMegaphone_4.png in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				4C9D34952369EFC7006A4307 /* launchApp.json in Resources */,
+				8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
@@ -3551,6 +3621,7 @@
 				45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */,
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
 				45B74A772044AAB600CD42F8 /* hello.aifc in Resources */,
+				8889007323DBB39B00F40186 /* reactionMegaphone_5.png in Resources */,
 				45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */,
 				45B74A792044AAB600CD42F8 /* input.aifc in Resources */,
 				45B74A8C2044AAB600CD42F8 /* input-quiet.aifc in Resources */,
@@ -3559,15 +3630,17 @@
 				45B74A862044AAB600CD42F8 /* note.aifc in Resources */,
 				888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */,
 				45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */,
-				4C9D349B2369F11F006A4307 /* img_1.png in Resources */,
+				4C9D349B2369F11F006A4307 /* notificationPermission1.png in Resources */,
 				45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */,
+				8889007723DBD61200F40186 /* requiredProfileNamesSplash.json in Resources */,
 				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
 				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,
-				4C9D349D2369F11F006A4307 /* img_2.png in Resources */,
+				4C9D349D2369F11F006A4307 /* notificationPermission2.png in Resources */,
 				45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				888C828223D795FA0059464B /* pinCreationFail.json in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
+				8889007023DBB39B00F40186 /* reactionMegaphone_3.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4273,7 +4346,7 @@
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				3496957221A301A100DCFE74 /* OWSBackup.m in Sources */,
-				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradeViewController.swift in Sources */,
+				34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */,
 				3448E1622213585C004B052E /* OnboardingBaseViewController.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
@@ -4282,6 +4355,7 @@
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
 				34A4C61E221613D00042EF2E /* OnboardingVerificationViewController.swift in Sources */,
 				4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */,
+				88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */,
 				340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */,
 				452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
@@ -4326,6 +4400,7 @@
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */,
+				8889007523DBD0B400F40186 /* RequiredProfileNames.swift in Sources */,
 				3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */,
 				34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */,
 				4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */,
@@ -4389,6 +4464,7 @@
 				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,
 				4C46361322EE680700185951 /* ConversationPicker.swift in Sources */,
+				88A505FC23DBAE4F0005C012 /* Reactions.swift in Sources */,
 				88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */,
 				340FC8B5204DAC8D007AEB0F /* AboutTableViewController.m in Sources */,
 				34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */,

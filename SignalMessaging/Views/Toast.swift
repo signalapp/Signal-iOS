@@ -108,6 +108,7 @@ class ToastView: UIView {
     weak var delegate: ToastViewDelegate?
 
     private let label: UILabel
+    private let darkThemeBackgroundOverlay = UIView()
 
     // MARK: Initializers
 
@@ -127,6 +128,10 @@ class ToastView: UIView {
             blurEffectView.autoPinEdgesToSuperviewEdges()
         }
 
+        addSubview(darkThemeBackgroundOverlay)
+        darkThemeBackgroundOverlay.autoPinEdgesToSuperviewEdges()
+        darkThemeBackgroundOverlay.backgroundColor = UIColor.white.withAlphaComponent(0.10)
+
         label.textAlignment = .center
         label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.ows_dynamicTypeBody
@@ -139,6 +144,10 @@ class ToastView: UIView {
 
         let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe(gesture:)))
         self.addGestureRecognizer(swipeGesture)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        applyTheme()
+
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -146,6 +155,10 @@ class ToastView: UIView {
     }
 
     // MARK: Gestures
+
+    @objc func applyTheme() {
+        darkThemeBackgroundOverlay.isHidden = !Theme.isDarkThemeEnabled
+    }
 
     @objc
     func didTap(gesture: UITapGestureRecognizer) {

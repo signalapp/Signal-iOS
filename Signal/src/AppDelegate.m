@@ -742,7 +742,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                 OWSAssertDebug(frontmostViewController);
 
                 UIViewController *reminderVC;
-                if (SSKFeatureFlags.pinsForEveryone) {
+                if (RemoteConfig.pinsForEveryone) {
                     reminderVC = [OWSPinReminderViewController new];
                 } else {
                     reminderVC = [OWS2FAReminderViewController wrappedInNavController];
@@ -1314,7 +1314,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         OWSLogInfo(@"localAddress: %@", [self.tsAccountManager localAddress]);
 
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [ExperienceUpgradeFinder.sharedManager markAllCompleteWithTransaction:transaction.unwrapGrdbWrite];
+            [ExperienceUpgradeFinder markAllCompleteForNewUserWithTransaction:transaction.unwrapGrdbWrite];
         }];
 
         // Start running the disappearing messages job in case the newly registered user
