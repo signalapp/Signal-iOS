@@ -82,7 +82,7 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
     }
 
     private func tryToRefreshGroupThreadWithThrottling(_ thread: TSThread,
-                                                      groupUpdateMode: GroupUpdateMode) {
+                                                       groupUpdateMode: GroupUpdateMode) {
         guard let groupThread = thread as? TSGroupThread else {
             return
         }
@@ -117,20 +117,20 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
     }
 
     private func refreshGroupV2SnapshotFromService(groupSecretParamsData: Data,
-                                                groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
+                                                   groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         // GroupsV2 TODO: Try to use individual changes.
 
         guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
             return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
         }
-        return groupsV2Swift.fetchCurrentGroupState(groupSecretParamsData: groupSecretParamsData)
-            .then(on: .global()) { groupState in
-                return self.tryToApplyCurrentGroupV2SnapshotFromService(groupState: groupState,
-                                                                     groupUpdateMode: groupUpdateMode)
+        return groupsV2Swift.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
+            .then(on: .global()) { groupV2Snapshot in
+                return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
+                                                                        groupUpdateMode: groupUpdateMode)
         }
     }
 
-    // MARK: - Changes Actions
+    // MARK: - Group Changes
 
     public func updateGroupWithChangeActions(groupId: Data,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
@@ -164,36 +164,90 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
         return updatedGroupThread
     }
 
-    // MARK: - Current State
-
-    private func fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: Data,
-                                                             groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
+    private func fetchAndApplyChangeActionsFromService(groupSecretParamsData: Data,
+                                                       groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
             return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
         }
-        return groupsV2Swift.fetchCurrentGroupState(groupSecretParamsData: groupSecretParamsData)
-            .then(on: .global()) { groupState in
-                return self.tryToApplyCurrentGroupV2SnapshotFromService(groupState: groupState,
-                                                                     groupUpdateMode: groupUpdateMode)
+        return groupsV2Swift.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData)
+            .then(on: DispatchQueue.global()) { (groupChanges) throws -> Promise<TSGroupThread> in
+                let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
+                return self.tryToApplyGroupChangesFromService(groupId: groupId,
+                                                              groupChanges: groupChanges,
+                                                              groupUpdateMode: groupUpdateMode)
         }
     }
 
-    private func tryToApplyCurrentGroupV2SnapshotFromService(groupState: GroupV2Snapshot,
-                                                          groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
+    private func tryToApplyGroupChangesFromService(groupId: Data,
+                                                   groupChanges: [GroupV2Change],
+                                                   groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         switch groupUpdateMode {
         case .upToRevisionImmediately:
-            return tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupState: groupState)
+            return tryToApplyGroupChangesFromServiceNow(groupId: groupId,
+                                                        groupChanges: groupChanges)
         case .upToLatestAfterMessageProcess:
             return messageProcessing.allMessageFetchingAndProcessingPromise()
                 .then(on: .global()) { _ in
-                    return self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupState: groupState)
+                    return self.tryToApplyGroupChangesFromServiceNow(groupId: groupId,
+                                                                     groupChanges: groupChanges)
             }
         }
     }
 
-    private func tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupState: GroupV2Snapshot) -> Promise<TSGroupThread> {
+    private func tryToApplyGroupChangesFromServiceNow(groupId: Data,
+                                                      groupChanges: [GroupV2Change]) -> Promise<TSGroupThread> {
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
-            let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupState,
+            guard let oldGroupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                throw OWSAssertionError("Missing group thread.")
+            }
+
+            var groupThread = oldGroupThread
+
+            for groupChange in groupChanges {
+                let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupChange.snapshot,
+                                                                     transaction: transaction)
+                // GroupsV2 TODO: Set groupUpdateSourceAddress.
+                let groupUpdateSourceAddress: SignalServiceAddress? = nil
+                groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
+                                                                                                       newGroupModel: newGroupModel,
+                                                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                                       transaction: transaction)
+
+            }
+            return groupThread
+        }
+    }
+
+    // MARK: - Current State
+
+    private func fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: Data,
+                                                                groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
+        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
+            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
+        }
+        return groupsV2Swift.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
+            .then(on: .global()) { groupV2Snapshot in
+                return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
+                                                                        groupUpdateMode: groupUpdateMode)
+        }
+    }
+
+    private func tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: GroupV2Snapshot,
+                                                             groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
+        switch groupUpdateMode {
+        case .upToRevisionImmediately:
+            return tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
+        case .upToLatestAfterMessageProcess:
+            return messageProcessing.allMessageFetchingAndProcessingPromise()
+                .then(on: .global()) { _ in
+                    return self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
+            }
+        }
+    }
+
+    private func tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: GroupV2Snapshot) -> Promise<TSGroupThread> {
+        return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
+            let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot,
                                                                  transaction: transaction)
             // GroupsV2 TODO: Set groupUpdateSourceAddress.
             let groupUpdateSourceAddress: SignalServiceAddress? = nil
@@ -203,5 +257,4 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
                                                                                                  transaction: transaction)
         }
     }
-
 }

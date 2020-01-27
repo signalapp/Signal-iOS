@@ -45,12 +45,11 @@ public protocol GroupsV2Swift {
 
     func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
 
-    func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot>
+    func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot>
 
-    func fetchCurrentGroupState(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
+    func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
 
-    func fetchGroupChangeActions(groupSecretParamsData: Data,
-                                 fromRevision: UInt32) -> Promise<[GroupV2Change]>
+    func fetchGroupChangeActions(groupSecretParamsData: Data) -> Promise<[GroupV2Change]>
 
     func buildChangeSet(from oldGroupModel: TSGroupModel,
                         to newGroupModel: TSGroupModel,
@@ -197,16 +196,15 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot> {
+    public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot> {
         owsFail("Not implemented.")
     }
 
-    public func fetchCurrentGroupState(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot> {
+    public func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot> {
         owsFail("Not implemented.")
     }
 
-    public func fetchGroupChangeActions(groupSecretParamsData: Data,
-                                        fromRevision: UInt32) -> Promise<[GroupV2Change]> {
+    public func fetchGroupChangeActions(groupSecretParamsData: Data) -> Promise<[GroupV2Change]> {
         owsFail("Not implemented.")
     }
 

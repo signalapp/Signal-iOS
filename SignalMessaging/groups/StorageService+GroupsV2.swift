@@ -42,7 +42,7 @@ public extension StorageService {
                                             redemptionTime: redemptionTime)
     }
 
-    static func buildFetchCurrentGroupStateRequest(groupParams: GroupParams,
+    static func buildFetchCurrentGroupV2SnapshotRequest(groupParams: GroupParams,
                                                    sessionManager: AFHTTPSessionManager,
                                                    authCredentialMap: [UInt32: AuthCredential],
                                                    redemptionTime: UInt32) throws -> NSURLRequest {

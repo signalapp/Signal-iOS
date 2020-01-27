@@ -217,10 +217,10 @@ public class GroupsV2Protos {
 
             let uuid = try groupParams.uuid(forUserId: userID)
             let member = GroupV2SnapshotImpl.Member(userID: userID,
-                                                 uuid: uuid,
-                                                 role: role,
-                                                 profileKey: profileKey,
-                                                 joinedAtVersion: joinedAtVersion)
+                                                    uuid: uuid,
+                                                    role: role,
+                                                    profileKey: profileKey,
+                                                    joinedAtVersion: joinedAtVersion)
             members.append(member)
         }
 
@@ -241,9 +241,9 @@ public class GroupsV2Protos {
                 throw OWSAssertionError("Group member missing role.")
             }
             let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userID,
-                                                               uuid: uuid,
-                                                               timestamp: timestamp,
-                                                               role: role)
+                                                                  uuid: uuid,
+                                                                  timestamp: timestamp,
+                                                                  role: role)
             pendingMembers.append(pendingMember)
         }
 
@@ -267,25 +267,22 @@ public class GroupsV2Protos {
         let revision = groupProto.version
         let groupSecretParamsData = groupParams.groupSecretParamsData
         return GroupV2SnapshotImpl(groupSecretParamsData: groupSecretParamsData,
-                                groupProto: groupProto,
-                                revision: revision,
-                                title: title,
-                                members: members,
-                                pendingMembers: pendingMembers,
-                                accessControlForAttributes: accessControlForAttributes,
-                                accessControlForMembers: accessControlForMembers)
+                                   groupProto: groupProto,
+                                   revision: revision,
+                                   title: title,
+                                   members: members,
+                                   pendingMembers: pendingMembers,
+                                   accessControlForAttributes: accessControlForAttributes,
+                                   accessControlForMembers: accessControlForMembers)
     }
 
     // MARK: -
 
+    // We do not treat an empty response with no changes as an error.
     public class func parse(groupChangesProto: GroupsProtoGroupChanges,
                             groupParams: GroupParams) throws -> [GroupV2Change] {
-        let groupChanges = groupChangesProto.groupChanges
-        guard groupChanges.count > 0 else {
-            throw OWSAssertionError("Missing groupChanges.")
-        }
         var result = [GroupV2Change]()
-        for changeStateProto in groupChanges {
+        for changeStateProto in groupChangesProto.groupChanges {
             guard let snapshotProto = changeStateProto.groupState else {
                 throw OWSAssertionError("Missing groupState proto.")
             }

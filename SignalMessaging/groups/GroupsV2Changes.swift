@@ -262,14 +262,14 @@ public class GroupsV2Changes {
         let avatarData: Data? = oldGroupModel.groupAvatarData
 
         let newGroupModel = try GroupManager.buildGroupModel(groupId: groupId,
-                                                name: newGroupName,
-                                                avatarData: avatarData,
-                                                groupMembership: newGroupMembership,
-                                                groupAccess: newGroupAccess,
-                                                groupsVersion: groupsVersion,
-                                                groupV2Revision: newRevision,
-                                                groupSecretParamsData: groupSecretParamsData,
-                                                transaction: transaction)
+                                                             name: newGroupName,
+                                                             avatarData: avatarData,
+                                                             groupMembership: newGroupMembership,
+                                                             groupAccess: newGroupAccess,
+                                                             groupsVersion: groupsVersion,
+                                                             groupV2Revision: newRevision,
+                                                             groupSecretParamsData: groupSecretParamsData,
+                                                             transaction: transaction)
         return ChangedGroupModel(groupThread: groupThread,
                                  oldGroupModel: oldGroupModel,
                                  newGroupModel: newGroupModel,
