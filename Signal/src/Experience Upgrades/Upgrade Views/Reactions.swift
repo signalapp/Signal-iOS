@@ -16,7 +16,6 @@ class ReactionsMegaphone: MegaphoneView {
             name: "reactionsMegaphone",
             backgroundImageName: "reactions-megaphone-bg",
             backgroundImageInset: 12,
-            speed: 3,
             loopMode: .repeat(3),
             backgroundBehavior: .forceFinish,
             contentMode: .center
