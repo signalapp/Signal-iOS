@@ -163,8 +163,8 @@ private class TSConstantsProduction: TSConstantsProtocol {
         return contactDiscoveryEnclaveName
     }
 
-    public let keyBackupEnclaveName = "f2e2a5004794a6c1bac5c4949eadbc243dd02e02d1a93f10fe24584fb70815d8"
-    public let keyBackupMrEnclave = "f51f435802ada769e67aaf5744372bb7e7d519eecf996d335eb5b46b872b5789"
+    public let keyBackupEnclaveName = "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe"
+    public let keyBackupMrEnclave = "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87"
     public var keyBackupServiceId: String {
         return keyBackupEnclaveName
     }

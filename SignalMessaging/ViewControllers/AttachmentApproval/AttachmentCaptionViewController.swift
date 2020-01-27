@@ -294,7 +294,7 @@ extension AttachmentCaptionViewController: UITextViewDelegate {
             // Accept as much of the input as we can
             let charBudget: Int = Int(kMaxCaptionCharacterCount) - charsAfterDelete
             if charBudget >= 0 {
-                let acceptableNewText = String(text.prefix(charBudget))
+                let acceptableNewText = text.safePrefix(charBudget)
                 textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
             }
 

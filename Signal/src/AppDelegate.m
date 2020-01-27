@@ -749,7 +749,8 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                     reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
                 }
 
-                if ([frontmostViewController isKindOfClass:[reminderVC class]]) {
+                if ([frontmostViewController isKindOfClass:[OWSPinReminderViewController class]] ||
+                    [frontmostViewController isKindOfClass:[OWS2FAReminderViewController class]]) {
                     // We're already presenting this
                     return;
                 }
