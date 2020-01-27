@@ -8,8 +8,8 @@ class ReactionsMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
-        titleText = "Introducing Reactions"
-        bodyText = "Now you can 👍 a message with a touch. Tap and hold a message to get started."
+        titleText = NSLocalizedString("REACTION_MEGAPHONE_TITLE", comment: "Title for the megaphone introducing reactions")
+        bodyText = NSLocalizedString("REACTION_MEGAPHONE_BODY", comment: "Body for the megaphone introducing reactions")
 
         imageSize = .large
         animation = Animation(
