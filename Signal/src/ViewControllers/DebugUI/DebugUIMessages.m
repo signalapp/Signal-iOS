@@ -4210,20 +4210,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             [thread disappearingMessagesConfigurationWithTransaction:initialTransaction];
 
         // MJK TODO - remove senderTimestamp
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
-            initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                    inThread:thread
-                                 messageBody:text
-                               attachmentIds:[NSMutableArray new]
-                            expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
-                                                                      : 0)expireStartedAt:0
-                              isVoiceMessage:NO
-                            groupMetaMessage:TSGroupMetaMessageUnspecified
-                               quotedMessage:nil
-                                contactShare:nil
-                                 linkPreview:nil
-                              messageSticker:nil
-                           isViewOnceMessage:NO];
+        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
+                                                                                        messageBody:text];
+        [messageBuilder applyDisappearingMessagesConfiguration:configuration];
+        TSOutgoingMessage *message = [messageBuilder build];
         OWSLogInfo(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
@@ -4302,20 +4292,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             }
             {
                 // MJK TODO - this might be the one place we actually use senderTimestamp
-                TSOutgoingMessage *message =
-                    [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:timestamp.unsignedLongLongValue
-                                                                       inThread:thread
-                                                                    messageBody:randomText
-                                                                  attachmentIds:[NSMutableArray new]
-                                                               expiresInSeconds:0
-                                                                expireStartedAt:0
-                                                                 isVoiceMessage:NO
-                                                               groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                                  quotedMessage:nil
-                                                                   contactShare:nil
-                                                                    linkPreview:nil
-                                                                 messageSticker:nil
-                                                              isViewOnceMessage:NO];
+                TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
+                                                                                                messageBody:randomText];
+                messageBuilder.timestamp = timestamp.unsignedLongLongValue;
+                TSOutgoingMessage *message = [messageBuilder build];
                 [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 [message updateWithSentRecipient:address wasSentByUD:NO transaction:transaction];
@@ -4613,20 +4593,15 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     // MJK TODO - remove senderTimestamp
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:messageBody
-                                                      attachmentIds:attachmentIds
-                                                   expiresInSeconds:0
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:isVoiceMessage
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:quotedMessage
-                                                       contactShare:contactShare
-                                                        linkPreview:linkPreview
-                                                     messageSticker:messageSticker
-                                                  isViewOnceMessage:NO];
+    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
+                                                                                    messageBody:messageBody];
+    messageBuilder.attachmentIds = attachmentIds;
+    messageBuilder.isVoiceMessage = isVoiceMessage;
+    messageBuilder.quotedMessage = quotedMessage;
+    messageBuilder.contactShare = contactShare;
+    messageBuilder.linkPreview = linkPreview;
+    messageBuilder.messageSticker = messageSticker;
+    TSOutgoingMessage *message = [messageBuilder build];
 
     [message anyInsertWithTransaction:transaction];
     [message updateWithFakeMessageState:messageState transaction:transaction];

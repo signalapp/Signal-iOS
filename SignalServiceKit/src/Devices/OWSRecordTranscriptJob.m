@@ -140,7 +140,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                        contactShare:transcript.contact
                                                         linkPreview:transcript.linkPreview
                                                      messageSticker:transcript.messageSticker
-                                                  isViewOnceMessage:transcript.isViewOnceMessage];
+                                                  isViewOnceMessage:transcript.isViewOnceMessage
+                                             changeActionsProtoData:nil];
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos

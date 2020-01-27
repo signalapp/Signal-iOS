@@ -80,6 +80,13 @@ public struct GroupMembership {
             }
         }
 
+        public mutating func replace(_ address: SignalServiceAddress,
+                                 isAdministrator: Bool,
+                                 isPending: Bool) {
+            remove(address)
+            add([address], isAdministrator: isAdministrator, isPending: isPending)
+        }
+
         internal func asStateMap() -> StateMap {
             return stateMap
         }
@@ -154,8 +161,7 @@ public struct GroupMembership {
     // namely the local user.
     public func withNonAdminMember(address: SignalServiceAddress) -> GroupMembership {
         var builder = self.asBuilder
-        builder.remove(address)
-        builder.add(address, isAdministrator: false, isPending: false)
+        builder.replace(address, isAdministrator: false, isPending: false)
         return builder.build()
     }
 

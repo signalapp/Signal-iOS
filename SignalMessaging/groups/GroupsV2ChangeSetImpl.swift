@@ -34,7 +34,7 @@ import ZKGroup
 // The latter can be non-trivial:
 //
 // * If we try to add a new member and another user beats us to it, we'll throw
-//   GroupsV2Error.redundant when computing a GroupChange proto.
+//   GroupsV2Error.redundantChange when computing a GroupChange proto.
 // * If we add (alice and bob) but another user adds (alice) first, we'll just add (bob).
 @objc
 public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
@@ -362,7 +362,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
 
             guard didChange else {
-                throw GroupsV2Error.redundant
+                throw GroupsV2Error.redundantChange
             }
 
             return try actionsBuilder.build()

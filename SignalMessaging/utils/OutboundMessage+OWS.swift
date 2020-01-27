@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -54,19 +54,12 @@ extension OutgoingMessagePreparer {
             }
         }
 
-        let message = TSOutgoingMessage(outgoingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                        in: thread,
-                                        messageBody: truncatedText,
-                                        attachmentIds: [],
-                                        expiresInSeconds: expiresInSeconds,
-                                        expireStartedAt: 0,
-                                        isVoiceMessage: isVoiceMessage,
-                                        groupMetaMessage: .unspecified,
-                                        quotedMessage: quotedReplyModel?.buildQuotedMessageForSending(),
-                                        contactShare: nil,
-                                        linkPreview: nil,
-                                        messageSticker: nil,
-                                        isViewOnceMessage: isViewOnceMessage)
+        let message = TSOutgoingMessage.Builder(thread: thread,
+                                                messageBody: truncatedText,
+                                                expiresInSeconds: expiresInSeconds,
+                                                isVoiceMessage: isVoiceMessage,
+                                                quotedMessage: quotedReplyModel?.buildQuotedMessageForSending(),
+                                                isViewOnceMessage: isViewOnceMessage).build()
 
         let attachmentInfos = attachments.map { $0.buildOutgoingAttachmentInfo(message: message) }
 

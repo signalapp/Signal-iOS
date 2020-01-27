@@ -145,7 +145,8 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                      contactShare: contactShareBuilder(),
                                      linkPreview: linkPreviewBuilder(),
                                      messageSticker: messageStickerBuilder(),
-                                     isViewOnceMessage: isViewOnceMessageBuilder())
+                                     isViewOnceMessage: isViewOnceMessageBuilder(),
+                                     changeActionsProtoData: changeActionsProtoDataBuilder())
 
         return item
     }
@@ -225,6 +226,11 @@ public class OutgoingMessageFactory: NSObject, Factory {
     @objc
     public var isViewOnceMessageBuilder: () -> Bool = {
         return false
+    }
+
+    @objc
+    public var changeActionsProtoDataBuilder: () -> Data? = {
+        return nil
     }
 
     // MARK: Delivery Receipts

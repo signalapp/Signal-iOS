@@ -395,27 +395,31 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [attachmentIds addObject:attachmentId];
     }
 
-    // MJK TODO remove SenderTimestamp?
-    return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                              inThread:thread
-                                                           messageBody:body
-                                                         attachmentIds:attachmentIds
-                                                      expiresInSeconds:expiresInSeconds
-                                                       expireStartedAt:0
-                                                        isVoiceMessage:NO
-                                                      groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                         quotedMessage:quotedMessage
-                                                          contactShare:nil
-                                                           linkPreview:linkPreview
-                                                        messageSticker:messageSticker
-                                                     isViewOnceMessage:NO];
+    TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    builder.messageBody = body;
+    builder.attachmentIds = attachmentIds;
+    builder.expiresInSeconds = expiresInSeconds;
+    builder.quotedMessage = quotedMessage;
+    builder.linkPreview = linkPreview;
+    builder.messageSticker = messageSticker;
+    return [builder build];
 }
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds
 {
-    // MJK TODO remove SenderTimestamp?
+    TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    builder.groupMetaMessage = groupMetaMessage;
+    builder.expiresInSeconds = expiresInSeconds;
+    return [builder build];
+}
+
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
+                       groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+                       expiresInSeconds:(uint32_t)expiresInSeconds
+                 changeActionsProtoData:(nullable NSData *)changeActionsProtoData
+{
     return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                               inThread:thread
                                                            messageBody:nil
@@ -428,7 +432,33 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                           contactShare:nil
                                                            linkPreview:nil
                                                         messageSticker:nil
-                                                     isViewOnceMessage:NO];
+                                                     isViewOnceMessage:NO
+                                                changeActionsProtoData:changeActionsProtoData];
+}
+
+- (instancetype)initOutgoingMessageWithThread:(TSThread *)thread messageBody:(nullable NSString *)body
+{
+    self = [super initMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                  inThread:thread
+                               messageBody:body
+                             attachmentIds:[NSMutableArray new]
+                          expiresInSeconds:0
+                           expireStartedAt:0
+                             quotedMessage:nil
+                              contactShare:nil
+                               linkPreview:nil
+                            messageSticker:nil
+                         isViewOnceMessage:NO];
+    if (!self) {
+        return self;
+    }
+
+    [self commonInitWithThread:thread
+                isVoiceMessage:NO
+              groupMetaMessage:TSGroupMetaMessageUnspecified
+        changeActionsProtoData:nil];
+
+    return self;
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -444,6 +474,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
                                isViewOnceMessage:(BOOL)isViewOnceMessage
+                          changeActionsProtoData:(nullable NSData *)changeActionsProtoData
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -460,6 +491,19 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         return self;
     }
 
+    [self commonInitWithThread:thread
+                isVoiceMessage:isVoiceMessage
+              groupMetaMessage:groupMetaMessage
+        changeActionsProtoData:changeActionsProtoData];
+
+    return self;
+}
+
+- (void)commonInitWithThread:(TSThread *)thread
+              isVoiceMessage:(BOOL)isVoiceMessage
+            groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+      changeActionsProtoData:(nullable NSData *)changeActionsProtoData
+{
     _hasSyncedTranscript = NO;
 
     if ([thread isKindOfClass:TSGroupThread.class]) {
@@ -497,7 +541,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     self.recipientAddressStates = [recipientAddressStates copy];
     _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
 
-    return self;
+    _changeActionsProtoData = changeActionsProtoData;
 }
 
 // Each message has the responsibility for eagerly cleaning up its attachments.
@@ -1279,9 +1323,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // GroupsV2 TODO: Populate groupChangeData.
     NSError *error;
-    SSKProtoGroupContextV2 *_Nullable groupContextV2 = [self.groupsV2 buildGroupContextV2ProtoWithGroupModel:groupModel
-                                                                                             groupChangeData:nil
-                                                                                                       error:&error];
+    SSKProtoGroupContextV2 *_Nullable groupContextV2 =
+        [self.groupsV2 buildGroupContextV2ProtoWithGroupModel:groupModel
+                                       changeActionsProtoData:self.changeActionsProtoData
+                                                        error:&error];
     if (groupContextV2 == nil || error != nil) {
         OWSFailDebug(@"Error: %@", error);
         return OutgoingGroupProtoResult_Error;

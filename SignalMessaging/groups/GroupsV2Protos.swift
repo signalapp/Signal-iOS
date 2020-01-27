@@ -137,7 +137,7 @@ public class GroupsV2Protos {
     }
 
     public class func buildGroupContextV2Proto(groupModel: TSGroupModel,
-                                               groupChangeData: Data?) throws -> SSKProtoGroupContextV2 {
+                                               changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
 
         guard let groupSecretParamsData = groupModel.groupSecretParamsData else {
             throw OWSAssertionError("Missing groupSecretParamsData.")
@@ -148,11 +148,31 @@ public class GroupsV2Protos {
         builder.setMasterKey(try groupSecretParams.getMasterKey().serialize().asData)
         builder.setRevision(groupModel.groupV2Revision)
 
-        if let groupChangeData = groupChangeData {
-            assert(groupChangeData.count > 0)
-            builder.setGroupChange(groupChangeData)
+        if let changeActionsProtoData = changeActionsProtoData {
+            assert(changeActionsProtoData.count > 0)
+            builder.setGroupChange(changeActionsProtoData)
         }
 
         return try builder.build()
+    }
+
+    // MARK: -
+
+    // This method throws if verification fails.
+    public class func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
+        let changeProto = try GroupsProtoGroupChange.parseData(changeProtoData)
+
+        guard let serverSignatureData = changeProto.serverSignature else {
+            throw OWSAssertionError("Missing serverSignature.")
+        }
+        let serverSignature = try NotarySignature(contents: [UInt8](serverSignatureData))
+        guard let changeActionsProtoData = changeProto.actions else {
+            throw OWSAssertionError("Missing changeActionsProtoData.")
+        }
+        let serverPublicParams = try self.serverPublicParams()
+        try serverPublicParams.verifySignature(message: [UInt8](changeActionsProtoData),
+                                               notarySignature: serverSignature)
+        let changeActionsProto = try GroupsProtoGroupChangeActions.parseData(changeActionsProtoData)
+        return changeActionsProto
     }
 }
