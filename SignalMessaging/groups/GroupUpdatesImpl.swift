@@ -134,7 +134,6 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
 
     public func updateGroupWithChangeActions(groupId: Data,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
-                                             changeActionsProtoData: Data,
                                              transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
         // GroupsV2 TODO: Instead of loading the group model from the database,
         // we should use exactly the same group model that was used to construct
@@ -146,7 +145,6 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
         // GroupsV2 TODO: Can we eliminate ChangedGroupModel?
         let changedGroupModel = try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
                                                                              changeActionsProto: changeActionsProto,
-                                                                             changeActionsProtoData: changeActionsProtoData,
                                                                              transaction: transaction)
         guard changedGroupModel.newGroupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")

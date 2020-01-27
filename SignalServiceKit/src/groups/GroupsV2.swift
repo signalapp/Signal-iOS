@@ -93,7 +93,6 @@ public protocol GroupUpdates: AnyObject {
 
     func updateGroupWithChangeActions(groupId: Data,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
-                                             changeActionsProtoData: Data,
                                              transaction: SDSAnyWriteTransaction) throws -> TSGroupThread
 }
 
@@ -240,7 +239,6 @@ public class MockGroupUpdates: NSObject, GroupUpdates {
 
     public func updateGroupWithChangeActions(groupId: Data,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
-                                             changeActionsProtoData: Data,
                                              transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
         owsFail("Not implemented.")
     }

@@ -544,7 +544,6 @@ class IncomingGroupsV2MessageQueue: NSObject {
         do {
             updatedGroupThread = try groupUpdates.updateGroupWithChangeActions(groupId: groupId,
                                                                                changeActionsProto: changeActionsProto,
-                                                                               changeActionsProtoData: changeActionsProtoData,
                                                                                transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")

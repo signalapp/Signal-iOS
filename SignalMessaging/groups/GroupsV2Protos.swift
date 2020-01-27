@@ -175,4 +175,100 @@ public class GroupsV2Protos {
         let changeActionsProto = try GroupsProtoGroupChangeActions.parseData(changeActionsProtoData)
         return changeActionsProto
     }
+
+    // MARK: -
+
+    // GroupsV2 TODO: How can we make this parsing less brittle?
+    public class func parse(groupProto: GroupsProtoGroup,
+                            groupParams: GroupParams) throws -> GroupV2State {
+
+        // GroupsV2 TODO: Is GroupsProtoAccessControl required?
+        guard let accessControl = groupProto.accessControl else {
+            throw OWSAssertionError("Missing accessControl.")
+        }
+        guard let accessControlForAttributes = accessControl.attributes else {
+            throw OWSAssertionError("Missing accessControl.members.")
+        }
+        guard let accessControlForMembers = accessControl.members else {
+            throw OWSAssertionError("Missing accessControl.members.")
+        }
+
+        var members = [GroupV2StateImpl.Member]()
+        for memberProto in groupProto.members {
+            guard let userID = memberProto.userID else {
+                throw OWSAssertionError("Group member missing userID.")
+            }
+            guard memberProto.hasRole, let role = memberProto.role else {
+                throw OWSAssertionError("Group member missing role.")
+            }
+            guard let profileKey = memberProto.profileKey else {
+                throw OWSAssertionError("Group member missing profileKey.")
+            }
+            // NOTE: presentation is set when creating and updating groups, not
+            //       when fetching group state.
+            guard memberProto.hasJoinedAtVersion else {
+                throw OWSAssertionError("Group member missing joinedAtVersion.")
+            }
+            let joinedAtVersion = memberProto.joinedAtVersion
+
+            let uuid = try groupParams.uuid(forUserId: userID)
+            let member = GroupV2StateImpl.Member(userID: userID,
+                                                 uuid: uuid,
+                                                 role: role,
+                                                 profileKey: profileKey,
+                                                 joinedAtVersion: joinedAtVersion)
+            members.append(member)
+        }
+
+        var pendingMembers = [GroupV2StateImpl.PendingMember]()
+        for pendingMemberProto in groupProto.pendingMembers {
+            guard let userID = pendingMemberProto.addedByUserID else {
+                throw OWSAssertionError("Group pending member missing userID.")
+            }
+            guard let memberProto = pendingMemberProto.member else {
+                throw OWSAssertionError("Group pending member missing memberProto.")
+            }
+            guard pendingMemberProto.hasTimestamp else {
+                throw OWSAssertionError("Group pending member missing timestamp.")
+            }
+            let timestamp = pendingMemberProto.timestamp
+            let uuid = try groupParams.uuid(forUserId: userID)
+            guard memberProto.hasRole, let role = memberProto.role else {
+                throw OWSAssertionError("Group member missing role.")
+            }
+            let pendingMember = GroupV2StateImpl.PendingMember(userID: userID,
+                                                               uuid: uuid,
+                                                               timestamp: timestamp,
+                                                               role: role)
+            pendingMembers.append(pendingMember)
+        }
+
+        // GroupsV2 TODO: Do we need the public key?
+
+        var title = ""
+        if let titleData = groupProto.title {
+            do {
+                title = try groupParams.decryptString(titleData)
+            } catch {
+                owsFailDebug("Could not decrypt title: \(error).")
+            }
+        }
+
+        // GroupsV2 TODO: Avatar
+        //        public var avatar: String? {
+
+        // GroupsV2 TODO: disappearingMessagesTimer
+        //        public var disappearingMessagesTimer: Data? {
+
+        let revision = groupProto.version
+        let groupSecretParamsData = groupParams.groupSecretParamsData
+        return GroupV2StateImpl(groupSecretParamsData: groupSecretParamsData,
+                                groupProto: groupProto,
+                                revision: revision,
+                                title: title,
+                                members: members,
+                                pendingMembers: pendingMembers,
+                                accessControlForAttributes: accessControlForAttributes,
+                                accessControlForMembers: accessControlForMembers)
+    }
 }
