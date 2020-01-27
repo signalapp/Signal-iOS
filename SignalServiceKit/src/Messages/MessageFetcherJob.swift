@@ -363,6 +363,8 @@ private class MessageFetchOperation: OWSOperation {
         let (promise, resolver) = Promise<Void>.pending()
         self.promise = promise
         self.resolver = resolver
+        super.init()
+        self.remainingRetries = 3
     }
 
     public override func run() {
