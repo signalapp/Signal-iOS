@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSErrorMessage;
 @class TSIncomingMessage;
 @class TSInfoMessage;
+@class TSOutgoingMessage;
 @class TSThread;
 @class ThreadlessErrorMessage;
 
@@ -22,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)notifyUserForReaction:(OWSReaction *)reaction
+            onOutgoingMessage:(TSOutgoingMessage *)message
                      inThread:(TSThread *)thread
                   transaction:(SDSAnyReadTransaction *)transaction;
 
