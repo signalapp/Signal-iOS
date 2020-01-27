@@ -431,7 +431,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [pullToRefreshView addTarget:self
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
-    [self.tableView insertSubview:pullToRefreshView atIndex:0];
+    self.tableView.refreshControl = pullToRefreshView;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, pullToRefreshView);
 }
 
