@@ -43,12 +43,12 @@ internal class LokiSnodeProxy : LokiHTTPClient {
         guard let targetHexEncodedPublicKeySet = target.publicKeySet else { return Promise(error: Error.targetPublicKeySetMissing) }
         let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: Data(hex: targetHexEncodedPublicKeySet.encryptionKey), privateKey: keyPair.privateKey)
         guard let symmetricKey = uncheckedSymmetricKey else { return Promise(error: Error.symmetricKeyGenerationFailed) }
-        let headers = convertHeadersToProxyEndpointFormat(for: request)
+        let headers = getCanonicalHeaders(for: request)
         return LokiAPI.getRandomSnode().then { [target = self.target, keyPair = self.keyPair, httpSession = self.httpSession] proxy -> Promise<Any> in
             let url = "\(proxy.address):\(proxy.port)/proxy"
             print("[Loki] Proxying request to \(target) through \(proxy).")
             let parametersAsData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
-            let proxyRequestParameters: [String : Any] = [
+            let proxyRequestParameters: [String:Any] = [
                 "method" : request.httpMethod,
                 "body" : String(bytes: parametersAsData, encoding: .utf8),
                 "headers" : headers
@@ -103,7 +103,7 @@ internal class LokiSnodeProxy : LokiHTTPClient {
     }
     
     // MARK: Convenience
-    private func convertHeadersToProxyEndpointFormat(for request: TSRequest) -> [String: Any] {
+    private func getCanonicalHeaders(for request: TSRequest) -> [String: Any] {
         guard let headers = request.allHTTPHeaderFields else { return [:] }
         return headers.mapValues { value in
             switch value.lowercased() {
