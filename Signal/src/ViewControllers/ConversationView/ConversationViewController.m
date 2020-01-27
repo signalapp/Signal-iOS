@@ -3701,40 +3701,11 @@ typedef enum : NSUInteger {
                                 }];
 }
 
-- (void)conversationSettingsDidUpdateGroupWithId:(NSData *)groupId
-                                         members:(NSArray<SignalServiceAddress *> *)members
-                                  administrators:(NSArray<SignalServiceAddress *> *)administrators
-                                            name:(nullable NSString *)name
-                                      avatarData:(nullable NSData *)avatarData
+- (void)conversationSettingsDidUpdateGroupThread:(TSGroupThread *)thread
 {
-    OWSAssertDebug(groupId.length > 0);
-    OWSAssertDebug(members.count > 0);
+    OWSAssertIsOnMainThread();
 
-    SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
-    if (localAddress == nil) {
-        OWSFailDebug(@"localAddress was unexpectedly nil");
-        return;
-    }
-
-    __block NSError *_Nullable error;
-    __block TSGroupThread *_Nullable newThread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        newThread = [GroupManager updateExistingGroupWithGroupId:groupId
-                                                         members:members
-                                                  administrators:administrators
-                                                            name:name
-                                                      avatarData:avatarData
-                                               shouldSendMessage:YES
-                                        groupUpdateSourceAddress:localAddress
-                                                     transaction:transaction
-                                                           error:&error];
-    }];
-    if (error != nil || newThread == nil) {
-        OWSFailDebug(@"Error: %@", error);
-        return;
-    }
-
-    self.thread = newThread;
+    self.thread = thread;
 }
 
 - (void)popKeyBoard
@@ -4136,19 +4107,16 @@ typedef enum : NSUInteger {
     OWSAssertDebug(message);
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [[GroupManager sendGroupUpdateMessageObjcWithThread:groupThread
-                                              oldGroupModel:groupThread.groupModel
-                                              newGroupModel:groupThread.groupModel
-                                                transaction:transaction]
-                .thenOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    OWSLogInfo(@"Group updated, removing group creation error.");
+    [[GroupManager sendGroupUpdateMessageObjcWithThread:groupThread
+                                          oldGroupModel:groupThread.groupModel
+                                          newGroupModel:groupThread.groupModel]
+            .thenOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                OWSLogInfo(@"Group updated, removing group creation error.");
 
-                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                        [message anyRemoveWithTransaction:transaction];
-                    }];
-                }) retainUntilComplete];
-    }];
+                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    [message anyRemoveWithTransaction:transaction];
+                }];
+            }) retainUntilComplete];
 }
 
 - (void)conversationColorWasUpdated

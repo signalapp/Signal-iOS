@@ -107,6 +107,8 @@
 		3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */; };
 		344DC9AF226E483D004E7322 /* ManageStickersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344DC9AE226E483C004E7322 /* ManageStickersViewController.swift */; };
 		344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248C2007CCD600CFB4F4 /* DisplayableText.swift */; };
+		3456A73223D63EBE00947219 /* GroupsV2Protos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73123D63EBE00947219 /* GroupsV2Protos.swift */; };
+		3456A73423D741E300947219 /* GroupsV2Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73323D741E300947219 /* GroupsV2Test.swift */; };
 		345AE2B62317048300DB6225 /* GRDBFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345AE2B52317048200DB6225 /* GRDBFinderTest.swift */; };
 		345BC30C2047030700257B7C /* OWS2FASettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */; };
 		3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461284A1FD0B93F00532771 /* SAELoadViewController.swift */; };
@@ -306,6 +308,7 @@
 		34C758DD228DD81C00802527 /* StickerTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C758DC228DD81C00802527 /* StickerTooltip.swift */; };
 		34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA631A2097806E00E526A0 /* OWSContactShareView.m */; };
 		34CCC08223D762DE00022FC6 /* GroupsV2MiscTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CCC08123D762DE00022FC6 /* GroupsV2MiscTest.swift */; };
+		34CCC08423D78B2500022FC6 /* UpdateGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CCC08323D78B2500022FC6 /* UpdateGroupViewController.swift */; };
 		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
 		34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
 		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
@@ -906,6 +909,8 @@
 		34491FC11FB0F78500B3E5A3 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/Localizable.strings; sourceTree = "<group>"; };
 		344DC9AE226E483C004E7322 /* ManageStickersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageStickersViewController.swift; sourceTree = "<group>"; };
 		344F248C2007CCD600CFB4F4 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
+		3456A73123D63EBE00947219 /* GroupsV2Protos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Protos.swift; sourceTree = "<group>"; };
+		3456A73323D741E300947219 /* GroupsV2Test.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Test.swift; sourceTree = "<group>"; };
 		345AE2B52317048200DB6225 /* GRDBFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBFinderTest.swift; sourceTree = "<group>"; };
 		345BC30A2047030600257B7C /* OWS2FASettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS2FASettingsViewController.h; sourceTree = "<group>"; };
 		345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS2FASettingsViewController.m; sourceTree = "<group>"; };
@@ -1133,6 +1138,7 @@
 		34CA63192097806E00E526A0 /* OWSContactShareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareView.h; sourceTree = "<group>"; };
 		34CA631A2097806E00E526A0 /* OWSContactShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareView.m; sourceTree = "<group>"; };
 		34CCC08123D762DE00022FC6 /* GroupsV2MiscTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2MiscTest.swift; sourceTree = "<group>"; };
+		34CCC08323D78B2500022FC6 /* UpdateGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateGroupViewController.swift; sourceTree = "<group>"; };
 		34CE88E51F2FB9A10098030F /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		34CE88E61F2FB9A10098030F /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
 		34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = busy_tone_ansi.caf; path = Signal/AudioFiles/busy_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
@@ -1820,6 +1826,7 @@
 				340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */,
 				340FC8A5204DAC8D007AEB0F /* FingerprintViewScanController.h */,
 				340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */,
+				88A357B823639384009D6B9A /* MemberActionSheet.swift */,
 				340FC898204DAC8D007AEB0F /* OWSAddToContactViewController.h */,
 				340FC8A1204DAC8D007AEB0F /* OWSAddToContactViewController.m */,
 				340FC8A0204DAC8D007AEB0F /* OWSConversationSettingsViewController.h */,
@@ -1829,7 +1836,7 @@
 				340FC8A6204DAC8D007AEB0F /* ShowGroupMembersViewController.m */,
 				340FC8A3204DAC8D007AEB0F /* UpdateGroupViewController.h */,
 				340FC89C204DAC8D007AEB0F /* UpdateGroupViewController.m */,
-				88A357B823639384009D6B9A /* MemberActionSheet.swift */,
+				34CCC08323D78B2500022FC6 /* UpdateGroupViewController.swift */,
 			);
 			path = ThreadSettings;
 			sourceTree = "<group>";
@@ -2250,7 +2257,9 @@
 			children = (
 				34BB3C5B23C6644B001651FC /* GroupParams.swift */,
 				34BB3C5923C6644B001651FC /* GroupsV2ChangeSetImpl.swift */,
+				3456A73323D741E300947219 /* GroupsV2Test.swift */,
 				34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */,
+				3456A73123D63EBE00947219 /* GroupsV2Protos.swift */,
 				34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */,
 				34BB3C5A23C6644B001651FC /* GroupV2StateImpl.swift */,
 				340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */,
@@ -2945,14 +2954,15 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
-				4C10B1C523176DB00099396B /* PerformanceTests */,
 				34C6B0A41FA0E46F00D35993 /* Assets */,
 				B660F6751C29867F00687D6E /* contact */,
 				34CCC08023D762DE00022FC6 /* groups */,
 				34843B29214FE295004DED45 /* mocks */,
 				458E38381D6699110094BD24 /* Models */,
+				4C10B1C523176DB00099396B /* PerformanceTests */,
 				34843B2321432293004DED45 /* SignalBaseTest.h */,
 				34843B2221432292004DED45 /* SignalBaseTest.m */,
+				4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */,
 				4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */,
 				4C3EF8002109184A0007EBF7 /* SSKTests */,
 				B660F69D1C29868000687D6E /* Supporting Files */,
@@ -2960,7 +2970,6 @@
 				B660F6A21C29868000687D6E /* util */,
 				34B3F8951E8DF1B90035BE1A /* ViewControllers */,
 				34BEDB0F21C41E71007B0EAE /* views */,
-				4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -3967,6 +3976,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				45F59A0A2029140500E8D2B0 /* OWSVideoPlayer.swift in Sources */,
+				3456A73423D741E300947219 /* GroupsV2Test.swift in Sources */,
 				340872C82239563500CB25B0 /* ApprovalRailCellView.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				34AC09E1211B39B100997B47 /* SelectThreadViewController.m in Sources */,
@@ -4112,6 +4122,7 @@
 				4C618199219DF03A009BD6B5 /* OWSButton.swift in Sources */,
 				4598198F204E2F28009414F2 /* OWS108CallLoggingPreference.m in Sources */,
 				4C3E245C21F29FCE000AE092 /* Toast.swift in Sources */,
+				3456A73223D63EBE00947219 /* GroupsV2Protos.swift in Sources */,
 				34BBC84B220B2CB200857249 /* ImageEditorTextViewController.swift in Sources */,
 				34AC09FA211B39B100997B47 /* SharingThreadPickerViewController.m in Sources */,
 				45F59A082028E4FB00E8D2B0 /* OWSAudioSession.swift in Sources */,
@@ -4190,6 +4201,7 @@
 				881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */,
 				3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */,
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
+				34CCC08423D78B2500022FC6 /* UpdateGroupViewController.swift in Sources */,
 				4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */,
 				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
 				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,

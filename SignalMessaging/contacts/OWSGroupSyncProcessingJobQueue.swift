@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalServiceKit
 
 public extension Notification.Name {
     static let IncomingGroupSyncDidComplete = Notification.Name("IncomingGroupSyncDidComplete")
@@ -198,15 +199,20 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         if let groupsVersionReceived = groupDetails.groupsVersion {
             groupsVersion = groupsVersionReceived
         }
-        // GroupsV2 TODO: Set administrators.
-        let result = try GroupManager.upsertExistingGroup(members: groupDetails.memberAddresses,
-                                                          administrators: [],
+        // GroupsV2 TODO: Set administrators, pending members.
+        let groupMembership = GroupMembership(nonAdminMembers: Set(groupDetails.memberAddresses), administrators: Set(), pendingNonAdminMembers: Set(), pendingAdministrators: Set())
+        // GroupsV2 TODO: Set access.
+        let groupAccess = GroupAccess.allAccess
+        // GroupsV2 TODO: Set groupV2Revision.
+        let groupV2Revision: UInt32 = 0
+        let result = try GroupManager.upsertExistingGroup(groupId: groupDetails.groupId,
                                                           name: groupDetails.name,
                                                           avatarData: groupDetails.avatarData,
-                                                          groupId: groupDetails.groupId,
+                                                          groupMembership: groupMembership,
+                                                          groupAccess: groupAccess,
                                                           groupsVersion: groupsVersion,
+                                                          groupV2Revision: groupV2Revision,
                                                           groupSecretParamsData: groupDetails.groupSecretParamsData,
-                                                          shouldSendMessage: false,
                                                           groupUpdateSourceAddress: nil,
                                                           transaction: transaction)
 

@@ -228,12 +228,15 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 {
     OWSAssertDebug(groupModel);
     OWSAssertDebug(transaction);
+    OWSAssertDebug(groupModel.groupsVersion == self.groupModel.groupsVersion);
 
     BOOL didAvatarChange = ![NSObject isNullableObject:groupModel.groupAvatarData
                                                equalTo:self.groupModel.groupAvatarData];
 
     [self anyUpdateGroupThreadWithTransaction:transaction
                                         block:^(TSGroupThread *thread) {
+                                            OWSAssertDebug(
+                                                thread.groupModel.groupV2Revision <= groupModel.groupV2Revision);
                                             thread.groupModel = [groupModel copy];
                                         }];
 

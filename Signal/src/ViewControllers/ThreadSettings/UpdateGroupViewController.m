@@ -293,12 +293,45 @@ NS_ASSUME_NONNULL_BEGIN
     }];
     NSMutableSet<SignalServiceAddress *> *memberSet = [NSMutableSet setWithArray:memberList];
     [memberSet addObject:self.tsAccountManager.localAddress];
-    // GroupsV2 TODO: Persist, diff and handle administrators in this view.
-    [self.conversationSettingsViewDelegate conversationSettingsDidUpdateGroupWithId:self.thread.groupModel.groupId
-                                                                            members:memberSet.allObjects
-                                                                     administrators:@[]
-                                                                               name:self.groupNameTextField.text
-                                                                         avatarData:self.groupAvatarData];
+
+    TSGroupModel *oldGroupModel = self.thread.groupModel;
+    NSString *_Nullable newTitle = self.groupNameTextField.text;
+    NSData *_Nullable newAvatarData = self.groupAvatarData;
+
+    __weak UpdateGroupViewController *weakSelf = self;
+    [ModalActivityIndicatorViewController
+        presentFromViewController:self
+                        canCancel:NO
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      [self updateGroupThreadWithOldGroupModel:oldGroupModel
+                          newTitle:newTitle
+                          newAvatarData:newAvatarData
+                          v1Members:memberSet
+                          success:^(TSGroupThread *groupThread) {
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [modalActivityIndicator dismissWithCompletion:^{
+                                      OWSAssertIsOnMainThread();
+
+                                      [weakSelf.conversationSettingsViewDelegate
+                                          conversationSettingsDidUpdateGroupThread:groupThread];
+                                      [weakSelf.conversationSettingsViewDelegate
+                                          popAllConversationSettingsViewsWithCompletion:nil];
+                                  }];
+                              });
+                          }
+                          failure:^(NSError *error) {
+                              OWSFailDebug(@"Error: %@", error);
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [modalActivityIndicator dismissWithCompletion:^{
+                                      OWSAssertIsOnMainThread();
+
+                                      [OWSActionSheets showActionSheetWithTitle:
+                                                           NSLocalizedString(@"UPDATE_GROUP_FAILED",
+                                                               @"Error indicating that a group could not be updated.")];
+                                  }];
+                              });
+                          }];
+                  }];
 }
 
 #pragma mark - Group Avatar
@@ -361,9 +394,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                           OWSAssertDebug(self.conversationSettingsViewDelegate);
 
                                                           [self updateGroup];
-
-                                                          [self.conversationSettingsViewDelegate
-                                                              popAllConversationSettingsViewsWithCompletion:nil];
                                                       }]];
     [alert addAction:[[ActionSheetAction alloc]
                                    initWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
@@ -381,8 +411,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.conversationSettingsViewDelegate);
 
     [self updateGroup];
-
-    [self.conversationSettingsViewDelegate popAllConversationSettingsViewsWithCompletion:nil];
 }
 
 - (void)groupNameDidChange:(id)sender

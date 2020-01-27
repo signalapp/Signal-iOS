@@ -7,11 +7,6 @@ import PromiseKit
 import SignalServiceKit
 import ZKGroup
 
-public enum GroupsV2ChangeError: Error {
-    // By the time we tried to apply the change, it was irrelevant.
-    case redundant
-}
-
 // Represents a proposed set of changes to a group.
 //
 // There are up to three group revisions involved:
@@ -39,7 +34,7 @@ public enum GroupsV2ChangeError: Error {
 // The latter can be non-trivial:
 //
 // * If we try to add a new member and another user beats us to it, we'll throw
-//   GroupsV2ChangeError.redundant when computing a GroupChange proto.
+//   GroupsV2Error.redundant when computing a GroupChange proto.
 // * If we add (alice and bob) but another user adds (alice) first, we'll just add (bob).
 @objc
 public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
@@ -66,9 +61,14 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private var title: String?
 
     private var membersToAdd = [UUID: GroupsProtoMemberRole]()
-    private var membersToInvite = [UUID: GroupsProtoMemberRole]()
     private var membersToRemove = [UUID]()
     private var membersToChangeRole = [UUID: GroupsProtoMemberRole]()
+    private var pendingMembersToAdd = [UUID: GroupsProtoMemberRole]()
+    private var pendingMembersToRemove = [UUID]()
+
+    // These access properties should only be set if the value is changing.
+    private var accessForMembers: GroupV2Access?
+    private var accessForAttributes: GroupV2Access?
 
     @objc
     public required init(for groupModel: TSGroupModel) throws {
@@ -88,7 +88,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     // by diffing two group models.
     @objc
     public func buildChangeSet(from oldGroupModel: TSGroupModel,
-                               to newGroupModel: TSGroupModel) throws {
+                               to newGroupModel: TSGroupModel,
+                               transaction: SDSAnyReadTransaction) throws {
+
         if oldGroupModel.groupName != newGroupModel.groupName {
             setTitle(newGroupModel.groupName)
         }
@@ -99,32 +101,64 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             throw OWSAssertionError("Mismatched groupId.")
         }
 
-        let oldMemberUuids = Set(oldGroupModel.groupMembers.compactMap { $0.uuid })
-        let newMemberUuids = Set(newGroupModel.groupMembers.compactMap { $0.uuid })
+        let oldGroupMembership = oldGroupModel.groupMembership
+        let newGroupMembership = newGroupModel.groupMembership
 
-        for uuid in newMemberUuids.subtracting(oldMemberUuids) {
-            let isAdministrator = newGroupModel.isAdministrator(SignalServiceAddress(uuid: uuid))
+        let oldUserUuids = Set(oldGroupMembership.allUsers.compactMap { $0.uuid })
+        let newUserUuids = Set(newGroupMembership.allUsers.compactMap { $0.uuid })
+
+        for uuid in newUserUuids.subtracting(oldUserUuids) {
+            let isAdministrator = newGroupMembership.isAdministrator(SignalServiceAddress(uuid: uuid))
+            let isPending = newGroupMembership.isPending(SignalServiceAddress(uuid: uuid))
             let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
-            addMember(uuid, role: role)
+            if isPending {
+                addPendingMember(uuid, role: role)
+            } else {
+                addMember(uuid, role: role)
+            }
         }
 
-        for uuid in oldMemberUuids.subtracting(newMemberUuids) {
-            removeMember(uuid)
+        for uuid in oldUserUuids.subtracting(newUserUuids) {
+            let wasPending = oldGroupMembership.isPending(SignalServiceAddress(uuid: uuid))
+            if wasPending {
+                removePendingMember(uuid)
+            } else {
+                removeMember(uuid)
+            }
         }
+
+        // GroupsV2 TODO: We don't try to add a non-pending member if user is already a pending member.
+        // GroupsV2 TODO: We don't try to add a pending member if user is already a non-pending member.
+        // GroupsV2 TODO: We don't try to change the role of pending members.
 
         // GroupsV2 TODO: Calculate membersToInvite.
         // Don't include already-invited members.
         // Persist list of invited members on TSGroupModel.
 
+        let oldMemberUuids = Set(oldGroupMembership.allMembers.compactMap { $0.uuid })
+        let newMemberUuids = Set(newGroupMembership.allMembers.compactMap { $0.uuid })
         for uuid in oldMemberUuids.intersection(newMemberUuids) {
             let address = SignalServiceAddress(uuid: uuid)
-            let oldIsAdministrator = oldGroupModel.isAdministrator(address)
-            let newIsAdministrator = newGroupModel.isAdministrator(address)
+            let oldIsAdministrator = oldGroupMembership.isAdministrator(address)
+            let newIsAdministrator = newGroupMembership.isAdministrator(address)
             guard oldIsAdministrator != newIsAdministrator else {
                 continue
             }
             let role: GroupsProtoMemberRole = newIsAdministrator ? .administrator : .`default`
             changeRoleForMember(uuid, role: role)
+        }
+
+        guard let oldAccess = oldGroupModel.groupAccess else {
+            throw OWSAssertionError("Missing groupAccess.")
+        }
+        guard let newAccess = newGroupModel.groupAccess else {
+            throw OWSAssertionError("Missing groupAccess.")
+        }
+        if oldAccess.member != newAccess.member {
+            self.accessForMembers = newAccess.member
+        }
+        if oldAccess.attributes != newAccess.attributes {
+            self.accessForAttributes = newAccess.attributes
         }
 
         // GroupsV2 TODO: Calculate other changed state, e.g. avatar.
@@ -163,6 +197,16 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         membersToChangeRole[uuid] = role
     }
 
+    public func addPendingMember(_ uuid: UUID, role: GroupsProtoMemberRole) {
+        assert(pendingMembersToAdd[uuid] == nil)
+        pendingMembersToAdd[uuid] = role
+    }
+
+    public func removePendingMember(_ uuid: UUID) {
+        assert(!pendingMembersToRemove.contains(uuid))
+        pendingMembersToRemove.append(uuid)
+    }
+
     // MARK: - Change Protos
 
     private typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
@@ -183,19 +227,20 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         // We could slightly optimize by only gathering profile key
         // credentials that we'll actually need to build the change proto.
         //
-        // GroupsV2 TODO: Do we need to gather profile key credentials for other users as well?
+        // NOTE: We don't (and can't) gather profile key credentials for pending members.
+        //
+        // GroupsV2 TODO: Do we need to gather profile key credentials for other actions as well?
         var uuidsForProfileKeyCredentials = Set<UUID>()
         uuidsForProfileKeyCredentials.formUnion(membersToAdd.keys)
-        uuidsForProfileKeyCredentials.formUnion(membersToInvite.keys)
         let addressesForProfileKeyCredentials: [SignalServiceAddress] = uuidsForProfileKeyCredentials.map { SignalServiceAddress(uuid: $0) }
 
         return groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
             .then { (_) -> Promise<ProfileKeyCredentialMap> in
                 return groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
-            }.then { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
-                return self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
-                                                  profileKeyCredentialMap: profileKeyCredentialMap)
-            }
+        }.then { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
+            return self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
+                                              profileKeyCredentialMap: profileKeyCredentialMap)
+        }
     }
 
     private func buildGroupChangeProto(currentGroupModel: TSGroupModel,
@@ -217,19 +262,18 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
             if let title = self.title,
                 title != currentGroupModel.groupName {
-                let encryptedData = try groupParams.encryptString(title ?? "")
+                let encryptedData = try groupParams.encryptString(title)
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
                 actionBuilder.setTitle(encryptedData)
                 actionsBuilder.setModifyTitle(try actionBuilder.build())
                 didChange = true
             }
 
+            let currentGroupMembership = currentGroupModel.groupMembership
             for (uuid, role) in self.membersToAdd {
-                guard !currentGroupModel.groupMembers.contains(SignalServiceAddress(uuid: uuid)) else {
+                guard !currentGroupMembership.contains(uuid) else {
                     // Another user has already added this member.
                     //
-                    // GroupsV2 TODO: Add pending members to TSGroupModel.
-                    // GroupsV2 TODO: Consult pending members.
                     // GroupsV2 TODO: What if they added them with a different (lower) role?
                     continue
                 }
@@ -237,40 +281,32 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                     throw OWSAssertionError("Missing profile key credential]: \(uuid)")
                 }
                 let actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
-                actionBuilder.setAdded(try GroupsV2Utils.buildMemberProto(profileKeyCredential: profileKeyCredential,
-                                                                          role: role,
-                                                                          groupParams: groupParams))
+                actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: profileKeyCredential,
+                                                                           role: role,
+                                                                           groupParams: groupParams))
                 actionsBuilder.addAddMembers(try actionBuilder.build())
                 didChange = true
             }
 
-            for (uuid, role) in self.membersToInvite {
-                guard !currentGroupModel.groupMembers.contains(SignalServiceAddress(uuid: uuid)) else {
+            for (uuid, role) in self.pendingMembersToAdd {
+                guard !currentGroupMembership.contains(uuid) else {
                     // Another user has already added this member.
                     //
-                    // GroupsV2 TODO: Add pending members to TSGroupModel.
-                    // GroupsV2 TODO: Consult pending members.
                     // GroupsV2 TODO: What if they added them with a different (lower) role?
                     continue
                 }
-                guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
-                    throw OWSAssertionError("Missing profile key credential]: \(uuid)")
-                }
                 let actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
-                actionBuilder.setAdded(try GroupsV2Utils.buildPendingMemberProto(profileKeyCredential: profileKeyCredential,
-                                                                                 role: role,
-                                                                                 localUuid: localUuid,
-                                                                                 groupParams: groupParams))
+                actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(uuid: uuid,
+                                                                                  role: role,
+                                                                                  localUuid: localUuid,
+                                                                                  groupParams: groupParams))
                 actionsBuilder.addAddPendingMembers(try actionBuilder.build())
                 didChange = true
             }
 
-            for uuid: UUID in self.membersToRemove {
-                guard currentGroupModel.groupMembers.contains(SignalServiceAddress(uuid: uuid)) else {
+            for uuid in self.membersToRemove {
+                guard currentGroupMembership.contains(uuid) else {
                     // Another user has already deleted this member.
-                    //
-                    // GroupsV2 TODO: Add pending members to TSGroupModel.
-                    // GroupsV2 TODO: Consult pending members.
                     continue
                 }
                 let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
@@ -280,12 +316,22 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 didChange = true
             }
 
+            for uuid in self.pendingMembersToRemove {
+                guard currentGroupMembership.contains(uuid) else {
+                    // Another user has already deleted this member.
+                    continue
+                }
+                let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
+                let userId = try groupParams.userId(forUuid: uuid)
+                actionBuilder.setDeletedUserID(userId)
+                actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
+                didChange = true
+            }
+
             for (uuid, role) in self.membersToChangeRole {
-                guard !currentGroupModel.groupMembers.contains(SignalServiceAddress(uuid: uuid)) else {
+                guard currentGroupMembership.contains(uuid) else {
                     // Another user has already added this member.
                     //
-                    // GroupsV2 TODO: Add pending members to TSGroupModel.
-                    // GroupsV2 TODO: Consult pending members.
                     // GroupsV2 TODO: What if they added them with a different (lower) role?
                     continue
                 }
@@ -297,10 +343,26 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 didChange = true
             }
 
-            // GroupsV2 TODO: Populate other actions.
+            guard let currentAccess = currentGroupModel.groupAccess else {
+                throw OWSAssertionError("Missing groupAccess.")
+            }
+            if let access = self.accessForMembers {
+                if currentAccess.member != access {
+                    let actionBuilder = GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.builder()
+                    actionBuilder.setMembersAccess(GroupAccess.protoAccess(forGroupV2Access: access))
+                    actionsBuilder.setModifyMemberAccess(try actionBuilder.build())
+                    didChange = true
+                }
+            }
+            if let access = self.accessForAttributes {
+                let actionBuilder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.builder()
+                actionBuilder.setAttributesAccess(GroupAccess.protoAccess(forGroupV2Access: access))
+                actionsBuilder.setModifyAttributesAccess(try actionBuilder.build())
+                didChange = true
+            }
 
             guard didChange else {
-                throw GroupsV2ChangeError.redundant
+                throw GroupsV2Error.redundant
             }
 
             return try actionsBuilder.build()
@@ -309,58 +371,24 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
     // GroupsV2 TODO: Ensure that we are correctly building all of the following actions:
     //
-    //    message Actions {
-    //
-    //    message AddMemberAction {
-    //    Member added = 1;
-    //    }
-    //
-    //    message DeleteMemberAction {
-    //    bytes deletedUserId = 1;
-    //    }
-    //
-    //    message ModifyMemberRoleAction {
-    //    bytes       userId = 1;
-    //    Member.Role role   = 2;
-    //    }
-    //
+    // NOTE: This should be used after you rotate your profile key.
+    //       This presumably needs to be done in a durable way.
     //    message ModifyMemberProfileKeyAction {
     //    bytes presentation = 1;
     //    }
     //
-    //    message AddPendingMemberAction {
-    //    PendingMember added = 1;
-    //    }
-    //
-    //    message DeletePendingMemberAction {
-    //    bytes deletedUserId = 1;
-    //    }
-    //
+    // NOTE: This action is used to accept an invitation.
     //    message PromotePendingMemberAction {
     //    bytes presentation = 1;
     //    }
     //
-    //    message ModifyTitleAction {
-    //    bytes title = 1;
-    //    }
-    //
+    // NOTE: This won't be easy.
     //    message ModifyAvatarAction {
     //    string avatar = 1;
     //    }
     //
+    // NOTE: This won't be easy.
     //    message ModifyDisappearingMessagesTimerAction {
     //    bytes timer = 1;
-    //    }
-    //
-    //    message ModifyAttributesAccessControlAction {
-    //    AccessControl.AccessRequired attributesAccess = 1;
-    //    }
-    //
-    //    message ModifyAvatarAccessControlAction {
-    //    AccessControl.AccessRequired avatarAccess = 1;
-    //    }
-    //
-    //    message ModifyMembersAccessControlAction {
-    //    AccessControl.AccessRequired membersAccess = 1;
     //    }
 }

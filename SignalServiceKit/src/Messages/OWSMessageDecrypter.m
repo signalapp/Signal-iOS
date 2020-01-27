@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageDecrypter.h"
@@ -602,7 +602,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:newEnvelopeData
                                                                             plaintextData:plaintextData
                                                                             sourceAddress:sourceAddress
-                                                                             sourceDevice:(uint32_t)sourceDeviceId
+                                                                             sourceDevice:(UInt32)sourceDeviceId
                                                                               isUDMessage:YES];
         successBlock(result, transaction);
     }];
