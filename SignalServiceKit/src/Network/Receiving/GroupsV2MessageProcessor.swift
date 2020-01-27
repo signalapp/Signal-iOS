@@ -590,7 +590,8 @@ class IncomingGroupsV2MessageQueue: NSObject {
 
         return groupsV2Swift.fetchAndApplyGroupV2UpdatesFromService(groupId: groupContextInfo.groupId,
                                                                     groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                    upToRevision: groupContext.revision)
+                                                                    upToRevision: groupContext.revision,
+                                                                    waitForMessageProcessing: false)
             .then(on: DispatchQueue.global()) { _ in
                 return self.databaseStorage.write(.promise) { transaction in
                     _ = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)

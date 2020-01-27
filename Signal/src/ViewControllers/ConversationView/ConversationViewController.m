@@ -341,6 +341,11 @@ typedef enum : NSUInteger {
     return AppEnvironment.shared.notificationPresenter;
 }
 
+- (id<GroupUpdates>)groupUpdates
+{
+    return SSKEnvironment.shared.groupUpdates;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -503,6 +508,8 @@ typedef enum : NSUInteger {
                                                           selector:@selector(reloadTimerDidFire)
                                                           userInfo:nil
                                                            repeats:YES];
+
+    [self.groupUpdates tryToRefreshGroupThreadToLatestStateWithThrottling:thread];
 }
 
 - (void)dealloc

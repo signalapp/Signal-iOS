@@ -163,10 +163,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                                                                                      changeActionsProtoData: changeActionsProtoData,
                                                                                      transaction: transaction)
                 // GroupsV2 TODO: Set groupUpdateSourceAddress.
-                _ = GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
-                                                                                         newGroupModel: changedGroupModel.newGroupModel,
-                                                                                         groupUpdateSourceAddress: nil,
-                                                                                         transaction: transaction)
+                let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
+                                                                                             newGroupModel: changedGroupModel.newGroupModel,
+                                                                                             groupUpdateSourceAddress: nil,
+                                                                                             transaction: transaction)
                 return changedGroupModel
             }
 
@@ -218,6 +218,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
     // MARK: - Fetch Group State
 
+    // GroupsV2 TODO: We should be able to clean this up eventually?
     @objc
     public func fetchCurrentGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise {
         return AnyPromise(fetchCurrentGroupState(groupModel: groupModel))
@@ -396,7 +397,8 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     // GroupsV2 TODO: Implement properly.
     public func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
                                                        groupSecretParamsData: Data,
-                                                       upToRevision: UInt32) -> Promise<TSGroupThread> {
+                                                       upToRevision: UInt32,
+                                                       waitForMessageProcessing: Bool) -> Promise<TSGroupThread> {
         return self.fetchCurrentGroupState(groupSecretParamsData: groupSecretParamsData)
             .map(on: DispatchQueue.global()) { (groupState: GroupV2State) throws in
                 let groupThread = try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
@@ -408,10 +410,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
                     let groupId = groupModel.groupId
                     if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-                        return GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
-                                                                                            newGroupModel: groupModel,
-                                                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                            transaction: transaction)
+                        return try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
+                                                                                                        newGroupModel: groupModel,
+                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                                        transaction: transaction)
                     } else {
                         return GroupManager.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: groupModel,
                                                                                             groupUpdateSourceAddress: groupUpdateSourceAddress,

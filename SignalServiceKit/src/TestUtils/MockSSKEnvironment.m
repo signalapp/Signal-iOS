@@ -101,6 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSFakeStorageServiceManager *storageServiceManager = [OWSFakeStorageServiceManager new];
     SSKPreferences *sskPreferences = [SSKPreferences new];
     id<GroupsV2> groupsV2 = [[MockGroupsV2 alloc] init];
+    id<GroupUpdates> groupUpdates = [[MockGroupUpdates alloc] init];
     MessageProcessing *messageProcessing = [MessageProcessing new];
     MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
 
@@ -143,6 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
                        storageCoordinator:storageCoordinator
                            sskPreferences:sskPreferences
                                  groupsV2:groupsV2
+                             groupUpdates:groupUpdates
                         messageProcessing:messageProcessing
                         messageFetcherJob:messageFetcherJob];
 
