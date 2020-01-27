@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -102,7 +102,52 @@ public class NotificationStrings: NSObject {
     static public let failedToSendBody = NSLocalizedString("SEND_FAILED_NOTIFICATION_BODY", comment: "notification body")
 
     @objc
-    static public let incomingReactionFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_BODY_FORMAT", comment: "notification body")
+    static public let incomingReactionFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_BODY_FORMAT",
+                                                                 comment: "notification body. Embeds {{reaction emoji}}")
+
+    @objc
+    static public let incomingReactionTextMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT",
+                                                                            comment: "notification body. Embeds {{reaction emoji}} and {{body text}}")
+
+    @objc
+    static public let incomingReactionViewOnceMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT",
+                                                                                comment: "notification body. Embeds {{reaction emoji}}")
+
+    @objc
+    static public let incomingReactionStickerMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT",
+                                                                               comment: "notification body. Embeds {{reaction emoji}}")
+
+    @objc
+    static public let incomingReactionContactShareMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT",
+                                                                                    comment: "notification body. Embeds {{reaction emoji}}")
+
+    @objc
+    static public let incomingReactionAlbumMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT",
+                                                                             comment: "notification body. Embeds {{reaction emoji}}")
+
+    @objc
+    static public let incomingReactionPhotoMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT",
+                                                                             comment: "notification body. Embeds {{reaction emoji}}")
+
+    @objc
+    static public let incomingReactionVideoMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT",
+                                                                             comment: "notification body. Embeds {{reaction emoji}}")
+
+    @objc
+    static public let incomingReactionVoiceMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT",
+                                                                             comment: "notification body. Embeds {{reaction emoji}}")
+
+    @objc
+    static public let incomingReactionAudioMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT",
+                                                                             comment: "notification body. Embeds {{reaction emoji}}")
+
+    @objc
+    static public let incomingReactionGifMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT",
+                                                                            comment: "notification body. Embeds {{reaction emoji}}")
+
+    @objc
+    static public let incomingReactionFileMessageFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT",
+                                                                            comment: "notification body. Embeds {{reaction emoji}}")
 }
 
 @objc public class CallStrings: NSObject {
