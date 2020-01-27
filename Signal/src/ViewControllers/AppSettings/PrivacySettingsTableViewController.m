@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "PrivacySettingsTableViewController.h"
@@ -147,18 +147,27 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
     // If pins are enabled for everyone, show the change pin section
     // TODO Linked PIN editing
-    if (SSKFeatureFlags.pinsForEveryone && self.accountManager.isRegisteredPrimaryDevice) {
+    if (RemoteConfig.pinsForEveryone && self.accountManager.isRegisteredPrimaryDevice) {
         OWSTableSection *pinsSection = [OWSTableSection new];
         pinsSection.headerTitle
             = NSLocalizedString(@"SETTINGS_PINS_TITLE", @"Title for the 'PINs' section of the privacy settings.");
         pinsSection.footerTitle
             = NSLocalizedString(@"SETTINGS_PINS_FOOTER", @"Footer for the 'PINs' section of the privacy settings.");
         [pinsSection
-            addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PINS_ITEM",
-                                                             @"Label for the 'pins' item of the privacy settings.")
+            addItem:[OWSTableItem disclosureItemWithText:([OWS2FAManager.sharedManager is2FAEnabled]
+                                                                 ? NSLocalizedString(@"SETTINGS_PINS_ITEM",
+                                                                     @"Label for the 'pins' item of the privacy "
+                                                                     @"settings when the user does have a pin.")
+                                                                 : NSLocalizedString(@"SETTINGS_PINS_ITEM_CREATE",
+                                                                     @"Label for the 'pins' item of the privacy "
+                                                                     @"settings when the user doesn't have a pin."))
                                  accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"pin"]
                                              actionBlock:^{
-                                                 [weakSelf showChangePin];
+                                                 if ([OWS2FAManager.sharedManager is2FAEnabled]) {
+                                                     [weakSelf showChangePin];
+                                                 } else {
+                                                     [weakSelf showCreatePin];
+                                                 }
                                              }]];
         [contents addSection:pinsSection];
     }
@@ -299,7 +308,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
     // If pins are enabled for everyone, everyone has registration lock so we don't need this section
     // TODO Linked PIN editing
-    if (!SSKFeatureFlags.pinsForEveryone && self.accountManager.isRegisteredPrimaryDevice) {
+    if (!RemoteConfig.pinsForEveryone && self.accountManager.isRegisteredPrimaryDevice) {
         OWSTableSection *twoFactorAuthSection = [OWSTableSection new];
         twoFactorAuthSection.headerTitle = NSLocalizedString(
             @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
@@ -586,6 +595,17 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
     __weak PrivacySettingsTableViewController *weakSelf = self;
     OWSPinSetupViewController *vc = [OWSPinSetupViewController changingWithCompletionHandler:^{
+        [weakSelf.navigationController popToViewController:weakSelf animated:YES];
+    }];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showCreatePin
+{
+    OWSLogInfo(@"");
+
+    __weak PrivacySettingsTableViewController *weakSelf = self;
+    OWSPinSetupViewController *vc = [OWSPinSetupViewController creatingWithCompletionHandler:^{
         [weakSelf.navigationController popToViewController:weakSelf animated:YES];
     }];
     [self.navigationController pushViewController:vc animated:YES];

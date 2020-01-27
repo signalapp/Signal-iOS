@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, ProfileViewMode) {
     ProfileViewMode_AppSettings = 0,
     ProfileViewMode_Registration,
+    ProfileViewMode_ExperienceUpgrade,
 };
 
 NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDate";
@@ -56,6 +57,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 @property (nonatomic) ProfileViewMode profileViewMode;
 
 @property (nonatomic) Reachability *reachability;
+
+@property (nonatomic, nullable) void (^experienceUpgradeCompletionHandler)(void);
 
 @end
 
@@ -296,7 +299,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     // Username
 
-    if (SSKFeatureFlags.usernames) {
+    if (self.shouldShowUsernameRow) {
         addSeparator(YES);
 
         UIStackView *usernameRow = [UIStackView new];
@@ -378,31 +381,47 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     // Big Button
 
-    if (self.profileViewMode == ProfileViewMode_Registration) {
-        UIView *buttonRow = [UIView new];
-        buttonRow.layoutMargins = rowMargins;
-        [stackView addArrangedSubview:buttonRow];
+    switch (self.profileViewMode) {
+        case ProfileViewMode_Registration:
+        case ProfileViewMode_ExperienceUpgrade: {
+            UIView *buttonRow = [UIView new];
+            buttonRow.layoutMargins = rowMargins;
+            [stackView addArrangedSubview:buttonRow];
 
-        const CGFloat kButtonHeight = 47.f;
-        OWSFlatButton *saveButton =
-            [OWSFlatButton buttonWithTitle:NSLocalizedString(@"PROFILE_VIEW_SAVE_BUTTON",
-                                               @"Button to save the profile view in the profile view.")
-                                      font:[OWSFlatButton fontForHeight:kButtonHeight]
-                                titleColor:[UIColor whiteColor]
-                           backgroundColor:UIColor.ows_signalBlueColor
-                                    target:self
-                                  selector:@selector(saveButtonPressed)];
-        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, saveButton);
-        self.saveButton = saveButton;
-        [buttonRow addSubview:saveButton];
-        [saveButton autoPinEdgesToSuperviewMargins];
-        [saveButton autoSetDimension:ALDimensionHeight toSize:47.f];
+            const CGFloat kButtonHeight = 47.f;
+            OWSFlatButton *saveButton =
+                [OWSFlatButton buttonWithTitle:NSLocalizedString(@"PROFILE_VIEW_SAVE_BUTTON",
+                                                   @"Button to save the profile view in the profile view.")
+                                          font:[OWSFlatButton fontForHeight:kButtonHeight]
+                                    titleColor:[UIColor whiteColor]
+                               backgroundColor:UIColor.ows_signalBlueColor
+                                        target:self
+                                      selector:@selector(saveButtonPressed)];
+            SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, saveButton);
+            self.saveButton = saveButton;
+            [buttonRow addSubview:saveButton];
+            [saveButton autoPinEdgesToSuperviewMargins];
+            [saveButton autoSetDimension:ALDimensionHeight toSize:47.f];
+
+            break;
+        }
+        case ProfileViewMode_AppSettings:
+            break;
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
+    switch (self.profileViewMode) {
+        case ProfileViewMode_AppSettings:
+            break;
+        case ProfileViewMode_Registration:
+        case ProfileViewMode_ExperienceUpgrade:
+            [self.givenNameTextField becomeFirstResponder];
+            break;
+    }
 
     [self updateUsername];
 }
@@ -445,6 +464,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         [self.navigationController setNavigationBarHidden:NO animated:YES];
     }
 
+    BOOL forceSaveButtonEnabled = NO;
+
     switch (self.profileViewMode) {
         case ProfileViewMode_AppSettings:
             if (self.hasUnsavedChanges) {
@@ -463,9 +484,18 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             self.navigationItem.hidesBackButton = YES;
             self.navigationItem.rightBarButtonItem = nil;
             break;
+        case ProfileViewMode_ExperienceUpgrade:
+            self.navigationItem.rightBarButtonItem = nil;
+
+            // During the experience upgrade, if you have a name we want
+            // to enable the save button even if you haven't edited anything.
+            if (self.givenNameTextField.text.length > 0) {
+                forceSaveButtonEnabled = YES;
+            }
+            break;
     }
 
-    if (self.hasUnsavedChanges) {
+    if (self.hasUnsavedChanges || forceSaveButtonEnabled) {
         self.saveButton.enabled = YES;
         [self.saveButton setBackgroundColorsWithUpColor:UIColor.ows_signalBlueColor];
     } else {
@@ -575,6 +605,13 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         case ProfileViewMode_Registration:
             [self showPinCreation];
             break;
+        case ProfileViewMode_ExperienceUpgrade:
+            if (self.experienceUpgradeCompletionHandler) {
+                self.experienceUpgradeCompletionHandler();
+            } else {
+                OWSFailDebug(@"Missing experienceUpgradeCompletionHandler");
+            }
+            break;
     }
 }
 
@@ -592,7 +629,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     OWSLogVerbose(@"");
 
     // If the user already has a pin, or the pins for all feature is disabled, just go home
-    if ([OWS2FAManager sharedManager].is2FAEnabled || !SSKFeatureFlags.pinsForEveryone) {
+    if ([OWS2FAManager sharedManager].is2FAEnabled || !RemoteConfig.pinsForEveryone) {
         return [self showConversationSplitView];
     }
 
@@ -727,6 +764,17 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }
 }
 
+- (BOOL)shouldShowUsernameRow
+{
+    switch (self.profileViewMode) {
+        case ProfileViewMode_ExperienceUpgrade:
+        case ProfileViewMode_Registration:
+            return false;
+        case ProfileViewMode_AppSettings:
+            return SSKFeatureFlags.usernames;
+    }
+}
+
 - (void)avatarViewTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
@@ -784,6 +832,13 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_Registration];
     [navigationController pushViewController:vc animated:YES];
+}
+
++ (instancetype)forExperienceUpgradeWithCompletionHandler:(void (^)(void))completionHandler
+{
+    ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_ExperienceUpgrade];
+    vc.experienceUpgradeCompletionHandler = completionHandler;
+    return vc;
 }
 
 #pragma mark - AvatarViewHelperDelegate

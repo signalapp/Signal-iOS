@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Show 2FA Reminder"
                                      actionBlock:^() {
                                          UIViewController *reminderVC;
-                                         if (SSKFeatureFlags.pinsForEveryone) {
+                                         if (RemoteConfig.pinsForEveryone) {
                                              reminderVC = [OWSPinReminderViewController new];
                                          } else {
                                              reminderVC = [OWS2FAReminderViewController wrappedInNavController];
