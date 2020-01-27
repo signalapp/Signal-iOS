@@ -65,23 +65,23 @@ class IncomingGroupsV2MessageQueue: NSObject {
     private func observeNotifications() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationWillEnterForeground),
-                                               name: NSNotification.Name.OWSApplicationWillEnterForeground,
+                                               name: .OWSApplicationWillEnterForeground,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationDidEnterBackground),
-                                               name: NSNotification.Name.OWSApplicationDidEnterBackground,
+                                               name: .OWSApplicationDidEnterBackground,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
-                                               name: NSNotification.Name.registrationStateDidChange,
+                                               name: .registrationStateDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(webSocketStateDidChange),
-                                               name: NSNotification.Name.webSocketStateDidChange,
+                                               name: .webSocketStateDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),
-                                               name: NSNotification.Name.reachabilityChanged,
+                                               name: .reachabilityChanged,
                                                object: nil)
     }
 

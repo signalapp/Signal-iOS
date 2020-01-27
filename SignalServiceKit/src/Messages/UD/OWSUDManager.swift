@@ -156,7 +156,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               name: .OWSApplicationDidBecomeActive,
                                                object: nil)
     }
 

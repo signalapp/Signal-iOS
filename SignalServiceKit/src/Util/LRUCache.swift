@@ -45,7 +45,7 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didEnterBackground),
-                                               name: NSNotification.Name.OWSApplicationDidEnterBackground,
+                                               name: .OWSApplicationDidEnterBackground,
                                                object: nil)
     }
 

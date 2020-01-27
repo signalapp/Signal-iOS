@@ -193,11 +193,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         reachability = Reachability.forInternetConnection()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),
-                                               name: NSNotification.Name.reachabilityChanged,
+                                               name: .reachabilityChanged,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               name: .OWSApplicationDidBecomeActive,
                                                object: nil)
         loadTrending()
     }

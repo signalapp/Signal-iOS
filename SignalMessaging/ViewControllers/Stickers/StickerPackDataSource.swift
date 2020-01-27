@@ -133,7 +133,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               name: .OWSApplicationDidBecomeActive,
                                                object: nil)
 
         ensureState()
@@ -283,7 +283,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               name: .OWSApplicationDidBecomeActive,
                                                object: nil)
 
         ensureState()

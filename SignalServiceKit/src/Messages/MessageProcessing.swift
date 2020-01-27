@@ -49,15 +49,15 @@ public class MessageProcessing: NSObject {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(messageDecryptionDidFlushQueue),
-                                               name: NSNotification.Name.messageDecryptionDidFlushQueue,
+                                               name: .messageDecryptionDidFlushQueue,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(messageProcessingDidFlushQueue),
-                                               name: NSNotification.Name.messageProcessingDidFlushQueue,
+                                               name: .messageProcessingDidFlushQueue,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(webSocketStateDidChange),
-                                               name: NSNotification.Name.webSocketStateDidChange,
+                                               name: .webSocketStateDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(messageFetcherJobDidChangeState),

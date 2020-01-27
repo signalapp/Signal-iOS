@@ -51,11 +51,11 @@ public class LoadingViewController: UIViewController {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               name: .OWSApplicationDidBecomeActive,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didEnterBackground),
-                                               name: NSNotification.Name.OWSApplicationDidEnterBackground,
+                                               name: .OWSApplicationDidEnterBackground,
                                                object: nil)
     }
 

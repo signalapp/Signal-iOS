@@ -49,7 +49,7 @@ public class MediaDownloadView: UIView {
         progressView.autoSetDimension(.height, toSize: radius * 2)
         progressView.autoCenterInSuperview()
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name.attachmentDownloadProgress, object: nil, queue: nil) { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: .attachmentDownloadProgress, object: nil, queue: nil) { [weak self] notification in
             guard let strongSelf = self else { return }
             guard let notificationAttachmentId = notification.userInfo?[kAttachmentDownloadAttachmentIDKey] as? String else {
                 return
