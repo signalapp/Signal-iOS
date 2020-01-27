@@ -206,9 +206,11 @@ public class GroupsV2Changes {
         }
 
         if let action = changeActionsProto.modifyTitle {
-            newGroupName = nil
             if let titleData = action.title {
                 newGroupName = try groupParams.decryptString(titleData)
+            } else {
+                // Other client cleared the group title.
+                newGroupName = nil
             }
         }
 
