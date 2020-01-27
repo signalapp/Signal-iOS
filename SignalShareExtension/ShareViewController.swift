@@ -679,6 +679,14 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 return UnloadedItem(itemProvider: itemProvider, itemType: .other)
             }
 
+            // Prefer a URL if available. If there's an image item and a URL item,
+            // the URL is generally more useful. e.g. when sharing an app from the
+            // App Store the image would be the app icon and the URL is the link
+            // to the application.
+            if let urlItem = itemsToLoad.first(where: { $0.itemType == .webUrl }) {
+                return [urlItem]
+            }
+
             let visualMediaItems = itemsToLoad.filter { ShareViewController.isVisualMediaItem(itemProvider: $0.itemProvider) }
 
             // We only allow sharing 1 item, unless they are visual media items. And if they are

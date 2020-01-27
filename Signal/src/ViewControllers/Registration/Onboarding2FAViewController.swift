@@ -62,7 +62,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         let titleText: String
         let explanationText: String
 
-        if (FeatureFlags.pinsForEveryone) {
+        if FeatureFlags.pinsForEveryone {
             titleText = NSLocalizedString("ONBOARDING_PIN_TITLE", comment: "Title of the 'onboarding PIN' view.")
             explanationText = NSLocalizedString("ONBOARDING_PIN_EXPLANATION", comment: "Title of the 'onboarding PIN' view.")
         } else {
@@ -199,7 +199,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             pinToUse = pinToUse?.substring(to: Int(kLegacyTruncated2FAv1PinLength))
         }
 
-        guard let pin = pinToUse?.ows_stripped(), pin.count >= (isUsingKBS ? kMin2FAv2PinLength : kMin2FAPinLength) else {
+        guard let pin = pinToUse?.ows_stripped(), pin.count >= kMin2FAPinLength else {
             // Check if we're already in an invalid state, if so we can do nothing
             guard !attemptState.isInvalid else { return }
             attemptState = .invalid(remainingAttempts: nil)

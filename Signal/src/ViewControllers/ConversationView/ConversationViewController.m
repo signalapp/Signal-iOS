@@ -3829,7 +3829,9 @@ typedef enum : NSUInteger {
 - (void)showApprovalDialogForAttachments:(NSArray<SignalAttachment *> *)attachments
 {
     OWSNavigationController *modal =
-        [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:attachments approvalDelegate:self];
+        [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:attachments
+                                                             initialMessageText:self.inputToolbar.messageText
+                                                               approvalDelegate:self];
 
     [self presentFullScreenViewController:modal animated:YES completion:nil];
 }

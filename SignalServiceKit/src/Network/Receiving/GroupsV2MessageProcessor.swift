@@ -174,6 +174,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
             // Don't process queues.
             return
         }
+        guard FeatureFlags.incomingGroupsV2 else {
+            // Don't process this queue.
+            return
+        }
 
         // We want a value that is just high enough to yield perf benefits.
         let kIncomingMessageBatchSize: UInt = 32
@@ -641,6 +645,11 @@ public class GroupsV2MessageProcessor: NSObject {
                         transaction: SDSAnyWriteTransaction) {
         guard envelopeData.count > 0 else {
             owsFailDebug("Empty envelope.")
+            return
+        }
+
+        guard FeatureFlags.incomingGroupsV2 else {
+            // Discard envelope.
             return
         }
 
