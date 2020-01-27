@@ -71,6 +71,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         buttons = [primary, secondary]
     }
 
+    private let darkThemeBackgroundOverlay = UIView()
     private let stackView = UIStackView()
     init(experienceUpgrade: ExperienceUpgrade) {
         self.experienceUpgrade = experienceUpgrade
@@ -88,9 +89,16 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             blurEffectView.autoPinEdgesToSuperviewEdges()
         }
 
+        addSubview(darkThemeBackgroundOverlay)
+        darkThemeBackgroundOverlay.autoPinEdgesToSuperviewEdges()
+        darkThemeBackgroundOverlay.backgroundColor = UIColor.white.withAlphaComponent(0.10)
+
         stackView.axis = .vertical
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        applyTheme()
     }
 
     required init(coder: NSCoder) {
@@ -150,6 +158,10 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         }
 
         hasPresented = true
+    }
+
+    @objc func applyTheme() {
+        darkThemeBackgroundOverlay.isHidden = !Theme.isDarkThemeEnabled
     }
 
     @objc func tappedDismiss() {
