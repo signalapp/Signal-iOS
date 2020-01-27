@@ -132,7 +132,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
     }
 
     fileprivate func drainQueueWhenReady() {
-        if !CurrentAppContext().shouldProcessIncomingMessages {
+        guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
