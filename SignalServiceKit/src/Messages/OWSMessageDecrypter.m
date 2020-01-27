@@ -602,7 +602,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:newEnvelopeData
                                                                             plaintextData:plaintextData
                                                                             sourceAddress:sourceAddress
-                                                                             sourceDevice:sourceDeviceId
+                                                                             sourceDevice:(UInt32)sourceDeviceId
                                                                               isUDMessage:YES];
         successBlock(result, transaction);
     }];

@@ -304,7 +304,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 didChange = true
             }
 
-            for uuid: UUID in self.membersToRemove {
+            for uuid in self.membersToRemove {
                 guard currentGroupMembership.contains(uuid) else {
                     // Another user has already deleted this member.
                     continue
@@ -316,7 +316,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 didChange = true
             }
 
-            for uuid: UUID in self.pendingMembersToRemove {
+            for uuid in self.pendingMembersToRemove {
                 guard currentGroupMembership.contains(uuid) else {
                     // Another user has already deleted this member.
                     continue
