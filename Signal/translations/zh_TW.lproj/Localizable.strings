@@ -1729,10 +1729,10 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN 碼錯誤。你嘗試次數已用盡。";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "輸入字母數字PIN 碼";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "輸入數字PIN 碼";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "此電話號碼已啟用註冊鎖定。請輸入註冊鎖定 PIN 碼。";
@@ -1960,7 +1960,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "未命名的相簿";
 
 /* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN 碼必須至少要6位字母數字";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "你無法回復你的 PIN 碼，所以要牢記它。";
@@ -1972,16 +1972,16 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "確認你的新 PIN 碼。";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "建立字母數字PIN碼";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+"PIN_CREATION_CREATE_NUMERIC" = "建立數字 PIN 碼";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+"PIN_CREATION_ERROR_MESSAGE" = "你的 PIN 碼尚未被儲存。稍後，我們會提示你建立PIN碼。";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+"PIN_CREATION_ERROR_TITLE" = "PIN碼建立失敗";
 
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "你的 PIN 碼會增加額外的安全保護並備份你的帳戶。";
@@ -1990,7 +1990,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN 碼不符，請再試一次。";
 
 /* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
+"PIN_CREATION_NUMERIC_HINT" = "PIN碼至少要6位字母數字";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "重新輸入 PIN 碼";
@@ -2008,7 +2008,7 @@
 "PIN_CREATION_TITLE" = "建立你的 PIN 碼";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN碼必須要至少6位字母數字。";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "要幫助你記住你的 PIN碼，我們將定期要求你輸入 PIN 碼。我們只會偶爾詢問你。";
@@ -2023,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "輸入你的 Signal PIN 碼";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN碼必須要至少6位字母數字。";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒體";
@@ -2089,28 +2089,28 @@
 "PROFILE_VIEW_CREATE_USERNAME" = "新創使用者名稱";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
-"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "你的姓太長了。";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "你必須輸入名字。";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "你的名字太長了。";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(選擇性)";
 
 /* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "姓";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(必須的)";
 
 /* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "名字";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
+"PROFILE_VIEW_NO_CONNECTION" = "當連接到網際網路，你的個人資料可以上傳。";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "你的個人資訊在以下情況可被看見，當開啟新對話時，以及你分享給其他使用者和群組時。";
@@ -2175,8 +2175,41 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "影片";
 
-/* notification body */
+/* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@對你的訊息回應";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+
+/* notification body. Embeds {{reaction emoji}} and {{body text}} */
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "我忘了 PIN 碼。";

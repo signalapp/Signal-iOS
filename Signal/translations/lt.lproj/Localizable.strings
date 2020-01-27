@@ -2098,16 +2098,16 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Nebūtina)";
 
 /* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Pavardė";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Būtina)";
 
 /* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "Vardas";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
@@ -2175,8 +2175,41 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Vaizdo įrašas";
 
-/* notification body */
+/* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+
+/* notification body. Embeds {{reaction emoji}} and {{body text}} */
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Aš pamiršau savo PIN.";
