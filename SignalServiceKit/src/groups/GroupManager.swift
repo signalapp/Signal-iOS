@@ -903,8 +903,6 @@ public class GroupManager: NSObject {
                                                                                transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
         let oldGroupModel = groupThread.groupModel
-        groupThread.update(with: newGroupModel, transaction: transaction)
-
         guard !oldGroupModel.isEqual(to: newGroupModel) else {
             // Skip redundant update.
             return groupThread
@@ -925,6 +923,8 @@ public class GroupManager: NSObject {
                 return groupThread
             }
         }
+
+        groupThread.update(with: newGroupModel, transaction: transaction)
 
         insertGroupUpdateInfoMessage(groupThread: groupThread,
                                      oldGroupModel: oldGroupModel,

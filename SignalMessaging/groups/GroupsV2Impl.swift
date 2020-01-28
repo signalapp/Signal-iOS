@@ -208,7 +208,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
     // MARK: - Fetch Current Group State
 
-    // GroupsV2 TODO: We should be able to clean this up eventually?
     public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot> {
         guard groupModel.groupsVersion == .V2 else {
             return Promise(error: OWSAssertionError("Invalid groupsVersion."))
