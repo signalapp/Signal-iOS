@@ -1729,10 +1729,10 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Falsche PIN. Versuche aufgebraucht.";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Alphanumerische PIN eingeben";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Numerische PIN eingeben";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Für diese Rufnummer ist eine Registrierungssperre aktiviert. Bitte gib die PIN für die Registrierungssperre ein.";
@@ -1960,7 +1960,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unbenanntes Album";
 
 /* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN muss mindestens 6 Zeichen besitzen";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
 "PIN_CREATION_BOLD_EXPLANATION" = "Deine PIN kann nicht wiederhergestellt werden, daher solltest du sie dir merken.";
@@ -1972,16 +1972,16 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Bestätige deine neue PIN.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Alphanumerische PIN erstellen";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+"PIN_CREATION_CREATE_NUMERIC" = "Numerische PIN erstellen";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+"PIN_CREATION_ERROR_MESSAGE" = "Deine PIN wurde nicht gespeichert. Wir fragen dich später, eine PIN zu erstellen.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+"PIN_CREATION_ERROR_TITLE" = "PIN konnte nicht erstellt werden";
 
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Deine PIN erhöht den Schutz deines Kontos und ermöglicht dir gleichzeitig, dieses wiederherzustellen.";
@@ -1990,7 +1990,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PINs stimmen nicht überein. Bitte erneut versuchen.";
 
 /* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
+"PIN_CREATION_NUMERIC_HINT" = "PIN muss mindestens 6 Ziffern besitzen";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "PIN wiederholen";
@@ -2008,7 +2008,7 @@
 "PIN_CREATION_TITLE" = "Deine PIN erstellen";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN muss mindestens 6 Ziffern besitzen.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Damit du dir deine PIN besser merken kannst, werden wir gelegentlich nach ihr fragen. Mit der Zeit werden wir dies seltener tun.";
@@ -2023,7 +2023,7 @@
 "PIN_REMINDER_TITLE" = "Bitte Signal-PIN eingeben";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN muss mindestens 6 Ziffern besitzen.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medieninhalt wiedergeben";
@@ -2089,28 +2089,28 @@
 "PROFILE_VIEW_CREATE_USERNAME" = "Benutzername erstellen";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
-"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Dein Nachname ist zu lang.";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Dein Vorname ist erforderlich.";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Dein Vorname ist zu lang.";
 
 /* Default text for the family name field of the profile view. */
 "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
 
 /* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Nachname";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Erforderlich)";
 
 /* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "Vorname";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
+"PROFILE_VIEW_NO_CONNECTION" = "Profil kann nur bei verbundenem Internet aktualisiert werden.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dein Signal-Profil wird für deine Kontakte sichtbar, wenn du eine neue Unterhaltung beginnst und es mit anderen Benutzern und Gruppen teilst.";
@@ -2175,8 +2175,41 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
-/* notification body */
+/* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ hat auf deine Nachricht reagiert";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+
+/* notification body. Embeds {{reaction emoji}} and {{body text}} */
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ich habe meine PIN vergessen.";

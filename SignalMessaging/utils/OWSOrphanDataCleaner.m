@@ -386,27 +386,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             return;
         }
 
-        [OWSReaction
-         anyEnumerateWithTransaction:transaction
-         batched:YES
-         block:^(OWSReaction *reaction, BOOL *stop) {
-             if (!self.isMainAppAndActive) {
-                 shouldAbort = YES;
-                 *stop = YES;
-                 return;
-             }
-             if (![reaction isKindOfClass:[OWSReaction class]]) {
-                 return;
-             }
-             [allReactionIds addObject:reaction.uniqueId];
-         }];
-
-        if (shouldAbort) {
-            return;
-        }
-
         threadIds = [NSSet setWithArray:[TSThread anyAllUniqueIdsWithTransaction:transaction]];
 
+        NSMutableSet<NSString *> *allInteractionIds = [NSMutableSet new];
         [TSInteraction anyEnumerateWithTransaction:transaction
                                            batched:YES
                                              block:^(TSInteraction *interaction, BOOL *stop) {
@@ -420,18 +402,35 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                                      [orphanInteractionIds addObject:interaction.uniqueId];
                                                  }
 
+                                                 [allInteractionIds addObject:interaction.uniqueId];
                                                  if (![interaction isKindOfClass:[TSMessage class]]) {
                                                      return;
                                                  }
 
                                                  TSMessage *message = (TSMessage *)interaction;
                                                  [allMessageAttachmentIds addObjectsFromArray:message.allAttachmentIds];
-
-                                                 NSArray<NSString *> *_Nullable messageReactionIds = [message allReactionIdsWithTransaction:transaction];
-                                                 if (messageReactionIds) {
-                                                     [allMessageReactionIds addObjectsFromArray:messageReactionIds];
-                                                 }
                                              }];
+
+        if (shouldAbort) {
+            return;
+        }
+
+        [OWSReaction anyEnumerateWithTransaction:transaction
+                                         batched:YES
+                                           block:^(OWSReaction *reaction, BOOL *stop) {
+                                               if (!self.isMainAppAndActive) {
+                                                   shouldAbort = YES;
+                                                   *stop = YES;
+                                                   return;
+                                               }
+                                               if (![reaction isKindOfClass:[OWSReaction class]]) {
+                                                   return;
+                                               }
+                                               [allReactionIds addObject:reaction.uniqueId];
+                                               if ([allInteractionIds containsObject:reaction.uniqueMessageId]) {
+                                                   [allMessageReactionIds addObject:reaction.uniqueId];
+                                               }
+                                           }];
 
         if (shouldAbort) {
             return;
