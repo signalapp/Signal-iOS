@@ -37,36 +37,19 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
 
     private let serialQueue = DispatchQueue(label: "GroupV2UpdatesImpl")
 
-    // This struct should only be accessed on serialQueue.
-    private struct RefreshState {
-        private var lastSuccessfulRefreshMap = [Data: Date]()
+    // This property should only be accessed on serialQueue.
+    private var lastSuccessfulRefreshMap = [Data: Date]()
 
-        func lastSuccessfulRefreshDate(forGroupId  groupId: Data) -> Date? {
-            return lastSuccessfulRefreshMap[groupId]
-        }
-
-        mutating func groupRefreshDidSucceed(forGroupId groupId: Data) {
-            lastSuccessfulRefreshMap[groupId] = Date()
-        }
-
-        mutating func groupRefreshDidFail(forGroupId groupId: Data, error: Error) {
-            // Do nothing.
-        }
-    }
-
-    // These properties should only be accessed on serialQueue.
-    private let upToSpecificRevisionImmediatelyRefreshState = RefreshState()
-    private let upToCurrentRevisionAfterMessageProcessWithThrottlingRefreshState = RefreshState()
-
-    private func refreshState(for groupUpdateMode: GroupUpdateMode) -> RefreshState {
+    private func lastSuccessfulRefreshDate(forGroupId  groupId: Data) -> Date? {
         assertOnQueue(serialQueue)
 
-        switch groupUpdateMode {
-        case .upToSpecificRevisionImmediately:
-            return upToSpecificRevisionImmediatelyRefreshState
-        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
-            return upToCurrentRevisionAfterMessageProcessWithThrottlingRefreshState
-        }
+        return lastSuccessfulRefreshMap[groupId]
+    }
+
+    private func groupRefreshDidSucceed(forGroupId groupId: Data) {
+        assertOnQueue(serialQueue)
+
+        lastSuccessfulRefreshMap[groupId] = Date()
     }
 
     private func shouldThrottle(for groupUpdateMode: GroupUpdateMode) -> Bool {
@@ -121,8 +104,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
             guard self.shouldThrottle(for: groupUpdateMode) else {
                 return false
             }
-            let refreshState = self.refreshState(for: groupUpdateMode)
-            guard let lastSuccessfulRefreshDate = refreshState.lastSuccessfulRefreshDate(forGroupId: groupId) else {
+            guard let lastSuccessfulRefreshDate = self.lastSuccessfulRefreshDate(forGroupId: groupId) else {
                 return false
             }
             // Don't auto-refresh more often than once every N minutes.
@@ -140,8 +122,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
             Logger.verbose("Group refresh succeeded.")
 
             self.serialQueue.sync {
-                var refreshState = self.refreshState(for: groupUpdateMode)
-                refreshState.groupRefreshDidSucceed(forGroupId: groupId)
+                self.groupRefreshDidSucceed(forGroupId: groupId)
             }
         }.catch(on: .global()) { error in
             Logger.verbose("Group refresh failed: \(error).")
