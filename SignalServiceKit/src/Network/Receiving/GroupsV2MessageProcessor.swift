@@ -60,7 +60,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
         observeNotifications()
 
         // Start processing.
-        drainQueueWhenMainAppIsReady()
+        drainQueueWhenReady()
     }
 
     private func observeNotifications() {
@@ -103,19 +103,19 @@ class IncomingGroupsV2MessageQueue: NSObject {
     @objc func registrationStateDidChange() {
         AssertIsOnMainThread()
 
-        drainQueueWhenMainAppIsReady()
+        drainQueueWhenReady()
     }
 
     @objc func webSocketStateDidChange() {
         AssertIsOnMainThread()
 
-        drainQueueWhenMainAppIsReady()
+        drainQueueWhenReady()
     }
 
     @objc func reachabilityChanged() {
         AssertIsOnMainThread()
 
-        drainQueueWhenMainAppIsReady()
+        drainQueueWhenReady()
     }
 
     // MARK: -
@@ -131,11 +131,8 @@ class IncomingGroupsV2MessageQueue: NSObject {
         finder.addJob(envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, transaction: transaction.unwrapGrdbWrite)
     }
 
-    fileprivate func drainQueueWhenMainAppIsReady() {
-        // GroupsV2 TODO: We'll need to reconcile the "isMainApp" checks
-        // in this class with the "observe message processing"
-        // changes.
-        if !CurrentAppContext().isMainApp {
+    fileprivate func drainQueueWhenReady() {
+        guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
@@ -148,10 +145,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
             owsFailDebug("App is not ready.")
             return
         }
-        // Don't process incoming messages in app extensions.
-        //
-        // GroupsV2 TODO: Reconcile with "observe message processing".
-        guard CurrentAppContext().isMainApp else {
+        guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
         guard tsAccountManager.isRegisteredAndReady else {
@@ -192,6 +186,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
         guard batchJobs.count > 0 else {
             self.isDrainingQueue = false
             Logger.verbose("Queue is drained")
+            NotificationCenter.default.postNotificationNameAsync(GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue, object: nil)
             return
         }
 
@@ -619,12 +614,20 @@ class IncomingGroupsV2MessageQueue: NSObject {
             }
         }
     }
+
+    func hasPendingJobs(transaction: SDSAnyReadTransaction) -> Bool {
+        return self.finder.jobCount(transaction: transaction) > 0
+    }
 }
 
 // MARK: -
 
 @objc
 public class GroupsV2MessageProcessor: NSObject {
+
+    @objc
+    public static let didFlushGroupsV2MessageQueue = Notification.Name("didFlushGroupsV2MessageQueue")
+
     private let processingQueue = IncomingGroupsV2MessageQueue()
 
     @objc
@@ -633,7 +636,7 @@ public class GroupsV2MessageProcessor: NSObject {
 
         SwiftSingletons.register(self)
 
-        processingQueue.drainQueueWhenMainAppIsReady()
+        processingQueue.drainQueueWhenReady()
     }
 
     // MARK: -
@@ -662,7 +665,7 @@ public class GroupsV2MessageProcessor: NSObject {
         // The new envelope won't be visible to the finder until this transaction commits,
         // so drainQueue in the transaction completion.
         transaction.addAsyncCompletion {
-            self.processingQueue.drainQueueWhenMainAppIsReady()
+            self.processingQueue.drainQueueWhenReady()
         }
     }
 
@@ -702,5 +705,10 @@ public class GroupsV2MessageProcessor: NSObject {
         } else {
             return nil
         }
+    }
+
+    @objc
+    public func hasPendingJobs(transaction: SDSAnyReadTransaction) -> Bool {
+        return processingQueue.hasPendingJobs(transaction: transaction)
     }
 }

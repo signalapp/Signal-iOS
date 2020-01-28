@@ -38,6 +38,10 @@ public class MessageProcessing: NSObject {
         return OWSSignalService.sharedInstance()
     }
 
+    private var groupsV2MessageProcessor: GroupsV2MessageProcessor {
+        return SSKEnvironment.shared.groupsV2MessageProcessor
+    }
+
     // MARK: -
 
     private let serialQueue = DispatchQueue(label: "org.signal.MessageProcessing")
@@ -66,6 +70,10 @@ public class MessageProcessing: NSObject {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
                                                name: .registrationStateDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didFlushGroupsV2MessageQueue),
+                                               name: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue,
                                                object: nil)
     }
 
@@ -182,11 +190,27 @@ public class MessageProcessing: NSObject {
     }
 
     private func isProcessingIncomingMessages(transaction: SDSAnyReadTransaction) -> Bool {
-        return batchMessageProcessor.hasPendingJobs(with: transaction)
+        guard !batchMessageProcessor.hasPendingJobs(with: transaction) else {
+            return true
+        }
+        guard !groupsV2MessageProcessor.hasPendingJobs(transaction: transaction) else {
+            return true
+        }
+        return false
     }
 
     @objc
     fileprivate func messageProcessingDidFlushQueue() {
+        AssertIsOnMainThread()
+
+        serialQueue.async {
+            self.tryToResolveProcessingStepPromises()
+            self.tryToResolveAllMessageFetchingAndProcessingPromises()
+        }
+    }
+
+    @objc
+    fileprivate func didFlushGroupsV2MessageQueue() {
         AssertIsOnMainThread()
 
         serialQueue.async {
