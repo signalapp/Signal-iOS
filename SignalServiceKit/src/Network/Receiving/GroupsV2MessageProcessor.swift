@@ -34,8 +34,8 @@ class IncomingGroupsV2MessageQueue: NSObject {
         return SSKEnvironment.shared.groupsV2
     }
 
-    private var groupUpdates: GroupUpdates {
-        return SSKEnvironment.shared.groupUpdates
+    private var groupV2Updates: GroupV2Updates {
+        return SSKEnvironment.shared.groupV2Updates
     }
 
     private var blockingManager: OWSBlockingManager {
@@ -542,9 +542,9 @@ class IncomingGroupsV2MessageQueue: NSObject {
 
         let updatedGroupThread: TSGroupThread
         do {
-            updatedGroupThread = try groupUpdates.updateGroupWithChangeActions(groupId: groupId,
-                                                                               changeActionsProto: changeActionsProto,
-                                                                               transaction: transaction)
+            updatedGroupThread = try groupV2Updates.updateGroupWithChangeActions(groupId: groupId,
+                                                                                 changeActionsProto: changeActionsProto,
+                                                                                 transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
             // GroupsV2 TODO: Make sure this is still correct behavior.
@@ -572,17 +572,17 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 owsFailDebug("Missing jobInfo properties.")
                 return Promise(error: GroupsV2Error.shouldDiscard)
         }
-        guard let groupUpdatesSwift = self.groupUpdates as? GroupUpdatesSwift else {
-            return Promise(error: OWSAssertionError("Missing groupUpdatesSwift."))
+        guard let groupV2UpdatesSwift = self.groupV2Updates as? GroupV2UpdatesSwift else {
+            return Promise(error: OWSAssertionError("Missing groupV2UpdatesSwift."))
         }
 
-        // See GroupUpdatesImpl.
+        // See GroupV2UpdatesImpl.
         // This will try to update the group using incremental "changes" but
         // failover to using a "snapshot".
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
-        return groupUpdatesSwift.tryToRefreshGroupThreadWithThrottling(groupId: groupContextInfo.groupId,
-                                                                       groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                       groupUpdateMode: groupUpdateMode)
+        return groupV2UpdatesSwift.tryToRefreshGroupThreadWithThrottling(groupId: groupContextInfo.groupId,
+                                                                         groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                         groupUpdateMode: groupUpdateMode)
             .then(on: DispatchQueue.global()) { _ in
                 return self.databaseStorage.write(.promise) { transaction in
                     _ = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)
