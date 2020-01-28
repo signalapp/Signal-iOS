@@ -21,8 +21,8 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
                 action: TypingIndicatorAction) {
         self.action = action
 
-        super.init(outgoingMessageWithThread: thread,
-                   messageBody: nil)
+        let builder = TSOutgoingMessageBuilder(thread: thread)
+        super.init(outgoingMessageWithBuilder: builder)
     }
 
     @objc

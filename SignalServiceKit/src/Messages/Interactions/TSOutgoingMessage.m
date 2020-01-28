@@ -427,107 +427,27 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return [builder build];
 }
 
-- (instancetype)initOutgoingMessageWithThread:(TSThread *)thread messageBody:(nullable NSString *)body
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
 {
-    self = [super initMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                  inThread:thread
-                               messageBody:body
-                             attachmentIds:[NSMutableArray new]
-                          expiresInSeconds:0
-                           expireStartedAt:0
-                             quotedMessage:nil
-                              contactShare:nil
-                               linkPreview:nil
-                            messageSticker:nil
-                         isViewOnceMessage:NO];
+    self = [super initMessageWithTimestamp:outgoingMessageBuilder.timestamp
+                                  inThread:outgoingMessageBuilder.thread
+                               messageBody:outgoingMessageBuilder.messageBody
+                             attachmentIds:outgoingMessageBuilder.attachmentIds
+                          expiresInSeconds:outgoingMessageBuilder.expiresInSeconds
+                           expireStartedAt:outgoingMessageBuilder.expireStartedAt
+                             quotedMessage:outgoingMessageBuilder.quotedMessage
+                              contactShare:outgoingMessageBuilder.contactShare
+                               linkPreview:outgoingMessageBuilder.linkPreview
+                            messageSticker:outgoingMessageBuilder.messageSticker
+                         isViewOnceMessage:outgoingMessageBuilder.isViewOnceMessage];
     if (!self) {
         return self;
     }
 
-    [self commonInitWithThread:thread
-                isVoiceMessage:NO
-              groupMetaMessage:TSGroupMetaMessageUnspecified
-        changeActionsProtoData:nil
-          additionalRecipients:nil];
-
-    return self;
-}
-
-- (instancetype)initOutgoingMessageWithThread:(TSThread *)thread
-                                  messageBody:(nullable NSString *)body
-                             expiresInSeconds:(uint32_t)expiresInSeconds
-{
-    self = [super initMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                  inThread:thread
-                               messageBody:body
-                             attachmentIds:[NSMutableArray new]
-                          expiresInSeconds:expiresInSeconds
-                           expireStartedAt:0
-                             quotedMessage:nil
-                              contactShare:nil
-                               linkPreview:nil
-                            messageSticker:nil
-                         isViewOnceMessage:NO];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInitWithThread:thread
-                isVoiceMessage:NO
-              groupMetaMessage:TSGroupMetaMessageUnspecified
-        changeActionsProtoData:nil
-          additionalRecipients:nil];
-
-    return self;
-}
-
-- (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(TSThread *)thread
-                                     messageBody:(nullable NSString *)body
-                                   attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                                expiresInSeconds:(uint32_t)expiresInSeconds
-                                 expireStartedAt:(uint64_t)expireStartedAt
-                                  isVoiceMessage:(BOOL)isVoiceMessage
-                                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
-                                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                                  messageSticker:(nullable MessageSticker *)messageSticker
-                               isViewOnceMessage:(BOOL)isViewOnceMessage
-                          changeActionsProtoData:(nullable NSData *)changeActionsProtoData
-                            additionalRecipients:(nullable NSArray<SignalServiceAddress *> *)additionalRecipients
-{
-    self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:body
-                             attachmentIds:attachmentIds
-                          expiresInSeconds:expiresInSeconds
-                           expireStartedAt:expireStartedAt
-                             quotedMessage:quotedMessage
-                              contactShare:contactShare
-                               linkPreview:linkPreview
-                            messageSticker:messageSticker
-                         isViewOnceMessage:isViewOnceMessage];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInitWithThread:thread
-                isVoiceMessage:isVoiceMessage
-              groupMetaMessage:groupMetaMessage
-        changeActionsProtoData:changeActionsProtoData
-          additionalRecipients:additionalRecipients];
-
-    return self;
-}
-
-- (void)commonInitWithThread:(TSThread *)thread
-              isVoiceMessage:(BOOL)isVoiceMessage
-            groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-      changeActionsProtoData:(nullable NSData *)changeActionsProtoData
-        additionalRecipients:(nullable NSArray<SignalServiceAddress *> *)additionalRecipients
-{
     _hasSyncedTranscript = NO;
+
+    TSThread *thread = outgoingMessageBuilder.thread;
+    TSGroupMetaMessage groupMetaMessage = outgoingMessageBuilder.groupMetaMessage;
 
     if ([thread isKindOfClass:TSGroupThread.class]) {
         // Unless specified, we assume group messages are "Delivery" i.e. normal messages.
@@ -542,7 +462,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         _groupMetaMessage = TSGroupMetaMessageUnspecified;
     }
 
-    _isVoiceMessage = isVoiceMessage;
+    _isVoiceMessage = outgoingMessageBuilder.isVoiceMessage;
 
     // New outgoing messages should immediately determine their
     // recipient list from current thread state.
@@ -556,8 +476,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [recipientAddresses addObjectsFromArray:thread.recipientAddresses];
         // 3. V2 group updates should also be sent to pending members of the group
         //    whose clients support Groups v2.
-        if (additionalRecipients) {
-            [recipientAddresses addObjectsFromArray:additionalRecipients];
+        if (outgoingMessageBuilder.additionalRecipients) {
+            [recipientAddresses addObjectsFromArray:outgoingMessageBuilder.additionalRecipients];
         }
     }
 
@@ -571,7 +491,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     self.recipientAddressStates = [recipientAddressStates copy];
     _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
 
-    _changeActionsProtoData = changeActionsProtoData;
+    _changeActionsProtoData = outgoingMessageBuilder.changeActionsProtoData;
+
+    return self;
 }
 
 // Each message has the responsibility for eagerly cleaning up its attachments.

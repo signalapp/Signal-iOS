@@ -29,8 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug([thread.uniqueId isEqualToString:message.uniqueThreadId]);
     OWSAssertDebug(emoji.isSingleEmoji);
 
-    // MJK TODO - remove senderTimestamp
-    self = [super initOutgoingMessageWithThread:thread messageBody:nil expiresInSeconds:expiresInSeconds];
+    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    messageBuilder.expiresInSeconds = expiresInSeconds;
+    self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (!self) {
         return self;
     }

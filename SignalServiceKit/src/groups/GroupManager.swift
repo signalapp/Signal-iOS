@@ -847,7 +847,7 @@ public class GroupManager: NSObject {
 
         return databaseStorage.read(.promise) { transaction in
             let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
-            let messageBuilder = TSOutgoingMessage.Builder(thread: thread)
+            let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
             messageBuilder.groupMetaMessage = .update
             messageBuilder.expiresInSeconds = expiresInSeconds
             messageBuilder.changeActionsProtoData = changeActionsProtoData
@@ -896,7 +896,7 @@ public class GroupManager: NSObject {
 
         return databaseStorage.write(.promise) { transaction in
             let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
-            let messageBuilder = TSOutgoingMessage.Builder(thread: thread)
+            let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
             messageBuilder.groupMetaMessage = .new
             messageBuilder.expiresInSeconds = expiresInSeconds
             self.addAdditionalRecipients(to: messageBuilder,
@@ -914,7 +914,7 @@ public class GroupManager: NSObject {
     // for example, because it's a diff of group state.  To show their
     // user the invite UI, pending member's clients will need a snapshot,
     // not a diff.
-    private static func addAdditionalRecipients(to messageBuilder: TSOutgoingMessage.Builder,
+    private static func addAdditionalRecipients(to messageBuilder: TSOutgoingMessageBuilder,
                                                 groupThread: TSGroupThread,
                                                 transaction: SDSAnyReadTransaction) {
         guard groupThread.groupModel.groupsVersion == .V2 else {
