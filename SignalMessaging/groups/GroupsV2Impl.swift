@@ -312,54 +312,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }
     }
 
-    // MARK: - Updates
-
-    // Fetch group state from service and apply.
-    //
-    // * Try to fetch and apply incremental "changes" -
-    //   if the group already existing in the database.
-    // * Failover to fetching and applying latest state.
-    // * We need to distinguish between retryable (network) errors
-    //   and non-retryable errors.
-    // * In the case of networking errors, we should do exponential
-    //   backoff.
-    // * If reachability changes, we should retry network errors
-    //   immediately.
-    //
-    // It should upsert the group thread if it does not exist.
-    //
-    // GroupsV2 TODO: Implement properly.
-    public func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
-                                                       groupSecretParamsData: Data,
-                                                       upToRevision: UInt32,
-                                                       waitForMessageProcessing: Bool) -> Promise<TSGroupThread> {
-        return self.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
-            .map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws in
-                let groupThread = try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
-                    // GroupsV2 TODO: We could make this a single GroupManager method.
-                    let groupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot,
-                                                                      transaction: transaction)
-                    // GroupsV2 TODO: Set groupUpdateSourceAddress.
-                    let groupUpdateSourceAddress: SignalServiceAddress? = nil
-
-                    let groupId = groupModel.groupId
-                    if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-                        return try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
-                                                                                                        newGroupModel: groupModel,
-                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                                        transaction: transaction)
-                    } else {
-                        return GroupManager.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: groupModel,
-                                                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                            transaction: transaction)
-                    }
-                }
-                // GroupsV2 TODO: Remove this logging.
-                Logger.verbose("GroupV2Snapshot: \(groupV2Snapshot.debugDescription)")
-                return groupThread
-        }
-    }
-
     // MARK: - Perform Request
 
     private struct ServiceResponse {

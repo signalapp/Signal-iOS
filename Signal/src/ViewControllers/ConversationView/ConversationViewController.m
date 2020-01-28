@@ -509,7 +509,7 @@ typedef enum : NSUInteger {
                                                           userInfo:nil
                                                            repeats:YES];
 
-    [self.groupUpdates tryToRefreshGroupThreadToLatestStateWithThrottling:thread];
+    [self.groupUpdates tryToRefreshGroupUpToCurrentRevisionAfterMessageProcessWithThrottlingWithThrottling:thread];
 }
 
 - (void)dealloc

@@ -26,8 +26,6 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
 
     // MARK: -
 
-    //    public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
-
     @objc
     public required override init() {
         super.init()
@@ -39,94 +37,215 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
 
     private let serialQueue = DispatchQueue(label: "GroupUpdatesImpl")
 
+    // This struct should only be accessed on serialQueue.
     private struct RefreshState {
-        private var groupRefreshesInFlightSet = Set<Data>()
-        private var lastGroupRefreshMap = [Data: Date]()
+        private var lastSuccessfulRefreshMap = [Data: Date]()
 
-        func isRefreshInFlight(forGroupId groupId: Data) -> Bool {
-            return groupRefreshesInFlightSet.contains(groupId)
+        func lastSuccessfulRefreshDate(forGroupId  groupId: Data) -> Date? {
+            return lastSuccessfulRefreshMap[groupId]
         }
 
-        mutating func markRefreshInFlight(forGroupId groupId: Data) {
-            assert(!groupRefreshesInFlightSet.contains(groupId))
-
-            groupRefreshesInFlightSet.insert(groupId)
+        mutating func groupRefreshDidSucceed(forGroupId groupId: Data) {
+            lastSuccessfulRefreshMap[groupId] = Date()
         }
 
-        func lastGroupRefreshMap(forGroupId  groupId: Data) -> Date? {
-            return lastGroupRefreshMap[groupId]
-        }
-
-        mutating func lastGroupRefreshSuceeded(forGroupId groupId: Data) {
-            lastGroupRefreshMap[groupId] = Date()
+        mutating func groupRefreshDidFail(forGroupId groupId: Data, error: Error) {
+            // Do nothing.
         }
     }
 
-    private let upToRevisionImmediatelyRefreshState = RefreshState()
-    private let upToLatestAfterMessageProcessRefreshState = RefreshState()
+    // These properties should only be accessed on serialQueue.
+    private let upToSpecificRevisionImmediatelyRefreshState = RefreshState()
+    private let upToCurrentRevisionAfterMessageProcessWithThrottlingRefreshState = RefreshState()
 
     private func refreshState(for groupUpdateMode: GroupUpdateMode) -> RefreshState {
+        assertOnQueue(serialQueue)
+
         switch groupUpdateMode {
-        case .upToRevisionImmediately:
-            return upToRevisionImmediatelyRefreshState
-        case .upToLatestAfterMessageProcess:
-            return upToLatestAfterMessageProcessRefreshState
+        case .upToSpecificRevisionImmediately:
+            return upToSpecificRevisionImmediatelyRefreshState
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
+            return upToCurrentRevisionAfterMessageProcessWithThrottlingRefreshState
+        }
+    }
+
+    private func shouldThrottle(for groupUpdateMode: GroupUpdateMode) -> Bool {
+        assertOnQueue(serialQueue)
+
+        switch groupUpdateMode {
+        case .upToSpecificRevisionImmediately:
+            return false
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
+            return true
         }
     }
 
     // MARK: -
 
     @objc
-    public func tryToRefreshGroupThreadToLatestStateWithThrottling(_ thread: TSThread) {
-        tryToRefreshGroupThreadWithThrottling(thread, groupUpdateMode: .upToLatestAfterMessageProcess)
+    public func tryToRefreshGroupUpToCurrentRevisionAfterMessageProcessWithThrottlingWithThrottling(_ thread: TSThread) {
+        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
+        tryToRefreshGroupThreadWithThrottling(thread: thread, groupUpdateMode: groupUpdateMode)
+            .retainUntilComplete()
     }
 
-    private func tryToRefreshGroupThreadWithThrottling(_ thread: TSThread,
-                                                       groupUpdateMode: GroupUpdateMode) {
+    @objc
+    public func tryToRefreshGroupUpToSpecificRevisionImmediately(_ thread: TSThread,
+                                                                 upToRevision: UInt32) {
+        let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: upToRevision)
+        tryToRefreshGroupThreadWithThrottling(thread: thread, groupUpdateMode: groupUpdateMode)
+            .retainUntilComplete()
+    }
+
+    private func tryToRefreshGroupThreadWithThrottling(thread: TSThread,
+                                                       groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
         guard let groupThread = thread as? TSGroupThread else {
-            return
+            return Promise.value(())
         }
         let groupModel = groupThread.groupModel
         guard groupModel.groupsVersion == .V2 else {
-            return
+            return Promise.value(())
         }
         let groupId = groupModel.groupId
-        let shouldUpdate = serialQueue.sync { () -> Bool in
-            var refreshState = self.refreshState(for: groupUpdateMode)
+        guard let groupSecretParamsData = groupModel.groupSecretParamsData,
+            groupSecretParamsData.count > 0 else {
+                return Promise(error: OWSAssertionError("Missing groupSecretParamsData."))
+        }
+        return tryToRefreshGroupThreadWithThrottling(groupId: groupId,
+                                                     groupSecretParamsData: groupSecretParamsData,
+                                                     groupUpdateMode: groupUpdateMode)
+    }
 
-            guard !refreshState.isRefreshInFlight(forGroupId: groupId) else {
-                // Ignore; group refresh already in flight.
+    public func tryToRefreshGroupThreadWithThrottling(groupId: Data,
+                                                      groupSecretParamsData: Data,
+                                                      groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
+
+        let isThrottled = serialQueue.sync { () -> Bool in
+            guard self.shouldThrottle(for: groupUpdateMode) else {
                 return false
             }
-            if let lastRefreshData = refreshState.lastGroupRefreshMap(forGroupId: groupId) {
-                // Don't auto-refresh more often than once every N minutes.
-                let refreshFrequency: TimeInterval = kMinuteInterval * 5
-                guard abs(lastRefreshData.timeIntervalSinceNow) > refreshFrequency else {
-                    return false
-                }
+            let refreshState = self.refreshState(for: groupUpdateMode)
+            guard let lastSuccessfulRefreshDate = refreshState.lastSuccessfulRefreshDate(forGroupId: groupId) else {
+                return false
             }
-
-            // Mark refresh as in flight.
-            refreshState.markRefreshInFlight(forGroupId: groupId)
-
-            return true
+            // Don't auto-refresh more often than once every N minutes.
+            let refreshFrequency: TimeInterval = kMinuteInterval * 5
+            return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) > refreshFrequency
         }
-        guard shouldUpdate else {
-            return
+
+        guard !isThrottled else {
+            Logger.verbose("Skipping redundant v2 group refresh.")
+            return Promise.value(())
+        }
+
+        let operation = GroupV2UpdateOperation(groupUpdates: self, groupSecretParamsData: groupSecretParamsData, groupUpdateMode: groupUpdateMode)
+        operation.promise.done(on: .global()) { _ in
+            Logger.verbose("Group refresh succeeded.")
+
+            self.serialQueue.sync {
+                var refreshState = self.refreshState(for: groupUpdateMode)
+                refreshState.groupRefreshDidSucceed(forGroupId: groupId)
+            }
+        }.retainUntilComplete()
+        operationQueue.addOperation(operation)
+        return operation.promise
+    }
+
+    let operationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "GroupUpdatesImpl"
+        operationQueue.maxConcurrentOperationCount = 1
+        return operationQueue
+    }()
+
+    private class GroupV2UpdateOperation: OWSOperation {
+        let groupUpdates: GroupUpdatesImpl
+        let groupSecretParamsData: Data
+        let groupUpdateMode: GroupUpdateMode
+
+        let promise: Promise<Void>
+        let resolver: Resolver<Void>
+
+        // MARK: -
+
+        required init(groupUpdates: GroupUpdatesImpl,
+                      groupSecretParamsData: Data,
+                      groupUpdateMode: GroupUpdateMode) {
+            self.groupUpdates = groupUpdates
+            self.groupSecretParamsData = groupSecretParamsData
+            self.groupUpdateMode = groupUpdateMode
+
+            let (promise, resolver) = Promise<Void>.pending()
+            self.promise = promise
+            self.resolver = resolver
+
+            super.init()
+
+            self.remainingRetries = 3
+        }
+
+        // MARK: -
+
+        public override func run() {
+            firstly {
+                groupUpdates.refreshGroupFromService(groupSecretParamsData: groupSecretParamsData,
+                                                     groupUpdateMode: groupUpdateMode)
+            }.done(on: .global()) { _ in
+                Logger.verbose("Group refresh succeeded.")
+
+                self.reportSuccess()
+            }.catch(on: .global()) { (error) in
+                // GroupsV2 TODO: Only fail if non-network error.
+                owsFailDebug("Group refresh failed: \(error)")
+
+                self.reportError(withUndefinedRetry: error)
+            }.retainUntilComplete()
+        }
+
+        public override func didSucceed() {
+            resolver.fulfill(())
+        }
+
+        public override func didReportError(_ error: Error) {
+            Logger.debug("remainingRetries: \(self.remainingRetries)")
+        }
+
+        public override func didFail(error: Error) {
+            Logger.error("failed with error: \(error)")
+
+            resolver.reject(error)
         }
     }
 
-    private func refreshGroupV2SnapshotFromService(groupSecretParamsData: Data,
-                                                   groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
-        // GroupsV2 TODO: Try to use individual changes.
+    // Fetch group state from service and apply.
+    //
+    // * Try to fetch and apply incremental "changes" -
+    //   if the group already existing in the database.
+    // * Failover to fetching and applying latest snapshot.
+    // * We need to distinguish between retryable (network) errors
+    //   and non-retryable errors.
+    // * In the case of networking errors, we should do exponential
+    //   backoff.
+    // * If reachability changes, we should retry network errors
+    //   immediately.
+    //
+    // It should upsert the group thread if it does not exist.
+    //
+    // GroupsV2 TODO: Implement properly.
+    private func refreshGroupFromService(groupSecretParamsData: Data,
+                                         groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
 
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
-        }
-        return groupsV2Swift.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
-            .then(on: .global()) { groupV2Snapshot in
-                return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
-                                                                        groupUpdateMode: groupUpdateMode)
+        // Try to use individual changes.
+        return fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
+                                                     groupUpdateMode: groupUpdateMode)
+            .recover { (error) throws -> Promise<TSGroupThread> in
+                owsFailDebug("Error: \(error)")
+
+                // GroupsV2 TODO: This should not fail over in the case of networking problems.
+
+                // Failover to applying latest snapshot.
+                return self.fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: groupSecretParamsData,
+                                                                           groupUpdateMode: groupUpdateMode)
         }
     }
 
@@ -182,20 +301,23 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
                                                    groupChanges: [GroupV2Change],
                                                    groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         switch groupUpdateMode {
-        case .upToRevisionImmediately:
+        case .upToSpecificRevisionImmediately(let upToRevision):
             return tryToApplyGroupChangesFromServiceNow(groupId: groupId,
-                                                        groupChanges: groupChanges)
-        case .upToLatestAfterMessageProcess:
+                                                        groupChanges: groupChanges,
+                                                        upToRevision: upToRevision)
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
             return messageProcessing.allMessageFetchingAndProcessingPromise()
                 .then(on: .global()) { _ in
                     return self.tryToApplyGroupChangesFromServiceNow(groupId: groupId,
-                                                                     groupChanges: groupChanges)
+                                                                     groupChanges: groupChanges,
+                                                                     upToRevision: nil)
             }
         }
     }
 
     private func tryToApplyGroupChangesFromServiceNow(groupId: Data,
-                                                      groupChanges: [GroupV2Change]) -> Promise<TSGroupThread> {
+                                                      groupChanges: [GroupV2Change],
+                                                      upToRevision: UInt32?) -> Promise<TSGroupThread> {
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             guard let oldGroupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing group thread.")
@@ -204,6 +326,13 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
             var groupThread = oldGroupThread
 
             for groupChange in groupChanges {
+                let changeRevision = groupChange.snapshot.revision
+                if let upToRevision = upToRevision {
+                    guard upToRevision >= changeRevision else {
+                        Logger.info("Ignoring group change: \(changeRevision); only updating to revision: \(upToRevision)")
+                        return groupThread
+                    }
+                }
                 let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupChange.snapshot,
                                                                      transaction: transaction)
                 // GroupsV2 TODO: Set groupUpdateSourceAddress.
@@ -218,7 +347,7 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
         }
     }
 
-    // MARK: - Current State
+    // MARK: - Current Snapshot
 
     private func fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: Data,
                                                                 groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
@@ -235,9 +364,9 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
     private func tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: GroupV2Snapshot,
                                                              groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         switch groupUpdateMode {
-        case .upToRevisionImmediately:
+        case .upToSpecificRevisionImmediately:
             return tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
-        case .upToLatestAfterMessageProcess:
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
             return messageProcessing.allMessageFetchingAndProcessingPromise()
                 .then(on: .global()) { _ in
                     return self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)

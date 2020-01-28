@@ -7,16 +7,13 @@ import SignalServiceKit
 import ZKGroup
 
 public struct ChangedGroupModel {
-    public let groupThread: TSGroupThread
     public let oldGroupModel: TSGroupModel
     public let newGroupModel: TSGroupModel
     public let changeAuthorUuid: UUID
 
-    public init(groupThread: TSGroupThread,
-                oldGroupModel: TSGroupModel,
+    public init(oldGroupModel: TSGroupModel,
                 newGroupModel: TSGroupModel,
                 changeAuthorUuid: UUID) {
-        self.groupThread = groupThread
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
         self.changeAuthorUuid = changeAuthorUuid
@@ -270,8 +267,7 @@ public class GroupsV2Changes {
                                                              groupV2Revision: newRevision,
                                                              groupSecretParamsData: groupSecretParamsData,
                                                              transaction: transaction)
-        return ChangedGroupModel(groupThread: groupThread,
-                                 oldGroupModel: oldGroupModel,
+        return ChangedGroupModel(oldGroupModel: oldGroupModel,
                                  newGroupModel: newGroupModel,
                                  changeAuthorUuid: changeAuthorUuid)
     }

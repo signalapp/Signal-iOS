@@ -448,7 +448,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
 
             switch error {
             case GroupsV2Error.shouldRetry:
-            // GroupsV2 TODO: We need to handle retry.
+                // GroupsV2 TODO: We need to handle retry.
                 break
             default:
                 break
@@ -566,32 +566,23 @@ class IncomingGroupsV2MessageQueue: NSObject {
         return .successShouldProcess
     }
 
-    // Fetch group state from service and apply.
-    //
-    // * Try to fetch and apply incremental "changes".
-    // * Failover to fetching and applying latest state.
-    // * We need to distinguish between retryable (network) errors
-    //   and non-retryable errors.
-    // * In the case of networking errors, we should do exponential
-    //   backoff.
-    // * If reachability changes, we should retry network errors
-    //   immediately.
-    //
-    // GroupsV2 TODO: Ensure comment above is implemented.
     private func tryToUpdateUsingService(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
         guard let groupContextInfo = jobInfo.groupContextInfo,
             let groupContext = jobInfo.groupContext else {
                 owsFailDebug("Missing jobInfo properties.")
                 return Promise(error: GroupsV2Error.shouldDiscard)
         }
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Missing groupsV2Swift."))
+        guard let groupUpdatesSwift = self.groupUpdates as? GroupUpdatesSwift else {
+            return Promise(error: OWSAssertionError("Missing groupUpdatesSwift."))
         }
 
-        return groupsV2Swift.fetchAndApplyGroupV2UpdatesFromService(groupId: groupContextInfo.groupId,
-                                                                    groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                    upToRevision: groupContext.revision,
-                                                                    waitForMessageProcessing: false)
+        // See GroupUpdatesImpl.
+        // This will try to update the group using incremental "changes" but
+        // failover to using a "snapshot".
+        let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
+        return groupUpdatesSwift.tryToRefreshGroupThreadWithThrottling(groupId: groupContextInfo.groupId,
+                                                                       groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                       groupUpdateMode: groupUpdateMode)
             .then(on: DispatchQueue.global()) { _ in
                 return self.databaseStorage.write(.promise) { transaction in
                     _ = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)
