@@ -185,6 +185,7 @@ final class RegisterVC : UIViewController {
         databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
         databaseConnection.setObject(keyPair!, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
         TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair!.hexEncodedPublicKey
+        OWSPrimaryStorage.shared().setRestorationTime(0)
         UserDefaults.standard.set(false, forKey: "hasViewedSeed")
         let displayNameVC = DisplayNameVC()
         navigationController!.pushViewController(displayNameVC, animated: true)
