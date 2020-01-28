@@ -428,7 +428,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyUser(for reaction: OWSReaction, in thread: TSThread, transaction: SDSAnyReadTransaction) {
+    public func notifyUser(for reaction: OWSReaction, on message: TSOutgoingMessage, in thread: TSThread, transaction: SDSAnyReadTransaction) {
 
         guard !thread.isMuted else { return }
 
@@ -455,7 +455,45 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
 
-        let notificationBody = String(format: NotificationStrings.incomingReactionFormat, reaction.emoji)
+        let notificationBody: String
+        if let bodyDescription: String = {
+            if let messageBody = message.body, !messageBody.isEmpty {
+                return messageBody.filterStringForDisplay()
+            } else if let oversizeText = message.oversizeText(with: transaction), !oversizeText.isEmpty {
+                return oversizeText.filterStringForDisplay()
+            } else {
+                return nil
+            }
+        }() {
+            notificationBody = String(format: NotificationStrings.incomingReactionTextMessageFormat, reaction.emoji, bodyDescription)
+        } else if message.isViewOnceMessage {
+            notificationBody = String(format: NotificationStrings.incomingReactionViewOnceMessageFormat, reaction.emoji)
+        } else if message.messageSticker != nil {
+            notificationBody = String(format: NotificationStrings.incomingReactionStickerMessageFormat, reaction.emoji)
+        } else if message.contactShare != nil {
+            notificationBody = String(format: NotificationStrings.incomingReactionContactShareMessageFormat, reaction.emoji)
+        } else if message.hasAttachments() {
+            let mediaAttachments = message.mediaAttachments(with: transaction)
+            let firstAttachment = mediaAttachments.first
+
+            if mediaAttachments.count > 1 {
+                notificationBody = String(format: NotificationStrings.incomingReactionAlbumMessageFormat, reaction.emoji)
+            } else if firstAttachment?.isImage == true {
+                notificationBody = String(format: NotificationStrings.incomingReactionPhotoMessageFormat, reaction.emoji)
+            } else if firstAttachment?.isVideo == true {
+                notificationBody = String(format: NotificationStrings.incomingReactionVideoMessageFormat, reaction.emoji)
+            } else if firstAttachment?.isVoiceMessage == true {
+                notificationBody = String(format: NotificationStrings.incomingReactionVoiceMessageFormat, reaction.emoji)
+            } else if firstAttachment?.isAudio == true {
+                notificationBody = String(format: NotificationStrings.incomingReactionAudioMessageFormat, reaction.emoji)
+            } else if firstAttachment?.isAnimated == true {
+                notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
+            } else {
+                notificationBody = String(format: NotificationStrings.incomingReactionFileMessageFormat, reaction.emoji)
+            }
+        } else {
+            notificationBody = String(format: NotificationStrings.incomingReactionFormat, reaction.emoji)
+        }
 
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".

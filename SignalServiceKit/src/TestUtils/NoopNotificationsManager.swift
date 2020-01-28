@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 @objc
@@ -9,7 +9,7 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         Logger.warn("skipping notification for: \(incomingMessage.description)")
     }
 
-    public func notifyUser(for reaction: OWSReaction, in thread: TSThread, transaction: SDSAnyReadTransaction) {
+    public func notifyUser(for reaction: OWSReaction, on message: TSOutgoingMessage, in thread: TSThread, transaction: SDSAnyReadTransaction) {
         Logger.warn("skipping notification for: \(reaction.description)")
     }
 
