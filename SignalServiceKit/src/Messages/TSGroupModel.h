@@ -10,9 +10,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, GroupType) {
-    SIGNAL = 0,
-    PUBLIC_CHAT = 1,
-    RSS_FEED = 2
+    closedGroup = 0, // a.k.a. private group chat
+    openGroup = 1, // a.k.a. public group chat
+    rssFeed = 2
 };
 
 extern const int32_t kGroupIdLength;

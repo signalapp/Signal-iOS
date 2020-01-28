@@ -189,7 +189,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Don't fire delegate "change" events during initialization.
     if (self.shouldNotifyDelegateOfUpdatedContacts) {
-        OWSLogInfo(@"Fire delegate update function");
         [self.delegate contactsViewHelperDidUpdateContacts];
         self.hasUpdatedContactsAtLeastOnce = YES;
     }

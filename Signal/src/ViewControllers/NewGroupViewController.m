@@ -88,8 +88,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commonInit
 {
-    _groupId = [LKGroupUtil getEncodedSignalGroupIdAsData:[[Randomness generateRandomBytes:kGroupIdLength] hexadecimalString]];
-    _groupType = SIGNAL;
+    _groupId = [LKGroupUtilities getEncodedClosedGroupIDAsData:[[Randomness generateRandomBytes:kGroupIdLength] hexadecimalString]];
+    _groupType = closedGroup;
 
     _messageSender = SSKEnvironment.shared.messageSender;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];

@@ -372,8 +372,8 @@ class GroupThreadFactory: NSObject, Factory {
                             memberIds: groupThreadFactory.memberIdsBuilder(),
                             image: groupThreadFactory.imageBuilder(),
                             groupId: groupThreadFactory.groupIdBuilder(),
-                            groupType: .SIGNAL,
-                             adminIds: [])
+                            groupType: .closedGroup,
+                            adminIds: [])
     }
 
     @objc

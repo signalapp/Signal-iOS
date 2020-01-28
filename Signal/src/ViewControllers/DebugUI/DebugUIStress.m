@@ -530,13 +530,13 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSGroupThread *thread;
     [OWSPrimaryStorage.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            //TODO: Figure out if this is correct
+            // TODO: Figure out if this is correct
             TSGroupModel *groupModel =
                 [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
                                           memberIds:groupThread.groupModel.groupMemberIds
                                               image:groupThread.groupModel.groupImage
                                             groupId:[Randomness generateRandomBytes:kGroupIdLength]
-                                          groupType:SIGNAL
+                                          groupType:closedGroup
                                            adminIds:groupThread.groupModel.groupAdminIds];
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         }];
@@ -561,12 +561,12 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSGroupThread *thread;
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(
         YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        //TODO: Figure out if this is correct
+        // TODO: Figure out if this is correct
         TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:NSUUID.UUID.UUIDString
                                                              memberIds:recipientIds
                                                                  image:nil
                                                                groupId:[Randomness generateRandomBytes:kGroupIdLength]
-                                                             groupType:SIGNAL adminIds:@[ self.tsAccountManager.localNumber ]];
+                                                             groupType:closedGroup adminIds:@[ self.tsAccountManager.localNumber ]];
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
     }];
     OWSAssertDebug(thread);

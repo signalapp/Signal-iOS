@@ -3875,12 +3875,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     NSString *groupName = [NSUUID UUID].UUIDString;
     NSMutableArray<NSString *> *recipientIds = [@[
         recipientId,
-        [TSAccountManager localNumber],
+        TSAccountManager.localNumber,
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-    //TODO: Figure out if this is correct
-    TSGroupModel *groupModel =
-        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:SIGNAL adminIds:@[ [TSAccountManager localNumber] ]];
+    // TODO: Figure out if this is correct
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:closedGroup adminIds:@[ TSAccountManager.localNumber ]];
 
     __block TSGroupThread *thread;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -4276,7 +4275,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         @(now - 2 * (long long)kMonthInMs),
     ];
     NSMutableArray<NSString *> *recipientIds = [thread.recipientIdentifiers mutableCopy];
-    [recipientIds removeObject:[TSAccountManager localNumber]];
+    [recipientIds removeObject:TSAccountManager.localNumber];
     NSString *recipientId = (recipientIds.count > 0 ? recipientIds.firstObject : @"+19174054215");
 
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -4382,12 +4381,12 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                  NSString *groupName = string;
                  NSMutableArray<NSString *> *recipientIds = [@[
                                                                recipientId,
-                                                               [TSAccountManager localNumber],
+                                                               TSAccountManager.localNumber,
                                                                ] mutableCopy];
                  NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-                 //TODO: Figure out if this is correct
+                 // TODO: Figure out if this is correct
                  TSGroupModel *groupModel =
-                 [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:SIGNAL adminIds:@[ [TSAccountManager localNumber] ]];
+                 [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:closedGroup adminIds:@[ TSAccountManager.localNumber ]];
 
                  TSGroupThread *groupThread =
                  [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
@@ -4424,12 +4423,12 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                     NSString *groupName = string;
                     NSMutableArray<NSString *> *recipientIds = [@[
                         recipientId,
-                        [TSAccountManager localNumber],
+                        TSAccountManager.localNumber,
                     ] mutableCopy];
                     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-                    //TODO: Figure out if this is correct
+                    // TODO: Figure out if this is correct
                     TSGroupModel *groupModel =
-                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:SIGNAL adminIds:@[ [TSAccountManager localNumber] ]];
+                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:closedGroup adminIds:@[ TSAccountManager.localNumber ]];
 
                     TSGroupThread *groupThread =
                         [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
@@ -4464,12 +4463,12 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                     NSString *groupName = string;
                     NSMutableArray<NSString *> *recipientIds = [@[
                         recipientId,
-                        [TSAccountManager localNumber],
+                        TSAccountManager.localNumber,
                     ] mutableCopy];
                     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-                    //TODO: Figure out if this is correct
+                    // TODO: Figure out if this is correct
                     TSGroupModel *groupModel =
-                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:SIGNAL adminIds:@[ [TSAccountManager localNumber] ]];
+                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:closedGroup adminIds:@[ TSAccountManager.localNumber ]];
 
                     TSGroupThread *groupThread =
                         [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];

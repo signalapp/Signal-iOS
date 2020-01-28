@@ -188,12 +188,10 @@ const CGFloat kIconViewLength = 24;
 -(BOOL)isPrivateGroupChat
 {
     if (self.isGroupThread) {
-        TSGroupThread *thread = (TSGroupThread*)self.thread;
-        if (thread.isRSSFeed || thread.isPublicChat) {
-            return false;
-        }
+        TSGroupThread *thread = (TSGroupThread *)self.thread;
+        return !thread.isRSSFeed && !thread.isPublicChat;
     }
-    return true;
+    return false;
 }
 
 - (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
@@ -1085,7 +1083,6 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showGroupMembersView
 {
-    OWSLogInfo(@"Setting show thread");
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     ShowGroupMembersViewController *showGroupMembersViewController = [ShowGroupMembersViewController new];
     [showGroupMembersViewController configWithThread:groupThread];

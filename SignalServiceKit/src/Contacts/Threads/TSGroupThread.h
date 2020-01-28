@@ -4,7 +4,7 @@
 
 #import "TSGroupModel.h"
 #import "TSThread.h"
-#import "LKGroupUtil.h"
+#import "LKGroupUtilities.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

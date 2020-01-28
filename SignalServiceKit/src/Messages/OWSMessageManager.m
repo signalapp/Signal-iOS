@@ -1402,7 +1402,7 @@ NS_ASSUME_NONNULL_BEGIN
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
                 if (oldGroupThread && ![oldGroupThread.groupModel.groupAdminIds containsObject:envelope.source]) {
-                    OWSLogWarn(@"Loki - Received a group update message from a non-admin user for %@ %@", [LKGroupUtil getEncodedGroupId:groupId], @". Ignoring.");
+                    OWSLogWarn(@"Loki - Received a group update message from a non-admin user for %@ %@", [LKGroupUtilities getEncodedGroupID:groupId], @". Ignoring.");
                     return nil;
                 }
                 // Ensures that the thread exists but doesn't update it.

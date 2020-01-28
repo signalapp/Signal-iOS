@@ -12,4 +12,4 @@
 #import <SignalServiceKit/SSKJobRecord.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
-#import <SignalServiceKit/LKGroupUtil.h>
+#import <SignalServiceKit/LKGroupUtilities.h>

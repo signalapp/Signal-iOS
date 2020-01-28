@@ -92,8 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.thread.groupModel.groupMemberIds);
 
     self.memberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
-    
-     OWSLogInfo(@"Setting show thread %@", self.thread.groupModel.groupName);
 }
 
 - (void)viewDidLoad
@@ -114,7 +112,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateTableContents
 {
-//    OWSLogInfo(@"Setting show thread %@", self.thread.groupModel.groupName);
     OWSAssertDebug(self.thread);
 
     OWSTableContents *contents = [OWSTableContents new];

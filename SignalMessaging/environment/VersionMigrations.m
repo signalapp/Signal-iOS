@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
         for (LKPublicChat *chat in LKPublicChatAPI.defaultChats) {
-            TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtil getEncodedPublichChatGroupIdAsData:chat.id] transaction:transaction];
+            TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtilities getEncodedOpenGroupIDAsData:chat.id] transaction:transaction];
             if (thread != nil) {
                 [LKDatabaseUtilities setPublicChat:chat threadID:thread.uniqueId transaction:transaction];
             }
@@ -183,8 +183,8 @@ NS_ASSUME_NONNULL_BEGIN
                 //If the thread is still using the old group id, it needs to be updated.
                 thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
                 if (thread != nil) {
-                    thread.groupModel.groupType = PUBLIC_CHAT;
-                    [thread.groupModel updateGroupId:[LKGroupUtil getEncodedPublichChatGroupIdAsData:chat.id]];
+                    thread.groupModel.groupType = openGroup;
+                    [thread.groupModel updateGroupId:[LKGroupUtilities getEncodedOpenGroupIDAsData:chat.id]];
                     [thread saveWithTransaction:transaction];
                     [LKDatabaseUtilities setPublicChat:chat threadID:thread.uniqueId transaction:transaction];
                 }
@@ -197,8 +197,8 @@ NS_ASSUME_NONNULL_BEGIN
         for (LKRSSFeed *feed in feeds) {
             TSGroupThread *thread = [TSGroupThread threadWithGroupId:[feed.id dataUsingEncoding:NSUTF8StringEncoding] transaction:transaction];
             if (thread != nil) {
-                thread.groupModel.groupType = RSS_FEED;
-                [thread.groupModel updateGroupId:[LKGroupUtil getEncodedRssFeedGroupIdAsData:feed.id]];
+                thread.groupModel.groupType = rssFeed;
+                [thread.groupModel updateGroupId:[LKGroupUtilities getEncodedRSSFeedIDAsData:feed.id]];
                 [thread saveWithTransaction:transaction];
             }
         }

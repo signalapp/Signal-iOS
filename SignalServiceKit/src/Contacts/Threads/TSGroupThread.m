@@ -38,7 +38,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return self;
 }
 
-- (instancetype)initWithGroupId:(NSData *)groupId groupType:(GroupType) groupType
+- (instancetype)initWithGroupId:(NSData *)groupId groupType:(GroupType)groupType
 {
     OWSAssertDebug(groupId.length > 0);
 
@@ -124,7 +124,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 + (NSString *)threadIdFromGroupId:(NSData *)groupId
 {
     OWSAssertDebug(groupId.length > 0);
-    return [TSGroupThreadPrefix stringByAppendingString:[[LKGroupUtil getDecodedGroupIdAsData:groupId] base64EncodedString]];
+    return [TSGroupThreadPrefix stringByAppendingString:[[LKGroupUtilities getDecodedGroupIDAsData:groupId] base64EncodedString]];
 }
 
 + (NSData *)groupIdFromThreadId:(NSString *)threadId
@@ -132,7 +132,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     OWSAssertDebug(threadId.length > 0);
 
     return [NSData dataFromBase64String:[threadId substringWithRange:NSMakeRange(1, threadId.length - 1)]];
-//    return [NSData dataFromBase64String:[threadId componentsSeparatedByString:@"!"][1]];
 }
 
 - (NSArray<NSString *> *)recipientIdentifiers
@@ -178,18 +177,12 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (BOOL)isPublicChat
 {
-    if (self.groupModel.groupType == PUBLIC_CHAT) {
-        return true;
-    }
-    return false;
+    return (self.groupModel.groupType == openGroup);
 }
 
 - (BOOL)isRSSFeed
 {
-    if (self.groupModel.groupType == RSS_FEED) {
-        return true;
-    }
-    return false;
+    return (self.groupModel.groupType == rssFeed);
 }
 
 - (BOOL)isLocalUserInGroup
@@ -284,12 +277,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
     return [self.class stableColorNameForNewConversationWithString:[self threadIdFromGroupId:groupId]];
 }
-
-//- (BOOL)isRSSFeed
-//{
-//    NSString *groupID = [[NSString alloc] initWithData:self.groupModel.groupId encoding:NSUTF8StringEncoding];
-//    return groupID != nil && [groupID hasPrefix:@"rss://"];
-//}
 
 @end
 

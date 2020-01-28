@@ -72,8 +72,6 @@ typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
  *  @return YES if is a group thread, NO otherwise.
  */
 - (BOOL)isGroupThread;
-//- (BOOL)isPublicChat;
-//- (BOOL)isRSSFeed;
 
 /**
  *  Returns the name of the thread.

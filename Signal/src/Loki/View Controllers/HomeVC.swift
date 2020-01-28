@@ -252,8 +252,9 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureView)
-//        let createPrivateGroupChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "People"), style: .plain, target: self, action: #selector(createPrivateGroupChat))
-//        createPrivateGroupChatButton.tintColor = Colors.text
+        let newClosedGroupButton = UIBarButtonItem(image: #imageLiteral(resourceName: "btnGroup--white"), style: .plain, target: self, action: #selector(createClosedGroup))
+        newClosedGroupButton.tintColor = Colors.text
+        navigationItem.rightBarButtonItem = newClosedGroupButton
         let joinPublicChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Globe"), style: .plain, target: self, action: #selector(joinPublicChat))
         joinPublicChatButton.tintColor = Colors.text
         navigationItem.rightBarButtonItems = [ /*createPrivateGroupChatButton,*/ joinPublicChatButton ]
@@ -362,8 +363,10 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc private func createPrivateGroupChat() {
-        // TODO: Implement
+    @objc private func createClosedGroup() {
+        let newClosedGroupVC = NewGroupViewController()
+        let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
+        present(navigationController, animated: true, completion: nil)
     }
     
     @objc func createPrivateChat() {
