@@ -521,7 +521,9 @@ typedef enum : NSUInteger {
     if (groupThread.groupModel.groupsVersion != GroupsVersionV2) {
         return;
     }
-    [self.groupV2Updates tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessWithThrottling:groupThread];
+    // Try to update the v2 group to latest from the service.
+    // This will help keep us in sync if we've missed any group updates, etc.
+    [self.groupV2Updates tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling:groupThread];
 }
 
 - (void)dealloc

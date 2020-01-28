@@ -83,7 +83,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
     // MARK: -
 
     @objc
-    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessWithThrottling(_ groupThread: TSGroupThread) {
+    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
         tryToRefreshV2GroupThreadWithThrottling(groupThread, groupUpdateMode: groupUpdateMode)
             .retainUntilComplete()

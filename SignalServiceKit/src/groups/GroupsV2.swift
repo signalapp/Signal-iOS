@@ -94,7 +94,7 @@ public enum GroupUpdateMode {
 @objc
 public protocol GroupV2Updates: AnyObject {
 
-    func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessWithThrottling(_ groupThread: TSGroupThread)
+    func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread)
 
     func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
                                                             upToRevision: UInt32)
@@ -256,7 +256,7 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
 
 public class MockGroupV2Updates: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
     @objc
-    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessWithThrottling(_ groupThread: TSGroupThread) {
+    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
         owsFail("Not implemented.")
     }
 
