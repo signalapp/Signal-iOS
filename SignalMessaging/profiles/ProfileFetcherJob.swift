@@ -32,16 +32,13 @@ public class ProfileFetchOptions: NSObject {
     fileprivate let mainAppOnly: Bool
     fileprivate let ignoreThrottling: Bool
     // TODO: Do we ever want to fetch but not update our local profile store?
-    fileprivate let shouldUpdateProfile: Bool
     fileprivate let fetchType: ProfileFetchType
 
     fileprivate init(mainAppOnly: Bool = true,
                      ignoreThrottling: Bool = false,
-                     shouldUpdateProfile: Bool = true,
                      fetchType: ProfileFetchType = .default) {
         self.mainAppOnly = mainAppOnly
         self.ignoreThrottling = ignoreThrottling
-        self.shouldUpdateProfile = shouldUpdateProfile
         self.fetchType = fetchType
     }
 }
@@ -90,6 +87,13 @@ extension ProfileRequestSubject: CustomStringConvertible {
 
 // MARK: -
 
+private struct FetchedProfile {
+    let profile: SignalServiceProfile
+    let versionedProfileRequest: VersionedProfileRequest?
+}
+
+// MARK: -
+
 @objc
 public class ProfileFetcherJob: NSObject {
 
@@ -105,12 +109,10 @@ public class ProfileFetcherJob: NSObject {
     public class func fetchAndUpdateProfilePromise(address: SignalServiceAddress,
                                                    mainAppOnly: Bool = true,
                                                    ignoreThrottling: Bool = false,
-                                                   shouldUpdateProfile: Bool = true,
                                                    fetchType: ProfileFetchType = .default) -> Promise<SignalServiceProfile> {
         let subject = ProfileRequestSubject.address(address: address)
         let options = ProfileFetchOptions(mainAppOnly: mainAppOnly,
                                           ignoreThrottling: ignoreThrottling,
-                                          shouldUpdateProfile: shouldUpdateProfile,
                                           fetchType: fetchType)
         return ProfileFetcherJob(subject: subject, options: options).runAsPromise()
     }
@@ -133,15 +135,15 @@ public class ProfileFetcherJob: NSObject {
         ProfileFetcherJob(subject: subject, options: options).runAsPromise()
             .done { profile in
                 success(profile.address)
-            }.catch { error in
-                switch error {
-                case ProfileFetchError.missing:
-                    notFound()
-                default:
-                    failure(error)
-                }
+        }.catch { error in
+            switch error {
+            case ProfileFetchError.missing:
+                notFound()
+            default:
+                failure(error)
             }
-            .retainUntilComplete()
+        }
+        .retainUntilComplete()
     }
 
     @objc(fetchAndUpdateProfilesWithThread:)
@@ -209,15 +211,13 @@ public class ProfileFetcherJob: NSObject {
             self.addBackgroundTask()
         }.then(on: DispatchQueue.global()) { _ in
             return self.requestProfile()
-        }.map(on: DispatchQueue.global()) { profile in
-            if self.options.shouldUpdateProfile {
-                self.updateProfile(signalServiceProfile: profile)
-            }
-            return profile
+        }.map(on: DispatchQueue.global()) { fetchedProfile in
+            self.updateProfile(fetchedProfile: fetchedProfile)
+            return fetchedProfile.profile
         }
     }
 
-    private func requestProfile() -> Promise<SignalServiceProfile> {
+    private func requestProfile() -> Promise<FetchedProfile> {
 
         guard !options.mainAppOnly || CurrentAppContext().isMainApp else {
             // We usually only refresh profiles in the MainApp to decrease the
@@ -246,49 +246,51 @@ public class ProfileFetcherJob: NSObject {
         return requestProfileWithRetries()
     }
 
-    private func requestProfileWithRetries(remainingRetries: Int = 3) -> Promise<SignalServiceProfile> {
+    private func requestProfileWithRetries(remainingRetries: Int = 3) -> Promise<FetchedProfile> {
         let subject = self.subject
 
-        let (promise, resolver) = Promise<SignalServiceProfile>.pending()
-        requestProfileAttempt()
-            .done(on: DispatchQueue.global()) { profile in
-                resolver.fulfill(profile)
-            }.catch(on: DispatchQueue.global()) { error in
-                if case .taskError(let task, _)? = error as? NetworkManagerError, task.statusCode() == 404 {
-                    resolver.reject(ProfileFetchError.missing)
+        let (promise, resolver) = Promise<FetchedProfile>.pending()
+        firstly {
+            requestProfileAttempt()
+        }.done(on: DispatchQueue.global()) { fetchedProfile in
+            resolver.fulfill(fetchedProfile)
+        }.catch(on: DispatchQueue.global()) { error in
+            if case .taskError(let task, _)? = error as? NetworkManagerError, task.statusCode() == 404 {
+                resolver.reject(ProfileFetchError.missing)
+                return
+            }
+
+            switch error {
+            case ProfileFetchError.throttled, ProfileFetchError.notMainApp:
+                // These errors should only be thrown at a higher level.
+                owsFailDebug("Unexpected error: \(error)")
+                resolver.reject(error)
+                return
+            case let error as SignalServiceProfile.ValidationError:
+                // This should not be retried.
+                owsFailDebug("skipping updateProfile retry. Invalid profile for: \(subject) error: \(error)")
+                resolver.reject(error)
+                return
+            default:
+                guard remainingRetries > 0 else {
+                    owsFailDebug("failed to get profile with error: \(error)")
+                    resolver.reject(error)
                     return
                 }
 
-                switch error {
-                case ProfileFetchError.throttled, ProfileFetchError.notMainApp:
-                    // These errors should only be thrown at a higher level.
-                    owsFailDebug("Unexpected error: \(error)")
-                    resolver.reject(error)
-                    return
-                case let error as SignalServiceProfile.ValidationError:
-                    // This should not be retried.
-                    owsFailDebug("skipping updateProfile retry. Invalid profile for: \(subject) error: \(error)")
-                    resolver.reject(error)
-                    return
-                default:
-                    guard remainingRetries > 0 else {
-                        owsFailDebug("failed to get profile with error: \(error)")
-                        resolver.reject(error)
-                        return
-                    }
-
+                firstly {
                     self.requestProfileWithRetries(remainingRetries: remainingRetries - 1)
-                        .done(on: DispatchQueue.global()) { profile in
-                            resolver.fulfill(profile)
-                        }.catch(on: DispatchQueue.global()) { error in
-                            resolver.reject(error)
-                        }.retainUntilComplete()
-                }
-            }.retainUntilComplete()
+                }.done(on: DispatchQueue.global()) { fetchedProfile in
+                    resolver.fulfill(fetchedProfile)
+                }.catch(on: DispatchQueue.global()) { error in
+                    resolver.reject(error)
+                }.retainUntilComplete()
+            }
+        }.retainUntilComplete()
         return promise
     }
 
-    private func requestProfileAttempt() -> Promise<SignalServiceProfile> {
+    private func requestProfileAttempt() -> Promise<FetchedProfile> {
         switch subject {
         case .address(let address):
             return requestProfileAttempt(address: address)
@@ -297,7 +299,7 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
-    private func requestProfileAttempt(username: String) -> Promise<SignalServiceProfile> {
+    private func requestProfileAttempt(username: String) -> Promise<FetchedProfile> {
         Logger.info("username")
 
         guard options.fetchType != .versioned else {
@@ -305,8 +307,11 @@ public class ProfileFetcherJob: NSObject {
         }
 
         let request = OWSRequestFactory.getProfileRequest(withUsername: username)
-        return networkManager.makePromise(request: request)
-            .map(on: DispatchQueue.global()) { try SignalServiceProfile(address: nil, responseObject: $1)
+        return firstly {
+            return networkManager.makePromise(request: request)
+        }.map(on: DispatchQueue.global()) {
+            let profile = try SignalServiceProfile(address: nil, responseObject: $1)
+            return FetchedProfile(profile: profile, versionedProfileRequest: nil)
         }
     }
 
@@ -321,7 +326,7 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
-    private func requestProfileAttempt(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
+    private func requestProfileAttempt(address: SignalServiceAddress) -> Promise<FetchedProfile> {
         Logger.verbose("address: \(address)")
 
         let shouldUseVersionedFetch = (shouldUseVersionedFetchForUuids
@@ -365,30 +370,46 @@ public class ProfileFetcherJob: NSObject {
         }, address: address,
            udAccess: udAccess,
            canFailoverUDAuth: canFailoverUDAuth)
-        return requestMaker.makeRequest()
-            .map(on: DispatchQueue.global()) { (result: RequestMakerResult) -> SignalServiceProfile in
-                try SignalServiceProfile(address: address, responseObject: result.responseObject)
-        }.map(on: DispatchQueue.global()) { (profile: SignalServiceProfile) -> SignalServiceProfile in
-            if let profileRequest = currentVersionedProfileRequest {
-                VersionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
-            }
-            return profile
+
+        return firstly {
+            return requestMaker.makeRequest()
+        }.map(on: DispatchQueue.global()) { (result: RequestMakerResult) -> FetchedProfile in
+            let profile = try SignalServiceProfile(address: address, responseObject: result.responseObject)
+            return FetchedProfile(profile: profile, versionedProfileRequest: currentVersionedProfileRequest)
         }
     }
 
-    private func updateProfile(signalServiceProfile: SignalServiceProfile) {
-        let address = signalServiceProfile.address
-        verifyIdentityUpToDateAsync(address: address, latestIdentityKey: signalServiceProfile.identityKey)
+    // TODO: This method can cause many database writes.
+    //       Perhaps we can use a single transaction?
+    private func updateProfile(fetchedProfile: FetchedProfile) {
+        let profile = fetchedProfile.profile
+        let address = profile.address
+
+        if let profileRequest = fetchedProfile.versionedProfileRequest {
+            VersionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
+        }
 
         profileManager.updateProfile(for: address,
-                                     profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
-                                     username: signalServiceProfile.username,
-                                     isUuidCapable: signalServiceProfile.supportsUUID,
-                                     avatarUrlPath: signalServiceProfile.avatarUrlPath)
+                                     profileNameEncrypted: profile.profileNameEncrypted,
+                                     username: profile.username,
+                                     isUuidCapable: profile.supportsUUID,
+                                     avatarUrlPath: profile.avatarUrlPath)
 
         updateUnidentifiedAccess(address: address,
-                                 verifier: signalServiceProfile.unidentifiedAccessVerifier,
-                                 hasUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
+                                 verifier: profile.unidentifiedAccessVerifier,
+                                 hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess)
+
+        databaseStorage.asyncWrite { transaction in
+            // GroupsV2 TODO: Do we need to bother clearing this state
+            // if supportsGroupsV2 is false?
+            GroupManager.setUserHasGroupsV2Capability(address: address,
+                                                      value: profile.supportsGroupsV2,
+                                                      transaction: transaction)
+
+            self.verifyIdentityUpToDateAsync(address: address,
+                                             latestIdentityKey: profile.identityKey,
+                                             transaction: transaction)
+        }
     }
 
     private func updateUnidentifiedAccess(address: SignalServiceAddress, verifier: Data?, hasUnrestrictedAccess: Bool) {
@@ -425,14 +446,14 @@ public class ProfileFetcherJob: NSObject {
         udManager.setUnidentifiedAccessMode(.enabled, address: address)
     }
 
-    private func verifyIdentityUpToDateAsync(address: SignalServiceAddress, latestIdentityKey: Data) {
-        databaseStorage.asyncWrite { (transaction) in
-            if self.identityManager.saveRemoteIdentity(latestIdentityKey, address: address, transaction: transaction) {
-                Logger.info("updated identity key with fetched profile for recipient: \(address)")
-                self.sessionStore.archiveAllSessions(for: address, transaction: transaction)
-            } else {
-                // no change in identity.
-            }
+    private func verifyIdentityUpToDateAsync(address: SignalServiceAddress,
+                                             latestIdentityKey: Data,
+                                             transaction: SDSAnyWriteTransaction) {
+        if self.identityManager.saveRemoteIdentity(latestIdentityKey, address: address, transaction: transaction) {
+            Logger.info("updated identity key with fetched profile for recipient: \(address)")
+            self.sessionStore.archiveAllSessions(for: address, transaction: transaction)
+        } else {
+            // no change in identity.
         }
     }
 

@@ -223,8 +223,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
                 case GroupsV2Error.groupNotInDatabase:
                     // Unknown groups are handled by snapshot.
                     break
-                case GroupsV2Error.todo:
-                    Logger.warn("Error: \(error)")
                 default:
                     owsFailDebug("Error: \(error)")
                 }

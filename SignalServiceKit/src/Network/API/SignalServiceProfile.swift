@@ -21,6 +21,7 @@ public class SignalServiceProfile: NSObject {
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
     public let supportsUUID: Bool
+    public let supportsGroupsV2: Bool
     public let credential: Data?
 
     public init(address: SignalServiceAddress?, responseObject: Any?) throws {
@@ -70,6 +71,9 @@ public class SignalServiceProfile: NSObject {
         } else {
             self.supportsUUID = false
         }
+
+        // GroupsV2 TODO: Parse this capability when it exists on the service.
+        self.supportsGroupsV2 = true
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
     }

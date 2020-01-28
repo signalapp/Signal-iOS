@@ -14,9 +14,6 @@ public enum GroupsV2Error: Error {
     case unauthorized
     case shouldRetry
     case shouldDiscard
-    // GroupsV2 TODO: Indicates errors that represent future work.
-    //                We'll remove this error when they are no longer necessary.
-    case todo
     case groupNotInDatabase
 }
 

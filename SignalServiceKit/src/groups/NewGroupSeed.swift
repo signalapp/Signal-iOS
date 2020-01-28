@@ -31,7 +31,7 @@ public class NewGroupSeed: NSObject {
     public override init() {
         groupIdV1 = TSGroupModel.generateRandomV1GroupId()
 
-        if FeatureFlags.tryToCreateNewGroupsV2 {
+        if FeatureFlags.groupsV2CreateGroups {
             let groupsV2 = NewGroupSeed.groupsV2
             let groupSecretParamsData = try! groupsV2.generateGroupSecretParamsData()
             self.groupSecretParamsData = groupSecretParamsData

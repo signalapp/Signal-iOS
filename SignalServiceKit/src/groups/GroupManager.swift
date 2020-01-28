@@ -250,7 +250,7 @@ public class GroupManager: NSObject {
     private static func groupsVersion(for members: Set<SignalServiceAddress>,
                                       transaction: SDSAnyReadTransaction) -> GroupsVersion {
 
-        guard FeatureFlags.tryToCreateNewGroupsV2 else {
+        guard FeatureFlags.groupsV2CreateGroups else {
             return .V1
         }
         let canUseV2 = self.canUseV2(for: members, transaction: transaction)
@@ -261,25 +261,31 @@ public class GroupManager: NSObject {
                                  transaction: SDSAnyReadTransaction) -> Bool {
 
         for recipientAddress in members {
-            guard let uuid = recipientAddress.uuid else {
-                Logger.warn("Creating legacy group; member without UUID.")
+            guard doesUserSupportGroupsV2(address: recipientAddress, transaction: transaction) else {
                 return false
             }
-            let address = SignalServiceAddress(uuid: uuid)
-            let hasCredential = self.groupsV2.hasProfileKeyCredential(for: address,
-                                                                      transaction: transaction)
-            guard hasCredential else {
-                Logger.warn("Creating legacy group; member missing credential.")
-                return false
-            }
-            // GroupsV2 TODO: Check capability.
+        }
+        return true
+    }
+
+    private static func doesUserSupportGroupsV2(address: SignalServiceAddress,
+                                                transaction: SDSAnyReadTransaction) -> Bool {
+
+        guard address.uuid != nil else {
+            Logger.warn("Creating legacy group; member without UUID.")
+            return false
+        }
+        guard doesUserHasGroupsV2Capability(address: address,
+                                            transaction: transaction) else {
+                                                Logger.warn("Creating legacy group; member without Groups v2 capability.")
+                                                return false
         }
         return true
     }
 
     @objc
     public static var defaultGroupsVersion: GroupsVersion {
-        guard FeatureFlags.tryToCreateNewGroupsV2 else {
+        guard FeatureFlags.groupsV2CreateGroups else {
             return .V1
         }
         return .V2
@@ -342,7 +348,7 @@ public class GroupManager: NSObject {
             // We will need a profile key credential for all users including
             // ourself.  If we've never done a versioned profile update,
             // try to do so now.
-            guard FeatureFlags.tryToCreateNewGroupsV2 else {
+            guard FeatureFlags.groupsV2CreateGroups else {
                 return Promise.value(groupMembership)
             }
             let hasLocalCredential = self.databaseStorage.read { transaction in
@@ -359,21 +365,25 @@ public class GroupManager: NSObject {
         }.then(on: .global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
             // Try to obtain profile key credentials for all group members
             // including ourself, unless we already have them on hand.
-            guard FeatureFlags.tryToCreateNewGroupsV2 else {
+            guard FeatureFlags.groupsV2CreateGroups else {
                 return Promise.value(groupMembership)
             }
             return groupsV2Swift.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allUsers))
                 .map(on: .global()) { (_) -> GroupMembership in
                     return groupMembership
             }
-        }.then(on: .global()) { (groupMembership: GroupMembership) throws -> Promise<TSGroupModel> in
+        }.then(on: .global()) { (oldGroupMembership: GroupMembership) throws -> Promise<TSGroupModel> in
             // GroupsV2 TODO: Let users specify access levels in the "new group" view.
             let groupAccess = GroupAccess.allAccess
-            let groupModel = try self.databaseStorage.read { transaction in
+            let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
+                let newGroupMembership = self.separatePendingMembersForNewGroup(in: oldGroupMembership,
+                                                                                transaction: transaction)
+                Logger.verbose("newGroupMembership: \(newGroupMembership.debugDescription)")
+                Logger.flush()
                 return try self.buildGroupModel(groupId: groupId,
                                                 name: name,
                                                 avatarData: avatarData,
-                                                groupMembership: groupMembership,
+                                                groupMembership: newGroupMembership,
                                                 groupAccess: groupAccess,
                                                 groupV2Revision: 0,
                                                 newGroupSeed: newGroupSeed,
@@ -398,6 +408,25 @@ public class GroupManager: NSObject {
                 return Promise.value(thread)
             }
         }
+    }
+
+    private static func separatePendingMembersForNewGroup(in groupMembership: GroupMembership,
+                                                          transaction: SDSAnyReadTransaction) -> GroupMembership {
+        var builder = GroupMembership.Builder()
+        for address in groupMembership.allUsers {
+            guard doesUserSupportGroupsV2(address: address, transaction: transaction) else {
+                // Use simple group membership for legacy groups.
+                return groupMembership
+            }
+
+            // We must call this _after_ we try to fetch profile key credentials for
+            // all members.
+            let isPending = !groupsV2.hasProfileKeyCredential(for: address,
+                                                              transaction: transaction)
+            let isAdministrator = groupMembership.isAdministrator(address)
+            builder.add(address, isAdministrator: isAdministrator, isPending: isPending)
+        }
+        return builder.build()
     }
 
     private static func createNewGroupOnServiceIfNecessary(groupModel: TSGroupModel) -> Promise<TSGroupModel> {
@@ -695,6 +724,7 @@ public class GroupManager: NSObject {
         }
     }
 
+    // GroupsV2 TODO: This should block on message processing.
     private static func updateExistingGroupV2(groupId: Data,
                                               name: String? = nil,
                                               avatarData: Data? = nil,
@@ -862,7 +892,7 @@ public class GroupManager: NSObject {
         }
     }
 
-    // MARK: -
+    // MARK: - Group Database
 
     public static func insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: TSGroupModel,
                                                                        groupUpdateSourceAddress: SignalServiceAddress?,
@@ -954,5 +984,42 @@ public class GroupManager: NSObject {
                                         messageType: .typeGroupUpdate,
                                         infoMessageUserInfo: userInfo)
         infoMessage.anyInsert(transaction: transaction)
+    }
+
+    // MARK: - Group Database
+
+    @objc
+    public static let groupsV2CapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2Capability")
+
+    @objc
+    public static func doesUserHasGroupsV2Capability(address: SignalServiceAddress,
+                                                     transaction: SDSAnyReadTransaction) -> Bool {
+        if FeatureFlags.groupsV2IgnoreCapability {
+            return true
+        }
+
+        if let uuid = address.uuid {
+            if groupsV2CapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction) {
+                return true
+            }
+        }
+        if let phoneNumber = address.phoneNumber {
+            if groupsV2CapabilityStore.getBool(phoneNumber, defaultValue: false, transaction: transaction) {
+                return true
+            }
+        }
+        return false
+    }
+
+    @objc
+    public static func setUserHasGroupsV2Capability(address: SignalServiceAddress,
+                                                    value: Bool,
+                                                    transaction: SDSAnyWriteTransaction) {
+        if let uuid = address.uuid {
+            groupsV2CapabilityStore.setBool(value, key: uuid.uuidString, transaction: transaction)
+        }
+        if let phoneNumber = address.phoneNumber {
+            groupsV2CapabilityStore.setBool(value, key: phoneNumber, transaction: transaction)
+        }
     }
 }

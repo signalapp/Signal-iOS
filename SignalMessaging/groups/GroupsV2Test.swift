@@ -31,7 +31,7 @@ public class GroupsV2Test: NSObject {
     @objc
     public static func testGroupsV2Functionality() {
         guard !FeatureFlags.isUsingProductionService,
-            FeatureFlags.tryToCreateNewGroupsV2,
+            FeatureFlags.groupsV2CreateGroups,
             FeatureFlags.versionedProfiledFetches,
             FeatureFlags.versionedProfiledUpdate else {
                 owsFailDebug("Incorrect feature flags.")
