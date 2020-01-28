@@ -57,8 +57,7 @@ class ExperienceUpgradeManager: NSObject {
 
     private static func hasSplash(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
         switch experienceUpgrade.id {
-        case .introducingPins,
-             .requiredProfileNames:
+        case .introducingPins:
             return true
         default:
             return false
@@ -69,9 +68,6 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins:
             let vc = IntroducingPinsSplash(experienceUpgrade: experienceUpgrade)
-            return OWSNavigationController(rootViewController: vc)
-        case .requiredProfileNames:
-            let vc = RequiredProfileNamesSplash(experienceUpgrade: experienceUpgrade)
             return OWSNavigationController(rootViewController: vc)
         default:
             return nil
@@ -84,7 +80,7 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins,
              .reactions,
-             .requiredProfileNames:
+             .profileNameReminder:
             return true
         default:
             return false
@@ -97,8 +93,8 @@ class ExperienceUpgradeManager: NSObject {
             return IntroducingPinsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .reactions:
             return ReactionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .requiredProfileNames:
-            return RequiredProfileNamesMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .profileNameReminder:
+            return ProfileNameReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }

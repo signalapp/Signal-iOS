@@ -22,8 +22,8 @@ public class RemoteConfig: NSObject {
     }
 
     @objc
-    public static var requiredProfileNames: Bool {
-        return isEnabled("ios.requiredProfileNames")
+    public static var profileNameReminder: Bool {
+        return isEnabled("ios.profileNameReminder")
     }
 
     private static func isEnabled(_ key: String, defaultValue: Bool = false) -> Bool {
