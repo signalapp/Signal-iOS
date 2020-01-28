@@ -239,7 +239,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
                                                      groupUpdateMode: groupUpdateMode)
             .recover { (error) throws -> Promise<TSGroupThread> in
                 switch error {
-                case GroupsV2Error.unknownGroup:
+                case GroupsV2Error.groupNotInDatabase:
                     // Unknown groups are handled by snapshot.
                     break
                 case GroupsV2Error.todo:

@@ -288,7 +288,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             let fromRevision = try self.databaseStorage.read { (transaction) throws -> UInt32 in
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                     // This probably isn't an error and will be handled upstream.
-                    throw GroupsV2Error.unknownGroup
+                    throw GroupsV2Error.groupNotInDatabase
                 }
                 guard groupThread.groupModel.groupsVersion == .V2 else {
                     throw OWSAssertionError("Invalid groupsVersion.")
