@@ -8,7 +8,7 @@ import SignalServiceKit
 import ZKGroup
 
 @objc
-public class GroupV2UpdatesImpl: NSObject, GroupV2Updates {
+public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
 
     // MARK: - Dependencies
 
@@ -146,6 +146,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates {
                 var refreshState = self.refreshState(for: groupUpdateMode)
                 refreshState.groupRefreshDidSucceed(forGroupId: groupId)
             }
+        }.catch(on: .global()) { error in
+            Logger.verbose("Group refresh failed: \(error).")
         }.retainUntilComplete()
         operationQueue.addOperation(operation)
         return operation.promise
@@ -239,7 +241,15 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates {
         return fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                      groupUpdateMode: groupUpdateMode)
             .recover { (error) throws -> Promise<TSGroupThread> in
-                owsFailDebug("Error: \(error)")
+                switch error {
+                case GroupsV2Error.unknownGroup:
+                    // Unknown groups are handled by snapshot.
+                    break
+                case GroupsV2Error.todo:
+                    Logger.warn("Error: \(error)")
+                default:
+                    owsFailDebug("Error: \(error)")
+                }
 
                 // GroupsV2 TODO: This should not fail over in the case of networking problems.
 
@@ -268,7 +278,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates {
         guard changedGroupModel.newGroupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
         }
-        
+
         // GroupsV2 TODO: Set groupUpdateSourceAddress.
         let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                           newGroupModel: changedGroupModel.newGroupModel,

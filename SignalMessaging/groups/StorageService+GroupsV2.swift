@@ -62,7 +62,7 @@ public extension StorageService {
                                                     authCredentialMap: [UInt32: AuthCredential],
                                                     redemptionTime: UInt32) throws -> NSURLRequest {
 
-        let urlPath = "/v1/groups/\(OWSFormat.formatInt(Int32(fromRevision)))"
+        let urlPath = "/v1/groups/logs/\(OWSFormat.formatInt(Int32(fromRevision)))"
         return try buildGroupV2Request(protoData: nil,
                                        urlPath: urlPath,
                                        httpMethod: "GET",

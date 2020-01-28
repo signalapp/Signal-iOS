@@ -287,12 +287,19 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }.map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) throws -> NSURLRequest in
             let fromRevision = try self.databaseStorage.read { (transaction) throws -> UInt32 in
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                    throw OWSAssertionError("Missing groupThread.")
+                    // This probably isn't an error and will be handled upstream.
+                    throw GroupsV2Error.unknownGroup
                 }
                 guard groupThread.groupModel.groupsVersion == .V2 else {
                     throw OWSAssertionError("Invalid groupsVersion.")
                 }
                 return groupThread.groupModel.groupV2Revision
+            }
+            guard fromRevision > 0 else {
+                // GroupsV2 TODO: This is temporary.
+                //                There appears to be a bug in the service.
+                //                GET /v1/groups/logs/0 always fails.
+                throw GroupsV2Error.todo
             }
 
             let redemptionTime = self.daysSinceEpoch
@@ -364,10 +371,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                     return resolver.reject(OWSAssertionError("Invalid response: \(response.statusCode)"))
                 }
 
-                // GroupsV2 TODO: Some requests might not have a response body.
-                guard let responseData = responseObject as? Data else {
-                    return resolver.reject(OWSAssertionError("Missing response data."))
-                }
+                // NOTE: responseObject may be nil; not all group v2 responses have bodies.
                 let serviceResponse = ServiceResponse(task: blockTask, response: response, responseObject: responseObject)
                 return resolver.fulfill(serviceResponse)
             }
