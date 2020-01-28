@@ -37,8 +37,8 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         return OWSProfileManager.shared()
     }
 
-    fileprivate var groupUpdates: GroupUpdates {
-        return SSKEnvironment.shared.groupUpdates
+    fileprivate var groupV2Updates: GroupV2Updates {
+        return SSKEnvironment.shared.groupV2Updates
     }
 
     // MARK: -
@@ -65,9 +65,9 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             return Promise<Void>(error: OWSAssertionError("Missing localUuid."))
         }
         let sessionManager = self.sessionManager
-        let groupParams: GroupParams
+        let groupV2Params: GroupV2Params
         do {
-            groupParams = try GroupParams(groupModel: groupModel)
+            groupV2Params = try GroupV2Params(groupModel: groupModel)
         } catch {
             return Promise<Void>(error: error)
         }
@@ -88,7 +88,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             return self.buildNewGroupRequest(groupModel: groupModel,
                                              localUuid: localUuid,
                                              profileKeyCredentialMap: profileKeyCredentialMap,
-                                             groupParams: groupParams,
+                                             groupV2Params: groupV2Params,
                                              sessionManager: sessionManager)
         }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
             return self.performServiceRequest(request: request, sessionManager: sessionManager)
@@ -98,19 +98,19 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     private func buildNewGroupRequest(groupModel: TSGroupModel,
                                       localUuid: UUID,
                                       profileKeyCredentialMap: ProfileKeyCredentialMap,
-                                      groupParams: GroupParams,
+                                      groupV2Params: GroupV2Params,
                                       sessionManager: AFHTTPSessionManager) -> Promise<NSURLRequest> {
 
         return retrieveCredentials(localUuid: localUuid)
             .map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) -> NSURLRequest in
 
                 let groupProto = try GroupsV2Protos.buildNewGroupProto(groupModel: groupModel,
-                                                                       groupParams: groupParams,
+                                                                       groupV2Params: groupV2Params,
                                                                        profileKeyCredentialMap: profileKeyCredentialMap,
                                                                        localUuid: localUuid)
                 let redemptionTime = self.daysSinceEpoch
                 return try StorageService.buildNewGroupRequest(groupProto: groupProto,
-                                                               groupParams: groupParams,
+                                                               groupV2Params: groupV2Params,
                                                                sessionManager: sessionManager,
                                                                authCredentialMap: authCredentialMap,
                                                                redemptionTime: redemptionTime)
@@ -127,9 +127,9 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
         let sessionManager = self.sessionManager
-        let groupParams: GroupParams
+        let groupV2Params: GroupV2Params
         do {
-            groupParams = try GroupParams(groupSecretParamsData: changeSet.groupSecretParamsData)
+            groupV2Params = try GroupV2Params(groupSecretParamsData: changeSet.groupSecretParamsData)
         } catch {
             return Promise(error: error)
         }
@@ -143,7 +143,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }.then(on: DispatchQueue.global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> Promise<NSURLRequest> in
             // GroupsV2 TODO: We should implement retry for all request methods in this class.
             return self.buildUpdateGroupRequest(localUuid: localUuid,
-                                                groupParams: groupParams,
+                                                groupV2Params: groupV2Params,
                                                 groupChangeProto: groupChangeProto,
                                                 sessionManager: sessionManager)
         }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
@@ -159,9 +159,9 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             // we should use exactly the same group model that was used to construct
             // the update request - which should reflect pre-update service state.
             let updatedGroupThread = try self.databaseStorage.write { transaction throws -> TSGroupThread in
-                return try self.groupUpdates.updateGroupWithChangeActions(groupId: groupId,
-                                                                          changeActionsProto: changeActionsProto,
-                                                                          transaction: transaction)
+                return try self.groupV2Updates.updateGroupWithChangeActions(groupId: groupId,
+                                                                            changeActionsProto: changeActionsProto,
+                                                                            transaction: transaction)
             }
 
             // GroupsV2 TODO: Handle conflicts.
@@ -191,7 +191,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     private func buildUpdateGroupRequest(localUuid: UUID,
-                                         groupParams: GroupParams,
+                                         groupV2Params: GroupV2Params,
                                          groupChangeProto: GroupsProtoGroupChangeActions,
                                          sessionManager: AFHTTPSessionManager) -> Promise<NSURLRequest> {
 
@@ -199,7 +199,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             .map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) -> NSURLRequest in
                 let redemptionTime = self.daysSinceEpoch
                 return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
-                                                                  groupParams: groupParams,
+                                                                  groupV2Params: groupV2Params,
                                                                   sessionManager: sessionManager,
                                                                   authCredentialMap: authCredentialMap,
                                                                   redemptionTime: redemptionTime)
@@ -225,10 +225,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise<GroupV2Snapshot>(error: OWSAssertionError("Missing localUuid."))
         }
-        return DispatchQueue.global().async(.promise) { () -> GroupParams in
-            return try GroupParams(groupSecretParamsData: groupSecretParamsData)
-        }.then(on: DispatchQueue.global()) { (groupParams: GroupParams) -> Promise<GroupV2Snapshot> in
-            return self.fetchCurrentGroupV2Snapshot(groupParams: groupParams,
+        return DispatchQueue.global().async(.promise) { () -> GroupV2Params in
+            return try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        }.then(on: DispatchQueue.global()) { (groupV2Params: GroupV2Params) -> Promise<GroupV2Snapshot> in
+            return self.fetchCurrentGroupV2Snapshot(groupV2Params: groupV2Params,
                                                     localUuid: localUuid)
         }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) -> GroupV2Snapshot in
             // GroupsV2 TODO: Remove this logging.
@@ -237,7 +237,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }
     }
 
-    private func fetchCurrentGroupV2Snapshot(groupParams: GroupParams,
+    private func fetchCurrentGroupV2Snapshot(groupV2Params: GroupV2Params,
                                              localUuid: UUID) -> Promise<GroupV2Snapshot> {
         let sessionManager = self.sessionManager
         return firstly {
@@ -245,7 +245,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }.map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) -> NSURLRequest in
 
             let redemptionTime = self.daysSinceEpoch
-            return try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupParams: groupParams,
+            return try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: groupV2Params,
                                                                               sessionManager: sessionManager,
                                                                               authCredentialMap: authCredentialMap,
                                                                               redemptionTime: redemptionTime)
@@ -256,7 +256,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             let groupProto = try GroupsProtoGroup.parseData(groupProtoData)
-            return try GroupsV2Protos.parse(groupProto: groupProto, groupParams: groupParams)
+            return try GroupsV2Protos.parse(groupProto: groupProto, groupV2Params: groupV2Params)
         }
     }
 
@@ -267,19 +267,19 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
-        return DispatchQueue.global().async(.promise) { () -> (Data, GroupParams) in
+        return DispatchQueue.global().async(.promise) { () -> (Data, GroupV2Params) in
             let groupId = try self.groupId(forGroupSecretParamsData: groupSecretParamsData)
-            let groupParams = try GroupParams(groupSecretParamsData: groupSecretParamsData)
-            return (groupId, groupParams)
-        }.then(on: DispatchQueue.global()) { (groupId: Data, groupParams: GroupParams) -> Promise<[GroupV2Change]> in
+            let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+            return (groupId, groupV2Params)
+        }.then(on: DispatchQueue.global()) { (groupId: Data, groupV2Params: GroupV2Params) -> Promise<[GroupV2Change]> in
             return self.fetchGroupChangeActions(groupId: groupId,
-                                                groupParams: groupParams,
+                                                groupV2Params: groupV2Params,
                                                 localUuid: localUuid)
         }
     }
 
     private func fetchGroupChangeActions(groupId: Data,
-                                         groupParams: GroupParams,
+                                         groupV2Params: GroupV2Params,
                                          localUuid: UUID) -> Promise<[GroupV2Change]> {
         let sessionManager = self.sessionManager
         return firstly {
@@ -296,7 +296,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             }
 
             let redemptionTime = self.daysSinceEpoch
-            return try StorageService.buildFetchGroupChangeActionsRequest(groupParams: groupParams,
+            return try StorageService.buildFetchGroupChangeActionsRequest(groupV2Params: groupV2Params,
                                                                           fromRevision: fromRevision,
                                                                           sessionManager: sessionManager,
                                                                           authCredentialMap: authCredentialMap,
@@ -308,7 +308,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             let groupChangesProto = try GroupsProtoGroupChanges.parseData(groupChangesProtoData)
-            return try GroupsV2Protos.parse(groupChangesProto: groupChangesProto, groupParams: groupParams)
+            return try GroupsV2Protos.parse(groupChangesProto: groupChangesProto, groupV2Params: groupV2Params)
         }
     }
 

@@ -341,9 +341,9 @@ typedef enum : NSUInteger {
     return AppEnvironment.shared.notificationPresenter;
 }
 
-- (id<GroupUpdates>)groupUpdates
+- (id<GroupV2Updates>)groupV2Updates
 {
-    return SSKEnvironment.shared.groupUpdates;
+    return SSKEnvironment.shared.groupV2Updates;
 }
 
 #pragma mark -
@@ -509,7 +509,7 @@ typedef enum : NSUInteger {
                                                           userInfo:nil
                                                            repeats:YES];
 
-    [self.groupUpdates tryToRefreshGroupUpToCurrentRevisionAfterMessageProcessWithThrottlingWithThrottling:thread];
+    [self.groupV2Updates tryToRefreshGroupUpToCurrentRevisionAfterMessageProcessWithThrottlingWithThrottling:thread];
 }
 
 - (void)dealloc

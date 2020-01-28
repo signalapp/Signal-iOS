@@ -8,7 +8,7 @@ import SignalServiceKit
 import ZKGroup
 
 @objc
-public class GroupUpdatesImpl: NSObject, GroupUpdates {
+public class GroupV2UpdatesImpl: NSObject, GroupV2Updates {
 
     // MARK: - Dependencies
 
@@ -35,7 +35,7 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
 
     // MARK: -
 
-    private let serialQueue = DispatchQueue(label: "GroupUpdatesImpl")
+    private let serialQueue = DispatchQueue(label: "GroupV2UpdatesImpl")
 
     // This struct should only be accessed on serialQueue.
     private struct RefreshState {
@@ -138,7 +138,7 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
             return Promise.value(())
         }
 
-        let operation = GroupV2UpdateOperation(groupUpdates: self, groupSecretParamsData: groupSecretParamsData, groupUpdateMode: groupUpdateMode)
+        let operation = GroupV2UpdateOperation(groupV2Updates: self, groupSecretParamsData: groupSecretParamsData, groupUpdateMode: groupUpdateMode)
         operation.promise.done(on: .global()) { _ in
             Logger.verbose("Group refresh succeeded.")
 
@@ -153,13 +153,13 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
 
     let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "GroupUpdatesImpl"
+        operationQueue.name = "GroupV2UpdatesImpl"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()
 
     private class GroupV2UpdateOperation: OWSOperation {
-        let groupUpdates: GroupUpdatesImpl
+        let groupV2Updates: GroupV2UpdatesImpl
         let groupSecretParamsData: Data
         let groupUpdateMode: GroupUpdateMode
 
@@ -168,10 +168,10 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
 
         // MARK: -
 
-        required init(groupUpdates: GroupUpdatesImpl,
+        required init(groupV2Updates: GroupV2UpdatesImpl,
                       groupSecretParamsData: Data,
                       groupUpdateMode: GroupUpdateMode) {
-            self.groupUpdates = groupUpdates
+            self.groupV2Updates = groupV2Updates
             self.groupSecretParamsData = groupSecretParamsData
             self.groupUpdateMode = groupUpdateMode
 
@@ -188,8 +188,8 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
 
         public override func run() {
             firstly {
-                groupUpdates.refreshGroupFromService(groupSecretParamsData: groupSecretParamsData,
-                                                     groupUpdateMode: groupUpdateMode)
+                groupV2Updates.refreshGroupFromService(groupSecretParamsData: groupSecretParamsData,
+                                                       groupUpdateMode: groupUpdateMode)
             }.done(on: .global()) { _ in
                 Logger.verbose("Group refresh succeeded.")
 
@@ -268,10 +268,10 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
         guard changedGroupModel.newGroupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
         }
-        // GroupsV2 TODO: Set groupUpdateSourceAddress.
+        // GroupsV2 TODO: Set groupV2UpdatesourceAddress.
         let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                           newGroupModel: changedGroupModel.newGroupModel,
-                                                                                                          groupUpdateSourceAddress: nil,
+                                                                                                          groupV2UpdatesourceAddress: nil,
                                                                                                           transaction: transaction)
 
         guard updatedGroupThread.groupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
@@ -335,11 +335,11 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
                 }
                 let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupChange.snapshot,
                                                                      transaction: transaction)
-                // GroupsV2 TODO: Set groupUpdateSourceAddress.
-                let groupUpdateSourceAddress: SignalServiceAddress? = nil
+                // GroupsV2 TODO: Set groupV2UpdatesourceAddress.
+                let groupV2UpdatesourceAddress: SignalServiceAddress? = nil
                 groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                        newGroupModel: newGroupModel,
-                                                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                                       groupV2UpdatesourceAddress: groupV2UpdatesourceAddress,
                                                                                                        transaction: transaction)
 
             }
@@ -378,10 +378,10 @@ public class GroupUpdatesImpl: NSObject, GroupUpdates {
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot,
                                                                  transaction: transaction)
-            // GroupsV2 TODO: Set groupUpdateSourceAddress.
-            let groupUpdateSourceAddress: SignalServiceAddress? = nil
+            // GroupsV2 TODO: Set groupV2UpdatesourceAddress.
+            let groupV2UpdatesourceAddress: SignalServiceAddress? = nil
             return try GroupManager.tryToUpdateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
-                                                                                                 groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                                 groupV2UpdatesourceAddress: groupV2UpdatesourceAddress,
                                                                                                  canInsert: true,
                                                                                                  transaction: transaction)
         }

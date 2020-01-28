@@ -68,7 +68,7 @@ public class GroupsV2Changes {
         guard let groupSecretParamsData = oldGroupModel.groupSecretParamsData else {
             throw OWSAssertionError("Missing groupSecretParamsData.")
         }
-        let groupParams = try GroupParams(groupModel: oldGroupModel)
+        let groupV2Params = try GroupV2Params(groupModel: oldGroupModel)
 
         var newGroupName: String? = oldGroupModel.groupName
         let oldGroupMembership = oldGroupModel.groupMembership
@@ -97,7 +97,7 @@ public class GroupsV2Changes {
             guard let profileKey = member.profileKey else {
                 throw OWSAssertionError("Missing profileKey.")
             }
-            let uuid = try groupParams.uuid(forUserId: userId)
+            let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
             let isAdministrator = role == .administrator
 
@@ -113,7 +113,7 @@ public class GroupsV2Changes {
             guard let userId = action.deletedUserID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            let uuid = try groupParams.uuid(forUserId: userId)
+            let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
             guard oldGroupMembership.allMembers.contains(address) else {
@@ -129,7 +129,7 @@ public class GroupsV2Changes {
             guard let role = action.role else {
                 throw OWSAssertionError("Missing role.")
             }
-            let uuid = try groupParams.uuid(forUserId: userId)
+            let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
             let isAdministrator = role == .administrator
 
@@ -146,8 +146,8 @@ public class GroupsV2Changes {
             let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
             let uuidCiphertext = try presentation.getUuidCiphertext()
             let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
-            let uuid = try groupParams.uuid(forUuidCiphertext: uuidCiphertext)
-            let profileKey = try groupParams.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
+            let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
 
             let address = SignalServiceAddress(uuid: uuid)
             guard oldGroupMembership.allMembers.contains(address) else {
@@ -172,7 +172,7 @@ public class GroupsV2Changes {
             guard let profileKey = member.profileKey else {
                 throw OWSAssertionError("Missing profileKey.")
             }
-            let uuid = try groupParams.uuid(forUserId: userId)
+            let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
             let isAdministrator = role == .administrator
 
@@ -188,7 +188,7 @@ public class GroupsV2Changes {
             guard let userId = action.deletedUserID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            let uuid = try groupParams.uuid(forUserId: userId)
+            let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
             guard oldGroupMembership.allPendingMembers.contains(address) else {
@@ -204,8 +204,8 @@ public class GroupsV2Changes {
             let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
             let uuidCiphertext = try presentation.getUuidCiphertext()
             let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
-            let uuid = try groupParams.uuid(forUuidCiphertext: uuidCiphertext)
-            let profileKey = try groupParams.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
+            let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
 
             let address = SignalServiceAddress(uuid: uuid)
             guard oldGroupMembership.allPendingMembers.contains(address) else {
@@ -222,7 +222,7 @@ public class GroupsV2Changes {
 
         if let action = changeActionsProto.modifyTitle {
             if let titleData = action.title {
-                newGroupName = try groupParams.decryptString(titleData)
+                newGroupName = try groupV2Params.decryptString(titleData)
             } else {
                 // Other client cleared the group title.
                 newGroupName = nil

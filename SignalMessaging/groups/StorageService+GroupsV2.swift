@@ -11,52 +11,52 @@ public extension StorageService {
     typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
 
     static func buildNewGroupRequest(groupProto: GroupsProtoGroup,
-                                     groupParams: GroupParams,
+                                     groupV2Params: GroupV2Params,
                                      sessionManager: AFHTTPSessionManager,
                                      authCredentialMap: [UInt32: AuthCredential],
                                      redemptionTime: UInt32) throws -> NSURLRequest {
 
         let protoData = try groupProto.serializedData()
         return try buildGroupV2Request(protoData: protoData,
-                                            urlPath: "/v1/groups/",
-                                            httpMethod: "PUT",
-                                            groupParams: groupParams,
-                                            sessionManager: sessionManager,
-                                            authCredentialMap: authCredentialMap,
-                                            redemptionTime: redemptionTime)
+                                       urlPath: "/v1/groups/",
+                                       httpMethod: "PUT",
+                                       groupV2Params: groupV2Params,
+                                       sessionManager: sessionManager,
+                                       authCredentialMap: authCredentialMap,
+                                       redemptionTime: redemptionTime)
     }
 
     static func buildUpdateGroupRequest(groupChangeProto: GroupsProtoGroupChangeActions,
-                                        groupParams: GroupParams,
+                                        groupV2Params: GroupV2Params,
                                         sessionManager: AFHTTPSessionManager,
                                         authCredentialMap: [UInt32: AuthCredential],
                                         redemptionTime: UInt32) throws -> NSURLRequest {
 
         let protoData = try groupChangeProto.serializedData()
         return try buildGroupV2Request(protoData: protoData,
-                                            urlPath: "/v1/groups/",
-                                            httpMethod: "PATCH",
-                                            groupParams: groupParams,
-                                            sessionManager: sessionManager,
-                                            authCredentialMap: authCredentialMap,
-                                            redemptionTime: redemptionTime)
-    }
-
-    static func buildFetchCurrentGroupV2SnapshotRequest(groupParams: GroupParams,
-                                                   sessionManager: AFHTTPSessionManager,
-                                                   authCredentialMap: [UInt32: AuthCredential],
-                                                   redemptionTime: UInt32) throws -> NSURLRequest {
-
-        return try buildGroupV2Request(protoData: nil,
                                        urlPath: "/v1/groups/",
-                                       httpMethod: "GET",
-                                       groupParams: groupParams,
+                                       httpMethod: "PATCH",
+                                       groupV2Params: groupV2Params,
                                        sessionManager: sessionManager,
                                        authCredentialMap: authCredentialMap,
                                        redemptionTime: redemptionTime)
     }
 
-    static func buildFetchGroupChangeActionsRequest(groupParams: GroupParams,
+    static func buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: GroupV2Params,
+                                                        sessionManager: AFHTTPSessionManager,
+                                                        authCredentialMap: [UInt32: AuthCredential],
+                                                        redemptionTime: UInt32) throws -> NSURLRequest {
+
+        return try buildGroupV2Request(protoData: nil,
+                                       urlPath: "/v1/groups/",
+                                       httpMethod: "GET",
+                                       groupV2Params: groupV2Params,
+                                       sessionManager: sessionManager,
+                                       authCredentialMap: authCredentialMap,
+                                       redemptionTime: redemptionTime)
+    }
+
+    static func buildFetchGroupChangeActionsRequest(groupV2Params: GroupV2Params,
                                                     fromRevision: UInt32,
                                                     sessionManager: AFHTTPSessionManager,
                                                     authCredentialMap: [UInt32: AuthCredential],
@@ -66,19 +66,19 @@ public extension StorageService {
         return try buildGroupV2Request(protoData: nil,
                                        urlPath: urlPath,
                                        httpMethod: "GET",
-                                       groupParams: groupParams,
+                                       groupV2Params: groupV2Params,
                                        sessionManager: sessionManager,
                                        authCredentialMap: authCredentialMap,
                                        redemptionTime: redemptionTime)
     }
 
     private static func buildGroupV2Request(protoData: Data?,
-                                                 urlPath: String,
-                                                 httpMethod: String,
-                                                 groupParams: GroupParams,
-                                                 sessionManager: AFHTTPSessionManager,
-                                                 authCredentialMap: [UInt32: AuthCredential],
-                                                 redemptionTime: UInt32) throws -> NSURLRequest {
+                                            urlPath: String,
+                                            httpMethod: String,
+                                            groupV2Params: GroupV2Params,
+                                            sessionManager: AFHTTPSessionManager,
+                                            authCredentialMap: [UInt32: AuthCredential],
+                                            redemptionTime: UInt32) throws -> NSURLRequest {
 
         guard let url = URL(string: urlPath, relativeTo: sessionManager.baseURL) else {
             throw OWSAssertionError("Invalid URL.")
@@ -92,7 +92,7 @@ public extension StorageService {
         }
 
         try self.addAuthorizationHeader(to: request,
-                                        groupParams: groupParams,
+                                        groupV2Params: groupV2Params,
                                         authCredentialMap: authCredentialMap,
                                         redemptionTime: redemptionTime)
 
@@ -102,7 +102,7 @@ public extension StorageService {
     // MARK: - Authorization Headers
 
     private static func addAuthorizationHeader(to request: NSMutableURLRequest,
-                                               groupParams: GroupParams,
+                                               groupV2Params: GroupV2Params,
                                                authCredentialMap: [UInt32: AuthCredential],
                                                redemptionTime: UInt32) throws {
 
@@ -112,10 +112,10 @@ public extension StorageService {
 
         let serverPublicParams = try GroupsV2Protos.serverPublicParams()
         let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
-        let authCredentialPresentation = try clientZkAuthOperations.createAuthCredentialPresentation(groupSecretParams: groupParams.groupSecretParams, authCredential: authCredential)
+        let authCredentialPresentation = try clientZkAuthOperations.createAuthCredentialPresentation(groupSecretParams: groupV2Params.groupSecretParams, authCredential: authCredential)
         let authCredentialPresentationData = authCredentialPresentation.serialize().asData
 
-        let username: String = groupParams.groupPublicParamsData.hexadecimalString
+        let username: String = groupV2Params.groupPublicParamsData.hexadecimalString
         let password: String = authCredentialPresentationData.hexadecimalString
         let auth = Auth(username: username, password: password)
         request.setValue(try auth.authHeader(), forHTTPHeaderField: "Authorization")

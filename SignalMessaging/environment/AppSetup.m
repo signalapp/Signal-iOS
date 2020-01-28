@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
         SSKPreferences *sskPreferences = [SSKPreferences new];
         id<GroupsV2> groupsV2 = [GroupsV2Impl new];
-        id<GroupUpdates> groupUpdates = [[GroupUpdatesImpl alloc] init];
+        id<GroupV2Updates> groupV2Updates = [[GroupV2UpdatesImpl alloc] init];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
@@ -163,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                storageCoordinator:storageCoordinator
                                                                    sskPreferences:sskPreferences
                                                                          groupsV2:groupsV2
-                                                                     groupUpdates:groupUpdates
+                                                                   groupV2Updates:groupV2Updates
                                                                 messageProcessing:messageProcessing
                                                                 messageFetcherJob:messageFetcherJob]];
 

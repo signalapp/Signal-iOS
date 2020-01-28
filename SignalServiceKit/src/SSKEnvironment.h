@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol OWSTypingIndicators;
 @protocol StorageServiceManagerProtocol;
 @protocol GroupsV2;
-@protocol GroupUpdates;
+@protocol GroupV2Updates;
 
 @interface SSKEnvironment : NSObject
 
@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
                          sskPreferences:(SSKPreferences *)sskPreferences
                                groupsV2:(id<GroupsV2>)groupsV2
-                           groupUpdates:(id<GroupUpdates>)groupUpdates
+                         groupV2Updates:(id<GroupV2Updates>)groupV2Updates
                       messageProcessing:(MessageProcessing *)messageProcessing
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob NS_DESIGNATED_INITIALIZER;
 
@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) AccountServiceClient *accountServiceClient;
 @property (nonatomic, readonly) id<StorageServiceManagerProtocol> storageServiceManager;
 @property (nonatomic, readonly) id<GroupsV2> groupsV2;
-@property (nonatomic, readonly) id<GroupUpdates> groupUpdates;
+@property (nonatomic, readonly) id<GroupV2Updates> groupV2Updates;
 
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;

@@ -88,7 +88,7 @@ public enum GroupUpdateMode {
 // MARK: -
 
 @objc
-public protocol GroupUpdates: AnyObject {
+public protocol GroupV2Updates: AnyObject {
 
     func tryToRefreshGroupUpToCurrentRevisionAfterMessageProcessWithThrottlingWithThrottling(_ thread: TSThread)
 
@@ -102,7 +102,7 @@ public protocol GroupUpdates: AnyObject {
 
 // MARK: -
 
-public protocol GroupUpdatesSwift: AnyObject {
+public protocol GroupV2UpdatesSwift: AnyObject {
     func tryToRefreshGroupThreadWithThrottling(groupId: Data,
                                                groupSecretParamsData: Data,
                                                groupUpdateMode: GroupUpdateMode) -> Promise<Void>
@@ -250,7 +250,7 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
 
 // MARK: -
 
-public class MockGroupUpdates: NSObject, GroupUpdates, GroupUpdatesSwift {
+public class MockGroupV2Updates: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
     @objc
     public func tryToRefreshGroupUpToCurrentRevisionAfterMessageProcessWithThrottlingWithThrottling(_ thread: TSThread) {
         owsFail("Not implemented.")
