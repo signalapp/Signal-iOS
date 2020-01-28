@@ -252,20 +252,16 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureView)
-        
         let newClosedGroupButton = UIButton(type: .custom)
         newClosedGroupButton.setImage(#imageLiteral(resourceName: "btnGroup--white"), for: UIControl.State.normal)
         newClosedGroupButton.addTarget(self, action: #selector(createClosedGroup), for: UIControl.Event.touchUpInside)
         newClosedGroupButton.tintColor = Colors.text
-        
         let joinPublicChatButton = UIButton(type: .custom)
         joinPublicChatButton.setImage(#imageLiteral(resourceName: "Globe"), for: UIControl.State.normal)
         joinPublicChatButton.addTarget(self, action: #selector(joinPublicChat), for: UIControl.Event.touchUpInside)
         joinPublicChatButton.tintColor = Colors.text
-        
         let buttonStackView = UIStackView(arrangedSubviews: [ newClosedGroupButton, joinPublicChatButton ])
         buttonStackView.axis = .horizontal
-        
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: buttonStackView)
     }
     
@@ -373,7 +369,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     }
     
     @objc private func createClosedGroup() {
-        let newClosedGroupVC = NewGroupViewController()
+        let newClosedGroupVC = NewClosedGroupVC()
         let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
         present(navigationController, animated: true, completion: nil)
     }
