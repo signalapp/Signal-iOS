@@ -268,10 +268,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates {
         guard changedGroupModel.newGroupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
         }
-        // GroupsV2 TODO: Set groupV2UpdatesourceAddress.
+        
+        // GroupsV2 TODO: Set groupUpdateSourceAddress.
         let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                           newGroupModel: changedGroupModel.newGroupModel,
-                                                                                                          groupV2UpdatesourceAddress: nil,
+                                                                                                          groupUpdateSourceAddress: nil,
                                                                                                           transaction: transaction)
 
         guard updatedGroupThread.groupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
@@ -335,11 +336,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates {
                 }
                 let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupChange.snapshot,
                                                                      transaction: transaction)
-                // GroupsV2 TODO: Set groupV2UpdatesourceAddress.
-                let groupV2UpdatesourceAddress: SignalServiceAddress? = nil
+                // GroupsV2 TODO: Set groupUpdateSourceAddress.
+                let groupUpdateSourceAddress: SignalServiceAddress? = nil
                 groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                        newGroupModel: newGroupModel,
-                                                                                                       groupV2UpdatesourceAddress: groupV2UpdatesourceAddress,
+                                                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                        transaction: transaction)
 
             }
@@ -378,10 +379,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates {
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot,
                                                                  transaction: transaction)
-            // GroupsV2 TODO: Set groupV2UpdatesourceAddress.
-            let groupV2UpdatesourceAddress: SignalServiceAddress? = nil
+            // GroupsV2 TODO: Set groupUpdateSourceAddress.
+            let groupUpdateSourceAddress: SignalServiceAddress? = nil
             return try GroupManager.tryToUpdateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
-                                                                                                 groupV2UpdatesourceAddress: groupV2UpdatesourceAddress,
+                                                                                                 groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                  canInsert: true,
                                                                                                  transaction: transaction)
         }
