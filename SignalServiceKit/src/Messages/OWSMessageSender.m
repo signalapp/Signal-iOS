@@ -600,8 +600,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // * The recipient is in the "sending" state.
 
         [recipientAddresses addObjectsFromArray:message.sendingRecipientAddresses];
-        // Only send to members in the latest known group member list.
-        [recipientAddresses intersectSet:[NSSet setWithArray:groupThread.groupModel.groupMembers]];
+
+        // Only send to members in the latest known group member list...
+        NSMutableSet<SignalServiceAddress *> *currentThreadRecipients = [NSMutableSet new];
+        [currentThreadRecipients addObjectsFromArray:groupThread.groupModel.groupMembers];
+        // ...or latest known list of "additional recipients".
+        NSSet<SignalServiceAddress *> *additionalRecipients = groupThread.groupModel.allPendingMembers;
+        [currentThreadRecipients unionSet:additionalRecipients];
+        [recipientAddresses intersectSet:currentThreadRecipients];
 
         if ([recipientAddresses containsObject:self.tsAccountManager.localAddress]) {
             OWSFailDebug(@"Message send recipients should not include self.");

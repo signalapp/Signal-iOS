@@ -36,6 +36,8 @@ public extension TSOutgoingMessage {
         public var isViewOnceMessage = false
         @objc
         public var changeActionsProtoData: Data?
+        @objc
+        public var additionalRecipients: [SignalServiceAddress]?
 
         @objc
         public required init(thread: TSThread) {
@@ -62,7 +64,8 @@ public extension TSOutgoingMessage {
                              linkPreview: OWSLinkPreview? = nil,
                              messageSticker: MessageSticker? = nil,
                              isViewOnceMessage: Bool = false,
-                             changeActionsProtoData: Data? = nil) {
+                             changeActionsProtoData: Data? = nil,
+                             additionalRecipients: [SignalServiceAddress]? = nil) {
             self.thread = thread
 
             if let timestamp = timestamp {
@@ -82,6 +85,7 @@ public extension TSOutgoingMessage {
             self.messageSticker = messageSticker
             self.isViewOnceMessage = isViewOnceMessage
             self.changeActionsProtoData = changeActionsProtoData
+            self.additionalRecipients = additionalRecipients
         }
 
         @objc(applyDisappearingMessagesConfiguration:)
@@ -106,7 +110,8 @@ public extension TSOutgoingMessage {
                                      linkPreview: linkPreview,
                                      messageSticker: messageSticker,
                                      isViewOnceMessage: isViewOnceMessage,
-                                     changeActionsProtoData: changeActionsProtoData)
+                                     changeActionsProtoData: changeActionsProtoData,
+                                     additionalRecipients: additionalRecipients)
         }
     }
 }

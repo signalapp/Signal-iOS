@@ -146,7 +146,8 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                      linkPreview: linkPreviewBuilder(),
                                      messageSticker: messageStickerBuilder(),
                                      isViewOnceMessage: isViewOnceMessageBuilder(),
-                                     changeActionsProtoData: changeActionsProtoDataBuilder())
+                                     changeActionsProtoData: changeActionsProtoDataBuilder(),
+                                     additionalRecipients: additionalRecipientsBuilder())
 
         return item
     }
@@ -230,6 +231,11 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     @objc
     public var changeActionsProtoDataBuilder: () -> Data? = {
+        return nil
+    }
+
+    @objc
+    public var additionalRecipientsBuilder: () -> [SignalServiceAddress]? = {
         return nil
     }
 

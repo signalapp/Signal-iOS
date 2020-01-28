@@ -100,11 +100,17 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
                                isViewOnceMessage:(BOOL)isViewOnceMessage
-                          changeActionsProtoData:(nullable NSData *)changeActionsProtoData NS_DESIGNATED_INITIALIZER;
+                          changeActionsProtoData:(nullable NSData *)changeActionsProtoData
+                            additionalRecipients:(nullable NSArray<SignalServiceAddress *> *)additionalRecipients NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initOutgoingMessageWithThread:(TSThread *)thread
                                   messageBody:(nullable NSString *)body NS_DESIGNATED_INITIALIZER
     NS_SWIFT_NAME(init(outgoingMessageWithThread:messageBody:));
+
+- (instancetype)initOutgoingMessageWithThread:(TSThread *)thread
+                                  messageBody:(nullable NSString *)body
+                             expiresInSeconds:(uint32_t)expiresInSeconds NS_DESIGNATED_INITIALIZER
+    NS_SWIFT_NAME(init(outgoingMessageWithThread:messageBody:expiresInSeconds:));
 
 // --- CODE GENERATION MARKER
 

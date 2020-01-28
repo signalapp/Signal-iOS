@@ -420,20 +420,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                        expiresInSeconds:(uint32_t)expiresInSeconds
                  changeActionsProtoData:(nullable NSData *)changeActionsProtoData
 {
-    return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                              inThread:thread
-                                                           messageBody:nil
-                                                         attachmentIds:[NSMutableArray new]
-                                                      expiresInSeconds:expiresInSeconds
-                                                       expireStartedAt:0
-                                                        isVoiceMessage:NO
-                                                      groupMetaMessage:groupMetaMessage
-                                                         quotedMessage:nil
-                                                          contactShare:nil
-                                                           linkPreview:nil
-                                                        messageSticker:nil
-                                                     isViewOnceMessage:NO
-                                                changeActionsProtoData:changeActionsProtoData];
+    TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    builder.groupMetaMessage = groupMetaMessage;
+    builder.expiresInSeconds = expiresInSeconds;
+    builder.changeActionsProtoData = changeActionsProtoData;
+    return [builder build];
 }
 
 - (instancetype)initOutgoingMessageWithThread:(TSThread *)thread messageBody:(nullable NSString *)body
@@ -456,7 +447,36 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     [self commonInitWithThread:thread
                 isVoiceMessage:NO
               groupMetaMessage:TSGroupMetaMessageUnspecified
-        changeActionsProtoData:nil];
+        changeActionsProtoData:nil
+          additionalRecipients:nil];
+
+    return self;
+}
+
+- (instancetype)initOutgoingMessageWithThread:(TSThread *)thread
+                                  messageBody:(nullable NSString *)body
+                             expiresInSeconds:(uint32_t)expiresInSeconds
+{
+    self = [super initMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                  inThread:thread
+                               messageBody:body
+                             attachmentIds:[NSMutableArray new]
+                          expiresInSeconds:expiresInSeconds
+                           expireStartedAt:0
+                             quotedMessage:nil
+                              contactShare:nil
+                               linkPreview:nil
+                            messageSticker:nil
+                         isViewOnceMessage:NO];
+    if (!self) {
+        return self;
+    }
+
+    [self commonInitWithThread:thread
+                isVoiceMessage:NO
+              groupMetaMessage:TSGroupMetaMessageUnspecified
+        changeActionsProtoData:nil
+          additionalRecipients:nil];
 
     return self;
 }
@@ -475,6 +495,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                   messageSticker:(nullable MessageSticker *)messageSticker
                                isViewOnceMessage:(BOOL)isViewOnceMessage
                           changeActionsProtoData:(nullable NSData *)changeActionsProtoData
+                            additionalRecipients:(nullable NSArray<SignalServiceAddress *> *)additionalRecipients
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -494,7 +515,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     [self commonInitWithThread:thread
                 isVoiceMessage:isVoiceMessage
               groupMetaMessage:groupMetaMessage
-        changeActionsProtoData:changeActionsProtoData];
+        changeActionsProtoData:changeActionsProtoData
+          additionalRecipients:additionalRecipients];
 
     return self;
 }
@@ -503,6 +525,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
               isVoiceMessage:(BOOL)isVoiceMessage
             groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
       changeActionsProtoData:(nullable NSData *)changeActionsProtoData
+        additionalRecipients:(nullable NSArray<SignalServiceAddress *> *)additionalRecipients
 {
     _hasSyncedTranscript = NO;
 
@@ -523,12 +546,19 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // New outgoing messages should immediately determine their
     // recipient list from current thread state.
-    NSArray<SignalServiceAddress *> *recipientAddresses;
+    NSMutableSet<SignalServiceAddress *> *recipientAddresses = [NSMutableSet new];
     if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+        // 1. Sync messages should only be sent to linked devices.
         OWSAssertDebug(TSAccountManager.localAddress);
-        recipientAddresses = @[ TSAccountManager.localAddress ];
+        [recipientAddresses addObject:TSAccountManager.localAddress];
     } else {
-        recipientAddresses = thread.recipientAddresses;
+        // 2. Most messages should only be sent to the current members of the group.
+        [recipientAddresses addObjectsFromArray:thread.recipientAddresses];
+        // 3. V2 group updates should also be sent to pending members of the group
+        //    whose clients support Groups v2.
+        if (additionalRecipients) {
+            [recipientAddresses addObjectsFromArray:additionalRecipients];
+        }
     }
 
     NSMutableDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates =

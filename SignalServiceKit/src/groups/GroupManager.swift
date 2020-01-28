@@ -262,6 +262,7 @@ public class GroupManager: NSObject {
 
         for recipientAddress in members {
             guard doesUserSupportGroupsV2(address: recipientAddress, transaction: transaction) else {
+                Logger.warn("Creating legacy group; member missing UUID or Groups v2 capability.")
                 return false
             }
         }
@@ -272,14 +273,20 @@ public class GroupManager: NSObject {
                                                 transaction: SDSAnyReadTransaction) -> Bool {
 
         guard address.uuid != nil else {
-            Logger.warn("Creating legacy group; member without UUID.")
+            Logger.warn("Member without UUID.")
             return false
         }
         guard doesUserHasGroupsV2Capability(address: address,
                                             transaction: transaction) else {
-                                                Logger.warn("Creating legacy group; member without Groups v2 capability.")
+                                                Logger.warn("Member without Groups v2 capability.")
                                                 return false
         }
+        // NOTE: We do consider users to support groups v2 even if:
+        //
+        // * We don't know their UUID.
+        // * We don't know their profile key.
+        // * They've never done a versioned profile update.
+        // * We don't have a profile key credential for them.
         return true
     }
 
@@ -845,6 +852,9 @@ public class GroupManager: NSObject {
             messageBuilder.groupMetaMessage = .update
             messageBuilder.expiresInSeconds = expiresInSeconds
             messageBuilder.changeActionsProtoData = changeActionsProtoData
+            self.addAdditionalRecipients(to: messageBuilder,
+                                         groupThread: thread,
+                                         transaction: transaction)
             return messageBuilder.build()
         }.then(on: .global()) { (message: TSOutgoingMessage) throws -> Promise<Void> in
             let groupModel = thread.groupModel
@@ -886,10 +896,37 @@ public class GroupManager: NSObject {
         assert(thread.groupModel.groupAvatarData == nil)
 
         return databaseStorage.write(.promise) { transaction in
-            let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
+            let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
+            let messageBuilder = TSOutgoingMessage.Builder(thread: thread)
+            messageBuilder.groupMetaMessage = .new
+            messageBuilder.expiresInSeconds = expiresInSeconds
+            self.addAdditionalRecipients(to: messageBuilder,
+                                         groupThread: thread,
+                                         transaction: transaction)
+            let message = messageBuilder.build()
             self.messageSenderJobQueue.add(message: message.asPreparer,
                                            transaction: transaction)
         }
+    }
+
+    private static func addAdditionalRecipients(to messageBuilder: TSOutgoingMessage.Builder,
+                                                groupThread: TSGroupThread,
+                                                transaction: SDSAnyReadTransaction) {
+        guard groupThread.groupModel.groupsVersion == .V2 else {
+            // No need to add "additional recipients" to v1 groups.
+            return
+        }
+        // We need to send v2 group updates to pending members
+        // who
+        assert(messageBuilder.additionalRecipients == nil)
+        var additionalRecipients = [SignalServiceAddress]()
+        for address in groupThread.groupModel.allPendingMembers {
+            if doesUserSupportGroupsV2(address: address,
+                                       transaction: transaction) {
+                additionalRecipients.append(address)
+            }
+        }
+        messageBuilder.additionalRecipients = additionalRecipients
     }
 
     // MARK: - Group Database

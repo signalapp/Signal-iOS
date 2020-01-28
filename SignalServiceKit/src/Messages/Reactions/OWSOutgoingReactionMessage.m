@@ -30,20 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(emoji.isSingleEmoji);
 
     // MJK TODO - remove senderTimestamp
-    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                          inThread:thread
-                                       messageBody:nil
-                                     attachmentIds:[NSMutableArray new]
-                                  expiresInSeconds:expiresInSeconds
-                                   expireStartedAt:0
-                                    isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMetaMessageUnspecified
-                                     quotedMessage:nil
-                                      contactShare:nil
-                                       linkPreview:nil
-                                    messageSticker:nil
-                                 isViewOnceMessage:NO
-                            changeActionsProtoData:nil];
+    self = [super initOutgoingMessageWithThread:thread messageBody:nil expiresInSeconds:expiresInSeconds];
     if (!self) {
         return self;
     }

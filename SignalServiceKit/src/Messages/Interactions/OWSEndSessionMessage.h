@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingMessage.h"
@@ -21,7 +21,9 @@ NS_SWIFT_NAME(EndSessionMessage)
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
-                               isViewOnceMessage:(BOOL)isViewOnceMessage NS_UNAVAILABLE;
+                               isViewOnceMessage:(BOOL)isViewOnceMessage
+                          changeActionsProtoData:(nullable NSData *)changeActionsProtoData
+                            additionalRecipients:(nullable NSArray<SignalServiceAddress *> *)additionalRecipients NS_UNAVAILABLE;
 
 // MJK TODO can we remove the sender timestamp?
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingMessage.h"
@@ -25,7 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
-                               isViewOnceMessage:(BOOL)isViewOnceMessage NS_UNAVAILABLE;
+                               isViewOnceMessage:(BOOL)isViewOnceMessage
+                          changeActionsProtoData:(nullable NSData *)changeActionsProtoData
+                            additionalRecipients:(nullable NSArray<SignalServiceAddress *> *)additionalRecipients NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
