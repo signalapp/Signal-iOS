@@ -620,6 +620,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      failure:(RetryableFailureHandler)failureHandlerParam
 {
     AssertIsOnSendingQueue();
+    OWSAssert(senderCertificate);
 
     void (^successHandler)(void) = ^() {
         dispatch_async([OWSDispatch sendingQueue], ^{
@@ -958,7 +959,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *contactID = messageSend.recipient.recipientId;
     BOOL isGroupMessage = messageSend.thread.isGroupThread;
     BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
-    if (isGroupMessage || isDeviceLinkMessage) {
+    if (isGroupMessage || isDeviceLinkMessage || messageSend.isUDSend) {
         [self sendMessage:messageSend];
     } else {
         BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];
