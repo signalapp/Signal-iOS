@@ -379,18 +379,17 @@ public class GroupManager: NSObject {
                 .map(on: .global()) { (_) -> GroupMembership in
                     return groupMembership
             }
-        }.then(on: .global()) { (oldGroupMembership: GroupMembership) throws -> Promise<TSGroupModel> in
+        }.then(on: .global()) { (rawGroupMembership: GroupMembership) throws -> Promise<TSGroupModel> in
             // GroupsV2 TODO: Let users specify access levels in the "new group" view.
             let groupAccess = GroupAccess.allAccess
             let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
-                let newGroupMembership = self.separatePendingMembersForNewGroup(in: oldGroupMembership,
+                let groupMembership = self.separatePendingMembersForNewGroup(in: rawGroupMembership,
                                                                                 transaction: transaction)
-                Logger.verbose("newGroupMembership: \(newGroupMembership.debugDescription)")
                 Logger.flush()
                 return try self.buildGroupModel(groupId: groupId,
                                                 name: name,
                                                 avatarData: avatarData,
-                                                groupMembership: newGroupMembership,
+                                                groupMembership: groupMembership,
                                                 groupAccess: groupAccess,
                                                 groupV2Revision: 0,
                                                 newGroupSeed: newGroupSeed,
@@ -909,6 +908,12 @@ public class GroupManager: NSObject {
         }
     }
 
+    // GroupsV2 TODO: This might not be necessary if there's a separate
+    // "invite to v2 group" message.  What we have now is insufficent.
+    // We can't just send pending members a message with changeActionsProtoData,
+    // for example, because it's a diff of group state.  To show their
+    // user the invite UI, pending member's clients will need a snapshot,
+    // not a diff.
     private static func addAdditionalRecipients(to messageBuilder: TSOutgoingMessage.Builder,
                                                 groupThread: TSGroupThread,
                                                 transaction: SDSAnyReadTransaction) {
