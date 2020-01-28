@@ -127,9 +127,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
         let sessionManager = self.sessionManager
+        let groupSecretParamsData = changeSet.groupSecretParamsData
         let groupV2Params: GroupV2Params
         do {
-            groupV2Params = try GroupV2Params(groupSecretParamsData: changeSet.groupSecretParamsData)
+            groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
         } catch {
             return Promise(error: error)
         }

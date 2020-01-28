@@ -249,6 +249,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             throw OWSAssertionError("Missing groupThread.")
         }
+        guard groupThread.groupModel.groupsVersion == .V2 else {
+            throw OWSAssertionError("Invalid groupsVersion.")
+        }
         // GroupsV2 TODO: Can we eliminate ChangedGroupModel?
         let changedGroupModel = try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
                                                                              changeActionsProto: changeActionsProto,
@@ -257,10 +260,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
         }
 
-        // GroupsV2 TODO: Set groupUpdateSourceAddress.
+        let groupUpdateSourceAddress = SignalServiceAddress(uuid: changedGroupModel.changeAuthorUuid)
         let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                           newGroupModel: changedGroupModel.newGroupModel,
-                                                                                                          groupUpdateSourceAddress: nil,
+                                                                                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                           transaction: transaction)
 
         guard updatedGroupThread.groupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
