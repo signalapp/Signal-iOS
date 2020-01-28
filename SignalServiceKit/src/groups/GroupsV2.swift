@@ -94,10 +94,10 @@ public enum GroupUpdateMode {
 @objc
 public protocol GroupV2Updates: AnyObject {
 
-    func tryToRefreshGroupUpToCurrentRevisionAfterMessageProcessWithThrottlingWithThrottling(_ thread: TSThread)
+    func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessWithThrottling(_ groupThread: TSGroupThread)
 
-    func tryToRefreshGroupUpToSpecificRevisionImmediately(_ thread: TSThread,
-                                                          upToRevision: UInt32)
+    func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
+                                                            upToRevision: UInt32)
 
     func updateGroupWithChangeActions(groupId: Data,
                                       changeActionsProto: GroupsProtoGroupChangeActions,
@@ -107,9 +107,9 @@ public protocol GroupV2Updates: AnyObject {
 // MARK: -
 
 public protocol GroupV2UpdatesSwift: AnyObject {
-    func tryToRefreshGroupThreadWithThrottling(groupId: Data,
-                                               groupSecretParamsData: Data,
-                                               groupUpdateMode: GroupUpdateMode) -> Promise<Void>
+    func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
+                                                 groupSecretParamsData: Data,
+                                                 groupUpdateMode: GroupUpdateMode) -> Promise<Void>
 }
 
 // MARK: -
@@ -256,19 +256,19 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
 
 public class MockGroupV2Updates: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
     @objc
-    public func tryToRefreshGroupUpToCurrentRevisionAfterMessageProcessWithThrottlingWithThrottling(_ thread: TSThread) {
+    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessWithThrottling(_ groupThread: TSGroupThread) {
         owsFail("Not implemented.")
     }
 
     @objc
-    public func tryToRefreshGroupUpToSpecificRevisionImmediately(_ thread: TSThread,
-                                                                 upToRevision: UInt32) {
+    public func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
+                                                                   upToRevision: UInt32) {
         owsFail("Not implemented.")
     }
 
-    public func tryToRefreshGroupThreadWithThrottling(groupId: Data,
-                                                      groupSecretParamsData: Data,
-                                                      groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
+    public func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
+                                                        groupSecretParamsData: Data,
+                                                        groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
         owsFail("Not implemented.")
     }
 

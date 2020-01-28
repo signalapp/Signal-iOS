@@ -83,25 +83,22 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
     // MARK: -
 
     @objc
-    public func tryToRefreshGroupUpToCurrentRevisionAfterMessageProcessWithThrottlingWithThrottling(_ thread: TSThread) {
+    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessWithThrottling(_ groupThread: TSGroupThread) {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
-        tryToRefreshGroupThreadWithThrottling(thread: thread, groupUpdateMode: groupUpdateMode)
+        tryToRefreshV2GroupThreadWithThrottling(groupThread, groupUpdateMode: groupUpdateMode)
             .retainUntilComplete()
     }
 
     @objc
-    public func tryToRefreshGroupUpToSpecificRevisionImmediately(_ thread: TSThread,
-                                                                 upToRevision: UInt32) {
+    public func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
+                                                                   upToRevision: UInt32) {
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: upToRevision)
-        tryToRefreshGroupThreadWithThrottling(thread: thread, groupUpdateMode: groupUpdateMode)
+        tryToRefreshV2GroupThreadWithThrottling(groupThread, groupUpdateMode: groupUpdateMode)
             .retainUntilComplete()
     }
 
-    private func tryToRefreshGroupThreadWithThrottling(thread: TSThread,
-                                                       groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
-        guard let groupThread = thread as? TSGroupThread else {
-            return Promise.value(())
-        }
+    private func tryToRefreshV2GroupThreadWithThrottling(_ groupThread: TSGroupThread,
+                                                         groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
         let groupModel = groupThread.groupModel
         guard groupModel.groupsVersion == .V2 else {
             return Promise.value(())
@@ -111,14 +108,14 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
             groupSecretParamsData.count > 0 else {
                 return Promise(error: OWSAssertionError("Missing groupSecretParamsData."))
         }
-        return tryToRefreshGroupThreadWithThrottling(groupId: groupId,
-                                                     groupSecretParamsData: groupSecretParamsData,
-                                                     groupUpdateMode: groupUpdateMode)
+        return tryToRefreshV2GroupThreadWithThrottling(groupId: groupId,
+                                                       groupSecretParamsData: groupSecretParamsData,
+                                                       groupUpdateMode: groupUpdateMode)
     }
 
-    public func tryToRefreshGroupThreadWithThrottling(groupId: Data,
-                                                      groupSecretParamsData: Data,
-                                                      groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
+    public func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
+                                                        groupSecretParamsData: Data,
+                                                        groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
 
         let isThrottled = serialQueue.sync { () -> Bool in
             guard self.shouldThrottle(for: groupUpdateMode) else {

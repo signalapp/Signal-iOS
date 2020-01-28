@@ -509,7 +509,19 @@ typedef enum : NSUInteger {
                                                           userInfo:nil
                                                            repeats:YES];
 
-    [self.groupV2Updates tryToRefreshGroupUpToCurrentRevisionAfterMessageProcessWithThrottlingWithThrottling:thread];
+    [self updateV2GroupIfNecessary];
+}
+
+- (void)updateV2GroupIfNecessary
+{
+    if (!self.thread.isGroupThread) {
+        return;
+    }
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    if (groupThread.groupModel.groupsVersion != GroupsVersionV2) {
+        return;
+    }
+    [self.groupV2Updates tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessWithThrottling:groupThread];
 }
 
 - (void)dealloc
