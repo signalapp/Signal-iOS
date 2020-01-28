@@ -205,7 +205,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         let groupAccess = GroupAccess.allAccess
         // GroupsV2 TODO: Set groupV2Revision.
         let groupV2Revision: UInt32 = 0
-        // groupUpdateSourceAddress to nil because we don't know
+        // groupUpdateSourceAddress is nil because we don't know
         // who made any changes.
         let groupUpdateSourceAddress: SignalServiceAddress? = nil
         let result = try GroupManager.upsertExistingGroup(groupId: groupDetails.groupId,
