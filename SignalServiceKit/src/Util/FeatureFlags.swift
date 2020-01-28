@@ -176,9 +176,6 @@ public class FeatureFlags: NSObject {
     public static let onlyModernNotificationClearance = build.includes(.beta)
 
     @objc
-    public static let registrationLockV2 = true
-
-    @objc
     public static var allowUUIDOnlyContacts: Bool {
         // TODO UUID: Remove production check once this rolls out to prod service
         if OWSIsDebugBuild() && !isUsingProductionService {
@@ -265,4 +262,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let useZKGroups = false
+
+    @objc
+    public static let requiredProfileNames = build.includes(.qa)
 }

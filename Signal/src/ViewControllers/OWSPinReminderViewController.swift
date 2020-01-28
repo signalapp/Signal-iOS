@@ -253,7 +253,7 @@ public class PinReminderViewController: OWSViewController {
         OWS2FAManager.shared().updateRepetitionInterval(withWasSuccessful: !hasGuessedWrong)
 
         // Migrate to 2FA v2 if they've proved they know their pin
-        if let pinCode = OWS2FAManager.shared().pinCode, FeatureFlags.registrationLockV2, OWS2FAManager.shared().mode == .V1 {
+        if let pinCode = OWS2FAManager.shared().pinCode, RemoteConfig.kbs, OWS2FAManager.shared().mode == .V1 {
             // enabling 2fa v2 automatically disables v1 on the server
             OWS2FAManager.shared().enable2FAPromise(with: pinCode)
                 .ensure {
