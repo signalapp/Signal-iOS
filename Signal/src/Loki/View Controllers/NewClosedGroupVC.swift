@@ -1,5 +1,6 @@
 
 final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableViewDelegate {
+    private var selectedContacts: Set<String> = []
     
     private lazy var contacts: [String] = {
         var result: [String] = []
@@ -41,6 +42,19 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         navigationBar.shadowImage = UIImage()
         navigationBar.isTranslucent = false
         navigationBar.barTintColor = Colors.navigationBarBackground
+        // Set up navigation bar buttons
+        let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
+        closeButton.tintColor = Colors.text
+        navigationItem.leftBarButtonItem = closeButton
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(createClosedGroup))
+        doneButton.tintColor = Colors.text
+        navigationItem.rightBarButtonItem = doneButton
+        // Customize title
+        let titleLabel = UILabel()
+        titleLabel.text = NSLocalizedString("New Closed Group", comment: "")
+        titleLabel.textColor = Colors.text
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        navigationItem.titleView = titleLabel
         // Set up table view
         view.addSubview(tableView)
         tableView.pin(to: view)
@@ -55,12 +69,54 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! Cell
         let contact = contacts[indexPath.row]
         cell.hexEncodedPublicKey = contact
+        cell.hasTick = selectedContacts.contains(contact)
         return cell
     }
     
     // MARK: Interaction
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // TODO: Implement
+        let contact = contacts[indexPath.row]
+        if !selectedContacts.contains(contact) {
+            selectedContacts.insert(contact)
+        } else {
+            selectedContacts.remove(contact)
+        }
+        guard let cell = tableView.cellForRow(at: indexPath) as? Cell else { return }
+        cell.hasTick = selectedContacts.contains(contact)
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    @objc private func close() {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @objc private func createClosedGroup() {
+        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let members = [String](selectedContacts) + [ userHexEncodedPublicKey ]
+        let admins = [ userHexEncodedPublicKey ]
+        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(Randomness.generateRandomBytes(kGroupIdLength)!.toHexString())
+        let group = TSGroupModel(title: nil, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
+        let thread = TSGroupThread.getOrCreateThread(with: group)
+        OWSProfileManager.shared().addThread(toProfileWhitelist: thread)
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
+            let message = TSOutgoingMessage(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
+            message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""))
+            DispatchQueue.main.async {
+                SSKEnvironment.shared.messageSender.send(message, success: {
+                    DispatchQueue.main.async {
+                        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+                        self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                    }
+                }, failure: { error in
+                    let message = TSErrorMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, failedMessageType: .groupCreationFailed)
+                    message.save()
+                    DispatchQueue.main.async {
+                        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+                        self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                    }
+                })
+            }
+        }
     }
 }
 
@@ -69,7 +125,8 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
 private extension NewClosedGroupVC {
     
     final class Cell : UITableViewCell {
-        var hexEncodedPublicKey: String = "" { didSet { update() } }
+        var hexEncodedPublicKey = "" { didSet { update() } }
+        var hasTick = false { didSet { update() } }
         
         // MARK: Components
         private lazy var profilePictureView = ProfilePictureView()
@@ -82,7 +139,16 @@ private extension NewClosedGroupVC {
             return result
         }()
         
-        lazy var separator: UIView = {
+        private lazy var tickImageView: UIImageView = {
+            let result = UIImageView()
+            result.contentMode = .scaleAspectFit
+            let size: CGFloat = 24
+            result.set(.width, to: size)
+            result.set(.height, to: size)
+            return result
+        }()
+        
+        private lazy var separator: UIView = {
             let result = UIView()
             result.backgroundColor = Colors.separator
             result.set(.height, to: Values.separatorThickness)
@@ -113,7 +179,7 @@ private extension NewClosedGroupVC {
             profilePictureView.set(.height, to: profilePictureViewSize)
             profilePictureView.size = profilePictureViewSize
             // Set up the main stack view
-            let stackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel ])
+            let stackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel, tickImageView ])
             stackView.axis = .horizontal
             stackView.alignment = .center
             stackView.spacing = Values.mediumSpacing
@@ -121,21 +187,21 @@ private extension NewClosedGroupVC {
             contentView.addSubview(stackView)
             stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
             stackView.pin(.top, to: .top, of: contentView, withInset: Values.mediumSpacing)
-            contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.mediumSpacing)
             contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.mediumSpacing)
             stackView.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
             // Set up the separator
             addSubview(separator)
             separator.pin(.leading, to: .leading, of: self)
-            separator.pin(.trailing, to: .trailing, of: self)
             separator.pin(.bottom, to: .bottom, of: self)
+            separator.set(.width, to: UIScreen.main.bounds.width)
         }
         
         // MARK: Updating
         private func update() {
-            displayNameLabel.text = DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
             profilePictureView.hexEncodedPublicKey = hexEncodedPublicKey
             profilePictureView.update()
+            displayNameLabel.text = DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
+            tickImageView.image = hasTick ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
         }
     }
 }

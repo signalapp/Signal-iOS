@@ -72,8 +72,8 @@ final class ConversationTitleView : UIView {
     private func updateTitle() {
         let title: String
         if thread.isGroupThread() {
-            if thread.name().isEmpty {
-                title = NSLocalizedString("New Group", comment: "")
+            if thread.name().isEmpty || thread.name() == "New Group" {
+                title = DisplayNameUtilities.getDisplayName(for: thread as! TSGroupThread)
             } else {
                 title = thread.name()
             }

@@ -180,8 +180,8 @@ final class ConversationCell : UITableViewCell {
     
     private func getDisplayName() -> String {
         if threadViewModel.isGroupThread {
-            if threadViewModel.name.isEmpty {
-                return NSLocalizedString("New Group", comment: "")
+            if threadViewModel.name.isEmpty || threadViewModel.name == "New Group" {
+                return DisplayNameUtilities.getDisplayName(for: threadViewModel.threadRecord as! TSGroupThread)
             } else {
                 return threadViewModel.name
             }

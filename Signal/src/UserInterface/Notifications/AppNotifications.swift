@@ -371,8 +371,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 notificationTitle = senderName
             case is TSGroupThread:
                 var groupName = thread.name()
-                if groupName.count < 1 {
-                    groupName = MessageStrings.newGroupDefaultTitle
+                if groupName.count < 1 || groupName == "New Group" {
+                    groupName = DisplayNameUtilities.getDisplayName(for: thread as! TSGroupThread)
                 }
                 notificationTitle = String(format: NotificationStrings.incomingGroupMessageTitleFormat,
                                            senderName,
