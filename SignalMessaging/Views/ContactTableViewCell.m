@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.preservesSuperviewLayoutMargins = YES;
     self.contentView.preservesSuperviewLayoutMargins = YES;
-
+    
     self.cellView = [ContactCellView new];
     [self.contentView addSubview:self.cellView];
     [self.cellView autoPinEdgesToSuperviewMargins];

@@ -734,7 +734,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     NSString *profileNameFormatString = NSLocalizedString(@"PROFILE_NAME_LABEL_FORMAT",
         @"Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}.");
 
-    return [NSString stringWithFormat:profileNameFormatString, profileName];
+    return profileName;
 }
 
 - (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId

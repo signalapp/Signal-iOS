@@ -272,7 +272,7 @@ static NSTimeInterval launchStartedAt;
             [self versionMigrationsDidComplete];
         }];
 
-    [UIUtil setupSignalAppearence];
+    [LKAppearanceUtilities switchToSessionAppearance];
 
     if (CurrentAppContext().isRunningTests) {
         return YES;
@@ -1097,12 +1097,25 @@ static NSTimeInterval launchStartedAt;
     }
     
     [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
-    __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
-        job = nil;
+    
+    __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
+        fetchMessagesPromise = nil;
     }).catch(^{
-        job = nil;
+        fetchMessagesPromise = nil;
     });
-    [job retainUntilComplete];
+    [fetchMessagesPromise retainUntilComplete];
+    
+    __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
+    }];
+    for (LKPublicChat *publicChat in publicChats) {
+        if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
+        LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
+        [poller stop];
+        AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
+        [fetchGroupMessagesPromise retainUntilComplete];
+    }
 }
 
 - (void)application:(UIApplication *)application
@@ -1120,14 +1133,35 @@ static NSTimeInterval launchStartedAt;
     }
 
     [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
-    __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
-        completionHandler(UIBackgroundFetchResultNewData);
-        job = nil;
+    
+    NSMutableArray *promises = [NSMutableArray new];
+    
+    __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
+        fetchMessagesPromise = nil;
     }).catch(^{
-        completionHandler(UIBackgroundFetchResultFailed);
-        job = nil;
+        fetchMessagesPromise = nil;
     });
-    [job retainUntilComplete];
+    [promises addObject:fetchMessagesPromise];
+    [fetchMessagesPromise retainUntilComplete];
+    
+    __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
+    }];
+    for (LKPublicChat *publicChat in publicChats) {
+        if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
+        LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
+        [poller stop];
+        AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
+        [promises addObject:fetchGroupMessagesPromise];
+        [fetchGroupMessagesPromise retainUntilComplete];
+    }
+    
+    PMKJoin(promises).then(^(id results) {
+        completionHandler(UIBackgroundFetchResultNewData);
+    }).catch(^(id error) {
+        completionHandler(UIBackgroundFetchResultFailed);
+    });
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
@@ -1229,14 +1263,34 @@ static NSTimeInterval launchStartedAt;
     NSLog(@"[Loki] Performing background fetch.");
     [LKAnalytics.shared track:@"Performed Background Fetch"];
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
-            completionHandler(UIBackgroundFetchResultNewData);
-            job = nil;
+        NSMutableArray *promises = [NSMutableArray new];
+        
+        __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
+            fetchMessagesPromise = nil;
         }).catch(^{
-            completionHandler(UIBackgroundFetchResultFailed);
-            job = nil;
+            fetchMessagesPromise = nil;
         });
-        [job retainUntilComplete];
+        [promises addObject:fetchMessagesPromise];
+        [fetchMessagesPromise retainUntilComplete];
+        
+        __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
+        }];
+        for (LKPublicChat *publicChat in publicChats) {
+            if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
+            LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
+            [poller stop];
+            AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
+            [promises addObject:fetchGroupMessagesPromise];
+            [fetchGroupMessagesPromise retainUntilComplete];
+        }
+        
+        PMKJoin(promises).then(^(id results) {
+            completionHandler(UIBackgroundFetchResultNewData);
+        }).catch(^(id error) {
+            completionHandler(UIBackgroundFetchResultFailed);
+        });
     }];
 }
 
@@ -1548,12 +1602,12 @@ static NSTimeInterval launchStartedAt;
 
 - (LKRSSFeed *)lokiNewsFeed
 {
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki News", @"") isDeletable:true];
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:@"Loki News" isDeletable:true];
 }
 
 - (LKRSSFeed *)lokiMessengerUpdatesFeed
 {
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Loki Messenger Updates", @"") isDeletable:false];
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:@"Loki Messenger Updates" isDeletable:false];
 }
 
 - (void)setUpDefaultPublicChatsIfNeeded

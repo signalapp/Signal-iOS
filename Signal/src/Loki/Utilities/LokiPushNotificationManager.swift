@@ -1,5 +1,7 @@
 import UIKit
 
+// Ideally this should be in SignalServiceKit, but somehow linking fails when it is.
+
 @objc(LKPushNotificationManager)
 final class LokiPushNotificationManager : NSObject {
     

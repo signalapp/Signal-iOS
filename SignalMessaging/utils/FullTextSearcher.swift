@@ -364,6 +364,7 @@ public class FullTextSearcher: NSObject {
 
     @objc(filterThreads:withSearchText:)
     public func filterThreads(_ threads: [TSThread], searchText: String) -> [TSThread] {
+        let threads = threads.filter { $0.name() != "Loki Messenger Updates" && $0.name() != "Loki News" }
         guard searchText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 else {
             return threads
         }

@@ -36,7 +36,7 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Link to your existing account by going into your in-app settings and clicking \"Linked Devices\".", comment: "")
+        let message = NSLocalizedString("Link to your existing account by going into your in-app settings and clicking \"Devices\".", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -73,7 +73,13 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
         // Set up tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
-        tabBar.pin(.top, to: .top, of: view, withInset: navigationBar.height())
+        let tabBarInset: CGFloat
+        if #available(iOS 13, *) {
+            tabBarInset = navigationBar.height()
+        } else {
+            tabBarInset = 0
+        }
+        tabBar.pin(.top, to: .top, of: view, withInset: tabBarInset)
         view.pin(.trailing, to: .trailing, of: tabBar)
         // Set up page VC constraints
         let pageVCView = pageVC.view!
@@ -84,7 +90,13 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
         view.pin(.bottom, to: .bottom, of: pageVCView)
         let screen = UIScreen.main.bounds
         pageVCView.set(.width, to: screen.width)
-        let height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
+        let height: CGFloat
+        if #available(iOS 13, *) {
+            height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
+        } else {
+            let statusBarHeight = UIApplication.shared.statusBarFrame.height
+            height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight - statusBarHeight
+        }
         pageVCView.set(.height, to: height)
         enterPublicKeyVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
@@ -148,7 +160,7 @@ private final class EnterPublicKeyVC : UIViewController {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Link your device", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -165,14 +177,14 @@ private final class EnterPublicKeyVC : UIViewController {
         linkButton.addTarget(self, action: #selector(requestDeviceLink), for: UIControl.Event.touchUpInside)
         let linkButtonContainer = UIView()
         linkButtonContainer.addSubview(linkButton)
-        linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: 80)
+        linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: isSmallScreen ? 48 : 80)
         linkButton.pin(.top, to: .top, of: linkButtonContainer)
-        linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: 80)
-        linkButtonBottomConstraint = linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: Values.veryLargeSpacing)
+        linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: isSmallScreen ? 48 : 80)
+        linkButtonBottomConstraint = linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: Values.largeSpacing)
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, publicKeyTextField ])
         topStackView.axis = .vertical
-        topStackView.spacing = Values.largeSpacing
+        topStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -216,7 +228,7 @@ private final class EnterPublicKeyVC : UIViewController {
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         bottomConstraint.constant = -newHeight
-        linkButtonBottomConstraint.constant = Values.mediumSpacing
+        linkButtonBottomConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.mediumSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -224,7 +236,7 @@ private final class EnterPublicKeyVC : UIViewController {
     
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
         bottomConstraint.constant = 0
-        linkButtonBottomConstraint.constant = Values.veryLargeSpacing
+        linkButtonBottomConstraint.constant = Values.largeSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }

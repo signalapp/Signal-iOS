@@ -532,8 +532,7 @@ const CGFloat kIconViewLength = 24;
                                      [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
 
                                      UILabel *subtitleLabel = [UILabel new];
-                                     subtitleLabel.text = NSLocalizedString(
-                                         @"DISAPPEARING_MESSAGES_DESCRIPTION", @"subheading in conversation settings");
+                                     subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), [LKDisplayNameUtilities getPrivateChatDisplayNameFor:self.thread.contactIdentifier]];
                                      subtitleLabel.textColor = LKColors.text;
                                      subtitleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
                                      subtitleLabel.numberOfLines = 0;
@@ -1263,8 +1262,7 @@ const CGFloat kIconViewLength = 24;
 - (void)updateDisappearingMessagesDurationLabel
 {
     if (self.disappearingMessagesConfiguration.isEnabled) {
-        NSString *keepForFormat = NSLocalizedString(@"KEEP_MESSAGES_DURATION",
-            @"Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples.");
+        NSString *keepForFormat = NSLocalizedString(@"Disappear after %@", @"");
         self.disappearingMessagesDurationLabel.text =
             [NSString stringWithFormat:keepForFormat, self.disappearingMessagesConfiguration.durationString];
     } else {

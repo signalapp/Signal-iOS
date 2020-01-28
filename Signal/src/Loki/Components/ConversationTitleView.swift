@@ -1,5 +1,6 @@
 
-@objc final class ConversationTitleView : UIView {
+@objc(LKConversationTitleView)
+final class ConversationTitleView : UIView {
     private let thread: TSThread
     private var currentStatus: Status? { didSet { updateSubtitleForCurrentStatus() } }
     
@@ -141,8 +142,9 @@
         self.currentStatus = nil
     }
     
-    private func updateSubtitleForCurrentStatus() {
+    @objc func updateSubtitleForCurrentStatus() {
         DispatchQueue.main.async {
+            self.subtitleLabel.isHidden = false
             switch self.currentStatus {
             case .calculatingPoW: self.subtitleLabel.text = NSLocalizedString("Encrypting message", comment: "")
             case .contactingNetwork: self.subtitleLabel.text = NSLocalizedString("Tracing a path", comment: "")
@@ -151,12 +153,40 @@
             case .messageFailed: self.subtitleLabel.text = NSLocalizedString("Message failed to send", comment: "")
             case nil:
                 let subtitle = NSMutableAttributedString()
-                if self.thread.isMuted {
+                if let muteEndDate = self.thread.mutedUntilDate {
                     subtitle.append(NSAttributedString(string: "\u{e067}  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.unimportant ]))
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.locale = Locale.current
+                    dateFormatter.timeStyle = .medium
+                    dateFormatter.dateStyle = .medium
+                    subtitle.append(NSAttributedString(string: "Muted until " + dateFormatter.string(from: muteEndDate)))
+                } else if self.thread.isGroupThread() && !(self.thread as! TSGroupThread).isRSSFeed {
+                    let storage = OWSPrimaryStorage.shared()
+                    var userCount: Int?
+                    storage.dbReadConnection.readWrite { transaction in
+                        if let publicChat = LokiDatabaseUtilities.getPublicChat(for: self.thread.uniqueId!, in: transaction) {
+                            userCount = storage.getUserCount(for: publicChat, in: transaction)
+                        }
+                    }
+                    if let userCount = userCount {
+                        if userCount >= 200 {
+                            subtitle.append(NSAttributedString(string: "200+ members"))
+                        } else {
+                            subtitle.append(NSAttributedString(string: "\(userCount) members"))
+                        }
+                    } else if let hexEncodedPublicKey = (self.thread as? TSContactThread)?.contactIdentifier(), ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
+                        subtitle.append(NSAttributedString(string: hexEncodedPublicKey))
+                    } else {
+                        self.subtitleLabel.isHidden = true
+                    }
+                } else if let hexEncodedPublicKey = (self.thread as? TSContactThread)?.contactIdentifier(), ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
+                    subtitle.append(NSAttributedString(string: hexEncodedPublicKey))
+                } else {
+                    self.subtitleLabel.isHidden = true
                 }
-                subtitle.append(NSAttributedString(string: "26 members")) // TODO: Implement
                 self.subtitleLabel.attributedText = subtitle
             }
+            self.titleLabel.font = .boldSystemFont(ofSize: self.subtitleLabel.isHidden ? Values.veryLargeFontSize : Values.mediumFontSize)
         }
     }
     

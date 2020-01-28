@@ -6,6 +6,7 @@ public extension Notification.Name {
     public static let messageFriendRequestStatusChanged = Notification.Name("messageFriendRequestStatusChanged")
     public static let threadDeleted = Notification.Name("threadDeleted")
     public static let dataNukeRequested = Notification.Name("dataNukeRequested")
+    public static let threadSessionRestoreDevicesChanged = Notification.Name("threadSessionRestoreDevicesChanged")
     // Message statuses
     public static let calculatingPoW = Notification.Name("calculatingPoW")
     public static let contactingNetwork = Notification.Name("contactingNetwork")
@@ -23,6 +24,7 @@ public extension Notification.Name {
     @objc public static let messageFriendRequestStatusChanged = Notification.Name.messageFriendRequestStatusChanged.rawValue as NSString
     @objc public static let threadDeleted = Notification.Name.threadDeleted.rawValue as NSString
     @objc public static let dataNukeRequested = Notification.Name.dataNukeRequested.rawValue as NSString
+    @objc public static let threadSessionRestoreDevicesChanged = Notification.Name.threadSessionRestoreDevicesChanged.rawValue as NSString
     // Message statuses
     @objc public static let calculatingPoW = Notification.Name.calculatingPoW.rawValue as NSString
     @objc public static let contactingNetwork = Notification.Name.contactingNetwork.rawValue as NSString

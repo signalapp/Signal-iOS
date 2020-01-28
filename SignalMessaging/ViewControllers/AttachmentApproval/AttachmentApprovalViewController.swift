@@ -92,13 +92,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
         navController.ows_prefersStatusBarHidden = true
-
-        guard let navigationBar = navController.navigationBar as? OWSNavigationBar else {
-            owsFailDebug("navigationBar was nil or unexpected class")
-            return navController
-        }
-        navigationBar.overrideTheme(type: .clear)
-
         return navController
     }
 
@@ -138,7 +131,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = .black
+        self.view.backgroundColor = .red
 
         // avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
         pagerScrollView?.isScrollEnabled = attachmentItems.count > 1
@@ -176,7 +169,16 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             owsFailDebug("navigationBar was nil or unexpected class")
             return
         }
-        navigationBar.overrideTheme(type: .clear)
+        
+        // Loki: Set navigation bar background color
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
+        navigationBar.respectsTheme = true
+        navigationBar.backgroundColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
+        let backgroundImage = UIImage(color: UIColor(rgbHex: 0x161616)) // Colors.navigationBarBackground
+        navigationBar.setBackgroundImage(backgroundImage, for: .default)
 
         updateContents()
     }

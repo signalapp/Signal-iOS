@@ -29,7 +29,7 @@ final class DisplayNameVC : UIViewController {
         navigationBar.barTintColor = Colors.navigationBarBackground
         // Set up logo image view
         let logoImageView = UIImageView()
-        logoImageView.image = #imageLiteral(resourceName: "Session")
+        logoImageView.image = #imageLiteral(resourceName: "SessionGreen32")
         logoImageView.contentMode = .scaleAspectFit
         logoImageView.set(.width, to: 32)
         logoImageView.set(.height, to: 32)
@@ -37,7 +37,7 @@ final class DisplayNameVC : UIViewController {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Pick your display name", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -45,15 +45,15 @@ final class DisplayNameVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "This is how others will be able to recognize you."
+        explanationLabel.text = "This will be your name when you use Session."
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let spacer1 = UIView()
-        spacer1HeightConstraint = spacer1.set(.height, to: Values.veryLargeSpacing)
+        spacer1HeightConstraint = spacer1.set(.height, to: isSmallScreen ? Values.smallSpacing : Values.veryLargeSpacing)
         let spacer2 = UIView()
-        spacer2HeightConstraint = spacer2.set(.height, to: Values.veryLargeSpacing)
+        spacer2HeightConstraint = spacer2.set(.height, to: isSmallScreen ? Values.smallSpacing : Values.veryLargeSpacing)
         let bottomSpacer = UIView.vStretchingSpacer()
         let registerButtonBottomOffsetSpacer = UIView()
         registerButtonBottomOffsetConstraint = registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
@@ -117,9 +117,9 @@ final class DisplayNameVC : UIViewController {
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         bottomConstraint.constant = -newHeight // Negative due to how the constraint is set up
-        registerButtonBottomOffsetConstraint.constant = Values.largeSpacing
-        spacer1HeightConstraint.constant = Values.mediumSpacing
-        spacer2HeightConstraint.constant = Values.mediumSpacing
+        registerButtonBottomOffsetConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
+        spacer1HeightConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.mediumSpacing
+        spacer2HeightConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.mediumSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -128,8 +128,8 @@ final class DisplayNameVC : UIViewController {
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
         bottomConstraint.constant = 0
         registerButtonBottomOffsetConstraint.constant = Values.onboardingButtonBottomOffset
-        spacer1HeightConstraint.constant = Values.veryLargeSpacing
-        spacer2HeightConstraint.constant = Values.veryLargeSpacing
+        spacer1HeightConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.veryLargeSpacing
+        spacer2HeightConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.veryLargeSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }

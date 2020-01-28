@@ -40,8 +40,6 @@ final class ConversationCell : UITableViewCell {
     
     private lazy var typingIndicatorView = TypingIndicatorView()
     
-    private lazy var bottomLabelStackViewSpacer = UIView.hStretchingSpacer()
-    
     private lazy var statusIndicatorView: UIImageView = {
         let result = UIImageView()
         result.contentMode = .center
@@ -68,56 +66,79 @@ final class ConversationCell : UITableViewCell {
         self.selectedBackgroundView = selectedBackgroundView
         // Set up the unread messages indicator view
         unreadMessagesIndicatorView.set(.width, to: Values.accentLineThickness)
+        unreadMessagesIndicatorView.set(.height, to: 72)
         // Set up the profile picture view
         let profilePictureViewSize = Values.mediumProfilePictureSize
         profilePictureView.set(.width, to: profilePictureViewSize)
         profilePictureView.set(.height, to: profilePictureViewSize)
         profilePictureView.size = profilePictureViewSize
         // Set up the label stack view
-        let topLabelStackView = UIStackView(arrangedSubviews: [ displayNameLabel, UIView.hStretchingSpacer(), timestampLabel ])
+        let topLabelSpacer = UIView.hStretchingSpacer()
+        let topLabelStackView = UIStackView(arrangedSubviews: [ displayNameLabel, topLabelSpacer, timestampLabel ])
         topLabelStackView.axis = .horizontal
+        topLabelStackView.alignment = .center
         topLabelStackView.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
         let snippetLabelContainer = UIView()
         snippetLabelContainer.addSubview(snippetLabel)
         snippetLabelContainer.addSubview(typingIndicatorView)
-        let bottomLabelStackView = UIStackView(arrangedSubviews: [ snippetLabelContainer, bottomLabelStackViewSpacer, statusIndicatorView ])
+        let bottomLabelSpacer = UIView.hStretchingSpacer()
+        let bottomLabelStackView = UIStackView(arrangedSubviews: [ snippetLabelContainer, bottomLabelSpacer, statusIndicatorView ])
         bottomLabelStackView.axis = .horizontal
+        bottomLabelStackView.alignment = .center
         bottomLabelStackView.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
-        let labelStackView = UIStackView(arrangedSubviews: [ UIView.spacer(withHeight: Values.smallSpacing), topLabelStackView, bottomLabelStackView, UIView.spacer(withHeight: Values.smallSpacing) ])
-        labelStackView.axis = .vertical
-        labelStackView.spacing = Values.smallSpacing
+        let labelContainerView = UIView()
+        labelContainerView.addSubview(topLabelStackView)
+        labelContainerView.addSubview(bottomLabelStackView)
         // Set up the main stack view
-        let stackView = UIStackView(arrangedSubviews: [ unreadMessagesIndicatorView, profilePictureView, labelStackView ])
+        let stackView = UIStackView(arrangedSubviews: [ unreadMessagesIndicatorView, profilePictureView, labelContainerView ])
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = Values.mediumSpacing
         contentView.addSubview(stackView)
         // Set up the constraints
-        unreadMessagesIndicatorView.pin(.top, to: .top, of: stackView)
-        unreadMessagesIndicatorView.pin(.bottom, to: .bottom, of: stackView)
+        unreadMessagesIndicatorView.pin(.top, to: .top, of: contentView)
+        unreadMessagesIndicatorView.pin(.bottom, to: .bottom, of: contentView)
+        // The three lines below are part of a workaround for a weird layout bug
+        topLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
+        topLabelStackView.set(.height, to: 18)
+        topLabelSpacer.set(.height, to: 18)
         timestampLabel.setContentCompressionResistancePriority(.required, for: NSLayoutConstraint.Axis.horizontal)
+        // The three lines below are part of a workaround for a weird layout bug
+        bottomLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
+        bottomLabelStackView.set(.height, to: 16)
+        bottomLabelSpacer.set(.height, to: 16)
         statusIndicatorView.set(.width, to: Values.conversationCellStatusIndicatorSize)
         statusIndicatorView.set(.height, to: Values.conversationCellStatusIndicatorSize)
         snippetLabel.pin(to: snippetLabelContainer)
         typingIndicatorView.pin(.leading, to: .leading, of: snippetLabelContainer)
         typingIndicatorView.centerYAnchor.constraint(equalTo: snippetLabel.centerYAnchor).isActive = true
+        // Not using a stack view for this is part of a workaround for a weird layout bug
+        topLabelStackView.pin(.leading, to: .leading, of: labelContainerView)
+        topLabelStackView.pin(.top, to: .top, of: labelContainerView, withInset: Values.mediumSpacing)
+        topLabelStackView.pin(.trailing, to: .trailing, of: labelContainerView)
+        bottomLabelStackView.pin(.leading, to: .leading, of: labelContainerView)
+        bottomLabelStackView.pin(.top, to: .bottom, of: topLabelStackView, withInset: Values.smallSpacing)
+        labelContainerView.pin(.bottom, to: .bottom, of: bottomLabelStackView, withInset: Values.mediumSpacing)
+        // The two lines below are part of a workaround for a weird layout bug
+        labelContainerView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
+        labelContainerView.set(.height, to: 72)
         stackView.pin(.leading, to: .leading, of: contentView)
         stackView.pin(.top, to: .top, of: contentView)
-        contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.mediumSpacing)
-        contentView.pin(.bottom, to: .bottom, of: stackView)
-        stackView.set(.width, to: UIScreen.main.bounds.width - Values.mediumSpacing) // Workaround for weird constraints issue
+        // The two lines below are part of a workaround for a weird layout bug
+        stackView.set(.width, to: UIScreen.main.bounds.width - Values.mediumSpacing)
+        stackView.set(.height, to: 72)
     }
     
     // MARK: Updating
     private func update() {
         LokiAPI.populateUserHexEncodedPublicKeyCacheIfNeeded(for: threadViewModel.threadRecord.uniqueId!) // FIXME: This is a terrible place to do this
-        unreadMessagesIndicatorView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0
+        unreadMessagesIndicatorView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
         if threadViewModel.isGroupThread {
             let users = LokiAPI.userHexEncodedPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
             let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
             if !randomUsers.isEmpty {
                 profilePictureView.hexEncodedPublicKey = randomUsers[0]
-                profilePictureView.additionalHexEncodedPublicKey = randomUsers.count == 2 ? randomUsers[1] : ""
+                profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
             } else {
                 profilePictureView.hexEncodedPublicKey = ""
                 profilePictureView.additionalHexEncodedPublicKey = ""

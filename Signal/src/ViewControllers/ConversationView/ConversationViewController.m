@@ -160,8 +160,9 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable) NSTimer *readTimer;
 @property (nonatomic) NSCache *cellMediaCache;
-@property (nonatomic) ConversationTitleView *headerView;
+@property (nonatomic) LKConversationTitleView *headerView;
 @property (nonatomic, nullable) UIView *bannerView;
+@property (nonatomic, nullable) UIView *restoreSessionBannerView;
 @property (nonatomic, nullable) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
 // Back Button Unread Count
@@ -261,7 +262,7 @@ typedef enum : NSUInteger {
     _recordVoiceNoteAudioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:OWSAudioBehavior_PlayAndRecord];
 
     self.scrollContinuity = kScrollContinuityBottom;
-    
+
     _currentMentionStartIndex = -1;
     _mentions = [NSMutableArray new];
     _oldText = @"";
@@ -419,6 +420,10 @@ typedef enum : NSUInteger {
                                                  name:NSNotification.threadFriendRequestStatusChanged
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleThreadSessionRestoreDevicesChangedNotifiaction:)
+                                                 name:NSNotification.threadSessionRestoreDevicesChanged
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleCalculatingPoWNotification:)
                                                  name:NSNotification.calculatingPoW
                                                object:nil];
@@ -509,6 +514,17 @@ typedef enum : NSUInteger {
     [self resetContentAndLayout];
 }
 
+- (void)handleThreadSessionRestoreDevicesChangedNotifiaction:(NSNotification *)notification
+{
+    // Check thread
+    NSString *threadID = (NSString *)notification.object;
+    if (![threadID isEqualToString:self.thread.uniqueId]) { return; }
+    // Ensure thread instance is up to date
+    [self.thread reload];
+    // Update UI
+    [self updateSessionRestoreBanner];
+}
+
 - (void)peekSetup
 {
     _peek = YES;
@@ -547,7 +563,7 @@ typedef enum : NSUInteger {
                                                           selector:@selector(reloadTimerDidFire)
                                                           userInfo:nil
                                                            repeats:YES];
-    
+
     [LKAPI populateUserHexEncodedPublicKeyCacheIfNeededFor:thread.uniqueId in:nil];
 }
 
@@ -622,7 +638,7 @@ typedef enum : NSUInteger {
     [super viewDidLoad];
 
     [self createContents];
-    
+
     [self registerCellClasses];
 
     [self createConversationScrollButtons];
@@ -641,20 +657,20 @@ typedef enum : NSUInteger {
     [self loadDraftInCompose];
     [self applyTheme];
     [self.conversationViewModel viewDidLoad];
-    
+
     // Loki: Set gradient background
     self.collectionView.backgroundColor = UIColor.clearColor;
     LKGradient *gradient = LKGradients.defaultLokiBackground;
     self.view.backgroundColor = UIColor.clearColor;
     [self.view setGradient:gradient];
-    
+
     // Loki: Set navigation bar background color
     UINavigationBar *navigationBar = self.navigationController.navigationBar;
     [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     navigationBar.shadowImage = [UIImage new];
     [navigationBar setTranslucent:NO];
     navigationBar.barTintColor = LKColors.navigationBarBackground;
-    
+
     // Loki: Set up navigation bar buttons
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", "") style:UIBarButtonItemStylePlain target:nil action:nil];
     backButton.tintColor = LKColors.text;
@@ -662,6 +678,19 @@ typedef enum : NSUInteger {
     UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Gear"] style:UIBarButtonItemStylePlain target:self action:@selector(showConversationSettings)];
     settingsButton.tintColor = LKColors.text;
     self.navigationItem.rightBarButtonItem = settingsButton;
+
+    if (self.thread.isGroupThread) {
+        TSGroupThread *thread = (TSGroupThread *)self.thread;
+        if (thread.isRSSFeed) { return; }
+        __block LKPublicChat *publicChat;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
+        }];
+        [LKPublicChatAPI getUserCountForGroup:publicChat.channel onServer:publicChat.server]
+        .thenOn(dispatch_get_main_queue(), ^(id userCount) {
+            [self.headerView updateSubtitleForCurrentStatus];
+        });
+    }
 }
 
 - (void)createContents
@@ -706,7 +735,7 @@ typedef enum : NSUInteger {
     [self.progressIndicatorView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.progressIndicatorView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.progressIndicatorView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-    
+
     [self.collectionView applyScrollViewInsetsFix];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _collectionView);
 
@@ -715,7 +744,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
     [self updateInputToolbar];
-    
+
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES", @"Indicates that the app is loading more messages in this conversation.");
     self.loadMoreHeader.textColor = [LKColors.text colorWithAlphaComponent:0.8];
@@ -822,6 +851,7 @@ typedef enum : NSUInteger {
     OWSLogDebug(@"viewWillAppear");
 
     [self ensureBannerState];
+    [self updateSessionRestoreBanner];
 
     [super viewWillAppear:animated];
 
@@ -977,6 +1007,38 @@ typedef enum : NSUInteger {
         }
     }
     return [result copy];
+}
+
+- (void)updateSessionRestoreBanner {
+    BOOL isContactThread = [self.thread isKindOfClass:[TSContactThread class]];
+    BOOL shouldRemoveBanner = !isContactThread;
+    if (isContactThread) {
+        TSContactThread *thread = (TSContactThread *)self.thread;
+        if (thread.sessionRestoreDevices.count > 0) {
+            if (self.restoreSessionBannerView == nil) {
+                LKSessionRestorationView *bannerView = [[LKSessionRestorationView alloc] initWithThread:thread];
+                [self.view addSubview:bannerView];
+                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:LKValues.mediumSpacing];
+                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:LKValues.largeSpacing];
+                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:LKValues.mediumSpacing];
+                [self.view layoutSubviews];
+                self.restoreSessionBannerView = bannerView;
+                [bannerView setOnRestore:^{
+                    [self restoreSession];
+                }];
+                [bannerView setOnDismiss:^{
+                    [thread removeAllSessionRestoreDevicesWithTransaction:nil];
+                }];
+            }
+        } else {
+            shouldRemoveBanner = true;
+        }
+    }
+
+    if (shouldRemoveBanner && self.restoreSessionBannerView) {
+        [self.restoreSessionBannerView removeFromSuperview];
+        self.restoreSessionBannerView = nil;
+    }
 }
 
 - (void)ensureBannerState
@@ -1150,6 +1212,27 @@ typedef enum : NSUInteger {
     }];
 }
 
+- (void)restoreSession {
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
+        TSContactThread *thread = (TSContactThread *)self.thread;
+        NSArray *devices = thread.sessionRestoreDevices;
+        for (NSString *device in devices) {
+            if (device.length == 0) { continue; }
+            OWSMessageSend *sessionRestoreMessage = [messageSender getSessionRestoreMessageForHexEncodedPublicKey:device];
+            if (sessionRestoreMessage) {
+                dispatch_async(OWSDispatch.sendingQueue, ^{
+                    [messageSender sendMessage:sessionRestoreMessage];
+                });
+            }
+        }
+        [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageType:TSInfoMessageTypeLokiSessionResetInProgress] save];
+        thread.sessionResetState = TSContactThreadSessionResetStateRequestReceived;
+        [thread save];
+        [thread removeAllSessionRestoreDevicesWithTransaction:nil];
+    }
+}
+
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
@@ -1320,7 +1403,7 @@ typedef enum : NSUInteger {
     // - Begin presenting another view, e.g. swipe-left for details or swipe-right to go back, but quit part way, so that you remain on the conversation view
     // - toolbar will be not be visible unless we reaquire first responder.
     if (!self.isFirstResponder) {
-        
+
         // We don't have to worry about the input toolbar being visible if the inputToolbar.textView is first responder
         // In fact doing so would unnecessarily dismiss the keyboard which is probably not desirable and at least
         // a distracting animation.
@@ -1410,7 +1493,7 @@ typedef enum : NSUInteger {
 
 - (void)createHeaderViews
 {
-    ConversationTitleView *headerView = [[ConversationTitleView alloc] initWithThread:self.thread];
+    LKConversationTitleView *headerView = [[LKConversationTitleView alloc] initWithThread:self.thread];
     self.headerView = headerView;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, headerView);
 
@@ -1468,7 +1551,7 @@ typedef enum : NSUInteger {
 - (void)updateBarButtonItems
 {
     return; // Loki: Re-enable later?
-    
+
     self.navigationItem.hidesBackButton = NO;
     if (self.customBackButton) {
         self.navigationItem.leftBarButtonItem = self.customBackButton;
@@ -1495,7 +1578,7 @@ typedef enum : NSUInteger {
         UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *image = [[UIImage imageNamed:@"button_phone_white"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [callButton setImage:image forState:UIControlStateNormal];
-        
+
         if (OWSWindowManager.sharedManager.hasCall) {
             callButton.enabled = NO;
             callButton.userInteractionEnabled = NO;
@@ -1507,7 +1590,7 @@ typedef enum : NSUInteger {
         }
 
         UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
-        
+
         // We normally would want to use left and right insets that ensure the button
         // is square and the icon is centered.  However UINavigationBar doesn't offer us
         // control over the margins and spacing of its content, and the buttons end up
@@ -1591,7 +1674,7 @@ typedef enum : NSUInteger {
         isAttachmentButtonHidden = false;
     }
     [self.inputToolbar setUserInteractionEnabled:isEnabled];
-    NSString *placeholderText = isEnabled ? NSLocalizedString(@"Message", "") : NSLocalizedString(@"Pending message request", "");
+    NSString *placeholderText = isEnabled ? NSLocalizedString(@"Message", "") : NSLocalizedString(@"Pending session request", "");
     [self.inputToolbar setPlaceholderText:placeholderText];
     [self.inputToolbar setAttachmentButtonHidden:isAttachmentButtonHidden];
 }
@@ -1860,14 +1943,14 @@ typedef enum : NSUInteger {
             // Before 2.13 we didn't track the recipient id in the identity change error.
             OWSLogWarn(@"Ignoring tap on legacy nonblocking identity change since it has no signal id");
             return;
-            
+
         } else {
             OWSLogInfo(@"Assuming tap on legacy nonblocking identity change corresponds to current contact thread: %@",
                 self.thread.contactIdentifier);
             signalIdParam = self.thread.contactIdentifier;
         }
     }
-    
+
     NSString *signalId = signalIdParam;
 
     [self showFingerprintWithRecipientId:signalId];
@@ -2395,7 +2478,7 @@ typedef enum : NSUInteger {
 
     self.audioAttachmentPlayer =
         [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.originalMediaURL audioBehavior:OWSAudioBehavior_AudioMessagePlayback delegate:viewItem];
-    
+
     // Associate the player with this media adapter.
     self.audioAttachmentPlayer.owner = viewItem;
     [self.audioAttachmentPlayer play];
@@ -4235,18 +4318,24 @@ typedef enum : NSUInteger {
     [searchBar setImage:searchImage forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
     UIImage *clearImage = [[UIImage imageNamed:@"searchbar_clear"] asTintedImageWithColor:LKColors.searchBarPlaceholder];
     [searchBar setImage:clearImage forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
-    searchBar.searchTextField.backgroundColor = LKColors.searchBarBackground;
-    searchBar.searchTextField.textColor = LKColors.text;
-    searchBar.searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Search", @"") attributes:@{ NSForegroundColorAttributeName : LKColors.searchBarPlaceholder }];
+    UITextField *searchTextField;
+    if (@available(iOS 13, *)) {
+        searchTextField = searchBar.searchTextField;
+    } else {
+        searchTextField = (UITextField *)[searchBar valueForKey:@"_searchField"];
+    }
+    searchTextField.backgroundColor = LKColors.searchBarBackground;
+    searchTextField.textColor = LKColors.text;
+    searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Search", @"") attributes:@{ NSForegroundColorAttributeName : LKColors.searchBarPlaceholder }];
     searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
     [searchBar setPositionAdjustment:UIOffsetMake(4, 0) forSearchBarIcon:UISearchBarIconSearch];
     [searchBar setSearchTextPositionAdjustment:UIOffsetMake(2, 0)];
     [searchBar setPositionAdjustment:UIOffsetMake(-4, 0) forSearchBarIcon:UISearchBarIconClear];
-    
+
     // Note: setting a searchBar as the titleView causes UIKit to render the navBar
     // *slightly* taller (44pt -> 56pt)
     self.navigationItem.titleView = searchBar;
-    
+
     [self updateBarButtonItems];
 
     // Hack so that the ResultsBar stays on the screen when dismissing the search field
@@ -4725,7 +4814,7 @@ typedef enum : NSUInteger {
     targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
 {
     if (@available(iOS 13, *)) {
-        
+
     } else {
         if (self.menuActionsViewController != nil) {
             NSValue *_Nullable contentOffset = [self contentOffsetForMenuActionInteraction];

@@ -678,16 +678,34 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
             [errorMessage saveWithTransaction:transaction];
+            [self handleSessionRestoreForErrorMessage:errorMessage envelope:envelope transaction:transaction];
             [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
         }
     }];
+}
+
+- (void)handleSessionRestoreForErrorMessage:(TSErrorMessage *)errorMessage
+                                   envelope:(SSKProtoEnvelope *)envelope
+                                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSString *hexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source;
+    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+       
+   // Trigger a session restore prompt if we get specific errors
+   if (errorMessage.errorType == TSErrorMessageNoSession ||
+       errorMessage.errorType == TSErrorMessageInvalidMessage ||
+       errorMessage.errorType == TSErrorMessageInvalidKeyException) {
+       // We want to store the source device's public key into the session restore in case it's a secondary device message
+       [((TSContactThread *)contactThread) addSessionRestoreDevice:envelope.source transaction:transaction];
+   }
 }
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
                          envelope:(SSKProtoEnvelope *)envelope
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    NSString *hexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source;
+    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
     [SSKEnvironment.shared.notificationsManager notifyUserForErrorMessage:errorMessage
                                                                    thread:contactThread
                                                               transaction:transaction];

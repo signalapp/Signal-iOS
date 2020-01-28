@@ -11,7 +11,7 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("Enter Channel URL", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("Open Group URL", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
@@ -36,7 +36,7 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Scan the QR code of the channel you'd like to join", comment: "")
+        let message = NSLocalizedString("Scan the QR code of the open group you'd like to join", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -60,7 +60,7 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
         navigationItem.leftBarButtonItem = closeButton
         // Customize title
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("Join Channel", comment: "")
+        titleLabel.text = NSLocalizedString("Join Open Group", comment: "")
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
@@ -73,7 +73,13 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
         // Set up tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
-        tabBar.pin(.top, to: .top, of: view, withInset: navigationBar.height())
+        let tabBarInset: CGFloat
+        if #available(iOS 13, *) {
+            tabBarInset = navigationBar.height()
+        } else {
+            tabBarInset = 0
+        }
+        tabBar.pin(.top, to: .top, of: view, withInset: tabBarInset)
         view.pin(.trailing, to: .trailing, of: tabBar)
         // Set up page VC constraints
         let pageVCView = pageVC.view!
@@ -84,7 +90,13 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
         view.pin(.bottom, to: .bottom, of: pageVCView)
         let screen = UIScreen.main.bounds
         pageVCView.set(.width, to: screen.width)
-        let height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
+        let height: CGFloat
+        if #available(iOS 13, *) {
+            height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
+        } else {
+            let statusBarHeight = UIApplication.shared.statusBarFrame.height
+            height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight - statusBarHeight
+        }
         pageVCView.set(.height, to: height)
         enterChatURLVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
@@ -141,6 +153,7 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
         .done(on: .main) { [weak self] _ in
             let _ = LokiPublicChatAPI.getMessages(for: channelID, on: urlAsString)
             let _ = LokiPublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
+            let _ = LokiPublicChatAPI.join(channelID, on: urlAsString)
             self?.presentingViewController!.dismiss(animated: true, completion: nil)
         }
         .catch(on: .main) { [weak self] _ in
@@ -177,7 +190,7 @@ private final class EnterChatURLVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Enter the URL of the channel you'd like to join", comment: "")
+        explanationLabel.text = NSLocalizedString("Enter an open group URL", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -195,7 +208,7 @@ private final class EnterChatURLVC : UIViewController {
         let stackView = UIStackView(arrangedSubviews: [ chatURLTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
+        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view)

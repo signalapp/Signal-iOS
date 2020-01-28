@@ -16,14 +16,18 @@ public class LoadingViewController: UIViewController {
 
     override public func loadView() {
         self.view = UIView()
-        view.backgroundColor = UIColor.lokiDarkestGray()
+        
+        // Loki: Set gradient background
+        view.backgroundColor = .clear
+        let gradient = Gradients.defaultLokiBackground
+        view.setGradient(gradient)
 
-        self.logoView = UIImageView(image: #imageLiteral(resourceName: "Session"))
+        self.logoView = UIImageView(image: #imageLiteral(resourceName: "SessionGreen64"))
         view.addSubview(logoView)
 
         logoView.autoCenterInSuperview()
-        logoView.autoSetDimension(.width, toSize: 75)
-        logoView.autoSetDimension(.height, toSize: 75)
+        logoView.autoSetDimension(.width, toSize: 64)
+        logoView.autoSetDimension(.height, toSize: 64)
         logoView.contentMode = .scaleAspectFit
 
         self.topLabel = buildLabel()

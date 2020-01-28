@@ -17,10 +17,6 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     
     @objc public static let defaultChats: [LokiPublicChat] = {
         var result: [LokiPublicChat] = []
-        result.append(LokiPublicChat(channel: 1, server: "https://chat.lokinet.org", displayName: NSLocalizedString("Loki Public Chat", comment: ""), isDeletable: true)!)
-        #if DEBUG
-            result.append(LokiPublicChat(channel: 1, server: "https://chat-dev.lokinet.org", displayName: "Loki Dev Chat", isDeletable: true)!)
-        #endif
         return result
     }()
     
@@ -246,6 +242,49 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }
     }
     
+    public static func join(_ channel: UInt64, on server: String) -> Promise<Void> {
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
+            let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
+            let request = TSRequest(url: url, method: "POST", parameters: [:])
+            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).done(on: DispatchQueue.global()) { result -> Void in
+                print("[Loki] Joined channel with ID: \(channel) on server: \(server).")
+            }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+        }
+    }
+    
+    public static func leave(_ channel: UInt64, on server: String) -> Promise<Void> {
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
+            let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
+            let request = TSRequest(url: url, method: "DELETE", parameters: [:])
+            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).done(on: DispatchQueue.global()) { result -> Void in
+                print("[Loki] Left channel with ID: \(channel) on server: \(server).")
+            }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+        }
+    }
+    
+    public static func getUserCount(for channel: UInt64, on server: String) -> Promise<Int> {
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Int> in
+            let queryParameters = "count=2500"
+            let url = URL(string: "\(server)/channels/\(channel)/subscribers?\(queryParameters)")!
+            let request = TSRequest(url: url)
+            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse in
+                guard let json = rawResponse as? JSON, let users = json["data"] as? [JSON] else {
+                    print("[Loki] Couldn't parse user count for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                    throw Error.parsingFailed
+                }
+                let userCount = users.count
+                let storage = OWSPrimaryStorage.shared()
+                storage.dbReadWriteConnection.readWrite { transaction in
+                    storage.setUserCount(userCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
+                }
+                return userCount
+            }
+        }
+    }
+    
     public static func getDisplayNames(for channel: UInt64, on server: String) -> Promise<Void> {
         let publicChatID = "\(server).\(channel)"
         guard let hexEncodedPublicKeys = displayNameUpdatees[publicChatID] else { return Promise.value(()) }
@@ -346,6 +385,11 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     @objc(deleteMessageWithID:forGroup:onServer:isSentByUser:)
     public static func objc_deleteMessage(with messageID: UInt, for group: UInt64, on server: String, isSentByUser: Bool) -> AnyPromise {
         return AnyPromise.from(deleteMessage(with: messageID, for: group, on: server, isSentByUser: isSentByUser))
+    }
+    
+    @objc(getUserCountForGroup:onServer:)
+    public static func objc_getUserCount(for group: UInt64, on server: String) -> AnyPromise {
+        return AnyPromise.from(getUserCount(for: group, on: server))
     }
     
     @objc(setDisplayName:on:)

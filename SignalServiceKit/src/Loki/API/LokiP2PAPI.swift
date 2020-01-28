@@ -33,7 +33,7 @@ public class LokiP2PAPI : NSObject {
     /// - Parameter url: The url to our local server
     @objc public static func setOurP2PAddress(url: URL) {
         guard let scheme = url.scheme, let host = url.host, let port = url.port else { return }
-        let target = LokiAPITarget(address: "\(scheme)://\(host)", port: UInt16(port))
+        let target = LokiAPITarget(address: "\(scheme)://\(host)", port: UInt16(port), publicKeySet: nil)
         ourP2PAddress = target
     }
     

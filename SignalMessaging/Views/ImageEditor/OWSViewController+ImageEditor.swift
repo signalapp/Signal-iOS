@@ -35,7 +35,7 @@ public extension UIViewController {
         stackView.axis = .horizontal
         stackView.spacing = spacing
         stackView.alignment = .center
-
+        
         // Ensure layout works on older versions of iOS.
         var stackSize = CGSize.zero
         for item in navigationBarItems {
@@ -49,5 +49,15 @@ public extension UIViewController {
         stackView.frame = CGRect(origin: .zero, size: stackSize)
 
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
+        
+        // Loki: Set navigation bar background color
+        let navigationBar = navigationController!.navigationBar
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
+        navigationBar.backgroundColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
+        let backgroundImage = UIImage(color: UIColor(rgbHex: 0x161616)) // Colors.navigationBarBackground
+        navigationBar.setBackgroundImage(backgroundImage, for: .default)
     }
 }

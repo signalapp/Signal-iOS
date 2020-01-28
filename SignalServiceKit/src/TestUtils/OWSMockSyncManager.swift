@@ -19,6 +19,12 @@ public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {
 
         return AnyPromise()
     }
+    
+    @objc public func syncContact(_ hexEncodedPubKey: String, transaction: YapDatabaseReadTransaction) -> AnyPromise {
+        Logger.info("")
+
+        return AnyPromise()
+    }
 
     @objc public func syncAllContacts() -> AnyPromise {
         Logger.info("")

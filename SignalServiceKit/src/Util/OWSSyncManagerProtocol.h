@@ -6,12 +6,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class AnyPromise;
 @class SignalAccount;
+@class YapDatabaseReadTransaction;
 
 @protocol OWSSyncManagerProtocol <NSObject>
 
 - (void)sendConfigurationSyncMessage;
 
 - (AnyPromise *)syncLocalContact __attribute__((warn_unused_result));
+
+- (AnyPromise *)syncContact:(NSString *)hexEncodedPubKey transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (AnyPromise *)syncAllContacts __attribute__((warn_unused_result));
 

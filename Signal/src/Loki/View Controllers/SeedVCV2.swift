@@ -30,7 +30,7 @@ final class SeedVCV2 : UIViewController {
         let attributedTitle = NSMutableAttributedString(string: title)
         attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "90%"))
         result.title = attributedTitle
-        result.subtitle = NSLocalizedString("Press the redacted words to view your recovery phrase and secure your account", comment: "")
+        result.subtitle = NSLocalizedString("Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID.", comment: "")
         result.setProgress(0.9, animated: false)
         return result
     }()
@@ -80,7 +80,7 @@ final class SeedVCV2 : UIViewController {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Meet your recovery phrase", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -88,7 +88,7 @@ final class SeedVCV2 : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Think of this as the crypto-equivalent of a social security number. This allows whomever has it complete access to your account.", comment: "")
+        explanationLabel.text = NSLocalizedString("Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone. To restore your Session ID, launch Session and tap Continue your Session.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up mnemonic label
@@ -100,14 +100,14 @@ final class SeedVCV2 : UIViewController {
         // Set up mnemonic label container
         let mnemonicLabelContainer = UIView()
         mnemonicLabelContainer.addSubview(mnemonicLabel)
-        mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: Values.mediumSpacing)
+        mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isSmallScreen ? Values.smallSpacing : Values.mediumSpacing)
         mnemonicLabelContainer.layer.cornerRadius = Values.textFieldCornerRadius
         mnemonicLabelContainer.layer.borderWidth = Values.borderThickness
         mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor
         // Set up call to action label
         let callToActionLabel = UILabel()
         callToActionLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        callToActionLabel.font = .systemFont(ofSize: Values.mediumFontSize)
+        callToActionLabel.font = .systemFont(ofSize: isSmallScreen ? Values.smallFontSize : Values.mediumFontSize)
         callToActionLabel.text = NSLocalizedString("Hold to reveal", comment: "")
         callToActionLabel.textAlignment = .center
         let callToActionLabelGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(revealMnemonic))
@@ -127,7 +127,7 @@ final class SeedVCV2 : UIViewController {
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, mnemonicLabelContainer, callToActionLabel ])
         topStackView.axis = .vertical
-        topStackView.spacing = Values.largeSpacing
+        topStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
         topStackView.alignment = .fill
         // Set up top stack view container
         let topStackViewContainer = UIView()
@@ -145,7 +145,7 @@ final class SeedVCV2 : UIViewController {
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, copyButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
-        mainStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: Values.mediumSpacing, trailing: 0)
+        mainStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: isSmallScreen ? Values.smallSpacing : Values.mediumSpacing, trailing: 0)
         mainStackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: view)

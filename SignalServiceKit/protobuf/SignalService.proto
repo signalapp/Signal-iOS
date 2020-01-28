@@ -148,6 +148,7 @@ message DataMessage {
     END_SESSION             = 1;
     EXPIRATION_TIMER_UPDATE = 2;
     PROFILE_KEY_UPDATE      = 4;
+    SESSION_RESTORE         = 64;
     UNLINK_DEVICE           = 128;
     SESSION_REQUEST         = 256;
   }

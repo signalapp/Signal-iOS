@@ -41,14 +41,32 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    self.view.backgroundColor = [UIColor ows_materialBlueColor];
+    UIView.appearance.tintColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+    
+    // Loki: Set gradient background
+    self.view.backgroundColor = UIColor.clearColor;
+    CAGradientLayer *layer = [CAGradientLayer new];
+    layer.frame = UIScreen.mainScreen.bounds;
+    layer.colors = @[ (id)[UIColor colorWithRGBHex:0x171717].CGColor, (id)[UIColor colorWithRGBHex:0x121212].CGColor ];
+    [self.view.layer insertSublayer:layer atIndex:0];
+    
+    // Loki: Set navigation bar background color
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navigationBar.shadowImage = [UIImage new];
+    [navigationBar setTranslucent:NO];
+    navigationBar.barTintColor = [UIColor colorWithRGBHex:0x161616]; // Colors.navigationBarBackground
 
-    self.title = NSLocalizedString(@"SHARE_EXTENSION_VIEW_TITLE", @"Title for the 'share extension' view.");
+    // Loki: Customize title
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.text = NSLocalizedString(@"Share to Session", @"");
+    titleLabel.textColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+    titleLabel.font = [UIFont boldSystemFontOfSize:25]; // Values.veryLargeFontSize
+    self.navigationItem.titleView = titleLabel;
 
-    self.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-                                                      target:self
-                                                      action:@selector(dismissPressed:)];
+    UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"X"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissPressed:)];
+    closeButton.tintColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+    self.navigationItem.leftBarButtonItem = closeButton;
 }
 
 - (void)viewWillAppear:(BOOL)animated

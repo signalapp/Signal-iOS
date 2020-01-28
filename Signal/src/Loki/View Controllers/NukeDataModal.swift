@@ -16,7 +16,7 @@ final class NukeDataModal : Modal {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("This will delete your entire account, including all data, any messages currently linked to your Session ID, as well as your personal key pair.", comment: "")
+        explanationLabel.text = NSLocalizedString("This will permanently delete your Session ID, including all messages, sessions, and contacts.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping

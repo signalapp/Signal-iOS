@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2400888E239F30A600305217 /* SessionRestorationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2400888D239F30A600305217 /* SessionRestorationView.swift */; };
 		241C6314231F64C000B4198E /* JazzIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C630E231F5AAC00B4198E /* JazzIcon.swift */; };
 		241C6315231F64CE00B4198E /* CGFloat+Rounding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */; };
 		241C6316231F64CE00B4198E /* UIColor+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6310231F5C4400B4198E /* UIColor+Helper.swift */; };
@@ -573,15 +574,19 @@
 		B82B4094239DF15900A248E7 /* ConversationTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B4093239DF15900A248E7 /* ConversationTitleView.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
 		B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F4235022F30083A1CD /* MentionUtilities.swift */; };
+		B847570323D5698100759540 /* LokiPushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B847570223D5698100759540 /* LokiPushNotificationManager.swift */; };
 		B85357BF23A1AE0800AAF6CD /* SeedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */; };
 		B85357C123A1B81900AAF6CD /* SeedReminderViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C023A1B81900AAF6CD /* SeedReminderViewDelegate.swift */; };
 		B85357C323A1BD1200AAF6CD /* SeedVCV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C223A1BD1200AAF6CD /* SeedVCV2.swift */; };
 		B85357C523A1F13800AAF6CD /* LinkDeviceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C423A1F13800AAF6CD /* LinkDeviceVC.swift */; };
 		B85357C723A1FB5100AAF6CD /* LinkDeviceVCDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C623A1FB5100AAF6CD /* LinkDeviceVCDelegate.swift */; };
+		B8544E3123D16CA500299F14 /* DeviceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8544E3023D16CA500299F14 /* DeviceUtilities.swift */; };
+		B8544E3323D50E4900299F14 /* AppearanceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */; };
+		B8544E3423D51EEF00299F14 /* ProfilePictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */; };
+		B8544E3523D5201400299F14 /* UIView+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
 		B885D5F4233491AB00EE0D8E /* DeviceLinkingModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */; };
-		B885D5F62334A32100EE0D8E /* UIView+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */; };
 		B886B4A72398B23E00211ABE /* QRCodeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B886B4A62398B23E00211ABE /* QRCodeVC.swift */; };
 		B886B4A92398BA1500211ABE /* QRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B886B4A82398BA1500211ABE /* QRCode.swift */; };
 		B891105C2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
@@ -598,7 +603,6 @@
 		B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A4238F627000BA5194 /* HomeVC.swift */; };
 		B8BB82A9238F62FB00BA5194 /* Gradients.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A8238F62FB00BA5194 /* Gradients.swift */; };
 		B8BB82AB238F669C00BA5194 /* ConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82AA238F669C00BA5194 /* ConversationCell.swift */; };
-		B8BB82AD238F734800BA5194 /* ProfilePictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */; };
 		B8BB82B12390C37000BA5194 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82B02390C37000BA5194 /* SearchBar.swift */; };
 		B8BB82B523947F2D00BA5194 /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82B423947F2D00BA5194 /* TextField.swift */; };
 		B8BB82B92394911B00BA5194 /* Separator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82B82394911B00BA5194 /* Separator.swift */; };
@@ -706,6 +710,7 @@
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
+		2400888D239F30A600305217 /* SessionRestorationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestorationView.swift; sourceTree = "<group>"; };
 		241C630E231F5AAC00B4198E /* JazzIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JazzIcon.swift; sourceTree = "<group>"; };
 		241C6310231F5C4400B4198E /* UIColor+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Helper.swift"; sourceTree = "<group>"; };
 		241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Rounding.swift"; sourceTree = "<group>"; };
@@ -1412,11 +1417,15 @@
 		B82B4093239DF15900A248E7 /* ConversationTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTitleView.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
 		B84664F4235022F30083A1CD /* MentionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionUtilities.swift; sourceTree = "<group>"; };
+		B847570023D568EB00759540 /* SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B847570223D5698100759540 /* LokiPushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiPushNotificationManager.swift; sourceTree = "<group>"; };
 		B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedReminderView.swift; sourceTree = "<group>"; };
 		B85357C023A1B81900AAF6CD /* SeedReminderViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedReminderViewDelegate.swift; sourceTree = "<group>"; };
 		B85357C223A1BD1200AAF6CD /* SeedVCV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedVCV2.swift; sourceTree = "<group>"; };
 		B85357C423A1F13800AAF6CD /* LinkDeviceVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceVC.swift; sourceTree = "<group>"; };
 		B85357C623A1FB5100AAF6CD /* LinkDeviceVCDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceVCDelegate.swift; sourceTree = "<group>"; };
+		B8544E3023D16CA500299F14 /* DeviceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
+		B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceUtilities.swift; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
 		B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinkingModal.swift; sourceTree = "<group>"; };
@@ -2715,12 +2724,22 @@
 		B846365922B7417900AF1514 /* Loki */ = {
 			isa = PBXGroup;
 			children = (
+				B8544E3623D520F600299F14 /* Jazz Icon */,
+				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,
+				B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */,
+			);
+			path = Loki;
+			sourceTree = "<group>";
+		};
+		B8544E3623D520F600299F14 /* Jazz Icon */ = {
+			isa = PBXGroup;
+			children = (
 				241C630E231F5AAC00B4198E /* JazzIcon.swift */,
 				B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */,
 				241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */,
 				241C6310231F5C4400B4198E /* UIColor+Helper.swift */,
 			);
-			path = Loki;
+			path = "Jazz Icon";
 			sourceTree = "<group>";
 		};
 		B8BB82A3238F356800BA5194 /* Style Guide */ = {
@@ -2762,11 +2781,11 @@
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
 				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
-				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,
 				B8BB82B02390C37000BA5194 /* SearchBar.swift */,
 				B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */,
 				B85357C023A1B81900AAF6CD /* SeedReminderViewDelegate.swift */,
 				B8BB82B82394911B00BA5194 /* Separator.swift */,
+				2400888D239F30A600305217 /* SessionRestorationView.swift */,
 				B8CCF638239721E20091D419 /* TabBar.swift */,
 				B8BB82B423947F2D00BA5194 /* TextField.swift */,
 			);
@@ -2776,8 +2795,10 @@
 		B8CCF63C239757DB0091D419 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */,
+				B8544E3023D16CA500299F14 /* DeviceUtilities.swift */,
+				B847570223D5698100759540 /* LokiPushNotificationManager.swift */,
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
-				B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */,
 				B886B4A82398BA1500211ABE /* QRCode.swift */,
 			);
 			path = Utilities;
@@ -2837,6 +2858,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B847570023D568EB00759540 /* SignalServiceKit.framework */,
 				3496955F21A2FC8100DCFE74 /* CloudKit.framework */,
 				4C9CA25C217E676900607C63 /* ZXingObjC.framework */,
 				4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */,
@@ -3717,6 +3739,7 @@
 				34BBC85B220C7ADA00857249 /* OrderedDictionary.swift in Sources */,
 				346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
+				B8544E3523D5201400299F14 /* UIView+Constraints.swift in Sources */,
 				34AC09EA211B39B100997B47 /* ModalActivityIndicatorViewController.swift in Sources */,
 				344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
@@ -3805,6 +3828,7 @@
 				4551DB5A205C562300C8AE75 /* Collection+OWS.swift in Sources */,
 				34BBC84F220B8A0100857249 /* ImageEditorCropViewController.swift in Sources */,
 				34AC09ED211B39B100997B47 /* ContactFieldView.swift in Sources */,
+				B8544E3423D51EEF00299F14 /* ProfilePictureView.swift in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
 				34AC09E3211B39B100997B47 /* OWSViewController.m in Sources */,
 				346129C81FD2072E00532771 /* NSAttributedString+OWS.m in Sources */,
@@ -3846,6 +3870,7 @@
 				34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */,
 				348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */,
 				450DF2091E0DD2C6003D14BE /* UserNotificationsAdaptee.swift in Sources */,
+				B847570323D5698100759540 /* LokiPushNotificationManager.swift in Sources */,
 				34B6A907218B5241007C4606 /* TypingIndicatorCell.swift in Sources */,
 				4CFD151D22415AA400F2450F /* CallVideoHintView.swift in Sources */,
 				34D1F0AB1F867BFC0066283D /* OWSContactOffersCell.m in Sources */,
@@ -3947,20 +3972,22 @@
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
 				B85357C523A1F13800AAF6CD /* LinkDeviceVC.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
+				B8544E3123D16CA500299F14 /* DeviceUtilities.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
 				B8162F0522892C5F00D46544 /* FriendRequestViewDelegate.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
-				B8BB82AD238F734800BA5194 /* ProfilePictureView.swift in Sources */,
 				B8CCF639239721E20091D419 /* TabBar.swift in Sources */,
 				B8162F0322891AD600D46544 /* FriendRequestView.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
+				2400888E239F30A600305217 /* SessionRestorationView.swift in Sources */,
 				B886B4A72398B23E00211ABE /* QRCodeVC.swift in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
+				B8544E3323D50E4900299F14 /* AppearanceUtilities.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */,
 				3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */,
@@ -3973,7 +4000,6 @@
 				B8CCF63F23975CFB0091D419 /* JoinPublicChatVC.swift in Sources */,
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
-				B885D5F62334A32100EE0D8E /* UIView+Constraints.swift in Sources */,
 				34DBF003206BD5A500025978 /* OWSMessageTextView.m in Sources */,
 				34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */,
 				34B3F8821E8DF1700035BE1A /* NewContactThreadViewController.m in Sources */,
@@ -4214,7 +4240,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 31;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -4226,7 +4252,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SignalShareExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -4276,7 +4302,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 31;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -4293,7 +4319,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SignalShareExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -4330,7 +4356,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 31;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
@@ -4347,7 +4373,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SignalMessaging/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -4399,7 +4425,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 31;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
@@ -4421,7 +4447,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SignalMessaging/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -4608,7 +4634,7 @@
 				CODE_SIGN_ENTITLEMENTS = Signal/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 31;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4636,7 +4662,7 @@
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Signal/Signal-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4675,7 +4701,7 @@
 				CODE_SIGN_ENTITLEMENTS = Signal/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 31;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4703,7 +4729,7 @@
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Signal/Signal-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
