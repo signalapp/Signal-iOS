@@ -28,7 +28,12 @@ public extension TSInfoMessage {
 
         guard let groupUpdater = self.groupUpdateSourceAddress else {
             if self.previousGroupModel == nil {
-                return NSLocalizedString("GROUP_CREATED", comment: "conversation history entry")
+                switch newGroupModel.groupsVersion {
+                case .V1:
+                    return NSLocalizedString("GROUP_CREATED", comment: "conversation history entry")
+                case .V2:
+                    return genericDescription
+                }
             } else {
                 return genericDescription
             }

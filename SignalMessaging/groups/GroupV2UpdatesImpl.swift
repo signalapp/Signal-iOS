@@ -314,6 +314,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
             guard let oldGroupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing group thread.")
             }
+            guard oldGroupThread.groupModel.groupsVersion == .V2 else {
+                throw OWSAssertionError("Invalid groupsVersion: \(oldGroupThread.groupModel.groupsVersion).")
+            }
+            guard let groupSecretParamsData = oldGroupThread.groupModel.groupSecretParamsData else {
+                throw OWSAssertionError("Missing groupSecretParamsData.")
+            }
+            let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
 
             var groupThread = oldGroupThread
 
@@ -327,8 +334,15 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
                 }
                 let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupChange.snapshot,
                                                                      transaction: transaction)
-                // GroupsV2 TODO: Set groupUpdateSourceAddress.
-                let groupUpdateSourceAddress: SignalServiceAddress? = nil
+
+                // Many change actions have author info, e.g. addedByUserID. But we can
+                // safely assume that all actions in the "change actions" have the same author.
+                guard let changeAuthorUuidData = groupChange.changeActionsProto.sourceUuid else {
+                    throw OWSAssertionError("Missing changeAuthorUuid.")
+                }
+                let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
+                let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
+
                 groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                        newGroupModel: newGroupModel,
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
@@ -370,7 +384,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot,
                                                                  transaction: transaction)
-            // GroupsV2 TODO: Set groupUpdateSourceAddress.
+            // groupUpdateSourceAddress is nil because we don't know the
+            // author(s) of changes reflected in the snapshot.
             let groupUpdateSourceAddress: SignalServiceAddress? = nil
             return try GroupManager.tryToUpdateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                                  groupUpdateSourceAddress: groupUpdateSourceAddress,

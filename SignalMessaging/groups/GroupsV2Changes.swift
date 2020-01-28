@@ -53,9 +53,8 @@ public class GroupsV2Changes {
             throw OWSAssertionError("Missing groupSecretParamsData.")
         }
         let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
-        // GroupsV2 TODO: Many change actions have author info,
-        // e.g. addedByUserID.  We can safely assume that all
-        // actions in the "change actions" have the same author.
+        // Many change actions have author info, e.g. addedByUserID. But we can
+        // safely assume that all actions in the "change actions" have the same author.
         guard let changeAuthorUuidData = changeActionsProto.sourceUuid else {
             throw OWSAssertionError("Missing changeAuthorUuid.")
         }
