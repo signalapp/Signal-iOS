@@ -410,18 +410,15 @@ public class GroupsV2ChangeSetAcceptInvite: NSObject, GroupsV2ChangeSet {
     public let groupSecretParamsData: Data
 
     private let localUserUuid: UUID
-    private let groupV2Revision: UInt32
 
     @objc
     public required init(groupId: Data,
                          groupSecretParamsData: Data,
-                         localUserUuid: UUID,
-                         groupV2Revision: UInt32) {
+                         localUserUuid: UUID) {
         self.groupId = groupId
         self.groupSecretParamsData = groupSecretParamsData
 
         self.localUserUuid = localUserUuid
-        self.groupV2Revision = groupV2Revision
     }
 
     // MARK: - Change Protos
@@ -442,17 +439,19 @@ public class GroupsV2ChangeSetAcceptInvite: NSObject, GroupsV2ChangeSet {
             .then { (_) -> Promise<ProfileKeyCredentialMap> in
                 return groupsV2Impl.loadProfileKeyCredentialData(for: uuidsForProfileKeyCredentials)
         }.then { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
-            return self.buildGroupChangeProto(profileKeyCredentialMap: profileKeyCredentialMap)
+            return self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
+                                              profileKeyCredentialMap: profileKeyCredentialMap)
         }
     }
 
-    private func buildGroupChangeProto(profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> {
+    private func buildGroupChangeProto(currentGroupModel: TSGroupModel,
+                                       profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsProtoGroupChangeActions in
             let groupV2Params = try GroupV2Params(groupSecretParamsData: self.groupSecretParamsData)
 
             let actionsBuilder = GroupsProtoGroupChangeActions.builder()
 
-            let oldVersion = self.groupV2Revision
+            let oldVersion = currentGroupModel.groupV2Revision
             let newVersion = oldVersion + 1
             Logger.verbose("Version: \(oldVersion) -> \(newVersion)")
             actionsBuilder.setVersion(newVersion)

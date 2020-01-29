@@ -334,14 +334,12 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }
         return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSetAcceptInvite in
             let groupId = groupThread.groupModel.groupId
-            let groupV2Revision = groupThread.groupModel.groupV2Revision
             guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
                 throw OWSAssertionError("Missing groupSecretParamsData.")
             }
             let changeSet = GroupsV2ChangeSetAcceptInvite(groupId: groupId,
                                                           groupSecretParamsData: groupSecretParamsData,
-                                                          localUserUuid: localUuid,
-                                                          groupV2Revision: groupV2Revision)
+                                                          localUserUuid: localUuid)
             return changeSet
         }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> in
             return self.updateExistingGroupOnService(changeSet: changeSet)

@@ -36,7 +36,6 @@ public extension UpdateGroupViewController {
             var groupMembershipBuilder = oldGroupMembership.asBuilder
             for address in v1Members {
                 if !oldGroupMembership.allUsers.contains(address) {
-                    // GroupsV2 TODO: Handle detection of pending members in group updates.
                     groupMembershipBuilder.add(address, isAdministrator: false, isPending: false)
                 }
             }
@@ -50,7 +49,7 @@ public extension UpdateGroupViewController {
             }
             groupMembership = groupMembershipBuilder.build()
         }
-        
+
         let groupAccess = GroupAccess.forV1
         let groupsVersion = oldGroupModel.groupsVersion
 
