@@ -5,6 +5,7 @@
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
 #import "NSString+SSK.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -103,7 +104,7 @@ const int32_t kGroupIdLength = 16;
     if (self == newModel) {
         return NSLocalizedString(@"GROUP_UPDATED", @"");
     }
-    if (![_groupName isEqual:newModel.groupName]) {
+    if (![_groupName isEqual:newModel.groupName] && newModel.groupName.length != 0) {
         updatedGroupInfoString = [updatedGroupInfoString
             stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""),
                                                                newModel.groupName]];
@@ -139,7 +140,7 @@ const int32_t kGroupIdLength = 16;
     
     if ([membersWhoJoined count] > 0) {
         NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString*(NSString* item) {
-            return [contactsManager displayNameForPhoneIdentifier:item];
+            return [LKDisplayNameUtilities getPrivateChatDisplayNameFor:item];
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),

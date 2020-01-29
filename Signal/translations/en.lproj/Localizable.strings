@@ -1006,7 +1006,7 @@
 "GROUP_AVATAR_CHANGED" = "Avatar changed. ";
 
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "Group created.";
+"GROUP_CREATED" = "Group created";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
@@ -2790,3 +2790,5 @@
 "Dismiss" = "Dismiss";
 "New Closed Group" = "New Closed Group";
 "Group Members" = "Group Members";
+"You don't have any contacts yet" = "You don't have any contacts yet";
+"Start a Session" = "Start a Session";

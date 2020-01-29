@@ -55,9 +55,31 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
-        // Set up table view
-        view.addSubview(tableView)
-        tableView.pin(to: view)
+        // Set up content
+        if !contacts.isEmpty {
+            view.addSubview(tableView)
+            tableView.pin(to: view)
+        } else {
+            let explanationLabel = UILabel()
+            explanationLabel.textColor = Colors.text
+            explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
+            explanationLabel.numberOfLines = 0
+            explanationLabel.lineBreakMode = .byWordWrapping
+            explanationLabel.textAlignment = .center
+            explanationLabel.text = NSLocalizedString("You don't have any contacts yet", comment: "")
+            let createNewPrivateChatButton = Button(style: .prominentOutline, size: .medium)
+            createNewPrivateChatButton.setTitle(NSLocalizedString("Start a Session", comment: ""), for: UIControl.State.normal)
+            createNewPrivateChatButton.addTarget(self, action: #selector(createPrivateChat), for: UIControl.Event.touchUpInside)
+            createNewPrivateChatButton.set(.width, to: 160)
+            let stackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
+            stackView.axis = .vertical
+            stackView.spacing = Values.mediumSpacing
+            stackView.alignment = .center
+            view.addSubview(stackView)
+            stackView.center(.horizontal, in: view)
+            let verticalCenteringConstraint = stackView.center(.vertical, in: view)
+            verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
+        }
     }
     
     // MARK: Data
@@ -117,6 +139,11 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
                 })
             }
         }
+    }
+    
+    @objc private func createPrivateChat() {
+        presentingViewController?.dismiss(animated: true, completion: nil)
+        SignalApp.shared().homeViewController!.createPrivateChat()
     }
 }
 
