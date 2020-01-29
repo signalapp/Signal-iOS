@@ -122,7 +122,7 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         OWSProfileManager.shared().addThread(toProfileWhitelist: thread)
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
             let message = TSOutgoingMessage(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
-            message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""))
+            message.update(withCustomMessage: "Closed group created")
             DispatchQueue.main.async {
                 SSKEnvironment.shared.messageSender.send(message, success: {
                     DispatchQueue.main.async {

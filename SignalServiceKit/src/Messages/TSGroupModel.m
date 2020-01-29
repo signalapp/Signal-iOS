@@ -104,10 +104,12 @@ const int32_t kGroupIdLength = 16;
     if (self == newModel) {
         return NSLocalizedString(@"GROUP_UPDATED", @"");
     }
-    if (![_groupName isEqual:newModel.groupName] && newModel.groupName.length != 0) {
-        updatedGroupInfoString = [updatedGroupInfoString
-            stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""),
-                                                               newModel.groupName]];
+    if (![_groupName isEqual:newModel.groupName]) {
+        if (newModel.groupName.length == 0) {
+            updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Closed group created"];
+        } else {
+            updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""), newModel.groupName]];
+        }
     }
     if (_groupImage != nil && newModel.groupImage != nil &&
         !([UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(newModel.groupImage)])) {
