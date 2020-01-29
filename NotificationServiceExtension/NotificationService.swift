@@ -35,26 +35,46 @@ class NotificationService: UNNotificationServiceExtension {
     //  3)  Extension processes messages / displays whatever
     //      notifications it needs to
     //  4)  Extension notifies its work is complete by calling
-    //      the contentHandler and is terminated
+    //      the contentHandler
     //  5)  If the extension takes too long to perform its work
     //      (more than 30s), it will be notified and immediately
     //      terminated
+    //
+    // Note that the NSE does *not* always spawn a new process to
+    // handle a new notification and will also try and process notifications
+    // in parallel. `didReceive` could be called twice for the same process,
+    // but will always be called on different threads. To deal with this we
+    // ensure that we only do setup *once* per process and we dispatch to
+    // the main queue to make sure the calls to the message fetcher job
+    // run serially.
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
-        DispatchQueue.main.async { self.setup() }
+        DispatchQueue.main.async {
+            self.setupIfNecessary()
+            AppReadiness.runNowOrWhenAppDidBecomeReady { self.fetchAndProcessMessages() }
+        }
     }
 
     // Called just before the extension will be terminated by the system.
     override func serviceExtensionTimeWillExpire() {
         Logger.error("NSE expired before messages could be processed")
 
-        NotificationCenter.default.removeObserver(self)
-
+        // We complete silently here so that nothing is presented to the user.
+        // By default the OS will present whatever the raw content of the original
+        // notification is to the user otherwise.
         completeSilenty()
     }
 
-    func setup() {
+    private var hasSetup = false
+    func setupIfNecessary() {
         AssertIsOnMainThread()
+
+        // The NSE will often re-use the same process, so if we're
+        // already setup we want to do nothing. We're already ready
+        // to process new messages.
+        guard !hasSetup else { return }
+
+        hasSetup = true
 
         // This should be the first thing we do.
         SetCurrentAppContext(NotificationServiceExtensionContext())
@@ -134,8 +154,6 @@ class NotificationService: UNNotificationServiceExtension {
         AppReadiness.setAppIsReady()
 
         AppVersion.sharedInstance().nseLaunchDidComplete()
-
-        fetchAndProcessMessages()
     }
 
     func fetchAndProcessMessages() {
