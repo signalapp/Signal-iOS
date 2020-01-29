@@ -49,15 +49,17 @@ public class GroupsV2Changes {
         guard groupsVersion == .V2 else {
             throw OWSAssertionError("Invalid groupsVersion: \(groupsVersion).")
         }
-        // GroupsV2 TODO: Many change actions have author info,
-        // e.g. addedByUserID.  We can safely assume that all
-        // actions in the "change actions" have the same author.
+        guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
+            throw OWSAssertionError("Missing groupSecretParamsData.")
+        }
+        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        // Many change actions have author info, e.g. addedByUserID. But we can
+        // safely assume that all actions in the "change actions" have the same author.
         guard let changeAuthorUuidData = changeActionsProto.sourceUuid else {
             throw OWSAssertionError("Missing changeAuthorUuid.")
         }
-        let changeAuthorUuid = changeAuthorUuidData.withUnsafeBytes {
-            UUID(uuid: $0.bindMemory(to: uuid_t.self).first!)
-        }
+        let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
+
         guard changeActionsProto.hasVersion else {
             throw OWSAssertionError("Missing revision.")
         }
@@ -65,10 +67,6 @@ public class GroupsV2Changes {
         guard newRevision == oldGroupModel.groupV2Revision + 1 else {
             throw OWSAssertionError("Unexpected revision: \(newRevision) != \(oldGroupModel.groupV2Revision + 1).")
         }
-        guard let groupSecretParamsData = oldGroupModel.groupSecretParamsData else {
-            throw OWSAssertionError("Missing groupSecretParamsData.")
-        }
-        let groupV2Params = try GroupV2Params(groupModel: oldGroupModel)
 
         var newGroupName: String? = oldGroupModel.groupName
         let oldGroupMembership = oldGroupModel.groupMembership
