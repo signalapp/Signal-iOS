@@ -304,6 +304,8 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                 //   assert. This will ensure that the client converges with the
                 //   service if they ever deviate (e.g. due to bugs or differences
                 //   between how they apply "group changes", etc.).
+                //
+                // GroupsV2 TODO: This isn't finalized.
                 return max(1, groupThread.groupModel.groupV2Revision)
             }
 

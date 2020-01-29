@@ -384,8 +384,9 @@ public class GroupManager: NSObject {
             let groupAccess = GroupAccess.allAccess
             let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
                 // We need to separate out the pending members.
-                let groupMembership = self.separatePendingMembersForNewGroup(in: proposedGroupMembership,
-                                                                             transaction: transaction)
+                let groupMembership = self.separatePendingMembers(in: proposedGroupMembership,
+                                                                  oldGroupModel: nil,
+                                                                  transaction: transaction)
                 Logger.flush()
 
                 guard groupMembership.allMembers.contains(localAddress) else {
@@ -422,8 +423,9 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func separatePendingMembersForNewGroup(in groupMembership: GroupMembership,
-                                                          transaction: SDSAnyReadTransaction) -> GroupMembership {
+    private static func separatePendingMembers(in groupMembership: GroupMembership,
+                                               oldGroupModel: TSGroupModel?,
+                                               transaction: SDSAnyReadTransaction) -> GroupMembership {
         var builder = GroupMembership.Builder()
         for address in groupMembership.allUsers {
             guard doesUserSupportGroupsV2(address: address, transaction: transaction) else {
@@ -433,8 +435,16 @@ public class GroupManager: NSObject {
 
             // We must call this _after_ we try to fetch profile key credentials for
             // all members.
-            let isPending = !groupsV2.hasProfileKeyCredential(for: address,
+            let isPending: Bool
+            if let oldGroupModel = oldGroupModel,
+                oldGroupModel.groupMembership.allMembers.contains(address) {
+                // If the member already is a full member, don't treat them
+                // as pending.  Perhaps someone else added them.
+                isPending = false
+            } else {
+                isPending = !groupsV2.hasProfileKeyCredential(for: address,
                                                               transaction: transaction)
+            }
             let isAdministrator = groupMembership.isAdministrator(address)
             builder.add(address, isAdministrator: isAdministrator, isPending: isPending)
         }
@@ -782,7 +792,7 @@ public class GroupManager: NSObject {
     private static func updateInfo(groupId: Data,
                                    name: String? = nil,
                                    avatarData: Data? = nil,
-                                   groupMembership groupMembershipParam: GroupMembership,
+                                   groupMembership proposedGroupMembership: GroupMembership,
                                    groupAccess: GroupAccess,
                                    transaction: SDSAnyReadTransaction) throws -> UpdateInfo {
         guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -799,9 +809,21 @@ public class GroupManager: NSObject {
         let groupMembership: GroupMembership
         if oldGroupModel.groupsVersion == .V1 {
             // Always ensure we're a member of any v1 group we're updating.
-            groupMembership = groupMembershipParam.withNonAdminMember(address: localAddress)
+            groupMembership = proposedGroupMembership.withNonAdminMember(address: localAddress)
         } else {
-            groupMembership = groupMembershipParam
+            for address in proposedGroupMembership.allUsers {
+                guard address.uuid != nil else {
+                    throw OWSAssertionError("Group v2 member missing uuid.")
+                }
+            }
+            // We need to separate out the pending members.
+            groupMembership = self.separatePendingMembers(in: proposedGroupMembership,
+                                                          oldGroupModel: oldGroupModel,
+                                                          transaction: transaction)
+
+            guard groupMembership.allMembers.contains(localAddress) else {
+                throw OWSAssertionError("Missing localAddress.")
+            }
 
             // Don't try to modify a v2 group if we're not a member.
             guard groupMembership.allMembers.contains(localAddress) else {
