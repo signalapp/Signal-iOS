@@ -379,13 +379,19 @@ public class GroupManager: NSObject {
                 .map(on: .global()) { (_) -> GroupMembership in
                     return groupMembership
             }
-        }.then(on: .global()) { (rawGroupMembership: GroupMembership) throws -> Promise<TSGroupModel> in
+        }.then(on: .global()) { (proposedGroupMembership: GroupMembership) throws -> Promise<TSGroupModel> in
             // GroupsV2 TODO: Let users specify access levels in the "new group" view.
             let groupAccess = GroupAccess.allAccess
             let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
-                let groupMembership = self.separatePendingMembersForNewGroup(in: rawGroupMembership,
-                                                                                transaction: transaction)
+                // We need to separate out the pending members.
+                let groupMembership = self.separatePendingMembersForNewGroup(in: proposedGroupMembership,
+                                                                             transaction: transaction)
                 Logger.flush()
+
+                guard groupMembership.allMembers.contains(localAddress) else {
+                    throw OWSAssertionError("Missing localAddress.")
+                }
+
                 return try self.buildGroupModel(groupId: groupId,
                                                 name: name,
                                                 avatarData: avatarData,
@@ -835,6 +841,33 @@ public class GroupManager: NSObject {
         }
     }
 
+    // MARK: - Accept Invites
+
+    public static func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+
+        // For now, always send update messages when accepting invites.
+        let shouldSendMessage = true
+
+        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
+            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
+        }
+
+        return firstly {
+            return groupsV2Swift.acceptInviteToGroupV2(groupThread: groupThread)
+        }.then(on: .global()) { (updatedV2Group: UpdatedV2Group) throws -> Promise<TSGroupThread> in
+
+            guard shouldSendMessage else {
+                return Promise.value(updatedV2Group.groupThread)
+            }
+
+            return self.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
+                                               changeActionsProtoData: updatedV2Group.changeActionsProtoData)
+                .map(on: .global()) { _ in
+                    return updatedV2Group.groupThread
+            }
+        }
+    }
+
     // MARK: - Messages
 
     @objc
@@ -844,6 +877,10 @@ public class GroupManager: NSObject {
 
     public static func sendGroupUpdateMessage(thread: TSGroupThread,
                                               changeActionsProtoData: Data? = nil) -> Promise<Void> {
+
+        guard !FeatureFlags.groupsV2dontSendUpdates else {
+            return Promise.value(())
+        }
 
         return databaseStorage.read(.promise) { transaction in
             let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
@@ -894,6 +931,10 @@ public class GroupManager: NSObject {
     private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
         assert(thread.groupModel.groupAvatarData == nil)
 
+        guard !FeatureFlags.groupsV2dontSendUpdates else {
+            return Promise.value(())
+        }
+
         return databaseStorage.write(.promise) { transaction in
             let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
             let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
@@ -922,7 +963,7 @@ public class GroupManager: NSObject {
             return
         }
         // We need to send v2 group updates to pending members
-        // who
+        // as well.  Normal group sends only include "full members".
         assert(messageBuilder.additionalRecipients == nil)
         var additionalRecipients = [SignalServiceAddress]()
         for address in groupThread.groupModel.allPendingMembers {
@@ -941,11 +982,18 @@ public class GroupManager: NSObject {
                                                                        transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let groupThread = TSGroupThread(groupModelPrivate: groupModel)
         groupThread.anyInsert(transaction: transaction)
+
         insertGroupUpdateInfoMessage(groupThread: groupThread,
                                      oldGroupModel: nil,
                                      newGroupModel: groupModel,
                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                      transaction: transaction)
+
+        // GroupsV2 TODO: This is temporary until we build the "accept invites" UI.
+        transaction.addAsyncCompletion {
+            self.autoAcceptInviteToGroupV2IfNecessary(groupThread: groupThread)
+        }
+
         return groupThread
     }
 
@@ -1004,6 +1052,11 @@ public class GroupManager: NSObject {
                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                      transaction: transaction)
 
+        // GroupsV2 TODO: This is temporary until we build the "accept invites" UI.
+        transaction.addAsyncCompletion {
+            self.autoAcceptInviteToGroupV2IfNecessary(groupThread: groupThread)
+        }
+
         return groupThread
     }
 
@@ -1026,6 +1079,29 @@ public class GroupManager: NSObject {
                                         messageType: .typeGroupUpdate,
                                         infoMessageUserInfo: userInfo)
         infoMessage.anyInsert(transaction: transaction)
+    }
+
+    // GroupsV2 TODO: This is temporary until we build the "accept invites" UI.
+    private static func autoAcceptInviteToGroupV2IfNecessary(groupThread: TSGroupThread) {
+        guard FeatureFlags.groupsV2AutoAcceptInvites else {
+            return
+        }
+        guard let localAddress = self.tsAccountManager.localAddress else {
+            owsFailDebug("Missing localAddress.")
+            return
+        }
+        let groupMembership = groupThread.groupModel.groupMembership
+        let isPendingMember = groupMembership.isPending(localAddress)
+        guard isPendingMember else {
+            return
+        }
+        firstly {
+            acceptInviteToGroupV2(groupThread: groupThread)
+        }.done(on: .global()) { _ in
+            Logger.debug("Accept invite succeeded.")
+        }.catch(on: .global()) { error in
+            owsFailDebug("Accept invite failed: \(error)")
+        }.retainUntilComplete()
     }
 
     // MARK: - Group Database

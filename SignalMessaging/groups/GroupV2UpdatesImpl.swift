@@ -24,6 +24,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
         return SSKEnvironment.shared.groupsV2
     }
 
+    fileprivate var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: -
 
     @objc
@@ -215,23 +219,43 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
     private func refreshGroupFromService(groupSecretParamsData: Data,
                                          groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
 
-        // Try to use individual changes.
-        return fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
-                                                     groupUpdateMode: groupUpdateMode)
-            .recover { (error) throws -> Promise<TSGroupThread> in
-                switch error {
-                case GroupsV2Error.groupNotInDatabase:
-                    // Unknown groups are handled by snapshot.
-                    break
-                default:
-                    owsFailDebug("Error: \(error)")
-                }
-
-                // GroupsV2 TODO: This should not fail over in the case of networking problems.
-
-                // Failover to applying latest snapshot.
+        return DispatchQueue.global().async(.promise) {
+            guard let localAddress = self.tsAccountManager.localAddress else {
+                throw OWSAssertionError("Missing localAddress.")
+            }
+            let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
+            let thread = self.databaseStorage.read { transaction in
+                return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+            }
+            var canFetchChangeActions = false
+            if let groupThread = thread {
+                // Pending members can fetch snapshots but not change actions.
+                canFetchChangeActions = groupThread.groupModel.groupMembership.allMembers.contains(localAddress)
+            }
+            return canFetchChangeActions
+        }.then(on: DispatchQueue.global()) { (canFetchChangeActions: Bool) throws -> Promise<TSGroupThread> in
+            guard canFetchChangeActions else {
                 return self.fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: groupSecretParamsData,
                                                                            groupUpdateMode: groupUpdateMode)
+            }
+            // Try to use individual changes.
+            return self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
+                                                              groupUpdateMode: groupUpdateMode)
+                .recover { (error) throws -> Promise<TSGroupThread> in
+                    switch error {
+                    case GroupsV2Error.groupNotInDatabase:
+                        // Unknown groups are handled by snapshot.
+                        break
+                    default:
+                        owsFailDebug("Error: \(error)")
+                    }
+
+                    // GroupsV2 TODO: This should not fail over in the case of networking problems.
+
+                    // Failover to applying latest snapshot.
+                    return self.fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: groupSecretParamsData,
+                                                                               groupUpdateMode: groupUpdateMode)
+            }
         }
     }
 
@@ -332,6 +356,17 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
                 }
                 let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupChange.snapshot,
                                                                      transaction: transaction)
+
+                if groupChange.snapshot.revision == changeRevision {
+                    if !oldGroupThread.groupModel.isEqual(to: newGroupModel) {
+                        // Sometimes we re-apply the snapshot corresponding to the
+                        // current revision when refreshing the group from the service.
+                        // This should match the state in the database.  If it doesn't,
+                        // this reflects a bug, perhaps\ a deviation in how the service
+                        // and client apply the "group changes" to the local model.
+                        owsFailDebug("Group models don't match.")
+                    }
+                }
 
                 // Many change actions have author info, e.g. addedByUserID. But we can
                 // safely assume that all actions in the "change actions" have the same author.

@@ -209,7 +209,7 @@ public class GroupsV2Changes {
             guard oldGroupMembership.allPendingMembers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            guard !oldGroupMembership.allUsers.contains(address) else {
+            guard !oldGroupMembership.allMembers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             let isAdministrator = oldGroupMembership.isAdministrator(address)

@@ -238,6 +238,10 @@ public class FeatureFlags: NSObject {
     @objc
     public static let groupsV2IgnoreCapability = groupsV2
 
+    // GroupsV2 TODO: We can use this to test recovery from "missed updates".
+    @objc
+    public static let groupsV2dontSendUpdates = false
+
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
 
