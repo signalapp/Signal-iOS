@@ -387,7 +387,6 @@ public class GroupManager: NSObject {
                 let groupMembership = self.separatePendingMembers(in: proposedGroupMembership,
                                                                   oldGroupModel: nil,
                                                                   transaction: transaction)
-                Logger.flush()
 
                 guard groupMembership.allMembers.contains(localAddress) else {
                     throw OWSAssertionError("Missing localAddress.")
@@ -995,6 +994,16 @@ public class GroupManager: NSObject {
             }
         }
         messageBuilder.additionalRecipients = additionalRecipients
+    }
+
+    @objc
+    public static func shouldMessageHaveAdditionalRecipients(_ message: TSOutgoingMessage) -> Bool {
+        switch message.groupMetaMessage {
+        case .update, .new:
+            return true
+        default:
+            return false
+        }
     }
 
     // MARK: - Group Database

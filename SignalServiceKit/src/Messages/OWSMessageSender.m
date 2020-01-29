@@ -604,9 +604,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // Only send to members in the latest known group member list...
         NSMutableSet<SignalServiceAddress *> *currentThreadRecipients = [NSMutableSet new];
         [currentThreadRecipients addObjectsFromArray:groupThread.groupModel.groupMembers];
-        // ...or latest known list of "additional recipients".
-        NSSet<SignalServiceAddress *> *additionalRecipients = groupThread.groupModel.allPendingMembers;
-        [currentThreadRecipients unionSet:additionalRecipients];
+        if ([GroupManager shouldMessageHaveAdditionalRecipients:message]) {
+            // ...or latest known list of "additional recipients".
+            NSSet<SignalServiceAddress *> *additionalRecipients = groupThread.groupModel.allPendingMembers;
+            [currentThreadRecipients unionSet:additionalRecipients];
+        }
         [recipientAddresses intersectSet:currentThreadRecipients];
 
         if ([recipientAddresses containsObject:self.tsAccountManager.localAddress]) {
