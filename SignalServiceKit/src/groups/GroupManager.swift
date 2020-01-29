@@ -970,12 +970,6 @@ public class GroupManager: NSObject {
         }
     }
 
-    // GroupsV2 TODO: This might not be necessary if there's a separate
-    // "invite to v2 group" message.  What we have now is insufficent.
-    // We can't just send pending members a message with changeActionsProtoData,
-    // for example, because it's a diff of group state.  To show their
-    // user the invite UI, pending member's clients will need a snapshot,
-    // not a diff.
     private static func addAdditionalRecipients(to messageBuilder: TSOutgoingMessageBuilder,
                                                 groupThread: TSGroupThread,
                                                 transaction: SDSAnyReadTransaction) {
@@ -997,7 +991,11 @@ public class GroupManager: NSObject {
     }
 
     @objc
-    public static func shouldMessageHaveAdditionalRecipients(_ message: TSOutgoingMessage) -> Bool {
+    public static func shouldMessageHaveAdditionalRecipients(_ message: TSOutgoingMessage,
+                                                             groupThread: TSGroupThread) -> Bool {
+        guard groupThread.groupModel.groupsVersion == .V2 else {
+            return false
+        }
         switch message.groupMetaMessage {
         case .update, .new:
             return true
