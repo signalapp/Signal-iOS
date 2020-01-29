@@ -31,6 +31,7 @@
 		340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872D922397FEB00CB25B0 /* AttachmentTextView.swift */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */; };
+		340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */; };
 		340CCB6A23032762005243B3 /* YDBLegacyMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CCB6823032762005243B3 /* YDBLegacyMigration.m */; };
 		340CCB712305962B005243B3 /* YDBToGRDBMigrationKeyValueTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340CCB6F2305962A005243B3 /* YDBToGRDBMigrationKeyValueTest.swift */; };
 		340CCB722305962B005243B3 /* YDBToGRDBMigrationModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340CCB702305962B005243B3 /* YDBToGRDBMigrationModelTest.swift */; };
@@ -264,8 +265,8 @@
 		34B6A909218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A908218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift */; };
 		34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */; };
 		34BB3C5E23C6644B001651FC /* GroupsV2ChangeSetImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5923C6644B001651FC /* GroupsV2ChangeSetImpl.swift */; };
-		34BB3C5F23C6644B001651FC /* GroupV2StateImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5A23C6644B001651FC /* GroupV2StateImpl.swift */; };
-		34BB3C6023C6644B001651FC /* GroupParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5B23C6644B001651FC /* GroupParams.swift */; };
+		34BB3C5F23C6644B001651FC /* GroupV2SnapshotImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */; };
+		34BB3C6023C6644B001651FC /* GroupV2Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5B23C6644B001651FC /* GroupV2Params.swift */; };
 		34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */; };
 		34BBC84B220B2CB200857249 /* ImageEditorTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC84A220B2CB200857249 /* ImageEditorTextViewController.swift */; };
 		34BBC84D220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC84C220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift */; };
@@ -806,6 +807,7 @@
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StorageService+GroupsV2.swift"; sourceTree = "<group>"; };
+		340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2UpdatesImpl.swift; sourceTree = "<group>"; };
 		340CCB6823032762005243B3 /* YDBLegacyMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBLegacyMigration.m; sourceTree = "<group>"; };
 		340CCB6923032762005243B3 /* YDBLegacyMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBLegacyMigration.h; sourceTree = "<group>"; };
 		340CCB6F2305962A005243B3 /* YDBToGRDBMigrationKeyValueTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YDBToGRDBMigrationKeyValueTest.swift; sourceTree = "<group>"; };
@@ -1102,8 +1104,8 @@
 		34B6A908218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS112TypingIndicatorsMigration.swift; sourceTree = "<group>"; };
 		34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Utils.swift; sourceTree = "<group>"; };
 		34BB3C5923C6644B001651FC /* GroupsV2ChangeSetImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2ChangeSetImpl.swift; sourceTree = "<group>"; };
-		34BB3C5A23C6644B001651FC /* GroupV2StateImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2StateImpl.swift; sourceTree = "<group>"; };
-		34BB3C5B23C6644B001651FC /* GroupParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupParams.swift; sourceTree = "<group>"; };
+		34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2SnapshotImpl.swift; sourceTree = "<group>"; };
+		34BB3C5B23C6644B001651FC /* GroupV2Params.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2Params.swift; sourceTree = "<group>"; };
 		34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Impl.swift; sourceTree = "<group>"; };
 		34BBC84A220B2CB200857249 /* ImageEditorTextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTextViewController.swift; sourceTree = "<group>"; };
 		34BBC84C220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorPinchGestureRecognizer.swift; sourceTree = "<group>"; };
@@ -2278,14 +2280,15 @@
 		34BB3C5723C6644B001651FC /* groups */ = {
 			isa = PBXGroup;
 			children = (
-				34BB3C5B23C6644B001651FC /* GroupParams.swift */,
 				34F0566923DA209300265283 /* GroupsV2Changes.swift */,
 				34BB3C5923C6644B001651FC /* GroupsV2ChangeSetImpl.swift */,
 				34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */,
 				3456A73123D63EBE00947219 /* GroupsV2Protos.swift */,
 				3456A73323D741E300947219 /* GroupsV2Test.swift */,
 				34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */,
-				34BB3C5A23C6644B001651FC /* GroupV2StateImpl.swift */,
+				34BB3C5B23C6644B001651FC /* GroupV2Params.swift */,
+				34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */,
+				340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */,
 				340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */,
 			);
 			path = groups;
@@ -4129,6 +4132,7 @@
 				340872CA2239563500CB25B0 /* AttachmentApprovalViewController.swift in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
 				34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */,
+				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
 				340872D02239787F00CB25B0 /* AttachmentTextToolbar.swift in Sources */,
 				3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */,
 				3416BCAE2277A24000E761B4 /* StickerPackDataSource.swift in Sources */,
@@ -4157,10 +4161,10 @@
 				4CBF6F7B230B03C000549FFC /* OWS115CleanupProfileAvatars.swift in Sources */,
 				346129D51FD20ADC00532771 /* UIViewController+OWS.m in Sources */,
 				34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */,
-				34BB3C6023C6644B001651FC /* GroupParams.swift in Sources */,
+				34BB3C6023C6644B001651FC /* GroupV2Params.swift in Sources */,
 				34BBC851220B8EEF00857249 /* ImageEditorCanvasView.swift in Sources */,
 				347850691FD9B78A007B8332 /* AppSetup.m in Sources */,
-				34BB3C5F23C6644B001651FC /* GroupV2StateImpl.swift in Sources */,
+				34BB3C5F23C6644B001651FC /* GroupV2SnapshotImpl.swift in Sources */,
 				346941A3215D2EE400B5BFAD /* Theme.m in Sources */,
 				4C295880233AE23000AAB2AA /* Theme+OWS.swift in Sources */,
 				4C23A5F2215C4ADE00534937 /* SheetViewController.swift in Sources */,

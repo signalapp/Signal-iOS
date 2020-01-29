@@ -46,6 +46,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) StorageCoordinator *storageCoordinator;
 @property (nonatomic) SSKPreferences *sskPreferences;
 @property (nonatomic) id<GroupsV2> groupsV2;
+@property (nonatomic) id<GroupV2Updates> groupV2Updates;
 @property (nonatomic) MessageProcessing *messageProcessing;
 @property (nonatomic) MessageFetcherJob *messageFetcherJob;
 
@@ -98,6 +99,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
                          sskPreferences:(SSKPreferences *)sskPreferences
                                groupsV2:(id<GroupsV2>)groupsV2
+                         groupV2Updates:(id<GroupV2Updates>)groupV2Updates
                       messageProcessing:(MessageProcessing *)messageProcessing
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
 {
@@ -144,6 +146,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(storageCoordinator);
     OWSAssertDebug(sskPreferences);
     OWSAssertDebug(groupsV2);
+    OWSAssertDebug(groupV2Updates);
     OWSAssertDebug(messageProcessing);
     OWSCAssertDebug(messageFetcherJob);
 
@@ -186,6 +189,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _storageCoordinator = storageCoordinator;
     _sskPreferences = sskPreferences;
     _groupsV2 = groupsV2;
+    _groupV2Updates = groupV2Updates;
     _messageProcessing = messageProcessing;
     _messageFetcherJob = messageFetcherJob;
 

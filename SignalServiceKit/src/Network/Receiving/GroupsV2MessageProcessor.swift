@@ -34,6 +34,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
         return SSKEnvironment.shared.groupsV2
     }
 
+    private var groupV2Updates: GroupV2Updates {
+        return SSKEnvironment.shared.groupV2Updates
+    }
+
     private var blockingManager: OWSBlockingManager {
         return SSKEnvironment.shared.blockingManager
     }
@@ -444,7 +448,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
 
             switch error {
             case GroupsV2Error.shouldRetry:
-            // GroupsV2 TODO: We need to handle retry.
+                // GroupsV2 TODO: We need to handle retry.
                 break
             default:
                 break
@@ -536,27 +540,23 @@ class IncomingGroupsV2MessageQueue: NSObject {
             return .failureShouldFailoverToService
         }
 
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            owsFailDebug("Invalid groupsV2 instance.")
-            return .failureShouldDiscard
-        }
-
-        let changedGroupModel: ChangedGroupModel
+        let updatedGroupThread: TSGroupThread
         do {
-            changedGroupModel = try groupsV2Swift.applyChangesToGroupModel(groupThread: groupThread,
-                                                                           changeActionsProto: changeActionsProto,
-                                                                           changeActionsProtoData: changeActionsProtoData,
-                                                                           transaction: transaction)
+            updatedGroupThread = try groupV2Updates.updateGroupWithChangeActions(groupId: groupId,
+                                                                                 changeActionsProto: changeActionsProto,
+                                                                                 transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
+            // GroupsV2 TODO: Make sure this is still correct behavior.
             return .failureShouldFailoverToService
         }
+        let updatedGroupModel = updatedGroupThread.groupModel
 
-        guard changedGroupModel.newGroupModel.groupV2Revision >= contextRevision else {
+        guard updatedGroupModel.groupV2Revision >= contextRevision else {
             owsFailDebug("Invalid revision.")
             return .failureShouldFailoverToService
         }
-        guard changedGroupModel.newGroupModel.groupV2Revision == contextRevision else {
+        guard updatedGroupModel.groupV2Revision == contextRevision else {
             // We expect the embedded changes to update us to the target
             // revision.  If we update past that, assert but proceed in production.
             owsFailDebug("Unexpected revision.")
@@ -566,31 +566,23 @@ class IncomingGroupsV2MessageQueue: NSObject {
         return .successShouldProcess
     }
 
-    // Fetch group state from service and apply.
-    //
-    // * Try to fetch and apply incremental "changes".
-    // * Failover to fetching and applying latest state.
-    // * We need to distinguish between retryable (network) errors
-    //   and non-retryable errors.
-    // * In the case of networking errors, we should do exponential
-    //   backoff.
-    // * If reachability changes, we should retry network errors
-    //   immediately.
-    //
-    // GroupsV2 TODO: Ensure comment above is implemented.
     private func tryToUpdateUsingService(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
         guard let groupContextInfo = jobInfo.groupContextInfo,
             let groupContext = jobInfo.groupContext else {
                 owsFailDebug("Missing jobInfo properties.")
                 return Promise(error: GroupsV2Error.shouldDiscard)
         }
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Missing groupsV2Swift."))
+        guard let groupV2UpdatesSwift = self.groupV2Updates as? GroupV2UpdatesSwift else {
+            return Promise(error: OWSAssertionError("Missing groupV2UpdatesSwift."))
         }
 
-        return groupsV2Swift.fetchAndApplyGroupV2UpdatesFromService(groupId: groupContextInfo.groupId,
-                                                                    groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                    upToRevision: groupContext.revision)
+        // See GroupV2UpdatesImpl.
+        // This will try to update the group using incremental "changes" but
+        // failover to using a "snapshot".
+        let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
+        return groupV2UpdatesSwift.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
+                                                                           groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                           groupUpdateMode: groupUpdateMode)
             .then(on: DispatchQueue.global()) { _ in
                 return self.databaseStorage.write(.promise) { transaction in
                     _ = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)

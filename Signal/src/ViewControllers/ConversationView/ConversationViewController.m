@@ -341,6 +341,11 @@ typedef enum : NSUInteger {
     return AppEnvironment.shared.notificationPresenter;
 }
 
+- (id<GroupV2Updates>)groupV2Updates
+{
+    return SSKEnvironment.shared.groupV2Updates;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -503,6 +508,22 @@ typedef enum : NSUInteger {
                                                           selector:@selector(reloadTimerDidFire)
                                                           userInfo:nil
                                                            repeats:YES];
+
+    [self updateV2GroupIfNecessary];
+}
+
+- (void)updateV2GroupIfNecessary
+{
+    if (!self.thread.isGroupThread) {
+        return;
+    }
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    if (groupThread.groupModel.groupsVersion != GroupsVersionV2) {
+        return;
+    }
+    // Try to update the v2 group to latest from the service.
+    // This will help keep us in sync if we've missed any group updates, etc.
+    [self.groupV2Updates tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling:groupThread];
 }
 
 - (void)dealloc
@@ -4109,16 +4130,14 @@ typedef enum : NSUInteger {
     OWSAssertDebug(message);
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    [[GroupManager sendGroupUpdateMessageObjcWithThread:groupThread
-                                          oldGroupModel:groupThread.groupModel
-                                          newGroupModel:groupThread.groupModel]
-            .thenOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSLogInfo(@"Group updated, removing group creation error.");
+    [[GroupManager sendGroupUpdateMessageObjcWithThread:groupThread].thenOn(
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            OWSLogInfo(@"Group updated, removing group creation error.");
 
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                    [message anyRemoveWithTransaction:transaction];
-                }];
-            }) retainUntilComplete];
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                [message anyRemoveWithTransaction:transaction];
+            }];
+        }) retainUntilComplete];
 }
 
 - (void)conversationColorWasUpdated

@@ -246,7 +246,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private func buildGroupChangeProto(currentGroupModel: TSGroupModel,
                                        profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsProtoGroupChangeActions in
-            let groupParams = try GroupParams(groupModel: currentGroupModel)
+            let groupV2Params = try GroupV2Params(groupModel: currentGroupModel)
 
             let actionsBuilder = GroupsProtoGroupChangeActions.builder()
             guard let localUuid = self.tsAccountManager.localUuid else {
@@ -262,7 +262,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
             if let title = self.title,
                 title != currentGroupModel.groupName {
-                let encryptedData = try groupParams.encryptString(title)
+                let encryptedData = try groupV2Params.encryptString(title)
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
                 actionBuilder.setTitle(encryptedData)
                 actionsBuilder.setModifyTitle(try actionBuilder.build())
@@ -283,7 +283,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 let actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
                 actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: profileKeyCredential,
                                                                            role: role,
-                                                                           groupParams: groupParams))
+                                                                           groupV2Params: groupV2Params))
                 actionsBuilder.addAddMembers(try actionBuilder.build())
                 didChange = true
             }
@@ -299,7 +299,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(uuid: uuid,
                                                                                   role: role,
                                                                                   localUuid: localUuid,
-                                                                                  groupParams: groupParams))
+                                                                                  groupV2Params: groupV2Params))
                 actionsBuilder.addAddPendingMembers(try actionBuilder.build())
                 didChange = true
             }
@@ -310,7 +310,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                     continue
                 }
                 let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
-                let userId = try groupParams.userId(forUuid: uuid)
+                let userId = try groupV2Params.userId(forUuid: uuid)
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeleteMembers(try actionBuilder.build())
                 didChange = true
@@ -322,7 +322,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                     continue
                 }
                 let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
-                let userId = try groupParams.userId(forUuid: uuid)
+                let userId = try groupV2Params.userId(forUuid: uuid)
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
                 didChange = true
@@ -336,7 +336,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                     continue
                 }
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyMemberRoleAction.builder()
-                let userId = try groupParams.userId(forUuid: uuid)
+                let userId = try groupV2Params.userId(forUuid: uuid)
                 actionBuilder.setUserID(userId)
                 actionBuilder.setRole(role)
                 actionsBuilder.addModifyMemberRoles(try actionBuilder.build())

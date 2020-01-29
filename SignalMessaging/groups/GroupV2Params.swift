@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 import ZKGroup
 
-public struct GroupParams {
+public struct GroupV2Params {
     let groupSecretParamsData: Data
     let groupSecretParams: GroupSecretParams
     let groupPublicParams: GroupPublicParams
@@ -31,7 +31,7 @@ public struct GroupParams {
 
 // MARK: -
 
-public extension GroupParams {
+public extension GroupV2Params {
     func encryptString(_ value: String) throws -> Data {
         guard let plaintext: Data = value.data(using: .utf8) else {
             throw OWSAssertionError("Could not encrypt value.")

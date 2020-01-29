@@ -14,6 +14,10 @@ public enum GroupsV2Error: Error {
     case unauthorized
     case shouldRetry
     case shouldDiscard
+    // GroupsV2 TODO: Indicates errors that represent future work.
+    //                We'll remove this error when they are no longer necessary.
+    case todo
+    case groupNotInDatabase
 }
 
 @objc
@@ -30,8 +34,6 @@ public protocol GroupsV2: AnyObject {
 
     func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress]) -> AnyPromise
 
-    func fetchCurrentGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise
-
     func buildGroupContextV2Proto(groupModel: TSGroupModel,
                                   changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2
 
@@ -47,24 +49,22 @@ public protocol GroupsV2Swift {
 
     func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
 
-    func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State>
+    func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot>
+
+    func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
+
+    func fetchGroupChangeActions(groupSecretParamsData: Data) -> Promise<[GroupV2Change]>
 
     func buildChangeSet(from oldGroupModel: TSGroupModel,
                         to newGroupModel: TSGroupModel,
                         transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet
 
-    func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<ChangedGroupModel>
+    // On success returns a group thread model that reflects the
+    // latest state in the service, which (due to races) might
+    // reflect changes after the change set.
+    func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
-
-    func applyChangesToGroupModel(groupThread: TSGroupThread,
-                                  changeActionsProto: GroupsProtoGroupChangeActions,
-                                  changeActionsProtoData: Data,
-                                  transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel
-
-    func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
-                                                groupSecretParamsData: Data,
-                                                upToRevision: UInt32) -> Promise<TSGroupThread>
 }
 
 // MARK: -
@@ -78,8 +78,44 @@ public protocol GroupsV2ChangeSet: AnyObject {
 
 // MARK: -
 
+public enum GroupUpdateMode {
+    // * Group update should halt at a specific revision.
+    // * Group update _should not_ block on message processing.
+    // * Group update _should not_ be throttled.
+    case upToSpecificRevisionImmediately(upToRevision: UInt32)
+    // * Group update should continue until current revision.
+    // * Group update _should_ block on message processing.
+    // * Group update _should_ be throttled.
+    case upToCurrentRevisionAfterMessageProcessWithThrottling
+}
+
+// MARK: -
+
+@objc
+public protocol GroupV2Updates: AnyObject {
+
+    func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread)
+
+    func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
+                                                            upToRevision: UInt32)
+
+    func updateGroupWithChangeActions(groupId: Data,
+                                      changeActionsProto: GroupsProtoGroupChangeActions,
+                                      transaction: SDSAnyWriteTransaction) throws -> TSGroupThread
+}
+
+// MARK: -
+
+public protocol GroupV2UpdatesSwift: AnyObject {
+    func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
+                                                 groupSecretParamsData: Data,
+                                                 groupUpdateMode: GroupUpdateMode) -> Promise<Void>
+}
+
+// MARK: -
+
 // GroupsV2 TODO: Can we eventually remove this and just use TSGroupModel?
-public protocol GroupV2State {
+public protocol GroupV2Snapshot {
     var groupSecretParamsData: Data { get }
 
     var debugDescription: String { get }
@@ -97,6 +133,19 @@ public protocol GroupV2State {
 
     var accessControlForAttributes: GroupsProtoAccessControlAccessRequired { get }
     var accessControlForMembers: GroupsProtoAccessControlAccessRequired { get }
+}
+
+// MARK: -
+
+public struct GroupV2Change {
+    public let snapshot: GroupV2Snapshot
+    public let changeActionsProto: GroupsProtoGroupChangeActions
+
+    public init(snapshot: GroupV2Snapshot,
+                changeActionsProto: GroupsProtoGroupChangeActions) {
+        self.snapshot = snapshot
+        self.changeActionsProto = changeActionsProto
+    }
 }
 
 // MARK: -
@@ -119,22 +168,13 @@ public class GroupV2ContextInfo: NSObject {
 
 // MARK: -
 
-public struct ChangedGroupModel {
+public struct UpdatedV2Group {
     public let groupThread: TSGroupThread
-    public let oldGroupModel: TSGroupModel
-    public let newGroupModel: TSGroupModel
-    public let changeAuthorUuid: UUID
     public let changeActionsProtoData: Data
 
     public init(groupThread: TSGroupThread,
-                oldGroupModel: TSGroupModel,
-                newGroupModel: TSGroupModel,
-                changeAuthorUuid: UUID,
                 changeActionsProtoData: Data) {
         self.groupThread = groupThread
-        self.oldGroupModel = oldGroupModel
-        self.newGroupModel = newGroupModel
-        self.changeAuthorUuid = changeAuthorUuid
         self.changeActionsProtoData = changeActionsProtoData
     }
 }
@@ -172,11 +212,15 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func fetchCurrentGroupState(groupModel: TSGroupModel) -> Promise<GroupV2State> {
+    public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot> {
         owsFail("Not implemented.")
     }
 
-    public func fetchCurrentGroupStateObjc(groupModel: TSGroupModel) -> AnyPromise {
+    public func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot> {
+        owsFail("Not implemented.")
+    }
+
+    public func fetchGroupChangeActions(groupSecretParamsData: Data) -> Promise<[GroupV2Change]> {
         owsFail("Not implemented.")
     }
 
@@ -191,7 +235,7 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<ChangedGroupModel> {
+    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> {
         owsFail("Not implemented.")
     }
 
@@ -203,20 +247,34 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func fetchAndApplyGroupV2UpdatesFromService(groupId: Data,
-                                                       groupSecretParamsData: Data,
-                                                       upToRevision: UInt32) -> Promise<TSGroupThread> {
-        owsFail("Not implemented.")
-    }
-
     public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
         owsFail("Not implemented.")
     }
+}
 
-    public func applyChangesToGroupModel(groupThread: TSGroupThread,
-                                         changeActionsProto: GroupsProtoGroupChangeActions,
-                                         changeActionsProtoData: Data,
-                                         transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
+// MARK: -
+
+public class MockGroupV2Updates: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
+    @objc
+    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
+        owsFail("Not implemented.")
+    }
+
+    @objc
+    public func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
+                                                                   upToRevision: UInt32) {
+        owsFail("Not implemented.")
+    }
+
+    public func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
+                                                        groupSecretParamsData: Data,
+                                                        groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
+        owsFail("Not implemented.")
+    }
+
+    public func updateGroupWithChangeActions(groupId: Data,
+                                             changeActionsProto: GroupsProtoGroupChangeActions,
+                                             transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
         owsFail("Not implemented.")
     }
 }
