@@ -230,20 +230,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return NO;
 }
 
-//- (BOOL)isPublicChat
-//{
-//    OWSAbstractMethod();
-//
-//    return NO;
-//}
-//
-//- (BOOL)isRSSFeed
-//{
-//    OWSAbstractMethod();
-//
-//    return NO;
-//}
-
 // Override in ContactThread
 - (nullable NSString *)contactIdentifier
 {

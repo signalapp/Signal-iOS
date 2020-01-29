@@ -177,10 +177,9 @@ NS_ASSUME_NONNULL_BEGIN
             TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtilities getEncodedOpenGroupIDAsData:chat.id] transaction:transaction];
             if (thread != nil) {
                 [LKDatabaseUtilities setPublicChat:chat threadID:thread.uniqueId transaction:transaction];
-            }
-            else {
-                //Update the group type and group id for private group chat version.
-                //If the thread is still using the old group id, it needs to be updated.
+            } else {
+                // Update the group type and group ID for private group chat version.
+                // If the thread is still using the old group ID, it needs to be updated.
                 thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
                 if (thread != nil) {
                     thread.groupModel.groupType = openGroup;
@@ -190,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             }
         }
-        //Update rss feed here
+        // Update RSS feeds here
         LKRSSFeed *lokiNewsFeed = [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki News", @"") isDeletable:true];
         LKRSSFeed *lokiMessengerUpdatesFeed = [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Loki Messenger Updates", @"") isDeletable:false];
         NSArray *feeds = @[ lokiNewsFeed, lokiMessengerUpdatesFeed ];

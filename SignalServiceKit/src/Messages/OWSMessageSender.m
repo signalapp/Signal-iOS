@@ -518,15 +518,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     // TODO: Handle
                 }
             }];
-        }
-        //Maybe need to handle RssFeed
-        else {
+        } else {
             [recipientIds addObjectsFromArray:message.sendingRecipientIds];
-            // Only send to members in the latest known group member list.
+            // Only send to members in the latest known group member list
             [recipientIds intersectSet:[NSSet setWithArray:groupThread.groupModel.groupMemberIds]];
-//            for (NSString *recipientId in recipientIds) {
-//                
-//            }
         }
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
@@ -701,7 +696,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     if (thread.isGroupThread) {
         [self saveInfoMessageForGroupMessage:message inThread:thread];
-        OWSLogInfo(@"group message save here %@ %@ %@", message.customMessage, message.recipientIds.lastObject, message.recipientIds.firstObject);
     }
 
     NSError *error;
@@ -729,8 +723,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         }];
     }
-    
-    OWSLogInfo(@"recipient count: %d", recipientIds.count);
 
     if (recipientIds.count < 1) {
         // All recipients are already sent or can be skipped.
@@ -986,9 +978,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
     if (isPublicChatMessage || isDeviceLinkMessage) {
         [self sendMessage:messageSend];
-    }
-    else if (isGroupMessage) {
+    } else if (isGroupMessage) {
         [self sendMessage:messageSend];
+        
+        // TODO: Multi device?
+        
 //        [[LKAPI getDestinationsFor:contactID]
 //        .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
 //            // Get master destination
@@ -1025,8 +1019,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 //        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
 //            [self messageSendDidFail:messageSend deviceMessages:@{} statusCode:0 error:error responseData:nil];
 //        }) retainUntilComplete];
-    }
-    else {
+    } else {
         BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];
         BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
         BOOL isSessionRequestMessage = [message isKindOfClass:LKSessionRequestMessage.class];
@@ -1683,8 +1676,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }];
     
     BOOL isPublicChatMessage = message.thread.isGroupThread && ((TSGroupThread *)message.thread).isPublicChat;
-    OWSLogInfo(@"Message recipient %d %@", [message.recipientIds count], message.recipientIds[0]);
-    OWSLogInfo(@"Try to figure out if it is a public chat message %d", isPublicChatMessage);
     
     BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript) && !isNoteToSelf && !isPublicChatMessage && !([message isKindOfClass:LKDeviceLinkMessage.class]);
     if (!shouldSendTranscript) {
@@ -2117,19 +2108,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(thread);
 
     if (message.groupMetaMessage == TSGroupMetaMessageDeliver) {
-        OWSLogInfo(@"save for group message deliver");
         // TODO: Why is this necessary?
         [message save];
     } else if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
         // MJK TODO - remove senderTimestamp
-        OWSLogInfo(@"save for group message quit: %@", message.customMessage);
         [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupQuit
                                     customMessage:message.customMessage] save];
     } else {
         // MJK TODO - remove senderTimestamp
-        OWSLogInfo(@"save for group message update: %@", message.customMessage);
         [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupUpdate

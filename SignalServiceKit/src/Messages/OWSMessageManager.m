@@ -1367,34 +1367,27 @@ NS_ASSUME_NONNULL_BEGIN
     if (groupId.length > 0) {
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
         NSMutableSet *removedMemberIds = [NSMutableSet new];
-        //Ryan TODO: validate the recipientId
-//        for (NSString *recipientId in newMemberIds) {
-//            if (!recipientId.isValidE164) {
-//                OWSLogVerbose(
-//                    @"incoming group update has invalid group member: %@", [self descriptionForEnvelope:envelope]);
-//                OWSFailDebug(@"incoming group update has invalid group member");
-//                return nil;
-//            }
-//        }
+        for (NSString *recipientId in newMemberIds) {
+            if (![ECKeyPair isValidHexEncodedPublicKeyWithCandidate:recipientId]) {
+                OWSLogVerbose(
+                    @"incoming group update has invalid group member: %@", [self descriptionForEnvelope:envelope]);
+                OWSFailDebug(@"incoming group update has invalid group member");
+                return nil;
+            }
+        }
 
         // Group messages create the group if it doesn't already exist.
         //
         // We distinguish between the old group state (if any) and the new group state.
         TSGroupThread *_Nullable oldGroupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
         if (oldGroupThread) {
-            // Don't trust other clients; ensure all known group members remain in the
-            // group unless it is a "quit" message in which case we should only remove
-            // the quiting member below.
-            //[newMemberIds addObjectsFromArray:oldGroupThread.groupModel.groupMemberIds];
-            
-            //Loki - Try to figure out removed members
+            // Loki: Try to figure out removed members
             removedMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
             [removedMemberIds minusSet:newMemberIds];
             [removedMemberIds removeObject:envelope.source];
         }
 
         NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
-//        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
 
         // Only set the display name here, the logic for updating profile pictures is handled when we're setting profile key
         [self handleProfileNameUpdateIfNeeded:dataMessage recipientId:hexEncodedPublicKey transaction:transaction];
@@ -1402,7 +1395,7 @@ NS_ASSUME_NONNULL_BEGIN
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
                 if (oldGroupThread && ![oldGroupThread.groupModel.groupAdminIds containsObject:envelope.source]) {
-                    OWSLogWarn(@"Loki - Received a group update message from a non-admin user for %@ %@", [LKGroupUtilities getEncodedGroupID:groupId], @". Ignoring.");
+                    [LKLogger print:[NSString stringWithFormat:@"[Loki] Received a group update from a non-admin user for %@; ignoring.", [LKGroupUtilities getEncodedGroupID:groupId]]];
                     return nil;
                 }
                 // Ensures that the thread exists but doesn't update it.
@@ -1421,7 +1414,7 @@ NS_ASSUME_NONNULL_BEGIN
                 newGroupThread.groupModel = newGroupModel;
                 [newGroupThread saveWithTransaction:transaction];
                 
-                //Loki - Try to establish session with members when a group is created or updated
+                // Loki: Try to establish sessions with all members when a group is created or updated
                 [self establishSessionsWithMembersIfNeeded: newMemberIds.allObjects forThread:newGroupThread transaction:transaction];
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
@@ -1674,14 +1667,9 @@ NS_ASSUME_NONNULL_BEGIN
         if ([member isEqualToString:userHexEncodedPublicKey] ) { continue; }
         __block BOOL hasSession;
         hasSession = [self.primaryStorage containsSession:member deviceId:1 protocolContext:transaction];
-        if (!hasSession) {
-            OWSLogInfo(@"Try to build session with %@", member);
-            LKSessionRequestMessage *message = [[LKSessionRequestMessage alloc] initWithThread:thread];
-            [self.messageSenderJobQueue addMessage:message transaction:transaction];
-        }
-        else {
-            OWSLogInfo(@"There is session with %@", member);
-        }
+        if (hasSession) { continue; }
+        LKSessionRequestMessage *message = [[LKSessionRequestMessage alloc] initWithThread:thread];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }
 }
 
@@ -1718,14 +1706,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope data:(SSKProtoDataMessage *)data message:(TSIncomingMessage *)message thread:(TSContactThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    
     if (envelope.isGroupChatMessage) {
         return NSLog(@"[Loki] Ignoring friend request in group chat.", @"");
     }
     if (envelope.type != SSKProtoEnvelopeTypeFriendRequest) {
         return NSLog(@"[Loki] handleFriendRequestMessageIfNeededWithEnvelope:data:message:thread:transaction was called with an envelope that isn't of type SSKProtoEnvelopeTypeFriendRequest.");
     }
-    
     if ([self canFriendRequestBeAutoAcceptedForThread:thread transaction:transaction]) {
         [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
         __block TSOutgoingMessage *existingFriendRequestMessage;
@@ -1773,7 +1759,7 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO: We'll need to fix this up if we ever start using sync messages
     // Currently this uses `envelope.source` but with sync messages we'll need to use the message sender ID
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
-    // We shouldn't be able to skip from None -> Friends in normal circumstances.
+    // We shouldn't be able to skip from none to friends under normal circumstances
     if (thread.friendRequestStatus == LKThreadFriendRequestStatusNone) { return; }
     if (thread.isContactFriend) return;
     // Become happy friends and go on great adventures

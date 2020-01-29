@@ -149,9 +149,9 @@ const int32_t kGroupIdLength = 16;
                                                            [newMembersNames componentsJoinedByString:@", "]]];
     }
     
-    if ([_removedMembers count] > 0) {
+    if (_removedMembers.count > 0) {
         NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
-        NSString *hexEncodedPublicKey = masterDeviceHexEncodedPublicKey != nil ? masterDeviceHexEncodedPublicKey : [TSAccountManager localNumber];
+        NSString *hexEncodedPublicKey = masterDeviceHexEncodedPublicKey != nil ? masterDeviceHexEncodedPublicKey : TSAccountManager.localNumber;
         if ([_removedMembers containsObject:hexEncodedPublicKey]) {
             updatedGroupInfoString = [updatedGroupInfoString
                                       stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
