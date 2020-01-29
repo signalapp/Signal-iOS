@@ -140,13 +140,8 @@ const int32_t kGroupIdLength = 16;
                                                            [oldMembersNames componentsJoinedByString:@", "]]];
     }
     
-    if ([membersWhoJoined count] > 0) {
-        NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString*(NSString* item) {
-            return [LKDisplayNameUtilities getPrivateChatDisplayNameFor:item];
-        }];
-        updatedGroupInfoString = [updatedGroupInfoString
-                                  stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),
-                                                           [newMembersNames componentsJoinedByString:@", "]]];
+    if (membersWhoJoined.count > 0) {
+        updatedGroupInfoString = [NSString stringWithFormat:@"%d members joined", membersWhoJoined.count];
     }
     
     if (_removedMembers.count > 0) {

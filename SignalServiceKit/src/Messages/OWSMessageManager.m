@@ -1659,7 +1659,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-//Loki: Establish a session if there is no session between the memebers of a group
+// Loki: Establish a session if there is no session between the memebers of a group
 - (void)establishSessionsWithMembersIfNeeded: (NSArray *)members forThread: (TSGroupThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
