@@ -8,7 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class DarwinNotificationName;
 
-@interface DarwinNotification : NSObject
+extern const int DarwinNotificationInvalidObserver;
+
+@interface DarwinNotificationCenter : NSObject
 
 /// Determines if an observer token is valid for a current registration.
 /// Negative integers are never valid. A positive or zero value is valid
@@ -40,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param observerToken The token returned by `addObserverForName:` for the notification you want to set state for.
 + (void)setState:(uint64_t)state forObserver:(int)observerToken;
 
-/// Retrieves teh state for a given observer. This value can be set and read from
+/// Retrieves the state for a given observer. This value can be set and read from
 /// any process listening for this notification. Note: `setState:` and `getState`
 /// are vulnerable to races.
 /// @param observerToken The token returned by `addObserverForName:` for the notification you want to get state for.

@@ -4,7 +4,7 @@
 
 #import "SDSCrossProcess.h"
 #import <SignalCoreKit/OWSAsserts.h>
-#import <SignalServiceKit/DarwinNotification.h>
+#import <SignalServiceKit/DarwinNotificationCenter.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -37,7 +37,7 @@ pid_t localPid(void)
 - (id)init
 {
     if (self = [super init]) {
-        self.notifyToken = -1;
+        self.notifyToken = DarwinNotificationInvalidObserver;
 
         [self start];
     }
@@ -54,18 +54,18 @@ pid_t localPid(void)
     [self stop];
 
     __weak SDSCrossProcess *weakSelf = self;
-    self.notifyToken = [DarwinNotification addObserverForName:DarwinNotificationName.sdsCrossProcess
-                                                        queue:dispatch_get_main_queue()
-                                                   usingBlock:^(int token) {
-                                                       [weakSelf handleNotification:token];
-                                                   }];
+    self.notifyToken = [DarwinNotificationCenter addObserverForName:DarwinNotificationName.sdsCrossProcess
+                                                              queue:dispatch_get_main_queue()
+                                                         usingBlock:^(int token) {
+                                                             [weakSelf handleNotification:token];
+                                                         }];
 }
 
 - (void)handleNotification:(int)token
 {
     OWSAssertIsOnMainThread();
 
-    uint64_t fromPid = [DarwinNotification getStateForObserver:token];
+    uint64_t fromPid = [DarwinNotificationCenter getStateForObserver:token];
     BOOL isLocal = fromPid == (uint64_t)localPid();
     if (isLocal) {
         return;
@@ -79,10 +79,10 @@ pid_t localPid(void)
 
 - (void)stop
 {
-    if ([DarwinNotification isValidObserver:self.notifyToken]) {
-        [DarwinNotification removeObserver:self.notifyToken];
+    if ([DarwinNotificationCenter isValidObserver:self.notifyToken]) {
+        [DarwinNotificationCenter removeObserver:self.notifyToken];
     }
-    self.notifyToken = -1;
+    self.notifyToken = DarwinNotificationInvalidObserver;
 }
 
 - (void)notifyChangedAsync
@@ -97,12 +97,12 @@ pid_t localPid(void)
     OWSAssertIsOnMainThread();
     OWSLogVerbose(@"");
 
-    if (![DarwinNotification isValidObserver:self.notifyToken]) {
+    if (![DarwinNotificationCenter isValidObserver:self.notifyToken]) {
         [self start];
     }
 
-    [DarwinNotification setState:localPid() forObserver:self.notifyToken];
-    [DarwinNotification postNotificationName:DarwinNotificationName.sdsCrossProcess];
+    [DarwinNotificationCenter setState:localPid() forObserver:self.notifyToken];
+    [DarwinNotificationCenter postNotificationName:DarwinNotificationName.sdsCrossProcess];
 }
 
 @end

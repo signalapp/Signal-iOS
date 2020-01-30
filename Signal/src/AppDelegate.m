@@ -28,7 +28,7 @@
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/CallKitIdStore.h>
-#import <SignalServiceKit/DarwinNotification.h>
+#import <SignalServiceKit/DarwinNotificationCenter.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -279,7 +279,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     [AppVersion sharedInstance];
 
-    [self listenForNSENotifications];
+    [self setupNSEInteroperation];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
@@ -1368,11 +1368,16 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     OWSLogInfo(@"");
 }
 
-- (void)listenForNSENotifications
+- (void)setupNSEInteroperation
 {
+    // We immediately post a notification letting the NSE know the main app has launched.
+    // If it's running it should take this as a sign to terminate so we don't unintentionally
+    // try and fetch messages from two processes at once.
+    [DarwinNotificationCenter postNotificationName:DarwinNotificationName.mainAppLaunched];
+
     // We listen to this notification for the lifetime of the application, so we don't
     // record the returned observer token.
-    [DarwinNotification
+    [DarwinNotificationCenter
         addObserverForName:DarwinNotificationName.nseDidReceiveNotification
                      queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)
                 usingBlock:^(int token) {
@@ -1380,13 +1385,11 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
                     // Immediately let the NSE know we will handle this notification so that it
                     // does not attempt to process messages while we are active.
-                    [DarwinNotification postNotificationName:DarwinNotificationName.mainAppHandledNotification];
+                    [DarwinNotificationCenter postNotificationName:DarwinNotificationName.mainAppHandledNotification];
 
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-                            [[self.messageFetcherJob runObjc] retainUntilComplete];
-                        }];
-                    });
+                    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+                        [[self.messageFetcherJob runObjc] retainUntilComplete];
+                    }];
                 }];
 }
 

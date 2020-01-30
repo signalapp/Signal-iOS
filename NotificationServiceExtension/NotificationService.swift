@@ -50,30 +50,16 @@ class NotificationService: UNNotificationServiceExtension {
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
 
+        DispatchQueue.main.sync { self.setupIfNecessary() }
+
         // Until we want to use this extension, crash if this path is hit.
         guard FeatureFlags.notificationServiceExtension else {
             owsFail("NSE should never be called.")
         }
 
-        var mainAppHandledReceipt = false
+        listenForMainAppLaunch()
 
-        // Listen for an indication that the main app is going to handle
-        // this notification. If the main app is active we don't want to
-        // process any messages here.
-        let token = DarwinNotification.addObserver(for: .mainAppHandledNotification, queue: .main) { _ in
-            mainAppHandledReceipt = true
-        }
-
-        // Notify the main app that we received new content to process.
-        // If it's running, it will notify us so we can bail out.
-        DarwinNotification.post(.nseDidReceiveNotification)
-
-        // The main app should notify us nearly instantaneously if it's
-        // going to process this notification so we only wait a fraction
-        // of a second to hear back from it.
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.001) {
-            DarwinNotification.removeObserver(token)
-
+        askMainAppToHandleReceipt { mainAppHandledReceipt in
             guard !mainAppHandledReceipt else {
                 Logger.info("Received notification handled by main application.")
                 return self.completeSilenty()
@@ -81,14 +67,13 @@ class NotificationService: UNNotificationServiceExtension {
 
             Logger.info("Processing received notification.")
 
-            self.setupIfNecessary()
             AppReadiness.runNowOrWhenAppDidBecomeReady { self.fetchAndProcessMessages() }
         }
     }
 
     // Called just before the extension will be terminated by the system.
     override func serviceExtensionTimeWillExpire() {
-        Logger.error("NSE expired before messages could be processed")
+        owsFailDebug("NSE expired before messages could be processed")
 
         // We complete silently here so that nothing is presented to the user.
         // By default the OS will present whatever the raw content of the original
@@ -187,18 +172,89 @@ class NotificationService: UNNotificationServiceExtension {
         AppVersion.sharedInstance().nseLaunchDidComplete()
     }
 
+    func askMainAppToHandleReceipt(handledCallback: @escaping (_ mainAppHandledReceipt: Bool) -> Void) {
+        DispatchQueue.main.async {
+            // We track whether we've ever handled the call back to ensure
+            // we only notify the caller once and avoid any races that may
+            // occur between the notification observer and the dispatch
+            // after block.
+            var hasCalledBack = false
+
+            // Listen for an indication that the main app is going to handle
+            // this notification. If the main app is active we don't want to
+            // process any messages here.
+            let token = DarwinNotificationCenter.addObserver(for: .mainAppHandledNotification, queue: .main) { token in
+                guard !hasCalledBack else { return }
+
+                hasCalledBack = true
+
+                handledCallback(true)
+
+                if DarwinNotificationCenter.isValidObserver(token) {
+                    DarwinNotificationCenter.removeObserver(token)
+                }
+            }
+
+            // Notify the main app that we received new content to process.
+            // If it's running, it will notify us so we can bail out.
+            DarwinNotificationCenter.post(.nseDidReceiveNotification)
+
+            // The main app should notify us nearly instantaneously if it's
+            // going to process this notification so we only wait a fraction
+            // of a second to hear back from it.
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.001) {
+                if DarwinNotificationCenter.isValidObserver(token) {
+                    DarwinNotificationCenter.removeObserver(token)
+                }
+
+                guard !hasCalledBack else { return }
+
+                hasCalledBack = true
+
+                // If we haven't called back yet and removed the observer token,
+                // the main app is not running and will not handle receipt of this
+                // notification.
+                handledCallback(false)
+            }
+        }
+    }
+
+    private var mainAppLaunchObserverToken = DarwinNotificationInvalidObserver
+    func listenForMainAppLaunch() {
+        guard !DarwinNotificationCenter.isValidObserver(mainAppLaunchObserverToken) else { return }
+        mainAppLaunchObserverToken = DarwinNotificationCenter.addObserver(for: .mainAppLaunched, queue: .global(), using: { _ in
+            // If we're currently processing messages we want to commit
+            // suicide to ensure that we don't try and process messages
+            // while the main app is running. If we're not processing
+            // messages we keep alive since future notifications will
+            // be passed off gracefully to the main app. We only kill
+            // ourselves as a last resort.
+            // TODO: We could eventually make the message fetch process
+            // cancellable to never have to exit here.
+            guard self.isProcessingMessages.get() else { return }
+            Logger.info("Exiting because main app launched while we were processing messages.")
+            exit(0)
+        })
+    }
+
+    private let isProcessingMessages = AtomicBool(false)
     func fetchAndProcessMessages() {
+        AssertIsOnMainThread()
+
         guard !AppExpiry.isExpired else {
-            Logger.error("Not processing notifications for expired application.")
+            owsFailDebug("Not processing notifications for expired application.")
             return completeSilenty()
         }
+
+        isProcessingMessages.set(true)
 
         Logger.info("Beginning message fetch.")
 
         messageFetcherJob.run().promise.then {
-            return self.messageProcessing.flushMessageDecryptionAndProcessingPromise()
+            return self.messageProcessing.flushMessageDecryptionAndProcessingPromise().asVoid()
         }.ensure {
-            Logger.info("Message fetch completed successfully.")
+            Logger.info("Message fetch completed.")
+            self.isProcessingMessages.set(false)
             self.completeSilenty()
         }.retainUntilComplete()
     }

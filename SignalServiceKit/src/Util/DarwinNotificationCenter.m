@@ -2,11 +2,13 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-#import "DarwinNotification.h"
+#import "DarwinNotificationCenter.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <notify.h>
 
-@implementation DarwinNotification
+const int DarwinNotificationInvalidObserver = NOTIFY_TOKEN_INVALID;
+
+@implementation DarwinNotificationCenter
 
 + (BOOL)isValidObserver:(int)observerToken
 {
