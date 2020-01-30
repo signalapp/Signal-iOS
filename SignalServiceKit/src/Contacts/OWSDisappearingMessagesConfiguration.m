@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -172,6 +172,23 @@ NS_ASSUME_NONNULL_BEGIN
     newInstance.enabled = YES;
     newInstance.durationSeconds = durationSeconds;
     return newInstance;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![other isKindOfClass:[OWSDisappearingMessagesConfiguration class]]) {
+        return NO;
+    }
+
+    OWSDisappearingMessagesConfiguration *otherConfiguration = (OWSDisappearingMessagesConfiguration *)other;
+    if (otherConfiguration.isEnabled != self.isEnabled) {
+        return NO;
+    }
+    if (!self.isEnabled) {
+        // Don't bother comparing durationSeconds if not enabled.
+        return YES;
+    }
+    return otherConfiguration.durationSeconds == self.durationSeconds;
 }
 
 @end

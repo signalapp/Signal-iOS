@@ -70,6 +70,18 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private var accessForMembers: GroupV2Access?
     private var accessForAttributes: GroupV2Access?
 
+    private var shouldAcceptInvite = false
+
+    // Non-nil if dm state changed.
+    private var newDisappearingMessageToken: DisappearingMessageToken?
+
+    @objc
+    public required init(groupId: Data,
+                         groupSecretParamsData: Data) {
+        self.groupId = groupId
+        self.groupSecretParamsData = groupSecretParamsData
+    }
+
     @objc
     public required init(for groupModel: TSGroupModel) throws {
         guard groupModel.groupsVersion == .V2 else {
@@ -87,8 +99,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     // Calculate the intended changes of the local user
     // by diffing two group models.
     @objc
-    public func buildChangeSet(from oldGroupModel: TSGroupModel,
-                               to newGroupModel: TSGroupModel,
+    public func buildChangeSet(oldGroupModel: TSGroupModel,
+                               newGroupModel: TSGroupModel,
+                               oldDMConfiguration: OWSDisappearingMessagesConfiguration,
+                               newDMConfiguration: OWSDisappearingMessagesConfiguration,
                                transaction: SDSAnyReadTransaction) throws {
 
         if oldGroupModel.groupName != newGroupModel.groupName {
@@ -161,6 +175,12 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             self.accessForAttributes = newAccess.attributes
         }
 
+        let oldDisappearingMessageToken = oldDMConfiguration.asToken
+        let newDisappearingMessageToken = newDMConfiguration.asToken
+        if oldDisappearingMessageToken != newDisappearingMessageToken {
+            setNewDisappearingMessageToken(newDisappearingMessageToken)
+        }
+
         // GroupsV2 TODO: Calculate other changed state, e.g. avatar.
     }
 
@@ -207,6 +227,16 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         pendingMembersToRemove.append(uuid)
     }
 
+    public func setShouldAcceptInvite() {
+        assert(!shouldAcceptInvite)
+        shouldAcceptInvite = true
+    }
+
+    public func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken) {
+        assert(self.newDisappearingMessageToken == nil)
+        self.newDisappearingMessageToken = newDisappearingMessageToken
+    }
+
     // MARK: - Change Protos
 
     private typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
@@ -214,12 +244,16 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     // Given the "current" group state, build a change proto that
     // reflects the elements of the "original intent" that are still
     // necessary to perform.
-    public func buildGroupChangeProto(currentGroupModel: TSGroupModel) -> Promise<GroupsProtoGroupChangeActions> {
+    public func buildGroupChangeProto(currentGroupModel: TSGroupModel,
+                                      currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> {
         guard groupId == currentGroupModel.groupId else {
             return Promise(error: OWSAssertionError("Mismatched groupId."))
         }
         guard let groupsV2Impl = groupsV2 as? GroupsV2Impl else {
             return Promise(error: OWSAssertionError("Invalid groupsV2: \(type(of: groupsV2))"))
+        }
+        guard let localUuid = self.tsAccountManager.localUuid else {
+            return Promise(error: OWSAssertionError("Missing localUuid."))
         }
 
         // Note that we're calculating the set of users for whom we need
@@ -233,6 +267,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         var uuidsForProfileKeyCredentials = Set<UUID>()
         uuidsForProfileKeyCredentials.formUnion(membersToAdd.keys)
         let addressesForProfileKeyCredentials: [SignalServiceAddress] = uuidsForProfileKeyCredentials.map { SignalServiceAddress(uuid: $0) }
+        if shouldAcceptInvite {
+            uuidsForProfileKeyCredentials.insert(localUuid)
+        }
 
         return firstly {
             groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
@@ -240,11 +277,34 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 return groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
         }.then(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
             return self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
+                                              currentDisappearingMessageToken: currentDisappearingMessageToken,
                                               profileKeyCredentialMap: profileKeyCredentialMap)
         }
     }
 
+    // This method builds the actual set of actions _that are still necessary_.
+    // Conflicts can occur due to races. This is where we make a best effort to
+    // resolve conflicts.
+    //
+    // Example conflict: Alice wants to add (Bob). But David renames the group before Alice can do so.
+    // Resolution: Alice adds Bob. (No real conflict).
+    //
+    // Example conflict: Alice wants to add (Bob, Carol). But David adds (just Bob) before Alice can do so.
+    // Resolution: Alice adds just Carol. (Simple conflict, clear resolution).
+    //
+    // Some conflicts are much more complicated, for example:
+    //
+    // * Alice wants to add Bob as an admin. But Carol adds Bob first as a normal member.
+    //   Arguably in this case Alice should "promote" Bob rather than add him, but we don't do this (yet?).
+    // * Alice wants to add Bob as a non-pending member. But Carol invites Bob first as a pending member.
+    //   Maybe Alice should accept Bob's invite on his behalf.  But we don't do this (yet).
+    // * Alice wants to add Bob. But Carol add Bob first, then removes Bob.
+    //   We don't handle this situation yet.
+    //
+    // Essentially, our strategy is to "apply any changes that still make sense".  If no
+    // changes do, we throw GroupsV2Error.redundantChange.
     private func buildGroupChangeProto(currentGroupModel: TSGroupModel,
+                                       currentDisappearingMessageToken: DisappearingMessageToken,
                                        profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsProtoGroupChangeActions in
             let groupV2Params = try GroupV2Params(groupModel: currentGroupModel)
@@ -356,14 +416,45 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 }
             }
             if let access = self.accessForAttributes {
-                let actionBuilder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.builder()
-                actionBuilder.setAttributesAccess(GroupAccess.protoAccess(forGroupV2Access: access))
-                actionsBuilder.setModifyAttributesAccess(try actionBuilder.build())
-                didChange = true
+                if currentAccess.attributes != access {
+                    let actionBuilder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.builder()
+                    actionBuilder.setAttributesAccess(GroupAccess.protoAccess(forGroupV2Access: access))
+                    actionsBuilder.setModifyAttributesAccess(try actionBuilder.build())
+                    didChange = true
+                }
             }
 
-            // NOTE: We don't populate PromotePendingMemberAction here;
-            //       GroupsV2ChangeSetAcceptInvite is used to accept invites.
+            if self.shouldAcceptInvite {
+                // Check that we are still invited.
+                let localAddress = SignalServiceAddress(uuid: localUuid)
+                if currentGroupMembership.allPendingMembers.contains(localAddress) {
+                    guard let profileKeyCredential = profileKeyCredentialMap[localUuid] else {
+                        throw OWSAssertionError("Missing profile key credential]: \(localUuid)")
+                    }
+                    let actionBuilder = GroupsProtoGroupChangeActionsPromotePendingMemberAction.builder()
+                    actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,
+                                                                                      groupV2Params: groupV2Params))
+                    actionsBuilder.addPromotePendingMembers(try actionBuilder.build())
+                    didChange = true
+                }
+            }
+
+            if let newDisappearingMessageToken = self.newDisappearingMessageToken {
+                if newDisappearingMessageToken != currentDisappearingMessageToken {
+                    let actionBuilder = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.builder()
+                    let timerBuilder = GroupsProtoDisappearingMessagesTimer.builder()
+                    if newDisappearingMessageToken.isEnabled {
+                        timerBuilder.setDuration(newDisappearingMessageToken.durationSeconds)
+                    } else {
+                        timerBuilder.setDuration(0)
+                    }
+                    let timerData = try timerBuilder.buildSerializedData()
+                    let encryptedTimerData = try groupV2Params.encryptBlob(timerData)
+                    actionBuilder.setTimer(encryptedTimerData)
+                    actionsBuilder.setModifyDisappearingMessagesTimer(try actionBuilder.build())
+                    didChange = true
+                }
+            }
 
             guard didChange else {
                 throw GroupsV2Error.redundantChange
@@ -385,89 +476,4 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     //    message ModifyAvatarAction {
     //    string avatar = 1;
     //    }
-    //
-    // NOTE: This won't be easy.
-    //    message ModifyDisappearingMessagesTimerAction {
-    //    bytes timer = 1;
-    //    }
-}
-
-// MARK: -
-
-// This is a special variant of GroupsV2ChangeSet that is
-// only used to accept an invitation.
-@objc
-public class GroupsV2ChangeSetAcceptInvite: NSObject, GroupsV2ChangeSet {
-
-    // MARK: - Dependencies
-
-    private var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
-    }
-
-    // MARK: -
-
-    public let groupId: Data
-    public let groupSecretParamsData: Data
-
-    private let localUserUuid: UUID
-
-    @objc
-    public required init(groupId: Data,
-                         groupSecretParamsData: Data,
-                         localUserUuid: UUID) {
-        self.groupId = groupId
-        self.groupSecretParamsData = groupSecretParamsData
-
-        self.localUserUuid = localUserUuid
-    }
-
-    // MARK: - Change Protos
-
-    private typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
-
-    // Given the "current" group state, build a change proto that
-    // reflects the elements of the "original intent" that are still
-    // necessary to perform.
-    public func buildGroupChangeProto(currentGroupModel: TSGroupModel) -> Promise<GroupsProtoGroupChangeActions> {
-        guard let groupsV2Impl = groupsV2 as? GroupsV2Impl else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2: \(type(of: groupsV2))"))
-        }
-
-        let uuidsForProfileKeyCredentials = [localUserUuid]
-        let addressesForProfileKeyCredentials = [SignalServiceAddress(uuid: localUserUuid)]
-        return firstly {
-            groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
-        }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
-                return groupsV2Impl.loadProfileKeyCredentialData(for: uuidsForProfileKeyCredentials)
-        }.then(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
-            return self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
-                                              profileKeyCredentialMap: profileKeyCredentialMap)
-        }
-    }
-
-    private func buildGroupChangeProto(currentGroupModel: TSGroupModel,
-                                       profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> {
-        return DispatchQueue.global().async(.promise) { () throws -> GroupsProtoGroupChangeActions in
-            let groupV2Params = try GroupV2Params(groupSecretParamsData: self.groupSecretParamsData)
-
-            let actionsBuilder = GroupsProtoGroupChangeActions.builder()
-
-            let oldVersion = currentGroupModel.groupV2Revision
-            let newVersion = oldVersion + 1
-            Logger.verbose("Version: \(oldVersion) -> \(newVersion)")
-            actionsBuilder.setVersion(newVersion)
-
-            let uuid = self.localUserUuid
-            guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
-                throw OWSAssertionError("Missing profile key credential]: \(uuid)")
-            }
-            let actionBuilder = GroupsProtoGroupChangeActionsPromotePendingMemberAction.builder()
-            actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,
-                                                                              groupV2Params: groupV2Params))
-            actionsBuilder.addPromotePendingMembers(try actionBuilder.build())
-
-            return try actionsBuilder.build()
-        }
-    }
 }

@@ -149,6 +149,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return true;
 }
 
+- (BOOL)isGroupV2Thread
+{
+    return self.groupModel.groupsVersion == GroupsVersionV2;
+}
+
 - (BOOL)isLocalUserInGroup
 {
     SignalServiceAddress *_Nullable localAddress = TSAccountManager.localAddress;

@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                 groupUpdateSourceAddress:localAddress
                                                              transaction:transaction
                                                                    error:&groupError]
-                              .thread;
+                              .groupThread;
                 if (groupError != nil || _thread == nil) {
                     OWSFailDebug(@"Could not create group: %@", groupError);
                     return nil;

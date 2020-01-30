@@ -52,8 +52,10 @@ public protocol GroupsV2Swift {
 
     func fetchGroupChangeActions(groupSecretParamsData: Data) -> Promise<[GroupV2Change]>
 
-    func buildChangeSet(from oldGroupModel: TSGroupModel,
-                        to newGroupModel: TSGroupModel,
+    func buildChangeSet(oldGroupModel: TSGroupModel,
+                        newGroupModel: TSGroupModel,
+                        oldDMConfiguration: OWSDisappearingMessagesConfiguration,
+                        newDMConfiguration: OWSDisappearingMessagesConfiguration,
                         transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet
 
     // On success returns a group thread model that reflects the
@@ -62,6 +64,9 @@ public protocol GroupsV2Swift {
     func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group>
 
     func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<UpdatedV2Group>
+
+    func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
+                                                 disappearingMessageToken: DisappearingMessageToken) -> Promise<UpdatedV2Group>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
 }
@@ -72,7 +77,8 @@ public protocol GroupsV2ChangeSet: AnyObject {
     var groupId: Data { get }
     var groupSecretParamsData: Data { get }
 
-    func buildGroupChangeProto(currentGroupModel: TSGroupModel) -> Promise<GroupsProtoGroupChangeActions>
+    func buildGroupChangeProto(currentGroupModel: TSGroupModel,
+                               currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
 }
 
 // MARK: -
@@ -105,7 +111,7 @@ public protocol GroupV2Updates: AnyObject {
 
 // MARK: -
 
-public protocol GroupV2UpdatesSwift: AnyObject {
+public protocol GroupV2UpdatesSwift: GroupV2Updates {
     func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
                                                  groupSecretParamsData: Data,
                                                  groupUpdateMode: GroupUpdateMode) -> Promise<Void>
@@ -132,6 +138,8 @@ public protocol GroupV2Snapshot {
 
     var accessControlForAttributes: GroupsProtoAccessControlAccessRequired { get }
     var accessControlForMembers: GroupsProtoAccessControlAccessRequired { get }
+
+    var disappearingMessageToken: DisappearingMessageToken { get }
 }
 
 // MARK: -
@@ -228,8 +236,10 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func buildChangeSet(from oldGroupModel: TSGroupModel,
-                               to newGroupModel: TSGroupModel,
+    public func buildChangeSet(oldGroupModel: TSGroupModel,
+                               newGroupModel: TSGroupModel,
+                               oldDMConfiguration: OWSDisappearingMessagesConfiguration,
+                               newDMConfiguration: OWSDisappearingMessagesConfiguration,
                                transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet {
         owsFail("Not implemented.")
     }
@@ -239,6 +249,11 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<UpdatedV2Group> {
+        owsFail("Not implemented.")
+    }
+
+    public func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
+                                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<UpdatedV2Group> {
         owsFail("Not implemented.")
     }
 
@@ -257,7 +272,7 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
 
 // MARK: -
 
-public class MockGroupV2Updates: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
+public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift {
     @objc
     public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
         owsFail("Not implemented.")

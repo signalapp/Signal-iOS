@@ -1056,7 +1056,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             // Ensures that the thread exists but doesn't update it.
             NSError *_Nullable error;
-            EnsureGroupResult *_Nullable result =
+            UpsertGroupResult *_Nullable result =
                 [GroupManager upsertExistingGroupV1WithGroupId:groupId
                                                           name:groupContext.name
                                                     avatarData:oldGroupThread.groupModel.groupAvatarData
@@ -1068,7 +1068,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Error: %@", error);
                 return;
             }
-            TSGroupThread *newGroupThread = result.thread;
+            TSGroupThread *newGroupThread = result.groupThread;
 
             [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                       thread:newGroupThread
@@ -1474,6 +1474,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (!thread) {
         OWSFail(@"Missing thread.");
+        return;
+    }
+    if (thread.isGroupV2Thread) {
+        OWSFailDebug(@"Unexpected dm timer update for v2 group.");
         return;
     }
 

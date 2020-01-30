@@ -3728,6 +3728,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     self.thread = thread;
+    [self updateDisappearingMessagesConfigurationWithSneakyTransaction];
 }
 
 - (void)popKeyBoard

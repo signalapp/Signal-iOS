@@ -8,7 +8,7 @@ import SignalServiceKit
 import ZKGroup
 
 @objc
-public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
+public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     // MARK: - Dependencies
 
@@ -283,11 +283,19 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
         }
 
+        if let newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken {
+            // GroupsV2 TODO: Combine with updateExistingGroupThreadInDatabaseAndCreateInfoMessage
+            // to yield a single "group update" info message.
+            GroupManager.updateDisappearingMessagesInDatabaseAndCreateMessages(token: newDisappearingMessageToken,
+                                                                               thread: groupThread,
+                                                                               transaction: transaction)
+        }
+
         let groupUpdateSourceAddress = SignalServiceAddress(uuid: changedGroupModel.changeAuthorUuid)
         let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                           newGroupModel: changedGroupModel.newGroupModel,
                                                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                                          transaction: transaction)
+            transaction: transaction).groupThread
 
         guard updatedGroupThread.groupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
@@ -355,10 +363,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
                         return groupThread
                     }
                 }
+                let oldGroupModel = groupThread.groupModel
                 let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupChange.snapshot,
                                                                      transaction: transaction)
 
-                if groupChange.snapshot.revision == changeRevision {
+                if changeRevision == oldGroupModel.groupV2Revision {
                     if !oldGroupThread.groupModel.isEqual(to: newGroupModel) {
                         // Sometimes we re-apply the snapshot corresponding to the
                         // current revision when refreshing the group from the service.
@@ -380,7 +389,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
                 groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                        newGroupModel: newGroupModel,
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                                       transaction: transaction)
+                    transaction: transaction).groupThread
 
             }
             return groupThread
@@ -421,10 +430,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
             // groupUpdateSourceAddress is nil because we don't know the
             // author(s) of changes reflected in the snapshot.
             let groupUpdateSourceAddress: SignalServiceAddress? = nil
-            return try GroupManager.tryToUpdateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+            return try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                                  groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                  canInsert: true,
-                                                                                                 transaction: transaction)
+                transaction: transaction).groupThread
         }
     }
 }

@@ -53,13 +53,6 @@ public class GroupsV2Protos {
         memberBuilder.setUserID(userId)
         builder.setMember(try memberBuilder.build())
 
-        // GroupsV2 TODO: What's the correct value here?
-        let timestamp: UInt64 = NSDate.ows_millisecondTimeStamp()
-        builder.setTimestamp(timestamp)
-
-        let localUserID = try groupV2Params.userId(forUuid: localUuid)
-        builder.setAddedByUserID(localUserID)
-
         return try builder.build()
     }
 
@@ -267,8 +260,21 @@ public class GroupsV2Protos {
         // GroupsV2 TODO: Avatar
         //        public var avatar: String? {
 
-        // GroupsV2 TODO: disappearingMessagesTimer
-        //        public var disappearingMessagesTimer: Data? {
+        var disappearingMessageToken = DisappearingMessageToken.disabledToken
+        if let disappearingMessagesTimerEncrypted = groupProto.disappearingMessagesTimer {
+            // If the timer blob is not populated or has zero duration,
+            // disappearing messages should be disabled.
+            do {
+                let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
+                let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
+                let durationSeconds = disappearingMessagesProto.duration
+                if durationSeconds != 0 {
+                    disappearingMessageToken = DisappearingMessageToken(isEnabled: true, durationSeconds: durationSeconds)
+                }
+            } catch {
+                owsFailDebug("Could not decrypt and parse disappearing messages state: \(error).")
+            }
+        }
 
         let revision = groupProto.version
         let groupSecretParamsData = groupV2Params.groupSecretParamsData
@@ -279,7 +285,8 @@ public class GroupsV2Protos {
                                    members: members,
                                    pendingMembers: pendingMembers,
                                    accessControlForAttributes: accessControlForAttributes,
-                                   accessControlForMembers: accessControlForMembers)
+                                   accessControlForMembers: accessControlForMembers,
+                                   disappearingMessageToken: disappearingMessageToken)
     }
 
     // MARK: -

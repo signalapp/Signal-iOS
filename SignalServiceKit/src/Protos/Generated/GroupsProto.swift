@@ -3082,3 +3082,94 @@ extension GroupsProtoGroupChanges.GroupsProtoGroupChangesBuilder {
 }
 
 #endif
+
+// MARK: - GroupsProtoDisappearingMessagesTimer
+
+public class GroupsProtoDisappearingMessagesTimer: NSObject {
+
+    // MARK: - GroupsProtoDisappearingMessagesTimerBuilder
+
+    public class func builder() -> GroupsProtoDisappearingMessagesTimerBuilder {
+        return GroupsProtoDisappearingMessagesTimerBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoDisappearingMessagesTimerBuilder {
+        let builder = GroupsProtoDisappearingMessagesTimerBuilder()
+        if hasDuration {
+            builder.setDuration(duration)
+        }
+        return builder
+    }
+
+    public class GroupsProtoDisappearingMessagesTimerBuilder: NSObject {
+
+        private var proto = GroupsProtos_DisappearingMessagesTimer()
+
+        fileprivate override init() {}
+
+        public func setDuration(_ valueParam: UInt32) {
+            proto.duration = valueParam
+        }
+
+        public func build() throws -> GroupsProtoDisappearingMessagesTimer {
+            return try GroupsProtoDisappearingMessagesTimer.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoDisappearingMessagesTimer.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_DisappearingMessagesTimer
+
+    public var duration: UInt32 {
+        return proto.duration
+    }
+    public var hasDuration: Bool {
+        return true
+    }
+
+    private init(proto: GroupsProtos_DisappearingMessagesTimer) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoDisappearingMessagesTimer {
+        let proto = try GroupsProtos_DisappearingMessagesTimer(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: GroupsProtos_DisappearingMessagesTimer) throws -> GroupsProtoDisappearingMessagesTimer {
+        // MARK: - Begin Validation Logic for GroupsProtoDisappearingMessagesTimer -
+
+        // MARK: - End Validation Logic for GroupsProtoDisappearingMessagesTimer -
+
+        let result = GroupsProtoDisappearingMessagesTimer(proto: proto)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoDisappearingMessagesTimer {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoDisappearingMessagesTimer.GroupsProtoDisappearingMessagesTimerBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoDisappearingMessagesTimer? {
+        return try! self.build()
+    }
+}
+
+#endif

@@ -215,7 +215,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                           transaction: transaction)
 
-        let groupThread = result.thread
+        let groupThread = result.groupThread
         let groupModel = groupThread.groupModel
         let isNewThread = result.action == .inserted
         var groupNeedsUpdate = false

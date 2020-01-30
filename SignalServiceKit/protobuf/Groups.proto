@@ -149,3 +149,7 @@ message GroupChanges {
 
     repeated GroupChangeState groupChanges = 1;
 }
+
+message DisappearingMessagesTimer {
+    uint32 duration = 1;
+}

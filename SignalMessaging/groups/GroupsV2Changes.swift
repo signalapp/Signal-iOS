@@ -9,13 +9,17 @@ import ZKGroup
 public struct ChangedGroupModel {
     public let oldGroupModel: TSGroupModel
     public let newGroupModel: TSGroupModel
+    // newDisappearingMessageToken is only set of DM state changed.
+    public let newDisappearingMessageToken: DisappearingMessageToken?
     public let changeAuthorUuid: UUID
 
     public init(oldGroupModel: TSGroupModel,
                 newGroupModel: TSGroupModel,
+                newDisappearingMessageToken: DisappearingMessageToken?,
                 changeAuthorUuid: UUID) {
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
+        self.newDisappearingMessageToken = newDisappearingMessageToken
         self.changeAuthorUuid = changeAuthorUuid
     }
 }
@@ -227,9 +231,20 @@ public class GroupsV2Changes {
             // GroupsProtoGroupChangeActionsModifyAvatarAction
         }
 
+        var newDisappearingMessageToken: DisappearingMessageToken?
         if let action = changeActionsProto.modifyDisappearingMessagesTimer {
-            // GroupsV2 TODO: Handle Dms.
-            // GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction
+            // If the timer blob is not populated or has zero duration,
+            // disappearing messages should be disabled.
+            newDisappearingMessageToken = DisappearingMessageToken.disabledToken
+
+            if let disappearingMessagesTimerEncrypted = action.timer {
+                let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
+                let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
+                let durationSeconds = disappearingMessagesProto.duration
+                if durationSeconds != 0 {
+                    newDisappearingMessageToken = DisappearingMessageToken(isEnabled: true, durationSeconds: durationSeconds)
+                }
+            }
         }
 
         if let action = changeActionsProto.modifyAttributesAccess {
@@ -262,6 +277,7 @@ public class GroupsV2Changes {
                                                              transaction: transaction)
         return ChangedGroupModel(oldGroupModel: oldGroupModel,
                                  newGroupModel: newGroupModel,
+                                 newDisappearingMessageToken: newDisappearingMessageToken,
                                  changeAuthorUuid: changeAuthorUuid)
     }
 }
