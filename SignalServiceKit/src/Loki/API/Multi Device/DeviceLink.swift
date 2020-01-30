@@ -7,7 +7,7 @@ public final class DeviceLink : NSObject, NSCoding {
     @objc public var isAuthorized: Bool { return master.signature != nil }
     
     @objc public var other: Device {
-        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         return (userHexEncodedPublicKey == master.hexEncodedPublicKey) ? slave : master
     }
     

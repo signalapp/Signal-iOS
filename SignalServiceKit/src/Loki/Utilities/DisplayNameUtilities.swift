@@ -7,7 +7,7 @@ public final class DisplayNameUtilities : NSObject {
     override private init() { }
     
     private static var userHexEncodedPublicKey: String {
-        return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        return getUserHexEncodedPublicKey()
     }
     
     private static var userDisplayName: String? {

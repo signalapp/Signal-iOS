@@ -72,7 +72,7 @@ final class ConversationTitleView : UIView {
     private func updateTitle() {
         let title: String
         if thread.isGroupThread() {
-            if thread.name().isEmpty || thread.name() == "New Group" {
+            if thread.name().isEmpty {
                 title = DisplayNameUtilities.getDisplayName(for: thread as! TSGroupThread)
             } else {
                 title = thread.name()
@@ -164,12 +164,7 @@ final class ConversationTitleView : UIView {
                     let storage = OWSPrimaryStorage.shared()
                     var userCount: Int?
                     if thread.groupModel.groupType == .closedGroup {
-                        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-                        var linkedDeviceHexEncodedPublicKeys: Set<String> = [ userHexEncodedPublicKey ]
-                        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-                            linkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
-                        }
-                        userCount = thread.groupModel.groupMemberIds.filter { !linkedDeviceHexEncodedPublicKeys.contains($0) }.count
+                        userCount = GroupUtilities.getClosedGroupMemberCount(thread)
                     } else if thread.groupModel.groupType == .openGroup {
                         storage.dbReadConnection.readWrite { transaction in
                             if let publicChat = LokiDatabaseUtilities.getPublicChat(for: self.thread.uniqueId!, in: transaction) {

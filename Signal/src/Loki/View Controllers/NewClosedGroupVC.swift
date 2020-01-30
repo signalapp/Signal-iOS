@@ -12,7 +12,7 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         func getDisplayName(for hexEncodedPublicKey: String) -> String {
             return DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
         }
-        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         var linkedDeviceHexEncodedPublicKeys: Set<String> = [ userHexEncodedPublicKey ]
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             linkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
@@ -147,7 +147,7 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         guard selectedContacts.count >= 2 else {
             return showError(title: NSLocalizedString("Please pick at least 2 group members", comment: ""))
         }
-        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         let members = [String](selectedContacts) + [ userHexEncodedPublicKey ]
         let admins = [ userHexEncodedPublicKey ]
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(Randomness.generateRandomBytes(kGroupIdLength)!.toHexString())

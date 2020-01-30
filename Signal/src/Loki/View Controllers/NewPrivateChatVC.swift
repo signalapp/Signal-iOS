@@ -158,7 +158,7 @@ private final class EnterPublicKeyVC : UIViewController {
         if let masterHexEncodedPublicKey = UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") {
             return masterHexEncodedPublicKey
         } else {
-            return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+            return getUserHexEncodedPublicKey()
         }
     }()
     

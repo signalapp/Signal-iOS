@@ -6,7 +6,7 @@ public class LokiP2PAPI : NSObject {
     private static let storage = OWSPrimaryStorage.shared()
     private static let messageSender = SSKEnvironment.shared.messageSender
     private static let messageReceiver = SSKEnvironment.shared.messageReceiver
-    private static let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+    private static let ourHexEncodedPubKey = getUserHexEncodedPublicKey()
     
     /// The amount of time before pinging when a user is set to offline
     private static let offlinePingTime = 2 * kMinuteInterval

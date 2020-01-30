@@ -9,7 +9,7 @@ public final class LokiAPI : NSObject {
     
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()
-    internal static let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+    internal static let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
     
     // MARK: Settings
     private static let version = "v1"

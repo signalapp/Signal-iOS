@@ -1,5 +1,5 @@
 
-final class SeedVCV2 : UIViewController {
+final class SeedVC : UIViewController {
     
     private let mnemonic: String = {
         let identityManager = OWSIdentityManager.shared()

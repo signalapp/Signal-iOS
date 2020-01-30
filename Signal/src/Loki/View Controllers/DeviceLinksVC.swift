@@ -86,7 +86,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     // MARK: Updating
     private func updateDeviceLinks() {
         let storage = OWSPrimaryStorage.shared()
-        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         var deviceLinks: [DeviceLink] = []
         storage.dbReadConnection.read { transaction in
             deviceLinks = storage.getDeviceLinks(for: userHexEncodedPublicKey, in: transaction).sorted { lhs, rhs in

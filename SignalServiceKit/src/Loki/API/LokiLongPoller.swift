@@ -14,7 +14,7 @@ public final class LokiLongPoller : NSObject {
     private let retryInterval: TimeInterval = 4
 
     // MARK: Convenience
-    private var userHexEncodedPublicKey: String { return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey }
+    private var userHexEncodedPublicKey: String { return getUserHexEncodedPublicKey() }
 
     // MARK: Initialization
     @objc public init(onMessagesReceived: @escaping ([SSKProtoEnvelope]) -> Void) {

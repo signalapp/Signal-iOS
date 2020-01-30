@@ -10,7 +10,7 @@ public final class LokiPublicChatPoller : NSObject {
     private var pollForModeratorsTimer: Timer? = nil
     private var pollForDisplayNamesTimer: Timer? = nil
     private var hasStarted = false
-    private let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+    private let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
     
     // MARK: Settings
     private let pollForNewMessagesInterval: TimeInterval = 4

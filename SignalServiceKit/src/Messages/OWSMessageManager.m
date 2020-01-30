@@ -577,7 +577,6 @@ NS_ASSUME_NONNULL_BEGIN
     
     [self handleProfileKeyUpdateIfNeeded:dataMessage recipientId:envelope.source];
 
-
     if (dataMessage.group) {
         TSGroupThread *_Nullable groupThread =
             [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];

@@ -244,7 +244,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let profilePictureSize = Values.verySmallProfilePictureSize
         let profilePictureView = ProfilePictureView()
         profilePictureView.size = profilePictureSize
-        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         profilePictureView.hexEncodedPublicKey = userHexEncodedPublicKey
         profilePictureView.update()
         profilePictureView.set(.width, to: profilePictureSize)
@@ -267,7 +267,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     
     // MARK: Interaction
     func handleContinueButtonTapped(from seedReminderView: SeedReminderView) {
-        let seedVC = SeedVCV2()
+        let seedVC = SeedVC()
         let navigationController = OWSNavigationController(rootViewController: seedVC)
         present(navigationController, animated: true, completion: nil)
     }

@@ -12,7 +12,7 @@ public final class LokiDatabaseUtilities : NSObject {
             if let message = interaction as? TSIncomingMessage {
                 senderHexEncodedPublicKey = message.authorId
             } else if let message = interaction as? TSOutgoingMessage {
-                senderHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+                senderHexEncodedPublicKey = getUserHexEncodedPublicKey()
             } else {
                 return false
             }
@@ -40,7 +40,7 @@ public final class LokiDatabaseUtilities : NSObject {
     
     @objc(isUserLinkedDevice:in:)
     public static func isUserLinkedDevice(_ hexEncodedPublicKey: String, transaction: YapDatabaseReadTransaction) -> Bool {
-        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         let userLinkedDeviceHexEncodedPublicKeys = getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
         return userLinkedDeviceHexEncodedPublicKeys.contains(hexEncodedPublicKey)
     }

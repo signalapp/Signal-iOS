@@ -31,7 +31,7 @@ public final class DeviceLinkingSession : NSObject {
     }
     
     @objc public func processLinkingRequest(from slaveHexEncodedPublicKey: String, to masterHexEncodedPublicKey: String, with slaveSignature: Data) {
-        guard isListeningForLinkingRequests, !isProcessingLinkingRequest, masterHexEncodedPublicKey == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey else { return }
+        guard isListeningForLinkingRequests, !isProcessingLinkingRequest, masterHexEncodedPublicKey == getUserHexEncodedPublicKey() else { return }
         let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey)
         let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
         let deviceLink = DeviceLink(between: master, and: slave)
@@ -43,7 +43,7 @@ public final class DeviceLinkingSession : NSObject {
     }
     
     @objc public func processLinkingAuthorization(from masterHexEncodedPublicKey: String, for slaveHexEncodedPublicKey: String, masterSignature: Data, slaveSignature: Data) {
-        guard isListeningForLinkingAuthorization, slaveHexEncodedPublicKey == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey else { return }
+        guard isListeningForLinkingAuthorization, slaveHexEncodedPublicKey == getUserHexEncodedPublicKey() else { return }
         let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey, signature: masterSignature)
         let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
         let deviceLink = DeviceLink(between: master, and: slave)

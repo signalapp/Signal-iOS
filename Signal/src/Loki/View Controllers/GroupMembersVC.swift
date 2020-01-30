@@ -7,12 +7,7 @@ final class GroupMembersVC : UIViewController, UITableViewDataSource {
         func getDisplayName(for hexEncodedPublicKey: String) -> String {
             return DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
         }
-        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-        var linkedDeviceHexEncodedPublicKeys: Set<String> = [ userHexEncodedPublicKey ]
-        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-            linkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
-        }
-        return thread.groupModel.groupMemberIds.filter { !linkedDeviceHexEncodedPublicKeys.contains($0) }.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
+        return GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
     }()
     
     // MARK: Components

@@ -58,6 +58,7 @@ final class ConversationCell : UITableViewCell {
     }
     
     private func setUpViewHierarchy() {
+        let cellHeight: CGFloat = 72
         // Set the cell background color
         backgroundColor = Colors.cellBackground
         // Set up the highlight color
@@ -66,7 +67,7 @@ final class ConversationCell : UITableViewCell {
         self.selectedBackgroundView = selectedBackgroundView
         // Set up the unread messages indicator view
         unreadMessagesIndicatorView.set(.width, to: Values.accentLineThickness)
-        unreadMessagesIndicatorView.set(.height, to: 72)
+        unreadMessagesIndicatorView.set(.height, to: cellHeight)
         // Set up the profile picture view
         let profilePictureViewSize = Values.mediumProfilePictureSize
         profilePictureView.set(.width, to: profilePictureViewSize)
@@ -121,12 +122,12 @@ final class ConversationCell : UITableViewCell {
         labelContainerView.pin(.bottom, to: .bottom, of: bottomLabelStackView, withInset: Values.mediumSpacing)
         // The two lines below are part of a workaround for a weird layout bug
         labelContainerView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
-        labelContainerView.set(.height, to: 72)
+        labelContainerView.set(.height, to: cellHeight)
         stackView.pin(.leading, to: .leading, of: contentView)
         stackView.pin(.top, to: .top, of: contentView)
         // The two lines below are part of a workaround for a weird layout bug
         stackView.set(.width, to: UIScreen.main.bounds.width - Values.mediumSpacing)
-        stackView.set(.height, to: 72)
+        stackView.set(.height, to: cellHeight)
     }
     
     // MARK: Updating
@@ -180,7 +181,7 @@ final class ConversationCell : UITableViewCell {
     
     private func getDisplayName() -> String {
         if threadViewModel.isGroupThread {
-            if threadViewModel.name.isEmpty || threadViewModel.name == "New Group" {
+            if threadViewModel.name.isEmpty {
                 return DisplayNameUtilities.getDisplayName(for: threadViewModel.threadRecord as! TSGroupThread)
             } else {
                 return threadViewModel.name

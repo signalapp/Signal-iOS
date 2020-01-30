@@ -9,7 +9,7 @@ public final class MentionUtilities : NSObject {
     }
     
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, threadID: String, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
-        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         var publicChat: LokiPublicChat?
         var userLinkedDeviceHexEncodedPublicKeys: Set<String>!
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in

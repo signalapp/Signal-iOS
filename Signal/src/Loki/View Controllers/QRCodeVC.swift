@@ -155,7 +155,7 @@ private final class ViewMyQRCodeVC : UIViewController {
         if let masterHexEncodedPublicKey = UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") {
             return masterHexEncodedPublicKey
         } else {
-            return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+            return getUserHexEncodedPublicKey()
         }
     }()
     

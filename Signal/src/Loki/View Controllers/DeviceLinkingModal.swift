@@ -24,8 +24,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     private lazy var qrCodeImageView: UIImageView = {
         let result = UIImageView()
         result.contentMode = .scaleAspectFit
-        result.set(.width, to: 128)
-        result.set(.height, to: 128)
+        let size: CGFloat = 128
+        result.set(.width, to: size)
+        result.set(.height, to: size)
         return result
     }()
     
@@ -116,7 +117,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         stackView.axis = .vertical
         switch mode {
         case .master:
-            let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+            let hexEncodedPublicKey = getUserHexEncodedPublicKey()
             qrCodeImageView.image = QRCode.generate(for: hexEncodedPublicKey, hasBackground: true)
         case .slave:
             spinner.set(.height, to: 64)
@@ -136,7 +137,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         }()
         mnemonicLabel.isHidden = (mode == .master)
         if mode == .slave {
-            let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey.removing05PrefixIfNeeded()
+            let hexEncodedPublicKey = getUserHexEncodedPublicKey().removing05PrefixIfNeeded()
             mnemonicLabel.text = Mnemonic.hash(hexEncodedString: hexEncodedPublicKey)
         }
         authorizeButton.addTarget(self, action: #selector(authorizeDeviceLink), for: UIControl.Event.touchUpInside)
