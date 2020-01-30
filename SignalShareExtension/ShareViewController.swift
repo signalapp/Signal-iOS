@@ -66,8 +66,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         _ = AppVersion.sharedInstance()
 
-        startupLogging()
-
         Cryptography.seedRandom()
 
         // We don't need to use DeviceSleepManager in the SAE.
@@ -288,8 +286,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // We don't need to use OWSOrphanDataCleaner in the SAE.
 
         // We don't need to fetch the local profile in the SAE
-
-        OWSReadReceiptManager.shared().prepareCachedValues()
     }
 
     @objc
@@ -352,35 +348,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
 
         // We don't use the AppUpdateNag in the SAE.
-    }
-
-    func startupLogging() {
-
-        if let osBuild = String(sysctlKey: "kern.osversion") {
-            Logger.info("iOS Version: \(UIDevice.current.systemVersion) (\(osBuild))")
-        } else {
-            Logger.info("iOS Version: \(UIDevice.current.systemVersion)")
-        }
-
-        let locale = NSLocale.current as NSLocale
-        if let localeIdentifier = locale.object(forKey: NSLocale.Key.identifier) as? String,
-            localeIdentifier.count > 0 {
-            Logger.info("Locale Identifier: \(localeIdentifier)")
-        } else {
-            owsFailDebug("Locale Identifier: Unknown")
-        }
-        if let countryCode = locale.object(forKey: NSLocale.Key.countryCode) as? String,
-            countryCode.count > 0 {
-            Logger.info("Country Code: \(countryCode)")
-        } else {
-            owsFailDebug("Country Code: Unknown")
-        }
-        if let languageCode = locale.object(forKey: NSLocale.Key.languageCode) as? String,
-            languageCode.count > 0 {
-            Logger.info("Language Code: \(languageCode)")
-        } else {
-            owsFailDebug("Language Code: Unknown")
-        }
     }
 
     // MARK: Error Views

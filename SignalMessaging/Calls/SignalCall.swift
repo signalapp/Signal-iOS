@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,17 +19,28 @@ public enum CallState: String {
     case remoteBusy // terminal
 }
 
-enum CallDirection {
+public enum CallDirection {
     case outgoing, incoming
 }
 
 // All Observer methods will be invoked from the main thread.
-protocol CallObserver: class {
+public protocol CallObserver: class {
     func stateDidChange(call: SignalCall, state: CallState)
     func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool)
     func muteDidChange(call: SignalCall, isMuted: Bool)
     func holdDidChange(call: SignalCall, isOnHold: Bool)
     func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?)
+}
+
+public enum CallError: Error {
+    case providerReset
+    case assertionError(description: String)
+    case disconnected
+    case externalError(underlyingError: Error)
+    case timeout(description: String)
+    case obsoleteCall(description: String)
+    case fatalError(description: String)
+    case messageSendFailure(underlyingError: Error)
 }
 
 /**
@@ -42,9 +53,9 @@ protocol CallObserver: class {
     var observers = [Weak<CallObserver>]()
 
     @objc
-    let remoteAddress: SignalServiceAddress
+    public let remoteAddress: SignalServiceAddress
 
-    var isTerminated: Bool {
+    public var isTerminated: Bool {
         switch state {
         case .localFailure, .localHangup, .remoteHangup, .remoteBusy:
             return true
@@ -54,17 +65,17 @@ protocol CallObserver: class {
     }
 
     // Signal Service identifier for this Call. Used to coordinate the call across remote clients.
-    let signalingId: UInt64
+    public let signalingId: UInt64
 
-    let direction: CallDirection
+    public let direction: CallDirection
 
     // Distinguishes between calls locally, e.g. in CallKit
     @objc
-    let localId: UUID
+    public let localId: UUID
 
-    let thread: TSContactThread
+    public let thread: TSContactThread
 
-    var callRecord: TSCall? {
+    public var callRecord: TSCall? {
         didSet {
             AssertIsOnMainThread()
             assert(oldValue == nil)
@@ -73,7 +84,7 @@ protocol CallObserver: class {
         }
     }
 
-    var hasLocalVideo = false {
+    public var hasLocalVideo = false {
         didSet {
             AssertIsOnMainThread()
 
@@ -83,7 +94,7 @@ protocol CallObserver: class {
         }
     }
 
-    var state: CallState {
+    public var state: CallState {
         didSet {
             AssertIsOnMainThread()
             Logger.debug("state changed: \(oldValue) -> \(self.state) for call: \(self.identifiersForLogs)")
@@ -104,7 +115,7 @@ protocol CallObserver: class {
         }
     }
 
-    var isMuted = false {
+    public var isMuted = false {
         didSet {
             AssertIsOnMainThread()
 
@@ -116,9 +127,9 @@ protocol CallObserver: class {
         }
     }
 
-    let audioActivity: AudioActivity
+    public let audioActivity: AudioActivity
 
-    var audioSource: AudioSource? = nil {
+    public var audioSource: AudioSource? = nil {
         didSet {
             AssertIsOnMainThread()
             Logger.debug("audioSource changed: \(String(describing: oldValue)) -> \(String(describing: audioSource))")
@@ -129,7 +140,7 @@ protocol CallObserver: class {
         }
     }
 
-    var isSpeakerphoneEnabled: Bool {
+    public var isSpeakerphoneEnabled: Bool {
         guard let audioSource = self.audioSource else {
             return false
         }
@@ -137,7 +148,7 @@ protocol CallObserver: class {
         return audioSource.isBuiltInSpeaker
     }
 
-    var isOnHold = false {
+    public var isOnHold = false {
         didSet {
             AssertIsOnMainThread()
             Logger.debug("isOnHold changed: \(oldValue) -> \(self.isOnHold)")
@@ -148,9 +159,9 @@ protocol CallObserver: class {
         }
     }
 
-    var connectedDate: NSDate?
+    public var connectedDate: NSDate?
 
-    var error: CallError?
+    public var error: CallError?
 
     // MARK: Initializers and Factory Methods
 
@@ -165,21 +176,21 @@ protocol CallObserver: class {
     }
 
     // A string containing the three identifiers for this call.
-    var identifiersForLogs: String {
+    public var identifiersForLogs: String {
         return "{\(remoteAddress), \(localId), \(signalingId)}"
     }
 
-    class func outgoingCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
+    public class func outgoingCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
         return SignalCall(direction: .outgoing, localId: localId, signalingId: newCallSignalingId(), state: .dialing, remoteAddress: remoteAddress)
     }
 
-    class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress, signalingId: UInt64) -> SignalCall {
+    public class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress, signalingId: UInt64) -> SignalCall {
         return SignalCall(direction: .incoming, localId: localId, signalingId: signalingId, state: .answering, remoteAddress: remoteAddress)
     }
 
     // -
 
-    func addObserverAndSyncState(observer: CallObserver) {
+    public func addObserverAndSyncState(observer: CallObserver) {
         AssertIsOnMainThread()
 
         observers.append(Weak(value: observer))
@@ -188,7 +199,7 @@ protocol CallObserver: class {
         observer.stateDidChange(call: self, state: state)
     }
 
-    func removeObserver(_ observer: CallObserver) {
+    public func removeObserver(_ observer: CallObserver) {
         AssertIsOnMainThread()
 
         while let index = observers.firstIndex(where: { $0.value === observer }) {
@@ -196,7 +207,7 @@ protocol CallObserver: class {
         }
     }
 
-    func removeAllObservers() {
+    public func removeAllObservers() {
         AssertIsOnMainThread()
 
         observers = []
@@ -231,7 +242,7 @@ protocol CallObserver: class {
     }
 
     // This method should only be called when the call state is "connected".
-    func connectionDuration() -> TimeInterval {
+    public func connectionDuration() -> TimeInterval {
         return -connectedDate!.timeIntervalSinceNow
     }
 }

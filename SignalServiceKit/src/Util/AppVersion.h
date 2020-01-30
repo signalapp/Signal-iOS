@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, nullable, readonly) NSString *lastCompletedLaunchAppVersion;
 @property (atomic, nullable, readonly) NSString *lastCompletedLaunchMainAppVersion;
 @property (atomic, nullable, readonly) NSString *lastCompletedLaunchSAEAppVersion;
+@property (atomic, nullable, readonly) NSString *lastCompletedLaunchNSEAppVersion;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -22,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)mainAppLaunchDidComplete;
 - (void)saeLaunchDidComplete;
+- (void)nseLaunchDidComplete;
 
 - (BOOL)isFirstLaunch;
 

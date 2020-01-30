@@ -271,8 +271,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Not registered.");
         return;
     }
-    if (!CurrentAppContext().isMainApp) {
-        OWSFail(@"Not main app.");
+    if (!CurrentAppContext().shouldProcessIncomingMessages) {
+        OWSFail(@"Should not process messages.");
         return;
     }
 

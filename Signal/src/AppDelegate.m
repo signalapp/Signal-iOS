@@ -28,6 +28,7 @@
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/CallKitIdStore.h>
+#import <SignalServiceKit/DarwinNotificationCenter.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -278,7 +279,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     [AppVersion sharedInstance];
 
-    [self startupLogging];
+    [self setupNSEInteroperation];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
@@ -407,7 +408,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     // We perform a subset of the [application:didFinishLaunchingWithOptions:].
     [AppVersion sharedInstance];
-    [self startupLogging];
 
     self.window = [OWSWindow new];
 
@@ -450,38 +450,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                                                        }];
                                                    }]];
     [viewController presentActionSheet:actionSheet];
-}
-
-- (void)startupLogging
-{
-    OWSLogInfo(@"iOS Version: %@ (%@)",
-        [UIDevice currentDevice].systemVersion,
-        [NSString stringFromSysctlKey:@"kern.osversion"]);
-
-    NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
-    if (localeIdentifier.length > 0) {
-        OWSLogInfo(@"Locale Identifier: %@", localeIdentifier);
-    }
-    NSString *countryCode = [NSLocale.currentLocale objectForKey:NSLocaleCountryCode];
-    if (countryCode.length > 0) {
-        OWSLogInfo(@"Country Code: %@", countryCode);
-    }
-    NSString *languageCode = [NSLocale.currentLocale objectForKey:NSLocaleLanguageCode];
-    if (languageCode.length > 0) {
-        OWSLogInfo(@"Language Code: %@", languageCode);
-    }
-
-    OWSLogInfo(@"Device Model: %@ (%@)", UIDevice.currentDevice.model, [NSString stringFromSysctlKey:@"hw.machine"]);
-
-    NSDictionary<NSString *, NSString *> *buildDetails =
-        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
-    OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
-    OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
-    OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
-    OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
-    OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
-
-    OWSLogInfo(@"Build Expires in: %ld days", (long)SSKAppExpiry.daysUntilBuildExpiry);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -1276,7 +1244,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 #endif
 
     [self.profileManager fetchAndUpdateLocalUsersProfile];
-    [self.readReceiptManager prepareCachedValues];
 
     [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
 
@@ -1399,6 +1366,31 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                                     __OSX_AVAILABLE(10.14)__WATCHOS_PROHIBITED __TVOS_PROHIBITED
 {
     OWSLogInfo(@"");
+}
+
+- (void)setupNSEInteroperation
+{
+    // We immediately post a notification letting the NSE know the main app has launched.
+    // If it's running it should take this as a sign to terminate so we don't unintentionally
+    // try and fetch messages from two processes at once.
+    [DarwinNotificationCenter postNotificationName:DarwinNotificationName.mainAppLaunched];
+
+    // We listen to this notification for the lifetime of the application, so we don't
+    // record the returned observer token.
+    [DarwinNotificationCenter
+        addObserverForName:DarwinNotificationName.nseDidReceiveNotification
+                     queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)
+                usingBlock:^(int token) {
+                    OWSLogDebug(@"Handling NSE received notification");
+
+                    // Immediately let the NSE know we will handle this notification so that it
+                    // does not attempt to process messages while we are active.
+                    [DarwinNotificationCenter postNotificationName:DarwinNotificationName.mainAppHandledNotification];
+
+                    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+                        [[self.messageFetcherJob runObjc] retainUntilComplete];
+                    }];
+                }];
 }
 
 @end
