@@ -883,6 +883,7 @@ struct SignalServiceProtos_DataMessage {
     case profileKeyUpdate // = 4
     case sessionRestore // = 64
     case unlinkDevice // = 128
+    case sessionRequest // = 256
 
     init() {
       self = .endSession
@@ -895,6 +896,7 @@ struct SignalServiceProtos_DataMessage {
       case 4: self = .profileKeyUpdate
       case 64: self = .sessionRestore
       case 128: self = .unlinkDevice
+      case 256: self = .sessionRequest
       default: return nil
       }
     }
@@ -906,6 +908,7 @@ struct SignalServiceProtos_DataMessage {
       case .profileKeyUpdate: return 4
       case .sessionRestore: return 64
       case .unlinkDevice: return 128
+      case .sessionRequest: return 256
       }
     }
 
@@ -2321,6 +2324,11 @@ struct SignalServiceProtos_GroupContext {
   var hasAvatar: Bool {return _storage._avatar != nil}
   /// Clears the value of `avatar`. Subsequent reads from it will return its default value.
   mutating func clearAvatar() {_uniqueStorage()._avatar = nil}
+    
+  var admins: [String] {
+    get {return _storage._admins}
+    set {_uniqueStorage()._admins = newValue}
+  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -3483,6 +3491,7 @@ extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProvidi
     4: .same(proto: "PROFILE_KEY_UPDATE"),
     64: .same(proto: "SESSION_RESTORE"),
     128: .same(proto: "UNLINK_DEVICE"),
+    256: .same(proto: "SESSION_REQUEST"),
   ]
 }
 
@@ -4940,6 +4949,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
     3: .same(proto: "name"),
     4: .same(proto: "members"),
     5: .same(proto: "avatar"),
+    6: .same(proto: "admins")
   ]
 
   fileprivate class _StorageClass {
@@ -4948,6 +4958,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
     var _name: String? = nil
     var _members: [String] = []
     var _avatar: SignalServiceProtos_AttachmentPointer? = nil
+    var _admins: [String] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -4959,6 +4970,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
       _name = source._name
       _members = source._members
       _avatar = source._avatar
+      _admins = source._admins
     }
   }
 
@@ -4979,6 +4991,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
         case 3: try decoder.decodeSingularStringField(value: &_storage._name)
         case 4: try decoder.decodeRepeatedStringField(value: &_storage._members)
         case 5: try decoder.decodeSingularMessageField(value: &_storage._avatar)
+        case 6: try decoder.decodeRepeatedStringField(value: &_storage._admins)
         default: break
         }
       }
@@ -5002,6 +5015,9 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
       if let v = _storage._avatar {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
       }
+      if !_storage._admins.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._admins, fieldNumber: 6)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5016,6 +5032,7 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._name != rhs_storage._name {return false}
         if _storage._members != rhs_storage._members {return false}
         if _storage._avatar != rhs_storage._avatar {return false}
+        if _storage._admins != rhs_storage._admins {return false}
         return true
       }
       if !storagesAreEqual {return false}

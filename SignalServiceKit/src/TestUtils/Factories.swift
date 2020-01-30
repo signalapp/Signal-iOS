@@ -371,7 +371,9 @@ class GroupThreadFactory: NSObject, Factory {
         return TSGroupModel(title: groupThreadFactory.titleBuilder(),
                             memberIds: groupThreadFactory.memberIdsBuilder(),
                             image: groupThreadFactory.imageBuilder(),
-                            groupId: groupThreadFactory.groupIdBuilder())
+                            groupId: groupThreadFactory.groupIdBuilder(),
+                            groupType: .closedGroup,
+                            adminIds: [])
     }
 
     @objc

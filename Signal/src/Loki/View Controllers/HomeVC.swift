@@ -252,11 +252,17 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureView)
-//        let createPrivateGroupChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "People"), style: .plain, target: self, action: #selector(createPrivateGroupChat))
-//        createPrivateGroupChatButton.tintColor = Colors.text
-        let joinPublicChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Globe"), style: .plain, target: self, action: #selector(joinPublicChat))
+        let newClosedGroupButton = UIButton(type: .custom)
+        newClosedGroupButton.setImage(#imageLiteral(resourceName: "btnGroup--white"), for: UIControl.State.normal)
+        newClosedGroupButton.addTarget(self, action: #selector(createClosedGroup), for: UIControl.Event.touchUpInside)
+        newClosedGroupButton.tintColor = Colors.text
+        let joinPublicChatButton = UIButton(type: .custom)
+        joinPublicChatButton.setImage(#imageLiteral(resourceName: "Globe"), for: UIControl.State.normal)
+        joinPublicChatButton.addTarget(self, action: #selector(joinPublicChat), for: UIControl.Event.touchUpInside)
         joinPublicChatButton.tintColor = Colors.text
-        navigationItem.rightBarButtonItems = [ /*createPrivateGroupChatButton,*/ joinPublicChatButton ]
+        let buttonStackView = UIStackView(arrangedSubviews: [ newClosedGroupButton, joinPublicChatButton ])
+        buttonStackView.axis = .horizontal
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: buttonStackView)
     }
     
     // MARK: Interaction
@@ -362,8 +368,10 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc private func createPrivateGroupChat() {
-        // TODO: Implement
+    @objc private func createClosedGroup() {
+        let newClosedGroupVC = NewClosedGroupVC()
+        let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
+        present(navigationController, animated: true, completion: nil)
     }
     
     @objc func createPrivateChat() {

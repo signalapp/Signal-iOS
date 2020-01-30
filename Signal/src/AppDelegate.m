@@ -591,7 +591,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    OWSLogInfo(@"registered vanilla push token");
+    OWSLogInfo(@"Registered for push notifications with token: %@.", deviceToken);
     [LKPushNotificationManager.shared registerWithToken:deviceToken];
     [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
@@ -1618,7 +1618,7 @@ static NSTimeInterval launchStartedAt;
         if (!isChatSetUp || !chat.isDeletable) {
             [LKPublicChatManager.shared addChatWithServer:chat.server channel:chat.channel name:chat.displayName];
             [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSGroupThread *thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
+                TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtilities getEncodedOpenGroupIDAsData:chat.id] transaction:transaction];
                 if (thread != nil) { [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread]; }
             }];
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
@@ -1634,7 +1634,7 @@ static NSTimeInterval launchStartedAt;
         NSString *userDefaultsKey = [@"isRSSFeedSetUp." stringByAppendingString:feed.id];
         BOOL isFeedSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
         if (!isFeedSetUp || !feed.isDeletable) {
-            TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:feed.displayName memberIds:@[ userHexEncodedPublicKey, feed.server ] image:nil groupId:[feed.id dataUsingEncoding:NSUTF8StringEncoding]];
+            TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:feed.displayName memberIds:@[ userHexEncodedPublicKey, feed.server ] image:nil groupId:[LKGroupUtilities getEncodedRSSFeedIDAsData:feed.id] groupType:rssFeed adminIds:@[ userHexEncodedPublicKey, feed.server ]];
             __block TSGroupThread *thread;
             [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
@@ -1650,7 +1650,7 @@ static NSTimeInterval launchStartedAt;
     // Only create the RSS feed pollers if their threads aren't deleted
     __block TSGroupThread *lokiNewsFeedThread;
     [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        lokiNewsFeedThread = [TSGroupThread threadWithGroupId:[self.lokiNewsFeed.id dataUsingEncoding:NSUTF8StringEncoding] transaction:transaction];
+        lokiNewsFeedThread = [TSGroupThread threadWithGroupId:[LKGroupUtilities getEncodedRSSFeedIDAsData:self.lokiNewsFeed.id] transaction:transaction];
     }];
     if (lokiNewsFeedThread != nil && self.lokiNewsFeedPoller == nil) {
         self.lokiNewsFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiNewsFeed];
@@ -1672,7 +1672,7 @@ static NSTimeInterval launchStartedAt;
     NSDictionary *userInfo = notification.userInfo;
     NSString *threadID = (NSString *)userInfo[@"threadId"];
     if (threadID == nil) { return; }
-    if ([threadID isEqualToString:[TSGroupThread threadIdFromGroupId:[self.lokiNewsFeed.id dataUsingEncoding:NSUTF8StringEncoding]]] && self.lokiNewsFeedPoller != nil) {
+    if ([threadID isEqualToString:[TSGroupThread threadIdFromGroupId:[LKGroupUtilities getEncodedRSSFeedIDAsData:self.lokiNewsFeed.id]]] && self.lokiNewsFeedPoller != nil) {
         [self.lokiNewsFeedPoller stop];
         self.lokiNewsFeedPoller = nil;
     }

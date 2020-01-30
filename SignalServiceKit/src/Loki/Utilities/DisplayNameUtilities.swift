@@ -1,4 +1,6 @@
 
+// TODO: Rename some of these functions to make the distinctions between them clearer.
+
 @objc(LKDisplayNameUtilities)
 public final class DisplayNameUtilities : NSObject {
     
@@ -12,6 +14,7 @@ public final class DisplayNameUtilities : NSObject {
         return SSKEnvironment.shared.profileManager.localProfileName()
     }
     
+    // MARK: Sessions
     @objc public static func getPrivateChatDisplayName(for hexEncodedPublicKey: String) -> String? {
         if hexEncodedPublicKey == userHexEncodedPublicKey {
             return userDisplayName
@@ -20,6 +23,19 @@ public final class DisplayNameUtilities : NSObject {
         }
     }
     
+    // MARK: Closed Groups
+    @objc public static func getDisplayName(for group: TSGroupThread) -> String {
+        let members = group.groupModel.groupMemberIds
+        let displayNames = members.map { hexEncodedPublicKey -> String in
+            guard let displayName = DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) else { return hexEncodedPublicKey }
+            let regex = try! NSRegularExpression(pattern: ".* \\(\\.\\.\\.[0-9a-fA-F]*\\)")
+            guard regex.hasMatch(input: displayName) else { return displayName }
+            return String(displayName[displayName.startIndex..<(displayName.index(displayName.endIndex, offsetBy: -14))])
+        }.sorted()
+        return displayNames.joined(separator: ", ")
+    }
+    
+    // MARK: Open Groups
     @objc public static func getPublicChatDisplayName(for hexEncodedPublicKey: String, in channel: UInt64, on server: String) -> String? {
         var result: String?
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in

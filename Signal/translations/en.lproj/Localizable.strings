@@ -1006,7 +1006,7 @@
 "GROUP_AVATAR_CHANGED" = "Avatar changed. ";
 
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "Group created.";
+"GROUP_CREATED" = "Group created";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
@@ -1019,6 +1019,15 @@
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = " %@ left the group. ";
+
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " You were removed from the group. ";
 
 /* Button label to add information to an unknown contact */
 "GROUP_MEMBERS_ADD_CONTACT_INFO" = "Add Contact";
@@ -2779,3 +2788,11 @@
 "Would you like to restore your session with %@?" = "Would you like to restore your session with %@?";
 "Restore" = "Restore";
 "Dismiss" = "Dismiss";
+"New Closed Group" = "New Closed Group";
+"Group Members" = "Group Members";
+"You don't have any contacts yet" = "You don't have any contacts yet";
+"Start a Session" = "Start a Session";
+"Enter a group name" = "Enter a group name";
+"Please enter a group name" = "Please enter a group name";
+"Please enter a shorter group name" = "Please enter a shorter group name";
+"Please pick at least 2 group members" = "Please pick at least 2 group members";

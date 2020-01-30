@@ -45,6 +45,7 @@
 #import "TSThread.h"
 #import "TSContactThread.h"
 #import "LKFriendRequestMessage.h"
+#import "LKSessionRequestMessage.h"
 #import "LKSessionRestoreMessage.h"
 #import "LKDeviceLinkMessage.h"
 #import "LKAddressMessage.h"
@@ -507,14 +508,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             recipientIds = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
         }];
     } else if (thread.isGroupThread) {
-        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
-            if (publicChat != nil) {
-                [recipientIds addObject:publicChat.server];
-            } else {
-                // TODO: Handle
-            }
-        }];
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        if (groupThread.isPublicChat) {
+            [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
+                if (publicChat != nil) {
+                    [recipientIds addObject:publicChat.server];
+                } else {
+                    // TODO: Handle
+                }
+            }];
+        } else {
+            [recipientIds addObjectsFromArray:message.sendingRecipientIds];
+            // Only send to members in the latest known group member list
+            [recipientIds intersectSet:[NSSet setWithArray:groupThread.groupModel.groupMemberIds]];
+        }
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
 
@@ -942,10 +950,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // Force hide slave device thread
         NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction];
         thread.isForceHidden = masterHexEncodedPublicKey != nil && ![masterHexEncodedPublicKey isEqualToString:hexEncodedPublicKey];
+        if (thread.friendRequestStatus == LKThreadFriendRequestStatusNone || thread.friendRequestStatus == LKThreadFriendRequestStatusRequestExpired) {
+            [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
+        }
         [thread saveWithTransaction:transaction];
     }];
     LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Please accept to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
+    message.skipSave = YES;
+    SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
+}
+
+- (OWSMessageSend *)getMultiDeviceSessionRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey forThread:(TSThread *)thread
+{
+    LKSessionRequestMessage *message = [[LKSessionRequestMessage alloc]initWithThread:thread];
     message.skipSave = YES;
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
@@ -957,12 +977,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSOutgoingMessage *message = messageSend.message;
     NSString *contactID = messageSend.recipient.recipientId;
     BOOL isGroupMessage = messageSend.thread.isGroupThread;
+    BOOL isPublicChatMessage = isGroupMessage && ((TSGroupThread *)messageSend.thread).isPublicChat;
     BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
-    if (isGroupMessage || isDeviceLinkMessage) {
+    if (isPublicChatMessage || isDeviceLinkMessage) {
         [self sendMessage:messageSend];
     } else {
         BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];
         BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
+        BOOL isSessionRequestMessage = [message isKindOfClass:LKSessionRequestMessage.class];
         [[LKAPI getDestinationsFor:contactID]
         .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
             // Get master destination
@@ -972,7 +994,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Send to master destination
             if (masterDestination != nil) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:masterDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage) {
+                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage || isSessionRequestMessage) {
                     OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
                     [self sendMessage:messageSendCopy];
                 } else {
@@ -987,7 +1009,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
             for (LKDestination *slaveDestination in slaveDestinations) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:slaveDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage) {
+                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage || isSessionRequestMessage) {
                     OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestination];
                     [self sendMessage:messageSendCopy];
                 } else {
@@ -1065,10 +1087,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSError *deviceMessagesError;
     NSArray<NSDictionary *> *_Nullable deviceMessages;
-    if (!message.thread.isGroupThread) {
-        deviceMessages = [self deviceMessagesForMessageSend:messageSend error:&deviceMessagesError];
-    } else {
+    if (message.thread.isGroupThread && ((TSGroupThread *)message.thread).isPublicChat) {
         deviceMessages = @{};
+    } else {
+        deviceMessages = [self deviceMessagesForMessageSend:messageSend error:&deviceMessagesError];
     }
     if (deviceMessagesError || !deviceMessages) {
         OWSAssertDebug(deviceMessagesError);
@@ -1615,7 +1637,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }];
     
-    BOOL isPublicChatMessage = message.thread.isGroupThread;
+    BOOL isPublicChatMessage = message.thread.isGroupThread && ((TSGroupThread *)message.thread).isPublicChat;
     
     BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript) && !isNoteToSelf && !isPublicChatMessage && !([message isKindOfClass:LKDeviceLinkMessage.class]);
     if (!shouldSendTranscript) {
@@ -1701,8 +1723,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             
             // Loki: Both for friend request messages and device link messages we don't require a session
             BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
+            BOOL isSessionRequest = [messageSend.message isKindOfClass:LKSessionRequestMessage.class];
             BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
-            if (!isFriendRequest && !(isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
+            if (!isFriendRequest && !isSessionRequest && !(isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
                 [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
             }
 
@@ -1946,8 +1969,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     
     // Loki: Both for friend request messages and device link messages we use fallback encryption as we don't necessarily have a session yet
     BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
+    BOOL isSessionRequest = [messageSend.message isKindOfClass:LKSessionRequestMessage.class];
     BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
-    if (isFriendRequest || (isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
+    if (isFriendRequest || isSessionRequest || (isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
         return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId) plainText:plainText];
     }
 

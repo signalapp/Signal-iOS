@@ -20,6 +20,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "LKEphemeralMessage.h"
+#import "LKSessionRequestMessage.h"
 #import "LKDeviceLinkMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSIncomingMessageFinder.h"
@@ -546,6 +547,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
+    // Loki: Don't process session request messages
+    if ((dataMessage.flags & SSKProtoDataMessageFlagsSessionRequest) != 0) { return; }
     // Loki: Don't process session restore messages
     if ((dataMessage.flags & SSKProtoDataMessageFlagsSessionRestore) != 0) { return; }
     
@@ -1363,8 +1366,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (groupId.length > 0) {
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
+        NSMutableSet *removedMemberIds = [NSMutableSet new];
         for (NSString *recipientId in newMemberIds) {
-            if (!recipientId.isValidE164) {
+            if (![ECKeyPair isValidHexEncodedPublicKeyWithCandidate:recipientId]) {
                 OWSLogVerbose(
                     @"incoming group update has invalid group member: %@", [self descriptionForEnvelope:envelope]);
                 OWSFailDebug(@"incoming group update has invalid group member");
@@ -1377,33 +1381,41 @@ NS_ASSUME_NONNULL_BEGIN
         // We distinguish between the old group state (if any) and the new group state.
         TSGroupThread *_Nullable oldGroupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
         if (oldGroupThread) {
-            // Don't trust other clients; ensure all known group members remain in the
-            // group unless it is a "quit" message in which case we should only remove
-            // the quiting member below.
-            [newMemberIds addObjectsFromArray:oldGroupThread.groupModel.groupMemberIds];
+            // Loki: Try to figure out removed members
+            removedMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
+            [removedMemberIds minusSet:newMemberIds];
+            [removedMemberIds removeObject:envelope.source];
         }
 
         NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
-        TSContactThread *thread =
-            [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
 
         // Only set the display name here, the logic for updating profile pictures is handled when we're setting profile key
-        [self handleProfileNameUpdateIfNeeded:dataMessage recipientId:thread.contactIdentifier transaction:transaction];
+        [self handleProfileNameUpdateIfNeeded:dataMessage recipientId:hexEncodedPublicKey transaction:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
+                if (oldGroupThread && ![oldGroupThread.groupModel.groupAdminIds containsObject:envelope.source]) {
+                    [LKLogger print:[NSString stringWithFormat:@"[Loki] Received a group update from a non-admin user for %@; ignoring.", [LKGroupUtilities getEncodedGroupID:groupId]]];
+                    return nil;
+                }
                 // Ensures that the thread exists but doesn't update it.
                 TSGroupThread *newGroupThread =
-                    [TSGroupThread getOrCreateThreadWithGroupId:groupId transaction:transaction];
+                [TSGroupThread getOrCreateThreadWithGroupId:groupId groupType:oldGroupThread.groupModel.groupType transaction:transaction];
 
                 TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
                                                                         memberIds:newMemberIds.allObjects
                                                                             image:oldGroupThread.groupModel.groupImage
-                                                                          groupId:dataMessage.group.id];
+                                                                          groupId:dataMessage.group.id
+                                                                        groupType:oldGroupThread.groupModel.groupType
+                                                                         adminIds:dataMessage.group.admins];
+                newGroupModel.removedMembers = removedMemberIds;
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
                 newGroupThread.groupModel = newGroupModel;
                 [newGroupThread saveWithTransaction:transaction];
+                
+                // Loki: Try to establish sessions with all members when a group is created or updated
+                [self establishSessionsWithMembersIfNeeded: newMemberIds.allObjects forThread:newGroupThread transaction:transaction];
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                           thread:newGroupThread
@@ -1647,6 +1659,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+// Loki: Establish a session if there is no session between the memebers of a group
+- (void)establishSessionsWithMembersIfNeeded:(NSArray *)members forThread:(TSGroupThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    for (NSString *member in members) {
+        if ([member isEqualToString:userHexEncodedPublicKey] ) { continue; }
+        BOOL hasSession = [self.primaryStorage containsSession:member deviceId:1 protocolContext:transaction];
+        if (hasSession) { continue; }
+        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:member transaction:transaction];
+        LKSessionRequestMessage *message = [[LKSessionRequestMessage alloc] initWithThread:contactThread];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }
+}
+
 - (BOOL)canFriendRequestBeAutoAcceptedForThread:(TSContactThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSString *senderHexEncodedPublicKey = thread.contactIdentifier;
@@ -1733,7 +1759,8 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO: We'll need to fix this up if we ever start using sync messages
     // Currently this uses `envelope.source` but with sync messages we'll need to use the message sender ID
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
-    if (thread.isContactFriend) return;
+    // We shouldn't be able to skip from none to friends under normal circumstances
+    if (thread.friendRequestStatus == LKThreadFriendRequestStatusNone) { return; }
     // Become happy friends and go on great adventures
     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
     TSOutgoingMessage *existingFriendRequestMessage = [thread.lastInteraction as:TSOutgoingMessage.class];

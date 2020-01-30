@@ -3435,6 +3435,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         case profileKeyUpdate = 4
         case sessionRestore = 64
         case unlinkDevice = 128
+        case sessionRequest = 256
     }
 
     private class func SSKProtoDataMessageFlagsWrap(_ value: SignalServiceProtos_DataMessage.Flags) -> SSKProtoDataMessageFlags {
@@ -3444,6 +3445,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         case .profileKeyUpdate: return .profileKeyUpdate
         case .sessionRestore: return .sessionRestore
         case .unlinkDevice: return .unlinkDevice
+        case .sessionRequest: return .sessionRequest
         }
     }
 
@@ -3454,6 +3456,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         case .profileKeyUpdate: return .profileKeyUpdate
         case .sessionRestore: return .sessionRestore
         case .unlinkDevice: return .unlinkDevice
+        case .sessionRequest: return .sessionRequest
         }
     }
 
@@ -5677,6 +5680,7 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         if let _value = avatar {
             builder.setAvatar(_value)
         }
+        builder.setAdmins(admins)
         return builder
     }
 
@@ -5710,9 +5714,19 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
             items.append(valueParam)
             proto.members = items
         }
+        
+        @objc public func addAdmins(_ valueParam: String) {
+            var items = proto.admins
+            items.append(valueParam)
+            proto.admins = items
+        }
 
         @objc public func setMembers(_ wrappedItems: [String]) {
             proto.members = wrappedItems
+        }
+        
+        @objc public func setAdmins(_ wrappedItems: [String]) {
+            proto.admins = wrappedItems
         }
 
         @objc public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
@@ -5748,6 +5762,10 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 
     @objc public var members: [String] {
         return proto.members
+    }
+    
+    @objc public var admins: [String] {
+        return proto.admins
     }
 
     private init(proto: SignalServiceProtos_GroupContext,

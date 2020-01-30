@@ -5,6 +5,7 @@
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
 #import "NSString+SSK.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,13 +26,17 @@ const int32_t kGroupIdLength = 16;
                     memberIds:(NSArray<NSString *> *)memberIds
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId
+                    groupType:(GroupType)groupType
+                     adminIds:(NSArray<NSString *> *)adminIds
 {
     OWSAssertDebug(memberIds);
 
     _groupName              = title;
     _groupMemberIds         = [memberIds copy];
     _groupImage = image; // image is stored in DB
+    _groupType              = groupType;
     _groupId                = groupId;
+    _groupAdminIds          = [adminIds copy];
 
     return self;
 }
@@ -47,6 +52,14 @@ const int32_t kGroupIdLength = 16;
     // which causes crashes.
     if (_groupMemberIds == nil) {
         _groupMemberIds = [NSArray new];
+    }
+    
+    if (_groupAdminIds == nil) {
+        _groupAdminIds = [NSArray new];
+    }
+    
+    if (_removedMembers == nil) {
+        _removedMembers = [NSMutableSet new];
     }
 
     return self;
@@ -75,6 +88,9 @@ const int32_t kGroupIdLength = 16;
           [UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(other.groupImage)])) {
         return NO;
     }
+    if (_groupType != other.groupType) {
+        return NO;
+    }
     NSMutableArray *compareMyGroupMemberIds = [NSMutableArray arrayWithArray:_groupMemberIds];
     [compareMyGroupMemberIds removeObjectsInArray:other.groupMemberIds];
     if ([compareMyGroupMemberIds count] > 0) {
@@ -89,9 +105,11 @@ const int32_t kGroupIdLength = 16;
         return NSLocalizedString(@"GROUP_UPDATED", @"");
     }
     if (![_groupName isEqual:newModel.groupName]) {
-        updatedGroupInfoString = [updatedGroupInfoString
-            stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""),
-                                                               newModel.groupName]];
+        if (newModel.groupName.length == 0) {
+            updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Closed group created"];
+        } else {
+            updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""), newModel.groupName]];
+        }
     }
     if (_groupImage != nil && newModel.groupImage != nil &&
         !([UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(newModel.groupImage)])) {
@@ -109,6 +127,7 @@ const int32_t kGroupIdLength = 16;
 
     NSMutableSet *membersWhoLeft = [NSMutableSet setWithSet:oldMembers];
     [membersWhoLeft minusSet:newMembers];
+    [membersWhoLeft minusSet:_removedMembers];
 
 
     if ([membersWhoLeft count] > 0) {
@@ -121,13 +140,34 @@ const int32_t kGroupIdLength = 16;
                                                            [oldMembersNames componentsJoinedByString:@", "]]];
     }
     
-    if ([membersWhoJoined count] > 0) {
-        NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString*(NSString* item) {
-            return [contactsManager displayNameForPhoneIdentifier:item];
-        }];
-        updatedGroupInfoString = [updatedGroupInfoString
-                                  stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),
-                                                           [newMembersNames componentsJoinedByString:@", "]]];
+    if (membersWhoJoined.count > 0) {
+        updatedGroupInfoString = [NSString stringWithFormat:@"%d members joined", membersWhoJoined.count];
+    }
+    
+    if (_removedMembers.count > 0) {
+        NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+        NSString *hexEncodedPublicKey = masterDeviceHexEncodedPublicKey != nil ? masterDeviceHexEncodedPublicKey : TSAccountManager.localNumber;
+        if ([_removedMembers containsObject:hexEncodedPublicKey]) {
+            updatedGroupInfoString = [updatedGroupInfoString
+                                      stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
+        }
+        else {
+            NSArray *removedMembersNames = [[_removedMembers allObjects] map:^NSString*(NSString* item) {
+                return [contactsManager displayNameForPhoneIdentifier:item];
+            }];
+            if ([removedMembersNames count] > 1) {
+                updatedGroupInfoString = [updatedGroupInfoString
+                                          stringByAppendingString:[NSString
+                                                                   stringWithFormat:NSLocalizedString(@"GROUP_MEMBERS_REMOVED", @""),
+                                                                   [removedMembersNames componentsJoinedByString:@", "]]];
+            }
+            else {
+                updatedGroupInfoString = [updatedGroupInfoString
+                                          stringByAppendingString:[NSString
+                                                                   stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_REMOVED", @""),
+                                                                   [removedMembersNames componentsJoinedByString:@", "]]];
+            }
+        }
     }
 
     return updatedGroupInfoString;
@@ -138,6 +178,16 @@ const int32_t kGroupIdLength = 16;
 - (nullable NSString *)groupName
 {
     return _groupName.filterStringForDisplay;
+}
+
+- (void)setRemovedMembers:(NSMutableSet<NSString *> *)removedMembers
+{
+    _removedMembers = removedMembers;
+}
+
+- (void)updateGroupId: (NSData *)newGroupId
+{
+    _groupId = newGroupId;
 }
 
 @end

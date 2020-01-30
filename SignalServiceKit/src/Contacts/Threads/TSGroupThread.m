@@ -38,7 +38,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return self;
 }
 
-- (instancetype)initWithGroupId:(NSData *)groupId
+- (instancetype)initWithGroupId:(NSData *)groupId groupType:(GroupType)groupType
 {
     OWSAssertDebug(groupId.length > 0);
 
@@ -48,7 +48,9 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:nil
                                                          memberIds:@[ localNumber ]
                                                              image:nil
-                                                           groupId:groupId];
+                                                           groupId:groupId
+                                                         groupType:groupType
+                                                          adminIds:@[ localNumber ]];
 
     self = [self initWithGroupModel:groupModel];
     if (!self) {
@@ -66,6 +68,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 }
 
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
+                                   groupType:(GroupType)groupType
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
@@ -73,19 +76,19 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
     TSGroupThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId] transaction:transaction];
     if (!thread) {
-        thread = [[self alloc] initWithGroupId:groupId];
+        thread = [[self alloc] initWithGroupId:groupId groupType:groupType];
         [thread saveWithTransaction:transaction];
     }
     return thread;
 }
 
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId groupType:(GroupType)groupType
 {
     OWSAssertDebug(groupId.length > 0);
 
     __block TSGroupThread *thread;
     [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [self getOrCreateThreadWithGroupId:groupId transaction:transaction];
+        thread = [self getOrCreateThreadWithGroupId:groupId groupType:groupType transaction:transaction];
     }];
     return thread;
 }
@@ -121,8 +124,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 + (NSString *)threadIdFromGroupId:(NSData *)groupId
 {
     OWSAssertDebug(groupId.length > 0);
-
-    return [TSGroupThreadPrefix stringByAppendingString:[groupId base64EncodedString]];
+    return [TSGroupThreadPrefix stringByAppendingString:[[LKGroupUtilities getDecodedGroupIDAsData:groupId] base64EncodedString]];
 }
 
 + (NSData *)groupIdFromThreadId:(NSString *)threadId
@@ -171,6 +173,16 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 - (BOOL)isGroupThread
 {
     return true;
+}
+
+- (BOOL)isPublicChat
+{
+    return (self.groupModel.groupType == openGroup);
+}
+
+- (BOOL)isRSSFeed
+{
+    return (self.groupModel.groupType == rssFeed);
 }
 
 - (BOOL)isLocalUserInGroup
@@ -264,12 +276,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     OWSAssertDebug(groupId.length > 0);
 
     return [self.class stableColorNameForNewConversationWithString:[self threadIdFromGroupId:groupId]];
-}
-
-- (BOOL)isRSSFeed
-{
-    NSString *groupID = [[NSString alloc] initWithData:self.groupModel.groupId encoding:NSUTF8StringEncoding];
-    return groupID != nil && [groupID hasPrefix:@"rss://"];
 }
 
 @end

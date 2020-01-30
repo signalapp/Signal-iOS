@@ -133,7 +133,8 @@
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd"
                                                                                           memberIds:[@[] mutableCopy]
                                                                                               image:nil
-                                                                                            groupId:[NSData data]]
+                                                                                            groupId:[NSData data]
+                                                                                          groupType:SIGNAL]
                                                     transaction:transaction];
 
         [thread saveWithTransaction:transaction];

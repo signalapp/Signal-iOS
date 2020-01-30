@@ -4,6 +4,7 @@
 
 #import "TSGroupModel.h"
 #import "TSThread.h"
+#import "LKGroupUtilities.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,13 +18,16 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 @property (nonatomic, strong) TSGroupModel *groupModel;
 @property (nonatomic, readonly) BOOL isRSSFeed;
+@property (nonatomic, readonly) BOOL isPublicChat;
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId;
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
+                                   groupType:(GroupType) groupType;
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
+                                   groupType:(GroupType) groupType
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction;

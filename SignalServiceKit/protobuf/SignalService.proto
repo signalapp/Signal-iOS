@@ -150,6 +150,7 @@ message DataMessage {
     PROFILE_KEY_UPDATE      = 4;
     SESSION_RESTORE         = 64;
     UNLINK_DEVICE           = 128;
+    SESSION_REQUEST         = 256;
   }
 
   message Quote {
@@ -398,6 +399,7 @@ message GroupContext {
   optional string            name    = 3;
   repeated string            members = 4;
   optional AttachmentPointer avatar  = 5;
+  repeated string            admins  = 6;
 }
 
 message ContactDetails {

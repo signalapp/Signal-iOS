@@ -72,8 +72,8 @@ final class ConversationTitleView : UIView {
     private func updateTitle() {
         let title: String
         if thread.isGroupThread() {
-            if thread.name().isEmpty {
-                title = NSLocalizedString("New Group", comment: "")
+            if thread.name().isEmpty || thread.name() == "New Group" {
+                title = DisplayNameUtilities.getDisplayName(for: thread as! TSGroupThread)
             } else {
                 title = thread.name()
             }
@@ -160,12 +160,16 @@ final class ConversationTitleView : UIView {
                     dateFormatter.timeStyle = .medium
                     dateFormatter.dateStyle = .medium
                     subtitle.append(NSAttributedString(string: "Muted until " + dateFormatter.string(from: muteEndDate)))
-                } else if self.thread.isGroupThread() && !(self.thread as! TSGroupThread).isRSSFeed {
+                } else if let thread = self.thread as? TSGroupThread, !thread.isRSSFeed {
                     let storage = OWSPrimaryStorage.shared()
                     var userCount: Int?
-                    storage.dbReadConnection.readWrite { transaction in
-                        if let publicChat = LokiDatabaseUtilities.getPublicChat(for: self.thread.uniqueId!, in: transaction) {
-                            userCount = storage.getUserCount(for: publicChat, in: transaction)
+                    if thread.groupModel.groupType == .closedGroup {
+                        userCount = thread.groupModel.groupMemberIds.count
+                    } else if thread.groupModel.groupType == .openGroup {
+                        storage.dbReadConnection.readWrite { transaction in
+                            if let publicChat = LokiDatabaseUtilities.getPublicChat(for: self.thread.uniqueId!, in: transaction) {
+                                userCount = storage.getUserCount(for: publicChat, in: transaction)
+                            }
                         }
                     }
                     if let userCount = userCount {

@@ -79,7 +79,7 @@ internal class LokiSnodeProxy : LokiHTTPClient {
             task.resume()
             return promise
         }.map { rawResponse in
-            guard let data = rawResponse as? Data, let cipherText = Data(base64Encoded: data) else {
+            guard let data = rawResponse as? Data, !data.isEmpty, let cipherText = Data(base64Encoded: data) else {
                 print("[Loki] Received a non-string encoded response.")
                 return rawResponse
             }

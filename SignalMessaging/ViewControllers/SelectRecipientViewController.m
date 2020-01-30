@@ -527,7 +527,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         NSArray<SignalAccount *> *signalAccounts = helper.signalAccounts;
         if (signalAccounts.count == 0) {
             // No Contacts
-
             [contactsSection
                 addItem:[OWSTableItem softCenterLabelItemWithText:
                                           NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",

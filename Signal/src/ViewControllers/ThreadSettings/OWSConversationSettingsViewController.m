@@ -185,6 +185,15 @@ const CGFloat kIconViewLength = 24;
     return [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
+-(BOOL)isPrivateGroupChat
+{
+    if (self.isGroupThread) {
+        TSGroupThread *thread = (TSGroupThread *)self.thread;
+        return !thread.isRSSFeed && !thread.isPublicChat;
+    }
+    return false;
+}
+
 - (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
 {
     OWSAssertDebug(thread);
@@ -623,59 +632,55 @@ const CGFloat kIconViewLength = 24;
 
     // Group settings section.
 
-    /*
-    if (self.isGroupThread) {
-        NSArray *groupItems = @[
-            [OWSTableItem
-                itemWithCustomCellBlock:^{
-                    UITableViewCell *cell =
-                        [weakSelf disclosureCellWithName:NSLocalizedString(@"EDIT_GROUP_ACTION",
-                                                             @"table cell label in conversation settings")
-                                                iconName:@"table_ic_group_edit"
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                             OWSConversationSettingsViewController, @"edit_group")];
-                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
-                    return cell;
-                }
-                actionBlock:^{
-                    [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
-                }],
-            [OWSTableItem
-                itemWithCustomCellBlock:^{
-                    UITableViewCell *cell =
-                        [weakSelf disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
-                                                             @"table cell label in conversation settings")
-                                                iconName:@"table_ic_group_members"
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                             OWSConversationSettingsViewController, @"group_members")];
-                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
-                    return cell;
-                }
-                actionBlock:^{
-                    [weakSelf showGroupMembersView];
-                }],
-            [OWSTableItem
-                itemWithCustomCellBlock:^{
-                    UITableViewCell *cell =
-                        [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
-                                                             @"table cell label in conversation settings")
-                                                iconName:@"table_ic_group_leave"
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                             OWSConversationSettingsViewController, @"leave_group")];
-                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
-
-                    return cell;
-                }
-                actionBlock:^{
-                    [weakSelf didTapLeaveGroup];
-                }],
+    
+    if (self.isGroupThread && self.isPrivateGroupChat) {
+//        [OWSTableItem
+//            itemWithCustomCellBlock:^{
+//                UITableViewCell *cell =
+//                    [weakSelf disclosureCellWithName:NSLocalizedString(@"EDIT_GROUP_ACTION",
+//                                                         @"table cell label in conversation settings")
+//                                            iconName:@"table_ic_group_edit"
+//                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+//                                                         OWSConversationSettingsViewController, @"edit_group")];
+//                cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+//                return cell;
+//            }
+//            actionBlock:^{
+//                [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
+//            }],
+        [mainSection addItem:[OWSTableItem
+            itemWithCustomCellBlock:^{
+                UITableViewCell *cell =
+                    [weakSelf disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
+                                                         @"table cell label in conversation settings")
+                                            iconName:@"table_ic_group_members"
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                         OWSConversationSettingsViewController, @"group_members")];
+                cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+                return cell;
+            }
+            actionBlock:^{
+                [weakSelf showGroupMembersView];
+            }]
         ];
+        [mainSection addItem:[OWSTableItem
+            itemWithCustomCellBlock:^{
+                UITableViewCell *cell =
+                    [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
+                                                         @"table cell label in conversation settings")
+                                            iconName:@"table_ic_group_leave"
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                         OWSConversationSettingsViewController, @"leave_group")];
+                cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
 
-        [contents addSection:[OWSTableSection sectionWithTitle:NSLocalizedString(@"GROUP_MANAGEMENT_SECTION",
-                                                                   @"Conversation settings table section title")
-                                                         items:groupItems]];
+                return cell;
+            }
+            actionBlock:^{
+                [weakSelf didTapLeaveGroup];
+            }]
+        ];
     }
-     */
+    
 
     // Mute thread section.
 
@@ -1074,9 +1079,9 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showGroupMembersView
 {
-    ShowGroupMembersViewController *showGroupMembersViewController = [ShowGroupMembersViewController new];
-    [showGroupMembersViewController configWithThread:(TSGroupThread *)self.thread];
-    [self.navigationController pushViewController:showGroupMembersViewController animated:YES];
+    TSGroupThread *thread = (TSGroupThread *)self.thread;
+    LKGroupMembersVC *groupMembersVC = [[LKGroupMembersVC alloc] initWithThread:thread];
+    [self.navigationController pushViewController:groupMembersVC animated:YES];
 }
 
 - (void)showUpdateGroupView:(UpdateGroupMode)mode

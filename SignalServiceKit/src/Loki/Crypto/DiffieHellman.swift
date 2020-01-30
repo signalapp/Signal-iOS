@@ -24,6 +24,7 @@ public enum DiffieHellman {
     
     public static func decrypt(_ encryptedData: Data, using symmetricKey: Data) throws -> Data {
         let symmetricKeyBytes = [UInt8](symmetricKey)
+        guard encryptedData.count >= ivLength else { throw "Couldn't decrypt data." }
         let ivBytes = [UInt8](encryptedData[..<ivLength])
         let cipherBytes = [UInt8](encryptedData[ivLength...])
         let blockMode = CBC(iv: ivBytes)

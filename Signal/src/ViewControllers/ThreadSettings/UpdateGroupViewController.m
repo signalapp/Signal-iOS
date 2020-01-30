@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIImage *groupAvatar;
 @property (nonatomic, nullable) NSSet<NSString *> *previousMemberRecipientIds;
 @property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
+@property (nonatomic) NSMutableSet<NSString *> *removedRecipientIds;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
 
@@ -89,6 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
     _avatarViewHelper.delegate = self;
 
     self.memberRecipientIds = [NSMutableSet new];
+    self.removedRecipientIds = [NSMutableSet new];
 }
 
 #pragma mark - View Lifecycle
@@ -366,6 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(recipientId.length > 0);
 
     [self.memberRecipientIds removeObject:recipientId];
+    [self.removedRecipientIds addObject:recipientId];
     [self updateTableContents];
 }
 
@@ -379,7 +382,10 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                          memberIds:self.memberRecipientIds.allObjects
                                                              image:self.groupAvatar
-                                                           groupId:self.thread.groupModel.groupId];
+                                                           groupId:self.thread.groupModel.groupId
+                                                         groupType:self.thread.groupModel.groupType
+                                                          adminIds:self.thread.groupModel.groupAdminIds];
+    groupModel.removedMembers = self.removedRecipientIds;
     [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
 }
 

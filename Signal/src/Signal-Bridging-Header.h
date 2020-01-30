@@ -126,7 +126,9 @@
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/LKGroupUtilities.h>
 #import <SignalServiceKit/UIImage+OWS.h>
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>
+#import "NewGroupViewController.h"

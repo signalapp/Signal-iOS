@@ -61,6 +61,7 @@ public final class ProfilePictureView : UIView {
             additionalImageView.isHidden = true
             additionalImageView.image = nil
         }
+        guard hexEncodedPublicKey != nil else { return } // Can happen in rare cases
         imageView.image = isRSSFeed ? nil : getProfilePicture(of: size, for: hexEncodedPublicKey)
         imageView.backgroundColor = isRSSFeed ? UIColor(rgbHex: 0x353535) : UIColor(rgbHex: 0xD8D8D8) // UIColor(rgbHex: 0xD8D8D8) = Colors.unimportant
         imageView.layer.cornerRadius = size / 2

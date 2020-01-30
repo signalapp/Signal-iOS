@@ -150,7 +150,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     // MARK: Device Linking
     func requestUserAuthorization(for deviceLink: DeviceLink) {
         self.deviceLink = deviceLink
-        qrCodeImageView.isHidden = true
+        qrCodeImageViewContainer.isHidden = true
         titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
         subtitleLabel.text = NSLocalizedString("Please check that the words below match those shown on your other device", comment: "")
         let hexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey.removing05PrefixIfNeeded()

@@ -92,8 +92,13 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         } else {
             _conversationColorName = [self.class stableColorNameForNewConversationWithString:self.uniqueId];
         }
-
-        _friendRequestStatus = LKThreadFriendRequestStatusNone;
+        
+        // Loki: Friend request logic doesn't apply to group chats
+        if (self.isGroupThread) {
+            _friendRequestStatus = LKThreadFriendRequestStatusFriends;
+        } else {
+            _friendRequestStatus = LKThreadFriendRequestStatusNone;
+        }
     }
 
     return self;
