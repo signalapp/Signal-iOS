@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SDSCrossProcess.h"
 #import <SignalCoreKit/OWSAsserts.h>
+#import <SignalServiceKit/DarwinNotification.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <notify.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,7 +37,7 @@ pid_t localPid(void)
 - (id)init
 {
     if (self = [super init]) {
-        self.notifyToken = NOTIFY_TOKEN_INVALID;
+        self.notifyToken = -1;
 
         [self start];
     }
@@ -54,21 +54,18 @@ pid_t localPid(void)
     [self stop];
 
     __weak SDSCrossProcess *weakSelf = self;
-    const char *name = [[self notificationName] cStringUsingEncoding:NSUTF8StringEncoding];
-    int notifyToken;
-    notify_register_dispatch(name, &notifyToken, dispatch_get_main_queue(), ^(int token) {
-        [weakSelf handleNotification:token];
-    });
-    self.notifyToken = notifyToken;
+    self.notifyToken = [DarwinNotification addObserverForName:DarwinNotificationName.sdsCrossProcess
+                                                        queue:dispatch_get_main_queue()
+                                                   usingBlock:^(int token) {
+                                                       [weakSelf handleNotification:token];
+                                                   }];
 }
 
 - (void)handleNotification:(int)token
 {
     OWSAssertIsOnMainThread();
 
-    uint64_t fromPid;
-    // notify_get_state() & notify_set_state() are vulnerable to races.
-    notify_get_state(token, &fromPid);
+    uint64_t fromPid = [DarwinNotification getStateForObserver:token];
     BOOL isLocal = fromPid == (uint64_t)localPid();
     if (isLocal) {
         return;
@@ -82,12 +79,10 @@ pid_t localPid(void)
 
 - (void)stop
 {
-    if (!notify_is_valid_token(self.notifyToken)) {
-        return;
+    if ([DarwinNotification isValidObserver:self.notifyToken]) {
+        [DarwinNotification removeObserver:self.notifyToken];
     }
-
-    notify_cancel(self.notifyToken);
-    self.notifyToken = NOTIFY_TOKEN_INVALID;
+    self.notifyToken = -1;
 }
 
 - (void)notifyChangedAsync
@@ -102,19 +97,12 @@ pid_t localPid(void)
     OWSAssertIsOnMainThread();
     OWSLogVerbose(@"");
 
-    if (!notify_is_valid_token(self.notifyToken)) {
+    if (![DarwinNotification isValidObserver:self.notifyToken]) {
         [self start];
     }
 
-    const char *name = [[self notificationName] cStringUsingEncoding:NSUTF8StringEncoding];
-    // notify_get_state() & notify_set_state() are vulnerable to races.
-    notify_set_state(self.notifyToken, localPid());
-    notify_post(name);
-}
-
-- (NSString *)notificationName
-{
-    return @"org.signal.sdscrossprocess";
+    [DarwinNotification setState:localPid() forObserver:self.notifyToken];
+    [DarwinNotification postNotificationName:DarwinNotificationName.sdsCrossProcess];
 }
 
 @end

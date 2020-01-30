@@ -28,6 +28,7 @@
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/CallKitIdStore.h>
+#import <SignalServiceKit/DarwinNotification.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -277,6 +278,8 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 #endif
 
     [AppVersion sharedInstance];
+
+    [self listenForNSENotifications];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
@@ -1363,6 +1366,28 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                                     __OSX_AVAILABLE(10.14)__WATCHOS_PROHIBITED __TVOS_PROHIBITED
 {
     OWSLogInfo(@"");
+}
+
+- (void)listenForNSENotifications
+{
+    // We listen to this notification for the lifetime of the application, so we don't
+    // record the returned observer token.
+    [DarwinNotification
+        addObserverForName:DarwinNotificationName.nseDidReceiveNotification
+                     queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)
+                usingBlock:^(int token) {
+                    OWSLogDebug(@"Handling NSE received notification");
+
+                    // Immediately let the NSE know we will handle this notification so that it
+                    // does not attempt to process messages while we are active.
+                    [DarwinNotification postNotificationName:DarwinNotificationName.mainAppHandledNotification];
+
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+                            [[self.messageFetcherJob runObjc] retainUntilComplete];
+                        }];
+                    });
+                }];
 }
 
 @end

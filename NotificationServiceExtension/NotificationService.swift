@@ -49,7 +49,33 @@ class NotificationService: UNNotificationServiceExtension {
     // run serially.
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
-        DispatchQueue.main.async {
+
+        var mainAppHandledReceipt = false
+
+        // Listen for an indication that the main app is going to handle
+        // this notification. If the main app is active we don't want to
+        // process any messages here.
+        let token = DarwinNotification.addObserver(for: .mainAppHandledNotification, queue: .main) { _ in
+            mainAppHandledReceipt = true
+        }
+
+        // Notify the main app that we received new content to process.
+        // If it's running, it will notify us so we can bail out.
+        DarwinNotification.post(.nseDidReceiveNotification)
+
+        // The main app should notify us nearly instantaneously if it's
+        // going to process this notification so we only wait a fraction
+        // of a second to hear back from it.
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.001) {
+            DarwinNotification.removeObserver(token)
+
+            guard !mainAppHandledReceipt else {
+                Logger.info("Received notification handled by main application.")
+                return self.completeSilenty()
+            }
+
+            Logger.info("Processing received notification.")
+
             self.setupIfNecessary()
             AppReadiness.runNowOrWhenAppDidBecomeReady { self.fetchAndProcessMessages() }
         }
@@ -158,13 +184,16 @@ class NotificationService: UNNotificationServiceExtension {
 
     func fetchAndProcessMessages() {
         guard !AppExpiry.isExpired else {
-            Logger.info("Not processing notifications for expired application.")
+            Logger.error("Not processing notifications for expired application.")
             return completeSilenty()
         }
+
+        Logger.info("Beginning message fetch.")
 
         messageFetcherJob.run().promise.then {
             return self.messageProcessing.flushMessageDecryptionAndProcessingPromise()
         }.ensure {
+            Logger.info("Message fetch completed successfully.")
             self.completeSilenty()
         }.retainUntilComplete()
     }

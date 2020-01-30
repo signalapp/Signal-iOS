@@ -1,0 +1,65 @@
+//
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//
+
+#import "DarwinNotification.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <notify.h>
+
+@implementation DarwinNotification
+
++ (BOOL)isValidObserver:(int)observerToken
+{
+    return notify_is_valid_token(observerToken);
+}
+
++ (void)postNotificationName:(DarwinNotificationName *)name
+{
+    OWSAssertDebug(name.isValid);
+    notify_post(name.cString);
+}
+
++ (int)addObserverForName:(DarwinNotificationName *)name
+                    queue:(dispatch_queue_t)queue
+               usingBlock:(notify_handler_t)block
+{
+    OWSAssertDebug(name.isValid);
+
+    int observerToken;
+    notify_register_dispatch(name.cString, &observerToken, queue, block);
+    return observerToken;
+}
+
++ (void)removeObserver:(int)observerToken
+{
+    if (![self isValidObserver:observerToken]) {
+        OWSFailDebug(@"Invalid observer token.");
+        return;
+    }
+
+    notify_cancel(observerToken);
+}
+
++ (void)setState:(uint64_t)state forObserver:(int)observerToken
+{
+    if (![self isValidObserver:observerToken]) {
+        OWSFailDebug(@"Invalid observer token.");
+        return;
+    }
+
+    notify_set_state(observerToken, state);
+}
+
++ (uint64_t)getStateForObserver:(int)observerToken
+{
+    if (![self isValidObserver:observerToken]) {
+        OWSFailDebug(@"Invalid observer token.");
+        return 0;
+    }
+
+    uint64_t state;
+    notify_get_state(observerToken, &state);
+    return state;
+}
+
+@end
