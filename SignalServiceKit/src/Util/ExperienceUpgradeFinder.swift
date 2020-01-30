@@ -8,7 +8,7 @@ import Reachability
 public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"
     case reactions = "010"
-    case requiredProfileNames = "011"
+    case profileNameReminder = "011"
 
     // Until this flag is true the upgrade won't display to users.
     var hasLaunched: Bool {
@@ -19,8 +19,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
                 SSKEnvironment.shared.reachabilityManager.isReachable
         case .reactions:
             return FeatureFlags.reactionSend
-        case .requiredProfileNames:
-            return RemoteConfig.requiredProfileNames
+        case .profileNameReminder:
+            return RemoteConfig.profileNameReminder
         }
     }
 
@@ -55,7 +55,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
 @objc
 public class ExperienceUpgradeFinder: NSObject {
 
-    // MARK: - Instance Methods
+    // MARK: -
 
     public class func next(transaction: GRDBReadTransaction) -> ExperienceUpgrade? {
         return allActiveExperienceUpgrades(transaction: transaction).first { !$0.isSnoozed }
@@ -83,6 +83,13 @@ public class ExperienceUpgradeFinder: NSObject {
         experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.lastSnoozedTimestamp = Date().timeIntervalSince1970 }
     }
 
+    public class func markAsComplete(experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
+        Logger.info("marking experience upgrade as complete \(experienceUpgradeId)")
+        allActiveExperienceUpgrades(transaction: transaction)
+            .filter { $0.id == experienceUpgradeId }
+            .forEach { markAsComplete(experienceUpgrade: $0, transaction: transaction) }
+    }
+
     public class func markAsComplete(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as complete \(experienceUpgrade.uniqueId)")
         experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.isComplete = true }
@@ -96,10 +103,19 @@ public class ExperienceUpgradeFinder: NSObject {
             .forEach { markAsComplete(experienceUpgrade: $0, transaction: transaction) }
     }
 
+    // MARK: - Experience Specific Helpers
+
     @objc
     public class func hasPendingPinExperienceUpgrade(transaction: GRDBReadTransaction) -> Bool {
         return hasIncomplete(experienceUpgradeId: .introducingPins, transaction: transaction)
     }
+
+    @objc
+    class func clearProfileNameReminder(transaction: GRDBWriteTransaction) {
+        ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .profileNameReminder, transaction: transaction)
+    }
+
+    // MARK: -
 
     /// Returns an array of all experience upgrades currently being run that have
     /// yet to be completed. Sorted by the order of the `ExperienceUpgradeId` enumeration.
@@ -142,11 +158,6 @@ public class ExperienceUpgradeFinder: NSObject {
             return lhsIndex < rhsIndex
         }
     }
-}
-
-@objc
-extension OWS2FAManager {
-
 }
 
 public extension ExperienceUpgrade {
