@@ -50,6 +50,11 @@ class NotificationService: UNNotificationServiceExtension {
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
 
+        // Until we want to use this extension, crash if this path is hit.
+        guard FeatureFlags.notificationServiceExtension else {
+            owsFail("NSE should never be called.")
+        }
+
         var mainAppHandledReceipt = false
 
         // Listen for an indication that the main app is going to handle
