@@ -19,7 +19,9 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
     }()
     
     // MARK: Components
-    @objc private lazy var tableView: UITableView = {
+    private lazy var nameTextField = TextField(placeholder: NSLocalizedString("Enter a group name", comment: ""))
+    
+    private lazy var tableView: UITableView = {
         let result = UITableView()
         result.dataSource = self
         result.delegate = self
@@ -57,8 +59,22 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         navigationItem.titleView = titleLabel
         // Set up content
         if !contacts.isEmpty {
+            view.addSubview(nameTextField)
+            nameTextField.pin(.leading, to: .leading, of: view, withInset: Values.largeSpacing)
+            nameTextField.pin(.top, to: .top, of: view, withInset: Values.mediumSpacing)
+            nameTextField.pin(.trailing, to: .trailing, of: view, withInset: -Values.largeSpacing)
+            let separator = UIView()
+            separator.backgroundColor = Colors.separator
+            separator.set(.height, to: Values.separatorThickness)
+            view.addSubview(separator)
+            separator.pin(.leading, to: .leading, of: view)
+            separator.pin(.top, to: .bottom, of: nameTextField, withInset: Values.largeSpacing)
+            separator.pin(.trailing, to: .trailing, of: view)
             view.addSubview(tableView)
-            tableView.pin(to: view)
+            tableView.pin(.leading, to: .leading, of: view)
+            tableView.pin(.top, to: .bottom, of: separator)
+            tableView.pin(.trailing, to: .trailing, of: view)
+            tableView.pin(.bottom, to: .bottom, of: view)
         } else {
             let explanationLabel = UILabel()
             explanationLabel.textColor = Colors.text
@@ -113,11 +129,25 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
     }
     
     @objc private func createClosedGroup() {
+        func showError(title: String, message: String = "") {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            presentAlert(alert)
+        }
+        guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
+            return showError(title: NSLocalizedString("Please enter a group name", comment: ""))
+        }
+        guard name.count < 64 else {
+            return showError(title: NSLocalizedString("Please enter a shorter group name", comment: ""))
+        }
+        guard selectedContacts.count >= 2 else {
+            return showError(title: NSLocalizedString("Please pick at least 2 group members", comment: ""))
+        }
         let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         let members = [String](selectedContacts) + [ userHexEncodedPublicKey ]
         let admins = [ userHexEncodedPublicKey ]
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(Randomness.generateRandomBytes(kGroupIdLength)!.toHexString())
-        let group = TSGroupModel(title: nil, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
+        let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         let thread = TSGroupThread.getOrCreateThread(with: group)
         OWSProfileManager.shared().addThread(toProfileWhitelist: thread)
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
@@ -198,7 +228,7 @@ private extension NewClosedGroupVC {
             backgroundColor = Colors.cellBackground
             // Set up the highlight color
             let selectedBackgroundView = UIView()
-            selectedBackgroundView.backgroundColor = Colors.cellSelected
+            selectedBackgroundView.backgroundColor = .clear // Disabled for now
             self.selectedBackgroundView = selectedBackgroundView
             // Set up the profile picture image view
             let profilePictureViewSize = Values.smallProfilePictureSize

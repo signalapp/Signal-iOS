@@ -2792,3 +2792,7 @@
 "Group Members" = "Group Members";
 "You don't have any contacts yet" = "You don't have any contacts yet";
 "Start a Session" = "Start a Session";
+"Enter a group name" = "Enter a group name";
+"Please enter a group name" = "Please enter a group name";
+"Please enter a shorter group name" = "Please enter a shorter group name";
+"Please pick at least 2 group members" = "Please pick at least 2 group members";
