@@ -1660,15 +1660,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // Loki: Establish a session if there is no session between the memebers of a group
-- (void)establishSessionsWithMembersIfNeeded: (NSArray *)members forThread: (TSGroupThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)establishSessionsWithMembersIfNeeded:(NSArray *)members forThread:(TSGroupThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     for (NSString *member in members) {
         if ([member isEqualToString:userHexEncodedPublicKey] ) { continue; }
-        __block BOOL hasSession;
-        hasSession = [self.primaryStorage containsSession:member deviceId:1 protocolContext:transaction];
+        BOOL hasSession = [self.primaryStorage containsSession:member deviceId:1 protocolContext:transaction];
         if (hasSession) { continue; }
-        LKSessionRequestMessage *message = [[LKSessionRequestMessage alloc] initWithThread:thread];
+        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:member transaction:transaction];
+        LKSessionRequestMessage *message = [[LKSessionRequestMessage alloc] initWithThread:contactThread];
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }
 }
