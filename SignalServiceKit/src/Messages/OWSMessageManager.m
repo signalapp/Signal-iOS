@@ -1761,7 +1761,6 @@ NS_ASSUME_NONNULL_BEGIN
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     // We shouldn't be able to skip from none to friends under normal circumstances
     if (thread.friendRequestStatus == LKThreadFriendRequestStatusNone) { return; }
-    if (thread.isContactFriend) return;
     // Become happy friends and go on great adventures
     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
     TSOutgoingMessage *existingFriendRequestMessage = [thread.lastInteraction as:TSOutgoingMessage.class];

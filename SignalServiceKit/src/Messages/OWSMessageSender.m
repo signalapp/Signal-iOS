@@ -950,6 +950,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // Force hide slave device thread
         NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction];
         thread.isForceHidden = masterHexEncodedPublicKey != nil && ![masterHexEncodedPublicKey isEqualToString:hexEncodedPublicKey];
+        if (thread.friendRequestStatus == LKThreadFriendRequestStatusNone || thread.friendRequestStatus == LKThreadFriendRequestStatusRequestExpired) {
+            [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
+        }
         [thread saveWithTransaction:transaction];
     }];
     LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Please accept to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]
@@ -978,47 +981,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
     if (isPublicChatMessage || isDeviceLinkMessage) {
         [self sendMessage:messageSend];
-    } else if (isGroupMessage) {
-        [self sendMessage:messageSend];
-        
-        // TODO: Multi device?
-        
-//        [[LKAPI getDestinationsFor:contactID]
-//        .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
-//            // Get master destination
-//            LKDestination *masterDestination = [destinations filtered:^BOOL(LKDestination *destination) {
-//                return [destination.kind isEqual:@"master"];
-//            }].firstObject;
-//            // Send to master destination
-//            if (masterDestination != nil) {
-//                OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
-//                [self sendMessage:messageSendCopy];
-//            }
-//            // Get slave destinations
-//            NSArray *slaveDestinations = [destinations filtered:^BOOL(LKDestination *destination) {
-//                return [destination.kind isEqual:@"slave"];
-//            }];
-//            // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
-//            __block BOOL hasSession;
-//            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-//                for (LKDestination *slaveDestination in slaveDestinations) {
-//                    hasSession = [self.primaryStorage containsSession:slaveDestination.hexEncodedPublicKey deviceId:1 protocolContext:transaction];
-//                    if (hasSession) {
-//                        OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestinations];
-//                        [self sendMessage:messageSendCopy];
-//                    }
-//                    else {
-//                        //RYAN TODO: If current device has no session with the slave device try to build a session with the slave device.
-//                        OWSMessageSend *sessionRequestMessage = [self getMultiDeviceSessionRequestMessageForHexEncodedPublicKey:slaveDestination.hexEncodedPublicKey forThread:messageSend.thread];
-//                        [self sendMessage:sessionRequestMessage];
-//                    }
-//                }
-//
-//            }];
-//        })
-//        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
-//            [self messageSendDidFail:messageSend deviceMessages:@{} statusCode:0 error:error responseData:nil];
-//        }) retainUntilComplete];
     } else {
         BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];
         BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
