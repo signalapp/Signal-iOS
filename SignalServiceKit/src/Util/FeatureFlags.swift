@@ -262,7 +262,4 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let useZKGroups = false
-
-    @objc
-    public static let requiredProfileNames = build.includes(.qa)
 }
