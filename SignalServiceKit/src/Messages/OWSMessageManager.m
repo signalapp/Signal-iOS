@@ -422,7 +422,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     // Loki: Handle friend request acceptance if needed
-    // TODO: We'll need to fix this up if we ever start using sync messages
     [self handleFriendRequestAcceptanceIfNeededWithEnvelope:envelope transaction:transaction];
     
     if (envelope.content != nil) {
@@ -446,6 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
             PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage getPreKeyBundleWithTransaction:transaction];
             if (bundle == nil) {
                 OWSFailDebug(@"Failed to create a pre key bundle.");
+                return;
             }
             [self.primaryStorage setPreKeyBundle:bundle forContact:envelope.source transaction:transaction];
             
@@ -1780,8 +1780,6 @@ NS_ASSUME_NONNULL_BEGIN
     // If we get an envelope that isn't a friend request, then we can infer that we had to use
     // Signal cipher decryption and thus that we have a session with the other person.
     if (envelope.isGroupChatMessage || envelope.type == SSKProtoEnvelopeTypeFriendRequest) return;
-    // If we're already friends then there's no point in continuing
-    // TODO: We'll need to fix this up if we ever start using sync messages
     // Currently this uses `envelope.source` but with sync messages we'll need to use the message sender ID
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     // We shouldn't be able to skip from none to friends under normal circumstances
