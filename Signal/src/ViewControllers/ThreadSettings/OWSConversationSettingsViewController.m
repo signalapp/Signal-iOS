@@ -656,7 +656,6 @@ const CGFloat kIconViewLength = 24;
                                             iconName:@"table_ic_group_members"
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                          OWSConversationSettingsViewController, @"group_members")];
-                cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
                 return cell;
             }
             actionBlock:^{

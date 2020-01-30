@@ -37,6 +37,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 + (NSString *)defaultGroupName;
 
 - (BOOL)isLocalUserInGroup;
+- (BOOL)isLocalUserInGroupWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 // all group threads containing recipient as a member
 + (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId

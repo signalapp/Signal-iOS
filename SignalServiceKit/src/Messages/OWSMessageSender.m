@@ -994,7 +994,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Send to master destination
             if (masterDestination != nil) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:masterDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage || isSessionRequestMessage) {
+                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage || isSessionRequestMessage || isGroupMessage) {
                     OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
                     [self sendMessage:messageSendCopy];
                 } else {
@@ -1009,7 +1009,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
             for (LKDestination *slaveDestination in slaveDestinations) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:slaveDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage || isSessionRequestMessage) {
+                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage || isSessionRequestMessage || isGroupMessage) {
                     OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestination];
                     [self sendMessage:messageSendCopy];
                 } else {

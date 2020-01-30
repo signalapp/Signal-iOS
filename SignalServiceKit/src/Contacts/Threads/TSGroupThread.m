@@ -8,6 +8,8 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import "OWSPrimaryStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -187,12 +189,19 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (BOOL)isLocalUserInGroup
 {
-    NSString *_Nullable localNumber = TSAccountManager.localNumber;
-    if (localNumber == nil) {
-        return NO;
-    }
+    __block BOOL result = NO;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        result = [self isLocalUserInGroupWithTransaction:transaction];
+    }];
+    return result;
+}
 
-    return [self.groupModel.groupMemberIds containsObject:localNumber];
+- (BOOL)isLocalUserInGroupWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    NSString *userHexEncodedPublicKey = TSAccountManager.localNumber;
+    if (userHexEncodedPublicKey == nil) { return NO; }
+    NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
+    return [linkedDeviceHexEncodedPublicKeys intersectsSet:[NSSet setWithArray:self.groupModel.groupMemberIds]];
 }
 
 - (NSString *)name

@@ -584,7 +584,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (groupThread) {
             if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
-                if (!groupThread.isLocalUserInGroup) {
+                if (![groupThread isLocalUserInGroupWithTransaction:transaction]) {
                     OWSLogInfo(@"Ignoring messages for left group.");
                     return;
                 }
@@ -780,7 +780,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (typingMessage.hasGroupID) {
         TSGroupThread *groupThread = [TSGroupThread threadWithGroupId:typingMessage.groupID transaction:transaction];
 
-        if (!groupThread.isLocalUserInGroup) {
+        if (![groupThread isLocalUserInGroupWithTransaction:transaction]) {
             OWSLogInfo(@"Ignoring messages for left group.");
             return;
         }
@@ -989,14 +989,40 @@ NS_ASSUME_NONNULL_BEGIN
             }
              transaction:transaction];
         } else {
-            [OWSRecordTranscriptJob
-             processIncomingSentMessageTranscript:transcript
-             serverID:serverID
-             attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                OWSLogDebug(@"successfully fetched transcript attachments: %lu",
-                            (unsigned long)attachmentStreams.count);
+            if (transcript.isGroupUpdate) {
+                // TODO: This code is pretty much a duplicate of the code in OWSRecordTranscriptJob
+                TSGroupThread *newGroupThread = [TSGroupThread getOrCreateThreadWithGroupId:transcript.dataMessage.group.id groupType:closedGroup transaction:transaction];
+                TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:transcript.dataMessage.group.name
+                                                                        memberIds:transcript.dataMessage.group.members
+                                                                            image:nil
+                                                                          groupId:transcript.dataMessage.group.id
+                                                                        groupType:closedGroup
+                                                                         adminIds:transcript.dataMessage.group.admins];
+                NSString *updateMessage = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel contactsManager:self.contactsManager];
+                newGroupThread.groupModel = newGroupModel;
+                [newGroupThread saveWithTransaction:transaction];
+                // Loki: Try to establish sessions with all members when a group is created or updated
+                [self establishSessionsWithMembersIfNeeded: transcript.dataMessage.group.members forThread:newGroupThread transaction:transaction];
+                [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:transcript.dataMessage.expireTimer
+                                                                                          thread:newGroupThread
+                                                                      createdByRemoteRecipientId:nil
+                                                                          createdInExistingGroup:YES
+                                                                                     transaction:transaction];
+                TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp
+                                                                             inThread:newGroupThread
+                                                                          messageType:TSInfoMessageTypeGroupUpdate
+                                                                        customMessage:updateMessage];
+                [infoMessage saveWithTransaction:transaction];
+            } else {
+                [OWSRecordTranscriptJob
+                 processIncomingSentMessageTranscript:transcript
+                 serverID:(serverID ?: 0)
+                 attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                    OWSLogDebug(@"successfully fetched transcript attachments: %lu",
+                                (unsigned long)attachmentStreams.count);
+                }
+                 transaction:transaction];
             }
-             transaction:transaction];
         }
     } else if (syncMessage.request) {
         if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeContacts) {
@@ -1300,7 +1326,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Ensure we are in the group.
-    if (!gThread.isLocalUserInGroup) {
+    if (![gThread isLocalUserInGroupWithTransaction:transaction]) {
         OWSLogWarn(@"Ignoring 'Request Group Info' message for group we no longer belong to.");
         return;
     }

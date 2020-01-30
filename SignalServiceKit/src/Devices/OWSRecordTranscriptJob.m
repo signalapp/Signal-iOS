@@ -90,8 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Don't continue processing lest we print a bubble for the session reset.
         return;
     }
-
-    // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
+    
     TSOutgoingMessage *outgoingMessage =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:transcript.timestamp
                                                            inThread:transcript.thread

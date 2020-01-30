@@ -12,9 +12,13 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         func getDisplayName(for hexEncodedPublicKey: String) -> String {
             return DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
         }
-        result = result.sorted {
-            getDisplayName(for: $0) < getDisplayName(for: $1)
+        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        var linkedDeviceHexEncodedPublicKeys: Set<String> = [ userHexEncodedPublicKey ]
+        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+            linkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
         }
+        result = result.filter { !linkedDeviceHexEncodedPublicKeys.contains($0) }
+        result = result.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
         return result
     }()
     

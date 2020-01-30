@@ -6,6 +6,7 @@
 #import "FunctionalUtil.h"
 #import "NSString+SSK.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import "OWSIdentityManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -141,7 +142,7 @@ const int32_t kGroupIdLength = 16;
     }
     
     if (membersWhoJoined.count > 0) {
-        updatedGroupInfoString = [NSString stringWithFormat:@"%d members joined", membersWhoJoined.count];
+        updatedGroupInfoString = @"New members joined";
     }
     
     if (_removedMembers.count > 0) {
