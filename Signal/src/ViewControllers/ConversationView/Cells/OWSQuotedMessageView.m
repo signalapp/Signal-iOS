@@ -554,9 +554,9 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                 LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.quotedMessage.threadId transaction:transaction];
                 if (publicChat != nil) {
-                    quotedAuthor = [LKDisplayNameUtilities getPublicChatDisplayNameFor:self.quotedMessage.authorId in:publicChat.channel on:publicChat.server using:transaction];
+                    quotedAuthor = [LKUserDisplayNameUtilities getPublicChatDisplayNameFor:self.quotedMessage.authorId in:publicChat.channel on:publicChat.server using:transaction];
                 } else {
-                    quotedAuthor = [LKDisplayNameUtilities getPrivateChatDisplayNameFor:self.quotedMessage.authorId];
+                    quotedAuthor = [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:self.quotedMessage.authorId];
                 }
             }];
         }

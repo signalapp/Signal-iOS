@@ -73,7 +73,7 @@ final class ConversationTitleView : UIView {
         let title: String
         if thread.isGroupThread() {
             if thread.name().isEmpty {
-                title = DisplayNameUtilities.getDisplayName(for: thread as! TSGroupThread)
+                title = GroupDisplayNameUtilities.getDefaultDisplayName(for: thread as! TSGroupThread)
             } else {
                 title = thread.name()
             }
@@ -82,7 +82,7 @@ final class ConversationTitleView : UIView {
                 title = NSLocalizedString("Note to Self", comment: "")
             } else {
                 let hexEncodedPublicKey = thread.contactIdentifier()!
-                title = DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
+                title = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
             }
         }
         titleLabel.text = title

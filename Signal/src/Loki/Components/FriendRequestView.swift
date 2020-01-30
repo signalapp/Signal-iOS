@@ -122,7 +122,7 @@ final class FriendRequestView : UIView {
                 }
             }()
             let contactID = message.authorId
-            let displayName = DisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
+            let displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
             label.text = String(format: format, displayName)
         case .outgoing:
             guard let message = message as? TSOutgoingMessage else { preconditionFailure() }
@@ -139,7 +139,7 @@ final class FriendRequestView : UIView {
             }()
             if let format = format {
                 let contactID = message.thread.contactIdentifier()!
-                let displayName = DisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
+                let displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
                 label.text = String(format: format, displayName)
             }
             label.isHidden = (format == nil)

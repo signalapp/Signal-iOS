@@ -30,9 +30,9 @@ public final class MentionUtilities : NSObject {
                     displayName = OWSProfileManager.shared().localProfileName()
                 } else {
                     if let publicChat = publicChat {
-                        displayName = DisplayNameUtilities.getPublicChatDisplayName(for: hexEncodedPublicKey, in: publicChat.channel, on: publicChat.server)
+                        displayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: hexEncodedPublicKey, in: publicChat.channel, on: publicChat.server)
                     } else {
-                        displayName = DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey)
+                        displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey)
                     }
                 }
                 if let displayName = displayName {

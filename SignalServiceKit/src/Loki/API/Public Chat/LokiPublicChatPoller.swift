@@ -86,7 +86,7 @@ public final class LokiPublicChatPoller : NSObject {
                     }
                     var senderDisplayName = ""
                     if let masterHexEncodedPublicKey = masterHexEncodedPublicKey {
-                        senderDisplayName = DisplayNameUtilities.getPublicChatDisplayName(for: senderHexEncodedPublicKey, in: publicChat.channel, on: publicChat.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
+                        senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderHexEncodedPublicKey, in: publicChat.channel, on: publicChat.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
                     } else {
                         senderDisplayName = generateDisplayName(from: message.displayName)
                     }

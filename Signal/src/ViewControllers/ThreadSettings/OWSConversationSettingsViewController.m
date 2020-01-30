@@ -530,7 +530,7 @@ const CGFloat kIconViewLength = 24;
                                      [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
 
                                      UILabel *subtitleLabel = [UILabel new];
-                                     subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), [LKDisplayNameUtilities getPrivateChatDisplayNameFor:self.thread.contactIdentifier]];
+                                     subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:self.thread.contactIdentifier]];
                                      subtitleLabel.textColor = LKColors.text;
                                      subtitleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
                                      subtitleLabel.numberOfLines = 0;

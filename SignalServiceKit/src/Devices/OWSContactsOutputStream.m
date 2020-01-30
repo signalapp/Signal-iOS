@@ -32,7 +32,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
 
     SSKProtoContactDetailsBuilder *contactBuilder =
         [SSKProtoContactDetails builderWithNumber:signalAccount.recipientId];
-    [contactBuilder setName:[LKDisplayNameUtilities getPrivateChatDisplayNameFor:signalAccount.recipientId] ?: signalAccount.recipientId];
+    [contactBuilder setName:[LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:signalAccount.recipientId] ?: signalAccount.recipientId];
     [contactBuilder setColor:conversationColorName];
 
     if (recipientIdentity != nil) {

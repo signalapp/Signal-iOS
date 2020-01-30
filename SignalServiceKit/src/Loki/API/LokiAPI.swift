@@ -333,9 +333,9 @@ public final class LokiAPI : NSObject {
             candidates = cache.flatMap { hexEncodedPublicKey in
                 let uncheckedDisplayName: String?
                 if let publicChat = publicChat {
-                    uncheckedDisplayName = DisplayNameUtilities.getPublicChatDisplayName(for: hexEncodedPublicKey, in: publicChat.channel, on: publicChat.server)
+                    uncheckedDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: hexEncodedPublicKey, in: publicChat.channel, on: publicChat.server)
                 } else {
-                    uncheckedDisplayName = DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey)
+                    uncheckedDisplayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey)
                 }
                 guard let displayName = uncheckedDisplayName else { return nil }
                 guard !displayName.hasPrefix("Anonymous") else { return nil }

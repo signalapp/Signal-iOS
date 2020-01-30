@@ -10,7 +10,7 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
             result.append(hexEncodedPublicKey)
         }
         func getDisplayName(for hexEncodedPublicKey: String) -> String {
-            return DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
+            return UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
         }
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         var linkedDeviceHexEncodedPublicKeys: Set<String> = [ userHexEncodedPublicKey ]
@@ -261,7 +261,7 @@ private extension NewClosedGroupVC {
         private func update() {
             profilePictureView.hexEncodedPublicKey = hexEncodedPublicKey
             profilePictureView.update()
-            displayNameLabel.text = DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
+            displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
             tickImageView.image = hasTick ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
         }
     }

@@ -72,7 +72,7 @@ final class SessionRestorationView : UIView {
         mainStackView.pin(to: self, withInset: Values.mediumSpacing)
         // Update explanation label if possible
         if let contactID = thread.contactIdentifier() {
-            let displayName = DisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
+            let displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
             explanationLabel.text = String(format: NSLocalizedString("Would you like to restore your session with %@?", comment: ""), displayName)
         }
     }

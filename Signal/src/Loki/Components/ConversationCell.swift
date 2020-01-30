@@ -182,7 +182,7 @@ final class ConversationCell : UITableViewCell {
     private func getDisplayName() -> String {
         if threadViewModel.isGroupThread {
             if threadViewModel.name.isEmpty {
-                return DisplayNameUtilities.getDisplayName(for: threadViewModel.threadRecord as! TSGroupThread)
+                return GroupDisplayNameUtilities.getDefaultDisplayName(for: threadViewModel.threadRecord as! TSGroupThread)
             } else {
                 return threadViewModel.name
             }
@@ -191,7 +191,7 @@ final class ConversationCell : UITableViewCell {
                 return NSLocalizedString("Note to Self", comment: "")
             } else {
                 let hexEncodedPublicKey = threadViewModel.contactIdentifier!
-                return DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
+                return UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
             }
         }
     }
