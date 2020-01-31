@@ -219,3 +219,31 @@ public extension GRDBWriteTransaction {
         }
     }
 }
+
+// MARK: -
+
+@objc
+public extension SDSAnyReadTransaction {
+    var unwrapGrdbRead: GRDBReadTransaction {
+        switch readTransaction {
+        case .yapRead:
+            owsFail("Invalid transaction type.")
+        case .grdbRead(let grdbRead):
+            return grdbRead
+        }
+    }
+}
+
+// MARK: -
+
+@objc
+public extension SDSAnyWriteTransaction {
+    var unwrapGrdbWrite: GRDBWriteTransaction {
+        switch writeTransaction {
+        case .yapWrite:
+            owsFail("Invalid transaction type.")
+        case .grdbWrite(let grdbWrite):
+            return grdbWrite
+        }
+    }
+}
