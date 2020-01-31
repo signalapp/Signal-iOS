@@ -343,11 +343,11 @@ class IncomingGroupsV2MessageQueue: NSObject {
             let canJobBeProcessedWithoutUpdate = self.canJobBeProcessedWithoutUpdate(jobInfo: jobInfo, transaction: transaction)
             if !canJobBeProcessedWithoutUpdate {
                 if jobInfos.count > 0 {
-                    // Can't add "remote" job to "local" batch, abort and process jobs
+                    // Can't add "update" job to "no update" batch, abort and process jobs
                     // already added to batch.
                     break
                 }
-                // Remote batches should only contain a single job.
+                // Update batches should only contain a single job.
                 isUpdateBatch = true
                 jobInfos.append(jobInfo)
                 break
@@ -427,22 +427,23 @@ class IncomingGroupsV2MessageQueue: NSObject {
     private func updateGroupAndProcessJobAsync(jobInfo: IncomingGroupsV2MessageJobInfo,
                                                completion: @escaping BatchCompletionBlock) {
 
-        updateGroupPromise(jobInfo: jobInfo)
-            .map(on: DispatchQueue.global()) { (updateOutcome: UpdateOutcome) throws -> Void in
-                switch updateOutcome {
-                case .successShouldProcess:
-                    self.databaseStorage.write { transaction in
-                        let processedJobs = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)
-                        completion(processedJobs, transaction)
-                    }
-                case .failureShouldDiscard:
-                    throw GroupsV2Error.shouldDiscard
-                case .failureShouldRetry:
-                    throw GroupsV2Error.shouldRetry
-                case .failureShouldFailoverToService:
-                    owsFailDebug("Invalid embeddedUpdateOutcome: .failureShouldFailoverToService.")
-                    throw GroupsV2Error.shouldDiscard
+        firstly {
+            updateGroupPromise(jobInfo: jobInfo)
+        }.map(on: DispatchQueue.global()) { (updateOutcome: UpdateOutcome) throws -> Void in
+            switch updateOutcome {
+            case .successShouldProcess:
+                self.databaseStorage.write { transaction in
+                    let processedJobs = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)
+                    completion(processedJobs, transaction)
                 }
+            case .failureShouldDiscard:
+                throw GroupsV2Error.shouldDiscard
+            case .failureShouldRetry:
+                throw GroupsV2Error.shouldRetry
+            case .failureShouldFailoverToService:
+                owsFailDebug("Invalid embeddedUpdateOutcome: .failureShouldFailoverToService.")
+                throw GroupsV2Error.shouldDiscard
+            }
         }.recover(on: .global()) { error in
             Logger.warn("error: \(type(of: error)) \(error)")
 
