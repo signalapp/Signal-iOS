@@ -56,8 +56,8 @@ public class GRDBSchemaMigrator: NSObject {
         case dropContactQuery
         case indexFailedJob
         case groupsV2MessageJobs
-        case experienceUpgradeSnooze
         case addUserInfoToInteractions
+        case recreateExperienceUpgradeWithNewColumns
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -331,23 +331,31 @@ public class GRDBSchemaMigrator: NSObject {
             try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_uniqueId", on: "model_IncomingGroupsV2MessageJob", columns: ["uniqueId"])
         }
 
-        migrator.registerMigration(MigrationId.experienceUpgradeSnooze.rawValue) { db in
-            try db.alter(table: ExperienceUpgradeRecord.databaseTableName, body: { alteration in
-                alteration.add(column: "firstViewedTimestamp", .double)
-                alteration.add(column: "lastSnoozedTimestamp", .double)
-                alteration.add(column: "isComplete", .boolean)
-            })
-
-            // Mark all legacy experience upgrades as complete. This is not
-            // strictly necessary since we only check a subset of ids that should
-            // be active at a given time, but it's nice to keep things tidy.
-            try db.execute(sql: "UPDATE model_ExperienceUpgrade SET isComplete = 1")
-        }
-
         migrator.registerMigration(MigrationId.addUserInfoToInteractions.rawValue) { db in
             try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                 table.add(column: "infoMessageUserInfo", .blob)
             }
+        }
+
+        migrator.registerMigration(MigrationId.recreateExperienceUpgradeWithNewColumns.rawValue) { db in
+            // It's safe to just throw away old experience upgrade data since
+            // there are no campaigns actively running that we need to preserve
+            try db.drop(table: "model_ExperienceUpgrade")
+            try db.create(table: "model_ExperienceUpgrade", body: { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("recordType", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("firstViewedTimestamp", .double)
+                    .notNull()
+                table.column("lastSnoozedTimestamp", .double)
+                    .notNull()
+                table.column("isComplete", .boolean)
+                    .notNull()
+            })
         }
 
         return migrator
