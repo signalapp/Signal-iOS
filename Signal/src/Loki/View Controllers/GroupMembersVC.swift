@@ -48,8 +48,18 @@ final class GroupMembersVC : UIViewController, UITableViewDataSource {
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
         // Set up table view
+        let separator = UIView()
+        separator.backgroundColor = Colors.separator
+        separator.set(.height, to: Values.separatorThickness)
+        view.addSubview(separator)
+        separator.pin(.leading, to: .leading, of: view)
+        separator.pin(.top, to: .top, of: view)
+        separator.pin(.trailing, to: .trailing, of: view)
         view.addSubview(tableView)
-        tableView.pin(to: view)
+        tableView.pin(.leading, to: .leading, of: view)
+        tableView.pin(.top, to: .bottom, of: separator)
+        tableView.pin(.trailing, to: .trailing, of: view)
+        tableView.pin(.bottom, to: .bottom, of: view)
     }
     
     // MARK: Data
