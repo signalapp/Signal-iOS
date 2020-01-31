@@ -35,6 +35,9 @@ public extension UpdateGroupViewController {
             let oldGroupMembership = oldGroupModel.groupMembership
             var groupMembershipBuilder = oldGroupMembership.asBuilder
             for address in v1Members {
+                guard address.uuid != nil else {
+                    continue
+                }
                 if !oldGroupMembership.allUsers.contains(address) {
                     groupMembershipBuilder.add(address, isAdministrator: false, isPending: false)
                 }

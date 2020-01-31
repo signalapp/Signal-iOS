@@ -35,8 +35,9 @@ public class GroupsV2Protos {
                                        groupV2Params: GroupV2Params) throws -> GroupsProtoMember {
         let builder = GroupsProtoMember.builder()
         builder.setRole(role)
-        builder.setPresentation(try presentationData(profileKeyCredential: profileKeyCredential,
-                                                     groupV2Params: groupV2Params))
+        let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
+                                                     groupV2Params: groupV2Params)
+        builder.setPresentation(presentationData)
 
         return try builder.build()
     }
@@ -185,6 +186,10 @@ public class GroupsV2Protos {
     public class func parse(groupProto: GroupsProtoGroup,
                             groupV2Params: GroupV2Params) throws -> GroupV2Snapshot {
 
+        // This client can learn of profile keys from parsing group state protos.
+        // After parsing, we should fill in profileKeys in the profile manager.
+        var profileKeys = [UUID: Data]()
+
         // GroupsV2 TODO: Is GroupsProtoAccessControl required?
         guard let accessControl = groupProto.accessControl else {
             throw OWSAssertionError("Missing accessControl.")
@@ -204,9 +209,11 @@ public class GroupsV2Protos {
             guard memberProto.hasRole, let role = memberProto.role else {
                 throw OWSAssertionError("Group member missing role.")
             }
-            guard let profileKey = memberProto.profileKey else {
-                throw OWSAssertionError("Group member missing profileKey.")
+            guard let profileKeyCiphertextData = memberProto.profileKey else {
+                throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
             }
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
             // NOTE: presentation is set when creating and updating groups, not
             //       when fetching group state.
             guard memberProto.hasJoinedAtVersion else {
@@ -221,6 +228,8 @@ public class GroupsV2Protos {
                                                     profileKey: profileKey,
                                                     joinedAtVersion: joinedAtVersion)
             members.append(member)
+
+            profileKeys[uuid] = profileKey
         }
 
         var pendingMembers = [GroupV2SnapshotImpl.PendingMember]()
@@ -286,7 +295,8 @@ public class GroupsV2Protos {
                                    pendingMembers: pendingMembers,
                                    accessControlForAttributes: accessControlForAttributes,
                                    accessControlForMembers: accessControlForMembers,
-                                   disappearingMessageToken: disappearingMessageToken)
+                                   disappearingMessageToken: disappearingMessageToken,
+                                   profileKeys: profileKeys)
     }
 
     // MARK: -

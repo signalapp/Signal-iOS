@@ -12,15 +12,18 @@ public struct ChangedGroupModel {
     // newDisappearingMessageToken is only set of DM state changed.
     public let newDisappearingMessageToken: DisappearingMessageToken?
     public let changeAuthorUuid: UUID
+    public let profileKeys: [UUID: Data]
 
     public init(oldGroupModel: TSGroupModel,
                 newGroupModel: TSGroupModel,
                 newDisappearingMessageToken: DisappearingMessageToken?,
-                changeAuthorUuid: UUID) {
+                changeAuthorUuid: UUID,
+                profileKeys: [UUID: Data]) {
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
         self.newDisappearingMessageToken = newDisappearingMessageToken
         self.changeAuthorUuid = changeAuthorUuid
+        self.profileKeys = profileKeys
     }
 }
 
@@ -82,9 +85,9 @@ public class GroupsV2Changes {
         var newMemberAccess = oldGroupAccess.member
         var newAttributesAccess = oldGroupAccess.attributes
 
-        // GroupsV2 TODO: after parsing, we should fill in profileKey if
-        // not already in database. Also when learning of new groups.
-        var newProfileKeys = [UUID: Data]()
+        // This client can learn of profile keys from parsing group state protos.
+        // After parsing, we should fill in profileKeys in the profile manager.
+        var profileKeys = [UUID: Data]()
 
         for action in changeActionsProto.addMembers {
             guard let member = action.added else {
@@ -96,8 +99,8 @@ public class GroupsV2Changes {
             guard let role = member.role else {
                 throw OWSAssertionError("Missing role.")
             }
-            guard let profileKey = member.profileKey else {
-                throw OWSAssertionError("Missing profileKey.")
+            guard let profileKeyCiphertextData = member.profileKey else {
+                throw OWSAssertionError("Missing profileKeyCiphertext.")
             }
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
@@ -108,7 +111,10 @@ public class GroupsV2Changes {
             }
             groupMembershipBuilder.replace(address, isAdministrator: isAdministrator, isPending: false)
 
-            newProfileKeys[uuid] = profileKey
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
+
+            profileKeys[uuid] = profileKey
         }
 
         for action in changeActionsProto.deleteMembers {
@@ -155,7 +161,7 @@ public class GroupsV2Changes {
             guard oldGroupMembership.allMembers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            newProfileKeys[uuid] = profileKey
+            profileKeys[uuid] = profileKey
         }
 
         for action in changeActionsProto.addPendingMembers {
@@ -214,7 +220,7 @@ public class GroupsV2Changes {
             let isAdministrator = oldGroupMembership.isAdministrator(address)
             groupMembershipBuilder.replace(address, isAdministrator: isAdministrator, isPending: false)
 
-            newProfileKeys[uuid] = profileKey
+            profileKeys[uuid] = profileKey
         }
 
         if let action = changeActionsProto.modifyTitle {
@@ -278,6 +284,7 @@ public class GroupsV2Changes {
         return ChangedGroupModel(oldGroupModel: oldGroupModel,
                                  newGroupModel: newGroupModel,
                                  newDisappearingMessageToken: newDisappearingMessageToken,
-                                 changeAuthorUuid: changeAuthorUuid)
+                                 changeAuthorUuid: changeAuthorUuid,
+                                 profileKeys: profileKeys)
     }
 }
