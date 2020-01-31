@@ -174,13 +174,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                 storage.dbReadWriteConnection.removeObject(forKey: server, inCollection: authTokenCollection)
             }
             throw error
-        }.retryingIfNeeded(maxRetryCount: maxRetryCount).map { message in
-            Analytics.shared.track("Group Message Sent")
-            return message
-        }.recover(on: DispatchQueue.global()) { error -> Promise<LokiPublicChatMessage> in
-            Analytics.shared.track("Failed to Send Group Message")
-            throw error
-        }
+        }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
     public static func getDeletedMessageServerIDs(for channel: UInt64, on server: String) -> Promise<[UInt64]> {

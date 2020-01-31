@@ -92,8 +92,6 @@
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
 
     [self updateTableContents];
-    
-    [LKAnalytics.shared track:@"Settings Opened"];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -536,7 +534,6 @@
     }
     UIActivityViewController *shareVC = [[UIActivityViewController alloc] initWithActivityItems:@[ hexEncodedPublicKey ] applicationActivities:nil];
     [self presentViewController:shareVC animated:YES completion:nil];
-    [LKAnalytics.shared track:@"Public Key Shared"];
 }
 
 - (void)showQRCode

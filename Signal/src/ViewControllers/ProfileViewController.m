@@ -404,8 +404,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     if ([OWSProfileManager.sharedManager isProfileNameTooLong:normalizedProfileName]) {
         return [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"Please pick a shorter display name", @"")];
     }
-
-    [LKAnalytics.shared track:@"Display Name Updated"];
     
     // Show an activity indicator to block the UI during the profile upload.
     [ModalActivityIndicatorViewController

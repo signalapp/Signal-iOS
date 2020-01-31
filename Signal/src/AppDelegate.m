@@ -46,7 +46,6 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
-#import <Mixpanel/Mixpanel.h>
 #import <FirebaseCore/FirebaseCore.h>
 
 @import WebRTC;
@@ -355,12 +354,6 @@ static NSTimeInterval launchStartedAt;
 //        NSLog(@"[Loki] Failed to start P2P server.");
 //    }
   
-    // Loki - Set up beta analytics
-    [Mixpanel sharedInstanceWithToken:@"0410357303b7b6b45b740e6f0e6d34be"];
-    LKAnalytics.shared.trackImplementation = ^(NSString *event) {
-        NSDictionary *properties = @{ @"configuration" : LKBuildConfiguration.current };
-        [Mixpanel.sharedInstance track:event properties:properties];
-    };
 #if DEBUG
 #else
     [FIRApp configure];
@@ -1261,7 +1254,6 @@ static NSTimeInterval launchStartedAt;
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
     NSLog(@"[Loki] Performing background fetch.");
-    [LKAnalytics.shared track:@"Performed Background Fetch"];
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         NSMutableArray *promises = [NSMutableArray new];
         

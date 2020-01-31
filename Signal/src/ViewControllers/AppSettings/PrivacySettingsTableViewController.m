@@ -462,7 +462,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
 - (void)deleteThreadsAndMessages
 {
-    [LKAnalytics.shared track:@"Conversation History Cleared"];
     [ThreadUtil deleteAllContent];
 }
 
@@ -470,11 +469,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled screen security: %@", enabled ? @"ON" : @"OFF");
-    if (enabled) {
-        [LKAnalytics.shared track:@"Screen Security Enabled"];
-    } else {
-        [LKAnalytics.shared track:@"Screen Security Disabled"];
-    }
     [self.preferences setScreenSecurity:enabled];
 }
 
@@ -489,11 +483,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled areTypingIndicatorsEnabled: %@", enabled ? @"ON" : @"OFF");
-    if (enabled) {
-        [LKAnalytics.shared track:@"Typing Indicators Enabled"];
-    } else {
-        [LKAnalytics.shared track:@"Typing Indicators Disabled"];
-    }
     [self.typingIndicators setTypingIndicatorsEnabledWithValue:enabled];
 }
 
@@ -549,11 +538,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
-    if (sender.isOn) {
-        [LKAnalytics.shared track:@"Link Previews Enabled"];
-    } else {
-        [LKAnalytics.shared track:@"Link Previews Disabled"];
-    }
     SSKPreferences.areLinkPreviewsEnabled = sender.isOn;
 }
 
@@ -576,12 +560,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     }
 
     OWSLogInfo(@"trying to set is screen lock enabled: %@", @(shouldBeEnabled));
-
-    if (shouldBeEnabled) {
-        [LKAnalytics.shared track:@"Screen Lock Enabled"];
-    } else {
-        [LKAnalytics.shared track:@"Screen Lock Disabled"];
-    }
     
     [OWSScreenLock.sharedManager setIsScreenLockEnabled:shouldBeEnabled];
 }
