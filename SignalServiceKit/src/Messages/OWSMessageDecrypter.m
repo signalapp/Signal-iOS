@@ -480,16 +480,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         return failureBlock(error);
     }
 
-    if (!envelope.hasServerTimestamp) {
-        NSString *errorDescription = @"UD Envelope is missing server timestamp.";
-        // TODO: We're seeing incoming UD envelopes without a server timestamp on staging.
-        // Until this is fixed, disabling this assert.
-        //        OWSFailDebug(@"%@", errorDescription);
-        OWSLogError(@"%@", errorDescription);
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
-        return failureBlock(error);
-    }
-    UInt64 serverTimestamp = envelope.serverTimestamp;
+    UInt64 serverTimestamp = envelope.timestamp;
 
     id<SMKCertificateValidator> certificateValidator =
         [[SMKCertificateDefaultValidator alloc] initWithTrustRoot:self.udManager.trustRoot];
@@ -599,7 +590,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         }
 
         NSString *source = decryptResult.senderRecipientId;
-        if (source.length < 1 || !source.isValidE164) {
+        if (source.length < 1) {
             NSString *errorDescription = @"Invalid UD sender.";
             OWSFailDebug(@"%@", errorDescription);
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
@@ -618,6 +609,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         SSKProtoEnvelopeBuilder *envelopeBuilder = [envelope asBuilder];
         [envelopeBuilder setSource:source];
         [envelopeBuilder setSourceDevice:(uint32_t)sourceDeviceId];
+        if (decryptResult.messageType == SMKMessageTypeLokiFriendRequest) {
+            [envelopeBuilder setType:SSKProtoEnvelopeTypeFriendRequest];
+            OWSLogInfo(@"SMKMessageTypeLokiFriendRequest");
+        }
         NSError *envelopeBuilderError;
         NSData *_Nullable newEnvelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&envelopeBuilderError];
         if (envelopeBuilderError || !newEnvelopeData) {
