@@ -18,12 +18,23 @@ public class RemoteConfig: NSObject {
 
     @objc
     public static var pinsForEveryone: Bool {
+        // If we've turned off the KBS feature we don't want to present the
+        // pins for everyone migration even if this user is in the bucket.
+        guard kbs else { return false }
         return isEnabled("ios.pinsForEveryone")
     }
 
     @objc
     public static var profileNameReminder: Bool {
         return isEnabled("ios.profileNameReminder")
+    }
+
+    @objc
+    public static var kbs: Bool {
+        // This feature latches "on" – once they have a master key in KBS,
+        // even if we turn it off on the server they will keep using KBS.
+        guard !KeyBackupService.hasMasterKey else { return true }
+        return isEnabled("ios.kbs")
     }
 
     private static func isEnabled(_ key: String, defaultValue: Bool = false) -> Bool {

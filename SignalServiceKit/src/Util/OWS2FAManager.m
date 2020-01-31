@@ -99,7 +99,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 {
     // Identify what version of 2FA we're using
     if (OWSKeyBackupService.hasMasterKey) {
-        OWSAssertDebug(SSKFeatureFlags.registrationLockV2);
+        OWSAssertDebug(RemoteConfig.kbs);
         return OWS2FAMode_V2;
     } else if (self.pinCode != nil) {
         return OWS2FAMode_V1;
@@ -135,7 +135,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     // operate with pins in other numbering systems.
     pin = pin.ensureArabicNumerals;
 
-    if (!SSKFeatureFlags.registrationLockV2) {
+    if (!RemoteConfig.kbs) {
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [OWS2FAManager.keyValueStore setString:pin key:kOWS2FAManager_PinCode transaction:transaction];
         }];
@@ -171,7 +171,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     // operate with pins in other numbering systems.
     pin = pin.ensureArabicNumerals;
 
-    if (SSKFeatureFlags.registrationLockV2) {
+    if (RemoteConfig.kbs) {
         [[OWSKeyBackupService generateAndBackupKeysWithPin:pin].then(^{
             NSString *token = [OWSKeyBackupService deriveRegistrationLockToken];
             TSRequest *request = [OWSRequestFactory enableRegistrationLockV2RequestWithToken:token];
