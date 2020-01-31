@@ -679,8 +679,6 @@ public class GroupManager: NSObject {
                                            dmConfiguration: OWSDisappearingMessagesConfiguration?,
                                            groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
-        let shouldSendMessage = true
-
         switch groupsVersion {
         case .V1:
             return updateExistingGroupV1(groupId: groupId,
@@ -688,7 +686,6 @@ public class GroupManager: NSObject {
                                          avatarData: avatarData,
                                          groupMembership: groupMembership,
                                          groupAccess: groupAccess,
-                                         shouldSendMessage: shouldSendMessage,
                                          dmConfiguration: dmConfiguration,
                                          groupUpdateSourceAddress: groupUpdateSourceAddress)
         case .V2:
@@ -697,7 +694,6 @@ public class GroupManager: NSObject {
                                          avatarData: avatarData,
                                          groupMembership: groupMembership,
                                          groupAccess: groupAccess,
-                                         shouldSendMessage: shouldSendMessage,
                                          dmConfiguration: dmConfiguration,
                                          groupUpdateSourceAddress: groupUpdateSourceAddress)
 
@@ -710,7 +706,6 @@ public class GroupManager: NSObject {
                                               avatarData: Data? = nil,
                                               groupMembership: GroupMembership,
                                               groupAccess: GroupAccess,
-                                              shouldSendMessage: Bool,
                                               dmConfiguration: OWSDisappearingMessagesConfiguration?,
                                               groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
@@ -742,10 +737,6 @@ public class GroupManager: NSObject {
                 // Don't bother sending a message if the update was redundant.
                 return Promise.value(groupThread)
             }
-            guard shouldSendMessage else {
-                return Promise.value(groupThread)
-            }
-
             return self.sendGroupUpdateMessage(thread: groupThread)
                 .map(on: .global()) { _ in
                     return groupThread
@@ -761,7 +752,6 @@ public class GroupManager: NSObject {
                                               avatarData: Data? = nil,
                                               groupMembership: GroupMembership,
                                               groupAccess: GroupAccess,
-                                              shouldSendMessage: Bool,
                                               dmConfiguration: OWSDisappearingMessagesConfiguration?,
                                               groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
@@ -781,19 +771,8 @@ public class GroupManager: NSObject {
                                                                  transaction: transaction)
                 return (updateInfo, changeSet)
             }
-        }.then(on: .global()) { (_: UpdateInfo, changeSet: GroupsV2ChangeSet) throws -> Promise<UpdatedV2Group> in
+        }.then(on: .global()) { (_: UpdateInfo, changeSet: GroupsV2ChangeSet) throws -> Promise<TSGroupThread> in
             return groupsV2Swift.updateExistingGroupOnService(changeSet: changeSet)
-        }.then(on: .global()) { (updatedV2Group: UpdatedV2Group) throws -> Promise<TSGroupThread> in
-
-            guard shouldSendMessage else {
-                return Promise.value(updatedV2Group.groupThread)
-            }
-
-            return self.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
-                                               changeActionsProtoData: updatedV2Group.changeActionsProtoData)
-                .map(on: .global()) { _ in
-                    return updatedV2Group.groupThread
-            }
         }
         // GroupsV2 TODO: Handle redundant change error.
     }
@@ -891,13 +870,8 @@ public class GroupManager: NSObject {
             return simpleUpdate()
         }
 
-        return firstly {
-            return self.groupsV2Swift.updateDisappearingMessageStateOnService(groupThread: groupThread,
-                                                                              disappearingMessageToken: disappearingMessageToken)
-        }.then(on: .global()) { (updatedV2Group: UpdatedV2Group) in
-            return sendGroupUpdateMessage(thread: groupThread,
-                                          changeActionsProtoData: updatedV2Group.changeActionsProtoData)
-        }
+        return groupsV2Swift.updateDisappearingMessageStateOnService(groupThread: groupThread,
+            disappearingMessageToken: disappearingMessageToken).asVoid()
     }
 
     public static func updateDisappearingMessagesInDatabaseAndCreateMessages(token newToken: DisappearingMessageToken,
@@ -942,23 +916,81 @@ public class GroupManager: NSObject {
 
     public static func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
 
-        // For now, always send update messages when accepting invites.
-        let shouldSendMessage = true
+        return groupsV2Swift.acceptInviteToGroupV2(groupThread: groupThread)
+    }
 
-        return firstly {
-            return self.groupsV2Swift.acceptInviteToGroupV2(groupThread: groupThread)
-        }.then(on: .global()) { (updatedV2Group: UpdatedV2Group) throws -> Promise<TSGroupThread> in
+    // MARK: - Leave Group / Decline Invite
 
-            guard shouldSendMessage else {
-                return Promise.value(updatedV2Group.groupThread)
-            }
+    @objc
+    public static func leaveGroupOrDeclineInviteObjc(groupThread: TSGroupThread) -> AnyPromise {
+        return AnyPromise(leaveGroupOrDeclineInvite(groupThread: groupThread))
+    }
 
-            return self.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
-                                               changeActionsProtoData: updatedV2Group.changeActionsProtoData)
-                .map(on: .global()) { _ in
-                    return updatedV2Group.groupThread
-            }
+    public static func leaveGroupOrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+        switch groupThread.groupModel.groupsVersion {
+        case .V1:
+            return leaveGroupV1(groupId: groupThread.groupModel.groupId)
+        case .V2:
+            return leaveGroupV2OrDeclineInvite(groupThread: groupThread)
         }
+    }
+
+    private static func leaveGroupV1(groupId: Data) -> Promise<TSGroupThread> {
+        guard let localAddress = self.tsAccountManager.localAddress else {
+            return Promise(error: OWSAssertionError("Missing localAddress."))
+        }
+        return databaseStorage.write(.promise) { transaction in
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                throw OWSAssertionError("Missing group.")
+            }
+            let oldGroupModel = groupThread.groupModel
+            // Note that we consult allUsers which includes pending members.
+            guard oldGroupModel.groupMembership.allUsers.contains(localAddress) else {
+                throw OWSAssertionError("Local user is not a member of the group.")
+            }
+
+            let messageBuilder = TSOutgoingMessageBuilder(thread: groupThread)
+            messageBuilder.groupMetaMessage = .quit
+            let message = messageBuilder.build()
+            self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+
+            let threadMessageCount = groupThread.numberOfInteractions(with: transaction)
+            if threadMessageCount > 0 {
+                let infoMessage = TSInfoMessage(timestamp: message.timestamp,
+                                                in: groupThread,
+                                                messageType: .typeGroupQuit)
+                infoMessage.anyInsert(transaction: transaction)
+            }
+
+            var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
+            groupMembershipBuilder.remove(localAddress)
+            let newGroupMembership = groupMembershipBuilder.build()
+            let groupAccess = try oldGroupModel.groupAccessOrDefault()
+            let newGroupModel = try self.buildGroupModel(groupId: groupId,
+                                                         name: oldGroupModel.groupName,
+                                                         avatarData: oldGroupModel.groupAvatarData,
+                                                         groupMembership: newGroupMembership,
+                                                         groupAccess: groupAccess,
+                                                         groupsVersion: oldGroupModel.groupsVersion,
+                                                         groupV2Revision: oldGroupModel.groupV2Revision,
+                                                         groupSecretParamsData: nil,
+                                                         newGroupSeed: nil,
+                                                         transaction: transaction)
+            // GroupsV2 TODO: Do we need to set groupUpdateSourceAddress here?
+            let result = try self.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
+                                                                                          newGroupModel: newGroupModel,
+                                                                                          groupUpdateSourceAddress: nil,
+                                                                                          transaction: transaction)
+            return result.groupThread
+        }
+    }
+
+    private static func leaveGroupV2OrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
+            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
+        }
+
+        return groupsV2Swift.leaveGroupV2OrDeclineInvite(groupThread: groupThread)
     }
 
     // MARK: - Messages

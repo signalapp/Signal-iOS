@@ -61,12 +61,14 @@ public protocol GroupsV2Swift {
     // On success returns a group thread model that reflects the
     // latest state in the service, which (due to races) might
     // reflect changes after the change set.
-    func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group>
+    func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread>
 
-    func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<UpdatedV2Group>
+    func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread>
+
+    func leaveGroupV2OrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread>
 
     func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
-                                                 disappearingMessageToken: DisappearingMessageToken) -> Promise<UpdatedV2Group>
+                                                 disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
 }
@@ -175,19 +177,6 @@ public class GroupV2ContextInfo: NSObject {
 
 // MARK: -
 
-public struct UpdatedV2Group {
-    public let groupThread: TSGroupThread
-    public let changeActionsProtoData: Data
-
-    public init(groupThread: TSGroupThread,
-                changeActionsProtoData: Data) {
-        self.groupThread = groupThread
-        self.changeActionsProtoData = changeActionsProtoData
-    }
-}
-
-// MARK: -
-
 public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
 
     public func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void> {
@@ -244,16 +233,20 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> {
+    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 
-    public func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<UpdatedV2Group> {
+    public func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+        owsFail("Not implemented.")
+    }
+
+    public func leaveGroupV2OrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 
     public func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
-                                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<UpdatedV2Group> {
+                                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 

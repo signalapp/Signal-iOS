@@ -24,7 +24,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         return SSKEnvironment.shared.groupsV2
     }
 
-    fileprivate var tsAccountManager: TSAccountManager {
+    private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
     }
 
@@ -121,7 +121,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return Promise.value(())
         }
 
-        let operation = GroupV2UpdateOperation(groupV2Updates: self, groupSecretParamsData: groupSecretParamsData, groupUpdateMode: groupUpdateMode)
+        let operation = GroupV2UpdateOperation(groupV2Updates: self,
+                                               groupId: groupId,
+                                               groupSecretParamsData: groupSecretParamsData,
+                                               groupUpdateMode: groupUpdateMode)
         operation.promise.done(on: .global()) { _ in
             Logger.verbose("Group refresh succeeded.")
 
@@ -143,7 +146,21 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     }()
 
     private class GroupV2UpdateOperation: OWSOperation {
+
+        // MARK: - Dependencies
+
+        private var databaseStorage: SDSDatabaseStorage {
+            return SDSDatabaseStorage.shared
+        }
+
+        private var tsAccountManager: TSAccountManager {
+            return TSAccountManager.sharedInstance()
+        }
+
+        // MARK: -
+
         let groupV2Updates: GroupV2UpdatesImpl
+        let groupId: Data
         let groupSecretParamsData: Data
         let groupUpdateMode: GroupUpdateMode
 
@@ -153,9 +170,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         // MARK: -
 
         required init(groupV2Updates: GroupV2UpdatesImpl,
+                      groupId: Data,
                       groupSecretParamsData: Data,
                       groupUpdateMode: GroupUpdateMode) {
             self.groupV2Updates = groupV2Updates
+            self.groupId = groupId
             self.groupSecretParamsData = groupSecretParamsData
             self.groupUpdateMode = groupUpdateMode
 
@@ -179,11 +198,48 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
                 self.reportSuccess()
             }.catch(on: .global()) { (error) in
-                // GroupsV2 TODO: Only fail if non-network error.
-                owsFailDebug("Group refresh failed: \(error)")
 
-                self.reportError(withUndefinedRetry: error)
+                var shouldIgnoreError = false
+                switch error {
+                case GroupsV2Error.unauthorized:
+                    if self.shouldIgnoreAuthFailures {
+                        shouldIgnoreError = true
+                    }
+                default:
+                    break
+                }
+
+                let nsError: NSError = error as NSError
+                if shouldIgnoreError {
+                    Logger.warn("Group refresh failed: \(error)")
+                    nsError.isRetryable = false
+                } else {
+                    // GroupsV2 TODO: Only fail if non-network error.
+                    owsFailDebug("Group refresh failed: \(error)")
+                    nsError.isRetryable = true
+                }
+
+                self.reportError(nsError)
             }.retainUntilComplete()
+        }
+
+        private var shouldIgnoreAuthFailures: Bool {
+            return self.databaseStorage.read { transaction in
+                guard let groupThread = TSGroupThread.fetch(groupId: self.groupId, transaction: transaction) else {
+                    // The thread may have been deleted while the refresh was in flight.
+                    Logger.warn("Missing group thread.")
+                    return true
+                }
+                guard let localAddress = self.tsAccountManager.localAddress else {
+                    owsFailDebug("Missing localAddress.")
+                    return false
+                }
+                let isLocalUserInGroup = groupThread.groupModel.groupMembership.allUsers.contains(localAddress)
+                // Auth errors are expected if we've left the group,
+                // but we should still try to refresh so we can learn
+                // if we've been re-added.
+                return !isLocalUserInGroup
+            }
         }
 
         public override func didSucceed() {

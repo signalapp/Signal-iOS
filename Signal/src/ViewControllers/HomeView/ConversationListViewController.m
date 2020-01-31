@@ -1600,10 +1600,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
 
+    // GroupsV2 TODO: Should we leave v2 groups here?
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
-            if (groupThread.isLocalUserInGroup) {
+            if (groupThread.isLocalUserInGroup || groupThread.isGroupV2Thread) {
                 [groupThread softDeleteThreadWithTransaction:transaction];
             } else {
                 [groupThread anyRemoveWithTransaction:transaction];

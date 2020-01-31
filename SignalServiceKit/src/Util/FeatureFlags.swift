@@ -253,6 +253,9 @@ public class FeatureFlags: NSObject {
     public static let groupsV2embedProtosInGroupUpdates = false
 
     @objc
+    public static let groupsV2showV2Indicator = groupsV2 && build.includes(.internalPreview)
+
+    @objc
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc

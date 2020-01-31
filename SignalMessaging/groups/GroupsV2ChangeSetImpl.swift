@@ -71,6 +71,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private var accessForAttributes: GroupV2Access?
 
     private var shouldAcceptInvite = false
+    private var shouldLeaveGroupDeclineInvite = false
 
     // Non-nil if dm state changed.
     private var newDisappearingMessageToken: DisappearingMessageToken?
@@ -232,6 +233,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         shouldAcceptInvite = true
     }
 
+    public func setShouldLeaveGroupDeclineInvite() {
+        assert(!shouldLeaveGroupDeclineInvite)
+        shouldLeaveGroupDeclineInvite = true
+    }
+
     public func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken) {
         assert(self.newDisappearingMessageToken == nil)
         self.newDisappearingMessageToken = newDisappearingMessageToken
@@ -313,6 +319,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             guard let localUuid = self.tsAccountManager.localUuid else {
                 throw OWSAssertionError("Missing localUuid.")
             }
+            let localAddress = SignalServiceAddress(uuid: localUuid)
 
             let oldVersion = currentGroupModel.groupV2Revision
             let newVersion = oldVersion + 1
@@ -426,7 +433,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
             if self.shouldAcceptInvite {
                 // Check that we are still invited.
-                let localAddress = SignalServiceAddress(uuid: localUuid)
                 if currentGroupMembership.allPendingMembers.contains(localAddress) {
                     guard let profileKeyCredential = profileKeyCredentialMap[localUuid] else {
                         throw OWSAssertionError("Missing profile key credential]: \(localUuid)")
@@ -435,6 +441,25 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                     actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,
                                                                                       groupV2Params: groupV2Params))
                     actionsBuilder.addPromotePendingMembers(try actionBuilder.build())
+                    didChange = true
+                }
+            }
+
+            if self.shouldLeaveGroupDeclineInvite {
+                // Check that we are still invited or in group.
+                if currentGroupMembership.allPendingMembers.contains(localAddress) {
+                    // Decline invite
+                    let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
+                    let localUserId = try groupV2Params.userId(forUuid: localUuid)
+                    actionBuilder.setDeletedUserID(localUserId)
+                    actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
+                    didChange = true
+                } else if currentGroupMembership.allMembers.contains(localAddress) {
+                    // Leave group
+                    let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
+                    let localUserId = try groupV2Params.userId(forUuid: localUuid)
+                    actionBuilder.setDeletedUserID(localUserId)
+                    actionsBuilder.addDeleteMembers(try actionBuilder.build())
                     didChange = true
                 }
             }

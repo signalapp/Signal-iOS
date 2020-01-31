@@ -174,21 +174,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
-- (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    SignalServiceAddress *_Nullable localAddress = [TSAccountManager localAddressWithTransaction:transaction];
-    OWSAssertDebug(localAddress);
-
-    [self anyUpdateGroupThreadWithTransaction:transaction
-                                        block:^(TSGroupThread *thread) {
-                                            NSMutableArray<SignalServiceAddress *> *newGroupMembers =
-                                                [thread.groupModel.groupMembers mutableCopy];
-                                            [newGroupMembers removeObject:localAddress];
-                                            [thread.groupModel updateGroupMembers:newGroupMembers];
-                                            
-                                        }];
-}
-
 #pragma mark - Avatar
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
