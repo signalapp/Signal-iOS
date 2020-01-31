@@ -18,7 +18,7 @@ public class SSKPreferences: NSObject {
     @objc
     public static var areLinkPreviewsEnabled: Bool {
         get {
-            return getBool(key: areLinkPreviewsEnabledKey, defaultValue: true)
+            return getBool(key: areLinkPreviewsEnabledKey, defaultValue: false)
         }
         set {
             setBool(newValue, key: areLinkPreviewsEnabledKey)
