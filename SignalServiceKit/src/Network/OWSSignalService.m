@@ -232,12 +232,9 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (AFHTTPSessionManager *)defaultCDNSessionManager
 {
-    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureCDNServerURL];
-    OWSAssertDebug(baseURL);
-    
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+        [[AFHTTPSessionManager alloc] initWithBaseURL:nil sessionConfiguration:sessionConf];
 
     sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     

@@ -62,35 +62,21 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>amazonaws.com</key>
+			<key>149.56.148.124</key>
 			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
 				<key>NSIncludesSubdomains</key>
 				<true/>
-				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
-				<false/>
 			</dict>
-			<key>api-staging.directory.signal.org</key>
+			<key>contentproxy.signal.org</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
-				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
-				<false/>
-			</dict>
-			<key>api.directory.signal.org</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<key>NSIncludesSubdomains</key>
 				<true/>
-				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
-				<false/>
 			</dict>
 			<key>imaginary.stream</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
-			<key>signal.org</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
@@ -105,13 +91,6 @@
 				<true/>
 			</dict>
 			<key>storage.seed2.loki.network</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
-			<key>whispersystems.org</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>

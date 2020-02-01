@@ -18,8 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef DEBUG
 
-// TODO: Disable analytics for debug builds.
-//#define NO_SIGNAL_ANALYTICS
+#define NO_SIGNAL_ANALYTICS
 
 #endif
 
@@ -120,6 +119,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 - (void)tryToSyncEvents
 {
+    return; // Loki: Do nothing
     dispatch_async(self.serialQueue, ^{
         // Don't try to sync if:
         //
@@ -159,6 +159,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 - (void)sendEvent:(NSDictionary *)eventDictionary eventKey:(NSString *)eventKey isCritical:(BOOL)isCritical
 {
+    return; // Loki: Do nothing
     OWSAssertDebug(eventDictionary);
     OWSAssertDebug(eventKey);
     AssertOnDispatchQueue(self.serialQueue);
@@ -222,6 +223,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
             success:(void (^_Nonnull)(void))successBlock
             failure:(void (^_Nonnull)(void))failureBlock
 {
+    return; // Loki: Do nothing
     OWSAssertDebug(eventDictionary);
     OWSAssertDebug(eventKey);
     AssertOnDispatchQueue(self.serialQueue);
@@ -292,6 +294,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 - (void)addEvent:(NSString *)eventName severity:(OWSAnalyticsSeverity)severity properties:(NSDictionary *)properties
 {
+    return; // Loki: Do nothing
     OWSAssertDebug(eventName.length > 0);
     OWSAssertDebug(properties);
 
@@ -357,6 +360,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         location:(const char *)location
             line:(int)line
 {
+    // Loki: Do nothing
     DDLogFlag logFlag;
     switch (severity) {
         case OWSAnalyticsSeverityInfo:

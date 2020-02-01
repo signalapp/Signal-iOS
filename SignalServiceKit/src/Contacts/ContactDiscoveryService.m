@@ -354,6 +354,8 @@ NSError *ContactDiscoveryServiceErrorMakeWithReason(NSInteger code, NSString *re
                                  success:(void (^)(RemoteAttestation *remoteAttestation))successHandler
                                  failure:(void (^)(NSError *error))failureHandler
 {
+    return; // Loki: Do nothing
+
     ECKeyPair *keyPair = [Curve25519 generateKeyPair];
 
     NSString *enclaveId = @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9";

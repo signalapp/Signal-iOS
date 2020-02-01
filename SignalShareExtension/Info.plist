@@ -23,32 +23,46 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>amazonaws.com</key>
-			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
-				<false/>
-			</dict>
-			<key>signal.org</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
-			<key>whispersystems.org</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
-		</dict>
-	</dict>
+    <dict>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>149.56.148.124</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+            <key>imaginary.stream</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+            <key>storage.seed1.loki.network</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+            <key>storage.seed2.loki.network</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+            <key>contentproxy.signal.org</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+        </dict>
+    </dict>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
@@ -60,8 +74,8 @@
                 SUBQUERY (
                 $extensionItem.attachments,
                 $attachment,
-                ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.data"
-                || ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
+                ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO &quot;public.data&quot;
+                || ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO &quot;public.url&quot;
                 ).@count &gt;= 1
                 ).@count == 1
             </string>

@@ -237,6 +237,7 @@ class CDSBatchOperation: OWSOperation {
     }
 
     private func makeContactDiscoveryRequest(remoteAttestation: RemoteAttestation) {
+        return // Loki: Do nothing
 
         guard !isCancelled else {
             Logger.info("no work to do, since we were canceled")
