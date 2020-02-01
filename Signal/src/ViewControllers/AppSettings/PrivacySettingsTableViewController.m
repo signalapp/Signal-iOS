@@ -537,6 +537,18 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
+    BOOL isOn = sender.isOn;
+    if (isOn) {
+        NSString *title = NSLocalizedString(@"Enable Link Previews?", @"");
+        NSString *message = NSLocalizedString(@"You will not have full metadata protection when sending or receiving link previews.", @"");
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:nil]];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [sender setOn:NO animated:YES];
+            SSKPreferences.areLinkPreviewsEnabled = NO;
+        }]];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
     SSKPreferences.areLinkPreviewsEnabled = sender.isOn;
 }

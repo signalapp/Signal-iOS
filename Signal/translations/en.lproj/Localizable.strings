@@ -2796,3 +2796,6 @@
 "Please enter a group name" = "Please enter a group name";
 "Please enter a shorter group name" = "Please enter a shorter group name";
 "Please pick at least 2 group members" = "Please pick at least 2 group members";
+"Enable Link Previews?" = "Enable Link Previews?";
+"You will not have full metadata protection when sending or receiving link previews." = "You will not have full metadata protection when sending or receiving link previews.";
+"Open groups can be joined by anyone and do not provide full metadata protection" = "Open groups can be joined by anyone and do not provide full metadata protection";

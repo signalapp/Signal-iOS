@@ -186,14 +186,22 @@ private final class EnterChatURLVC : UIViewController {
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
-        // Set up explanation label
-        let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Enter an open group URL", comment: "")
-        explanationLabel.numberOfLines = 0
-        explanationLabel.textAlignment = .center
-        explanationLabel.lineBreakMode = .byWordWrapping
+        // Set up top explanation label
+        let topExplanationLabel = UILabel()
+        topExplanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        topExplanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        topExplanationLabel.text = NSLocalizedString("Enter an open group URL", comment: "")
+        topExplanationLabel.numberOfLines = 0
+        topExplanationLabel.textAlignment = .center
+        topExplanationLabel.lineBreakMode = .byWordWrapping
+        // Set up bottom explanation label
+        let bottomExplanationLabel = UILabel()
+        bottomExplanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        bottomExplanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
+        bottomExplanationLabel.text = NSLocalizedString("Open groups can be joined by anyone and do not provide full metadata protection", comment: "")
+        bottomExplanationLabel.numberOfLines = 0
+        bottomExplanationLabel.textAlignment = .center
+        bottomExplanationLabel.lineBreakMode = .byWordWrapping
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("Next", comment: ""), for: UIControl.State.normal)
@@ -205,10 +213,11 @@ private final class EnterChatURLVC : UIViewController {
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ chatURLTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ chatURLTextField, UIView.spacer(withHeight: Values.smallSpacing), topExplanationLabel, UIView.vStretchingSpacer(), nextButtonContainer, UIView.spacer(withHeight: Values.smallSpacing), bottomExplanationLabel ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
+        let bottomSpacing = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
+        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: bottomSpacing, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view)
