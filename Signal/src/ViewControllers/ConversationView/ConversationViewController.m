@@ -2826,6 +2826,18 @@ typedef enum : NSUInteger {
 
 #pragma mark - Attachment Picking: GIFs
 
+- (void)showGIFMetadataWarning
+{
+    NSString *title = NSLocalizedString(@"Search GIFs?", @"");
+    NSString *message = NSLocalizedString(@"You will not have full metadata protection when sending or receiving GIFs.", @"");
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self showGifPicker];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"") style:UIAlertActionStyleDefault handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
 - (void)showGifPicker
 {
     GifPickerViewController *view =
@@ -3533,7 +3545,7 @@ typedef enum : NSUInteger {
                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_gif")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *action) {
-                                   [self showGifPicker];
+                                   [self showGIFMetadataWarning];
                                }];
     UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
     OWSAssertDebug(gifImage);
