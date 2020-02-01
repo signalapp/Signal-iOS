@@ -2829,7 +2829,7 @@ typedef enum : NSUInteger {
 - (void)showGIFMetadataWarning
 {
     NSString *title = NSLocalizedString(@"Search GIFs?", @"");
-    NSString *message = NSLocalizedString(@"You will not have full metadata protection when sending or receiving GIFs.", @"");
+    NSString *message = NSLocalizedString(@"You will not have full metadata protection when sending GIFs.", @"");
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self showGifPicker];
