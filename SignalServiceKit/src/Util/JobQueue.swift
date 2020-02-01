@@ -324,6 +324,10 @@ public extension JobQueue {
         }
         self.didFlushQueue(transaction: transaction)
     }
+
+    func didFlushQueue(transaction: SDSAnyWriteTransaction) {
+        // Do nothing.
+    }
 }
 
 public protocol JobRecordFinder {

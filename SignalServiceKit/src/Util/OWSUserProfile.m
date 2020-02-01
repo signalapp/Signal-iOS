@@ -37,6 +37,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 @property (atomic, nullable) NSString *profileName;
 @property (atomic, nullable) NSString *familyName;
 @property (atomic, nullable) NSString *username;
+@property (atomic) BOOL isUuidCapable;
 @property (atomic, nullable) NSString *avatarUrlPath;
 @property (atomic, nullable) NSString *avatarFileName;
 
@@ -80,6 +81,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                   avatarFileName:(nullable NSString *)avatarFileName
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       familyName:(nullable NSString *)familyName
+                   isUuidCapable:(BOOL)isUuidCapable
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
@@ -96,6 +98,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     _avatarFileName = avatarFileName;
     _avatarUrlPath = avatarUrlPath;
     _familyName = familyName;
+    _isUuidCapable = isUuidCapable;
     _profileKey = profileKey;
     _profileName = profileName;
     _recipientPhoneNumber = recipientPhoneNumber;
@@ -386,6 +389,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 - (void)updateWithGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
                    username:(nullable NSString *)username
+              isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion
@@ -395,6 +399,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
             [userProfile setGivenName:givenName];
             [userProfile setFamilyName:familyName];
             [userProfile setUsername:username];
+            [userProfile setIsUuidCapable:isUuidCapable];
             [userProfile setAvatarUrlPath:avatarUrlPath];
         }
         functionName:__PRETTY_FUNCTION__
@@ -464,13 +469,16 @@ NSUInteger const kUserProfileSchemaVersion = 1;
           completion:completion];
 }
 
-- (void)updateWithUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithUsername:(nullable NSString *)username
+             isUuidCapable:(BOOL)isUuidCapable
+               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(username == nil || username.length > 0);
 
     [self
         applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setUsername:username];
+            userProfile.username = username;
+            userProfile.isUuidCapable = isUuidCapable;
         }
         functionName:__PRETTY_FUNCTION__
          transaction:transaction

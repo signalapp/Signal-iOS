@@ -327,11 +327,16 @@ public class ProfileFetcherJob: NSObject {
         let shouldUseVersionedFetch = (shouldUseVersionedFetchForUuids
             && address.uuid != nil)
 
-        // Don't use UD for "self" profile fetches.
-        var udAccess: OWSUDAccess?
-        if !address.isLocalAddress {
-            udAccess = udManager.udAccess(forAddress: address,
-                                          requireSyncAccess: false)
+        let udAccess: OWSUDAccess?
+        if address.isLocalAddress {
+            // Don't use UD for "self" profile fetches.
+            udAccess = nil
+        } else {
+            udAccess = databaseStorage.write { transaction in
+                return self.udManager.udAccess(forAddress: address,
+                                               requireSyncAccess: false,
+                                               transaction: transaction)
+            }
         }
 
         let canFailoverUDAuth = true
@@ -378,6 +383,7 @@ public class ProfileFetcherJob: NSObject {
         profileManager.updateProfile(for: address,
                                      profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                      username: signalServiceProfile.username,
+                                     isUuidCapable: signalServiceProfile.supportsUUID,
                                      avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
         updateUnidentifiedAccess(address: address,

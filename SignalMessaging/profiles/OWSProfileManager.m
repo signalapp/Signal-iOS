@@ -297,7 +297,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSUserProfile *userProfile = self.localUserProfile;
     OWSAssertDebug(self.localUserProfile);
 
-    [userProfile updateWithUsername:username transaction:transaction];
+    [userProfile updateWithUsername:username isUuidCapable:YES transaction:transaction];
 }
 
 - (void)writeAvatarToDiskWithData:(NSData *)avatarData
@@ -1085,6 +1085,17 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return [self profileKeyForAddress:address transaction:transaction].keyData;
 }
 
+- (BOOL)recipientAddressIsUuidCapable:(nonnull SignalServiceAddress *)address
+                          transaction:(nonnull SDSAnyReadTransaction *)transaction
+{
+    OWSUserProfile *_Nullable userProfile = [OWSUserProfile getUserProfileForAddress:address transaction:transaction];
+    if (userProfile == nil) {
+        return NO;
+    } else {
+        return userProfile.isUuidCapable;
+    }
+}
+
 - (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address
                                     transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -1332,6 +1343,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
            profileNameEncrypted:(nullable NSData *)profileNameEncrypted
                        username:(nullable NSString *)username
+                  isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
 {
     OWSAssertDebug(address.isValid);
@@ -1356,7 +1368,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             }
 
             if (!userProfile.profileKey) {
-                [userProfile updateWithUsername:username transaction:transaction];
+                [userProfile updateWithUsername:username isUuidCapable:isUuidCapable transaction:transaction];
                 return;
             }
 
@@ -1371,6 +1383,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [userProfile updateWithGivenName:profileNameComponents.givenName
                                   familyName:profileNameComponents.familyName
                                     username:username
+                               isUuidCapable:isUuidCapable
                                avatarUrlPath:avatarUrlPath
                                  transaction:transaction
                                   completion:nil];
@@ -1381,6 +1394,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 [localUserProfile updateWithGivenName:profileNameComponents.givenName
                                            familyName:profileNameComponents.familyName
                                              username:username
+                                        isUuidCapable:isUuidCapable
                                         avatarUrlPath:avatarUrlPath
                                           transaction:transaction
                                            completion:nil];

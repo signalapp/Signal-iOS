@@ -58,6 +58,7 @@ public class GRDBSchemaMigrator: NSObject {
         case groupsV2MessageJobs
         case experienceUpgradeSnooze
         case addUserInfoToInteractions
+        case addIsUuidCapableToUserProfiles
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -347,6 +348,12 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.addUserInfoToInteractions.rawValue) { db in
             try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                 table.add(column: "infoMessageUserInfo", .blob)
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addIsUuidCapableToUserProfiles.rawValue) { db in
+            try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
+                table.add(column: "isUuidCapable", .boolean).notNull().defaults(to: false)
             }
         }
 

@@ -44,8 +44,7 @@ public class SSKBaseTestSwift: XCTestCase {
         return databaseStorage.read(block: block)
     }
 
-    @objc
-    public func write(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    public func write<T>(_ block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
         return databaseStorage.write(block: block)
     }
 

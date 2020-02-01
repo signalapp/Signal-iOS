@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     _recipientWhitelist = [NSMutableSet new];
     _threadWhitelist = [NSMutableSet new];
     _userProfileReadCache = [UserProfileReadCache new];
+    _stubbedUuidCapabilitiesMap = [NSMutableDictionary new];
 
     return self;
 }
@@ -124,6 +125,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Do nothing.
 }
+
+- (BOOL)recipientAddressIsUuidCapable:(nonnull SignalServiceAddress *)address
+                          transaction:(nonnull SDSAnyReadTransaction *)transaction
+{
+    NSNumber *_Nullable capability = self.stubbedUuidCapabilitiesMap[address];
+    if (capability == nil) {
+        OWSFailDebug(@"unknown address %@ must be added to stubbedUuidCapabilitiesMap.", address);
+        return NO;
+    }
+    return capability.boolValue;
+}
+
 
 @end
 

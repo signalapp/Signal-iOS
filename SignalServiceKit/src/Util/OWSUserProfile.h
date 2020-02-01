@@ -29,6 +29,7 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 @property (atomic, readonly, nullable) NSPersonNameComponents *nameComponents;
 @property (atomic, readonly, nullable) NSString *fullName;
 @property (atomic, readonly, nullable) NSString *username;
+@property (atomic, readonly) BOOL isUuidCapable;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (atomic, readonly, nullable) NSString *avatarFileName;
@@ -46,12 +47,13 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
                   avatarFileName:(nullable NSString *)avatarFileName
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       familyName:(nullable NSString *)familyName
+                   isUuidCapable:(BOOL)isUuidCapable
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
                         username:(nullable NSString *)username
-NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:isUuidCapable:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on
 
@@ -82,6 +84,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:profi
 - (void)updateWithGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
                    username:(nullable NSString *)username
+              isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion;
@@ -103,7 +106,9 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:profi
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion;
 
-- (void)updateWithUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithUsername:(nullable NSString *)username
+             isUuidCapable:(BOOL)isUuidCapable
+               transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Profile Avatars Directory
 

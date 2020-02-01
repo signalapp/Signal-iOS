@@ -40,6 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)address;
 
+- (BOOL)recipientAddressIsUuidCapable:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
+
 - (void)warmCaches;
 
 @property (nonatomic, readonly) UserProfileReadCache *userProfileReadCache;
