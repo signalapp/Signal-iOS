@@ -135,11 +135,9 @@ public final class LokiPublicChatMessage : NSObject {
             value["sig"] = signature.data.toHexString()
             value["sigver"] = signature.version
         }
-
         if let avatar = avatar {
             value["avatar"] = avatar;
         }
-
         let annotation: JSON = [ "type" : type, "value" : value ]
         let attachmentAnnotations: [JSON] = attachments.map { attachment in
             let type: String
