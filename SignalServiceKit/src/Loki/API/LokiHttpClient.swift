@@ -1,6 +1,6 @@
 import PromiseKit
 
-/// Base class for `LokiSnodeProxy`, `LokiFileServerProxy` and `LokiRSSFeedProxy`.
+/// Base class for `LokiSnodeProxy` and `LokiFileServerProxy`.
 internal class LokiHTTPClient {
 
     internal lazy var httpSession: AFHTTPSessionManager = {
