@@ -11,7 +11,8 @@ public enum GroupUtilities {
 
     public static func getClosedGroupMembers(_ closedGroup: TSGroupThread, with transaction: YapDatabaseReadTransaction) -> [String] {
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-        let linkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
+        var linkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
+        linkedDeviceHexEncodedPublicKeys.remove(userHexEncodedPublicKey) // Show the user as a member
         return closedGroup.groupModel.groupMemberIds.filter { !linkedDeviceHexEncodedPublicKeys.contains($0) }
     }
 

@@ -170,7 +170,7 @@ final class ConversationCell : UITableViewCell {
             case .calculatingPoW, .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot")
             case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck")
             case .read: image = #imageLiteral(resourceName: "FilledCircleCheck")
-            case .failed: image = #imageLiteral(resourceName: "message_status_failed")
+            case .failed: image = #imageLiteral(resourceName: "message_status_failed").asTintedImage(color: Colors.text)!
             }
             statusIndicatorView.image = image
             statusIndicatorView.isHidden = false
