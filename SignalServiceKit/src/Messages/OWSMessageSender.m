@@ -1988,21 +1988,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     
     // Loki: Both for friend request messages and device link messages we use fallback encryption as we don't necessarily have a session yet
     BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
-<<<<<<< HEAD
     BOOL isSessionRequest = [messageSend.message isKindOfClass:LKSessionRequestMessage.class];
-    BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
-    if (isFriendRequest || isSessionRequest || (isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
-        return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId) plainText:plainText];
-    }
-=======
     BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class] && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest;
-//    if ((isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
-//        return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId) plainText:plainText];
-//    }
->>>>>>> f4e376bfb47d670f29ab970912d4004f694c1d69
 
     // This may throw an exception.
-    if (!isFriendRequest && !isDeviceLinkMessage && ![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
+    if (!isFriendRequest && !isSessionRequest && !isDeviceLinkMessage && ![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
             @"Unexpectedly missing session for recipient: %@, device: %@",

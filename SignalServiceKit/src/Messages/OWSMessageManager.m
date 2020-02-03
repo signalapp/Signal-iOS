@@ -456,7 +456,7 @@ NS_ASSUME_NONNULL_BEGIN
                 TSContactThread *thread = [TSContactThread getThreadWithContactId:envelope.source transaction:transaction];
                 if (thread && thread.isContactFriend) {
                     [self resetSessionWithContact:envelope.source transaction:transaction];
-                    // Let our o ther devices know that we have reset the session
+                    // Let our other devices know that we have reset the session
                     [SSKEnvironment.shared.syncManager syncContact:envelope.source transaction:transaction];
                 }
             }
