@@ -12,6 +12,10 @@ class ExperienceUpgradeManager: NSObject {
 
     private static weak var currentlyPresented: UIView?
 
+    // The first day is day 0, so this gives the user 1 week of megaphone
+    // before we display the splash.
+    static let splashStartDay = 7
+
     @objc
     static func presentNext(fromViewController: UIViewController) -> Bool {
         // If we already have a experience upgrade
@@ -32,7 +36,7 @@ class ExperienceUpgradeManager: NSObject {
         // we will display the splash. If there is only a megaphone we will
         // render it for as long as the upgrade is active.
 
-        if (hasMegaphone && !hasSplash) || (hasMegaphone && next.daysSinceFirstViewed < 8) {
+        if (hasMegaphone && !hasSplash) || (hasMegaphone && next.daysSinceFirstViewed < splashStartDay) {
             let megaphone = self.megaphone(forExperienceUpgrade: next, fromViewController: fromViewController)
             megaphone?.present(fromViewController: fromViewController)
             currentlyPresented = megaphone
