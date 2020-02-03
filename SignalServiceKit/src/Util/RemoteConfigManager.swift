@@ -74,6 +74,12 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
     // MARK: -
 
+    // Values defined in this array remain forever true once they are
+    // marked true regardless of the remote state.
+    private let stickyFlags = [
+        "ios.pinsForEveryone"
+    ]
+
     @objc
     public private(set) var cachedConfig: RemoteConfig?
 
@@ -132,12 +138,20 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     private func refresh() {
         return firstly {
             self.serviceClient.getRemoteConfig()
-        }.done(on: .global()) { remoteConfig in
+        }.done(on: .global()) { fetchedConfig in
+            var configToStore = fetchedConfig
             self.databaseStorage.write { transaction in
-                self.keyValueStore.setRemoteConfig(remoteConfig, transaction: transaction)
+                // Update fetched config to reflect any sticky flags.
+                if let existingConfig = self.keyValueStore.getRemoteConfig(transaction: transaction) {
+                    existingConfig.lazy.filter { self.stickyFlags.contains($0.key) }.forEach {
+                        configToStore[$0.key] = $0.value || (fetchedConfig[$0.key] ?? false)
+                    }
+                }
+
+                self.keyValueStore.setRemoteConfig(configToStore, transaction: transaction)
                 self.keyValueStore.setLastFetched(Date(), transaction: transaction)
             }
-            Logger.info("stored new remoteConfig: \(remoteConfig)")
+            Logger.info("stored new remoteConfig: \(configToStore)")
         }.catch { error in
             Logger.error("error: \(error)")
         }.retainUntilComplete()
