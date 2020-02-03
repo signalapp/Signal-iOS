@@ -37,35 +37,41 @@ internal class LokiFileServerProxy : LokiHTTPClient {
 
     // MARK: Proxying
     override internal func perform(_ request: TSRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> LokiAPI.RawResponsePromise {
+        let isLokiFileServer = server.contains("file.lokinet.org") || server.contains("file-dev.lokinet.org")
+        guard isLokiFileServer else { return super.perform(request, withCompletionQueue: queue) } // Don't proxy open group requests for now
         let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: LokiFileServerProxy.fileServerPublicKey, privateKey: keyPair.privateKey)
         guard let symmetricKey = uncheckedSymmetricKey else { return Promise(error: Error.symmetricKeyGenerationFailed) }
-        let headers = getCanonicalHeaders(for: request)
+        var headers = getCanonicalHeaders(for: request)
+        headers["Content-Type"] = "application/json"
         return LokiAPI.getRandomSnode().then { [server = self.server, keyPair = self.keyPair, httpSession = self.httpSession] proxy -> Promise<Any> in
-            let url = "\(proxy.address):\(proxy.port)/proxy"
+            let url = "\(proxy.address):\(proxy.port)/file_proxy"
             print("[Loki] Proxying request to \(server) through \(proxy).")
             guard let urlAsString = request.url?.absoluteString, let serverURLEndIndex = urlAsString.range(of: server)?.upperBound,
                 serverURLEndIndex < urlAsString.endIndex else { throw Error.endpointParsingFailed }
             let endpointStartIndex = urlAsString.index(after: serverURLEndIndex)
             let endpoint = String(urlAsString[endpointStartIndex..<urlAsString.endIndex])
             let parametersAsData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
+            let parametersAsString = !request.parameters.isEmpty ? String(bytes: parametersAsData, encoding: .utf8)! : "null"
             let proxyRequestParameters: JSON = [
-                "body" : String(bytes: parametersAsData, encoding: .utf8),
+                "body" : parametersAsString,
                 "endpoint": endpoint,
                 "method" : request.httpMethod,
                 "headers" : headers
             ]
             let proxyRequestParametersAsData = try JSONSerialization.data(withJSONObject: proxyRequestParameters, options: [])
             let ivAndCipherText = try DiffieHellman.encrypt(proxyRequestParametersAsData, using: symmetricKey)
+            let base64EncodedPublicKey = Data(hex: keyPair.hexEncodedPublicKey).base64EncodedString() // The file server expects an 05 prefixed public key
             let proxyRequestHeaders = [
                 "X-Loki-File-Server-Target" : "/loki/v1/secure_rpc",
                 "X-Loki-File-Server-Verb" : "POST",
-                "X-Loki-File-Server-Headers" : "{ X-Loki-File-Server-Ephemeral-Key : \(keyPair.publicKey.base64EncodedString()) }",
-                "Connection" : "close"
+                "X-Loki-File-Server-Headers" : "{ \"X-Loki-File-Server-Ephemeral-Key\" : \"\(base64EncodedPublicKey)\" }",
+                "Connection" : "close", // TODO: Is this necessary?
+                "Content-Type" : "application/json"
             ]
             let (promise, resolver) = LokiAPI.RawResponsePromise.pending()
             let proxyRequest = AFHTTPRequestSerializer().request(withMethod: "POST", urlString: url, parameters: nil, error: nil)
             proxyRequest.allHTTPHeaderFields = proxyRequestHeaders
-            proxyRequest.httpBody = try JSONSerialization.data(withJSONObject: [ "cipherText64" : ivAndCipherText.base64EncodedString() ], options: [])
+            proxyRequest.httpBody = "{ \"cipherText64\" : \"\(ivAndCipherText.base64EncodedString())\" }".data(using: String.Encoding.utf8)!
             proxyRequest.timeoutInterval = request.timeoutInterval
             var task: URLSessionDataTask!
             task = httpSession.dataTask(with: proxyRequest as URLRequest) { response, result, error in
@@ -99,7 +105,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
             guard isSuccess else { throw HTTPError.networkError(code: httpStatusCode, response: body, underlyingError: Error.fileServerHTTPError(code: httpStatusCode, message: body)) }
             return body
         }.recover { error -> Promise<Any> in
-            print("[Loki] Proxy request failed with error: \(error.localizedDescription).")
+            print("[Loki] File server proxy request failed with error: \(error.localizedDescription).")
             throw HTTPError.from(error: error) ?? error
         }
     }
