@@ -42,14 +42,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
 
     // If false, this will be marked complete after registration
     // without ever presenting to the user.
-    var showNewUsers: Bool {
-        switch self {
-        case .reactions:
-            return true
-        default:
-            return false
-        }
-    }
+    var showNewUsers: Bool { false }
 }
 
 @objc
