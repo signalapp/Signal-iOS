@@ -799,11 +799,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.viewItem.mediaAlbumItems);
 
+    BOOL isClosedGroup = NO;
+    if ([self.viewItem isKindOfClass:TSOutgoingMessage.class]) {
+        TSOutgoingMessage *message = (TSOutgoingMessage *)self.viewItem;
+        if ([message.thread isKindOfClass:TSGroupThread.class]) {
+            TSGroupThread *groupThread = (TSGroupThread *)message.thread;
+            isClosedGroup = (groupThread.groupModel.groupType == closedGroup);
+        }
+    }
+    
     OWSMediaAlbumCellView *albumView =
         [[OWSMediaAlbumCellView alloc] initWithMediaCache:self.cellMediaCache
                                                     items:self.viewItem.mediaAlbumItems
                                                isOutgoing:self.isOutgoing
-                                          maxMessageWidth:self.conversationStyle.maxMessageWidth];
+                                          maxMessageWidth:self.conversationStyle.maxMessageWidth
+                                            isClosedGroup:isClosedGroup];
     self.loadCellContentBlock = ^{
         [albumView loadMedia];
     };

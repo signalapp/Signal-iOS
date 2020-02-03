@@ -26,13 +26,16 @@ public class MediaAlbumCellView: UIStackView {
     public required init(mediaCache: NSCache<NSString, AnyObject>,
                          items: [ConversationMediaAlbumItem],
                          isOutgoing: Bool,
-                         maxMessageWidth: CGFloat) {
+                         maxMessageWidth: CGFloat,
+                         isClosedGroup: Bool) {
         self.items = items
         self.itemViews = MediaAlbumCellView.itemsToDisplay(forItems: items).map {
-            ConversationMediaView(mediaCache: mediaCache,
+            let result = ConversationMediaView(mediaCache: mediaCache,
                                   attachment: $0.attachment,
                                   isOutgoing: isOutgoing,
                                   maxMessageWidth: maxMessageWidth)
+            result.isClosedGroup = isClosedGroup
+            return result
         }
 
         super.init(frame: .zero)

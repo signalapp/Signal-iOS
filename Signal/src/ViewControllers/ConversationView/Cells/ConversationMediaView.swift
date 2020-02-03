@@ -26,8 +26,9 @@ public class ConversationMediaView: UIView {
     public let attachment: TSAttachment
     private let isOutgoing: Bool
     private let maxMessageWidth: CGFloat
-    private var loadBlock : (() -> Void)?
-    private var unloadBlock : (() -> Void)?
+    private var loadBlock: (() -> Void)?
+    private var unloadBlock: (() -> Void)?
+    var isClosedGroup = false
 
     // MARK: - LoadState
 
@@ -173,12 +174,9 @@ public class ConversationMediaView: UIView {
     }
 
     private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
-        guard isOutgoing else {
-            return false
-        }
-        guard let attachmentStream = attachment as? TSAttachmentStream else {
-            return false
-        }
+        guard !isClosedGroup else { return false } // Loki: Due to the way proxying works we can't get upload progress for closed group attachments right now
+        guard isOutgoing else { return false }
+        guard let attachmentStream = attachment as? TSAttachmentStream else { return false }
         guard let attachmentId = attachmentStream.uniqueId else {
             owsFailDebug("Attachment missing unique ID.")
             configure(forError: .invalid)
