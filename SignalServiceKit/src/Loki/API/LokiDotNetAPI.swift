@@ -74,9 +74,9 @@ public class LokiDotNetAPI : NSObject {
                     throw error
                 }
                 // Send the request
-                let isLokiFileServer = server.contains("file.lokinet.org") || server.contains("file-dev.lokinet.org")
-                if isLokiFileServer {
-                    LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done { responseObject in
+                let isProxyingRequired = (server == LokiStorageAPI.server)
+                if isProxyingRequired {
+                    let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done { responseObject in
                         // Parse the server ID & download URL
                         guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let serverID = data["id"] as? UInt64, let downloadURL = data["url"] as? String else {
                             print("[Loki] Couldn't parse attachment from: \(responseObject).")

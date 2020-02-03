@@ -59,7 +59,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                 let parametersAsData = try JSONSerialization.data(withJSONObject: tsRequest.parameters, options: [])
                 parametersAsString = !tsRequest.parameters.isEmpty ? String(bytes: parametersAsData, encoding: .utf8)! : "null"
             } else {
-                if let parametersAsData = request.httpBody {
+                if let parametersAsInputStream = request.httpBodyStream, let parametersAsData = try? Data(from: parametersAsInputStream) {
                     parametersAsString = "{ \"fileUpload\" : \"\(String(data: parametersAsData.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
                 } else {
                     parametersAsString = "null"
