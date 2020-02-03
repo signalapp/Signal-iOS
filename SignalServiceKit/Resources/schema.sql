@@ -272,25 +272,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "model_ExperienceUpgrade" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"recordType" INTEGER NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"firstViewedTimestamp" DOUBLE NOT NULL
-            ,"lastSnoozedTimestamp" DOUBLE NOT NULL
-            ,"isComplete" BOOLEAN NOT NULL
-        )
-;
-
-CREATE
-    INDEX "index_model_ExperienceUpgrade_on_uniqueId"
-        ON "model_ExperienceUpgrade"("uniqueId"
-)
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "model_OWSDisappearingMessagesConfiguration" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"recordType" INTEGER NOT NULL
@@ -625,30 +606,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "media_gallery_items" (
-            "attachmentId" INTEGER NOT NULL UNIQUE
-            ,"albumMessageId" INTEGER NOT NULL
-            ,"threadId" INTEGER NOT NULL
-            ,"originalAlbumOrder" INTEGER NOT NULL
-        )
-;
-
-CREATE
-    INDEX "index_media_gallery_items_for_gallery"
-        ON "media_gallery_items"("threadId"
-    ,"albumMessageId"
-    ,"originalAlbumOrder"
-)
-;
-
-CREATE
-    INDEX "index_media_gallery_items_on_attachmentId"
-        ON "media_gallery_items"("attachmentId"
-)
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "model_OWSReaction" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"recordType" INTEGER NOT NULL
@@ -680,6 +637,30 @@ CREATE
     INDEX "index_model_OWSReaction_on_uniqueMessageId_and_reactorUUID"
         ON "model_OWSReaction"("uniqueMessageId"
     ,"reactorUUID"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "media_gallery_items" (
+            "attachmentId" INTEGER NOT NULL UNIQUE
+            ,"albumMessageId" INTEGER NOT NULL
+            ,"threadId" INTEGER NOT NULL
+            ,"originalAlbumOrder" INTEGER NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_media_gallery_items_for_gallery"
+        ON "media_gallery_items"("threadId"
+    ,"albumMessageId"
+    ,"originalAlbumOrder"
+)
+;
+
+CREATE
+    INDEX "index_media_gallery_items_on_attachmentId"
+        ON "media_gallery_items"("attachmentId"
 )
 ;
 
@@ -861,5 +842,24 @@ CREATE
 CREATE
     INDEX "index_model_IncomingGroupsV2MessageJob_on_uniqueId"
         ON "model_IncomingGroupsV2MessageJob"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_ExperienceUpgrade" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"firstViewedTimestamp" DOUBLE NOT NULL
+            ,"lastSnoozedTimestamp" DOUBLE NOT NULL
+            ,"isComplete" BOOLEAN NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_ExperienceUpgrade_on_uniqueId"
+        ON "model_ExperienceUpgrade"("uniqueId"
 )
 ;

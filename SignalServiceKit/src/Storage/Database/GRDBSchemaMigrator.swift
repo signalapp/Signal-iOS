@@ -58,6 +58,7 @@ public class GRDBSchemaMigrator: NSObject {
         case groupsV2MessageJobs
         case addUserInfoToInteractions
         case recreateExperienceUpgradeWithNewColumns
+        case recreateExperienceUpgradeIndex
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -356,6 +357,10 @@ public class GRDBSchemaMigrator: NSObject {
                 table.column("isComplete", .boolean)
                     .notNull()
             })
+        }
+
+        migrator.registerMigration(MigrationId.recreateExperienceUpgradeIndex.rawValue) { db in
+            try db.create(index: "index_model_ExperienceUpgrade_on_uniqueId", on: "model_ExperienceUpgrade", columns: ["uniqueId"])
         }
 
         return migrator
