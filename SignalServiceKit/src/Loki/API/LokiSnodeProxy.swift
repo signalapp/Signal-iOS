@@ -1,18 +1,8 @@
 import PromiseKit
 
 internal class LokiSnodeProxy : LokiHTTPClient {
-    internal let target: LokiAPITarget
-    private let keyPair: ECKeyPair
-    
-    private lazy var httpSession: AFHTTPSessionManager = {
-        let result = AFHTTPSessionManager(sessionConfiguration: .ephemeral)
-        let securityPolicy = AFSecurityPolicy.default()
-        securityPolicy.allowInvalidCertificates = true
-        securityPolicy.validatesDomainName = false
-        result.securityPolicy = securityPolicy
-        result.responseSerializer = AFHTTPResponseSerializer()
-        return result
-    }()
+    private let target: LokiAPITarget
+    private let keyPair = Curve25519.generateKeyPair()
     
     // MARK: Error
     internal enum Error : LocalizedError {
@@ -23,10 +13,10 @@ internal class LokiSnodeProxy : LokiHTTPClient {
            
         internal var errorDescription: String? {
            switch self {
-           case .targetPublicKeySetMissing: return "Missing target public key set"
-           case .symmetricKeyGenerationFailed: return "Couldn't generate symmetric key"
-           case .proxyResponseParsingFailed: return "Couldn't parse proxy response"
-           case .targetSnodeHTTPError(let httpStatusCode, let message): return "Target snode returned error \(httpStatusCode) with description: \(message ?? "no description provided")."
+           case .targetPublicKeySetMissing: return "Missing target public key set."
+           case .symmetricKeyGenerationFailed: return "Couldn't generate symmetric key."
+           case .proxyResponseParsingFailed: return "Couldn't parse proxy response."
+           case .targetSnodeHTTPError(let httpStatusCode, let message): return "Target snode returned error \(httpStatusCode) with description: \(message ?? "no description provided.")."
            }
         }
     }
@@ -34,7 +24,6 @@ internal class LokiSnodeProxy : LokiHTTPClient {
     // MARK: Initialization
     internal init(for target: LokiAPITarget) {
         self.target = target
-        keyPair = Curve25519.generateKeyPair()
         super.init()
     }
     
@@ -48,7 +37,7 @@ internal class LokiSnodeProxy : LokiHTTPClient {
             let url = "\(proxy.address):\(proxy.port)/proxy"
             print("[Loki] Proxying request to \(target) through \(proxy).")
             let parametersAsData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
-            let proxyRequestParameters: [String:Any] = [
+            let proxyRequestParameters: JSON = [
                 "method" : request.httpMethod,
                 "body" : String(bytes: parametersAsData, encoding: .utf8),
                 "headers" : headers
@@ -56,7 +45,7 @@ internal class LokiSnodeProxy : LokiHTTPClient {
             let proxyRequestParametersAsData = try JSONSerialization.data(withJSONObject: proxyRequestParameters, options: [])
             let ivAndCipherText = try DiffieHellman.encrypt(proxyRequestParametersAsData, using: symmetricKey)
             let proxyRequestHeaders = [
-                "X-Sender-Public-Key" : keyPair.publicKey.map { String(format: "%02hhx", $0) }.joined(),
+                "X-Sender-Public-Key" : keyPair.publicKey.toHexString(),
                 "X-Target-Snode-Key" : targetHexEncodedPublicKeySet.idKey
             ]
             let (promise, resolver) = LokiAPI.RawResponsePromise.pending()
@@ -72,45 +61,32 @@ internal class LokiSnodeProxy : LokiHTTPClient {
                     nsError.isRetryable = false
                     resolver.reject(nsError)
                 } else {
-                    OutageDetection.shared.reportConnectionSuccess()
                     resolver.fulfill(result)
                 }
             }
             task.resume()
             return promise
         }.map { rawResponse in
-            guard let data = rawResponse as? Data, !data.isEmpty, let cipherText = Data(base64Encoded: data) else {
+            guard let responseAsData = rawResponse as? Data, let cipherText = Data(base64Encoded: responseAsData) else {
                 print("[Loki] Received a non-string encoded response.")
                 return rawResponse
             }
             let response = try DiffieHellman.decrypt(cipherText, using: symmetricKey)
             let uncheckedJSON = try? JSONSerialization.jsonObject(with: response, options: .allowFragments) as? JSON
-            guard let json = uncheckedJSON, let httpStatusCode = json["status"] as? Int else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
-            let isSuccess = (200..<300).contains(httpStatusCode)
+            guard let json = uncheckedJSON, let statusCode = json["status"] as? Int else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
+            let isSuccess = (200..<300).contains(statusCode)
             var body: Any? = nil
             if let bodyAsString = json["body"] as? String {
                 body = bodyAsString
-                if let bodyAsJSON = try? JSONSerialization.jsonObject(with: bodyAsString.data(using: .utf8)!, options: .allowFragments) as? [String: Any] {
+                if let bodyAsJSON = try? JSONSerialization.jsonObject(with: bodyAsString.data(using: .utf8)!, options: .allowFragments) as? JSON {
                     body = bodyAsJSON
                 }
             }
-            guard isSuccess else { throw HTTPError.networkError(code: httpStatusCode, response: body, underlyingError: Error.targetSnodeHTTPError(code: httpStatusCode, message: body)) }
+            guard isSuccess else { throw HTTPError.networkError(code: statusCode, response: body, underlyingError: Error.targetSnodeHTTPError(code: statusCode, message: body)) }
             return body
         }.recover { error -> Promise<Any> in
             print("[Loki] Proxy request failed with error: \(error.localizedDescription).")
             throw HTTPError.from(error: error) ?? error
-        }
-    }
-    
-    // MARK: Convenience
-    private func getCanonicalHeaders(for request: TSRequest) -> [String: Any] {
-        guard let headers = request.allHTTPHeaderFields else { return [:] }
-        return headers.mapValues { value in
-            switch value.lowercased() {
-            case "true": return true
-            case "false": return false
-            default: return value
-            }
         }
     }
 }

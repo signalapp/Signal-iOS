@@ -1,5 +1,6 @@
 import PromiseKit
 
+/// Base class for `LokiStorageAPI` and `LokiPublicChatAPI`.
 public class LokiDotNetAPI : NSObject {
 
     // MARK: Convenience
@@ -129,7 +130,7 @@ public class LokiDotNetAPI : NSObject {
         let queryParameters = "pubKey=\(userHexEncodedPublicKey)"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
-        return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse in
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map { rawResponse in
             guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
                 let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
                 throw Error.parsingFailed
@@ -153,7 +154,7 @@ public class LokiDotNetAPI : NSObject {
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : userHexEncodedPublicKey, "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in token }
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in token }
     }
     
     // MARK: Attachments (Public Obj-C API)

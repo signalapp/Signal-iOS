@@ -1,5 +1,7 @@
 import PromiseKit
 
+// TODO: Clean
+
 @objc(LKPublicChatManager)
 public final class LokiPublicChatManager : NSObject {
     private let storage = OWSPrimaryStorage.shared()
