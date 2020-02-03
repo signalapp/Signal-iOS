@@ -531,7 +531,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Hesabınızı silmek istediğinizden emin misiniz?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Bu işlem, bu cihazdaki tüm iletilerinizi silerek uygulamayı sıfırlayacaktır. Telefonunuzla istediğiniz zaman tekrar bağlayabilirsiniz ama silinen iletiler kurtarılmayacaktır. Uygulama bu işlem sonunda kapanacaktır.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Bu işlem, bu cihazdaki tüm iletilerinizi silerek uygulamayı sıfırlayacaktır. Telefonunuzla istediğiniz zaman tekrar bağlayabilirsiniz ama silinen iletiler kurtarılmayacaktır. Uygulama bu işlem tamamlandıktan sonra kapanacaktır.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Tüm verileri silmek istediğinizden emin misiniz?";
@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Kayıtlı Olmayan Kullanıcı: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Şimdi Değil";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Hadi Başlayalım";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Signal sürümünüz kullanım dışı kaldı! Mesajlar artık gönderilemeyecek. En son sürüme güncellemek için dokunun.";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Veritabanı Optimize Ediliyor";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Profil resmi değişti.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "Grup oluşturuldu";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Üyelerin bazıları gruba eklenemedi. Tekrar denemek için dokunun.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Grup Yönetimi";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ gruba katıldı.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ gruptan ayrıldı.";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "İleti";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Yeni başlık: '%@'. ";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "Grup güncellendi.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "Grubu güncellediniz.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Gruptan ayrıldınız.";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Bu Ay";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "İleti Metnini kopyala";
@@ -1777,7 +1801,7 @@
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "\"iPad'i kaydet\" tuşuna basarak yeni bir Signal hesabı açabilir veya mevcut hesabınızı bu iPad'e aktarabilirsiniz. Bu işlem diğer cihazlarda aynı telefon numarası ile kaydedilmiş Signal'i devre dışı bırakacaktır.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "\"iPhone'u bağla\" tuşuna basarak telefonunuzu varolan bir hesaba bağlayabilirsiniz. Telefonunuzu bağlamanız genellikle önerilmez, aynı zamanda, arama gibi bazı özellikleri sınırlayacaktır.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "\"iPhone'u bağla\" tuşuna basarak telefonunuzu mevcut bir hesaba bağlayabilirsiniz. Telefonunuzu bağlamanız genellikle önerilmez, aynı zamanda, arama gibi bazı özellikleri sınırlayacaktır.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Bu iPad'i kaydet";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN en az 6 karakterden oluşmalıdır";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "PIN'inizi kurtarmanın bir yolu yoktur, bu yüzden unutmayın.";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "PIN'inizi değiştirin";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Oluşturma Başarısız Oldu";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN'iniz güvenliğinize bir katman daha ekler ve hesabınızı korur.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN'ler eşleşmiyor. Tekrar deneyin.";
@@ -1995,11 +2016,11 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "PIN'i tekrar girin";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Çıkış yaptığınızda, PIN'inizi kurtarmanın bir yolu yoktur.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Hesabınız halen açık olduğu için yeni bir PIN oluşturabilirsiniz.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN. When you’re logged out, there is no way to recover your PIN.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Yeni PIN oluştur";
@@ -2024,6 +2045,27 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN en az 6 haneli olmalıdır.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "PIN'i güncelle";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Karşınızda PIN'ler";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN oluşturuldu.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medyayı Oynat";
@@ -2178,38 +2220,44 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "İletinize karşılık verdi: %@";
 
-/* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Now you can 👍 a message with a touch. Tap and hold a message to get started.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Albümünüze karşılık verdi: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Sesinize karşılık verdi: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Kişi paylaşımınıza karşılık verdi: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Dosyanıza karşılık verdi: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "GIF'inize karşılık verdi: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Fotoğrafınıza karşılık verdi: %@";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Çıkartmanıza karşılık verdi: %@";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "\"%@\"  iletisine karşılık verdi: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Videonuza karşılık verdi: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Tek görümlük içeriğinize karşılık verdi: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Sesli iletinize karşılık verdi: %@";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "PIN'imi unuttum.";
@@ -2312,6 +2360,42 @@
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Bu doğru PIN değil.";
+
+/* Action text for required profile name megaphone */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for required profile name megaphone when user already has a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+
+/* Title for required profile name megaphone when user already has a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+
+/* Body for required profile name megaphone when user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for required profile name megaphone when user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+
+/* Toast indicating that a PIN has been created. */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+
+/* Button to start a confirm profile name flow from the one time splash screen that appears after upgrading */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_BUTTON" = "Confirm Profile Name";
+
+/* Body text for required profile names splash screen when the user already has a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_DESCRIPTION" = "Your profile can now include an optional last name.";
+
+/* Header for required profile names splash screen when the user already has a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_TITLE" = "Confirm Name";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_BUTTON" = "Create Profile Name";
+
+/* Body text for required profile names splash screen when the user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_DESCRIPTION" = "Your name is displayed when you start a new conversation or share it with other users or groups.";
+
+/* Header for required profile names splash screen when the user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_TITLE" = "Add a Profile Name";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Anlık bildirimler için yeniden kaydol";
@@ -2425,13 +2509,13 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Telefonunuza Signal Yükleyin";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Telefonunuzda Signal Ayarlarını açmak için profil resminize tıklayın. Sonrasında,  \"Bağlı Cihazlar\" > \"Yeni Cihaz Bağla\" yolunu izleyerek bu kodu telefonunuzla tarayın:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Telefonunuzda Signal Ayarlarını açmak için profil resminize dokunun. Sonrasında,  \"Bağlı Cihazlar\" > \"Yeni Cihaz Bağla\" yolunu izleyerek bu kodu telefonunuzla tarayın:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "iPad'inizi bağlamayla ilgili yardımı buradan alabilirsiniz";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Telefonunuza kare kodu taratın";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Telefonunuzla kare kodu tarayın";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Güvenli oturum sıfırlandı.";
@@ -2656,10 +2740,13 @@
 "SETTINGS_NOTIFICATIONS" = "Bildirimler";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN'iniz hesabınıza fazladan güvenlik katmanı ekler ve hesabınızı güvence altına alır. Signal'e telefon numaranızı kaydederken sorulacaktır. Eğer PIN'inizi unutursanız, hesabınıza 7 gün boyunca erişemezsiniz.";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "PIN'inizi değiştirin";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2884,7 +2971,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@, ve %lu diğer gruba üye";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Bu konuşmada kendinize notlar ekleyebilirsiniz. Eğer hesabınıza bağlı cihaz varsa, yeni notlar eşitlenecektir.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Bu konuşmada kendinize notlar ekleyebilirsiniz. Eğer hesabınıza bağlı cihaz varsa, yeni notlar eşzamanlanacaktır.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ grubuna üye";
@@ -2989,7 +3076,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%@\" bağlantısını kaldır?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Cihaz artık bağlı değil. Mesajlaşmaya devam etmek için Signal'i telefonunuzla yeniden bağlayın.";
+"UNLINKED_WARNING" = "Cihaz artık bağlı değil. Yazışmaya devam etmek için Signal'i telefonunuzla yeniden bağlayın.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal cihazınızın bağlantısını kaldıramadı.";
@@ -3019,25 +3106,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "PIN'ler hakkında dahasını öğrenin";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Kayıt Kilidiniz artık daha fazlasını yapıyor. PIN'ler sayesinde cihaz değiştirdiğinizde kişilerinizi kolayca aktarabilirsiniz.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Kayıt Kilidi = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Hesabınızı daha da güvenli hale getirip telefon değiştirdiğinizde kişilerinizi kolayca aktarın.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Karşınızda PIN'ler";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "PIN oluşturmam gerekiyor mu?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Çıkartma kullanabilecek iken neden kelimeler kullanasınız? Klavyenizdeki bu simgeye dokunun:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Karşınızda Çıkartmalar";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal yakında iOS 10 ve sonrasına gereksinim duyacaktır. Lütfen Ayarlar >> Genel >> Yazılım Güncelleme bölümünden yükseltin.";

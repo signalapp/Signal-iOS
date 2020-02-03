@@ -426,10 +426,10 @@
 "CALL_VIEW_MUTE_LABEL" = "השתק";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "אתה יכול לאפשר מיזוג שיחות iOS בהגדרות פְּרָטִיּוּת של Signal שלך כדי לענות לשיחות נכנסות מתוך מסך הנעילה שלך.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "אתה יכול לאפשר שילוב שיחות iOS בהגדרות פְּרָטִיּוּת של Signal שלך כדי לענות לשיחות נכנסות מתוך מסך הנעילה שלך.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "אתה יכול לאפשר מיזוג שיחות iOS בהגדרות פְּרָטִיּוּת של Signal שלך כדי לראות את השם ומספר הטלפון עבור שיחות נכנסות.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "אתה יכול לאפשר שילוב שיחות iOS בהגדרות פְּרָטִיּוּת של Signal שלך כדי לראות את השם ומספר הטלפון עבור שיחות נכנסות.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "לא עכשיו";
@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "משתמש בלתי רשום: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "לא עכשיו";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "בוא נתחיל";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "גרסת Signal שלך פגה! הודעות לא יישלחו יותר בהצלחה. הקש כדי לעדכן אל הגרסה העדכנית ביותר.";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "ממטב מסד־נתונים";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "יצגן שונָּה.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "קבוצה נוצרה";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "לא כל המשתמשים צורפו לקבוצה. הקש לנסות מחדש";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "פרטי קבוצה";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ הצטרף אל הקבוצה.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ עזב את הקבוצה.";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "הודעה";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "הכותרת היא עכשיו '%@'.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "קבוצה עודכנה.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "עדכנת את הקבוצה.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "עזבת את הקבוצה.";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "החודש";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "העתק מלל הודעה";
@@ -1762,7 +1786,7 @@
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "למד עוד אודות חשבונות נעולים";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "חשבון ננעל";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "החשבון ננעל";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "הוסף מגע של אנושיות אל ההודעות שלך";
@@ -1888,16 +1912,16 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "שגיאה בטיפול בהודעה נכנסת";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "מדיה של צפייה חד־פעמית";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "מדיה לצפייה חד־פעמית";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "מדיה";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "תצלום של צפייה חד־פעמית";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "תצלום לצפייה חד־פעמית";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "סרטון של צפייה חד־פעמית";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "סרטון לצפייה חד־פעמית";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "הצג תצלום";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN חייב להיות לפחות 6 תווים";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "אין דרך להשיב את ה־PIN שלך, אז זכור אותו.";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "שנה את ה־PIN שלך";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "יצירת PIN נכשלה";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "ה־PIN שלך מוסיף שכבת אקסטרה של אבטחה ומגבה את החשבון שלך.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "מספרי PIN אינם תואמים. נסה שוב.";
@@ -1995,11 +2016,11 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "הכנס מחדש PIN";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "כאשר אתה מנותק, אין דרך להשיב את ה־PIN שלך.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "מאחר שאתה עדין מחובר, אתה יכול ליצור PIN חדש.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN. When you’re logged out, there is no way to recover your PIN.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "צור PIN חדש";
@@ -2024,6 +2045,27 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN חייב להיות לפחות 6 ספרות.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "עדכן PIN";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "היכרות עם PIN";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN נוצר.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "נגן מדיה";
@@ -2178,38 +2220,44 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "הגיב עם %@ אל ההודעה שלך";
 
-/* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Now you can 👍 a message with a touch. Tap and hold a message to get started.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "הגיב עם %@ אל האלבום שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "הגיב עם %@ אל השמע שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "הגיב עם %@ אל שיתוף איש הקשר שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "הגיב עם %@ אל הקובץ שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "הגיב עם %@ אל ה־GIF שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "הגיב עם %@ אל התצלום שלך";
+
+/* notification body. Embeds {{reaction emoji}} */
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "הגיב עם %@ אל המדבקה שלך";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "הגיב עם %@ אל: \"%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "הגיב עם %@ אל הסרטון שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "הגיב עם %@ אל המדיה לצפייה חד־פעמית שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "הגיב עם %@ אל ההודעה הקולית שלך";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "שכחתי את ה־PIN שלי.";
@@ -2312,6 +2360,42 @@
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "זה לא ה־PIN הנכון.";
+
+/* Action text for required profile name megaphone */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for required profile name megaphone when user already has a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+
+/* Title for required profile name megaphone when user already has a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+
+/* Body for required profile name megaphone when user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for required profile name megaphone when user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+
+/* Toast indicating that a PIN has been created. */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+
+/* Button to start a confirm profile name flow from the one time splash screen that appears after upgrading */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_BUTTON" = "Confirm Profile Name";
+
+/* Body text for required profile names splash screen when the user already has a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_DESCRIPTION" = "Your profile can now include an optional last name.";
+
+/* Header for required profile names splash screen when the user already has a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_TITLE" = "Confirm Name";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_BUTTON" = "Create Profile Name";
+
+/* Body text for required profile names splash screen when the user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_DESCRIPTION" = "Your name is displayed when you start a new conversation or share it with other users or groups.";
+
+/* Header for required profile names splash screen when the user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_TITLE" = "Add a Profile Name";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "הירשם מחדש עבור התראות דחיפה";
@@ -2656,10 +2740,13 @@
 "SETTINGS_NOTIFICATIONS" = "התראות";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "ה־PIN שלך מוסעף שכבת אקסטרה של אבטחה ומגבה את חשבונך. תישאל לגביו כאשר תירשום את מספר הטלפון שלך עם Signal. אם תשכח את ה־PIN שלך, תינעל מחוץ לחשבונך למשך 7 ימים.";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "שנה את ה־PIN שלך";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2674,7 +2761,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "הראה שיחות באחרונים";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "מיזוג שיחות iOS";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "שילוב שיחות iOS";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "פרטיות";
@@ -2710,7 +2797,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "מנע מן קדם־תצוגות של Signal להופיע במחליף היישומים.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "מיזוג שיחות iOS מראה שיחות Signal על מסך הנעילה שלך ובהיסטורית השיחות של המערכת שלך. אתה יכול להראות את השם והמספר של איש הקשר שלך. אם iCloud מאופשר, היסטורית שיחות זו תשותף עם Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "שילוב שיחות iOS מראה שיחות Signal על מסך הנעילה שלך ובהיסטורית השיחות של המערכת שלך. אתה יכול להראות את השם והמספר של איש הקשר שלך. אם iCloud מאופשר, היסטורית שיחות זו תשותף עם Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "התראות";
@@ -2773,7 +2860,7 @@
 "SHARE_ACTION_MESSAGE" = "הודעה";
 
 /* action sheet item */
-"SHARE_ACTION_TWEET" = "טוויטר";
+"SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "מספר הביטחון שלך עם %@ השתנה לאחרונה. מומלץ לוודא אותו ביישום הראשי לפני שליחה מחדש.";
@@ -2953,7 +3040,7 @@
 "UNKNOWN_CONTACT_NAME" = "איש קשר בלתי ידוע";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "מדינה לא ידועה";
+"UNKNOWN_COUNTRY_NAME" = "מדינה בלתי ידועה";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "אחד מהמכשירים שלך שלח הודעה שאינה יכולה להיות מעובדת או להיות מוצגת כאן מאחר שהיא משתמשת במאפיין Signal חדש.";
@@ -3016,28 +3103,22 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "צור את ה־PIN שלך";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "למד עוד אודות PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "למד עוד אודות קודי PIN";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "נעילת ההרשמה שלך עושה יותר כעת. עם מספרי PIN אתה יכול לקחת את אנשי הקשר שלך איתך כשתחליף מכשירים.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "נעילת הרשמה = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "ואפילו יותר אבטחה אל החשבון שלך וקח את אנשי הקשר שלך איתך כשתחליף טלפונים.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "היכרות עם PIN";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "האם אני חייב ליצור PIN?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "למה להשתמש במילים כשאתה יכול להשתמש במדבקות? הקש על צלמית זו במקלדת שלך:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "היכרות עם מדבקות";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal ידרוש בקרוב iOS 10 ומעלה. אנא שדרג דרך יישום הגדרות >> כללי >> עדכוני תוכנה.";
@@ -3118,7 +3199,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "הקש כאן כדי להעלים הודעה זו לאחר שהיא תיקרא.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "קבצי מדיה יוצאים של צפייה חד־פעמית מוסרים באופן אוטומטי לאחר שהם נשלחים.";
+"VIEW_ONCE_OUTGOING_TOAST" = "קבצי מדיה יוצאים לצפייה חד־פעמית מוסרים באופן אוטומטי לאחר שהם נשלחים.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "החלק כדי לבטל";

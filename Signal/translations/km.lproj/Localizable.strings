@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "អ្នកប្រើប្រាស់មិនបានចុះឈ្មោះ: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "លើកក្រោយ";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "តោះយើង";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "ជំនាន់ Signal បានផុតកំណត់! សារនឹងមិនអាចផ្ញើបានឡើយ។ ចុច ដើម្បីធ្វើបច្ចុប្បន្នភាព ទៅកាន់ជំនាន់ថ្មីបំផុត។";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "កំពុងធ្វើឲ្យទិន្នន័យប្រសើរឡើង";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "រូបតំណាងបានផ្លាស់ប្តូរ។";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "ក្រុមបានបង្កើត។";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "មិនមែនសមាជិកទាំងអស់អាចត្រូវបានបន្ថែមទៅក្រុមនោះទេ។ ចុច ដើម្បីព្យាយាមម្តងទៀត។";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "ការគ្រប់គ្រងក្រុម";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ បានចូលក្នុងក្រុម។";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ បានចាកចេញពីក្រុម។";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "សារ";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "ចំណងជើងឥលូវគឺ '%@'។";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "បានធ្វើបច្ចុប្បន្នភាពក្រុម។";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "អ្នកបានធ្វើបច្ចុប្បន្នភាពក្រុម។";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "អ្នកបានចាកចេញពីក្រុម។";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "ខែនេះ";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "ថតចម្លងសារអក្សរ";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "មិនមានវិធីស្តារលេខ PIN របស់អ្នកវិញទេ ដូចនេះសូមចងចាំវា។";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "ផ្លាស់ប្តូរលេខ PIN របស់អ្នក";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "លេខ PIN បន្ថែមស្រទាប់សុវត្ថិភាព និងបម្រុងទុកគណនីរបស់អ្នក។";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "លេខPIN  មិនត្រូវគ្នា។ ព្យាយាមម្តងទៀត។";
@@ -1995,11 +2016,11 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "បញ្ចូលលេខ PIN ម្តងទៀត";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "ពេលអ្នកចាកចេញពីគណនី មិនមានវិធីណាស្តារលេខ PIN របស់អ្នកទេ។";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "ដោយសារអ្នកកំពុងចូលប្រើប្រាស់គណនី អ្នកអាចបង្កើតលេខ PIN ថ្មីបាន។";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN. When you’re logged out, there is no way to recover your PIN.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "បង្កើតលេខ PIN ថ្មី";
@@ -2024,6 +2045,27 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Update PIN";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "ការណែនាំ លេខPINs";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN created.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "ចាក់មេឌា";
@@ -2178,6 +2220,12 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅសាររបស់អ្នក";
 
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Now you can 👍 a message with a touch. Tap and hold a message to get started.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
 
@@ -2312,6 +2360,42 @@
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "លេខPINនោះ មិនត្រឹមត្រូវ។";
+
+/* Action text for required profile name megaphone */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for required profile name megaphone when user already has a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+
+/* Title for required profile name megaphone when user already has a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+
+/* Body for required profile name megaphone when user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for required profile name megaphone when user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+
+/* Toast indicating that a PIN has been created. */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+
+/* Button to start a confirm profile name flow from the one time splash screen that appears after upgrading */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_BUTTON" = "Confirm Profile Name";
+
+/* Body text for required profile names splash screen when the user already has a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_DESCRIPTION" = "Your profile can now include an optional last name.";
+
+/* Header for required profile names splash screen when the user already has a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_TITLE" = "Confirm Name";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_BUTTON" = "Create Profile Name";
+
+/* Body text for required profile names splash screen when the user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_DESCRIPTION" = "Your name is displayed when you start a new conversation or share it with other users or groups.";
+
+/* Header for required profile names splash screen when the user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_TITLE" = "Add a Profile Name";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "ចុះឈ្មោះឡើងវិញ សម្រាប់ការជូនដំណឹង";
@@ -2656,10 +2740,13 @@
 "SETTINGS_NOTIFICATIONS" = "ការជូនដំណឹង";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "លេខ PIN បន្ថែមស្រទាប់សុវត្ថិភាព និងបម្រុងទុកគណនីរបស់អ្នក។ អ្នកនឹងអាចត្រូវបានសួរ នៅពេលអ្នកចុះឈ្មោះលេខទូរស័ព្ទរបស់អ្នកជាមួយ Signal។ បើអ្នកភ្លេចលេខ PIN អ្នកនឹងត្រូវចាក់សោរពីគណនីរបស់អ្នករយៈពេល 7 ថ្ងៃ។";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "ផ្លាស់ប្តូរលេខ PIN របស់អ្នក";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "លេខ PIN";
@@ -3019,25 +3106,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "ស្វែងយល់បន្ថែមពី លេខ PINs";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "ការចាក់សោរចុះឈ្មោះ ធ្វើបានច្រើនជាងមុន។ ជាមួយលេខ PINs អ្នកអាចយកបញ្ជីទំនាក់ទំនងទៅជាមួយអ្នកនៅពេលអ្នកផ្លាស់ប្តូរទូរស័ព្ទ។";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "ចាក់សោរការចុះឈ្មោះ = លេខ PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "បន្ថែមសុវត្ថិភាពលើគណនីរបស់អ្នក និងយកបញ្ជីទំនាក់ទំនងទៅជាមួយនៅពេលអ្នកផ្លាស់ប្តូរទូរស័ព្ទ។";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "ការណែនាំ លេខPINs";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "តើខ្ញុំចាំបាច់ត្រូវបង្កើតលេខ PIN?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "ហេតុអ្វីបានជាប្រើប្រាស់ពាក្យ នៅពេលអ្នកអាចប្រើប្រាស់ស្ទីកគ័រ? ចុច រូបតំណាងនេះនៅលើក្តារចុចរបស់អ្នក៖";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "ការណែនាំ ស្ទីកគ័រ";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal នឹងទាមទារ iOS 10 ឬថ្មីជាងនេះ។ សូមដំឡើងក្នុង ការកំណត់ >> ទូទៅ >> បច្ចុប្បភាពកម្មវិធី។";

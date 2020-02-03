@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "অনিবন্ধভুক্ত ব্যবহারকারী: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "এখন নয়";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "চলো যাই";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "আপনার Signal সংস্করণটির মেয়াদ শেষ হয়ে গেছে! বার্তা সফলভাবে আর প্রেরণ করবে না। অতি সাম্প্রতিক সংস্করণে আপডেট করতে আলতো চাপুন।";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "ডাটাবেস অপ্টিমাইজ করা হচ্ছে";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "প্রোফাইলের ছবি বদল হয়েছে।";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "গ্রুপ তৈরি করা হয়েছে।";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "সমস্ত সদস্য গ্রুপে যোগ করা যায়নি। আবার চেষ্টা করতে আলতো চাপুন।";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "গ্রুপ ম্যানেজমেন্ট";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ গ্রুপে যোগ দিয়েছে";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ গ্রুপ ত্যাগ করেছে";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "বার্তা";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "শিরোনাম এখন '%@'।";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "গ্রুপ আপডেট হয়েছে।";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "আপনি গ্রুপ আপডেট করেছেন।";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "আপনি গ্রুপ ত্যাগ করেছেন।";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "এই মাস";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "বার্তার লেখা অনুলিপি করুন";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "আপনার পিনটি পুনরুদ্ধার করার কোনও উপায় নেই, তাই এটি অবশ্যই মনে রাখবেন।";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "আপনার পিন পরিবর্তন করুন";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "আপনার পিন সুরক্ষার অতিরিক্ত একটি স্তর যুক্ত করে এবং আপনার অ্যাকাউন্ট  সুরক্ষিত করে।";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "পিনগুলি মেলে না। আবার চেষ্টা করুন।";
@@ -1995,11 +2016,11 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "পূনরায় পিন প্রবেশ করান";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "আপনি যখন লগ আউট অবস্থায় আছেন, তখন আপনার পিনটি পুনরুদ্ধার করার কোনও উপায় নেই।";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "আপনি এখনও লগ ইন থাকায় আপনি একটি নতুন পিন তৈরি করতে পারেন।";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN. When you’re logged out, there is no way to recover your PIN.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "একটি নতুন পিন তৈরি করুন";
@@ -2024,6 +2045,27 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "পিন আপডেট করুন";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "পিনের সাথে পরিচিত হন";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "পিন তৈরি করা হয়েছে।";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "মিডিয়া চালান";
@@ -2178,6 +2220,12 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
 
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Now you can 👍 a message with a touch. Tap and hold a message to get started.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
 
@@ -2312,6 +2360,42 @@
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "এটি সঠিক পিন নয়।";
+
+/* Action text for required profile name megaphone */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for required profile name megaphone when user already has a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+
+/* Title for required profile name megaphone when user already has a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+
+/* Body for required profile name megaphone when user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for required profile name megaphone when user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+
+/* Toast indicating that a PIN has been created. */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+
+/* Button to start a confirm profile name flow from the one time splash screen that appears after upgrading */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_BUTTON" = "Confirm Profile Name";
+
+/* Body text for required profile names splash screen when the user already has a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_DESCRIPTION" = "Your profile can now include an optional last name.";
+
+/* Header for required profile names splash screen when the user already has a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_TITLE" = "Confirm Name";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_BUTTON" = "Create Profile Name";
+
+/* Body text for required profile names splash screen when the user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_DESCRIPTION" = "Your name is displayed when you start a new conversation or share it with other users or groups.";
+
+/* Header for required profile names splash screen when the user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_TITLE" = "Add a Profile Name";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "পুশ বিজ্ঞপ্তিগুলির জন্য পুনরায় নিবন্ধন করুন";
@@ -2656,10 +2740,13 @@
 "SETTINGS_NOTIFICATIONS" = "বিজ্ঞপ্তিগুলি";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "আপনার পিন সুরক্ষার অতিরিক্ত স্তর যুক্ত করে এবং আপনার অ্যাকাউন্ট নিরাপদ করে। আপনি যখন সিগন্যালের সাথে আপনার ফোন নাম্বার নিবন্ধন করবেন তখন আপনাকে এটি জিজ্ঞাসা করা হবে। আপনি যদি আপনার পিনটি ভুলে যান তবে আপনাকে 7 দিনের জন্য আপনার অ্যাকাউন্ট থেকে লক্ করা হবে।";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "আপনার পিন পরিবর্তন করুন";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "পিন";
@@ -3019,25 +3106,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "পিনগুলি সম্পর্কে আরও জানুন";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "আপনার রেজিস্ট্রেশন লক এখন আরও অনেক কিছু করতে পারে। পিনগুলির সাহায্যে আপনি যখনই ডিভাইসগুলি পরিবর্তন করেন তখন আপনার পরিচিতি সমূহ আপনার সাথে নিতে পারেন।";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "রেজিস্ট্রেশন লক = পিন";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "আপনার অ্যাকাউন্ট আরও সুরক্ষিত করুন এবং আপনি ফোন পরিবর্তন করার সময় আপনার পরিচিতি সমূহ সাথে রাখুন।";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "পিনের সাথে পরিচিত হন";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "আমার কি পিন তৈরি করতে হবে?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "আপনি যখন স্টিকার ব্যবহার করতে পারেন তখন কেন শব্দ ব্যবহার করবেন? আপনার কীবোর্ডে এই আইকনটি আলতো চাপুন:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "স্টিকারের সাথে পরিচিত হন";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal gcv জন্য শীঘ্রই আইওএস 10 বা তার পরের সংস্করণ প্রয়োজন হবে। সেটিংস অ্যাপ >> সাধারণ >> সফ্টওয়্যার আপডেটে আপগ্রেড করুন।";

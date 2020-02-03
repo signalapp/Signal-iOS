@@ -249,7 +249,7 @@
 "BACKUP_EXPORT_PHASE_EXPORT" = "Eksportuojama atsarginė kopija";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Įkeliama atsarginė kopija";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Nusiunčiama atsarginė kopija";
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Nepavyko importuoti atsarginės kopijos.";
@@ -450,7 +450,7 @@
 "CALL_WINDOW_RETURN_TO_CALL" = "Prilieskite, norėdami grįžti į skambutį";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Perskambinti";
+"CALLBACK_BUTTON_TITLE" = "Atskambinti";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal naudotojas";
@@ -810,7 +810,7 @@
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Nepavyko supakuoti žurnalus.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Nepavyko įkelti žurnalus.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Nepavyko nusiųsti žurnalų.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Ką norėtumėte daryti su nuorodą į jūsų derinimo žurnalą?";
@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Neregistruotas naudotojas: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Ne dabar";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Pirmyn";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Jūsų Signal versija nebegalioja! Žinučių nebepavyks sėkmingai išsiųsti. Bakstelėkite, norėdami atnaujinti į naujausią versiją.";
 
@@ -1135,25 +1129,25 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Įveskite savo paiešką";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "Ši Signal versija įtraukia databazių optimizacijas ir patobulinimus. Jūs galbūt tūrėsite atidaryti programėlę, kad užbaigtumėte šį procesą.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Į šią Signal versiją įeina duomenų bazės optimizavimai ir našumo patobulinimai. Norint užbaigti procesą, jums gali tekti atverti programėlę.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimizuojama duomenų bazė";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Avataras pasikeitė.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "Grupė sukurta.";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Ne visus dalyvius pavyko pridėti į grupę. Bakstelėkite, norėdami bandyti dar kartą.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Grupės tvarkymas";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ prisijungė prie grupės. ";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = " %@ išėjo iš grupės. ";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Žinutė";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Dabar pavadinimas yra \"%@\". ";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "Grupė atnaujinta.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "Jūs atnaujinote grupę.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Jūs išėjote iš grupės.";
@@ -1422,6 +1440,12 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Šis mėnuo";
 
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopijuoti žinutės tekstą";
 
@@ -1438,7 +1462,7 @@
 "MESSAGE_ACTION_REPLY" = "Atsakyti į šią žinutę";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Dalintis medija";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Bendrinti mediją";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Žinutė";
@@ -1471,7 +1495,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Praleista";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Įkeliama";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Nusiunčiama";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Žinutėje nėra turinio ar priedo.";
@@ -1546,7 +1570,7 @@
 "MESSAGE_STATUS_SENT" = "Išsiųsta";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Įkeliama…";
+"MESSAGE_STATUS_UPLOADING" = "Nusiunčiama…";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Nauja žinutės";
@@ -1702,7 +1726,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Gali būti, kad kol jūsų %@ buvo paleidžiamas iš naujo, jūs gavote žinutes.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Į veiksmus įeina \"Žymėti kaip perskaitytą,\" \"Atsakyti\" ir \"Perskambinti.\"";
+"NOTIFICATIONS_FOOTER_WARNING" = "Į veiksmus įeina \"Žymėti kaip skaitytą\", \"Atsakyti\" ir \"Atskambinti\".";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Jokio vardo ar turinio";
@@ -1729,10 +1753,10 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Neteisingas PIN. Visi bandymai išnaudoti.";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Įvesti tekstinį PIN kodą";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Įvesti skaitinį PIN kodą";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Šiam telefono numeriui yra įjungtas Registracijos užraktas. Įveskite Registracijos užrakto PIN.";
@@ -1777,7 +1801,7 @@
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Bakstelėjus \"Registruoti iPad\" jums bus leista susikurti visiškai naują Signal paskyrą arba perkelti esamą paskyrą į šį iPad. Tai išjungs Signal bet kuriame kitame įrenginyje, kuris šiuo metu yra užregistruotas naudojant tą patį numerį.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Paspausde \"Susieti iPhone\" galėsite prijungti savo telefoną prie jau esančios paskyros. Telefono susiejimas įprastai nerekomenduojamas ir sumažins funkcijonamumą, pvz.: pokalbiai.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Bakstelėjus \"Susieti iPhone\" jums bus leista prijungti savo telefoną prie esamos paskyros. Paprastai, telefono susiejimas nerekomenduojamas ir ribos kai kurį funkcionalumą, tokį kaip skambučius.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registruoti šį iPad";
@@ -1888,16 +1912,16 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Klaida, apdorojant gaunamą žinutę";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Vienąkart matoma medija";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Vienkartinės peržiūros medija";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Medija";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Vienkartinė nuotrauka";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Vienkartinės peržiūros nuotrauka";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Vienąkart matomas video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Vienkartinės peržiūros vaizdo įrašas";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Žiūrėti nuotrauką";
@@ -1960,10 +1984,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Albumas be pavadinimo";
 
 /* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
-
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "Nėra jokio būdo atkurti savo PIN kodą, todėl įsiminkite jį.";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN kode privalo būti bent 6 simboliai";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Keisti PIN kodą";
@@ -1972,34 +1993,34 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Pakartokite naująjį PIN kodą.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Sukurti tekstinį PIN kodą";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+"PIN_CREATION_CREATE_NUMERIC" = "Sukurti skaitinį PIN kodą";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+"PIN_CREATION_ERROR_MESSAGE" = "Jūsų PIN kodas nebuvo įrašytas. Vėliau, jūsų bus paprašyta susikurti PIN kodą.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+"PIN_CREATION_ERROR_TITLE" = "PIN kodo sukūrimas nepavyko";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN kodas prideda papildomą saugumą ir padaro jūsų paskyros atsarginę kopiją.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kodai nesutampa. Bandykite dar kartą.";
 
 /* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
+"PIN_CREATION_NUMERIC_HINT" = "PIN kode privalo būti bent 6 skaitmenys";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Pakartokite PIN";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Jums atsijungus, nėra jokio būdo atkurti savo PIN kodą.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Kadangi vis dar esate prisijungę, galite susikurti naują PIN kodą.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN. When you’re logged out, there is no way to recover your PIN.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Sukurti naują PIN kodą";
@@ -2008,7 +2029,7 @@
 "PIN_CREATION_TITLE" = "Susikurti PIN kodą";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN kode privalo būti bent 6 skaitmenys.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Tam, kad įsimintumėte savo PIN kodą, mes periodiškai prašysime jį įvesti. Bėgant laikui, mes tai darysime rečiau.";
@@ -2023,7 +2044,28 @@
 "PIN_REMINDER_TITLE" = "Įveskite savo Signal PIN";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN kode privalo būti bent 6 skaitmenys.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Atnaujinti PIN kodą";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Pristatome PIN kodus";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN kodas sukurtas.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Atkurti mediją";
@@ -2089,13 +2131,13 @@
 "PROFILE_VIEW_CREATE_USERNAME" = "Susikurti naudotojo vardą";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
-"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Jūsų pavardė yra per ilga.";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Reikia jūsų vardo.";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Jūsų vardas yra per ilgas.";
 
 /* Default text for the family name field of the profile view. */
 "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Nebūtina)";
@@ -2110,7 +2152,7 @@
 "PROFILE_VIEW_GIVEN_NAME_FIELD" = "Vardas";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
+"PROFILE_VIEW_NO_CONNECTION" = "Profilis gali būti atnaujintas tik tada, kai yra prisijungta prie interneto.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Jūsų Signal profilis bus matomas jūsų adresatams, kai inicijuosite naujus pokalbius, o taip pat, kai bendrinsite profilį su kitais naudotojais ir grupėmis.";
@@ -2177,6 +2219,12 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Now you can 👍 a message with a touch. Tap and hold a message to get started.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
@@ -2313,6 +2361,42 @@
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Tai nėra teisingas PIN.";
 
+/* Action text for required profile name megaphone */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for required profile name megaphone when user already has a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+
+/* Title for required profile name megaphone when user already has a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+
+/* Body for required profile name megaphone when user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for required profile name megaphone when user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+
+/* Toast indicating that a PIN has been created. */
+"REQUIRE_PROFILE_NAMES_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+
+/* Button to start a confirm profile name flow from the one time splash screen that appears after upgrading */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_BUTTON" = "Confirm Profile Name";
+
+/* Body text for required profile names splash screen when the user already has a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_DESCRIPTION" = "Your profile can now include an optional last name.";
+
+/* Header for required profile names splash screen when the user already has a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CONFIRMATION_TITLE" = "Confirm Name";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_BUTTON" = "Create Profile Name";
+
+/* Body text for required profile names splash screen when the user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_DESCRIPTION" = "Your name is displayed when you start a new conversation or share it with other users or groups.";
+
+/* Header for required profile names splash screen when the user doesn't have a profile name */
+"REQUIRE_PROFILE_NAMES_SPLASH_CREATION_TITLE" = "Add a Profile Name";
+
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Iš naujo užsiregistruoti push pranešimams";
 
@@ -2419,7 +2503,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Aš neturiu Signal programėlės savo telefone...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Pereikite savo telefone į programėlių parduotuvę (App Store), įsidiekite Signal, užbaikite registracijos procesą, o tuomet galite susieti savo iPad su ta pačia paskyra.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Įsidiekite Signal savo telefone";
@@ -2656,10 +2740,13 @@
 "SETTINGS_NOTIFICATIONS" = "Pranešimai";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Jūsų PIN kodas prideda papildomą saugumą ir padaro jūsų paskyros atsarginę kopiją. Jūsų bus prašoma jį įvesti, kai registruosite savo telefono numerį su Signal. Jei pamiršite PIN kodą, būsite 7 dienoms užblokuoti nuo savo paskyros.";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Keisti PIN kodą";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2797,7 +2884,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Nepavyko išsiųsti priedą";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Įkeliama…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Nusiunčiama…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Nepavyko paruošti priedo";
@@ -2884,7 +2971,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ ir dar %lu grupių dalyvis";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Šiame pokalbyje galite rašyti sau pastabas. Jeigu yra su paskyra susietų įrenginių, naujos pastabos bus sinchronizuotos.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ grupės dalyvis";
@@ -3019,25 +3106,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Sužinokite daugiau apie PIN kodus";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Jūsų registracijos užraktas dabar atlieka daugiau. Naudodami PIN kodus, galite pasiimti savo adresatus kartu su savimi, kai keičiate įrenginį.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registracijos užraktas = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Keisdami telefonus, pridėkite savo paskyrai dar daugiau saugumo ir pasiimkite savo adresatus kartu su savimi.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Pristatome PIN kodus";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Ar turiu susikurti PIN?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Kam naudoti žodžius, kai galima naudoti lipdukus? Bakstelėkite savo klaviatūroje šią piktogramą:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Pristatome lipdukus";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal greitu metu reikalaus iOS 10 ar naujesnės. Atsinaujinkite Nustatymų (angl. Settings) programėlėje >> Bendra (angl. General) >> Programinės įrangos atnaujinimas (angl. Software Update).";
@@ -3112,13 +3193,13 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Patikrinti saugumo numerius";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Jūs jau peržiūrėjote šią žinutę";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Jūs jau žiūrėjote šią žinutę.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Spauskitė čia, kad padaryti šią žinutę išnykstančia po to kai ji yra peržiūrima.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Bakstelėkite čia, kad peržiūrėjus šią žinutę, ji išnyktų.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Vienąkartinio žiūrėjimo medija yra automatiškai pašalinama po to kai ji yra išsiųsta.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Išsiunčiami vienkartinės peržiūros medijos failai, juos išsiuntus, yra automatiškai pašalinami.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Perbraukite, norėdami atsisakyti";
