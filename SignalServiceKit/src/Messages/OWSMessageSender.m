@@ -1949,13 +1949,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     
     // Loki: Both for friend request messages and device link messages we use fallback encryption as we don't necessarily have a session yet
     BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
-    BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
-    if ((isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
-        return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId) plainText:plainText];
-    }
+    BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class] && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest;
+//    if ((isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
+//        return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId) plainText:plainText];
+//    }
 
     // This may throw an exception.
-    if (!isFriendRequest && ![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
+    if (!isFriendRequest && !isDeviceLinkMessage && ![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
             @"Unexpectedly missing session for recipient: %@, device: %@",
@@ -1989,7 +1989,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       paddedPlaintext:[plainText paddedMessageBody]
                                                                     senderCertificate:messageSend.senderCertificate
                                                                       protocolContext:transaction
-                                                                      isFriendRequest:isFriendRequest
+                                                                      isFriendRequest:isFriendRequest || isDeviceLinkMessage
                                                                                 error:&error];
         SCKRaiseIfExceptionWrapperError(error);
         if (!serializedMessage || error) {
@@ -2020,7 +2020,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                        registrationId:[cipher throws_remoteRegistrationId:transaction]
                                                   ttl:message.ttl
                                                isPing:isPing
-                                      isFriendRequest:isFriendRequest];
+                                      isFriendRequest:isFriendRequest || isDeviceLinkMessage];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
