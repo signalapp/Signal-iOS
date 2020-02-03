@@ -408,16 +408,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     public func ensureSenderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SMKSenderCertificate> {
-        // If there is a valid cached sender certificate, use that.
-        //
-        // NOTE: We use a "strict" expiration policy.
-        if let certificate = senderCertificate(certificateExpirationPolicy: certificateExpirationPolicy) {
-            return Promise.value(certificate)
-        }
-
         // Try to obtain a new sender certificate.
         return firstly {
-//            requestSenderCertificate()
             generateSenderCertificate()
         }.map { (certificateData: Data, certificate: SMKSenderCertificate) in
 
