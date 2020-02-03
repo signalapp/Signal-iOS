@@ -78,7 +78,7 @@ internal class LokiSnodeProxy : LokiHTTPClient {
             var body: Any? = nil
             if let bodyAsString = json["body"] as? String {
                 body = bodyAsString
-                if let bodyAsJSON = try? JSONSerialization.jsonObject(with: bodyAsString.data(using: .utf8)!, options: .allowFragments) as? [String: Any] {
+                if let bodyAsJSON = try? JSONSerialization.jsonObject(with: bodyAsString.data(using: .utf8)!, options: .allowFragments) as? JSON {
                     body = bodyAsJSON
                 }
             }
