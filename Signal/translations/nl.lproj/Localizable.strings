@@ -1753,10 +1753,10 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrecte pincode. Geen pogingen resterend.";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Voer je alfanumerieke PIN in";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Voer je alfanumerieke pincode in";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Voer je numerieke PIN in";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Voer je numerieke pincode in";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Registratievergrendeling is ingeschakeld voor dit telefoonnummer. Voer de pincode voor registratievergrendeling in.";
@@ -1780,7 +1780,7 @@
 "ONBOARDING_2FA_TITLE" = "Registratievergrendeling";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Om de privacy en beveiliging van je account te beschermen hebben we je account voor 7 dagen vergrendeld.\n\nJe kunt dit telefoonnummer opnieuw registreren na 7 dagen inactiviteit zonder je PIN nodig te hebben. Als je zonder PIN opnieuw registreert word alle inhoud gewist";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Om de privacy en beveiliging van je account te beschermen hebben we je account voor 7 dagen vergrendeld.\n\nJe kunt dit telefoonnummer opnieuw registreren na 7 dagen inactiviteit zonder je pincode nodig te hebben. Als je zonder pincode opnieuw registreert word alle inhoud gewist";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Lees meer over vergrendelde accounts";
@@ -1984,7 +1984,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Naamloos album";
 
 /* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "Je PIN moet uit ten minste 6 karakters bestaan";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "Je pincode moet uit ten minste 6 karakters bestaan";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Wijzig je pincode";
@@ -1993,16 +1993,16 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Bevestig je nieuwe pincode";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Maak een alfanumerieke PIN aan";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Maak een alfanumerieke pincode aan";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Maak een numerieke PIN aan";
+"PIN_CREATION_CREATE_NUMERIC" = "Maak een numerieke pincode aan";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Je PIN is niet opgeslagen. We zullen je later opnieuw vragen een PIN aan te maken.";
+"PIN_CREATION_ERROR_MESSAGE" = "Je pincode is niet opgeslagen. We zullen je later opnieuw vragen een pincode aan te maken.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "PIN aanmaken mislukt";
+"PIN_CREATION_ERROR_TITLE" = "Pincode aanmaken mislukt";
 
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
@@ -2011,16 +2011,16 @@
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
 
 /* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "Je PIN moet uit ten minste 6 getallen bestaan";
+"PIN_CREATION_NUMERIC_HINT" = "Je pincode moet uit ten minste 6 getallen bestaan";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Voer pincode opnieuw in";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "PIN aan het aanmaken…";
+"PIN_CREATION_PIN_PROGRESS" = "Pincode aan het aanmaken…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN. When you’re logged out, there is no way to recover your PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Nieuwe pincode aanmaken";
@@ -2029,7 +2029,7 @@
 "PIN_CREATION_TITLE" = "Maak pincode aan";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "Je PIN moet uit ten minste 6 getallen bestaan.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "Je pincode moet uit ten minste 6 getallen bestaan.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je periodiek om je pincode in te voeren. Na verloop van tijd zullen we je minder vaak vragen om dat te doen.";
@@ -2044,28 +2044,34 @@
 "PIN_REMINDER_TITLE" = "Voer je Signal-pincode in";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "Je PIN moet uit ten minste 6 getallen bestaan.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "Je pincode moet uit ten minste 6 getallen bestaan.";
 
 /* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "PIN bijwerken";
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Pincode bijwerken";
 
 /* Body for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "We introduceren pincodes";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "PIN aanmaken";
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Pincode aanmaken";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+"PINS_MEGAPHONE_NO_PIN_BODY" = "Pincodes voegen een extra niveau van beveiliging toe aan je Signal account.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Een PIN aanmaken";
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Een pincode aanmaken";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN aangemaakt.";
+"PINS_MEGAPHONE_TOAST" = "Pincode aangemaakt.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Media afspelen";
@@ -2125,10 +2131,10 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Je kunt nu optioneel een achternaam toevoegen aan je profiel.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Bevestig dat dit de profielnaam is welke je wilt gebruiken";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
@@ -2137,7 +2143,7 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Voeg een profielnaam toe";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Je profielnaam is opgeslagen.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profielfoto instellen";
@@ -2272,7 +2278,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reageerde met %@ op je spraakbericht";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Tik een bericht aan en houd deze vast om snel te reageren met je gevoelens.";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "We introduceren ‘reacties’";
@@ -2728,7 +2734,7 @@
 "SETTINGS_PINS_ITEM" = "Wijzig je pincode";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Een PIN aanmaken";
+"SETTINGS_PINS_ITEM_CREATE" = "Een pincode aanmaken";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "Pincode";
