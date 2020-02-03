@@ -2020,7 +2020,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN. When you’re logged out, there is no way to recover your PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
