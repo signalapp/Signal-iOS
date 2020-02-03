@@ -48,7 +48,7 @@ public enum CallError: Error {
  *
  * This class' state should only be accessed on the main queue.
  */
-@objc public class SignalCall: NSObject {
+@objc public class SignalCall: NSObject, SignalCallNotificationInfo {
 
     var observers = [Weak<CallObserver>]()
 

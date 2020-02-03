@@ -575,6 +575,8 @@
 		4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC613352227A00400E21A3A /* ConversationSearch.swift */; };
 		4CCB567D23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */; };
 		4CD09B802398A12C009CA4AE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450DF2041E0D74AC003D14BE /* Platform.swift */; };
+		4CD4E7D523E8CCFE00834B1B /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0D23CEBF6000B0E74B /* SignalCall.swift */; };
+		4CD4E7D623E8CCFE00834B1B /* AudioSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D2D23CEC1BE00B0E74B /* AudioSource.swift */; };
 		4CD675BE22E7BE35008010D2 /* MediaDismissAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675BD22E7BE35008010D2 /* MediaDismissAnimationController.swift */; };
 		4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */; };
 		4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */; };
@@ -646,7 +648,6 @@
 		88D1D40622EF8F1100F472C5 /* ThreadDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40522EF8F1100F472C5 /* ThreadDetailsCell.swift */; };
 		88D23D0B23CEBF4400B0E74B /* UserNotificationsAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0923CEBF4400B0E74B /* UserNotificationsAdaptee.swift */; };
 		88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0A23CEBF4400B0E74B /* AppNotifications.swift */; };
-		88D23D0E23CEBF6000B0E74B /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0D23CEBF6000B0E74B /* SignalCall.swift */; };
 		88D23D1023CEBF7F00B0E74B /* NotificationActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0F23CEBF7F00B0E74B /* NotificationActionHandler.swift */; };
 		88D23D1223CEBFB200B0E74B /* UserNotificationActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D1123CEBFB200B0E74B /* UserNotificationActionHandler.swift */; };
 		88D23D2023CEC0C700B0E74B /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D1423CEC0C700B0E74B /* CallService.swift */; };
@@ -658,7 +659,6 @@
 		88D23D2723CEC0C700B0E74B /* WebRTCCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D1E23CEC0C700B0E74B /* WebRTCCallMessageHandler.swift */; };
 		88D23D2823CEC0C700B0E74B /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D1F23CEC0C700B0E74B /* TurnServerInfo.swift */; };
 		88D23D2C23CEC17400B0E74B /* CallAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D2B23CEC17400B0E74B /* CallAudioService.swift */; };
-		88D23D2E23CEC1BF00B0E74B /* AudioSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D2D23CEC1BE00B0E74B /* AudioSource.swift */; };
 		88E34F2722F269E900966CC2 /* StorageServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2622F269E900966CC2 /* StorageServiceManager.swift */; };
 		88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */; };
 		88EAD79223764F09004B797E /* OnboardingModeSwitchConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EAD79123764F09004B797E /* OnboardingModeSwitchConfirmationViewController.swift */; };
@@ -2621,7 +2621,6 @@
 			children = (
 				3469419C215D2EE400B5BFAD /* appearance */,
 				454A96571FD600B4008D2A0E /* attachments */,
-				88D23D0423CEBE7B00B0E74B /* Calls */,
 				34480B5C1FD0A98800BC14EF /* categories */,
 				346129A11FD1F09100532771 /* contacts */,
 				3461293F1FD1D74B00532771 /* environment */,
@@ -3005,15 +3004,6 @@
 			path = Lottie;
 			sourceTree = "<group>";
 		};
-		88D23D0423CEBE7B00B0E74B /* Calls */ = {
-			isa = PBXGroup;
-			children = (
-				88D23D2D23CEC1BE00B0E74B /* AudioSource.swift */,
-				88D23D0D23CEBF6000B0E74B /* SignalCall.swift */,
-			);
-			path = Calls;
-			sourceTree = "<group>";
-		};
 		88D23D0823CEBF4400B0E74B /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
@@ -3026,6 +3016,8 @@
 		88D23D1323CEC0C700B0E74B /* call */ = {
 			isa = PBXGroup;
 			children = (
+				88D23D2D23CEC1BE00B0E74B /* AudioSource.swift */,
+				88D23D0D23CEBF6000B0E74B /* SignalCall.swift */,
 				88D23D2B23CEC17400B0E74B /* CallAudioService.swift */,
 				88D23D1423CEC0C700B0E74B /* CallService.swift */,
 				88D23D1623CEC0C700B0E74B /* OutboundCallInitiator.swift */,
@@ -4249,7 +4241,6 @@
 				346129E61FD5C0C600532771 /* OWSDatabaseMigrationRunner.m in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsAdaptee.swift in Sources */,
 				34AC0A11211B39EA00997B47 /* OWSLayerView.swift in Sources */,
-				88D23D2E23CEC1BF00B0E74B /* AudioSource.swift in Sources */,
 				34AC0A1B211B39EA00997B47 /* GradientView.swift in Sources */,
 				34123C5E239AA3E900782788 /* TooltipView.swift in Sources */,
 				34AC09E2211B39B100997B47 /* ReturnToCallViewController.swift in Sources */,
@@ -4340,7 +4331,6 @@
 				349C3637233D198300D52012 /* LaunchJobs.swift in Sources */,
 				8827004C232071C500F01C46 /* OWSWindow.swift in Sources */,
 				8809CE8122F534B200D38867 /* CustomKeyboard.swift in Sources */,
-				88D23D0E23CEBF6000B0E74B /* SignalCall.swift in Sources */,
 				4541B71D209D3B7A0008608F /* ContactShareViewModel.swift in Sources */,
 				4C618199219DF03A009BD6B5 /* OWSButton.swift in Sources */,
 				4598198F204E2F28009414F2 /* OWS108CallLoggingPreference.m in Sources */,
@@ -4582,6 +4572,7 @@
 				4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */,
 				34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */,
 				45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */,
+				4CD4E7D623E8CCFE00834B1B /* AudioSource.swift in Sources */,
 				34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */,
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
@@ -4642,6 +4633,7 @@
 				3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */,
 				88081437234D80150004C187 /* UIResponder+OWS.swift in Sources */,
 				4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */,
+				4CD4E7D523E8CCFE00834B1B /* SignalCall.swift in Sources */,
 				34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */,
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
