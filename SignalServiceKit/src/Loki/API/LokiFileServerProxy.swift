@@ -39,6 +39,10 @@ internal class LokiFileServerProxy : LokiHTTPClient {
     override internal func perform(_ request: TSRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> LokiAPI.RawResponsePromise {
         let isLokiFileServer = server.contains("file.lokinet.org") || server.contains("file-dev.lokinet.org")
         guard isLokiFileServer else { return super.perform(request, withCompletionQueue: queue) } // Don't proxy open group requests for now
+        return performLokiFileServerNSURLRequest(request, withCompletionQueue: queue)
+    }
+    
+    internal func performLokiFileServerNSURLRequest(_ request: NSURLRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> LokiAPI.RawResponsePromise {
         let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: LokiFileServerProxy.fileServerPublicKey, privateKey: keyPair.privateKey)
         guard let symmetricKey = uncheckedSymmetricKey else { return Promise(error: Error.symmetricKeyGenerationFailed) }
         var headers = getCanonicalHeaders(for: request)
@@ -50,8 +54,17 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                 serverURLEndIndex < urlAsString.endIndex else { throw Error.endpointParsingFailed }
             let endpointStartIndex = urlAsString.index(after: serverURLEndIndex)
             let endpoint = String(urlAsString[endpointStartIndex..<urlAsString.endIndex])
-            let parametersAsData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
-            let parametersAsString = !request.parameters.isEmpty ? String(bytes: parametersAsData, encoding: .utf8)! : "null"
+            let parametersAsString: String
+            if let tsRequest = request as? TSRequest {
+                let parametersAsData = try JSONSerialization.data(withJSONObject: tsRequest.parameters, options: [])
+                parametersAsString = !tsRequest.parameters.isEmpty ? String(bytes: parametersAsData, encoding: .utf8)! : "null"
+            } else {
+                if let parametersAsData = request.httpBody {
+                    parametersAsString = "{ \"fileUpload\" : \"\(String(data: parametersAsData.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
+                } else {
+                    parametersAsString = "null"
+                }
+            }
             let proxyRequestParameters: JSON = [
                 "body" : parametersAsString,
                 "endpoint": endpoint,

@@ -19,7 +19,7 @@ internal class LokiHTTPClient {
         }
     }
 
-    internal func getCanonicalHeaders(for request: TSRequest) -> [String: Any] {
+    internal func getCanonicalHeaders(for request: NSURLRequest) -> [String:Any] {
         guard let headers = request.allHTTPHeaderFields else { return [:] }
         return headers.mapValues { value in
             switch value.lowercased() {
