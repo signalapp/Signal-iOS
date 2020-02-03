@@ -19,7 +19,7 @@ public enum LokiRSSFeedProxy {
         let url = URL(string: server + "/" + endpoint)!
         let request = TSRequest(url: url)
         return LokiFileServerProxy(for: server).perform(request).map { response -> String in
-            guard let data = response as? Data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON, let xml = json["data"] as? String else { throw Error.proxyResponseParsingFailed }
+            guard let json = response as? JSON, let xml = json["data"] as? String else { throw Error.proxyResponseParsingFailed }
             return xml
         }
     }
