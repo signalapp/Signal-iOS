@@ -58,7 +58,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             firstly {
                 GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
             }.catch { error in
-                owsFailDebug("Local profile update failed with error: \(error)")
+                Logger.warn("Local profile update failed with error: \(error)")
             }.retainUntilComplete()
         }
     }

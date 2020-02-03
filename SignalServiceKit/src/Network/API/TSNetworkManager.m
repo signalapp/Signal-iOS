@@ -20,10 +20,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSErrorDomain const TSNetworkManagerErrorDomain = @"SignalServiceKit.TSNetworkManager";
 
-BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
+// NOTE: This function should only be called from IsNetworkConnectivityFailure().
+BOOL IsObjCNetworkConnectivityFailure(NSError *_Nullable error)
 {
     return ([error.domain isEqualToString:TSNetworkManagerErrorDomain]
         && error.code == TSNetworkManagerErrorFailedConnection);
+}
+
+BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
+{
+    if (IsObjCNetworkConnectivityFailure(error)) {
+        return YES;
+    } else if ([TSNetworkManager isSwiftNetworkConnectivityError:error]) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 dispatch_queue_t NetworkManagerQueue()

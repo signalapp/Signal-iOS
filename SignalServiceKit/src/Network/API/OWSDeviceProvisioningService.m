@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceProvisioningService.h"
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
             successCallback();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
+            if (!IsNetworkConnectivityFailure(error)) {
                 OWSProdError([OWSAnalyticsEvents errorProvisioningRequestFailed]);
             }
             OWSLogVerbose(@"Provisioning request failed with error: %@", error);

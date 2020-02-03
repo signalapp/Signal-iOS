@@ -90,11 +90,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     NS_SWIFT_NAME(updateService(unversionedProfileAvatarData:success:failure:));
 
 // If profileName is nil, we are clearing the profileName.
-- (void)updateServiceWithUnversionedGivenName:(nullable NSString *)givenName
-                                   familyName:(nullable NSString *)familyName
-                                      success:(void (^)(void))successBlock
-                                      failure:(ProfileManagerFailureBlock)failureBlock
-    NS_SWIFT_NAME(updateService(unversionedGivenName:familyName:success:failure:));
+- (void)updateServiceWithUnversioned2GivenName:(nullable NSString *)givenName
+                                    familyName:(nullable NSString *)familyName
+                                       success:(void (^)(void))successBlock
+                                       failure:(ProfileManagerFailureBlock)failureBlock
+    NS_SWIFT_NAME(updateService2(unversionedGivenName:familyName:success:failure:));
 
 #pragma mark - Profile Whitelist
 

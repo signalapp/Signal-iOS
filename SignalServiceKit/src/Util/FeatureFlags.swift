@@ -234,11 +234,10 @@ public class FeatureFlags: NSObject {
 
     // GroupsV2 TODO: Use this until we have "accept invites" UI.
     @objc
-    public static let groupsV2AutoAcceptInvites = groupsV2
+    public static let groupsV2AutoAcceptInvites = false
 
-    // GroupsV2 TODO: Use this until we have group v2 capability.
     @objc
-    public static let groupsV2IgnoreCapability = groupsV2
+    public static let groupsV2IgnoreCapability = false
 
     // GroupsV2 TODO: We can use this to test recovery from "missed updates".
     @objc
@@ -254,6 +253,9 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let groupsV2showV2Indicator = groupsV2 && build.includes(.internalPreview)
+
+    @objc
+    public static let groupsV2SetCapability = groupsV2
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)

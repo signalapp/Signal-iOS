@@ -62,18 +62,28 @@ public class SignalServiceProfile: NSObject {
 
         self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
 
-        if FeatureFlags.uuidCapabilities {
-            guard let capabilities = ParamParser(responseObject: try params.required(key: "capabilities")) else {
-                owsFailDebug("invalid capabilities")
-                throw ValidationError.invalid(description: "invalid capabilities: \(String(describing: params))")
+        if let capabilities = ParamParser(responseObject: try params.required(key: "capabilities")) {
+            if let value: Bool = try capabilities.optional(key: "uuid") {
+                self.supportsUUID = value
+            } else {
+                if FeatureFlags.uuidCapabilities {
+                    owsFailDebug("Missing uuid capability.")
+                }
+                self.supportsUUID = false
             }
-            self.supportsUUID = try capabilities.required(key: "uuid")
+            if let value: Bool = try capabilities.optional(key: "gv2") {
+                self.supportsGroupsV2 = value
+            } else {
+                if FeatureFlags.groupsV2CreateGroups {
+                    owsFailDebug("Missing groups v2 capability.")
+                }
+                self.supportsGroupsV2 = false
+            }
         } else {
+            owsFailDebug("Missing capabilities.")
             self.supportsUUID = false
+            self.supportsGroupsV2 = false
         }
-
-        // GroupsV2 TODO: Parse this capability when it exists on the service.
-        self.supportsGroupsV2 = FeatureFlags.groupsV2IgnoreCapability
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
     }
