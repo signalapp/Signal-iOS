@@ -67,14 +67,14 @@ internal class LokiSnodeProxy : LokiHTTPClient {
             task.resume()
             return promise
         }.map { rawResponse in
-            guard let data = rawResponse as? Data, !data.isEmpty, let cipherText = Data(base64Encoded: data) else {
+            guard let responseAsData = rawResponse as? Data, let cipherText = Data(base64Encoded: responseAsData) else {
                 print("[Loki] Received a non-string encoded response.")
                 return rawResponse
             }
             let response = try DiffieHellman.decrypt(cipherText, using: symmetricKey)
             let uncheckedJSON = try? JSONSerialization.jsonObject(with: response, options: .allowFragments) as? JSON
-            guard let json = uncheckedJSON, let httpStatusCode = json["status"] as? Int else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
-            let isSuccess = (200..<300).contains(httpStatusCode)
+            guard let json = uncheckedJSON, let statusCode = json["status"] as? Int else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
+            let isSuccess = (200..<300).contains(statusCode)
             var body: Any? = nil
             if let bodyAsString = json["body"] as? String {
                 body = bodyAsString
@@ -82,7 +82,7 @@ internal class LokiSnodeProxy : LokiHTTPClient {
                     body = bodyAsJSON
                 }
             }
-            guard isSuccess else { throw HTTPError.networkError(code: httpStatusCode, response: body, underlyingError: Error.targetSnodeHTTPError(code: httpStatusCode, message: body)) }
+            guard isSuccess else { throw HTTPError.networkError(code: statusCode, response: body, underlyingError: Error.targetSnodeHTTPError(code: statusCode, message: body)) }
             return body
         }.recover { error -> Promise<Any> in
             print("[Loki] Proxy request failed with error: \(error.localizedDescription).")

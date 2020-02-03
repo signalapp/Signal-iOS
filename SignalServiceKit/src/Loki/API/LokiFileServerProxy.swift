@@ -24,7 +24,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
            case .symmetricKeyGenerationFailed: return "Couldn't generate symmetric key."
            case .endpointParsingFailed: return "Couldn't parse endpoint."
            case .proxyResponseParsingFailed: return "Couldn't parse proxy response."
-           case .fileServerHTTPError(let httpStatusCode, let message): return "File server returned error \(httpStatusCode) with description: \(message ?? "no description provided.")."
+           case .fileServerHTTPError(let httpStatusCode, let message): return "File server returned \(httpStatusCode) with description: \(message ?? "no description provided.")."
            }
         }
     }
@@ -87,42 +87,17 @@ internal class LokiFileServerProxy : LokiHTTPClient {
             task.resume()
             return promise
         }.map { rawResponse in
-            guard let data = rawResponse as? Data, !data.isEmpty else {
-                print("[Loki] Received an empty response.")
-                return rawResponse
-            }
-            var uncheckedStatusCode: Int? = nil
-            let uncheckedCipherText: Data?
-            if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON, let base64EncodedData = json["data"] as? String {
-                if let meta = json["meta"] as? JSON { uncheckedStatusCode = meta["code"] as? Int }
-                uncheckedCipherText = Data(base64Encoded: base64EncodedData)
-            } else {
-                uncheckedCipherText = data
-            }
-            guard let cipherText = uncheckedCipherText else {
-                print("[Loki] Received an invalid response.")
-                throw Error.proxyResponseParsingFailed
-            }
-            let response = try DiffieHellman.decrypt(cipherText, using: symmetricKey)
-            let uncheckedJSON = try? JSONSerialization.jsonObject(with: response, options: .allowFragments) as? JSON
-            guard let json = uncheckedJSON else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
-            if uncheckedStatusCode == nil {
-                uncheckedStatusCode = json["status"] as? Int
-            }
-            guard let statusCode = uncheckedStatusCode else {
+            guard let responseAsData = rawResponse as? Data, let responseAsJSON = try? JSONSerialization.jsonObject(with: responseAsData, options: .allowFragments) as? JSON, let base64EncodedCipherText = responseAsJSON["data"] as? String,
+                let meta = responseAsJSON["meta"] as? JSON, let statusCode = meta["code"] as? Int, let cipherText = Data(base64Encoded: base64EncodedCipherText) else {
                 print("[Loki] Received an invalid response.")
                 throw Error.proxyResponseParsingFailed
             }
             let isSuccess = (200..<300).contains(statusCode)
-            var body: Any? = nil
-            if let bodyAsString = json["body"] as? String {
-                body = bodyAsString
-                if let bodyAsJSON = try? JSONSerialization.jsonObject(with: bodyAsString.data(using: .utf8)!, options: .allowFragments) as? JSON {
-                    body = bodyAsJSON
-                }
-            }
-            guard isSuccess else { throw HTTPError.networkError(code: statusCode, response: body, underlyingError: Error.fileServerHTTPError(code: statusCode, message: body)) }
-            return body ?? response
+            guard isSuccess else { throw HTTPError.networkError(code: statusCode, response: nil, underlyingError: Error.fileServerHTTPError(code: statusCode, message: nil)) }
+            let uncheckedJSONAsData = try DiffieHellman.decrypt(cipherText, using: symmetricKey)
+            let uncheckedJSON = try? JSONSerialization.jsonObject(with: uncheckedJSONAsData, options: .allowFragments) as? JSON
+            guard let json = uncheckedJSON else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
+            return json
         }.recover { error -> Promise<Any> in
             print("[Loki] File server proxy request failed with error: \(error.localizedDescription).")
             throw HTTPError.from(error: error) ?? error
