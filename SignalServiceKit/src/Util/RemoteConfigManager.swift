@@ -100,9 +100,24 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
             }
             self.refreshIfReady()
         }
+
+        // Listen for registration state changes so we can fetch the config
+        // when the user registers. This will still not take effect until
+        // the *next* launch, but we'll have it ready to apply at that point.
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange),
+            name: .RegistrationStateDidChange,
+            object: nil
+        )
     }
 
     // MARK: -
+
+    @objc func registrationStateDidChange() {
+        guard self.tsAccountManager.isRegistered else { return }
+        self.refreshIfReady()
+    }
 
     private func cacheCurrent() {
         AssertIsOnMainThread()
