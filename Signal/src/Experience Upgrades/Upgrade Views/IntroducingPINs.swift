@@ -39,7 +39,18 @@ class IntroducingPinsMegaphone: MegaphoneView {
             fromViewController.navigationController?.pushViewController(vc, animated: true)
         }
 
-        let secondaryButton = snoozeButton(fromViewController: fromViewController)
+        let secondaryButton = snoozeButton(fromViewController: fromViewController) {
+            let daysRemaining = ExperienceUpgradeManager.splashStartDay - experienceUpgrade.daysSinceFirstViewed
+            assert(daysRemaining > 0)
+
+            let toastFormat = hasPinAlready
+                ? NSLocalizedString("PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT",
+                                    comment: "Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}}")
+                : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT",
+                                    comment: "Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}}")
+
+            return String(format: toastFormat, daysRemaining)
+        }
         setButtons(primary: primaryButton, secondary: secondaryButton)
     }
 
