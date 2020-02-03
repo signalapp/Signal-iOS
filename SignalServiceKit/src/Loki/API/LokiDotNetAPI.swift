@@ -74,20 +74,23 @@ public class LokiDotNetAPI : NSObject {
                     throw error
                 }
                 // Send the request
-                let isProxyingRequired = (server == LokiStorageAPI.server)
+                func parseResponse(_ response: Any) {
+                    // Parse the server ID & download URL
+                    guard let json = response as? JSON, let data = json["data"] as? JSON, let serverID = data["id"] as? UInt64, let downloadURL = data["url"] as? String else {
+                        print("[Loki] Couldn't parse attachment from: \(response).")
+                        return seal.reject(Error.parsingFailed)
+                    }
+                    // Update the attachment
+                    attachment.serverId = serverID
+                    attachment.isUploaded = true
+                    attachment.downloadURL = downloadURL
+                    attachment.save()
+                    seal.fulfill(())
+                }
+                let isProxyingRequired = (server == LokiStorageAPI.server) // Don't proxy open group requests for now
                 if isProxyingRequired {
                     let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done { responseObject in
-                        // Parse the server ID & download URL
-                        guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let serverID = data["id"] as? UInt64, let downloadURL = data["url"] as? String else {
-                            print("[Loki] Couldn't parse attachment from: \(responseObject).")
-                            return seal.reject(Error.parsingFailed)
-                        }
-                        // Update the attachment
-                        attachment.serverId = serverID
-                        attachment.isUploaded = true
-                        attachment.downloadURL = downloadURL
-                        attachment.save()
-                        seal.fulfill(())
+                        parseResponse(responseObject)
                     }.catch { error in
                         seal.reject(error)
                     }
@@ -110,17 +113,7 @@ public class LokiDotNetAPI : NSObject {
                             print("[Loki] Couldn't upload attachment.")
                             return seal.reject(Error.generic)
                         }
-                        // Parse the server ID & download URL
-                        guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let serverID = data["id"] as? UInt64, let downloadURL = data["url"] as? String else {
-                            print("[Loki] Couldn't parse attachment from: \(responseObject).")
-                            return seal.reject(Error.parsingFailed)
-                        }
-                        // Update the attachment
-                        attachment.serverId = serverID
-                        attachment.isUploaded = true
-                        attachment.downloadURL = downloadURL
-                        attachment.save()
-                        return seal.fulfill(())
+                        parseResponse(responseObject)
                     })
                     task.resume()
                 }
