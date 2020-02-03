@@ -932,7 +932,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     message.skipSave = YES;
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
+    SMKSenderCertificate *senderCertificate = [self.udManager getSenderCertificate];
+    OWSUDAccess *theirUDAccess = nil;
+    if (senderCertificate != nil) {
+        theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
+    }
+    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:senderCertificate udAccess:theirUDAccess localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
 }
 
 - (OWSMessageSend *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey
@@ -950,7 +955,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     message.skipSave = YES;
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
+    SMKSenderCertificate *senderCertificate = [self.udManager getSenderCertificate];
+    OWSUDAccess *theirUDAccess = nil;
+    if (senderCertificate != nil) {
+        theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
+    }
+    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:senderCertificate udAccess:theirUDAccess localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
 }
 
 - (void)sendMessageToDestinationAndLinkedDevices:(OWSMessageSend *)messageSend
@@ -1651,12 +1661,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         recipient = [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
     }];
+    
+    SMKSenderCertificate *senderCertificate = [self.udManager getSenderCertificate];
+    OWSUDAccess *theirUDAccess = nil;
+    if (senderCertificate != nil) {
+        theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
+    }
 
     OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
         thread:message.thread
         recipient:recipient
-        senderCertificate:nil
-        udAccess:nil
+        senderCertificate:senderCertificate
+        udAccess:theirUDAccess
         localNumber:self.tsAccountManager.localNumber
         success:^{
             OWSLogInfo(@"Successfully sent sync transcript.");

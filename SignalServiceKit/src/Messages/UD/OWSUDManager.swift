@@ -100,6 +100,9 @@ public class OWSUDAccess: NSObject {
     func shouldAllowUnrestrictedAccessLocal() -> Bool
     @objc
     func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
+    
+    @objc
+    func getSenderCertificate() -> SMKSenderCertificate?
 }
 
 // MARK: -
@@ -430,6 +433,21 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
             }
             seal.fulfill((certificateData: certificateData, certificate: certificate))
+        }
+    }
+    
+    @objc
+    public func getSenderCertificate() -> SMKSenderCertificate? {
+        do {
+            let sender = OWSIdentityManager.shared().identityKeyPair()?.hexEncodedPublicKey
+            let certificate = SMKSenderCertificate(senderDeviceId: OWSDevicePrimaryDeviceId, senderRecipientId: sender!)
+            guard self.isValidCertificate(certificate) else {
+                throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
+            }
+            return certificate
+        } catch {
+            Logger.error("\(error)")
+            return nil
         }
     }
 
