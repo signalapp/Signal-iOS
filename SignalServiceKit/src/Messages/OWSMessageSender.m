@@ -628,6 +628,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      failure:(RetryableFailureHandler)failureHandlerParam
 {
     AssertIsOnSendingQueue();
+    OWSAssert(senderCertificate);
 
     void (^successHandler)(void) = ^() {
         dispatch_async([OWSDispatch sendingQueue], ^{
@@ -939,7 +940,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     message.skipSave = YES;
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
+    SMKSenderCertificate *senderCertificate = [self.udManager getSenderCertificate];
+    OWSUDAccess *theirUDAccess = nil;
+    if (senderCertificate != nil) {
+        theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
+    }
+    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:senderCertificate udAccess:theirUDAccess localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
 }
 
 - (OWSMessageSend *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey
@@ -960,7 +966,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     message.skipSave = YES;
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
+    SMKSenderCertificate *senderCertificate = [self.udManager getSenderCertificate];
+    OWSUDAccess *theirUDAccess = nil;
+    if (senderCertificate != nil) {
+        theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
+    }
+    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:senderCertificate udAccess:theirUDAccess localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
 }
 
 - (OWSMessageSend *)getMultiDeviceSessionRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey forThread:(TSThread *)thread
@@ -1280,7 +1291,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [message saveGroupChatServerID:groupMessage.serverID in:transaction];
                 [OWSPrimaryStorage.sharedManager setIDForMessageWithServerID:groupMessage.serverID to:message.uniqueId in:transaction];
             }];
-            [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
+            [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:messageSend.isUDSend wasSentByWebsocket:false];
         })
         .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
             failedMessageSend(error);
@@ -1302,19 +1313,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSDictionary *signalMessageInfo = deviceMessages.firstObject;
         SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
         uint64_t timestamp = message.timestamp;
-        NSString *senderID = userHexEncodedPublicKey;
-        uint32_t senderDeviceID = OWSDevicePrimaryDeviceId;
+        NSString *senderID = type == SSKProtoEnvelopeTypeUnidentifiedSender ? @"" : userHexEncodedPublicKey;
+        uint32_t senderDeviceID = type == SSKProtoEnvelopeTypeUnidentifiedSender ? 0 : OWSDevicePrimaryDeviceId;
         NSString *content = signalMessageInfo[@"content"];
         NSString *recipientID = signalMessageInfo[@"destination"];
         uint64_t ttl = ((NSNumber *)signalMessageInfo[@"ttl"]).unsignedIntegerValue;
         BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
-        LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing];
+        BOOL isFriendRequest = ((NSNumber *)signalMessageInfo[@"isFriendRequest"]).boolValue;
+        LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing isFriendRequest:isFriendRequest];
         if (!message.skipSave) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 // Update the PoW calculation status
                 [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
                 // Update the message and thread if needed
-                if (signalMessage.type == TSFriendRequestMessageType) {
+                if (signalMessage.isFriendRequest) {
                     [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
                     [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
                 }
@@ -1326,7 +1338,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             if (!message.skipSave) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     // Update the message and thread if needed
-                    if (signalMessage.type == TSFriendRequestMessageType) {
+                    if (signalMessage.isFriendRequest) {
                         [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
                         [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
                     }
@@ -1350,7 +1362,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
                     [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageSent object:[[NSNumber alloc] initWithUnsignedLongLong:signalMessage.timestamp]];
                     isSuccess = YES;
-                    if (signalMessage.type == TSFriendRequestMessageType) {
+                    if (signalMessage.isFriendRequest) {
                         if (!message.skipSave) {
                             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                 // Update the thread
@@ -1368,7 +1380,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         }
                     }
                     // Invoke the completion handler
-                    [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
+                    [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:messageSend.isUDSend wasSentByWebsocket:false];
                 })
                 .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
                     errorCount += 1;
@@ -1671,12 +1683,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         recipient = [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
     }];
+    
+    SMKSenderCertificate *senderCertificate = [self.udManager getSenderCertificate];
+    OWSUDAccess *theirUDAccess = nil;
+    if (senderCertificate != nil) {
+        theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
+    }
 
     OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
         thread:message.thread
         recipient:recipient
-        senderCertificate:nil
-        udAccess:nil
+        senderCertificate:senderCertificate
+        udAccess:theirUDAccess
         localNumber:self.tsAccountManager.localNumber
         success:^{
             OWSLogInfo(@"Successfully sent sync transcript.");
@@ -1941,7 +1959,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                          isOnline:false
                                    registrationId:0
                                               ttl:message.ttl
-                                           isPing:false];
+                                           isPing:false
+                                  isFriendRequest:true];
     
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
@@ -1969,14 +1988,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     
     // Loki: Both for friend request messages and device link messages we use fallback encryption as we don't necessarily have a session yet
     BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
+<<<<<<< HEAD
     BOOL isSessionRequest = [messageSend.message isKindOfClass:LKSessionRequestMessage.class];
     BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
     if (isFriendRequest || isSessionRequest || (isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
         return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId) plainText:plainText];
     }
+=======
+    BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class] && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest;
+//    if ((isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
+//        return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId) plainText:plainText];
+//    }
+>>>>>>> f4e376bfb47d670f29ab970912d4004f694c1d69
 
     // This may throw an exception.
-    if (![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
+    if (!isFriendRequest && !isDeviceLinkMessage && ![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
             @"Unexpectedly missing session for recipient: %@, device: %@",
@@ -2010,6 +2036,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       paddedPlaintext:[plainText paddedMessageBody]
                                                                     senderCertificate:messageSend.senderCertificate
                                                                       protocolContext:transaction
+                                                                      isFriendRequest:isFriendRequest || isDeviceLinkMessage
                                                                                 error:&error];
         SCKRaiseIfExceptionWrapperError(error);
         if (!serializedMessage || error) {
@@ -2039,7 +2066,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                              isOnline:isOnline
                                        registrationId:[cipher throws_remoteRegistrationId:transaction]
                                                   ttl:message.ttl
-                                               isPing:isPing];
+                                               isPing:isPing
+                                      isFriendRequest:isFriendRequest || isDeviceLinkMessage];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];

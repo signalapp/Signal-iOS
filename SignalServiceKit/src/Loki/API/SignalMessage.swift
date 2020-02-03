@@ -10,11 +10,12 @@ public final class SignalMessage : NSObject {
     @objc(ttl)
     public let objc_ttl: UInt64
     @objc public let isPing: Bool
+    @objc public let isFriendRequest: Bool
     
     public var ttl: UInt64? { return objc_ttl != 0 ? objc_ttl : nil }
     
     @objc public init(type: SSKProtoEnvelope.SSKProtoEnvelopeType, timestamp: UInt64, senderID: String, senderDeviceID: UInt32,
-        content: String, recipientID: String, ttl: UInt64, isPing: Bool) {
+                      content: String, recipientID: String, ttl: UInt64, isPing: Bool, isFriendRequest: Bool) {
         self.type = type
         self.timestamp = timestamp
         self.senderID = senderID
@@ -23,6 +24,7 @@ public final class SignalMessage : NSObject {
         self.recipientID = recipientID
         self.objc_ttl = ttl
         self.isPing = isPing
+        self.isFriendRequest = isFriendRequest
         super.init()
     }
 }

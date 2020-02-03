@@ -264,13 +264,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"handling decrypted envelope: %@", [self descriptionForEnvelope:envelope]);
 
-    if (!envelope.hasSource || envelope.source.length < 1) {
-        OWSFailDebug(@"incoming envelope has invalid source");
-        return;
-    }
-    if (!envelope.hasSourceDevice || envelope.sourceDevice < 1) {
-        OWSFailDebug(@"incoming envelope has invalid source device");
-        return;
+    if (!wasReceivedByUD) {
+        if (!envelope.hasSource || envelope.source.length < 1) {
+            OWSFailDebug(@"incoming envelope has invalid source");
+            return;
+        }
+        if (!envelope.hasSourceDevice || envelope.sourceDevice < 1) {
+            OWSFailDebug(@"incoming envelope has invalid source device");
+            return;
+        }
     }
 
     OWSAssertDebug(![self isEnvelopeSenderBlocked:envelope]);
@@ -454,7 +456,7 @@ NS_ASSUME_NONNULL_BEGIN
                 TSContactThread *thread = [TSContactThread getThreadWithContactId:envelope.source transaction:transaction];
                 if (thread && thread.isContactFriend) {
                     [self resetSessionWithContact:envelope.source transaction:transaction];
-                    // Let our other devices know that we have reset the session
+                    // Let our o ther devices know that we have reset the session
                     [SSKEnvironment.shared.syncManager syncContact:envelope.source transaction:transaction];
                 }
             }
