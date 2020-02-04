@@ -207,10 +207,13 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     func createImageContainer() -> UIView {
         let container: UIView
         if let imageName = imageName {
+            container = UIView()
             let imageView = UIImageView()
             imageView.image = UIImage(named: imageName)
             imageView.contentMode = .scaleAspectFit
-            container = imageView
+            container.addSubview(imageView)
+            imageView.autoPinWidthToSuperview()
+            imageView.autoPinEdge(toSuperviewEdge: .top)
         } else if let animation = animation {
             container = UIView()
 
@@ -241,7 +244,8 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
 
         switch imageSize {
         case .small:
-            container.autoSetDimensions(to: CGSize(square: 64))
+            container.autoSetDimension(.width, toSize: 64)
+            container.autoSetDimension(.height, toSize: 64, relation: .greaterThanOrEqual)
         case .large:
             container.autoSetDimension(.height, toSize: 128)
         }
