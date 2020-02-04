@@ -152,6 +152,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     // Schedule next reminder relative to now
     self.lastSuccessfulReminderDate = [NSDate new];
 
+    // Reset the reminder repetition interval for the new pin.
+    [self setDefaultRepetitionInterval];
+
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
                                                              object:nil
                                                            userInfo:nil];
