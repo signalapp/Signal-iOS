@@ -27,14 +27,14 @@ public class MediaAlbumCellView: UIStackView {
                          items: [ConversationMediaAlbumItem],
                          isOutgoing: Bool,
                          maxMessageWidth: CGFloat,
-                         isClosedGroup: Bool) {
+                         isProxied: Bool) {
         self.items = items
         self.itemViews = MediaAlbumCellView.itemsToDisplay(forItems: items).map {
             let result = ConversationMediaView(mediaCache: mediaCache,
                                   attachment: $0.attachment,
                                   isOutgoing: isOutgoing,
-                                  maxMessageWidth: maxMessageWidth)
-            result.isClosedGroup = isClosedGroup
+                                  maxMessageWidth: maxMessageWidth,
+                                  isProxied: isProxied)
             return result
         }
 

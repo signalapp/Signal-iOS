@@ -799,12 +799,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.viewItem.mediaAlbumItems);
 
-    BOOL isClosedGroup = NO;
-    if ([self.viewItem isKindOfClass:TSOutgoingMessage.class]) {
-        TSOutgoingMessage *message = (TSOutgoingMessage *)self.viewItem;
+    BOOL isProxied = NO;
+    if ([self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class]) {
+        TSOutgoingMessage *message = (TSOutgoingMessage *)self.viewItem.interaction;
         if ([message.thread isKindOfClass:TSGroupThread.class]) {
             TSGroupThread *groupThread = (TSGroupThread *)message.thread;
-            isClosedGroup = (groupThread.groupModel.groupType == closedGroup);
+            isProxied = (groupThread.groupModel.groupType == closedGroup);
+        } else if ([message.thread isKindOfClass:TSContactThread.class]) {
+            isProxied = YES;
         }
     }
     
@@ -813,7 +815,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     items:self.viewItem.mediaAlbumItems
                                                isOutgoing:self.isOutgoing
                                           maxMessageWidth:self.conversationStyle.maxMessageWidth
-                                            isClosedGroup:isClosedGroup];
+                                                isProxied:isProxied];
     self.loadCellContentBlock = ^{
         [albumView loadMedia];
     };

@@ -46,19 +46,20 @@ internal class LokiFileServerProxy : LokiHTTPClient {
         let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: LokiFileServerProxy.fileServerPublicKey, privateKey: keyPair.privateKey)
         guard let symmetricKey = uncheckedSymmetricKey else { return Promise(error: Error.symmetricKeyGenerationFailed) }
         var headers = getCanonicalHeaders(for: request)
-        headers["Content-Type"] = "application/json"
         return LokiAPI.getRandomSnode().then { [server = self.server, keyPair = self.keyPair, httpSession = self.httpSession] proxy -> Promise<Any> in
             let url = "\(proxy.address):\(proxy.port)/file_proxy"
-            print("[Loki] Proxying request to \(server) through \(proxy).")
+            print("[Loki] Proxying file server request to \(server) through \(proxy).")
             guard let urlAsString = request.url?.absoluteString, let serverURLEndIndex = urlAsString.range(of: server)?.upperBound,
                 serverURLEndIndex < urlAsString.endIndex else { throw Error.endpointParsingFailed }
             let endpointStartIndex = urlAsString.index(after: serverURLEndIndex)
             let endpoint = String(urlAsString[endpointStartIndex..<urlAsString.endIndex])
             let parametersAsString: String
             if let tsRequest = request as? TSRequest {
+                headers["Content-Type"] = "application/json"
                 let parametersAsData = try JSONSerialization.data(withJSONObject: tsRequest.parameters, options: [])
                 parametersAsString = !tsRequest.parameters.isEmpty ? String(bytes: parametersAsData, encoding: .utf8)! : "null"
             } else {
+                headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
                 if let parametersAsInputStream = request.httpBodyStream, let parametersAsData = try? Data(from: parametersAsInputStream) {
                     parametersAsString = "{ \"fileUpload\" : \"\(String(data: parametersAsData.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
                 } else {

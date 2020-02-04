@@ -28,7 +28,7 @@ public class ConversationMediaView: UIView {
     private let maxMessageWidth: CGFloat
     private var loadBlock: (() -> Void)?
     private var unloadBlock: (() -> Void)?
-    var isClosedGroup = false
+    private let isProxied: Bool
 
     // MARK: - LoadState
 
@@ -91,11 +91,13 @@ public class ConversationMediaView: UIView {
     public required init(mediaCache: NSCache<NSString, AnyObject>,
                          attachment: TSAttachment,
                          isOutgoing: Bool,
-                         maxMessageWidth: CGFloat) {
+                         maxMessageWidth: CGFloat,
+                         isProxied: Bool) {
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.isOutgoing = isOutgoing
         self.maxMessageWidth = maxMessageWidth
+        self.isProxied = isProxied
 
         super.init(frame: .zero)
 
@@ -174,7 +176,7 @@ public class ConversationMediaView: UIView {
     }
 
     private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
-        guard !isClosedGroup else { return false } // Loki: Due to the way proxying works we can't get upload progress for closed group attachments right now
+        guard !isProxied else { return false } // Loki: Due to the way proxying works we can't get upload progress for those attachments right now
         guard isOutgoing else { return false }
         guard let attachmentStream = attachment as? TSAttachmentStream else { return false }
         guard let attachmentId = attachmentStream.uniqueId else {
