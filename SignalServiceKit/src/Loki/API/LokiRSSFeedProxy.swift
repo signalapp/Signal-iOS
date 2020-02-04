@@ -7,7 +7,7 @@ public enum LokiRSSFeedProxy {
 
         public var errorDescription: String? {
            switch self {
-           case .proxyResponseParsingFailed: return "Couldn't parse proxy response."
+           case .proxyResponseParsingFailed: return "Couldn't parse RSS feed proxy response."
            }
         }
     }

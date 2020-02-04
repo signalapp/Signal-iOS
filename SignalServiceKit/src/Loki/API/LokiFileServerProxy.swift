@@ -23,7 +23,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
            switch self {
            case .symmetricKeyGenerationFailed: return "Couldn't generate symmetric key."
            case .endpointParsingFailed: return "Couldn't parse endpoint."
-           case .proxyResponseParsingFailed: return "Couldn't parse proxy response."
+           case .proxyResponseParsingFailed: return "Couldn't parse file server proxy response."
            case .fileServerHTTPError(let httpStatusCode, let message): return "File server returned \(httpStatusCode) with description: \(message ?? "no description provided.")."
            }
         }
@@ -109,6 +109,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
             let isSuccess = (200..<300).contains(statusCode)
             guard isSuccess else { throw HTTPError.networkError(code: statusCode, response: nil, underlyingError: Error.fileServerHTTPError(code: statusCode, message: nil)) }
             let uncheckedJSONAsData = try DiffieHellman.decrypt(cipherText, using: symmetricKey)
+            if uncheckedJSONAsData.isEmpty { return () }
             let uncheckedJSON = try? JSONSerialization.jsonObject(with: uncheckedJSONAsData, options: .allowFragments) as? JSON
             guard let json = uncheckedJSON else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
             return json

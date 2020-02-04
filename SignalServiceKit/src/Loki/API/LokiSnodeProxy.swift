@@ -15,7 +15,7 @@ internal class LokiSnodeProxy : LokiHTTPClient {
            switch self {
            case .targetPublicKeySetMissing: return "Missing target public key set."
            case .symmetricKeyGenerationFailed: return "Couldn't generate symmetric key."
-           case .proxyResponseParsingFailed: return "Couldn't parse proxy response."
+           case .proxyResponseParsingFailed: return "Couldn't parse snode proxy response."
            case .targetSnodeHTTPError(let httpStatusCode, let message): return "Target snode returned error \(httpStatusCode) with description: \(message ?? "no description provided.")."
            }
         }
