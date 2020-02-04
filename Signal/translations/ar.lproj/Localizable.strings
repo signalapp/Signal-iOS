@@ -925,7 +925,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "لمَ لا تدعُ أحدهم؟";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirm your PIN.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "تأكيد الرقم التعريفي الشخصي الخاص بك.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "ليس الآن";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Let's Go";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Your version of Signal has expired! Messages will no longer send successfully. Tap to update to the most recent version.";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "تحسين قاعدة البيانات";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "تغيرت الصورة الرمزية.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "تمّ إنشاء المجموعة.";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "لا يمكن إضافة بعض الأعضاء إلى المجموعة. انقر لإعادة المحاولة.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "إدارة المجموعة";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ انضم إلى المجموعة";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ غادر المجموعة";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "رسالة";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "الآن أصبح العنوان %@";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "تم تحديث المجموعة.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "قمت بتحديث المجموعة.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "لقد غادرت المجموعة";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "هذا الشهر";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "نسخ نص الرسالة";
@@ -1741,10 +1765,10 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "هل نسيت الرقم التعريفي الشخصي؟";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
+"ONBOARDING_2FA_INVALID_PIN" = "الرقم التعريفي الشخصي غير صحيح";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
@@ -1807,10 +1831,10 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم خاطئ ";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "أدخل الرقم التعريفي الشخصي الذى أنشأته لحسابك. هذا مختلف عن رمز تحقق SMS.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "أدخل الرقم التعريفي الشخصي";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Terms & Privacy Policy";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
@@ -1995,17 +2016,17 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Re-enter PIN";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
+"PIN_CREATION_RECREATION_TITLE" = "إنشاء رقم تعريفي شخصي جديد";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "إنشاء الرقم التعريفي الشخصي الخاص بك";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
@@ -2014,16 +2035,43 @@
 "PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "هل نسيت الرقم التعريفي الشخصي؟";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "أدخل الرقم التعريفي الشخصي ل Signal";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "تحديث الرقم التعريفي الشخصي";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "نقدم لكم الأرقام التعريفية الشخصية أو PINs";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "تم إنشاء الرقم التعريفي الشخصي.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
@@ -2078,6 +2126,24 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "تقدم";
+
+/* Action text for profile name reminder megaphone */
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+
+/* Title for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+
+/* Body for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+
+/* Toast indicating that a PIN has been created. */
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "تعيين  الصورة الرمزية للملف الشخصي";
@@ -2211,6 +2277,12 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
 
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "نسيتُ رمز PIN للأمان الخاص بي.";
 
@@ -2218,7 +2290,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "هل نسيت الرقم التعريفي الشخصي؟";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
@@ -2227,7 +2299,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Incorrect PIN";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "الرقم التعريفي الشخصي غير صحيح";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "إرسال";
@@ -2656,13 +2728,16 @@
 "SETTINGS_NOTIFICATIONS" = "الإشعارات";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Change your PIN";
 
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN";
+"SETTINGS_PINS_TITLE" = "الرقم التعريفي الشخصي";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "اظهار أسم المتصل ورقمه";
@@ -3013,31 +3088,25 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "إنشاء الرقم التعريفي الشخصي الخاص بك";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock now does more. With PINs you can take your contacts with you when you switch devices.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registration Lock = PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "قفل التسجيل = الرقم التعريفي الشخصي";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Add even more security to your account and take your contacts with you when you switch phones.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "نقدم لكم الأرقام التعريفية الشخصية PINs";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "لماذا تستخدم الكلمات بينما يمكن أن تستخدم الملصقات؟ انقر هذه الأيقونة على لوحة المفاتيح:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducing Stickers";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";

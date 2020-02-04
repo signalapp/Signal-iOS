@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Contacto no registrado: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Ahora no";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "¡Vamos!";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "¡Esta versión de Signal ha caducado! Ya no se mandarán más mensajes. Toca para actualizar a la versión más reciente.";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimizando base de datos";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "La imagen de grupo ha cambiado.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "Grupo creado.";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "Has creado el grupo.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ te ha añadido al grupo.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "No se han podido añadir todos los participantes al grupo. Toca para probar de nuevo.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Gestión del grupo";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ se ha unido al grupo.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ ha abandonado el grupo.";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Mensaje";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "El grupo se llama ahora «%@».";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "Grupo actualizado.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ y %@ se han unido al grupo.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ se ha unido al grupo.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Avatar de grupo eliminado.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Avatar de grupo actualizado.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "Has actualizado el grupo.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ha actualizado el grupo.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Nombre eliminado.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Ahora el nombre del grupo es «%@».";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Te han añadido de nuevo al grupo.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Has abandonado el grupo.";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Este mes";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Recordar más tarde";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "Te lo recordaremos más tarde.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensaje";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "El PIN debe constar de al menos 6 caracteres";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "No hay manera de recuperar tu PIN ¡recuérdalo!";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Cambiar PIN";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Fallo al crear el PIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "El PIN es una medida de seguridad extra y permite recuperar tu cuenta.";
+"PIN_CREATION_EXPLANATION" = "El PIN añade una capa extra de seguridad a tu cuenta. Anota tu PIN y mantenlo en un lugar seguro. No se puede recuperar.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "El PIN no coincide. Inténtalo de nuevo.";
@@ -1995,11 +2016,11 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Vuelve a introducir el PIN";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Con la sesión cerrada, no hay manera de recuperar el PIN.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creando PIN ...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Al estar la sesión todavía abierta, puedes crear un nuevo PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Crear nuevo PIN";
@@ -2024,6 +2045,33 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "El PIN debe constar de al menos 6 cifras.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Actualizar PIN";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Tu bloqueo de registro ahora se llama PIN, y es más seguro. Actualizar sólo lleva unos segundos.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "¡El PIN ha llegado!";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Crea tu PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "El PIN añade otro nivel de seguridad a tu cuenta de Signal.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Crear PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN creado.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproducir adjunto multimedia";
@@ -2078,6 +2126,24 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Continuar";
+
+/* Action text for profile name reminder megaphone */
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Comenzar";
+
+/* Body for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Ahora tu perfil puede incluir opcionalmente tu(s) apellido(s)";
+
+/* Title for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirma tu nombre de perfil";
+
+/* Body for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Se mostrará al iniciar un nuevo chat o al compartirlo.";
+
+/* Title for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Añadir un nombre de perfil";
+
+/* Toast indicating that a PIN has been created. */
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Tu nombre de perfil se ha guardado.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Seleccionar foto para perfil";
@@ -2179,37 +2245,43 @@
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacción a tu mensaje: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacción a tu álbum: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacción a tu audio: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacción a tu contacto compartido: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacción a tu fichero: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacción a tu GIF: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacción a tu foto: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacción a tu cromo: %@";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacción %@ a: «%@»";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacción a tu video: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacción a tu archivo para ver solo una vez: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacción a tu nota de voz: %@";
+
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Mantén pulsado cualquier mensaje para respuesta rápida de como te sientes.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Las reacciones a mensajes han llegado";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "He olvidado mi PIN.";
@@ -2656,10 +2728,13 @@
 "SETTINGS_NOTIFICATIONS" = "Notificaciones";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "El PIN añade una capa de seguridad extra para proteger tu cuenta. Te preguntaremos el PIN al registrar tu número desde otro dispositivo en Signal. Si olvidas tu PIN, bloquearemos tu cuenta durante 7 días.";
+"SETTINGS_PINS_FOOTER" = "El PIN añade una capa de seguridad extra a tu cuenta. Te preguntaremos el PIN al registrar tu número desde otro dispositivo en Signal. Si olvidas tu PIN, tu cuenta permanecerá bloqueada durante 7 días.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Cambiar PIN";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Crear PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -3019,25 +3094,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Saber más sobre el PIN";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "El bloqueo de registro ofrece todavía más: Con el PIN puedes llevar tus contactos contigo al cambiar de teléfono.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "El bloqueo de registro ahora se llama PIN, y permite más funciones. Actualiza ahora.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Bloqueo de registro = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Añade más seguridad a tu cuenta y llévate tus contactos contigo al cambiar de teléfono.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "El PIN añade otro nivel de seguridad a tu cuenta. Crea ahora tu PIN.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "¡El PIN ha llegado!";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "¿Tengo que crear un PIN?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "¿Por qué usar palabras si puedes usar cromos? Toca este icono en tu teclado:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "¡Los cromos (stickers) han llegado!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal próximamente solo funcionará en iOS 10 o versiones posteriores. Actualiza en Ajustes >> General >> Actualización de software.";

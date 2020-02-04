@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -138,7 +138,7 @@ class EmojiCountCell: UICollectionViewCell {
 
     func configure(with item: EmojiItem) {
         emoji.text = item.emoji
-        count.text = "\(OWSFormat.formatInt(Int32(item.count)))"
+        count.text = item.count.abbreviatedString
     }
 
     override func layoutSubviews() {

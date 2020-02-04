@@ -336,7 +336,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Chyba";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Používateľ %@ bol/bola odblokovaný/á.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Používateľ %@ bol odblokovaný.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existujúci členovia vás teraz môžu znova pridať do skupiny.";
@@ -483,7 +483,7 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Obnovenie";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signalu sa nepodarilo zistiť stav vášho účtu iCloud. Pre vykonanie zálohy vašich údajov v Signale sa prihláste do svojho účtu iCloud v aplikácii nastavení iOS.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signalu sa nepodarilo zistiť stav vášho účtu iCloud. Pre vykonanie zálohy vašich údajov v Signale sa prihláste do svojho účtu iCloud v aplikácii Nastavenia iOS.";
 
 /* Error indicating that user does not have an iCloud account. */
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "Žiadny účet iCloud. Pre zálohovanie vašich dát zo Signalu sa prihláste do vášho účtu iCloud v aplikácii Nastavenia iOS.";
@@ -492,7 +492,7 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "Signalu bol zabránený prístup k vášmu účtu iCloud pre zálohy. Pre zálohovanie dát zo Signalu povoľte Signalu prístup k vašemu účtu iCloud V aplikácii Nastavenia iOS.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Zvolte farbu odoslanej správy v tejto konverzácií";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Zvoľte farbu odoslaných správ v tejto konverzácii";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Farbu, ktorú ste vybrali uvidíte iba vy.";
@@ -504,10 +504,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Porovnať so schránkou";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Vyberte alebo nájdite používateľa Signalu, aby ste začali konverzáciu.";
+"COMPOSE_BUTTON_HINT" = "Vyberte alebo nájdite používateľa Signalu pre začatie konverzácie.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Vytvoriť";
+"COMPOSE_BUTTON_LABEL" = "Skladať";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontakty";
@@ -534,7 +534,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Toto zresetuje aplikáciu prostredníctvom vymazania všetkých vašich správ z tohoto zariadenia. Stále budete môcť váš telefón pripojiť, ale vymazané správy to neobnoví. Po dokončení tohoto procesu sa aplikácia zatvorí. ";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Ste si istý, že chcete vymazať všetky dáta?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Ste si istý/istá, že chcete vymazať všetky dáta?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Nebudete môcť poslať ani prijať správy z tejto skupiny.";
@@ -558,7 +558,7 @@
 "CONTACT_ADDRESS" = "Adresa";
 
 /* An indicator that a contact or group has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "Blokovaný";
+"CONTACT_CELL_IS_BLOCKED" = "Blokovaný/á";
 
 /* An indicator that a contact is no longer verified. */
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Neoverený";
@@ -841,7 +841,7 @@
 "DEBUG_LOG_COULD_NOT_EMAIL" = "Nepodarilo sa otvoriť e-mailovú appku.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist odkaz bol skopírovaný do schránky. Budete presmerovaný/á na zoznam problémov na GitHube.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist odkaz bol skopírovaný do schránky. Budete presmerovaný/presmerovaná na zoznam problémov na GitHube.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Presmerovanie na GitHub";
@@ -913,7 +913,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopírovať";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Ahoj,\n\nv poslednej dobe som začal na svojom iPhone používať Signal, aby moje konverzácie zostali súkromné. Bol by som rád, keby si si ho nainštaloval tiež, aby sme si boli istí, že nikto iný nesleduje naše správy a hovory.\n\nSignal je dostupný pre iPhony a Android. Získaš ho tu: %@\n\nSignal funguje ako tvoja súčasná aplikácia na posielanie zpráv. Môžeme posielať obrázky, videá, uskutočňovať hovory a vytvárať skupinové chaty. A najlepšie na tom je, že ich nikto iný nemôže vidieť, ani ľudia, čo vyvíjajú Signal!\n\nViac o Open Whisper Systems, ľuďoch, ktorí vyvíjajú Signal, sa môžeš dočítať tu: %@";
+"EMAIL_INVITE_BODY" = "Ahoj,\n\nv poslednej dobe na svojom iPhone používam Signal, aby moje konverzácie zostali súkromné. Potešilo by ma, keby si si ho nainštaloval(a) tiež, aby sme si boli istí, že nikto iný nesleduje naše správy a hovory.\n\nSignal je dostupný pre iPhony a Android. Získaš ho tu: %@\n\nSignal funguje ako tvoja súčasná aplikácia na posielanie zpráv. Môžeme posielať obrázky, videá, uskutočňovať hovory a vytvárať skupinové chaty. A najlepšie na tom je, že ich nikto iný nemôže vidieť, ani ľudia, čo vyvíjajú Signal!\n\nViac o Open Whisper Systems, ľuďoch, ktorí vyvíjajú Signal, sa môžeš dočítať tu: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Prejdime na Signal";
@@ -985,7 +985,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Odosielanie zlyhalo pre zastaralé dáta krátkodobého kľúča.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Správa nebola odoslaná pretože používateľ bol blokovaný. ";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Správa nebola odoslaná pretože používateľ bol zablokovaný.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal sa nemohol pripojiť k Internetu. Skúste prosím znova.";
@@ -1058,12 +1058,6 @@
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Neregistrovaný používateľ: %@";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Teraz nie";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Poďme na to";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Vaša verzia Signalu vypršala! Správy sa nepodarí úspešne odoslať. Ťuknutím aktualizujte na najnovšiu verziu.";
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimalizácia databázy";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Avatar bol zmenený.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "Skupina bola vytvorená.";
 
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "Vytvorili ste skupinu.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ vás pridal(a) do skupiny.";
+
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Nepodarilo sa každého člena pridať do skupiny. Ťuknutím skúste znovu.";
+"GROUP_CREATION_FAILED" = "Každého člena sa nepodarilo pridať do skupiny. Ťuknutím skúste znovu.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Správa skupiny";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ sa pripojil(a) ku skupine.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ opustil(a) skupinu.";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Správa";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Názov je odteraz \"%@\".";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "Skupina aktualizovaná.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ a %@ sa pridali do skupiny.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ sa pridal(a) do skupiny.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Odstránil(a) avatar skupiny.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Aktualizoval(a) avatar skupiny.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "Aktualizovali ste skupinu.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ aktualizoval(a) skupinu.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Odstránil(a) názov.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Skupina sa teraz volá “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Vás znovu pridal(a) do skupiny.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Opustili ste skupinu.";
@@ -1189,7 +1207,7 @@
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archivované konverzácie";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Blokovnaný/á";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Blokovaná";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Hľadať";
@@ -1422,6 +1440,12 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Tento mesiac";
 
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Pripomenúť neskôr";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "Pripomenieme vám to neskôr.";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopírovať text správy";
 
@@ -1501,10 +1525,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Vymazať";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Musíte zdieľať váš profil, aby ste pokračovali v konverzácii s  %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Pre pokračovanie v konverzácii s  %@ musíte zdieľať váš profil.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Musíte zdieľať váš profil, aby ste pokračovali v konverzácii v %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Pre pokračovanie v konverzácii v %@ musíte zdieľať váš profil.";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Dozvedieť sa viac";
@@ -1756,7 +1780,7 @@
 "ONBOARDING_2FA_TITLE" = "Registračný zámok";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "V záujme ochrany vašeho súkromia  a bezpečnosti vašeho účtu sme ho zamkli na 7 dní.\n\nPo 7 dňoch neaktivity budete môcť toto telefónne číslo znovu zaregistrovať bez použitia PIN. Celý obsah ude zmazaný.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "V záujme ochrany vašeho súkromia  a bezpečnosti vašeho účtu sme vás vymkli na 7 dní.\n\nPo 7 dňoch neaktivity budete môcť toto telefónne číslo znovu zaregistrovať bez použitia PIN kódu. Celý obsah bude zmazaný.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Dozvedieť sa viac o zamknutých účtoch.";
@@ -1822,7 +1846,7 @@
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Zlé číslo?";
 
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Nedostal som kód (dostupné o %@)";
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Nedostal(a) som kód (dostupné o %@)";
 
 /* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
 "ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Kontaktovať podporu Signal";
@@ -1831,7 +1855,7 @@
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Tento kód je nesprávny";
 
 /* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Nedostal som kód";
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Nedostal(a) som kód";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Uistite sa, prosím, že ste pripojený/á k mobilnej sieti a môžete prijímať SMS správy.";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN musí mať aspoň 6 znakov";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "Váš PIN nie je možné nijakým spôsobom obnoviť, tak si ho zapamätajte.";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Zmente si PIN";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Vytvorenie PINu zlyhalo";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Váš PIN pridá ďalšiu vrstvu zabezpečenia a ochráni váš účet.";
+"PIN_CREATION_EXPLANATION" = "PIN kódy pridávajú k vášmu účtu ďalšiu vrstvu zabezpečenia. Je dôležité zapamätať si tento PIN, pretože ho nie je možné obnoviť.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINy sa nezhodujú. Skúste to znovu.";
@@ -1995,11 +2016,11 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Znovu zadajte PIN";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Keď ste odhlásený, váš PIN nie je možné nijakým spôsobom obnoviť.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Vytvára sa PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Pretože ste ešte stále prihlásený, môžete si vytvoriť nový PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Vytvoriť nový PIN";
@@ -2024,6 +2045,33 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN musí mať aspoň 6 číslic.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Aktualizovať PIN kód";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Váš Registračný zámok sa teraz volá PIN kód. Jeho aktualizácia vám zaberie pár sekúnd.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Predstavujeme PINy";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Vytvoriť PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PIN kódy pridajú k vášmu účtu Signal ďalšiu vrstvu zabezpečenia.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Vytvoriť PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN kód sa vytvoril.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spustiť média";
@@ -2079,6 +2127,24 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Pokračovať";
 
+/* Action text for profile name reminder megaphone */
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Poďme na to";
+
+/* Body for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Váš profil môže teraz voliteľne obsahovať priezvisko.";
+
+/* Title for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Potvrdiť názov vášho profilu";
+
+/* Body for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Toto sa zobrazí, keď začnete novú konverzáciu alebo keď ju budete zdieľať.";
+
+/* Title for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Pridať názov profilu";
+
+/* Toast indicating that a PIN has been created. */
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Názov vášho profilu bol uložený.";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Nastaviť profilovú fotku";
 
@@ -2101,7 +2167,7 @@
 "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Nepovinné)";
 
 /* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Priezvysko";
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Priezvisko";
 
 /* Default text for the given name field of the profile view. */
 "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Povinné)";
@@ -2176,40 +2242,46 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagoval/a %@ na vašu správu";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagoval(a) %@ na vašu správu";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagoval(a) %@ na váš album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagoval(a) %@ na vaše audio";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagoval(a) %@ na vaše zdieľanie kontaktu";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagoval(a) %@ na váš súbor";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagoval(a) %@ na váš GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagoval(a) %@ na vašu fotku";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagoval(a) %@ na vašu nálepku";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagoval(a) %@ na: \"%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagoval(a) %@ na vaše video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagoval(a) %@ na vaše médium na jedno zobrazenie";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagoval(a) %@ na vašu hlasovú správu";
+
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Predstavujeme reakcie";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Zabudol/la som PIN.";
@@ -2362,7 +2434,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Pre používanie zámku obrazovky, zapnite kódový zámok v nastaveniach iOS.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentifikujte sa pre otvorenie Signalu.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Pre otvorenie Signalu sa autentifikujte.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Autentifikácia Zlyhala";
@@ -2485,7 +2557,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Poloha: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Keď je povolené, Signal sa pokúsi obísť cenzúru. Nepovoľujte v umiestneniach, kde Signal nie je cenzúrovaný.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Keď je povolené, Signal sa pokúsi obísť cenzúru. Nepovoľujte v umiestneniach, kde Signal nie je cenzurovaný.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Obchádzanie cenzúry bolo zapnuté na základe telefónneho čísla vašeho účtu.";
@@ -2581,16 +2653,16 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Žiadne výsledky hľadania";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Blokovnaný/á";
+"SETTINGS_BLOCK_LIST_TITLE" = "Blokovaní";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Vždy presmerovať hovory";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Smerovať všetky hovory cez server Signal pre zabránenie odhaleniu vašej IP adresy kontaktu. Zapnutie zníži kvalitu hovoru.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Smerovať všetky hovory cez server Signal pre zabránenie odhaleniu vašej IP adresy vašemu kontaktu. Zapnutie zníži kvalitu hovoru.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Vymazať históriu konverzácie";
+"SETTINGS_CLEAR_HISTORY" = "Vymazať históriu konverzácií";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licencované pod GPLv3";
@@ -2611,7 +2683,7 @@
 "SETTINGS_HELP_HEADER" = "Pomoc";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Vymazať históriu konverzácie";
+"SETTINGS_HISTORYLOG_TITLE" = "Vymazať históriu konverzácií";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informácie";
@@ -2656,10 +2728,13 @@
 "SETTINGS_NOTIFICATIONS" = "Upozornenia";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Registrujte vaše telefónne číslo v aplikácii Signal. Ak svoj PIN zabudnete, budete z vašeho účtu vymknutý/á na 7 dní.";
+"SETTINGS_PINS_FOOTER" = "PIN kód pridáva k vášmu účtu ďalšiu vrstvu zabezpečenia. Budete oň požiadaný/požiadaná, keď si v Signale zaregistrujete svoje telefónne číslo. Ak svoj PIN zabudnete, váš účet sa na 7 dní uzamkne.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Zmente si PIN";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Vytvoriť PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2956,19 +3031,19 @@
 "UNKNOWN_COUNTRY_NAME" = "Neznáma krajina";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Jedno z vašich zariadení odoslalo správu, ktorú tu nie je možné spracovať alebo zobraziť, pretože používa novú funkciu Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Jedno z vašich zariadení odoslalo správu, ktorú tu nie je možné spracovať alebo zobraziť, pretože používa novú funkciu Signalu.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ vám poslal(a) správu, ktorú nie je možné zobraziť alebo spracovať, pretože používa novú funkciu Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ vám poslal(a) správu, ktorú nie je možné zobraziť alebo spracovať, pretože používa novú funkciu Signalu.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Dostali ste správu, ktorú nie je možné zobraziť alebo spracovať, pretože používa novú funkciu Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Dostali ste správu, ktorú nie je možné zobraziť alebo spracovať, pretože používa novú funkciu Signalu.";
 
 /* Label for button that lets users upgrade the app. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Aktualizujte Signal teraz";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Aktualizované na najnovšiu verziu Signal. Teraz môžete prijať tento typ správy na vašom zariadení.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Aktualizované na najnovšiu verziu Signalu. Teraz môžete prijať tento typ správy na vašom zariadení.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Teraz môžete požiadať %@, aby znovu odoslal/a túto správu, keďže používate aktuálnu verziu Signalu.";
@@ -3019,25 +3094,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Dozvedieť sa viac o PINoch";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Váš registračný zámok teraz dokáže viac. S PINmi si môžete vziať kontakty so sebou, keď zmeníte telefón.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Váš Registračný zámok sa teraz volá PIN kód a dokáže viac. Aktualizujte ho teraz.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registračný zámok = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Zabezpečte si účet ešte viac a vezmite si kontakty so sebou, keď zmeníte telefón.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN kódy pridávajú k vášmu účtu ďalšiu vrstvu zabezpečenia. Vytvorte si PIN teraz.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Predstavujeme PINy";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Musím si vytvoriť PIN?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Prečo používať slová, keď môžete používať nálepky? Ťuknite ná túto ikonu na klávesnici:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Predstavujeme nálepky";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal si čoskoro bude vyžadovať iOS 10 alebo novší. Prosím, vykonajte aktualizáciu v aplikácia Nastavenia >> Všeobecné >> Aktualizácia softvéru.";

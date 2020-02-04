@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Pengguna Tidak Berdaftar: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Bukan Sekarang";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Mari Pergi";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Versi Signal anda telah tamat tempoh! Mesej tidak akan berjaya dihantar lagi. Ketik untuk mengemas kini kepada versi yang terkini.";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Mengoptimumkan Pangkalan Data";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Avatar ditukar.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "Kumpulan dicipta.";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Bukan semua ahli dapat ditambah ke dalam kumpulan. Ketik untuk cuba semula.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Pengurusan Kumpulan";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ menyertai kumpulan.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ meninggalkan kumpulan.";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Mesej";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Tajuk sekarang adalah '%@'";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "Kumpulan dikemas kini.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "Anda telah mengemas kini kumpulan.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Anda telah meninggalkan kumpulan.";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Bulan Ini";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Salin Teks Mesej";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "Tidak ada cara untuk memulihkan PIN anda, jadi ingatlah.";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Tukar PIN anda";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN anda menambah lapisan tambahan keselamatan dan menyokong akaun anda.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN tidak sepadan. Cuba lagi.";
@@ -1995,11 +2016,11 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Masukkan semula PIN";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Apabila anda dilog keluar, tidak ada cara untuk memulihkan PIN anda.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Kerana anda masih log masuk, anda boleh membuat PIN baru.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Cipta PIN baru";
@@ -2024,6 +2045,33 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Update PIN";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Memperkenalkan PIN";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN created.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Mainkan Media";
@@ -2078,6 +2126,24 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Teruskan";
+
+/* Action text for profile name reminder megaphone */
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+
+/* Title for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+
+/* Body for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+
+/* Toast indicating that a PIN has been created. */
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Tetap Avatar Profil";
@@ -2210,6 +2276,12 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Saya terlupa PIN saya";
@@ -2656,10 +2728,13 @@
 "SETTINGS_NOTIFICATIONS" = "Pemberitahuan";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN anda menambah lapisan tambahan keselamatan dan menyokong akaun anda. Anda akan diminta apabila anda mendaftarkan nombor telefon anda dengan Signal. Jika anda terlupa PIN anda, anda akan dikunci daripada akaun anda selama 7 hari.";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Tukar PIN anda";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -3019,25 +3094,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Ketahui lebih lanjut mengenai PIN";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Kunci Pendaftaran anda sekarang berfungsi lebih banyak. Dengan PIN anda boleh membawa kenalan anda dengan anda apabila anda menukar peranti.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Kunci Pendaftaran = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Tambah lebih banyak keselamatan ke akaun anda dan bawa kenalan anda dengan anda apabila anda menukar telefon.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Memperkenalkan PIN";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Adakah saya perlu mencipta satu PIN?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Mengapa menggunakan kata-kata apabila anda boleh menggunakan pelekat? Ketik ikon ini di papan kekunci anda:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Memperkenalkan Pelekat";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal tidak lama lagi akan memerlukan iOS 10 atau lebih baru. Sila naik taraf dalam aplikasi Tetapan >> Umum >> Kemas Kini Perisian.";

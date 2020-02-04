@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Oregistrerad kontakt: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Inte nu";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Nu kör vi";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Din version av Signal har löpt ut! Meddelanden kommer inte längre att skickas framgångsrikt. Tryck för att uppdatera till den senaste versionen.";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimerar databas";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Avatar ändrad.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "Gruppen skapad.";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Alla medlemmar kunde inte läggas till i gruppen. Tryck för att försöka igen. ";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Hantera grupper";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ anslöt sig till gruppen.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ har lämnat gruppen.";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Meddelande";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Titeln är nu '%@'.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "Gruppen uppdaterad.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "Du uppdaterade gruppen.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Du har lämnat gruppen.";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Denna månad";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopiera meddelandetext";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-kod måste vara minst 6 tecken";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "Det finns inget sätt att återställa din PIN-kod, så kom ihåg det.";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Ändra din PIN-kod";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Det gick inte att skapa PIN-kod";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Din PIN-kod lägger till ett extra lager av säkerhet och skyddar ditt konto.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-koder matchar inte. Försök igen.";
@@ -1995,11 +2016,11 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Ange PIN-kod igen";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "När du är utloggad finns det inget sätt att återställa din PIN-kod.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Eftersom du fortfarande är inloggad kan du skapa en ny PIN-kod.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Skapa en ny PIN-kod";
@@ -2024,6 +2045,33 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koden måste vara minst 6 siffror.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Uppdatera PIN-kod";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Introducerar PIN-koder";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN-kod skapad.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spela media";
@@ -2078,6 +2126,24 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Fortsätt";
+
+/* Action text for profile name reminder megaphone */
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+
+/* Title for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+
+/* Body for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+
+/* Toast indicating that a PIN has been created. */
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Ställ in profilens avatar";
@@ -2179,37 +2245,43 @@
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagerade %@ på ditt meddelande";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagerade %@ på ditt album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagerade %@ på din ljudfil.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagerade %@ på din kontaktdelning";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagerade %@ på din fil";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagerade %@ på din GIF-bild";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagerade %@ på ditt foto";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagerade %@ på ditt klistermärke";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagerade %@ på: \"%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagerade %@ på din video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagerade %@ på din visa-en-gång media";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagerade %@ på ditt röstmeddelande";
+
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Jag har glömt PIN-koden.";
@@ -2656,10 +2728,13 @@
 "SETTINGS_NOTIFICATIONS" = "Notiser";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Din PIN-kod lägger till ett extra lager av säkerhet och säkerhetskopierar ditt konto. Du kommer att bli ombedd för det när du registrerar ditt telefonnummer med Signal. Om du glömmer din PIN-kod kommer ditt konto att vara låst i 7 dagar.";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Ändra din PIN-kod";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN-kod";
@@ -3019,25 +3094,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Läs mer om PIN-koder";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Ditt registreringslås gör nu mer. Med PIN-koder kan du ta dina kontakter med dig när du byter enhet.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registreringslås = PIN-kod";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Lägg till ännu mer säkerhet till ditt konto och ta dina kontakter med dig när du byter telefon.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducerar PIN-koder";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Måste jag skapa en PIN-kod?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Varför använda ord när du kan använda klistermärken? Tryck på den här ikonen på tangentbordet:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducerar klistermärken";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal kommer snart att kräva iOS 10 eller senare. Vänligen uppgradera i appen Inställningar >> Allmänt >> Programuppdatering.";

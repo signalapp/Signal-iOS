@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "నమోదుకాని వినియోగదారు: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "ఇప్పుడు కాదు";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "పదా  వెళ్దాము";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "మీ Signal వెర్షన్ గడువు ముగిసింది! సందేశాలు ఇకపై విజయవంతంగా పంపబడవు. ఇటీవలి సంస్కరణకు నవీకరించడానికి నొక్కండి.";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "దత్తాంశమూలను ఆప్టిమైజ్ చేస్తుంది";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "అవతార్ మార్చబడింది.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "సమూహం సృష్టించబడింది.";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "సభ్యులందరినీ సమూహానికి చేర్చలేరు. మరోసారి ప్రయత్నిచేందుకు తట్టండి.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "సమూహ నిర్వహణ";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ సమూహంలొ చేరారు.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ సమూహం వదిలి వెళ్లారు";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "సందేశం";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "శీర్షిక ఇప్పుడు '%@'.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "సమూహం నవీకరించబడింది";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "మీరు ఈ సమూహాన్ని నవీకరించారు.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "మీరు సమూహన్ని విడిచిపెట్టారు";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "ఈ నెల";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "సందేశ వచనాన్ని కాపీ చేయండి";
@@ -1888,22 +1912,22 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "ఇన్‌కమింగ్ సందేశాన్ని నిర్వహించడంలో లోపం";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "ఒకసారి-దృశ్యం మీడియా";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "మీడియా";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "ఒకసారి-దృశ్యం  ఫోటో";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "ఒకసారి-దృశ్యం వీడియో";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "చిత్రాలు వీక్షించండి ";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "వీడియో చూడండి";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "వీక్షించినవి";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "మీ పిన్‌ను తిరిగి పొందటానికి మార్గం లేదు, కాబట్టి దీన్ని గుర్తుంచుకోండి.";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "మీ పిన్ మార్చండి";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "మీ పిన్ అదనపు భద్రతా పొరను జోడిస్తుంది మరియు మీ ఖాతాను ప్రత్యామ్నాయ చేస్తుంది.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "పిన్‌లు సరిపోలడం లేదు. మళ్ళీ ప్రయత్నించండి.";
@@ -1995,11 +2016,11 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "పిన్‌ను తిరిగి నమోదు చేయండి";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "మీరు లాగ్ అవుట్ అయినప్పుడు, మీ పిన్‌ను తిరిగి పొందటానికి మార్గం లేదు.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "మీరు ఇప్పటికీ లాగిన్ అయినందున, మీరు క్రొత్త పిన్ను సృష్టించవచ్చు.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "క్రొత్త పిన్ను సృష్టించండి";
@@ -2024,6 +2045,33 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "పిన్‌ను నవీకరించండి";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "పిన్‌లను పరిచయం చేస్తోంది";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "పిన్ సృష్టించబడింది.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "మీడియాను ప్లే చేయండి";
@@ -2078,6 +2126,24 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "కొనసాగండి";
+
+/* Action text for profile name reminder megaphone */
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+
+/* Title for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+
+/* Body for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+
+/* Toast indicating that a PIN has been created. */
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "రూపం యొక్క అవతారని సెట్ చేయండి";
@@ -2210,6 +2276,12 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "నేను పిన్ను మరచిపోయాను.";
@@ -2656,10 +2728,13 @@
 "SETTINGS_NOTIFICATIONS" = "ప్రకటనలు";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "మీ పిన్ అదనపు భద్రతా పొరను జోడిస్తుంది మరియు మీ ఖాతాను ప్రత్యామ్నాయ చేస్తుంది. మల్లి మీరు మీ ఫోన్ నెంబర్ Signal తో నమోదు చేసినప్పుడు మిమల్ని ఆ పిన్ అడుగుతుంది. మీరు మీ పిన్‌ను మరచిపోతే, మీరు 7 రోజులు మీ ఖాతా నుండి లాక్ చేయబడతారు.";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "మీ పిన్ మార్చండి";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "పిన్";
@@ -3019,25 +3094,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "పిన్‌ల గురించి మరింత తెలుసుకోండి";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "మీ రిజిస్ట్రేషన్ లాక్ ఇప్పుడు మరింత చేస్తుంది. మీరు పరికరాలను మార్చినప్పుడు పిన్‌లతో మీ పరిచయాలను మీతో తీసుకెళ్లవచ్చు.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "నమోదు లాక్  = పిన్";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "మీ ఖాతాకు మరింత భద్రతను జోడించండి మరియు మీరు ఫోన్‌లను మార్చినప్పుడు మీ పరిచయాలను మీతో తీసుకెళ్లండి.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "పిన్‌లను పరిచయం చేస్తోంది";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "నేను పిన్ సృష్టించాలా?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "స్టిక్కెర్లు వుందగా పదాలు ఎందుకు? కీబోర్డ్‌లో ఈ చిహ్నాన్ని నొక్కండి:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "స్టిక్కర్లను పరిచయం చేస్తున్నాము";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal కు త్వరలో iOS 10 లేదా తరువాత అవసరం. దయచేసి సెట్టింగ్‌ల అనువర్తనంలో అప్‌గ్రేడ్ చేయండి >> సాధారణ >> సాఫ్ట్‌వేర్ నవీకరణ.";
@@ -3115,7 +3184,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "ఈ సందేశం చూసిన తర్వాత అదృశ్యమయ్యేలా ఇక్కడ నొక్కండి.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";

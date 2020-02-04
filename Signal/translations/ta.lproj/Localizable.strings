@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "பதிவு செய்யப்படாத பயனர்: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "இப்போது வேண்டாம் ";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "போகலாம்";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Signal லின் உங்கள் பதிப்பு காலாவதியானது! செய்திகள் இனி வெற்றிகரமாக அனுப்பப்படாது. மிக சமீபத்திய பதிப்பிற்கு புதுப்பிக்க தட்டவும்.";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "தரவுத்தளத்தை மேம்படுத்துகிறது";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "அவதாரம் மாற்றப்பட்டது.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "குழு உருவாக்கப்பட்டது.";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "அனைத்து உறுப்பினர்களையும் குழுவில் சேர்க்க முடியாது. மீண்டும் முயற்சிக்க தட்டவும்.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "குழு மேலாண்மை";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ குழுவில் சேர்ந்தார்.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ குழுவிலிருந்து வெளியேறினார்.";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "செய்தி";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "தலைப்பு இப்போது '%@'.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "குழு புதுப்பிக்கப்பட்டது.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "நீங்கள் குழுவைப் புதுப்பித்தீர்கள்.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "நீங்கள் குழுவிலிருந்து வெளியேறிவிட்டீர்கள்.";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "இந்த மாதம்";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "செய்தி உரையை நகலெடுக்கவும்";
@@ -1962,9 +1986,6 @@
 /* Label indicating the user must use at least 6 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
 
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "உங்கள் பின்னை மீட்டெடுக்க வழி இல்லை, எனவே அதை நினைவில் கொள்ளுங்கள்.";
-
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "உங்கள் பின்னை மாற்றவும்";
 
@@ -1984,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "உங்கள் பின் சேர்க்கிறது மற்றும் கூடுதல் பாதுகாப்பு அடுக்கு மற்றும் உங்கள் கணக்கு காப்புப் பிரதி எடுக்கிறது.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "பின்'கள்  பொருந்தவில்லை. மீண்டும் முயற்சி செய்.";
@@ -1995,11 +2016,11 @@
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "பின்னை மீண்டும் உள்ளிடவும்";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "நீங்கள் வெளியேறும்போது, ​​உங்கள் பின்னை மீட்டெடுக்க வழி இல்லை.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "நீங்கள் இன்னும் உள்நுழைந்திருப்பதால், புதிய பின்'ஐ  உருவாக்கலாம்.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "புதிய பின்னை உருவாக்கவும்";
@@ -2024,6 +2045,33 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "பின்னைப் புதுப்பிக்கவும்";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "பின்களை  அறிமுகப்படுத்துகிறது";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "பின் உருவாக்கப்பட்டது.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "மீடியா விளையாடு";
@@ -2078,6 +2126,24 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "தொடர";
+
+/* Action text for profile name reminder megaphone */
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+
+/* Title for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+
+/* Body for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+
+/* Toast indicating that a PIN has been created. */
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "சுயவிவர அவதாரம் அமைக்கவும்";
@@ -2210,6 +2276,12 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "எனது பின்னை மறந்துவிட்டேன்.";
@@ -2656,10 +2728,13 @@
 "SETTINGS_NOTIFICATIONS" = "அறிவிப்புகள்";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "உங்கள் பின் கூடுதல் பாதுகாப்பு அடுக்கைச் சேர்த்து உங்கள் கணக்கு காப்புப் பிரதி எடுக்கிறது. உங்கள் தொலைபேசி எண்ணை Signal லுடன் பதிவுசெய்யும்போது உங்களிடம் கேட்கப்படும். உங்கள் பின்னை மறந்துவிட்டால், உங்கள் கணக்கு 7 நாட்கள் பூட்டப்படும் .";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "உங்கள் பின்னை மாற்றவும்";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "பின்";
@@ -3019,25 +3094,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "பின்கள் பற்றி மேலும் அறிக";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "உங்கள் பதிவு பூட்டு இப்போது அதிகம் செய்கிறது. சாதனங்களை மாற்றும்போது பின்களுடன் உங்கள் தொடர்புகளை உங்களுடன் எடுத்துச் செல்லலாம்.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "பதிவு பூட்டு = பின்";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "உங்கள் கணக்கு இன்னும் கூடுதலான பாதுகாப்பைச் சேர்த்து, தொலைபேசிகளை மாற்றும்போது உங்கள் தொடர்புகளை உங்களுடன் எடுத்துச் செல்லுங்கள்.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "பின்'களை  அறிமுகப்படுத்துகிறது";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "நான் பின்னை உருவாக்க வேண்டுமா?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "நீங்கள் ஸ்டிக்கர்களைப் பயன்படுத்தும்போது ஏன் வார்த்தைகளைப் பயன்படுத்த வேண்டும்? உங்கள் விசைப்பலகையில் இந்த ஐகானைத் தட்டவும்:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "ஸ்டிக்கர்களை அறிமுகப்படுத்துகிறது";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal லுக்கு விரைவில் அல்லது பிறகு iOS 10 தேவைப்படும். அமைப்புகள் செயலியில் மேம்படுத்தவும் >> பொது >> மென்பொருள் புதுப்பிப்பு.";

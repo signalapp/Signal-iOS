@@ -313,11 +313,11 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         dismissButton.autoPinEdge(toSuperviewEdge: .top)
     }
 
-    func snoozeButton(fromViewController: UIViewController) -> Button {
+    func snoozeButton(fromViewController: UIViewController, snoozeCopy: @escaping () -> String = { MegaphoneStrings.weWillRemindYouLater }) -> Button {
         return Button(title: MegaphoneStrings.remindMeLater) { [weak self] in
             self?.markAsSnoozed()
             self?.dismiss {
-                self?.presentToast(text: MegaphoneStrings.weWillRemindYouLater, fromViewController: fromViewController)
+                self?.presentToast(text: snoozeCopy(), fromViewController: fromViewController)
             }
         }
     }

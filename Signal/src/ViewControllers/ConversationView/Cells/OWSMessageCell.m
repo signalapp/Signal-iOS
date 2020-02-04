@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageViewOnceView *messageViewOnceView;
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
-@property (nonatomic) ReactionBubblesView *reactionBubblesView;
+@property (nonatomic) ReactionCountsView *reactionCountsView;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentViewTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
     [self.contentViewTapGestureRecognizer requireGestureRecognizerToFail:self.messageViewTapGestureRecognizer];
 
-    self.reactionBubblesView = [ReactionBubblesView new];
+    self.reactionCountsView = [ReactionCountsView new];
 
     [self setupSwipeContainer];
 }
@@ -185,7 +185,6 @@ NS_ASSUME_NONNULL_BEGIN
     [messageView configureViews];
     [messageView loadContent];
     [self.contentView addSubview:messageView];
-    [messageView autoPinBottomToSuperviewMarginWithInset:0];
     [messageView addGestureRecognizer:self.messageViewTapGestureRecognizer];
 
     if (self.viewItem.hasCellHeader) {
@@ -263,26 +262,50 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([self updateReactionsView]) {
+        // We never want the reaction counts to go closer to the edge of the screen than
+        // the edge of the bubble with a small amount of padding
         if (self.isIncoming) {
-            [self.viewConstraints addObject:[self.reactionBubblesView autoPinEdge:ALEdgeLeading
-                                                                           toEdge:ALEdgeTrailing
-                                                                           ofView:messageView
-                                                                       withOffset:-8]];
+            [self.viewConstraints addObject:[self.reactionCountsView autoPinEdge:ALEdgeLeading
+                                                                          toEdge:ALEdgeLeading
+                                                                          ofView:messageView
+                                                                      withOffset:6
+                                                                        relation:NSLayoutRelationGreaterThanOrEqual]];
         } else {
-            [self.viewConstraints addObject:[self.reactionBubblesView autoPinEdge:ALEdgeTrailing
-                                                                           toEdge:ALEdgeLeading
-                                                                           ofView:messageView
-                                                                       withOffset:8]];
+            [self.viewConstraints addObject:[self.reactionCountsView autoPinEdge:ALEdgeTrailing
+                                                                          toEdge:ALEdgeTrailing
+                                                                          ofView:messageView
+                                                                      withOffset:-6
+                                                                        relation:NSLayoutRelationLessThanOrEqual]];
         }
 
+        // We want the reaction bubbles to stick to the middle of the screen inset from
+        // the edge of the bubble with a small amount of padding unless the bubble is smaller
+        // than the reactions view in which case it will break these constraints and extend
+        // further into the middle of the screen than the message itself.
+        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
+                             forConstraints:^{
+                                 if (self.isIncoming) {
+                                     [self.viewConstraints addObject:[self.reactionCountsView autoPinEdge:ALEdgeTrailing
+                                                                                                   toEdge:ALEdgeTrailing
+                                                                                                   ofView:messageView
+                                                                                               withOffset:-6]];
+                                 } else {
+                                     [self.viewConstraints addObject:[self.reactionCountsView autoPinEdge:ALEdgeLeading
+                                                                                                   toEdge:ALEdgeLeading
+                                                                                                   ofView:messageView
+                                                                                               withOffset:6]];
+                                 }
+                             }];
+
         [self.viewConstraints addObjectsFromArray:@[
-            [self.reactionBubblesView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:messageView],
-            [self.reactionBubblesView autoPinEdge:ALEdgeBottom
-                                           toEdge:ALEdgeBottom
-                                           ofView:messageView
-                                       withOffset:0
-                                         relation:NSLayoutRelationLessThanOrEqual]
+            [self.reactionCountsView autoPinEdge:ALEdgeTop
+                                          toEdge:ALEdgeBottom
+                                          ofView:messageView
+                                      withOffset:-ReactionCountsView.inset],
+            [self.reactionCountsView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.contentView]
         ]];
+    } else {
+        [messageView autoPinBottomToSuperviewMarginWithInset:0];
     }
 
     // Swipe-to-reply
@@ -404,8 +427,8 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    [self.reactionBubblesView configureWith:self.viewItem.reactionState];
-    [self.messageView addSubview:self.reactionBubblesView];
+    [self.reactionCountsView configureWith:self.viewItem.reactionState];
+    [self.messageView addSubview:self.reactionCountsView];
 
     return YES;
 }
@@ -432,6 +455,10 @@ NS_ASSUME_NONNULL_BEGIN
         cellSize.height +=
             [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
                 .height;
+    }
+
+    if (self.viewItem.reactionState.hasReactions) {
+        cellSize.height += ReactionCountsView.height - ReactionCountsView.inset;
     }
 
     if (self.shouldHaveSendFailureBadge) {
@@ -467,7 +494,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.avatarView.image = nil;
     [self.avatarView removeFromSuperview];
 
-    [self.reactionBubblesView removeFromSuperview];
+    [self.reactionCountsView removeFromSuperview];
 
     [self.sendFailureBadgeView removeFromSuperview];
     self.sendFailureBadgeView = nil;
@@ -635,8 +662,11 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
+    // Increase reactions touch area height to make sure it's tappable.
+    CGRect expandedReactionFrame = CGRectInset(self.reactionCountsView.frame, 0, -11);
+
     CGPoint tapPoint = [sender locationInView:self.messageView];
-    return CGRectContainsPoint(self.reactionBubblesView.frame, tapPoint);
+    return CGRectContainsPoint(expandedReactionFrame, tapPoint);
 }
 
 # pragma mark - UIGestureRecognizerDelegate
@@ -649,7 +679,8 @@ NS_ASSUME_NONNULL_BEGIN
         CGPoint velocity = [self.panGestureRecognizer velocityInView:self];
         return fabs(velocity.x) > fabs(velocity.y);
     } else if (gestureRecognizer == self.messageViewTapGestureRecognizer) {
-        return [self.messageView willHandleTapGesture:self.messageViewTapGestureRecognizer];
+        return ![self isGestureInReactions:self.messageViewTapGestureRecognizer] &&
+            [self.messageView willHandleTapGesture:self.messageViewTapGestureRecognizer];
     } else if (gestureRecognizer == self.contentViewTapGestureRecognizer) {
         return [self isGestureInAvatar:self.contentViewTapGestureRecognizer] ||
             [self isGestureInReactions:self.contentViewTapGestureRecognizer];

@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Ongeregistreerde gebruiker: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Niet nu";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Begrepen";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Jouw versie van Signal is verlopen, daarom kun je niet langer berichten verzenden. Tik hier om je app bij te werken naar de meest recente versie.";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Databank aan het optimaliseren";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Profielfoto aangepast.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "Groep aangemaakt.";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "Je hebt de groep aangemaakt.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ heeft jou aan de groep toegevoegd.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Niet alle leden konden aan de groep worden toegevoegd. Tik om opnieuw te proberen.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Groepsbeheer";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ betrad de groep. ";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = " %@ heeft de groep verlaten. ";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Bericht";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "De titel is nu “%@”.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "Groep aangepast.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ en %@ zijn aan de groep toegevoegd.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ is toegevoegd aan de groep.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "heeft de groepsafbeelding verwijderd.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "heeft de groepsafbeelding bijgewerkt.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "Je hebt de groep aangepast.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ heeft de groep bijgewerkt.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "heeft de naam van de groep verwijderd.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "De naam van de groep is vanaf nu “%@”.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "heeft je opnieuw aan de groep toegevoegd.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Je hebt de groep verlaten.";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Deze maand";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Herinner Me Later";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Berichttekst kopiëren";
@@ -1729,10 +1753,10 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrecte pincode. Geen pogingen resterend.";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Voer je alfanumerieke PIN in";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Voer je alfanumerieke pincode in";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Voer je numerieke PIN in";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Voer je numerieke pincode in";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Registratievergrendeling is ingeschakeld voor dit telefoonnummer. Voer de pincode voor registratievergrendeling in.";
@@ -1756,7 +1780,7 @@
 "ONBOARDING_2FA_TITLE" = "Registratievergrendeling";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Om de privacy en beveiliging van je account te beschermen hebben we je account voor 7 dagen vergrendeld.\n\nJe kunt dit telefoonnummer opnieuw registreren na 7 dagen inactiviteit zonder je PIN nodig te hebben. Als je zonder PIN opnieuw registreert word alle inhoud gewist";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Om de privacy en beveiliging van je account te beschermen hebben we je account voor 7 dagen vergrendeld.\n\nJe kunt dit telefoonnummer opnieuw registreren na 7 dagen inactiviteit zonder je pincode nodig te hebben. Als je zonder pincode opnieuw registreert word alle inhoud gewist";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Lees meer over vergrendelde accounts";
@@ -1960,10 +1984,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Naamloos album";
 
 /* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "Je PIN moet uit ten minste 6 karakters bestaan";
-
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "Er is geen manier om je pincode later terug te zien, dus onthoud deze!";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "Je pincode moet uit ten minste 6 karakters bestaan";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Wijzig je pincode";
@@ -1972,34 +1993,34 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Bevestig je nieuwe pincode";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Maak een alfanumerieke PIN aan";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Maak een alfanumerieke pincode aan";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Maak een numerieke PIN aan";
+"PIN_CREATION_CREATE_NUMERIC" = "Maak een numerieke pincode aan";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Je PIN is niet opgeslagen. We zullen je later opnieuw vragen een PIN aan te maken.";
+"PIN_CREATION_ERROR_MESSAGE" = "Je pincode is niet opgeslagen. We zullen je later opnieuw vragen een pincode aan te maken.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "PIN aanmaken mislukt";
+"PIN_CREATION_ERROR_TITLE" = "Pincode aanmaken mislukt";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Je pincode voegt een extra beveiliging toe en geeft je een manier om je account te herstellen.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
 
 /* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "Je PIN moet uit ten minste 6 getallen bestaan";
+"PIN_CREATION_NUMERIC_HINT" = "Je pincode moet uit ten minste 6 getallen bestaan";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Voer pincode opnieuw in";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Als je bent uitgelogd is er geen manier om je pincode terug te zien of wijzigen.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Pincode aan het aanmaken…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Omdat je nog bent ingelogd, kun je een nieuwe pincode aanmaken.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Nieuwe pincode aanmaken";
@@ -2008,7 +2029,7 @@
 "PIN_CREATION_TITLE" = "Maak pincode aan";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "Je PIN moet uit ten minste 6 getallen bestaan.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "Je pincode moet uit ten minste 6 getallen bestaan.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je periodiek om je pincode in te voeren. Na verloop van tijd zullen we je minder vaak vragen om dat te doen.";
@@ -2023,7 +2044,34 @@
 "PIN_REMINDER_TITLE" = "Voer je Signal-pincode in";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "Je PIN moet uit ten minste 6 getallen bestaan.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "Je pincode moet uit ten minste 6 getallen bestaan.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Pincode bijwerken";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "We introduceren pincodes";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Pincode aanmaken";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "Pincodes voegen een extra niveau van beveiliging toe aan je Signal account.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Een pincode aanmaken";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "Pincode aangemaakt.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Media afspelen";
@@ -2078,6 +2126,24 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Doorgaan";
+
+/* Action text for profile name reminder megaphone */
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+
+/* Body for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Je kunt nu optioneel een achternaam toevoegen aan je profiel.";
+
+/* Title for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Bevestig dat dit de profielnaam is welke je wilt gebruiken";
+
+/* Body for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+
+/* Title for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Voeg een profielnaam toe";
+
+/* Toast indicating that a PIN has been created. */
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Je profielnaam is opgeslagen.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profielfoto instellen";
@@ -2179,37 +2245,43 @@
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reageerde op je bericht met %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reageerde met %@ op je album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reageerde met %@ op je audio";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reageerde met %@ op het door jou delen van een contact";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reageerde met %@ op je bestand";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reageerde met %@ op je GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reageerde met %@ op je afbeelding";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reageerde met %@ op je sticker";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reageerde met %@ op “%@”";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reageerde met %@ op je video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reageerde met %@ op je eenmaligeweergave-bericht";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reageerde met %@ op je spraakbericht";
+
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Tik een bericht aan en houd deze vast om snel te reageren met je gevoelens.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "We introduceren ‘reacties’";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ik ben mijn pincode vergeten.";
@@ -2656,10 +2728,13 @@
 "SETTINGS_NOTIFICATIONS" = "Meldingen";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Je pincode voegt extra beveiliging toe en geeft je een manier om je account te herstellen. Je zult om deze pincode gevraagd worden wanneer je je telefoonnummer opnieuw registreert bij Signal. Als je de pincode vergeet zul je 7 dagen geen toegang hebben tot je account.";
+"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Wijzig je pincode";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Een pincode aanmaken";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "Pincode";
@@ -3019,25 +3094,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Lees meer over pincodes";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Vanaf nu kun je meer doen met je registratievergrendeling: Met pincodes kun je je contactenlijst meenemen als je van apparaat wisselt.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registratievergrendeling = Pincode";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Voeg nog meer beveiliging toe aan je account en neem je contactenlijst met je mee wanneer je van telefoon wisselt.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "We introduceren pincodes";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Moet ik een pincode aanmaken?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Waarom woorden gebruiken als je stickers kunt gebruiken? Tik op dit pictogram op je toetsenbord:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "We introduceren stickers";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Binnenkort vereist Signal dat je iOS 10 of een latere versie gebruikt. Werk je besturingssysteem bij via Instellingen >> Algemeen >> Software-update.";

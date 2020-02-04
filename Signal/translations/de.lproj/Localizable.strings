@@ -1059,17 +1059,11 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Unregistrierter Benutzer: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Nicht jetzt";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Los geht's";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Deine Signal-Version ist abgelaufen! Nachrichten werden nicht mehr erfolgreich versendet werden. Bitte antippen, um auf die neueste Version zu aktualisieren.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Deine Signal-Version wird in %d Tagen ablaufen. Bitte antippen, um auf die neueste Version zu aktualisieren.";
+"EXPIRATION_WARNING_SOON" = "Deine Signal-Version wird in %d Tagen ablaufen. Bitte antippen, um auf die neueste Version zu aktualisieren.";
 
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Deine Signal-Version wird heute ablaufen. Bitte antippen, um auf die neueste Version zu aktualisieren.";
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimieren der Datenbank";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Avatar geändert.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "Gruppe erstellt.";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "Du hast die Gruppe erstellt.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ hat dich zur Gruppe hinzugefügt.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Nicht alle Mitglieder konnten zur Gruppe hinzugefügt werden. Für erneuten Versuch antippen.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Gruppenmanagement";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ ist der Gruppe beigetreten.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ hat die Gruppe verlassen.";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Nachricht";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Titel lautet jetzt »%@«.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "Gruppe aktualisiert.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ und %@ sind der Gruppe beigetreten.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ ist der Gruppe beigetreten.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Gruppenavatar wurde entfernt.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Gruppenavatar wurde aktualisiert.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "Du hast die Gruppe aktualisiert.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ hat die Gruppe aktualisiert.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Name wurde entfernt.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Gruppenname lautet jetzt »%@«.";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Du wurdest zur Gruppe wieder hinzugefügt.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Du hast die Gruppe verlassen.";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Diesen Monat";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Mich später erinnern";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "Wir erinnern dich später.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Nachrichtentext kopieren";
@@ -1756,7 +1780,7 @@
 "ONBOARDING_2FA_TITLE" = "Registrierungssperre";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Zum Schutz deiner Privatsphäre und zur Sicherheit deines Benutzerkontos wurde dieses für 7 Tage gesperrt.\n\nNach Ablauf von 7 Tagen ohne Aktivität wirst du diese Rufnummer erneut registrieren können. ohne deine PIN zu benötigen. Alle Inhalte werden dabei gelöscht.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Zum Schutz deiner Privatsphäre und zur Sicherheit deines Benutzerkontos wurde dieses für 7 Tage gesperrt.\n\nNach Ablauf von 7 Tagen ohne Aktivität wirst du diese Rufnummer erneut registrieren können. ohne deine PIN zu benötigen. Alle Inhalte werden dabei gelöscht.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Mehr über gesperrte Konten erfahren";
@@ -1960,10 +1984,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unbenanntes Album";
 
 /* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN muss mindestens 6 Zeichen besitzen";
-
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "Deine PIN kann nicht wiederhergestellt werden, daher solltest du sie dir merken.";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN muss aus mindestens 6 Zeichen bestehen";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Deine PIN ändern";
@@ -1984,22 +2005,22 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN konnte nicht erstellt werden";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Deine PIN erhöht den Schutz deines Kontos und ermöglicht dir gleichzeitig, dieses wiederherzustellen.";
+"PIN_CREATION_EXPLANATION" = "PINs fügen eine weitere Sicherheitsebene zu deinem Konto hinzu. Es ist wichtig, dass du dir diese PIN merkst, da sie nicht wiederhergestellt werden kann.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINs stimmen nicht überein. Bitte erneut versuchen.";
 
 /* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN muss mindestens 6 Ziffern besitzen";
+"PIN_CREATION_NUMERIC_HINT" = "PIN muss aus mindestens 6 Ziffern bestehen";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "PIN wiederholen";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Sobald du abgemeldet bist, kann deine PIN nicht wiederhergestellt werden.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "PIN wird erstellt …";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Da du noch angemeldet bist, kannst du eine neue PIN erstellen.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Neue PIN erstellen";
@@ -2008,7 +2029,7 @@
 "PIN_CREATION_TITLE" = "Deine PIN erstellen";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN muss mindestens 6 Ziffern besitzen.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN muss aus mindestens 6 Ziffern bestehen.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Damit du dir deine PIN besser merken kannst, werden wir gelegentlich nach ihr fragen. Mit der Zeit werden wir dies seltener tun.";
@@ -2023,7 +2044,34 @@
 "PIN_REMINDER_TITLE" = "Bitte Signal-PIN eingeben";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN muss mindestens 6 Ziffern besitzen.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN muss aus mindestens 6 Ziffern bestehen.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "PIN aktualisieren";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Deine Registrierungssperre heißt nun PIN. Ihre Aktualisierung dauert Sekunden.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Einführung von PINs";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "PIN erstellen";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs fügen deinem Signal-Konto eine weitere Sicherheitsebene hinzu.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Erstelle eine PIN";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN erstellt.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medieninhalt wiedergeben";
@@ -2078,6 +2126,24 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Fortfahren";
+
+/* Action text for profile name reminder megaphone */
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Leg los";
+
+/* Body for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Dein Profil kann jetzt einen optionalen Nachnamen enthalten.";
+
+/* Title for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Bestätige deinen Profilnamen";
+
+/* Body for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Dies wird angezeigt, wenn du eine neue Unterhaltung beginnst oder teilst.";
+
+/* Title for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Füge einen Profilnamen hinzu";
+
+/* Toast indicating that a PIN has been created. */
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Dein Profilname wurde gespeichert.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profil-Avatar festlegen";
@@ -2179,37 +2245,43 @@
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ hat auf deine Nachricht reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Hat mit %@ auf dein Album reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Hat mit %@ auf dein Audio reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Hat mit %@ auf dein Kontaktteilen reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Hat mit %@ auf deine Datei reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Hat mit %@ auf dein GIF reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Hat mit %@ auf dein Foto reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Hat mit %@ auf deinen Sticker reagiert";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Hat mit %@ reagiert auf: »%@«";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Hat mit %@ auf dein Video reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Hat mit %@ auf deine einmalig anzeigbaren Medieninhalte reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Hat mit %@ auf deine Sprachnachricht reagiert";
+
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Einführung von Reaktionen";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ich habe meine PIN vergessen.";
@@ -2221,10 +2293,10 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Deine PIN vergessen?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du hast %lu verbleibende Versuche. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte gelöscht.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du hast %lu verbleibende Versuche. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte gelöscht.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Du hast 1 verbleibenden Versuch. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte gelöscht.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Du hast 1 verbleibenden Versuch. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte gelöscht.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Falsche PIN";
@@ -2656,10 +2728,13 @@
 "SETTINGS_NOTIFICATIONS" = "Mitteilungen";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Deine PIN erhöht den Schutz deines Kontos und ermöglicht dir gleichzeitig, dieses wiederherzustellen. Du wirst nach ihr gefragt, wenn du deine Rufnummer bei Signal registrierst. Falls du deine PIN vergisst, wird dein Konto für 7 Tage gesperrt werden.";
+"SETTINGS_PINS_FOOTER" = "Deine PIN fügt deinem Konto eine weitere Sicherheitsebene hinzu. Du wirst nach ihr gefragt, wenn du deine Rufnummer bei Signal registrierst. Falls du deine PIN vergisst, wird dein Konto für 7 Tage gesperrt.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Deine PIN ändern";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Erstelle eine PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2896,7 +2971,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Mitglied von %@ und %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ Tage";
+"TIME_AMOUNT_DAYS" = "%@ Tage";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
@@ -2920,7 +2995,7 @@
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ Tag";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ Tag";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_HOUR" = "%@ Stunde";
@@ -3019,25 +3094,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Mehr über PINs erfahren";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Deine Registrierungssperre kann nun mehr. Durch PINs kannst du deine Kontakte mitnehmen, wenn du das Gerät wechselst.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Deine Registrierungssperre heißt nun PIN und kann mehr. Aktualisiere sie jetzt.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registrierungssperre = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Erhöhe die Sicherheit deines Kontos noch weiter und nimm deine Kontakte mit, wenn du das Telefon wechselst.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs fügen deinem Konto eine weitere Sicherheitsebene hinzu. Erstelle jetzt deine PIN.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Einführung von PINs";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Muss ich eine PIN erstellen?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Warum Worte, wenn du auch Sticker benutzen kannst? Tippe auf dieses Symbol deiner Tastatur:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Einführung von Stickern";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal wird bald iOS 10 oder neuer erfordern. Bitte aktualisieren über die iOS-Einstellungen: Einstellungen >> Allgemein >> Softwareaktualisierung.";

@@ -1059,12 +1059,6 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Незарегистрированный пользователь: %@";
 
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Не сейчас";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Поехали";
-
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Ваша версия Signal устарела! Сообщения более не будут отправляться. Обновиться до последней версии…";
 
@@ -1140,20 +1134,20 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Оптимизируем базу данных";
 
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Аватар изменен.";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_CREATED" = "Группа создана.";
+
+/* conversation history entry when the local user created a group */
+"GROUP_CREATED_BY_LOCAL_USER" = "Вы создали группу.";
+
+/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ добавил(-а) вас в группу.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Не всех участников удалось добавить в группу. Повторить попытку?";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Управление группой";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "К группе присоединяется %@.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "Группу покидает %@.";
@@ -1176,11 +1170,35 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Сообщение";
 
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Название изменено на «%@».";
-
-/* No comment provided by engineer. */
+/* conversation history entry */
 "GROUP_UPDATED" = "Группа обновлена.";
+
+/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ и %@ присоединились к группе.";
+
+/* conversation history entry. Embeds the {{added user's name}} */
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ присоединился(-лась) к группе.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_REMOVED" = "Удалён аватар группы.";
+
+/* conversation history entry */
+"GROUP_UPDATED_AVATAR_UPDATED" = "Обновлён аватар группы.";
+
+/* conversation history entry. */
+"GROUP_UPDATED_BY_LOCAL_USER" = "Вы обновили группу.";
+
+/* conversation history entry. Embeds {{remote user's name}} */
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ обновил(-а) группу.";
+
+/* conversation history entry */
+"GROUP_UPDATED_NAME_REMOVED" = "Удалено имя группы.";
+
+/* conversation history entry. Embeds {{group name}} */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Группа теперь называется «%@».";
+
+/* conversation history entry */
+"GROUP_UPDATED_READDED_YOU" = "Заново добавил(-а) вас в группу.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Вы покинули группу.";
@@ -1421,6 +1439,12 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "В этом месяце";
+
+/* button title to snooze a megaphone */
+"MEGAPHONE_REMIND_LATER" = "Напомнить мне позже";
+
+/* toast indicating that we will remind the user later */
+"MEGAPHONE_WILL_REMIND_LATER" = "Мы напомним вам позже.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Копировать текст сообщения";
@@ -1729,10 +1753,10 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Неверный PIN-код. Попыток не осталось.";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Введите алфавитно-цифровой PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Введите алфавитно-цифровой PIN-код";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Введите цифровой PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Введите цифровой PIN-код";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Для этого номера телефона включена блокировка регистрации. Пожалуйста, введите PIN-код.";
@@ -1960,10 +1984,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Безымянный альбом";
 
 /* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN должен быть не короче 6 символов";
-
-/* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "Ваш PIN-код невозможно восстановить, поэтому запомните его.";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-код должен быть не короче 6 символов";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Изменить PIN-код";
@@ -1972,34 +1993,34 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Подтвердите свой новый PIN-код.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Создать алфавитно-цифровой PIN";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Создать алфавитно-цифровой PIN-код";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Создать цифровой PIN";
+"PIN_CREATION_CREATE_NUMERIC" = "Создать цифровой PIN-код";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Ваш PIN не был сохранён. Мы попросим вас создать PIN позднее.";
+"PIN_CREATION_ERROR_MESSAGE" = "Ваш PIN-код не был сохранён. Мы попросим вас создать PIN-код позднее.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "Не удалось создать PIN";
+"PIN_CREATION_ERROR_TITLE" = "Не удалось создать PIN-код";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Ваш PIN-код добавляет дополнительный уровень безопасности и защищает вашу учётную запись.";
+"PIN_CREATION_EXPLANATION" = "PIN-код добавляет дополнительный уровень безопасности к вашей учётной записи. Важно запомнить этот PIN, так как он не может быть восстановлен.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-коды не совпадают. Попробуйте ещё раз.";
 
 /* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN должен быть не короче 6 цифр";
+"PIN_CREATION_NUMERIC_HINT" = "PIN-код должен быть не короче 6 цифр";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Введите PIN-код ещё раз";
 
-/* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Когда вы вышли из учётной записи, ваш PIN-код невозможно восстановить.";
+/* Indicates the work we are doing while creating the user's pin */
+"PIN_CREATION_PIN_PROGRESS" = "Создание PIN-кода…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Так как вы всё ещё находитесь в учётной записи, вы можете создать новый PIN-код.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Создать новый PIN-код";
@@ -2008,7 +2029,7 @@
 "PIN_CREATION_TITLE" = "Создать PIN-код";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN должен быть не короче 6 цифр.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN-код должен быть не короче 6 цифр.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Чтобы помочь вам запомнить свой PIN-код, мы будем просить вас периодически вводить его. Со временем это будет происходить реже.";
@@ -2023,7 +2044,34 @@
 "PIN_REMINDER_TITLE" = "Введите свой PIN-код";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN должен быть не короче 6 цифр.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-код должен быть не короче 6 цифр.";
+
+/* Action text for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Обновить PIN-код";
+
+/* Body for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Блокировка регистрации теперь называется «PIN-код». Его обновление занимает несколько секунд.";
+
+/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user already has a PIN */
+"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Представляем PIN-коды";
+
+/* Action text for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Создать PIN-код";
+
+/* Body for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PIN-коды добавляют дополнительный уровень безопасности к вашей учётной записи.";
+
+/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+
+/* Title for PIN megaphone when user doesn't have a PIN */
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Создайте PIN-код";
+
+/* Toast indicating that a PIN has been created. */
+"PINS_MEGAPHONE_TOAST" = "PIN-код создан.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Воспроизвести медиа";
@@ -2078,6 +2126,24 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Продолжить";
+
+/* Action text for profile name reminder megaphone */
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Начать";
+
+/* Body for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Ваш профиль теперь может содержать необязательную фамилию.";
+
+/* Title for profile name reminder megaphone when user already has a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Подтвердите имя вашего профиля";
+
+/* Body for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Оно будет показано, когда вы начнёте новый разговор или когда вы поделитесь им.";
+
+/* Title for profile name reminder megaphone when user doesn't have a profile name */
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Добавьте имя профиля";
+
+/* Toast indicating that a PIN has been created. */
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Ваше имя профиля было сохранено.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Установить аватар профиля";
@@ -2176,40 +2242,46 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Видео";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Отреагировал %@ на ваше сообщение";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Отреагировал(-а) %@ на ваше сообщение";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Отреагировал(-а) %@ на ваш альбом";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Отреагировал(-а) %@ на ваше аудио";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Отреагировал(-а) %@ на контакт, которым вы поделились";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Отреагировал(-а) %@ на ваш файл";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Отреагировал(-а) %@ на вашу GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Отреагировал(-а) %@ на ваше фото";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Отреагировал(-а) %@ на ваш стикер";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Отреагировал(-а) %@ на: «%@»";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Отреагировал(-а) %@ на ваше видео";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Отреагировал(-а) %@ на ваше одноразовое медиа";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Отреагировал(-а) %@ на ваше голосовое сообщение";
+
+/* Body for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_BODY" = "Нажмите и удерживайте любое сообщение, чтобы быстро ответить вашими чувствами.";
+
+/* Title for the megaphone introducing reactions */
+"REACTION_MEGAPHONE_TITLE" = "Представляем реакции";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Я забыл свой PIN-код.";
@@ -2656,10 +2728,13 @@
 "SETTINGS_NOTIFICATIONS" = "Уведомления";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Ваш PIN-код добавляет дополнительный уровень безопасности и защищает вашу учётную запись. Его необходимо будет вводить при регистрации вашего номера телефона в Signal. Если вы забудете свой PIN-код, вы потеряете доступ к своей учётной записи на 7 дней.";
+"SETTINGS_PINS_FOOTER" = "PIN-код добавляет дополнительный уровень безопасности к вашей учётной записи. Его необходимо будет вводить при регистрации вашего номера телефона в Signal. Если вы забудете свой PIN-код, вы потеряете доступ к своей учётной записи на 7 дней.";
 
-/* Label for the 'pins' item of the privacy settings. */
+/* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Изменить свой PIN-код";
+
+/* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
+"SETTINGS_PINS_ITEM_CREATE" = "Создать PIN-код";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN-код";
@@ -3019,25 +3094,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Узнать больше о PIN-кодах";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Блокировка регистрации теперь умеет больше. С PIN-кодами вы можете взять свои контакты с собой при смене устройства.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Блокировка регистрации теперь называется просто «PIN-код», и он делает больше. Обновите его сейчас.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Блокировка регистрации = PIN-код";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Дополнительно защитите свою учётную запись и возьмите все контакты с собой при смене телефона.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-коды добавляют дополнительный уровень безопасности к вашей учётной записи. Создайте свой PIN-код сейчас.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Представляем PIN-коды";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Обязательно ли создавать PIN-код?";
-
-/* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Зачем использовать слова, когда можно использовать стикеры? Нажмите этот значок на своей клавиатуре:";
-
-/* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Представляем стикеры";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "В скором времени Signal будет работать только на iOS 10 и выше. Пожалуйста, обновите iOS, перейдя в приложение Настройки >> Основные >> Обновление ПО.";
