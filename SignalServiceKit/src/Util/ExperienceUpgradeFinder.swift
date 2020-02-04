@@ -9,6 +9,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"
     case reactions = "010"
     case profileNameReminder = "011"
+    case messageRequests = "012"
 
     // Until this flag is true the upgrade won't display to users.
     var hasLaunched: Bool {
@@ -21,6 +22,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return FeatureFlags.reactionSend
         case .profileNameReminder:
             return RemoteConfig.profileNameReminder
+        case .messageRequests:
+            return FeatureFlags.messageRequest
         }
     }
 
