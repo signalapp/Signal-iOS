@@ -4,10 +4,16 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
     
     private lazy var contacts: [String] = {
         var result: [String] = []
-        TSContactThread.enumerateCollectionObjects { object, _ in
-            guard let thread = object as? TSContactThread, thread.isContactFriend else { return }
-            let hexEncodedPublicKey = thread.contactIdentifier()
-            result.append(hexEncodedPublicKey)
+        let storage = OWSPrimaryStorage.shared()
+        storage.dbReadConnection.read { transaction in
+            TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
+                guard let thread = object as? TSContactThread, thread.isContactFriend else { return }
+                let hexEncodedPublicKey = thread.contactIdentifier()
+                // We shouldn't be able to add slave devices to groups
+                if (storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) == nil) {
+                    result.append(hexEncodedPublicKey)
+                }
+            }
         }
         func getDisplayName(for hexEncodedPublicKey: String) -> String {
             return UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
