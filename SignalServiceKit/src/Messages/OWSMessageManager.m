@@ -1402,6 +1402,8 @@ NS_ASSUME_NONNULL_BEGIN
                 return nil;
             }
         }
+        
+        NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
 
         // Group messages create the group if it doesn't already exist.
         //
@@ -1411,17 +1413,15 @@ NS_ASSUME_NONNULL_BEGIN
             // Loki: Try to figure out removed members
             removedMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
             [removedMemberIds minusSet:newMemberIds];
-            [removedMemberIds removeObject:envelope.source];
+            [removedMemberIds removeObject:hexEncodedPublicKey];
         }
-
-        NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
 
         // Only set the display name here, the logic for updating profile pictures is handled when we're setting profile key
         [self handleProfileNameUpdateIfNeeded:dataMessage recipientId:hexEncodedPublicKey transaction:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
-                if (oldGroupThread && ![oldGroupThread.groupModel.groupAdminIds containsObject:envelope.source]) {
+                if (oldGroupThread && ![oldGroupThread.groupModel.groupAdminIds containsObject:hexEncodedPublicKey]) {
                     [LKLogger print:[NSString stringWithFormat:@"[Loki] Received a group update from a non-admin user for %@; ignoring.", [LKGroupUtilities getEncodedGroupID:groupId]]];
                     return nil;
                 }
@@ -1464,12 +1464,12 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSLogWarn(@"ignoring quit group message from unknown group.");
                     return nil;
                 }
-                [newMemberIds removeObject:envelope.source];
+                [newMemberIds removeObject:hexEncodedPublicKey];
                 oldGroupThread.groupModel.groupMemberIds = [newMemberIds.allObjects mutableCopy];
                 [oldGroupThread saveWithTransaction:transaction];
 
                 NSString *nameString =
-                    [self.contactsManager displayNameForPhoneIdentifier:envelope.source transaction:transaction];
+                    [self.contactsManager displayNameForPhoneIdentifier:hexEncodedPublicKey transaction:transaction];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
                 // MJK TODO - should be safe to remove senderTimestamp
@@ -1487,7 +1487,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                           thread:oldGroupThread
-                                                                      createdByRemoteRecipientId:envelope.source
+                                                                      createdByRemoteRecipientId:hexEncodedPublicKey
                                                                           createdInExistingGroup:NO
                                                                                      transaction:transaction];
 
@@ -1514,7 +1514,7 @@ NS_ASSUME_NONNULL_BEGIN
                 TSIncomingMessage *incomingMessage =
                     [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
                                                                        inThread:oldGroupThread
-                                                                       authorId:envelope.source
+                                                                       authorId:hexEncodedPublicKey
                                                                  sourceDeviceId:envelope.sourceDevice
                                                                     messageBody:body
                                                                   attachmentIds:@[]
@@ -1540,7 +1540,7 @@ NS_ASSUME_NONNULL_BEGIN
                 // Loki: Don't process friend requests in group chats
                 if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
                     OWSLogWarn(@"ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
-                        envelopeAddress(envelope),
+                        hexEncodedPublicKey,
                         groupId,
                         (unsigned long)timestamp);
                     return nil;
