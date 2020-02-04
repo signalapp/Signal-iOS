@@ -176,7 +176,7 @@ private final class EnterChatURLVC : UIViewController {
     
     // MARK: Components
     private lazy var chatURLTextField: TextField = {
-        let result = TextField(placeholder: "https://chat.lokinet.org")
+        let result = TextField(placeholder: "https://chat.getsession.org")
         result.keyboardType = .URL
         result.autocapitalizationType = .none
         return result

@@ -47,13 +47,24 @@ final class GroupMembersVC : UIViewController, UITableViewDataSource {
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
-        // Set up table view
+        let explanationLabel = UILabel()
+        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        explanationLabel.text = NSLocalizedString("The ability to add members to a closed group is coming soon.", comment: "")
+        explanationLabel.numberOfLines = 0
+        explanationLabel.textAlignment = .center
+        explanationLabel.lineBreakMode = .byWordWrapping
+        // Set up view hierarchy
+        view.addSubview(explanationLabel)
+        explanationLabel.pin(.leading, to: .leading, of: view, withInset: Values.largeSpacing)
+        explanationLabel.pin(.top, to: .top, of: view, withInset: Values.mediumSpacing)
+        explanationLabel.pin(.trailing, to: .trailing, of: view, withInset: -Values.largeSpacing)
         let separator = UIView()
         separator.backgroundColor = Colors.separator
         separator.set(.height, to: Values.separatorThickness)
         view.addSubview(separator)
         separator.pin(.leading, to: .leading, of: view)
-        separator.pin(.top, to: .top, of: view)
+        separator.pin(.top, to: .bottom, of: explanationLabel, withInset: Values.mediumSpacing)
         separator.pin(.trailing, to: .trailing, of: view)
         view.addSubview(tableView)
         tableView.pin(.leading, to: .leading, of: view)
