@@ -254,7 +254,7 @@ public class GroupManager: NSObject {
     private static func groupsVersion(for members: Set<SignalServiceAddress>,
                                       transaction: SDSAnyReadTransaction) -> GroupsVersion {
 
-        guard FeatureFlags.groupsV2CreateGroups else {
+        guard RemoteConfig.groupsV2CreateGroups else {
             return .V1
         }
         let canUseV2 = self.canUseV2(for: members, transaction: transaction)
@@ -298,7 +298,7 @@ public class GroupManager: NSObject {
 
     @objc
     public static var defaultGroupsVersion: GroupsVersion {
-        guard FeatureFlags.groupsV2CreateGroups else {
+        guard RemoteConfig.groupsV2CreateGroups else {
             return .V1
         }
         return .V2
@@ -359,7 +359,7 @@ public class GroupManager: NSObject {
         }.then(on: .global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
             // Try to obtain profile key credentials for all group members
             // including ourself, unless we already have them on hand.
-            guard FeatureFlags.groupsV2CreateGroups else {
+            guard RemoteConfig.groupsV2CreateGroups else {
                 return Promise.value(groupMembership)
             }
             return firstly {
@@ -1301,7 +1301,7 @@ public class GroupManager: NSObject {
         guard FeatureFlags.versionedProfiledUpdate else {
             // We don't need a profile key credential for the local user
             // if we're not even going to try to create a v2 group.
-            if FeatureFlags.groupsV2CreateGroups {
+            if RemoteConfig.groupsV2CreateGroups {
                 owsFailDebug("Can't participate in v2 groups without a profile key commitment.")
             }
             return Promise.value(())

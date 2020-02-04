@@ -226,6 +226,8 @@ public class FeatureFlags: NSObject {
 
     private static let groupsV2 = build.includes(.dev) && !isUsingProductionService
 
+    // Don't consult this feature flag directly; instead
+    // consult RemoteConfig.groupsV2CreateGroups.
     @objc
     public static let groupsV2CreateGroups = groupsV2
 
@@ -256,6 +258,9 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let groupsV2SetCapability = groupsV2
+
+    @objc
+    public static let groupsV2IgnoreServerFlag = groupsV2
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)

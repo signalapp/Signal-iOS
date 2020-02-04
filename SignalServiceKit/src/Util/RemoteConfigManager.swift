@@ -39,6 +39,13 @@ public class RemoteConfig: NSObject {
         return isEnabled("ios.kbs")
     }
 
+    @objc
+    public static var groupsV2CreateGroups: Bool {
+        guard FeatureFlags.groupsV2CreateGroups else { return false }
+        if FeatureFlags.groupsV2IgnoreServerFlag { return true }
+        return isEnabled("ios.groupsV2CreateGroups")
+    }
+
     private static func isEnabled(_ key: String, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
             return defaultValue
