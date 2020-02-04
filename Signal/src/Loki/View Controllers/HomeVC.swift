@@ -145,6 +145,13 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isViewVisible = true
+        let hasSeenOpenGroupSuggestionSheet = UserDefaults.standard.bool(forKey: "hasSeenOpenGroupSuggestionSheet")
+        if !hasSeenOpenGroupSuggestionSheet {
+            let openGroupSuggestionSheet = OpenGroupSuggestionSheet()
+            openGroupSuggestionSheet.modalPresentationStyle = .overFullScreen
+            openGroupSuggestionSheet.modalTransitionStyle = .crossDissolve
+            present(openGroupSuggestionSheet, animated: true, completion: nil)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

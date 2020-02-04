@@ -57,7 +57,7 @@ final class DeviceNameModal : Modal {
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
-        // Stack view
+        // Set up main stack view
         let stackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, nameTextField, buttonStackView ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
