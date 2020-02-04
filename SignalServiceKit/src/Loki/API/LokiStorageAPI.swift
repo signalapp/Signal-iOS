@@ -7,7 +7,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
 //    #if DEBUG
 //    private static let server = "http://file-dev.lokinet.org"
 //    #else
-    @objc public static let server = "https://file.lokinet.org"
+    @objc public static let server = "https://file.getsession.org"
 //    #endif
     private static let deviceLinkType = "network.loki.messenger.devicemapping"
     private static let attachmentType = "net.app.core.oembed"
