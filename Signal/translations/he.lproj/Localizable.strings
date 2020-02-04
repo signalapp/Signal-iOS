@@ -1114,7 +1114,7 @@
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "לא היה ניתן לבחור GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "אנא הכנס את חיפושך.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "אנא הכנס את החיפוש שלך.";
 
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "חיפוש GIF";
@@ -1126,7 +1126,7 @@
 "GIF_VIEW_SEARCH_NO_RESULTS" = "אין תוצאות.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "הכנס את חיפושך";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "הכנס את החיפוש שלך";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "גרסה זו של Signal מכילה מיטובי מסד נתונים ושיפורי ביצועים. ייתכן שתצטרך לפתוח את היישום כדי להשלים את התהליך.";
@@ -1138,10 +1138,10 @@
 "GROUP_CREATED" = "קבוצה נוצרה";
 
 /* conversation history entry when the local user created a group */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "יצרת את הקבוצה.";
 
 /* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ הוסיף אותך אל הקבוצה.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "לא כל המשתמשים צורפו לקבוצה. הקש לנסות מחדש";
@@ -1174,10 +1174,10 @@
 "GROUP_UPDATED" = "קבוצה עודכנה.";
 
 /* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
-"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ ו%@ הצטרפו אל הקבוצה.";
 
 /* conversation history entry. Embeds the {{added user's name}} */
-"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ הצטרף אל הקבוצה.";
 
 /* conversation history entry */
 "GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
@@ -1189,16 +1189,16 @@
 "GROUP_UPDATED_BY_LOCAL_USER" = "עדכנת את הקבוצה.";
 
 /* conversation history entry. Embeds {{remote user's name}} */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ עידכן את הקבוצה.";
 
 /* conversation history entry */
 "GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
 
 /* conversation history entry. Embeds {{group name}} */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "שם הקבוצה הוא כעת ”%@“.";
 
 /* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
+"GROUP_UPDATED_READDED_YOU" = "הוסיף אותך מחדש אל הקבוצה.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "עזבת את הקבוצה.";
@@ -1441,10 +1441,10 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "החודש";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "הזכר לי מאוחר יותר";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "נזכיר לך מאוחר יותר.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "העתק מלל הודעה";
@@ -2005,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "יצירת PIN נכשלה";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
+"PIN_CREATION_EXPLANATION" = "קודי PIN מוסיפים שכבת אקסטרה של אבטחה אל החשבון שלך. זה חשוב לזכור PIN זה מאחר שהוא בלתי ניתן להשבה.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "מספרי PIN אינם תואמים. נסה שוב.";
@@ -2017,10 +2017,10 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "הכנס מחדש PIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "יוצר PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "אתה יכול לבחור PIN חדש מאחר שמכשיר זה רשום. אם תשכח את ה־PIN שלך, תצטרך להמתין 7 ימים כדי להירשם שוב.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "צור PIN חדש";
@@ -2050,25 +2050,25 @@
 "PINS_MEGAPHONE_HAS_PIN_ACTION" = "עדכן PIN";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "נעילת ההרשמה שלך נקראת כעת PIN. עדכון שלה לוקח שניות.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "נזכיר לך מאוחר יותר. עדכון PIN יהיה חובה עוד %ld ימים.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "היכרות עם PIN";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "צור PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+"PINS_MEGAPHONE_NO_PIN_BODY" = "קודי PIN מוסיפים שכבה נוספת של אבטחה אל חשבון Signal שלך.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "נזכיר לך מאוחר יותר. יצירת PIN תהיה חובה עוד %ld ימים.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "צור PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN נוצר.";
@@ -2116,7 +2116,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "הקוד הסרוק לא נראה כמו מספר ביטחון. האם שניכם על גרסה מעודכנת של Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "אם אתה רוצה לוודא את האבטחה של הצפנת קצה-אל-הקצה שלך עם %@, השווה את המספרים למעלה עם המספרים במכשיר שלו.\n\nלחלופין, אתה יכול לסרוק את הקוד בטלפון שלו, או לבקש ממנו לסרוק את הקוד שלך.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "אם אתה רוצה לוודא את האבטחה של הצפנת קצה־אל־הקצה שלך עם %@, השווה את המספרים למעלה עם המספרים במכשיר שלו.\n\nלחלופין, אתה יכול לסרוק את הקוד בטלפון שלו, או לבקש ממנו לסרוק את הקוד שלך.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "וודא מספר ביטחון";
@@ -2128,22 +2128,22 @@
 "PROCEED_BUTTON" = "המשך";
 
 /* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "התחל";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "הפרופיל שלך יכול להכיל כעת שם משפחה רשותי.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "אמת את שם הפרופיל שלך";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "זה יוצג כאשר תתחיל שיחה חדשה או כאשר תשתף את זה.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "הוסף שם פרופיל";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "שם הפרופיל שלך נשמר.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "קבע יצגן פרופיל";
@@ -2241,6 +2241,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "סרטון";
 
+/* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
+"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "הגיב עם %@ אל ההודעה שלך";
 
@@ -2278,7 +2281,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "הגיב עם %@ אל ההודעה הקולית שלך";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "הקש והחזק הודעה כלשהי כדי להשיב בזריזות איך אתה מרגיש.";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
@@ -2560,7 +2563,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "אם מאופשר, Signal ינסה לעקוף צנזורה. אל תאפשר מאפיין זה אלא אם אתה במיקום שבו Signal מצונזר.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "עקיפת צנזורה שופעלה על סמך מספר הטלפון של חשבונך.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "עקיפת צנזורה שופעלה על סמך מספר הטלפון של החשבון שלך.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "הִשְׁבַּת באופן ידני עקיפת צנזורה.";
@@ -2728,13 +2731,13 @@
 "SETTINGS_NOTIFICATIONS" = "התראות";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "ה־PIN שלך מוסיף שכבת אקסטרה של אבטחה אל חשבונך. תישאל לגביו כאשר תירשם עם מספר הטלפון שלך אל Signal. אם תשכח את ה־PIN שלך, תינעל מחוץ אל חשבונך למשך 7 ימים.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "שנה את ה־PIN שלך";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "צור PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -3094,13 +3097,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "למד עוד אודות קודי PIN";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "נעילת ההרשמה שלך נקראת כעת PIN, והיא עושה יותר. עדכן אותה כעת.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "נעילת הרשמה = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "קודי PIN מוסיפים שכבה נוספת של אבטחה אל החשבון שלך. צור את ה־PIN שלך עכשיו.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "היכרות עם PIN";

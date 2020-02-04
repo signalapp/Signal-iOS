@@ -486,10 +486,10 @@
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signalu sa nepodarilo zistiť stav vášho účtu iCloud. Pre vykonanie zálohy vašich údajov v Signale sa prihláste do svojho účtu iCloud v aplikácii Nastavenia iOS.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Žiadny účet iCloud. Pre zálohovanie vašich dát zo Signalu sa prihláste do vášho účtu iCloud v aplikácii Nastavenia iOS.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Žiadny účet iCloud. Pre zálohovanie vašich dát zo Signalu sa prihláste do svojho účtu iCloud v aplikácii Nastavenia iOS.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signalu bol zabránený prístup k vášmu účtu iCloud pre zálohy. Pre zálohovanie dát zo Signalu povoľte Signalu prístup k vašemu účtu iCloud V aplikácii Nastavenia iOS.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signalu bol zabránený prístup k vášmu účtu iCloud pre zálohy. Pre zálohovanie dát zo Signalu povoľte Signalu prístup k vášmu účtu iCloud V aplikácii Nastavenia iOS.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Zvoľte farbu odoslaných správ v tejto konverzácii";
@@ -841,7 +841,7 @@
 "DEBUG_LOG_COULD_NOT_EMAIL" = "Nepodarilo sa otvoriť e-mailovú appku.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist odkaz bol skopírovaný do schránky. Budete presmerovaný/presmerovaná na zoznam problémov na GitHube.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist odkaz bol skopírovaný do schránky. Budete presmerovaný/á na zoznam problémov na GitHube.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Presmerovanie na GitHub";
@@ -1294,7 +1294,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Neplatný zvukový súbor.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Na pozvanie vašich priateľov, aby sa pridali k používateľom Signalu, môžete v aplikácii Nastavenia iOS povoliť prístup ku kontaktom.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Na pozvanie svojich priateľov, aby sa pridali k používateľom Signalu, môžete v aplikácii Nastavenia iOS povoliť prístup ku kontaktom.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Povoliť prístup ku kontaktom";
@@ -1525,10 +1525,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Vymazať";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Pre pokračovanie v konverzácii s  %@ musíte zdieľať váš profil.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Pre pokračovanie v konverzácii s  %@ musíte zdieľať svoj profil.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Pre pokračovanie v konverzácii v %@ musíte zdieľať váš profil.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Pre pokračovanie v konverzácii v %@ musíte zdieľať svoj profil.";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Dozvedieť sa viac";
@@ -1627,7 +1627,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nemôžete pripojiť viac zariadení.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosiahli ste maximálny počet zariadení, ktoré môžete k vašemu účtu momentálne pripojiť. Prosím, odstráňte nejaké zariadenie a skúste to znovu.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosiahli ste maximálny počet zariadení, ktoré môžete k vášmu účtu momentálne pripojiť. Prosím, odstráňte nejaké zariadenie a skúste to znovu.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "O stlmených konverzáciách nebudete dostávať upozornenia.";
@@ -1780,7 +1780,7 @@
 "ONBOARDING_2FA_TITLE" = "Registračný zámok";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "V záujme ochrany vašeho súkromia  a bezpečnosti vašeho účtu sme vás vymkli na 7 dní.\n\nPo 7 dňoch neaktivity budete môcť toto telefónne číslo znovu zaregistrovať bez použitia PIN kódu. Celý obsah bude zmazaný.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "V záujme ochrany vášho súkromia  a bezpečnosti vášho účtu sme vás vymkli na 7 dní.\n\nPo 7 dňoch neaktivity budete môcť toto telefónne číslo znovu zaregistrovať bez použitia PIN kódu. Celý obsah bude zmazaný.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Dozvedieť sa viac o zamknutých účtoch.";
@@ -1813,7 +1813,7 @@
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registrácia tohoto iPadu vypne Signal na akomkoľvek inom zariadení, ktoré je momentálne registrované prostredníctvom tohoto istého telefónneho čísla.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Pripojenie vašeho iPhonu sa neodporúča a obmedzí to základnú funkcionalitu.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Pripojenie vášho iPhonu sa neodporúča a obmedzí to základnú funkcionalitu.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Povoliť povolenia";
@@ -2020,7 +2020,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "Vytvára sa PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Môžete si zvoliť nový PIN, pretože toto zariadenie je zaregistrované. Ak svoj PIN zabudnete, budete možno musieť čakať 7 dní na opätovnú registráciu.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Vytvoriť nový PIN";
@@ -2041,7 +2041,7 @@
 "PIN_REMINDER_MISMATCH_ERROR" = "Nesprávny PIN, skúste znova.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Zadajte váš PIN pre Signal";
+"PIN_REMINDER_TITLE" = "Zadajte svoj PIN pre Signal";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN musí mať aspoň 6 číslic.";
@@ -2053,7 +2053,7 @@
 "PINS_MEGAPHONE_HAS_PIN_BODY" = "Váš Registračný zámok sa teraz volá PIN kód. Jeho aktualizácia vám zaberie pár sekúnd.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Pripomenieme vám to neskôr. Svoj PIN si budete musieť povinne aktualizovať o %ld dní.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "Predstavujeme PINy";
@@ -2065,7 +2065,7 @@
 "PINS_MEGAPHONE_NO_PIN_BODY" = "PIN kódy pridajú k vášmu účtu Signal ďalšiu vrstvu zabezpečenia.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Pripomenieme vám to neskôr. PIN si budete musieť povinne vytvoriť o %ld dní.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Vytvoriť PIN";
@@ -2241,6 +2241,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
+/* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
+"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagoval(a) %@ na vašu správu";
 
@@ -2278,7 +2281,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagoval(a) %@ na vašu hlasovú správu";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Ťuknite a podržte na akúkoľvek správu, aby ste rýchlo odpovedali, ako sa cítite.";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Predstavujeme reakcie";
@@ -2287,7 +2290,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "Zabudol/la som PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Kvôli vašemu súkromiu a vašej bezpečnosti nie je možné PIN nijakým spôsobom obnoviť. Ak svoj PIN zabudnete, po 7 dňoch neaktivity si budete môcť overiť svoj účet prostredníctvom SMS. V tom prípade bude váš účet zmazaný a celý jeho obsah sa odstráni.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Kvôli vášmu súkromiu a vašej bezpečnosti nie je možné PIN nijakým spôsobom obnoviť. Ak svoj PIN zabudnete, po 7 dňoch neaktivity si budete môcť overiť svoj účet prostredníctvom SMS. V tom prípade bude váš účet zmazaný a celý jeho obsah sa odstráni.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Zabudli ste svoj PIN?";
@@ -2407,7 +2410,7 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaše bezpečnostné číslo s %@ sa zmenilo. Mohli by ste si to chcieť overiť.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Naskenujte QR kód na zariadení vašeho kontaktu.";
+"SCAN_CODE_INSTRUCTIONS" = "Naskenujte QR kód na zariadení vášho kontaktu.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Skenovať QR kód";
@@ -2485,7 +2488,7 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Dokončiť pripájanie";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Pre pripojenie tohoto iPadu k vašemu účtu spustite Signal na vašom telefóne.";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Pre pripojenie tohoto iPadu k vášmu účtu spustite Signal na vašom telefóne.";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nemám Signal na svojom telefóne...";
@@ -2497,7 +2500,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Inštalovať Signal na váš telefón";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Ťuknite na váš profilový obrázok, aby ste otvorili nastavenia Signal vo vašom telefóne. Potom na \"Pripojené zariadenia\" a \"Pripojiť nové zariadenie\", pre naskenovanie tohoto kódu pomocou vašeho telefónu:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Ťuknite na váš profilový obrázok, aby ste otvorili nastavenia Signal vo vašom telefóne. Potom na \"Pripojené zariadenia\" a \"Pripojiť nové zariadenie\", pre naskenovanie tohoto kódu pomocou vášho telefónu:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Získajte tu pomoc s pripojením vášho iPadu";
@@ -2659,7 +2662,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Vždy presmerovať hovory";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Smerovať všetky hovory cez server Signal pre zabránenie odhaleniu vašej IP adresy vašemu kontaktu. Zapnutie zníži kvalitu hovoru.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Smerovať všetky hovory cez server Signal, aby váš kontakt nedokázal odhaliť vašu IP adresu. Zapnutie zníži kvalitu hovoru.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Vymazať históriu konverzácií";
@@ -3064,7 +3067,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Odpojiť \"%@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Zariadenie už nie je pripojené. Pre pokračovanie znovu pripojte Signal k vašemu telefónu.";
+"UNLINKED_WARNING" = "Zariadenie už nie je pripojené. Pre pokračovanie znovu pripojte Signal k vášmu telefónu.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal nedokázal odpojiť vaše zariadenie.";

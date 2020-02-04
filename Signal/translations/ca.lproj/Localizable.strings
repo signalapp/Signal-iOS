@@ -42,34 +42,34 @@
 "ACTION_VIDEO_CALL" = "Trucada de video";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Voleu compartir el perfil amb aquest grup?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Voleu compartir el vostre perfil amb aquest grup?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Vols afegir aquest usuari als teus contactes?";
+"ADD_TO_CONTACTS_OFFER" = "Voleu afegir aquest usuari als vostres contactes?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Vols compartir el teu perfil amb aquest usuari?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Voleu compartir el vostre perfil amb aquest usuari?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "Entès!";
+"ALERT_ACTION_ACKNOWLEDGE" = "Entesos";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Descarta";
 
 /* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "No desar-ho";
+"ALERT_DONT_SAVE" = "No ho desis";
 
 /* No comment provided by engineer. */
 "ALERT_ERROR_TITLE" = "Error";
 
 /* The label for the 'save' button in action sheets. */
-"ALERT_SAVE" = "Desar";
+"ALERT_SAVE" = "Desa";
 
 /* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "Respondre";
+"ANSWER_CALL_BUTTON_TITLE" = "Respon";
 
 /* notification body */
-"APN_Message" = "Nou missatge!";
+"APN_Message" = "Missatge nou!";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "El Signal no es pot iniciar. Envieu els informes de depuració a support@signal.org perquè puguem provar de solucionar-ho.";
@@ -78,10 +78,10 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "No s'ha pogut carregar la base de dades.";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "No s'ha pogut carregar la base de dades";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Si us plau, actualitzeu a la darrera versió del Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Actualitzeu a la darrera versió del Signal.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versió desconeguda de la base de dades.";
@@ -93,10 +93,10 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Ara no";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Ja és disponible la versió %@ a l'App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Ja es troba disponible la versió %@ a l'App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Una nova versió del Signal està disponible";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Hi ha disponible una versió nova del Signal ";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Actualitza";
@@ -120,19 +120,19 @@
 "ATTACHMENT" = "Fitxer adjunt";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Limit de descripció assolit";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "S'ha assolit el límit de la llegenda.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Afegeix una descripció...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Afegeix una llegenda...";
 
 /* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Títol";
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Llegenda";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Ha fallat exportar l'adjunt.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "No s'ha pogut exportar l'adjunt.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "No s'ha pogut desar.";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "No s'ha pogut desar";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tipus de fitxer: %@";
@@ -141,7 +141,7 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Mida: %@";
 
 /* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Desat";
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "S'ha desat";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envia";
@@ -165,13 +165,13 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "No s'ha pogut analitzar la imatge.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "No s'han pogut esborrar les metadades de la imatge";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "No s'ha pogut esborrar les metadades de la imatge.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "No s'ha pogut redimensionar la imatge";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "No s'ha pogut canviar la mida de la imatge.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "El fitxer adjunt és massa gran.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "El fitxer adjunt és massa gros.";
 
 /* Attachment error message for attachments with invalid data */
 "ATTACHMENT_ERROR_INVALID_DATA" = "El contingut del fitxer adjunt no és vàlid.";
@@ -183,7 +183,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "El fitxer adjunt està buit.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Trieu contingut per enviar";
+"ATTACHMENT_HINT" = "Trieu el contingut a enviar";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Càmera";
@@ -201,10 +201,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Ubicació";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Permeteu l'accés a les fotografies des de la configuració per enviar-les des d'aquí.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Permeteu l'accés a les fotos en la configuració per a poder enviar-les.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Quan hàgiu fet fotografies, podreu enviar les recents des d'aquí.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Quan hàgiu fet fotos, podreu enviar les recents des d'aquí.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Fitxer adjunt";
@@ -213,7 +213,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "No s'ha pogut triar el document.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Creeu un fitxer comprimit d'aquest fitxer o directori i proveu d'enviar millor això.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Proveu d'enviar millor un fitxer comprimit d'aquest fitxer o directori.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fitxer no compatible";
@@ -234,49 +234,49 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "La còpia de seguretat no s’ha pogut exportar";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Resposta invàlida del servidor";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Resposta del servei no vàlida";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Es neteja la còpia de segeuretat";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "S'està netejant la còpia de seguretat";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "S'inicialitza la còpia de seguretat";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "S'està inicialitzant la còpia de seguretat";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "S'exporten dades";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "S'estan exportant les dades";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "S'exporta la còpia de seguretat";
+"BACKUP_EXPORT_PHASE_EXPORT" = "S'està exportant la còpia de seguretat";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Es carrega la còpia de seguretat";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "S'està pujant la còpia de seguretat";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "La còpia de seguretat no s’ha pogut importar";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "No s’ha pogut importar la còpia de seguretat.";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Es configura la còpia de seguretat";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "S'està configurant la còpia de seguretat";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Es baixa la còpia de seguretat";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "S'està baixant la còpia de seguretat";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "S'acaba còpia de seguretat";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "S'està finalitzant la còpia de seguretat";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "S'importa la còpia de seguretat.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "S'està important la còpia de seguretat.";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Es restaura la base de dades";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "S'està restaurant la base de dades";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Es restauren els fitxers";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "S'estan restaurant els fitxers";
 
 /* Label for the backup restore decision section. */
 "BACKUP_RESTORE_DECISION_TITLE" = "Còpia de seguretat disponible";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Es restaura la còpia de seguretat";
+"BACKUP_RESTORE_DESCRIPTION" = "S'està restaurant la còpia de seguretat";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Progrés";
@@ -285,7 +285,7 @@
 "BACKUP_RESTORE_STATUS" = "Estat";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Error durant la còpia de seguretat";
+"BACKUP_UNEXPECTED_ERROR" = "Error de la còpia de seguretat";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "No rebreu missatges ni actualitzacions d'aquest grup.";
@@ -327,7 +327,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Usuari blocat";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "S'ha blocat el grup";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Grup blocat";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "No podeu blocar-vos.";
@@ -336,10 +336,10 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "S'ha desblocat %@";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "S'ha desblocat %@.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Els membres existents ara us poden afegir de nou al grup.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Els membres existents ja us poden afegir de nou al grup.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Bloca";
@@ -348,13 +348,13 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Voleu blocar %@?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Els usuaris blocats no podran telefonar-vos ni enviar-vos missatges.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Els usuaris blocats no podran trucar-vos ni enviar-vos missatges.";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Navegueu";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continuar";
+"BUTTON_CONTINUE" = "Continua";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Fet";
@@ -2020,7 +2020,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "Es crea un PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Podeu triar un PIN nou perquè aquest dispositiu està registrat. Si l'oblideu, pot ser que hàgiu d'esperar 7 dies per tornar-vos a registrar.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Crea un PIN nou";
@@ -2053,7 +2053,7 @@
 "PINS_MEGAPHONE_HAS_PIN_BODY" = "El bloqueig de registre ara s'anomena PIN. Actualitzar-lo és cosa de segons.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Us ho recordarem més tard. Actualitzar el PIN serà obligatori d'aquí a %ld dies.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "S'introdueixen els PIN";
@@ -2065,7 +2065,7 @@
 "PINS_MEGAPHONE_NO_PIN_BODY" = "Els PIN afegeixen una altra capa de seguretat al compte del Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Us ho recordarem més tard. Crear un PIN serà obligatori d'aquí a %ld dies.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Crea un PIN";
@@ -2241,6 +2241,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Vídeo";
 
+/* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
+"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ ha reaccionat al vostre missatge";
 
@@ -2278,7 +2281,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "%@  ha reaccionat al vostre missatge";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Mantingueu un toc sobre qualsevol missatge per compartir com us sentiu.";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "S'introdueixen les reaccions";
