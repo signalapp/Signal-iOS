@@ -231,8 +231,6 @@ public class FeatureFlags: NSObject {
     @objc
     public static let groupsV2CreateGroups = groupsV2
 
-    // Don't consult this feature flag directly; instead
-    // consult RemoteConfig.groupsV2IncomingMessages.
     @objc
     public static let groupsV2IncomingMessages = groupsV2
 
