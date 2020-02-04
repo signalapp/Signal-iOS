@@ -1788,10 +1788,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (thread.friendRequestStatus == LKThreadFriendRequestStatusNone) { return; }
     // Become happy friends and go on great adventures
     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
-    TSOutgoingMessage *existingFriendRequestMessage = [thread.lastInteraction as:TSOutgoingMessage.class];
-    if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
-        [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        TSOutgoingMessage *existingFriendRequestMessage = [thread.lastInteraction as:TSOutgoingMessage.class];
+        if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
+            [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
+        }
+    });
     // Send our P2P details
     LKAddressMessage *_Nullable onlineMessage = [LKP2PAPI onlineBroadcastMessageForThread:thread];
     if (onlineMessage != nil) {
