@@ -147,18 +147,11 @@ public class PinSetupViewController: OWSViewController {
             topButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
             topButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
 
-            let topButtonRow = UIView()
-            topButtonRow.addSubview(topButton)
-            topButton.autoPinEdge(toSuperviewEdge: .leading)
-            topButton.autoPinHeightToSuperview()
-
             // Title
 
             let label = UILabel()
             label.textColor = Theme.primaryTextColor
-            label.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semibold()
-            label.numberOfLines = 0
-            label.lineBreakMode = .byWordWrapping
+            label.font = .systemFont(ofSize: 26, weight: .semibold)
             label.textAlignment = .center
 
             titleLabel = label
@@ -167,14 +160,14 @@ public class PinSetupViewController: OWSViewController {
 
             // If we're in creating mode AND we're the rootViewController, don't allow going back
             if case .creating = mode, navigationController?.viewControllers.first == self {
-                arrangedSubviews = [UIView.spacer(withHeight: 40), label, UIView.spacer(withHeight: 10)]
+                arrangedSubviews = [label]
             } else {
-                arrangedSubviews = [topButtonRow, label, UIView.spacer(withHeight: 10)]
+                arrangedSubviews = [topButton, label, UIView.spacer(withWidth: 40)]
             }
 
             let row = UIStackView(arrangedSubviews: arrangedSubviews)
-            row.axis = .vertical
-            row.distribution = .fill
+            row.isLayoutMarginsRelativeArrangement = true
+            row.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0)
             topRow = row
         }
 
@@ -189,7 +182,7 @@ public class PinSetupViewController: OWSViewController {
 
         let explanationLabel = UILabel()
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = .systemFont(ofSize: 15)
 
         switch mode {
         case .creating, .changing:
@@ -213,7 +206,7 @@ public class PinSetupViewController: OWSViewController {
         pinTextField.delegate = self
         pinTextField.textAlignment = .center
         pinTextField.textColor = Theme.primaryTextColor
-        pinTextField.font = .ows_dynamicTypeBodyClamped
+        pinTextField.font = .systemFont(ofSize: 17)
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
         pinTextField.keyboardAppearance = Theme.keyboardAppearance
@@ -224,12 +217,12 @@ public class PinSetupViewController: OWSViewController {
 
         validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.textAlignment = .center
-        validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+        validationWarningLabel.font = .systemFont(ofSize: 12)
         validationWarningLabel.accessibilityIdentifier = "pinCreation.validationWarningLabel"
 
         recommendationLabel.textColor = Theme.secondaryTextAndIconColor
         recommendationLabel.textAlignment = .center
-        recommendationLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+        recommendationLabel.font = .systemFont(ofSize: 12)
         recommendationLabel.accessibilityIdentifier = "pinCreation.recommendationLabel"
 
         let pinStack = UIStackView(arrangedSubviews: [
@@ -247,13 +240,16 @@ public class PinSetupViewController: OWSViewController {
         pinStack.autoPinHeightToSuperview()
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
+        pinStackRow.setCompressionResistanceVerticalHigh()
 
         pinTypeToggle.setTitleColor(.ows_signalBlue, for: .normal)
-        pinTypeToggle.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
+        pinTypeToggle.titleLabel?.font = .systemFont(ofSize: 15)
         pinTypeToggle.addTarget(self, action: #selector(togglePinType), for: .touchUpInside)
         pinTypeToggle.accessibilityIdentifier = "pinCreation.pinTypeToggle"
+        pinTypeToggle.setCompressionResistanceVerticalHigh()
+        pinTypeToggle.setContentHuggingVerticalHigh()
 
-        let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        let font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         let buttonHeight = OWSFlatButton.heightForFont(font)
         nextButton.setTitle(title: CommonStrings.nextButton, font: font, titleColor: .white)
         nextButton.setBackgroundColors(upColor: .ows_signalBlue)
@@ -284,7 +280,7 @@ public class PinSetupViewController: OWSViewController {
         let stackView = UIStackView(arrangedSubviews: arrangedSubviews)
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        stackView.layoutMargins = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.autoPinWidthToSuperview()
@@ -534,7 +530,7 @@ private class ProgressView: UIView {
         animationContainer.addSubview(successAnimation)
         successAnimation.autoPinEdgesToSuperviewEdges()
 
-        label.font = .ows_dynamicTypeBodyClamped
+        label.font = .systemFont(ofSize: 17)
         label.textColor = Theme.primaryTextColor
         label.textAlignment = .center
         label.text = loadingText
