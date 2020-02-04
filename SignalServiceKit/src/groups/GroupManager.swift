@@ -53,6 +53,10 @@ public class GroupManager: NSObject {
         return SSKEnvironment.shared.groupsV2
     }
 
+    private class var groupsV2Swift: GroupsV2Swift {
+        return self.groupsV2 as! GroupsV2Swift
+    }
+
     private class var contactsManager: ContactsManagerProtocol {
         return SSKEnvironment.shared.contactsManager
     }
@@ -333,9 +337,6 @@ public class GroupManager: NSObject {
         guard let localAddress = self.tsAccountManager.localAddress else {
             return Promise(error: OWSAssertionError("Missing localAddress."))
         }
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
-        }
 
         return DispatchQueue.global().async(.promise) { () -> GroupMembership in
             guard let localAddress = self.tsAccountManager.localAddress else {
@@ -367,8 +368,9 @@ public class GroupManager: NSObject {
             guard !hasLocalCredential else {
                 return Promise.value(groupMembership)
             }
-            return groupsV2Swift.reuploadLocalProfilePromise()
-                .map(on: .global()) { (_) -> GroupMembership in
+            return firstly {
+                self.groupsV2Swift.reuploadLocalProfilePromise()
+            }.map(on: .global()) { (_) -> GroupMembership in
                     return groupMembership
             }
         }.then(on: .global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
@@ -377,15 +379,18 @@ public class GroupManager: NSObject {
             guard FeatureFlags.groupsV2CreateGroups else {
                 return Promise.value(groupMembership)
             }
-            return groupsV2Swift.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allUsers))
-                .map(on: .global()) { (_) -> GroupMembership in
+            return firstly {
+                self.groupsV2Swift.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allUsers))
+            }.map(on: .global()) { (_) -> GroupMembership in
                     return groupMembership
             }
         }.then(on: .global()) { (proposedGroupMembership: GroupMembership) throws -> Promise<TSGroupModel> in
             // GroupsV2 TODO: Let users specify access levels in the "new group" view.
             let groupAccess = GroupAccess.allAccess
             let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
-                // We need to separate out the pending members.
+                // Before we create a v2 group, we need to separate out the
+                // pending and non-pending members.  If we already know we're
+                // going to create a v1 group, we shouldn't separate them.
                 let groupMembership = self.separatePendingMembers(in: proposedGroupMembership,
                                                                   oldGroupModel: nil,
                                                                   transaction: transaction)
@@ -424,6 +429,14 @@ public class GroupManager: NSObject {
         }
     }
 
+    // Separates pending and non-pending members.
+    // We cannot add non-pending members unless:
+    //
+    // * We know their UUID.
+    // * We know their profile key.
+    // * We have a profile key credential for them.
+    // * Their account has the "groups v2" capability
+    //   (e.g. all of their clients support groups v2.
     private static func separatePendingMembers(in groupMembership: GroupMembership,
                                                oldGroupModel: TSGroupModel?,
                                                transaction: SDSAnyReadTransaction) -> GroupMembership {
@@ -450,7 +463,7 @@ public class GroupManager: NSObject {
             // all members.
             let isPending: Bool
             if let oldGroupModel = oldGroupModel,
-                oldGroupModel.groupMembership.allMembers.contains(address) {
+                oldGroupModel.groupMembership.isNonPendingMember(address) {
                 // If the member already is a full member, don't treat them
                 // as pending.  Perhaps someone else added them.
                 isPending = false
@@ -468,11 +481,9 @@ public class GroupManager: NSObject {
         guard groupModel.groupsVersion == .V2 else {
             return Promise.value(groupModel)
         }
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
-        }
-        return groupsV2Swift.createNewGroupOnService(groupModel: groupModel)
-            .map(on: .global()) { _ in
+        return firstly {
+            self.groupsV2Swift.createNewGroupOnService(groupModel: groupModel)
+        }.map(on: .global()) { _ in
                 return groupModel
         }
     }
@@ -768,10 +779,6 @@ public class GroupManager: NSObject {
                                               shouldSendMessage: Bool,
                                               groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
-        }
-
         return DispatchQueue.global().async(.promise) { () throws -> UpdateInfo in
             let updateInfo: UpdateInfo = try databaseStorage.read { transaction in
                 return try self.updateInfo(groupId: groupId,
@@ -786,7 +793,7 @@ public class GroupManager: NSObject {
             guard let changeSet = updateInfo.changeSet else {
                 throw OWSAssertionError("Missing changeSet.")
             }
-            return groupsV2Swift.updateExistingGroupOnService(changeSet: changeSet)
+            return self.groupsV2Swift.updateExistingGroupOnService(changeSet: changeSet)
         }.then(on: .global()) { (updatedV2Group: UpdatedV2Group) throws -> Promise<TSGroupThread> in
 
             guard shouldSendMessage else {
@@ -815,9 +822,6 @@ public class GroupManager: NSObject {
         guard let localAddress = self.tsAccountManager.localAddress else {
             throw OWSAssertionError("Missing localAddress.")
         }
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            throw OWSAssertionError("Invalid groupsV2 instance.")
-        }
 
         let groupMembership: GroupMembership
         if oldGroupModel.groupsVersion == .V1 {
@@ -829,7 +833,8 @@ public class GroupManager: NSObject {
                     throw OWSAssertionError("Group v2 member missing uuid.")
                 }
             }
-            // We need to separate out the pending members.
+            // Before we update a v2 group, we need to separate out the
+            // pending and non-pending members.
             groupMembership = self.separatePendingMembers(in: proposedGroupMembership,
                                                           oldGroupModel: oldGroupModel,
                                                           transaction: transaction)
@@ -869,9 +874,9 @@ public class GroupManager: NSObject {
         case .V1:
             return UpdateInfo(groupId: groupId, oldGroupModel: oldGroupModel, newGroupModel: newGroupModel, changeSet: nil)
         case .V2:
-            let changeSet = try groupsV2Swift.buildChangeSet(from: oldGroupModel,
-                                                             to: newGroupModel,
-                                                             transaction: transaction)
+            let changeSet = try self.groupsV2Swift.buildChangeSet(from: oldGroupModel,
+                                                                  to: newGroupModel,
+                                                                  transaction: transaction)
             return UpdateInfo(groupId: groupId, oldGroupModel: oldGroupModel, newGroupModel: newGroupModel, changeSet: changeSet)
         }
     }
@@ -883,12 +888,8 @@ public class GroupManager: NSObject {
         // For now, always send update messages when accepting invites.
         let shouldSendMessage = true
 
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
-        }
-
         return firstly {
-            return groupsV2Swift.acceptInviteToGroupV2(groupThread: groupThread)
+            return self.groupsV2Swift.acceptInviteToGroupV2(groupThread: groupThread)
         }.then(on: .global()) { (updatedV2Group: UpdatedV2Group) throws -> Promise<TSGroupThread> in
 
             guard shouldSendMessage else {
@@ -994,14 +995,11 @@ public class GroupManager: NSObject {
         // We need to send v2 group updates to pending members
         // as well.  Normal group sends only include "full members".
         assert(messageBuilder.additionalRecipients == nil)
-        var additionalRecipients = [SignalServiceAddress]()
-        for address in groupThread.groupModel.allPendingMembers {
-            if doesUserSupportGroupsV2(address: address,
-                                       transaction: transaction) {
-                additionalRecipients.append(address)
-            }
+        let additionalRecipients = groupThread.groupModel.allPendingMembers.filter { address in
+            return doesUserSupportGroupsV2(address: address,
+                                       transaction: transaction)
         }
-        messageBuilder.additionalRecipients = additionalRecipients
+        messageBuilder.additionalRecipients = Array(additionalRecipients)
     }
 
     @objc
@@ -1164,11 +1162,6 @@ public class GroupManager: NSObject {
                 return true
             }
         }
-        if let phoneNumber = address.phoneNumber {
-            if groupsV2CapabilityStore.getBool(phoneNumber, defaultValue: false, transaction: transaction) {
-                return true
-            }
-        }
         return false
     }
 
@@ -1178,9 +1171,6 @@ public class GroupManager: NSObject {
                                                     transaction: SDSAnyWriteTransaction) {
         if let uuid = address.uuid {
             groupsV2CapabilityStore.setBool(value, key: uuid.uuidString, transaction: transaction)
-        }
-        if let phoneNumber = address.phoneNumber {
-            groupsV2CapabilityStore.setBool(value, key: phoneNumber, transaction: transaction)
         }
     }
 }
