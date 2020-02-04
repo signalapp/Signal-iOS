@@ -231,6 +231,8 @@ public class FeatureFlags: NSObject {
     @objc
     public static let groupsV2CreateGroups = groupsV2
 
+    // Don't consult this feature flag directly; instead
+    // consult RemoteConfig.groupsV2IncomingMessages.
     @objc
     public static let groupsV2IncomingMessages = groupsV2
 
@@ -259,8 +261,9 @@ public class FeatureFlags: NSObject {
     @objc
     public static let groupsV2SetCapability = groupsV2
 
+    // This flag auto-enables the groupv2 flags in RemoteConfig.
     @objc
-    public static let groupsV2IgnoreServerFlag = groupsV2
+    public static let groupsV2IgnoreServerFlags = groupsV2
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
@@ -272,7 +275,7 @@ public class FeatureFlags: NSObject {
     public static let reactionSend = true
 
     @objc
-    public static let isUsingProductionService = true
+    public static let isUsingProductionService = false
 
     @objc
     public static let versionedProfiledFetches = false || groupsV2
