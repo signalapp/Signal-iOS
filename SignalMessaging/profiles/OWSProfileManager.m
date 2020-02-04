@@ -378,10 +378,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 }
 
 // If profileName is nil, we are clearing the profileName.
-- (void)updateServiceWithUnversioned2GivenName:(nullable NSString *)givenName
-                                    familyName:(nullable NSString *)familyName
-                                       success:(void (^)(void))successBlock
-                                       failure:(ProfileManagerFailureBlock)failureBlock
+- (void)updateServiceWithUnversionedGivenName:(nullable NSString *)givenName
+                                   familyName:(nullable NSString *)familyName
+                                      success:(void (^)(void))successBlock
+                                      failure:(ProfileManagerFailureBlock)failureBlock
 {
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);

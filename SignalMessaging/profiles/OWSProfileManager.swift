@@ -249,7 +249,7 @@ extension OWSProfileManager {
     private class func updateProfileNameOnServiceUnversioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
         let (promise, resolver) = Promise<Void>.pending()
         DispatchQueue.global().async {
-            self.profileManager.updateService2(unversionedGivenName: attempt.update.profileGivenName,
+            self.profileManager.updateService(unversionedGivenName: attempt.update.profileGivenName,
                                               familyName: attempt.update.profileFamilyName,
                                               success: {
                                                 resolver.fulfill(())
