@@ -91,6 +91,42 @@ public class TSOutgoingMessageBuilder: NSObject {
         self.additionalRecipients = additionalRecipients
     }
 
+    // This factory method can be used at call sites that want
+    // to specify every property; usage will fail to compile if
+    // if any property is missing.
+    @objc
+    public class func builder(thread: TSThread,
+                              timestamp: UInt64,
+                              messageBody: String?,
+                              attachmentIds: NSMutableArray?,
+                              expiresInSeconds: UInt32,
+                              expireStartedAt: UInt64,
+                              isVoiceMessage: Bool,
+                              groupMetaMessage: TSGroupMetaMessage,
+                              quotedMessage: TSQuotedMessage?,
+                              contactShare: OWSContact?,
+                              linkPreview: OWSLinkPreview?,
+                              messageSticker: MessageSticker?,
+                              isViewOnceMessage: Bool,
+                              changeActionsProtoData: Data?,
+                              additionalRecipients: [SignalServiceAddress]?) -> TSOutgoingMessageBuilder {
+        return TSOutgoingMessageBuilder(thread: thread,
+                                        timestamp: timestamp,
+                                        messageBody: messageBody,
+                                        attachmentIds: attachmentIds,
+                                        expiresInSeconds: expiresInSeconds,
+                                        expireStartedAt: expireStartedAt,
+                                        isVoiceMessage: isVoiceMessage,
+                                        groupMetaMessage: groupMetaMessage,
+                                        quotedMessage: quotedMessage,
+                                        contactShare: contactShare,
+                                        linkPreview: linkPreview,
+                                        messageSticker: messageSticker,
+                                        isViewOnceMessage: isViewOnceMessage,
+                                        changeActionsProtoData: changeActionsProtoData,
+                                        additionalRecipients: additionalRecipients)
+    }
+
     @objc(applyDisappearingMessagesConfiguration:)
     public func apply(configuration: OWSDisappearingMessagesConfiguration) {
         expiresInSeconds = (configuration.isEnabled

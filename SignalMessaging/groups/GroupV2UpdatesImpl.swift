@@ -230,7 +230,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2Updates, GroupV2UpdatesSwift {
             var canFetchChangeActions = false
             if let groupThread = thread {
                 // Pending members can fetch snapshots but not change actions.
-                canFetchChangeActions = groupThread.groupModel.groupMembership.allMembers.contains(localAddress)
+                let groupMembership = groupThread.groupModel.groupMembership
+                canFetchChangeActions = groupMembership.isNonPendingMember(localAddress)
             }
             return canFetchChangeActions
         }.then(on: DispatchQueue.global()) { (canFetchChangeActions: Bool) throws -> Promise<TSGroupThread> in

@@ -133,22 +133,21 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     @objc
     public func build(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
-        let builder = TSOutgoingMessageBuilder(thread: threadCreator(transaction))
-        builder.timestamp = timestampBuilder()
-        builder.messageBody = messageBodyBuilder()
-        builder.attachmentIds = attachmentIdsBuilder()
-        builder.expiresInSeconds = expiresInSecondsBuilder()
-        builder.expireStartedAt = expireStartedAtBuilder()
-        builder.isVoiceMessage = isVoiceMessageBuilder()
-        builder.groupMetaMessage = groupMetaMessageBuilder()
-        builder.quotedMessage = quotedMessageBuilder()
-        builder.contactShare = contactShareBuilder()
-        builder.linkPreview = linkPreviewBuilder()
-        builder.messageSticker = messageStickerBuilder()
-        builder.isViewOnceMessage = isViewOnceMessageBuilder()
-        builder.changeActionsProtoData = changeActionsProtoDataBuilder()
-        builder.additionalRecipients = additionalRecipientsBuilder()
-        return builder.build()
+        return TSOutgoingMessageBuilder.builder(thread: threadCreator(transaction),
+                                                timestamp: timestampBuilder(),
+                                                messageBody: messageBodyBuilder(),
+                                                attachmentIds: attachmentIdsBuilder(),
+                                                expiresInSeconds: expiresInSecondsBuilder(),
+                                                expireStartedAt: expireStartedAtBuilder(),
+                                                isVoiceMessage: isVoiceMessageBuilder(),
+                                                groupMetaMessage: groupMetaMessageBuilder(),
+                                                quotedMessage: quotedMessageBuilder(),
+                                                contactShare: contactShareBuilder(),
+                                                linkPreview: linkPreviewBuilder(),
+                                                messageSticker: messageStickerBuilder(),
+                                                isViewOnceMessage: isViewOnceMessageBuilder(),
+                                                changeActionsProtoData: changeActionsProtoDataBuilder(),
+                                                additionalRecipients: additionalRecipientsBuilder()).build()
     }
 
     @objc

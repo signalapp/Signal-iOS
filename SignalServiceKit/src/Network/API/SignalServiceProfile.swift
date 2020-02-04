@@ -73,7 +73,7 @@ public class SignalServiceProfile: NSObject {
         }
 
         // GroupsV2 TODO: Parse this capability when it exists on the service.
-        self.supportsGroupsV2 = true
+        self.supportsGroupsV2 = FeatureFlags.groupsV2IgnoreCapability
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
     }

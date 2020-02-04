@@ -406,9 +406,9 @@ public class ProfileFetcherJob: NSObject {
                                                       value: profile.supportsGroupsV2,
                                                       transaction: transaction)
 
-            self.verifyIdentityUpToDateAsync(address: address,
-                                             latestIdentityKey: profile.identityKey,
-                                             transaction: transaction)
+            self.verifyIdentityUpToDate(address: address,
+                                        latestIdentityKey: profile.identityKey,
+                                        transaction: transaction)
         }
     }
 
@@ -446,9 +446,9 @@ public class ProfileFetcherJob: NSObject {
         udManager.setUnidentifiedAccessMode(.enabled, address: address)
     }
 
-    private func verifyIdentityUpToDateAsync(address: SignalServiceAddress,
-                                             latestIdentityKey: Data,
-                                             transaction: SDSAnyWriteTransaction) {
+    private func verifyIdentityUpToDate(address: SignalServiceAddress,
+                                        latestIdentityKey: Data,
+                                        transaction: SDSAnyWriteTransaction) {
         if self.identityManager.saveRemoteIdentity(latestIdentityKey, address: address, transaction: transaction) {
             Logger.info("updated identity key with fetched profile for recipient: \(address)")
             self.sessionStore.archiveAllSessions(for: address, transaction: transaction)

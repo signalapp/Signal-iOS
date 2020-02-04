@@ -234,10 +234,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         uuidsForProfileKeyCredentials.formUnion(membersToAdd.keys)
         let addressesForProfileKeyCredentials: [SignalServiceAddress] = uuidsForProfileKeyCredentials.map { SignalServiceAddress(uuid: $0) }
 
-        return groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
-            .then { (_) -> Promise<ProfileKeyCredentialMap> in
+        return firstly {
+            groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
+        }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
                 return groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
-        }.then { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
+        }.then(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
             return self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
                                               profileKeyCredentialMap: profileKeyCredentialMap)
         }
@@ -435,10 +436,11 @@ public class GroupsV2ChangeSetAcceptInvite: NSObject, GroupsV2ChangeSet {
 
         let uuidsForProfileKeyCredentials = [localUserUuid]
         let addressesForProfileKeyCredentials = [SignalServiceAddress(uuid: localUserUuid)]
-        return groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
-            .then { (_) -> Promise<ProfileKeyCredentialMap> in
+        return firstly {
+            groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
+        }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
                 return groupsV2Impl.loadProfileKeyCredentialData(for: uuidsForProfileKeyCredentials)
-        }.then { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
+        }.then(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
             return self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
                                               profileKeyCredentialMap: profileKeyCredentialMap)
         }

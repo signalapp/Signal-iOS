@@ -265,6 +265,8 @@ public class GroupManager: NSObject {
                 Logger.warn("Creating legacy group; member missing UUID or Groups v2 capability.")
                 return false
             }
+            // GroupsV2 TODO: We should finalize the exact decision-making process here.
+            // Should having a profile key credential figure in? At least for a while?
         }
         return true
     }
@@ -276,7 +278,7 @@ public class GroupManager: NSObject {
             Logger.warn("Member without UUID.")
             return false
         }
-        guard doesUserHasGroupsV2Capability(address: address,
+        guard doesUserHaveGroupsV2Capability(address: address,
                                             transaction: transaction) else {
                                                 Logger.warn("Member without Groups v2 capability.")
                                                 return false
@@ -425,11 +427,23 @@ public class GroupManager: NSObject {
     private static func separatePendingMembers(in groupMembership: GroupMembership,
                                                oldGroupModel: TSGroupModel?,
                                                transaction: SDSAnyReadTransaction) -> GroupMembership {
+        let isNewGroup: Bool
+        if let oldGroupModel = oldGroupModel {
+            assert(oldGroupModel.groupsVersion == .V2)
+            isNewGroup = false
+        } else {
+            isNewGroup = true
+        }
+
         var builder = GroupMembership.Builder()
         for address in groupMembership.allUsers {
-            guard doesUserSupportGroupsV2(address: address, transaction: transaction) else {
-                // Use simple group membership for legacy groups.
-                return groupMembership
+            if isNewGroup {
+                guard doesUserSupportGroupsV2(address: address, transaction: transaction) else {
+                    // If any member of a new group doesn't support groups v2,
+                    // we're going to create a v1 group.  In that case, we
+                    // don't want to separate out pending members.
+                    return groupMembership
+                }
             }
 
             // We must call this _after_ we try to fetch profile key credentials for
@@ -1139,7 +1153,7 @@ public class GroupManager: NSObject {
     public static let groupsV2CapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2Capability")
 
     @objc
-    public static func doesUserHasGroupsV2Capability(address: SignalServiceAddress,
+    public static func doesUserHaveGroupsV2Capability(address: SignalServiceAddress,
                                                      transaction: SDSAnyReadTransaction) -> Bool {
         if FeatureFlags.groupsV2IgnoreCapability {
             return true

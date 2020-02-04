@@ -39,14 +39,8 @@ public extension UpdateGroupViewController {
                     groupMembershipBuilder.add(address, isAdministrator: false, isPending: false)
                 }
             }
-            // GroupsV2 TODO: Don't remove any members until UI supports pending members, kicking members, etc..
-            if false {
-                for address in oldGroupMembership.allUsers {
-                    if !v1Members.contains(address) {
-                        groupMembershipBuilder.remove(address)
-                    }
-                }
-            }
+            // GroupsV2 TODO: Remove members, change roles, etc. when
+            // UI supports pending members, kicking members, etc..
             groupMembership = groupMembershipBuilder.build()
         }
 
