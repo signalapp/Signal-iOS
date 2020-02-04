@@ -46,7 +46,6 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
-#import <FirebaseCore/FirebaseCore.h>
 
 @import WebRTC;
 @import Intents;
@@ -353,11 +352,6 @@ static NSTimeInterval launchStartedAt;
 //    if (!self.lokiP2PServer.isRunning) {
 //        NSLog(@"[Loki] Failed to start P2P server.");
 //    }
-  
-#if DEBUG
-#else
-    [FIRApp configure];
-#endif
     
     return YES;
 }
