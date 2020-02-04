@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         // Update RSS feeds here
         LKRSSFeed *lokiNewsFeed = [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki News", @"") isDeletable:true];
-        LKRSSFeed *lokiMessengerUpdatesFeed = [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Loki Messenger Updates", @"") isDeletable:false];
+        LKRSSFeed *lokiMessengerUpdatesFeed = [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Session Updates", @"") isDeletable:false];
         NSArray *feeds = @[ lokiNewsFeed, lokiMessengerUpdatesFeed ];
         for (LKRSSFeed *feed in feeds) {
             TSGroupThread *thread = [TSGroupThread threadWithGroupId:[feed.id dataUsingEncoding:NSUTF8StringEncoding] transaction:transaction];

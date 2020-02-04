@@ -1599,7 +1599,7 @@ static NSTimeInterval launchStartedAt;
 
 - (LKRSSFeed *)lokiMessengerUpdatesFeed
 {
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:@"Loki Messenger Updates" isDeletable:false];
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:@"Session Updates" isDeletable:false];
 }
 
 - (void)setUpDefaultPublicChatsIfNeeded
@@ -1647,7 +1647,7 @@ static NSTimeInterval launchStartedAt;
     if (lokiNewsFeedThread != nil && self.lokiNewsFeedPoller == nil) {
         self.lokiNewsFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiNewsFeed];
     }
-    // The user can't delete the Loki Messenger Updates RSS feed
+    // The user can't delete the Session Updates RSS feed
     if (self.lokiMessengerUpdatesFeedPoller == nil) {
         self.lokiMessengerUpdatesFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiMessengerUpdatesFeed];
     }
