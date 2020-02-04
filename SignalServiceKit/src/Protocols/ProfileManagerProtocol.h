@@ -43,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)warmCaches;
 
 @property (nonatomic, readonly) UserProfileReadCache *userProfileReadCache;
+@property (nonatomic, readonly) BOOL hasProfileName;
 
 @end
 

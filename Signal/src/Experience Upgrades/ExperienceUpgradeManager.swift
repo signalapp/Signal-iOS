@@ -84,6 +84,9 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins:
             return RemoteConfig.mandatoryPins
+        case .messageRequests:
+            // Only use a splash for message requests if the user doesn't have a profile name.
+            return !OWSProfileManager.shared().hasProfileName
         default:
             return false
         }
@@ -93,6 +96,8 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins:
             return IntroducingPinsSplash(experienceUpgrade: experienceUpgrade)
+        case .messageRequests:
+            return MessageRequestsSplash(experienceUpgrade: experienceUpgrade)
         default:
             return nil
         }
@@ -107,6 +112,9 @@ class ExperienceUpgradeManager: NSObject {
              .profileNameReminder,
              .pinReminder:
             return true
+        case .messageRequests:
+            // Only use a megaphone for message requests if the user has a profile name.
+            return OWSProfileManager.shared().hasProfileName
         default:
             return false
         }
@@ -122,6 +130,8 @@ class ExperienceUpgradeManager: NSObject {
             return ProfileNameReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .pinReminder:
             return PinReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .messageRequests:
+            return MessageRequestsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }

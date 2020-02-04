@@ -51,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
     return _localProfileKey;
 }
 
+- (BOOL)hasProfileName
+{
+    return NO;
+}
+
 - (void)setProfileKeyData:(NSData *)profileKey
                forAddress:(SignalServiceAddress *)address
               transaction:(SDSAnyWriteTransaction *)transaction

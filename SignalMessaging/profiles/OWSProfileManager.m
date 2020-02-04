@@ -256,6 +256,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return (self.localGivenName.length > 0 || self.localProfileAvatarImage != nil);
 }
 
+- (BOOL)hasProfileName
+{
+    return self.localGivenName.length > 0;
+}
+
 - (nullable NSString *)localGivenName
 {
     return self.localUserProfile.givenName;

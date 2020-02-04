@@ -9,6 +9,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"
     case reactions = "010"
     case profileNameReminder = "011"
+    case messageRequests = "012"
+
     case pinReminder // Never saved, used to periodically prompt the user for their PIN
 
     // Until this flag is true the upgrade won't display to users.
@@ -24,6 +26,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return RemoteConfig.profileNameReminder
         case .pinReminder:
             return OWS2FAManager.shared().isDueForV2Reminder(transaction: transaction.asAnyRead)
+        case .messageRequests:
+            return FeatureFlags.messageRequest
         }
     }
 
@@ -60,6 +64,11 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         switch self {
         case .introducingPins:
             return .high
+        case .messageRequests:
+            // If the user already has a profile name, this is just a simple
+            // notice of a new feature. If they don't have a profile name,
+            // this is a high priority mandatory flow for them to create one.
+            return SSKEnvironment.shared.profileManager.hasProfileName ? .low : .high
         case .profileNameReminder,
              .reactions:
             return .low
