@@ -107,7 +107,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(registrationStateDidChange),
-            name: .RegistrationStateDidChange,
+            name: .registrationStateDidChange,
             object: nil
         )
     }

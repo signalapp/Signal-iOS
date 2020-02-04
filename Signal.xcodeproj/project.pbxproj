@@ -584,6 +584,8 @@
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
+		8806F21B23E90B0B00692638 /* MessageRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8806F21A23E90B0B00692638 /* MessageRequests.swift */; };
+		8806F21D23E90C8300692638 /* messageRequestsSplash.json in Resources */ = {isa = PBXBuildFile; fileRef = 8806F21C23E90C8300692638 /* messageRequestsSplash.json */; };
 		88081437234D80150004C187 /* UIResponder+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88081436234D80150004C187 /* UIResponder+OWS.swift */; };
 		8809CE8122F534B200D38867 /* CustomKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809CE8022F534B200D38867 /* CustomKeyboard.swift */; };
 		8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809CE8622F8FE6D00D38867 /* AttachmentKeyboard.swift */; };
@@ -1482,6 +1484,8 @@
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		7BB1CB6F2D7841356BE367EA /* Pods-Signal.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.testable release.xcconfig"; sourceTree = "<group>"; };
 		80A8593EDA963AA130D319BA /* Pods-NotificationServiceExtension.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.testable release.xcconfig"; sourceTree = "<group>"; };
+		8806F21A23E90B0B00692638 /* MessageRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequests.swift; sourceTree = "<group>"; };
+		8806F21C23E90C8300692638 /* messageRequestsSplash.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = messageRequestsSplash.json; sourceTree = "<group>"; };
 		88081436234D80150004C187 /* UIResponder+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIResponder+OWS.swift"; sourceTree = "<group>"; };
 		8809CE8022F534B200D38867 /* CustomKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomKeyboard.swift; sourceTree = "<group>"; };
 		8809CE8422F8DB2D00D38867 /* AttachmentKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentKeyboard.swift; sourceTree = "<group>"; };
@@ -2973,6 +2977,7 @@
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
 				88A505FB23DBAE4F0005C012 /* Reactions.swift */,
 				8889007423DBD0B400F40186 /* ProfileNameReminder.swift */,
+				8806F21A23E90B0B00692638 /* MessageRequests.swift */,
 			);
 			path = "Upgrade Views";
 			sourceTree = "<group>";
@@ -2989,6 +2994,7 @@
 				888C827F23D795F90059464B /* pinCreationFail.json */,
 				888C828023D795FA0059464B /* pinCreationInProgress.json */,
 				8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */,
+				8806F21C23E90C8300692638 /* messageRequestsSplash.json */,
 			);
 			path = Lottie;
 			sourceTree = "<group>";
@@ -3723,6 +3729,7 @@
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
+				8806F21D23E90C8300692638 /* messageRequestsSplash.json in Resources */,
 				8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */,
 				8889006E23DBB39B00F40186 /* reactionMegaphone_0.png in Resources */,
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
@@ -4425,6 +4432,7 @@
 				4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */,
 				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
 				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,
+				8806F21B23E90B0B00692638 /* MessageRequests.swift in Sources */,
 				3434AE1E22AEF5A4002EE04E /* CircularProgressView.swift in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
