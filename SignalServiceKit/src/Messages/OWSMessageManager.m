@@ -1464,6 +1464,7 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSLogWarn(@"ignoring quit group message from unknown group.");
                     return nil;
                 }
+                newMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
                 [newMemberIds removeObject:hexEncodedPublicKey];
                 oldGroupThread.groupModel.groupMemberIds = [newMemberIds.allObjects mutableCopy];
                 [oldGroupThread saveWithTransaction:transaction];
