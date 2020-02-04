@@ -281,10 +281,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
         }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
                 return groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
-        }.then(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
-            return self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
-                                              currentDisappearingMessageToken: currentDisappearingMessageToken,
-                                              profileKeyCredentialMap: profileKeyCredentialMap)
+        }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
+            return try self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
+                                                  currentDisappearingMessageToken: currentDisappearingMessageToken,
+                                                  profileKeyCredentialMap: profileKeyCredentialMap)
         }
     }
 
@@ -311,182 +311,180 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     // changes do, we throw GroupsV2Error.redundantChange.
     private func buildGroupChangeProto(currentGroupModel: TSGroupModel,
                                        currentDisappearingMessageToken: DisappearingMessageToken,
-                                       profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> {
-        return DispatchQueue.global().async(.promise) { () throws -> GroupsProtoGroupChangeActions in
-            let groupV2Params = try GroupV2Params(groupModel: currentGroupModel)
+                                       profileKeyCredentialMap: ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions {
+        let groupV2Params = try GroupV2Params(groupModel: currentGroupModel)
 
-            let actionsBuilder = GroupsProtoGroupChangeActions.builder()
-            guard let localUuid = self.tsAccountManager.localUuid else {
-                throw OWSAssertionError("Missing localUuid.")
+        let actionsBuilder = GroupsProtoGroupChangeActions.builder()
+        guard let localUuid = self.tsAccountManager.localUuid else {
+            throw OWSAssertionError("Missing localUuid.")
+        }
+        let localAddress = SignalServiceAddress(uuid: localUuid)
+
+        let oldVersion = currentGroupModel.groupV2Revision
+        let newVersion = oldVersion + 1
+        Logger.verbose("Version: \(oldVersion) -> \(newVersion)")
+        actionsBuilder.setVersion(newVersion)
+
+        var didChange = false
+
+        if let title = self.title,
+            title != currentGroupModel.groupName {
+            let encryptedData = try groupV2Params.encryptString(title)
+            let actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
+            actionBuilder.setTitle(encryptedData)
+            actionsBuilder.setModifyTitle(try actionBuilder.build())
+            didChange = true
+        }
+
+        let currentGroupMembership = currentGroupModel.groupMembership
+        for (uuid, role) in self.membersToAdd {
+            guard !currentGroupMembership.contains(uuid) else {
+                // Another user has already added this member.
+                //
+                // GroupsV2 TODO: What if they added them with a different (lower) role?
+                continue
             }
-            let localAddress = SignalServiceAddress(uuid: localUuid)
+            guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
+                throw OWSAssertionError("Missing profile key credential]: \(uuid)")
+            }
+            let actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
+            actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: profileKeyCredential,
+                                                                       role: role,
+                                                                       groupV2Params: groupV2Params))
+            actionsBuilder.addAddMembers(try actionBuilder.build())
+            didChange = true
+        }
 
-            let oldVersion = currentGroupModel.groupV2Revision
-            let newVersion = oldVersion + 1
-            Logger.verbose("Version: \(oldVersion) -> \(newVersion)")
-            actionsBuilder.setVersion(newVersion)
+        for (uuid, role) in self.pendingMembersToAdd {
+            guard !currentGroupMembership.contains(uuid) else {
+                // Another user has already added this member.
+                //
+                // GroupsV2 TODO: What if they added them with a different (lower) role?
+                continue
+            }
+            let actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
+            actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(uuid: uuid,
+                                                                              role: role,
+                                                                              localUuid: localUuid,
+                                                                              groupV2Params: groupV2Params))
+            actionsBuilder.addAddPendingMembers(try actionBuilder.build())
+            didChange = true
+        }
 
-            var didChange = false
+        for uuid in self.membersToRemove {
+            guard currentGroupMembership.contains(uuid) else {
+                // Another user has already deleted this member.
+                continue
+            }
+            let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
+            let userId = try groupV2Params.userId(forUuid: uuid)
+            actionBuilder.setDeletedUserID(userId)
+            actionsBuilder.addDeleteMembers(try actionBuilder.build())
+            didChange = true
+        }
 
-            if let title = self.title,
-                title != currentGroupModel.groupName {
-                let encryptedData = try groupV2Params.encryptString(title)
-                let actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
-                actionBuilder.setTitle(encryptedData)
-                actionsBuilder.setModifyTitle(try actionBuilder.build())
+        for uuid in self.pendingMembersToRemove {
+            guard currentGroupMembership.contains(uuid) else {
+                // Another user has already deleted this member.
+                continue
+            }
+            let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
+            let userId = try groupV2Params.userId(forUuid: uuid)
+            actionBuilder.setDeletedUserID(userId)
+            actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
+            didChange = true
+        }
+
+        for (uuid, role) in self.membersToChangeRole {
+            guard currentGroupMembership.contains(uuid) else {
+                // Another user has already added this member.
+                //
+                // GroupsV2 TODO: What if they added them with a different (lower) role?
+                continue
+            }
+            let actionBuilder = GroupsProtoGroupChangeActionsModifyMemberRoleAction.builder()
+            let userId = try groupV2Params.userId(forUuid: uuid)
+            actionBuilder.setUserID(userId)
+            actionBuilder.setRole(role)
+            actionsBuilder.addModifyMemberRoles(try actionBuilder.build())
+            didChange = true
+        }
+
+        guard let currentAccess = currentGroupModel.groupAccess else {
+            throw OWSAssertionError("Missing groupAccess.")
+        }
+        if let access = self.accessForMembers {
+            if currentAccess.member != access {
+                let actionBuilder = GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.builder()
+                actionBuilder.setMembersAccess(GroupAccess.protoAccess(forGroupV2Access: access))
+                actionsBuilder.setModifyMemberAccess(try actionBuilder.build())
                 didChange = true
             }
-
-            let currentGroupMembership = currentGroupModel.groupMembership
-            for (uuid, role) in self.membersToAdd {
-                guard !currentGroupMembership.contains(uuid) else {
-                    // Another user has already added this member.
-                    //
-                    // GroupsV2 TODO: What if they added them with a different (lower) role?
-                    continue
-                }
-                guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
-                    throw OWSAssertionError("Missing profile key credential]: \(uuid)")
-                }
-                let actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
-                actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: profileKeyCredential,
-                                                                           role: role,
-                                                                           groupV2Params: groupV2Params))
-                actionsBuilder.addAddMembers(try actionBuilder.build())
+        }
+        if let access = self.accessForAttributes {
+            if currentAccess.attributes != access {
+                let actionBuilder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.builder()
+                actionBuilder.setAttributesAccess(GroupAccess.protoAccess(forGroupV2Access: access))
+                actionsBuilder.setModifyAttributesAccess(try actionBuilder.build())
                 didChange = true
             }
+        }
 
-            for (uuid, role) in self.pendingMembersToAdd {
-                guard !currentGroupMembership.contains(uuid) else {
-                    // Another user has already added this member.
-                    //
-                    // GroupsV2 TODO: What if they added them with a different (lower) role?
-                    continue
+        if self.shouldAcceptInvite {
+            // Check that we are still invited.
+            if currentGroupMembership.allPendingMembers.contains(localAddress) {
+                guard let profileKeyCredential = profileKeyCredentialMap[localUuid] else {
+                    throw OWSAssertionError("Missing profile key credential]: \(localUuid)")
                 }
-                let actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
-                actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(uuid: uuid,
-                                                                                  role: role,
-                                                                                  localUuid: localUuid,
+                let actionBuilder = GroupsProtoGroupChangeActionsPromotePendingMemberAction.builder()
+                actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,
                                                                                   groupV2Params: groupV2Params))
-                actionsBuilder.addAddPendingMembers(try actionBuilder.build())
+                actionsBuilder.addPromotePendingMembers(try actionBuilder.build())
                 didChange = true
             }
+        }
 
-            for uuid in self.membersToRemove {
-                guard currentGroupMembership.contains(uuid) else {
-                    // Another user has already deleted this member.
-                    continue
-                }
+        if self.shouldLeaveGroupDeclineInvite {
+            // Check that we are still invited or in group.
+            if currentGroupMembership.allPendingMembers.contains(localAddress) {
+                // Decline invite
+                let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
+                let localUserId = try groupV2Params.userId(forUuid: localUuid)
+                actionBuilder.setDeletedUserID(localUserId)
+                actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
+                didChange = true
+            } else if currentGroupMembership.allMembers.contains(localAddress) {
+                // Leave group
                 let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
-                let userId = try groupV2Params.userId(forUuid: uuid)
-                actionBuilder.setDeletedUserID(userId)
+                let localUserId = try groupV2Params.userId(forUuid: localUuid)
+                actionBuilder.setDeletedUserID(localUserId)
                 actionsBuilder.addDeleteMembers(try actionBuilder.build())
                 didChange = true
             }
-
-            for uuid in self.pendingMembersToRemove {
-                guard currentGroupMembership.contains(uuid) else {
-                    // Another user has already deleted this member.
-                    continue
-                }
-                let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
-                let userId = try groupV2Params.userId(forUuid: uuid)
-                actionBuilder.setDeletedUserID(userId)
-                actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
-                didChange = true
-            }
-
-            for (uuid, role) in self.membersToChangeRole {
-                guard currentGroupMembership.contains(uuid) else {
-                    // Another user has already added this member.
-                    //
-                    // GroupsV2 TODO: What if they added them with a different (lower) role?
-                    continue
-                }
-                let actionBuilder = GroupsProtoGroupChangeActionsModifyMemberRoleAction.builder()
-                let userId = try groupV2Params.userId(forUuid: uuid)
-                actionBuilder.setUserID(userId)
-                actionBuilder.setRole(role)
-                actionsBuilder.addModifyMemberRoles(try actionBuilder.build())
-                didChange = true
-            }
-
-            guard let currentAccess = currentGroupModel.groupAccess else {
-                throw OWSAssertionError("Missing groupAccess.")
-            }
-            if let access = self.accessForMembers {
-                if currentAccess.member != access {
-                    let actionBuilder = GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.builder()
-                    actionBuilder.setMembersAccess(GroupAccess.protoAccess(forGroupV2Access: access))
-                    actionsBuilder.setModifyMemberAccess(try actionBuilder.build())
-                    didChange = true
-                }
-            }
-            if let access = self.accessForAttributes {
-                if currentAccess.attributes != access {
-                    let actionBuilder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.builder()
-                    actionBuilder.setAttributesAccess(GroupAccess.protoAccess(forGroupV2Access: access))
-                    actionsBuilder.setModifyAttributesAccess(try actionBuilder.build())
-                    didChange = true
-                }
-            }
-
-            if self.shouldAcceptInvite {
-                // Check that we are still invited.
-                if currentGroupMembership.allPendingMembers.contains(localAddress) {
-                    guard let profileKeyCredential = profileKeyCredentialMap[localUuid] else {
-                        throw OWSAssertionError("Missing profile key credential]: \(localUuid)")
-                    }
-                    let actionBuilder = GroupsProtoGroupChangeActionsPromotePendingMemberAction.builder()
-                    actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,
-                                                                                      groupV2Params: groupV2Params))
-                    actionsBuilder.addPromotePendingMembers(try actionBuilder.build())
-                    didChange = true
-                }
-            }
-
-            if self.shouldLeaveGroupDeclineInvite {
-                // Check that we are still invited or in group.
-                if currentGroupMembership.allPendingMembers.contains(localAddress) {
-                    // Decline invite
-                    let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
-                    let localUserId = try groupV2Params.userId(forUuid: localUuid)
-                    actionBuilder.setDeletedUserID(localUserId)
-                    actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
-                    didChange = true
-                } else if currentGroupMembership.allMembers.contains(localAddress) {
-                    // Leave group
-                    let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
-                    let localUserId = try groupV2Params.userId(forUuid: localUuid)
-                    actionBuilder.setDeletedUserID(localUserId)
-                    actionsBuilder.addDeleteMembers(try actionBuilder.build())
-                    didChange = true
-                }
-            }
-
-            if let newDisappearingMessageToken = self.newDisappearingMessageToken {
-                if newDisappearingMessageToken != currentDisappearingMessageToken {
-                    let actionBuilder = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.builder()
-                    let timerBuilder = GroupsProtoDisappearingMessagesTimer.builder()
-                    if newDisappearingMessageToken.isEnabled {
-                        timerBuilder.setDuration(newDisappearingMessageToken.durationSeconds)
-                    } else {
-                        timerBuilder.setDuration(0)
-                    }
-                    let timerData = try timerBuilder.buildSerializedData()
-                    let encryptedTimerData = try groupV2Params.encryptBlob(timerData)
-                    actionBuilder.setTimer(encryptedTimerData)
-                    actionsBuilder.setModifyDisappearingMessagesTimer(try actionBuilder.build())
-                    didChange = true
-                }
-            }
-
-            guard didChange else {
-                throw GroupsV2Error.redundantChange
-            }
-
-            return try actionsBuilder.build()
         }
+
+        if let newDisappearingMessageToken = self.newDisappearingMessageToken {
+            if newDisappearingMessageToken != currentDisappearingMessageToken {
+                let actionBuilder = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.builder()
+                let timerBuilder = GroupsProtoDisappearingMessagesTimer.builder()
+                if newDisappearingMessageToken.isEnabled {
+                    timerBuilder.setDuration(newDisappearingMessageToken.durationSeconds)
+                } else {
+                    timerBuilder.setDuration(0)
+                }
+                let timerData = try timerBuilder.buildSerializedData()
+                let encryptedTimerData = try groupV2Params.encryptBlob(timerData)
+                actionBuilder.setTimer(encryptedTimerData)
+                actionsBuilder.setModifyDisappearingMessagesTimer(try actionBuilder.build())
+                didChange = true
+            }
+        }
+
+        guard didChange else {
+            throw GroupsV2Error.redundantChange
+        }
+
+        return try actionsBuilder.build()
     }
 
     // GroupsV2 TODO: Ensure that we are correctly building all of the following actions:

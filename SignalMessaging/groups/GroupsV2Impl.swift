@@ -75,57 +75,39 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise<Void>(error: OWSAssertionError("Missing localUuid."))
         }
-        let sessionManager = self.sessionManager
         let groupV2Params: GroupV2Params
         do {
             groupV2Params = try GroupV2Params(groupModel: groupModel)
         } catch {
             return Promise<Void>(error: error)
         }
-        return DispatchQueue.global().async(.promise) { () -> [UUID] in
-            // Gather the UUIDs for all members.
-            // We cannot gather profile key credentials for pending members, by definition.
-            let uuids = self.uuids(for: groupModel.groupMembers)
-            guard uuids.contains(localUuid) else {
-                throw OWSAssertionError("localUuid is not a member.")
-            }
-            return uuids
-        }.then(on: DispatchQueue.global()) { (uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> in
-            // Gather the profile key credentials for all members.
-            let allUuids = uuids + [localUuid]
-            return self.loadProfileKeyCredentialData(for: allUuids)
-        }.then(on: DispatchQueue.global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<NSURLRequest> in
-            // Build the request.
-            return self.buildNewGroupRequest(groupModel: groupModel,
-                                             localUuid: localUuid,
-                                             profileKeyCredentialMap: profileKeyCredentialMap,
-                                             groupV2Params: groupV2Params,
-                                             sessionManager: sessionManager)
-        }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
-            return self.performServiceRequest(request: request, sessionManager: sessionManager)
-        }.asVoid()
-    }
 
-    private func buildNewGroupRequest(groupModel: TSGroupModel,
-                                      localUuid: UUID,
-                                      profileKeyCredentialMap: ProfileKeyCredentialMap,
-                                      groupV2Params: GroupV2Params,
-                                      sessionManager: AFHTTPSessionManager) -> Promise<NSURLRequest> {
-
-        return retrieveCredentials(localUuid: localUuid)
-            .map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) -> NSURLRequest in
-
+        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
+            return DispatchQueue.global().async(.promise) { () -> [UUID] in
+                // Gather the UUIDs for all members.
+                // We cannot gather profile key credentials for pending members, by definition.
+                let uuids = self.uuids(for: groupModel.groupMembers)
+                guard uuids.contains(localUuid) else {
+                    throw OWSAssertionError("localUuid is not a member.")
+                }
+                return uuids
+            }.then(on: DispatchQueue.global()) { (uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> in
+                // Gather the profile key credentials for all members.
+                let allUuids = uuids + [localUuid]
+                return self.loadProfileKeyCredentialData(for: allUuids)
+            }.map(on: DispatchQueue.global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> NSURLRequest in
                 let groupProto = try GroupsV2Protos.buildNewGroupProto(groupModel: groupModel,
                                                                        groupV2Params: groupV2Params,
                                                                        profileKeyCredentialMap: profileKeyCredentialMap,
                                                                        localUuid: localUuid)
-                let redemptionTime = self.daysSinceEpoch
                 return try StorageService.buildNewGroupRequest(groupProto: groupProto,
                                                                groupV2Params: groupV2Params,
                                                                sessionManager: sessionManager,
-                                                               authCredentialMap: authCredentialMap,
-                                                               redemptionTime: redemptionTime)
+                                                               authCredential: authCredential)
+            }
         }
+
+        return self.performServiceRequest(requestBuilder: requestBuilder).asVoid()
     }
 
     // MARK: - Update Group
@@ -161,10 +143,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         let groupId = changeSet.groupId
 
         // GroupsV2 TODO: Should we make sure we have a local profile credential?
-        guard let localUuid = tsAccountManager.localUuid else {
-            return Promise(error: OWSAssertionError("Missing localUuid."))
-        }
-        let sessionManager = self.sessionManager
         let groupSecretParamsData = changeSet.groupSecretParamsData
         let groupV2Params: GroupV2Params
         do {
@@ -172,23 +150,27 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         } catch {
             return Promise(error: error)
         }
-        return self.databaseStorage.read(.promise) { transaction in
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                throw OWSAssertionError("Thread does not exist.")
+
+        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
+            return self.databaseStorage.read(.promise) { transaction in
+                guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                    throw OWSAssertionError("Thread does not exist.")
+                }
+                let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
+                return (groupThread, dmConfiguration.asToken)
+            }.then(on: DispatchQueue.global()) { (thread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> in
+                return changeSet.buildGroupChangeProto(currentGroupModel: thread.groupModel,
+                                                       currentDisappearingMessageToken: disappearingMessageToken)
+            }.map(on: DispatchQueue.global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> NSURLRequest in
+                return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
+                                                                  groupV2Params: groupV2Params,
+                                                                  sessionManager: sessionManager,
+                                                                  authCredential: authCredential)
             }
-            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
-            return (groupThread, dmConfiguration.asToken)
-        }.then(on: DispatchQueue.global()) { (thread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> in
-            return changeSet.buildGroupChangeProto(currentGroupModel: thread.groupModel,
-                                                   currentDisappearingMessageToken: disappearingMessageToken)
-        }.then(on: DispatchQueue.global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> Promise<NSURLRequest> in
-            // GroupsV2 TODO: We should implement retry for all request methods in this class.
-            return self.buildUpdateGroupRequest(localUuid: localUuid,
-                                                groupV2Params: groupV2Params,
-                                                groupChangeProto: groupChangeProto,
-                                                sessionManager: sessionManager)
-        }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
-            return self.performServiceRequest(request: request, sessionManager: sessionManager)
+        }
+
+        return firstly {
+            return self.performServiceRequest(requestBuilder: requestBuilder)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> UpdatedV2Group in
 
             guard let changeActionsProtoData = response.responseObject as? Data else {
@@ -244,22 +226,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }
     }
 
-    private func buildUpdateGroupRequest(localUuid: UUID,
-                                         groupV2Params: GroupV2Params,
-                                         groupChangeProto: GroupsProtoGroupChangeActions,
-                                         sessionManager: AFHTTPSessionManager) -> Promise<NSURLRequest> {
-
-        return retrieveCredentials(localUuid: localUuid)
-            .map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) -> NSURLRequest in
-                let redemptionTime = self.daysSinceEpoch
-                return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
-                                                                  groupV2Params: groupV2Params,
-                                                                  sessionManager: sessionManager,
-                                                                  authCredentialMap: authCredentialMap,
-                                                                  redemptionTime: redemptionTime)
-        }
-    }
-
     // MARK: - Fetch Current Group State
 
     public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot> {
@@ -292,18 +258,16 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
     private func fetchCurrentGroupV2Snapshot(groupV2Params: GroupV2Params,
                                              localUuid: UUID) -> Promise<GroupV2Snapshot> {
-        let sessionManager = self.sessionManager
-        return firstly {
-            self.retrieveCredentials(localUuid: localUuid)
-        }.map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) -> NSURLRequest in
+        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
+            return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
+                return try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: groupV2Params,
+                                                                                  sessionManager: sessionManager,
+                                                                                  authCredential: authCredential)
+            }
+        }
 
-            let redemptionTime = self.daysSinceEpoch
-            return try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: groupV2Params,
-                                                                              sessionManager: sessionManager,
-                                                                              authCredentialMap: authCredentialMap,
-                                                                              redemptionTime: redemptionTime)
-        }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
-            return self.performServiceRequest(request: request, sessionManager: sessionManager)
+        return firstly { () -> Promise<ServiceResponse> in
+            return self.performServiceRequest(requestBuilder: requestBuilder)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupV2Snapshot in
             guard let groupProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -334,42 +298,42 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     private func fetchGroupChangeActions(groupId: Data,
                                          groupV2Params: GroupV2Params,
                                          localUuid: UUID) -> Promise<[GroupV2Change]> {
-        let sessionManager = self.sessionManager
-        return firstly {
-            self.retrieveCredentials(localUuid: localUuid)
-        }.map(on: DispatchQueue.global()) { (authCredentialMap: [UInt32: AuthCredential]) throws -> NSURLRequest in
-            let fromRevision = try self.databaseStorage.read { (transaction) throws -> UInt32 in
-                guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                    // This probably isn't an error and will be handled upstream.
-                    throw GroupsV2Error.groupNotInDatabase
-                }
-                guard groupThread.groupModel.groupsVersion == .V2 else {
-                    throw OWSAssertionError("Invalid groupsVersion.")
-                }
-                // * fromRevision is inclusive.
-                // * It's an error to request group changes where fromRevision = 0,
-                //   so we max(1, ....).
-                // * The key thing is to request the revisions we don't yet know about,
-                //   i.e. "local current" revision + 1.
-                // * However, we also re-request the "local current" revision.  When
-                //   applying this revision, we'll only apply it if it differs from
-                //   database state.  If it does differ, we apply its snapshot and
-                //   assert. This will ensure that the client converges with the
-                //   service if they ever deviate (e.g. due to bugs or differences
-                //   between how they apply "group changes", etc.).
-                //
-                // GroupsV2 TODO: This isn't finalized.
-                return max(1, groupThread.groupModel.groupV2Revision)
-            }
 
-            let redemptionTime = self.daysSinceEpoch
-            return try StorageService.buildFetchGroupChangeActionsRequest(groupV2Params: groupV2Params,
-                                                                          fromRevision: fromRevision,
-                                                                          sessionManager: sessionManager,
-                                                                          authCredentialMap: authCredentialMap,
-                                                                          redemptionTime: redemptionTime)
-        }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
-            return self.performServiceRequest(request: request, sessionManager: sessionManager)
+        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
+            return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
+                let fromRevision = try self.databaseStorage.read { (transaction) throws -> UInt32 in
+                    guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                        // This probably isn't an error and will be handled upstream.
+                        throw GroupsV2Error.groupNotInDatabase
+                    }
+                    guard groupThread.groupModel.groupsVersion == .V2 else {
+                        throw OWSAssertionError("Invalid groupsVersion.")
+                    }
+                    // * fromRevision is inclusive.
+                    // * It's an error to request group changes where fromRevision = 0,
+                    //   so we max(1, ....).
+                    // * The key thing is to request the revisions we don't yet know about,
+                    //   i.e. "local current" revision + 1.
+                    // * However, we also re-request the "local current" revision.  When
+                    //   applying this revision, we'll only apply it if it differs from
+                    //   database state.  If it does differ, we apply its snapshot and
+                    //   assert. This will ensure that the client converges with the
+                    //   service if they ever deviate (e.g. due to bugs or differences
+                    //   between how they apply "group changes", etc.).
+                    //
+                    // GroupsV2 TODO: This isn't finalized.
+                    return max(1, groupThread.groupModel.groupV2Revision)
+                }
+
+                return try StorageService.buildFetchGroupChangeActionsRequest(groupV2Params: groupV2Params,
+                                                                              fromRevision: fromRevision,
+                                                                              sessionManager: sessionManager,
+                                                                              authCredential: authCredential)
+            }
+        }
+
+        return firstly { () -> Promise<ServiceResponse> in
+            return self.performServiceRequest(requestBuilder: requestBuilder)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> [GroupV2Change] in
             guard let groupChangesProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -439,9 +403,64 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         let responseObject: Any?
     }
 
-    // GroupsV2 TODO: We should implement retry for all request methods in this class.
-    private func performServiceRequest(request: NSURLRequest,
-                                       sessionManager: AFHTTPSessionManager) -> Promise<ServiceResponse> {
+    private typealias AuthCredentialMap = [UInt32: AuthCredential]
+    private typealias RequestBuilder = (AuthCredential, AFHTTPSessionManager) -> Promise<NSURLRequest>
+
+    private func performServiceRequest(requestBuilder: @escaping RequestBuilder,
+                                       remainingRetries: UInt = 3) -> Promise<ServiceResponse> {
+        guard let localUuid = tsAccountManager.localUuid else {
+            return Promise(error: OWSAssertionError("Missing localUuid."))
+        }
+        let sessionManager = self.sessionManager
+
+        return firstly {
+            self.ensureTemporalCredentials(localUuid: localUuid)
+        }.then(on: DispatchQueue.global()) { (authCredential: AuthCredential) -> Promise<NSURLRequest> in
+            return requestBuilder(authCredential, sessionManager)
+        }.then(on: DispatchQueue.global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
+            let (promise, resolver) = Promise<ServiceResponse>.pending()
+            firstly {
+                self.performServiceRequestAttempt(request: request, sessionManager: sessionManager)
+            }.done(on: DispatchQueue.global()) { (response: ServiceResponse) in
+                resolver.fulfill(response)
+            }.catch(on: DispatchQueue.global()) { (error: Error) in
+                var isRetryable = false
+                switch error {
+                case let networkManagerError as NetworkManagerError:
+                    if networkManagerError.isNetworkConnectivityError {
+                        isRetryable = true
+                    } else if networkManagerError.statusCode == 401 {
+                        // Retry auth errors by retrieving new temporal credentials.
+                        self.clearTemporalCredentials()
+                        isRetryable = true
+                    } else if networkManagerError.statusCode == 409 {
+                        // Retry conflicts.  When updating group state, we
+                        // can often resolve conflicts using the change set.
+                        isRetryable = true
+                    }
+                default:
+                    Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
+                }
+
+                if isRetryable && remainingRetries > 0 {
+                    firstly {
+                        self.performServiceRequest(requestBuilder: requestBuilder,
+                                                   remainingRetries: remainingRetries - 1)
+                    }.done(on: DispatchQueue.global()) { (response: ServiceResponse) in
+                        resolver.fulfill(response)
+                    }.catch(on: DispatchQueue.global()) { (error: Error) in
+                        resolver.reject(error)
+                    }.retainUntilComplete()
+                } else {
+                    resolver.reject(error)
+                }
+            }.retainUntilComplete()
+            return promise
+        }
+    }
+
+    private func performServiceRequestAttempt(request: NSURLRequest,
+                                              sessionManager: AFHTTPSessionManager) -> Promise<ServiceResponse> {
 
         Logger.info("Making group request: \(String(describing: request.httpMethod)) \(request)")
 
@@ -624,23 +643,77 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         return when(fulfilled: promises).asVoid()
     }
 
-    // MARK: - AuthCredentials
+    // MARK: - Auth Credentials
 
-    // GroupsV2 TODO: Can we persist and reuse credentials?
-    // GroupsV2 TODO: Reorganize this code.
-    private func retrieveCredentials(localUuid: UUID) -> Promise<[UInt32: AuthCredential]> {
+    private let authCredentialStore = SDSKeyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
+
+    private func ensureTemporalCredentials(localUuid: UUID) -> Promise<AuthCredential> {
+        let redemptionTime = self.daysSinceEpoch
+
+        let authCredentialCacheKey = { (redemptionTime: UInt32) -> String in
+            return "\(redemptionTime)"
+        }
+
+        return DispatchQueue.global().async(.promise) { () -> AuthCredential? in
+            do {
+                let data = self.databaseStorage.read { (transaction) -> Data? in
+                    let key = authCredentialCacheKey(redemptionTime)
+                    return self.authCredentialStore.getData(key, transaction: transaction)
+                }
+                guard let authCredentialData = data else {
+                    return nil
+                }
+                return try AuthCredential(contents: [UInt8](authCredentialData))
+            } catch {
+                owsFailDebug("Error retrieving cached auth credential: \(error)")
+                return nil
+            }
+        }.then(on: DispatchQueue.global()) { (cachedAuthCredential: AuthCredential?) throws -> Promise<AuthCredential> in
+            if let cachedAuthCredential = cachedAuthCredential {
+                return Promise.value(cachedAuthCredential)
+            }
+            return firstly {
+                self.retrieveTemporalCredentialsFromService(localUuid: localUuid)
+            }.map(on: DispatchQueue.global()) { (authCredentialMap: AuthCredentialMap) throws -> AuthCredential in
+                self.databaseStorage.write { transaction in
+                    // Remove stale auth credentials.
+                    self.authCredentialStore.removeAll(transaction: transaction)
+                    // Store new auth credentials.
+                    for (authTime, authCredential) in authCredentialMap {
+                        let key = authCredentialCacheKey(authTime)
+                        let value = authCredential.serialize().asData
+                        self.authCredentialStore.setData(value, key: key, transaction: transaction)
+                    }
+                }
+                guard let authCredential = authCredentialMap[redemptionTime] else {
+                    throw OWSAssertionError("No auth credential for redemption time.")
+                }
+                return authCredential
+            }
+        }
+    }
+
+    private func clearTemporalCredentials() {
+        databaseStorage.write { transaction in
+            // Remove stale auth credentials.
+            self.authCredentialStore.removeAll(transaction: transaction)
+        }
+    }
+
+    private func retrieveTemporalCredentialsFromService(localUuid: UUID) -> Promise<AuthCredentialMap> {
 
         let today = self.daysSinceEpoch
         let todayPlus7 = today + 7
         let request = OWSRequestFactory.groupAuthenticationCredentialRequest(fromRedemptionDays: today,
                                                                              toRedemptionDays: todayPlus7)
-        return networkManager.makePromise(request: request)
-            .map(on: DispatchQueue.global()) { (_: URLSessionDataTask, responseObject: Any?) -> [UInt32: AuthCredential] in
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: DispatchQueue.global()) { (_: URLSessionDataTask, responseObject: Any?) -> AuthCredentialMap in
                 let temporalCredentials = try self.parseCredentialResponse(responseObject: responseObject)
                 let localZKGUuid = try localUuid.asZKGUuid()
                 let serverPublicParams = try GroupsV2Protos.serverPublicParams()
                 let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
-                var credentialMap = [UInt32: AuthCredential]()
+                var credentialMap = AuthCredentialMap()
                 for temporalCredential in temporalCredentials {
                     // Verify the credentials.
                     let authCredential: AuthCredential = try clientZkAuthOperations.receiveAuthCredential(uuid: localZKGUuid,
