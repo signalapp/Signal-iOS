@@ -95,10 +95,8 @@ public class PinSetupViewController: OWSViewController {
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        // Don't hide the nav bar when changing
-        guard !initialMode.isChanging else { return }
-
-        navigationController?.setNavigationBarHidden(true, animated: false)
+        // Hide the nav bar when not changing.
+        navigationController?.setNavigationBarHidden(!initialMode.isChanging, animated: false)
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -110,9 +108,6 @@ public class PinSetupViewController: OWSViewController {
 
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        // Don't hide the nav bar when changing
-        guard !initialMode.isChanging else { return }
 
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
