@@ -2802,3 +2802,5 @@
 "Search GIFs?" = "Search GIFs?";
 "You will not have full metadata protection when sending GIFs." = "You will not have full metadata protection when sending GIFs.";
 "The ability to add members to a closed group is coming soon." = "The ability to add members to a closed group is coming soon.";
+"A closed group cannot have more than 10 members" = "A closed group cannot have more than 10 members";
+"Closed groups are end-to-end encrypted group chats for up to 10 members. They provide the same privacy protections as one-on-one sessions." = "Closed groups are end-to-end encrypted group chats for up to 10 members. They provide the same privacy protections as one-on-one sessions.";

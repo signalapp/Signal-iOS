@@ -104,14 +104,14 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         if !hasViewedSeed && isMasterDevice {
             tableViewTopConstraint = tableView.pin(.top, to: .bottom, of: seedReminderView)
         } else {
-            tableViewTopConstraint = tableView.pin(.top, to: .top, of: view)
+            tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
         }
         tableView.pin(.trailing, to: .trailing, of: view)
         tableView.pin(.bottom, to: .bottom, of: view)
         // Set up search bar
-        tableView.tableHeaderView = searchBar
-        searchBar.sizeToFit()
-        tableView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
+//        tableView.tableHeaderView = searchBar
+//        searchBar.sizeToFit()
+//        tableView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
         // Set up new conversation button
         newConversationButton.addTarget(self, action: #selector(createPrivateChat), for: UIControl.Event.touchUpInside)
         view.addSubview(newConversationButton)
@@ -236,7 +236,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     
     @objc private func handleSeedViewedNotification(_ notification: Notification) {
         tableViewTopConstraint.isActive = false
-        tableViewTopConstraint = tableView.pin(.top, to: .top, of: view)
+        tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
         seedReminderView.removeFromSuperview()
     }
     

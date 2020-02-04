@@ -73,12 +73,23 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
             nameTextField.pin(.leading, to: .leading, of: view, withInset: Values.largeSpacing)
             nameTextField.pin(.top, to: .top, of: view, withInset: Values.mediumSpacing)
             nameTextField.pin(.trailing, to: .trailing, of: view, withInset: -Values.largeSpacing)
+            let explanationLabel = UILabel()
+            explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+            explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
+            explanationLabel.text = NSLocalizedString("Closed groups are end-to-end encrypted group chats for up to 10 members. They provide the same privacy protections as one-on-one sessions.", comment: "")
+            explanationLabel.numberOfLines = 0
+            explanationLabel.textAlignment = .center
+            explanationLabel.lineBreakMode = .byWordWrapping
+            view.addSubview(explanationLabel)
+            explanationLabel.pin(.leading, to: .leading, of: view, withInset: Values.largeSpacing)
+            explanationLabel.pin(.top, to: .bottom, of: nameTextField, withInset: Values.mediumSpacing)
+            explanationLabel.pin(.trailing, to: .trailing, of: view, withInset: -Values.largeSpacing)
             let separator = UIView()
             separator.backgroundColor = Colors.separator
             separator.set(.height, to: Values.separatorThickness)
             view.addSubview(separator)
             separator.pin(.leading, to: .leading, of: view)
-            separator.pin(.top, to: .bottom, of: nameTextField, withInset: Values.largeSpacing)
+            separator.pin(.top, to: .bottom, of: explanationLabel, withInset: Values.largeSpacing)
             separator.pin(.trailing, to: .trailing, of: view)
             view.addSubview(tableView)
             tableView.pin(.leading, to: .leading, of: view)
@@ -152,6 +163,9 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         }
         guard selectedContacts.count >= 2 else {
             return showError(title: NSLocalizedString("Please pick at least 2 group members", comment: ""))
+        }
+        guard selectedContacts.count <= 10 else {
+            return showError(title: NSLocalizedString("A closed group cannot have more than 10 members", comment: ""))
         }
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         let members = [String](selectedContacts) + [ userHexEncodedPublicKey ]

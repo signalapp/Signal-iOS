@@ -18,6 +18,7 @@ final class GroupMembersVC : UIViewController, UITableViewDataSource {
         result.separatorStyle = .none
         result.backgroundColor = .clear
         result.showsVerticalScrollIndicator = false
+        result.alwaysBounceVertical = false
         return result
     }()
     
@@ -47,6 +48,7 @@ final class GroupMembersVC : UIViewController, UITableViewDataSource {
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
+        // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
