@@ -30,6 +30,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         }
         let timestamp: UInt64
         let role: GroupsProtoMemberRole
+        let addedByUuid: UUID
     }
 
     public let groupSecretParamsData: Data
@@ -78,32 +79,26 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
     }
 
     public var groupMembership: GroupMembership {
-        var nonAdminMembers = Set<SignalServiceAddress>()
-        var administrators = Set<SignalServiceAddress>()
+        var builder = GroupMembership.Builder()
         for member in members {
             switch member.role {
             case .administrator:
-                administrators.insert(member.address)
+                builder.addNonPendingMember(member.address, isAdministrator: true)
             default:
-                nonAdminMembers.insert(member.address)
+                builder.addNonPendingMember(member.address, isAdministrator: false)
             }
         }
 
-        var pendingNonAdminMembers = Set<SignalServiceAddress>()
-        var pendingAdministrators = Set<SignalServiceAddress>()
         for member in pendingMembers {
             switch member.role {
             case .administrator:
-                pendingAdministrators.insert(member.address)
+                builder.addPendingMember(member.address, isAdministrator: true, addedByUuid: member.addedByUuid)
             default:
-                pendingNonAdminMembers.insert(member.address)
+                builder.addPendingMember(member.address, isAdministrator: false, addedByUuid: member.addedByUuid)
             }
         }
 
-        return GroupMembership(nonAdminMembers: nonAdminMembers,
-                               administrators: administrators,
-                               pendingNonAdminMembers: pendingNonAdminMembers,
-                               pendingAdministrators: pendingAdministrators)
+        return builder.build()
     }
 
     public var groupAccess: GroupAccess {

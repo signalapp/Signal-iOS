@@ -118,7 +118,7 @@ public class GroupsV2Protos {
                                                          role: role,
                                                          groupV2Params: groupV2Params))
         }
-        for address in groupMembership.allPendingMembers {
+        for address in groupMembership.pendingMembers {
             guard let uuid = address.uuid else {
                 throw OWSAssertionError("Missing uuid.")
             }
@@ -248,10 +248,15 @@ public class GroupsV2Protos {
             guard memberProto.hasRole, let role = memberProto.role else {
                 throw OWSAssertionError("Group member missing role.")
             }
+            guard let addedByUserID = pendingMemberProto.addedByUserID else {
+                throw OWSAssertionError("Group pending member missing addedByUserID.")
+            }
+            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
             let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userID,
                                                                   uuid: uuid,
                                                                   timestamp: timestamp,
-                                                                  role: role)
+                                                                  role: role,
+                                                                  addedByUuid: addedByUuid)
             pendingMembers.append(pendingMember)
         }
 

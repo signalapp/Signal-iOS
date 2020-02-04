@@ -141,15 +141,6 @@ public class GroupManager: NSObject {
                                                transaction: transaction)
         }
 
-        var groupSecretParamsData: Data?
-        if groupsVersion == .V2 {
-            if let groupSecretParamsDataParam = groupSecretParamsDataParam {
-                groupSecretParamsData = groupSecretParamsDataParam
-            } else {
-                groupSecretParamsData = newGroupSeed.groupSecretParamsData
-            }
-        }
-
         let groupId: Data
         if let groupIdParam = groupIdParam {
             groupId = groupIdParam
@@ -168,40 +159,31 @@ public class GroupManager: NSObject {
             throw OWSAssertionError("Invalid groupId.")
         }
 
-        let allMembers = groupMembership.allMembers
-        let administrators = groupMembership.administrators
-        var groupsV2MemberRoles = [UUID: NSNumber]()
-        for member in allMembers {
-            guard let uuid = member.uuid else {
-                continue
+        switch groupsVersion {
+        case .V1:
+            return TSGroupModel(groupId: groupId,
+                                name: name,
+                                avatarData: avatarData,
+                                members: Array(groupMembership.nonPendingMembers))
+        case .V2:
+            let groupSecretParamsData: Data
+            if let groupSecretParamsDataParam = groupSecretParamsDataParam {
+                groupSecretParamsData = groupSecretParamsDataParam
+            } else {
+                guard let groupSecretParamsDataParam = newGroupSeed.groupSecretParamsData else {
+                    throw OWSAssertionError("Missing groupSecretParamsData.")
+                }
+                groupSecretParamsData = groupSecretParamsDataParam
             }
-            let isAdmin = administrators.contains(member)
-            let role: TSGroupMemberRole = isAdmin ? .administrator : .normal
-            groupsV2MemberRoles[uuid] = NSNumber(value: role.rawValue)
-        }
 
-        let allPendingMembers = groupMembership.allPendingMembers
-        let pendingAdministrators = groupMembership.pendingAdministrators
-        var groupsV2PendingMemberRoles = [UUID: NSNumber]()
-        for pendingMember in allPendingMembers {
-            guard let uuid = pendingMember.uuid else {
-                continue
-            }
-            let isAdmin = pendingAdministrators.contains(pendingMember)
-            let role: TSGroupMemberRole = isAdmin ? .administrator : .normal
-            groupsV2PendingMemberRoles[uuid] = NSNumber(value: role.rawValue)
+            return TSGroupModelV2(groupId: groupId,
+                                  name: name,
+                                  avatarData: avatarData,
+                                  groupMembership: groupMembership,
+                                  groupAccess: groupAccess,
+                                  revision: groupV2Revision,
+                                  secretParamsData: groupSecretParamsData)
         }
-
-        return TSGroupModel(groupId: groupId,
-                            name: name,
-                            avatarData: avatarData,
-                            members: GroupMembership.normalize(Array(allMembers)),
-                            groupsV2MemberRoles: groupsV2MemberRoles,
-                            groupsV2PendingMemberRoles: groupsV2PendingMemberRoles,
-                            groupAccess: groupAccess,
-                            groupsVersion: groupsVersion,
-                            groupV2Revision: groupV2Revision,
-                            groupSecretParamsData: groupSecretParamsData)
     }
 
     // Convert a group state proto received from the service
@@ -275,8 +257,8 @@ public class GroupManager: NSObject {
         return true
     }
 
-    private static func doesUserSupportGroupsV2(address: SignalServiceAddress,
-                                                transaction: SDSAnyReadTransaction) -> Bool {
+    public static func doesUserSupportGroupsV2(address: SignalServiceAddress,
+                                               transaction: SDSAnyReadTransaction) -> Bool {
 
         guard address.uuid != nil else {
             Logger.warn("Member without UUID.")
@@ -341,21 +323,14 @@ public class GroupManager: NSObject {
         return firstly {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.map(on: .global()) { () throws -> GroupMembership in
-            guard let localAddress = self.tsAccountManager.localAddress else {
-                throw OWSAssertionError("Missing localAddress.")
-            }
             // Build member list.
             //
-            // GroupsV2 TODO: Separate out pending members here.
-            var nonAdminMembers = Set(membersParam)
-            nonAdminMembers.remove(localAddress)
-            let administrators = Set([localAddress])
-            let pendingNonAdminMembers = Set<SignalServiceAddress>()
-            let pendingAdministrators = Set<SignalServiceAddress>()
-            return GroupMembership(nonAdminMembers: nonAdminMembers,
-                                   administrators: administrators,
-                                   pendingNonAdminMembers: pendingNonAdminMembers,
-                                   pendingAdministrators: pendingAdministrators)
+            // GroupsV2 TODO: Handle roles, etc.
+            var builder = GroupMembership.Builder()
+            builder.addNonPendingMembers(Set(membersParam), isAdministrator: false)
+            builder.remove(localAddress)
+            builder.addNonPendingMember(localAddress, isAdministrator: true)
+            return builder.build()
         }.then(on: .global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
             // Try to obtain profile key credentials for all group members
             // including ourself, unless we already have them on hand.
@@ -378,7 +353,7 @@ public class GroupManager: NSObject {
                                                                   oldGroupModel: nil,
                                                                   transaction: transaction)
 
-                guard groupMembership.allMembers.contains(localAddress) else {
+                guard groupMembership.nonPendingMembers.contains(localAddress) else {
                     throw OWSAssertionError("Missing localAddress.")
                 }
 
@@ -429,42 +404,68 @@ public class GroupManager: NSObject {
     // * We have a profile key credential for them.
     // * Their account has the "groups v2" capability
     //   (e.g. all of their clients support groups v2.
-    private static func separatePendingMembers(in groupMembership: GroupMembership,
+    private static func separatePendingMembers(in newGroupMembership: GroupMembership,
                                                oldGroupModel: TSGroupModel?,
                                                transaction: SDSAnyReadTransaction) -> GroupMembership {
-        let isNewGroup: Bool
+        guard let localUuid = self.tsAccountManager.localUuid else {
+            owsFailDebug("Missing localUuid.")
+            return newGroupMembership
+        }
+        let newMembers: Set<SignalServiceAddress>
+        var builder = GroupMembership.Builder()
         if let oldGroupModel = oldGroupModel {
+            // Updating existing group
+            let oldGroupMembership = oldGroupModel.groupMembership
+
             assert(oldGroupModel.groupsVersion == .V2)
-            isNewGroup = false
+            newMembers = newGroupMembership.allUsers.subtracting(oldGroupMembership.allUsers)
+
+            // Carry over existing members as they stand.
+            let existingMembers = oldGroupMembership.allUsers.subtracting(newGroupMembership.allUsers)
+            for address in existingMembers {
+                builder.copyMember(address, from: oldGroupMembership)
+            }
         } else {
-            isNewGroup = true
+            // Creating new group
+
+            // First, skip separation when creating v1 groups.
+            guard canUseV2(for: newGroupMembership.allUsers, transaction: transaction) else {
+                // If any member of a new group doesn't support groups v2,
+                // we're going to create a v1 group.  In that case, we
+                // don't want to separate out pending members.
+                return newGroupMembership
+            }
+
+            newMembers = newGroupMembership.allUsers
         }
 
-        var builder = GroupMembership.Builder()
-        for address in groupMembership.allUsers {
-            if isNewGroup {
-                guard doesUserSupportGroupsV2(address: address, transaction: transaction) else {
-                    // If any member of a new group doesn't support groups v2,
-                    // we're going to create a v1 group.  In that case, we
-                    // don't want to separate out pending members.
-                    return groupMembership
-                }
+        // We only need to separate new members.
+        for address in newMembers {
+            guard doesUserSupportGroupsV2(address: address, transaction: transaction) else {
+                // Members of v2 groups must support groups v2.
+                // This should never happen.  We prevent this
+                // when creating new groups above by checking
+                // canUseV2(...).  We will prevent this when
+                // updating existing groups in the UI.
+                //
+                // GroupsV2 TODO: This should probably throw after we rework
+                // the create and update group views.
+                owsFailDebug("Invalid address: \(address)")
+                continue
             }
 
             // We must call this _after_ we try to fetch profile key credentials for
             // all members.
-            let isPending: Bool
-            if let oldGroupModel = oldGroupModel,
-                oldGroupModel.groupMembership.isNonPendingMember(address) {
-                // If the member already is a full member, don't treat them
-                // as pending.  Perhaps someone else added them.
-                isPending = false
-            } else {
-                isPending = !groupsV2.hasProfileKeyCredential(for: address,
+            //
+            // GroupsV2 TODO: We may need to consult the user's capabilities.
+            let isPending = !groupsV2.hasProfileKeyCredential(for: address,
                                                               transaction: transaction)
+            let isAdministrator = newGroupMembership.isAdministrator(address)
+            if isPending {
+                builder.addPendingMember(address, isAdministrator: isAdministrator, addedByUuid: localUuid)
+            } else {
+                builder.addNonPendingMember(address, isAdministrator: isAdministrator)
             }
-            let isAdministrator = groupMembership.isAdministrator(address)
-            builder.add(address, isAdministrator: isAdministrator, isPending: isPending)
         }
         return builder.build()
     }
@@ -555,7 +556,7 @@ public class GroupManager: NSObject {
                                            transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
         // GroupsV2 TODO: Elaborate tests to include admins, pending members, etc.
-        let groupMembership = GroupMembership(nonAdminMembers: Set(members), administrators: Set(), pendingNonAdminMembers: Set(), pendingAdministrators: Set())
+        let groupMembership = GroupMembership(v1Members: Set(members))
         // GroupsV2 TODO: Let tests specify access levels.
         let groupAccess = GroupAccess.allAccess
         // Use buildGroupModel() to fill in defaults, like it was a new group.
@@ -782,7 +783,10 @@ public class GroupManager: NSObject {
         let groupMembership: GroupMembership
         if oldGroupModel.groupsVersion == .V1 {
             // Always ensure we're a member of any v1 group we're updating.
-            groupMembership = proposedGroupMembership.withNonAdminMember(address: localAddress)
+            var builder = proposedGroupMembership.asBuilder
+            builder.remove(localAddress)
+            builder.addNonPendingMember(localAddress, isAdministrator: false)
+            groupMembership = builder.build()
         } else {
             for address in proposedGroupMembership.allUsers {
                 guard address.uuid != nil else {
@@ -795,12 +799,12 @@ public class GroupManager: NSObject {
                                                           oldGroupModel: oldGroupModel,
                                                           transaction: transaction)
 
-            guard groupMembership.allMembers.contains(localAddress) else {
+            guard groupMembership.nonPendingMembers.contains(localAddress) else {
                 throw OWSAssertionError("Missing localAddress.")
             }
 
             // Don't try to modify a v2 group if we're not a member.
-            guard groupMembership.allMembers.contains(localAddress) else {
+            guard groupMembership.nonPendingMembers.contains(localAddress) else {
                 throw OWSAssertionError("Missing localAddress.")
             }
         }
@@ -951,7 +955,7 @@ public class GroupManager: NSObject {
             var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
             groupMembershipBuilder.remove(localAddress)
             let newGroupMembership = groupMembershipBuilder.build()
-            let groupAccess = try oldGroupModel.groupAccessOrDefault()
+            let groupAccess = try oldGroupModel.groupAccess
             let newGroupModel = try self.buildGroupModel(groupId: groupId,
                                                          name: oldGroupModel.groupName,
                                                          avatarData: oldGroupModel.groupAvatarData,
@@ -1070,7 +1074,7 @@ public class GroupManager: NSObject {
         // We need to send v2 group updates to pending members
         // as well.  Normal group sends only include "full members".
         assert(messageBuilder.additionalRecipients == nil)
-        let additionalRecipients = groupThread.groupModel.allPendingMembers.filter { address in
+        let additionalRecipients = groupThread.groupModel.pendingMembers.filter { address in
             return doesUserSupportGroupsV2(address: address,
                                        transaction: transaction)
         }

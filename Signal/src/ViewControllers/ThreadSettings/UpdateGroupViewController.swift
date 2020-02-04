@@ -9,8 +9,12 @@ public extension UpdateGroupViewController {
 
     // MARK: - Dependencies
 
-    private static var tsAccountManager: TSAccountManager {
+    private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
+    }
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: -
@@ -34,12 +38,15 @@ public extension UpdateGroupViewController {
             // will _not_ be added as administrators.
             let oldGroupMembership = oldGroupModel.groupMembership
             var groupMembershipBuilder = oldGroupMembership.asBuilder
-            for address in v1Members {
-                guard address.uuid != nil else {
-                    continue
-                }
-                if !oldGroupMembership.allUsers.contains(address) {
-                    groupMembershipBuilder.add(address, isAdministrator: false, isPending: false)
+            databaseStorage.read { transaction in
+                for address in v1Members {
+                    guard GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction) else {
+                        owsFailDebug("Invalid address: \(address)")
+                        continue
+                    }
+                    if !oldGroupMembership.allUsers.contains(address) {
+                        groupMembershipBuilder.addNonPendingMember(address, isAdministrator: false)
+                    }
                 }
             }
             // GroupsV2 TODO: Remove members, change roles, etc. when
@@ -50,7 +57,7 @@ public extension UpdateGroupViewController {
         let groupAccess = GroupAccess.forV1
         let groupsVersion = oldGroupModel.groupsVersion
 
-        guard let localAddress = UpdateGroupViewController.tsAccountManager.localAddress else {
+        guard let localAddress = tsAccountManager.localAddress else {
             return failure(OWSAssertionError("Missing localAddress."))
         }
 
