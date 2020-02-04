@@ -49,7 +49,6 @@ public class GRDBSchemaMigrator: NSObject {
         case createMediaGalleryItems
         case createReaction
         case dedupeSignalRecipients
-        case indexMediaGallery2
         case unreadThreadInteractions
         case createFamilyName
         case createIndexableFTSTable
@@ -64,10 +63,27 @@ public class GRDBSchemaMigrator: NSObject {
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
+
+        // MARK: Data Migrations
+        //
+        // Any migration which leverages SDSModel serialization must occur *after* changes to the
+        // database schema complete.
+        //
+        // Otherwise, for example, consider we have these two pending migrations:
+        //  - Migration 1: resaves all instances of Foo (Foo is some SDSModel)
+        //  - Migration 2: adds a column "new_column" to the "model_Foo" table
+        //
+        // Migration 1 will fail, because the generated serialization logic for Foo expects
+        // "new_column" to already exist before Migration 2 has even run.
+        //
+        // The solution is to always split logic that leverages SDSModel serialization into a
+        // separate migration, and ensure it runs *after* any schema migrations. That is, new schema
+        // migrations must be inserted *before* any of these Data Migrations.
+        case dataMigration_populateGalleryItems
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 3
+    public static let grdbSchemaVersionLatest: UInt = 4
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -98,6 +114,16 @@ public class GRDBSchemaMigrator: NSObject {
     // to the latest.
     private lazy var incrementalMigrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
+
+        registerSchemaMigrations(migrator: &migrator)
+
+        // Data Migrations must run *after* schema migrations
+        registerDataMigrations(migrator: &migrator)
+
+        return migrator
+    }()
+
+    private func registerSchemaMigrations(migrator: inout DatabaseMigrator) {
         migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { _ in
             owsFail("This migration should have already been run by the last YapDB migration.")
             // try createV1Schema(db: db)
@@ -174,7 +200,10 @@ public class GRDBSchemaMigrator: NSObject {
                           on: "media_gallery_items",
                           columns: ["attachmentId"])
 
-            try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+            // Creating gallery records here can crash since it's run in the middle of schema migrations.
+            // It instead has been moved to a separate Data Migration.
+            // see: "dataMigration_populateGalleryItems"
+            // try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
         }
 
         migrator.registerMigration(MigrationId.createReaction.rawValue) { db in
@@ -227,10 +256,13 @@ public class GRDBSchemaMigrator: NSObject {
                           unique: true)
         }
 
-        migrator.registerMigration(MigrationId.indexMediaGallery2.rawValue) { db in
-            // re-index the media gallery for those who failed to create during the initial YDB migration
-            try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
-        }
+        // Creating gallery records here can crash since it's run in the middle of schema migrations.
+        // It instead has been moved to a separate Data Migration.
+        // see: "dataMigration_populateGalleryItems"
+        // migrator.registerMigration(MigrationId.indexMediaGallery2.rawValue) { db in
+        //     // re-index the media gallery for those who failed to create during the initial YDB migration
+        //     try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+        // }
 
         migrator.registerMigration(MigrationId.unreadThreadInteractions.rawValue) { db in
             try db.create(index: "index_interactions_on_threadId_read_and_id",
@@ -371,8 +403,14 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        return migrator
-    }()
+        // MARK: - Schema Migration Insertion Point
+    }
+
+    func registerDataMigrations(migrator: inout DatabaseMigrator) {
+        migrator.registerMigration(MigrationId.dataMigration_populateGalleryItems.rawValue) { db in
+            try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+        }
+    }
 }
 
 private func createV1Schema(db: Database) throws {

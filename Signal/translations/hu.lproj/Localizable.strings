@@ -744,7 +744,7 @@
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Ez a csoport láthatja a profilod.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Ez a felhasználó hozzáfér a profilodhoz.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Ez a felhasználó látja a profilodat";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Profil megosztása";
@@ -768,7 +768,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "További üzenetek betöltése...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Koppints a részletekért";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Koppints a teljeshez";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Felhasználó letiltása";
@@ -783,7 +783,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Mozgatás és Nagyítás";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ez néhány percet is igénybe vehet.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ez pár percet is igénybe vehet.";
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Adatbázis optimalizálása";
@@ -886,7 +886,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Hozzáférés az iOS Beállításokban adható.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "A Kontakt részletek szerkesztéséhez a Signal-nak Kontakt Hozzáférésre van szüksége";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "A Signalnak hozzáférésre van szüksége Kontakt listádhoz hogy szerkeszthesd az elemeit";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Csoport szerkesztése";
@@ -919,7 +919,7 @@
 "EMAIL_INVITE_SUBJECT" = "Váltsunk Signal-ra";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Nincs kontaklistájában Signal felhasználó";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Nincs kontaktlistádban Signal felhasználó";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Miért nem hívsz meg valakit?";
@@ -1063,10 +1063,10 @@
 "EXPIRATION_ERROR" = "A Signal verziója elavult. A továbbiakban üzeneteidet nem tudod elküldeni. Koppints ide a legfrissebb verzióra történő frissítéshez.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "A Signal-od verziója %d nap múlva lejár. Koppints a legutóbbi verzióra történő frissítéshez.";
+"EXPIRATION_WARNING_SOON" = "Ez a Signal verzió %d nap múlva lejár. Koppints a legújabb verzióra történő frissítéshez.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "A Signal-od verziója ma le fog járni. Koppints ide a legfrissebb verzióra történő frissítéshez.";
+"EXPIRATION_WARNING_TODAY" = "Ez a Signal verzió ma lejár. Koppints a legújabb verzióra történő frissítéshez.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Túl sok sikertelen küldési kísérlet. Kérlek próbáld újra később.";
@@ -1261,7 +1261,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ezek a beszélgetések archiválva vannak, ezért csak akkor jelennek meg újra a bejövő beszélgetések közt, ha újabb üzenet érkezik.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Dobj a postaládádba valamit, hogy ne legyen olyan magányos! Láss hozzá, és üzenj egy barátodnak!";
+"INBOX_VIEW_EMPTY_INBOX" = "Dobj a postaládádba valamit, hogy ne legyen olyan magányos! Kezdésként mondjuk üzenj egy barátodnak!";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Engedélyezheted a kontaktokhoz való hozzáférést az iOS Beállításokban, hogy a Signalt használó ismerőseid megjelenjenek a beszélgetési listában.";
@@ -1789,7 +1789,7 @@
 "ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Fiók zárolva";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Most bizonyíthatod az emberségedet";
+"ONBOARDING_CAPTCHA_TITLE" = "Most bizonyíthatod emberi mivoltodat";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad regisztrálása";
@@ -1888,7 +1888,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ beállította az eltűnő üzenetek idejét erre: %@";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "A Signal technikai nehézségekkel küzd. Keményen dolgozunk azért, hogy a lehető leghamarabb visszaállítsuk a szolgáltatást.";
+"OUTAGE_WARNING" = "A Signal technikai nehézségekkel küzd. Keményen dolgozunk a gyors helyreállásért.";
 
 /* info message text in conversation view */
 "OUTGOING_CALL" = "Kimenő hívás";
@@ -2020,7 +2020,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "PIN kód aktiválása...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Mivel még be vagy jelentkezve, ezért lehetőséged van új PIN kódot megadni. Ha elfelejted 7 napot kell várnod, míg újra regisztrálhatsz.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Új PIN létrehozása";
@@ -2053,7 +2053,7 @@
 "PINS_MEGAPHONE_HAS_PIN_BODY" = "A regisztrációs zárat mostantól PIN kódnak hívják. A frissítés pár pillanatot vesz igénybe.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Később újra emlékeztetünk. PIN kódod frissítése %ld nap múlva kötelezővé válik.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "A PIN kódok bemutatása";
@@ -2065,7 +2065,7 @@
 "PINS_MEGAPHONE_NO_PIN_BODY" = "A PIN kódok extra védelmi réteget adnak fiókod védelméhez.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Később újra emlékeztetünk. PIN kódod létrehozása %ld nap múlva kötelezővé válik.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "PIN létrehozása";
@@ -2241,6 +2241,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Videó";
 
+/* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
+"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reakció az üzenetedre: %@";
 
@@ -2278,7 +2281,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reakció az hangüzenetedre: %@";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Koppints és tartsd nyomva bármely üzenetet, hogy gyorsan reagálhass rá!";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Bemutakoznak az üzenet kedvelések";
@@ -2308,7 +2311,7 @@
 "REGISTER_CONTACTS_WELCOME" = "Üdvözlünk!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Újra próbálkozás";
+"REGISTER_FAILED_TRY_AGAIN" = "Újrapróbálkozás";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "Túl gyakran próbálkoztál. Kérlek várj egy percet mielőtt újra nekifutnál.";

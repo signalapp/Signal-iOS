@@ -1180,10 +1180,10 @@
 "GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ is toegevoegd aan de groep.";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "heeft de groepsafbeelding verwijderd.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "De groepsafbeelding is verwijderd.";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_UPDATED" = "heeft de groepsafbeelding bijgewerkt.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "De groepsafbeelding is bijgewerkt.";
 
 /* conversation history entry. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Je hebt de groep aangepast.";
@@ -1192,13 +1192,13 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ heeft de groep bijgewerkt.";
 
 /* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "heeft de naam van de groep verwijderd.";
+"GROUP_UPDATED_NAME_REMOVED" = "De naam van de groep is verwijderd.";
 
 /* conversation history entry. Embeds {{group name}} */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "De naam van de groep is vanaf nu “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "De naam van de groep is vanaf nu ‘%@’.";
 
 /* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "heeft je opnieuw aan de groep toegevoegd.";
+"GROUP_UPDATED_READDED_YOU" = "Je bent opnieuw aan de groep toegevoegd.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Je hebt de groep verlaten.";
@@ -1444,7 +1444,7 @@
 "MEGAPHONE_REMIND_LATER" = "Herinner Me Later";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "Je wordt er later aan herinneren dat je nog een pincode moet aanmaken.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Berichttekst kopiëren";
@@ -2005,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Pincode aanmaken mislukt";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
+"PIN_CREATION_EXPLANATION" = "Pincodes voegen een extra niveau van beveiliging toe aan je Signal account. Het is belangrijk om je pincode te onthouden, want je kunt hem later niet terugzien.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
@@ -2020,7 +2020,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "Pincode aan het aanmaken…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Je kunt een nieuwe pincode kiezen omdat dit apparaat al is geregistreerd. Als je je pincode vergeet dan zul je misschien 7 dagen moeten wachten voor je opnieuw kunt registreren.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Nieuwe pincode aanmaken";
@@ -2050,10 +2050,10 @@
 "PINS_MEGAPHONE_HAS_PIN_ACTION" = "Pincode bijwerken";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Registratievergrendeling heet vanaf nu ‘pincode’. Je zult de pincode die je tot nu toe gebruikte moeten bijwerken, maar dat kost slechts enkele seconden.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We zullen je er later aan herinneren dat je je pincode nog moet bijwerken. Dit wordt binnen %ld dagen verplicht.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "We introduceren pincodes";
@@ -2065,7 +2065,7 @@
 "PINS_MEGAPHONE_NO_PIN_BODY" = "Pincodes voegen een extra niveau van beveiliging toe aan je Signal account.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We zullen je er later aan herinneren dat je nog een pincode moet aanmaken. Dit wordt binnen %ld dagen verplicht.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Een pincode aanmaken";
@@ -2128,7 +2128,7 @@
 "PROCEED_BUTTON" = "Doorgaan";
 
 /* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Nu bijwerken";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Je kunt nu optioneel een achternaam toevoegen aan je profiel.";
@@ -2137,7 +2137,7 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Bevestig dat dit de profielnaam is welke je wilt gebruiken";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Je profielnaam zal worden weergegeven wanneer je een nieuw gesprek begint, of wanneer je expliciet toestemming geeft om je profiel zichtbaar te maken.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Voeg een profielnaam toe";
@@ -2240,6 +2240,9 @@
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
+
+/* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
+"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reageerde op je bericht met %@";
@@ -2728,7 +2731,7 @@
 "SETTINGS_NOTIFICATIONS" = "Meldingen";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "Je pincode voegt extra beveiliging toe en geeft je een manier om je account te herstellen. Je zult om deze pincode gevraagd worden wanneer je je telefoonnummer opnieuw registreert bij Signal. Als je de pincode vergeet zul je 7 dagen geen toegang hebben tot je account.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Wijzig je pincode";
@@ -3094,13 +3097,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Lees meer over pincodes";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Registratievergrendeling heet vanaf nu ‘pincode’, en je kunt er meer mee doen. Je moet de pincode welke je tot nog toe gebruikte bijwerken.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registratievergrendeling = Pincode";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Pincodes voegen een extra niveau van beveiliging toe aan je account. Het wordt aanbevolen nu een pincode aan te maken.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "We introduceren pincodes";

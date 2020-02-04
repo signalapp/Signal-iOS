@@ -7,7 +7,8 @@ import Foundation
 // MARK: -
 
 public struct EmojiItem {
-    let emoji: String
+    // If a specific emoji is not specified, this item represents "all" emoji
+    let emoji: String?
     let count: Int
 
     let didSelect: () -> Void
@@ -138,7 +139,16 @@ class EmojiCountCell: UICollectionViewCell {
 
     func configure(with item: EmojiItem) {
         emoji.text = item.emoji
-        count.text = item.count.abbreviatedString
+
+        if item.emoji != nil {
+            count.text = item.count.abbreviatedString
+        } else {
+            count.text = String(
+                format: NSLocalizedString("REACTION_DETAIL_ALL_FORMAT",
+                                          comment: "The header used to indicate All reactions to a given message. Embeds {{number of reactions}}"),
+                item.count.abbreviatedString
+            )
+        }
     }
 
     override func layoutSubviews() {

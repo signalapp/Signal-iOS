@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -75,7 +75,8 @@ class ReactionsDetailSheet: UIViewController {
 
         // Prepare paging between emoji reactors
         setupPaging()
-        setSelectedEmoji(allEmoji.first)
+        // Select the "all" reaction page by setting selected emoji to nil
+        setSelectedEmoji(nil)
 
         // Setup handle for interactive dismissal / resizing
         setupInteractiveSizing()
@@ -124,19 +125,23 @@ class ReactionsDetailSheet: UIViewController {
         buildEmojiCountItems()
 
         // If the currently selected emoji still exists, keep it selected.
-        // Otherwise, select the first available emoji.
+        // Otherwise, select the "all" page by setting selected emoji to nil.
         let newSelectedEmoji: String?
         if let selectedEmoji = selectedEmoji, allEmoji.contains(selectedEmoji) {
             newSelectedEmoji = selectedEmoji
         } else {
-            newSelectedEmoji = allEmoji.first
+            newSelectedEmoji = nil
         }
 
         setSelectedEmoji(newSelectedEmoji, transaction: transaction)
     }
 
     func buildEmojiCountItems() {
-        emojiCountsCollectionView.items = emojiCounts.map { (emoji, count) in
+        let allReactionsItem = EmojiItem(emoji: nil, count: emojiCounts.lazy.map { $0.count }.reduce(0, +)) { [weak self] in
+            self?.setSelectedEmoji(nil)
+        }
+
+        emojiCountsCollectionView.items = [allReactionsItem] + emojiCounts.map { (emoji, count) in
             EmojiItem(emoji: emoji, count: count) { [weak self] in
                 self?.setSelectedEmoji(emoji)
             }
@@ -352,8 +357,8 @@ class ReactionsDetailSheet: UIViewController {
         // If we don't have an emoji defined, the first emoji is always up next
         guard let emoji = selectedEmoji else { return allEmoji.first }
 
-        // If we don't have an index, or we're at the end of the array, the first emoji is up next
-        guard let index = allEmoji.firstIndex(of: emoji), index < (allEmoji.count - 1) else { return allEmoji.first }
+        // If we don't have an index, or we're at the end of the array, "all" is up next
+        guard let index = allEmoji.firstIndex(of: emoji), index < (allEmoji.count - 1) else { return nil }
 
         // Otherwise, use the next emoji in the array
         return allEmoji[index + 1]
@@ -363,8 +368,8 @@ class ReactionsDetailSheet: UIViewController {
         // If we don't have an emoji defined, the last emoji is always previous
         guard let emoji = selectedEmoji else { return allEmoji.last }
 
-        // If we don't have an index, or we're at the start of the array, the last emoji is previous
-        guard let index = allEmoji.firstIndex(of: emoji), index > 0 else { return allEmoji.last }
+        // If we don't have an index, or we're at the start of the array, "all" is previous
+        guard let index = allEmoji.firstIndex(of: emoji), index > 0 else { return nil }
 
         // Otherwise, use the previous emoji in the array
         return allEmoji[index - 1]
@@ -452,7 +457,9 @@ class ReactionsDetailSheet: UIViewController {
 
         // Update selection on the counts view to reflect our new selected emoji
         if let selectedEmoji = selectedEmoji, let index = allEmoji.firstIndex(of: selectedEmoji) {
-            emojiCountsCollectionView.setSelectedIndex(index)
+            emojiCountsCollectionView.setSelectedIndex(index + 1)
+        } else {
+            emojiCountsCollectionView.setSelectedIndex(0)
         }
     }
 

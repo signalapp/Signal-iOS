@@ -1138,10 +1138,10 @@
 "GROUP_CREATED" = "Grupi u krijua.";
 
 /* conversation history entry when the local user created a group */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "E krijuat grupin.";
 
 /* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ ju shtoi te grupi.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Jo të gjithë anëtarët mundën të shtohen te grupi. Prekeni që të riprovoni.";
@@ -1174,31 +1174,31 @@
 "GROUP_UPDATED" = "Grupi u përditësua.";
 
 /* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
-"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ dhe %@ u bënë pjesë e grupit.";
 
 /* conversation history entry. Embeds the {{added user's name}} */
-"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ u bë pjesë e grupit.";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Hoqi avatarin e grupit.";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Përditësoi avatarin e grupit.";
 
 /* conversation history entry. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "E përditësuat grupin.";
 
 /* conversation history entry. Embeds {{remote user's name}} */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ përditësoi grupin.";
 
 /* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+"GROUP_UPDATED_NAME_REMOVED" = "U hoq emri.";
 
 /* conversation history entry. Embeds {{group name}} */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Emri i grupit tani është “%@”.";
 
 /* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
+"GROUP_UPDATED_READDED_YOU" = "Ju rishtoi te grupi.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "E braktisët grupin.";
@@ -1441,10 +1441,10 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Këtë Muaj";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "Kujtoma Më Vonë";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "Do t’jua kujtojmë më vonë.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopjoni Tekstin e Mesazhit";
@@ -2005,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Krijimi i PIN-it Dështoi";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
+"PIN_CREATION_EXPLANATION" = "PIN-et shtojnë te llogaria juaj një shtresë sigurie ekstra. Është e rëndësishme të mbani mend këtë PIN, ngaqë s’mund të rimerret.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-et s’përputhen. Riprovoni.";
@@ -2017,10 +2017,10 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Rijepeni PIN-in";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "Po krijohet PIN-i…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Mund të zgjidhni një PIN të ri, ngaqë kjo pajisje është e regjistruar. Nëse harroni PIN-in tuaj, mund të duhet të prisni 7 ditë, para se ta regjistroni sërish.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Krijoni një PIN të ri";
@@ -2050,25 +2050,25 @@
 "PINS_MEGAPHONE_HAS_PIN_ACTION" = "Përditësoni PIN-in";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Kyçi juaj i Regjistrimit tani quhet PIN. Përditësimi ha vetëm pak sekonda.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Do t’jua kujtojmë më vonë. Përditësimi i PIN-it tuaj do të jetë i detyrueshëm pas %ld ditësh.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "Ju paraqesim PIN-et";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Krijoni PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PIN-et i shtojnë një tjetër shtresë sigurie llogarisë tuaj Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Do t’jua kujtojmë më vonë. Krijimi i një PIN-i do të jetë i detyrueshëm pas %ld ditësh.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Krijoni PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN-i u krijua.";
@@ -2128,22 +2128,22 @@
 "PROCEED_BUTTON" = "Kryeje";
 
 /* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Fillojani";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Profili juaj tani mund të përfshijë një mbiemër, në daçi.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Ripohoni Emrin e Profilit Tuaj";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Ky do të shfaqe kur nisni një bisedë të re ose e ndani me të tjerë.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Shtoni Emër Profili";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Emri juaj i profilit u ruajt.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Caktoni Avatar Profili";
@@ -2241,6 +2241,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
+/* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
+"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagoi me %@ te mesazhi juaj";
 
@@ -2278,10 +2281,10 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagoi me %@ te mesazhi juaj zanor";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Prekni dhe mbajeni të prekur brenda çfarëdo mesazhi që të përgjigjeni shpejt e shpejt me atë si ndjeheni.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "Ju Prezantojmë Reagimet";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Harrova PIN-in tim.";
@@ -2728,13 +2731,13 @@
 "SETTINGS_NOTIFICATIONS" = "Njoftime";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "PIN-i juaj shton një shtresë ekstra sigurie te llogaria juaj. Do t’ju kërkohet, kur regjistroni numrin tuaj të telefonit me Signal-in. Nëse harroni PIN-in tuaj, do t’ju kyçet llogaria për 7 ditë.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Ndryshoni PIN-in tuaj";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "Krijoni PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -3094,13 +3097,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Mësoni më tepër rreth PIN-ësh";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Kyçi juaj i Regjistrimit tani quhet PIN, dhe bën edhe më tepër se aq. Përditësojeni që tani.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Kyçje Regjistrimi = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-et i shtojnë llogarisë tuaj një tjetër shtresë sigurie. Krijoni tani PIN-in tuaj.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Ju paraqesim PIN-et";

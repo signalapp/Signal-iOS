@@ -2020,7 +2020,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "Tworzenie PINu...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "To urządzenie jest zarejestrowane, więc możesz wybrać nowy PIN. Jeśli zapomnisz swojego PINu, będziesz musiał(a) zaczekać 7 dni, aby ponownie się zarejestrować.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Utwórz nowy PIN";
@@ -2053,7 +2053,7 @@
 "PINS_MEGAPHONE_HAS_PIN_BODY" = "Twoja blokada rejestracji nazywa się teraz PIN. Aktualizacja potrwa kilka sekund.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Przypomnimy Ci o tym później. Uaktualnienie Twojego PINu stanie się obowiązkowe za %ld dni.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "Przedstawiamy numery PIN";
@@ -2065,7 +2065,7 @@
 "PINS_MEGAPHONE_NO_PIN_BODY" = "Numer PIN zapewnia dodatkową ochronę Twojego konta Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Przypomnimy Ci o tym później. Utworzenie PINu stanie się obowiązkowe za %ld dni.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Utwórz PIN";
@@ -2241,6 +2241,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Wideo";
 
+/* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
+"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ zareagował(a) na Twoją wiadomość";
 
@@ -2278,7 +2281,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Zareagował(a) w ten sposób %@ na Twoją wiadomość";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Stuknij i przytrzymaj wiadomość, aby szybko pokazać jak się czujesz. ";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Przedstawiamy reakcje";

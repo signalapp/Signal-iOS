@@ -2005,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN作成失敗";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINはアカウントのセキュリティを強化します。PINの回復はできませんので、しっかりと覚えてください。";
+"PIN_CREATION_EXPLANATION" = "PINはアカウントのセキュリティを強化します。PINの回復はできませんので、しっかり覚えてください。";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINが一致しません。再度試してください。";
@@ -2020,7 +2020,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "PINを作成しています...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "このデバイスを登録したため、新しいPINを選択できます。PINを忘れると、再登録まで7日間待たなければならないことがあります。";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "新しいPINを登録";
@@ -2053,7 +2053,7 @@
 "PINS_MEGAPHONE_HAS_PIN_BODY" = "登録ロックは今後PINと呼ばれます。アップデートは数秒で終わります。";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "あとで再度お知らせします。PINのアップデートは%ld日後に必須になります。";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "PINのご紹介";
@@ -2065,7 +2065,7 @@
 "PINS_MEGAPHONE_NO_PIN_BODY" = "PINはSignalアカウントのセキュリティを強化します。";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "あとで再度お知らせします。PINの作成は%ld日後に必須になります。";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "PINを作成";
@@ -2137,7 +2137,7 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "プロフィール名の確認";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "これは共有したり新しい会話を始めた際に表示されます。";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "プロフィール名を追加";
@@ -2241,6 +2241,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "動画";
 
+/* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
+"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ があなたのメッセージに反応";
 
@@ -2278,7 +2281,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "あなたのボイスメッセージに %@";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "メッセージをアップアンドホールドして、手軽にリアクションできます。";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "リアクションの紹介";
@@ -2287,7 +2290,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "PINを忘れました。";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "プライバシーとセキュリティ保護のため、PINを回復することはできません。PINを思い出せない場合、7日間の休止後にSMSで再認証できます。その場合アカウントはリセットされ、メッセージ等もすべて削除されます。";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "プライバシーとセキュリティ保護のため、PINを回復する方法はありません。PINを思い出せない場合、7日間の休止後にSMSで再認証できます。その場合アカウントはリセットされ、メッセージ等もすべて削除されます。";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "PINコードを忘れましたか？";
@@ -3100,7 +3103,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "登録ロック = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINはアカウントのセキュリティを強化します。いますぐPINを作成してください。";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINはアカウントのセキュリティを強化します。いますぐ作成しましょう。";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PINのご紹介";

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -41,6 +41,10 @@ public extension UIDevice {
             owsFailDebug("unknown device format")
             return false
         }
+    }
+
+    var isNarrowerThanIPhone6: Bool {
+        return CurrentAppContext().frame.width < 375
     }
 
     var isShorterThanIPhone5: Bool {

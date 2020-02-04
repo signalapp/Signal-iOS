@@ -776,6 +776,7 @@ typedef enum : NSUInteger {
 
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
+        [self loadDraftInCompose];
         [self scrollToDefaultPosition:NO];
     }
 
@@ -3751,6 +3752,7 @@ typedef enum : NSUInteger {
         draft = [self.thread currentDraftWithTransaction:transaction];
     }];
     OWSAssertDebug(self.inputToolbar != nil);
+    OWSAssertDebug(self.inputToolbar.messageText.length == 0);
     [self.inputToolbar setMessageText:draft animated:NO];
 }
 
@@ -3956,8 +3958,13 @@ typedef enum : NSUInteger {
 
 - (void)createInputToolbar
 {
+    NSString *_Nullable existingDraft;
+    if (_inputToolbar != nil) {
+        existingDraft = _inputToolbar.messageText;
+    }
+
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
-    [self loadDraftInCompose];
+    [self.inputToolbar setMessageText:existingDraft animated:NO];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);

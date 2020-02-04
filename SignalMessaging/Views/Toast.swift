@@ -46,7 +46,7 @@ public class ToastController: NSObject, ToastViewDelegate {
             self.toastView.alpha = 1
         }
 
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4) {
             // intentional strong reference to self.
             // As with an AlertController, the caller likely expects toast to
             // be presented and dismissed without maintaining a strong reference to ToastController

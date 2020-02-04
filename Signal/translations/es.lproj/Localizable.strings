@@ -1495,7 +1495,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Omitido";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Cargando";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Transfiriendo";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "El mensaje está vacío.";
@@ -1570,7 +1570,7 @@
 "MESSAGE_STATUS_SENT" = "Enviado";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Cargando ...";
+"MESSAGE_STATUS_UPLOADING" = "Transfiriendo ...";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Mensaje nuevo";
@@ -1780,7 +1780,7 @@
 "ONBOARDING_2FA_TITLE" = "Bloqueo de registro";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Para proteger tu privacidad y la seguridad de tu cuenta de Signal, hemos bloqueado tu número por 7 días.\n\nTras 7 días de inactividad, podrás volver a registrar este número de teléfono sin necesidad de un PIN. Se borrará todo el contenido de tu cuenta.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Para proteger tu privacidad y la seguridad de tu cuenta de Signal, hemos bloqueado tu número por 7 días.\n\nTras 7 días con tu cuenta inactiva, podrás volver a registrar este número de teléfono sin necesidad de tu PIN. Se borrará todo el contenido de tu cuenta.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Saber más sobre cuentas bloqueadas";
@@ -2020,7 +2020,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "Creando PIN ...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Es posible seleccionar un nuevo PIN porque este dispositivo aún está registrado. Si olvidas tu PIN, tendrás que esperar 7 días para volver a registrarte.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Crear nuevo PIN";
@@ -2053,7 +2053,7 @@
 "PINS_MEGAPHONE_HAS_PIN_BODY" = "Tu bloqueo de registro ahora se llama PIN, y es más seguro. Actualizar sólo lleva unos segundos.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Te lo volveremos a recordar. Actualizar tu PIN será obligatorio en %ld días.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "¡El PIN ha llegado!";
@@ -2065,7 +2065,7 @@
 "PINS_MEGAPHONE_NO_PIN_BODY" = "El PIN añade otro nivel de seguridad a tu cuenta de Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Te lo volveremos a recordar. Crear tu PIN será obligatorio en %ld días.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Crear PIN";
@@ -2241,6 +2241,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Vídeo";
 
+/* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
+"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacción a tu mensaje: %@";
 
@@ -2278,25 +2281,25 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacción a tu nota de voz: %@";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Mantén pulsado cualquier mensaje para respuesta rápida de como te sientes.";
+"REACTION_MEGAPHONE_BODY" = "Mantén pulsado un mensaje para mostrar cómo te sientes.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Las reacciones a mensajes han llegado";
+"REACTION_MEGAPHONE_TITLE" = "¡Ya puedes reaccionar a mensajes!";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "He olvidado mi PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Para proteger tu privacidad y seguridad, no hay manera de recuperar tu PIN. Si no lo puedes recordar, podrás verificar tu cuenta por SMS tras 7 días de inactividad. En este caso, tu cuenta se borrará junto con todo su contenido.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Para proteger tu privacidad y seguridad, no hay manera de recuperar tu PIN. Si no lo puedes recordar, podrás verificar tu cuenta por SMS tras 7 días con tu cuenta inactiva. En este caso, tu cuenta se borrará junto con todo su contenido.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "¿Has olvidado el PIN?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Te quedan %lu intentos. Cuando superes el número de intentos permitidos, tu cuenta se bloqueará. Tras 7 días de inactividad, podrás volver a registrar tu número sin PIN. Se borrará tu cuenta y todo su contenido.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Te quedan %lu intentos. Cuando superes el número de intentos permitidos, tu cuenta se bloqueará. Tras 7 días con tu cuenta inactiva, podrás volver a registrar este número sin tu PIN. Se borrará tu cuenta y todo su contenido.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Tan sólo te queda 1 intento. Si fallas, tu cuenta se bloqueará. Tras 7 días de inactividad, podrás volver a registrar tu número sin PIN. Se borrará tu cuenta y todo su contenido.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Tan sólo te queda 1 intento. Si fallas, tu cuenta se bloqueará. Tras 7 días con tu cuenta inactiva, podrás volver a registrar este número sin tu PIN. Se borrará tu cuenta y todo su contenido.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorrecto";
@@ -2872,7 +2875,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Fallo al enviar adjunto";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Enviando ...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Transfiriendo ...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Imposible preparar el adjunto";
@@ -3196,7 +3199,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Nota de voz";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Toca y mantén pulsado el icono del micrófono para grabar una nota de voz corta. Toca, arrastra hacia arriba y suelta para grabar notas de voz más largas.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Toca y mantén pulsado el icono del micrófono para grabar una nota de voz.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Nota de voz";

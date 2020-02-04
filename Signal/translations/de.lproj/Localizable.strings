@@ -2020,7 +2020,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "PIN wird erstellt …";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Da dieses Gerät registriert ist, kannst du eine neue PIN wählen. Falls du deine PIN vergisst, musst du möglicherweise 7 Tage warten, um dich erneut zu registrieren.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Neue PIN erstellen";
@@ -2053,7 +2053,7 @@
 "PINS_MEGAPHONE_HAS_PIN_BODY" = "Deine Registrierungssperre heißt nun PIN. Ihre Aktualisierung dauert Sekunden.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Wir erinnern dich später. Das Aktualisieren deiner PIN wird in %ld Tagen zwingend erforderlich.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "Einführung von PINs";
@@ -2065,7 +2065,7 @@
 "PINS_MEGAPHONE_NO_PIN_BODY" = "PINs fügen deinem Signal-Konto eine weitere Sicherheitsebene hinzu.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Wir erinnern dich später. Das Erstellen einer PIN wird in %ld Tagen zwingend erforderlich.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Erstelle eine PIN";
@@ -2241,6 +2241,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
+/* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
+"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ hat auf deine Nachricht reagiert";
 
@@ -2278,7 +2281,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Hat mit %@ auf deine Sprachnachricht reagiert";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Tippe länger auf eine Nachricht, um schnell deine Reaktion mitzuteilen.";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Einführung von Reaktionen";
@@ -2287,16 +2290,16 @@
 "REGISTER_2FA_FORGOT_PIN" = "Ich habe meine PIN vergessen.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Zu Gunsten deiner Privatsphäre und Sicherheit kann deine PIN nicht wiederhergestellt werden. Falls du dich nicht mehr an sie erinnerst, kannst du dich nach Ablauf von 7 aktivitätsfreien Tagen mittels SMS erneut verifizieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte gelöscht.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Zu Gunsten deiner Privatsphäre und Sicherheit kann deine PIN nicht wiederhergestellt werden. Falls du dich nicht mehr an sie erinnerst, kannst du dich nach Ablauf von 7 aktivitätsfreien Tagen mittels SMS erneut verifizieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte werden gelöscht.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Deine PIN vergessen?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du hast %lu verbleibende Versuche. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte gelöscht.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du hast %lu verbleibende Versuche. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte werden gelöscht.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Du hast 1 verbleibenden Versuch. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte gelöscht.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Du hast 1 verbleibenden Versuch. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte werden gelöscht.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Falsche PIN";
