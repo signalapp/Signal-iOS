@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,7 +9,8 @@ protocol MessageReactionPickerDelegate: class {
 }
 
 class MessageReactionPicker: UIStackView {
-    let pickerDiameter: CGFloat = 56
+    let pickerDiameter: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 50 : 56
+    let reactionFontSize: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 30 : 32
     let pickerPadding: CGFloat = 6
     var reactionHeight: CGFloat { return pickerDiameter - (pickerPadding * 2) }
     var selectedBackgroundHeight: CGFloat { return pickerDiameter - 4 }
@@ -50,7 +51,7 @@ class MessageReactionPicker: UIStackView {
         for emoji in ReactionManager.emojiSet {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setTitle(title: emoji, font: .systemFont(ofSize: 32), titleColor: Theme.primaryTextColor)
+            button.setTitle(title: emoji, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
             button.setPressedBlock { [weak self] in
                 self?.delegate?.didSelectReaction(reaction: emoji, isRemoving: emoji == self?.selectedEmoji)
             }

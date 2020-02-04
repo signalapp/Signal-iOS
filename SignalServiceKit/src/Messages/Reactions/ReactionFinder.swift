@@ -15,6 +15,9 @@ protocol ReactionFinderAdapter {
     /// Returns a list of all users who have reacted to this message with a given emoji
     func reactors(for emoji: String, transaction: ReadTransaction) -> [SignalServiceAddress]
 
+    /// Returns a list of all reactions to this message
+    func allReactions(transaction: ReadTransaction) -> [OWSReaction]
+
     /// Returns a list of all emoji that have been reacted to this message, and the number
     /// of users who have sent that reaction, ordered from most to least frequent reaction
     func emojiCounts(transaction: ReadTransaction) -> [(emoji: String, count: Int)]
@@ -66,6 +69,16 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
             return yapAdapter.reactors(for: emoji, transaction: yapRead)
         case .grdbRead(let grdbRead):
             return grdbAdapter.reactors(for: emoji, transaction: grdbRead)
+        }
+    }
+
+    @objc
+    public func allReactions(transaction: SDSAnyReadTransaction) -> [OWSReaction] {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.allReactions(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.allReactions(transaction: grdbRead)
         }
     }
 
@@ -222,6 +235,29 @@ class YAPDBReactionFinderAdapter: NSObject, ReactionFinderAdapter {
         }
 
         return reactors
+    }
+
+    func allReactions(transaction: YapDatabaseReadTransaction) -> [OWSReaction] {
+        guard let ext = transaction.ext(YAPDBReactionFinderAdapter.indexName) as? YapDatabaseSecondaryIndexTransaction else {
+            owsFailDebug("Unexpected transaction type for extension")
+            return []
+        }
+
+        let queryFormat = String(
+            format: "WHERE %@ = \"%@\"",
+            YAPDBReactionFinderAdapter.uniqueMessageIdKey,
+            uniqueMessageId
+        )
+        let query = YapDatabaseQuery(string: queryFormat, parameters: [])
+
+        var reactions = [OWSReaction]()
+
+        ext.enumerateKeysAndObjects(matching: query) { _, _, object, _ in
+            guard let reaction = object as? OWSReaction else { return }
+            reactions.append(reaction)
+        }
+
+        return reactions
     }
 
     func emojiCounts(transaction: YapDatabaseReadTransaction) -> [(emoji: String, count: Int)] {
@@ -381,6 +417,27 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
         }
 
         return reactors
+    }
+
+    func allReactions(transaction: GRDBReadTransaction) -> [OWSReaction] {
+        let sql = """
+            SELECT * FROM \(ReactionRecord.databaseTableName)
+            WHERE \(reactionColumn: .uniqueMessageId) = ?
+            ORDER BY \(reactionColumn: .id) DESC
+        """
+        let cursor = OWSReaction.grdbFetchCursor(sql: sql, arguments: [uniqueMessageId], transaction: transaction)
+
+        var reactions = [OWSReaction]()
+
+        do {
+            while let reaction = try cursor.next() {
+                reactions.append(reaction)
+            }
+        } catch {
+            owsFailDebug("unexpected error \(error)")
+        }
+
+        return reactions
     }
 
     func emojiCounts(transaction: GRDBReadTransaction) -> [(emoji: String, count: Int)] {
