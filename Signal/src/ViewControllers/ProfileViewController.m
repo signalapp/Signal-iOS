@@ -636,8 +636,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     OWSAssertIsOnMainThread();
     OWSLogVerbose(@"");
 
-    // If the user already has a pin, just go home
-    if ([OWS2FAManager sharedManager].is2FAEnabled) {
+    // If the user already has a pin or censorship circumvention is enabled, just go home
+    if ([OWS2FAManager sharedManager].is2FAEnabled || OWSSignalService.sharedInstance.isCensorshipCircumventionActive) {
         return [self showConversationSplitView];
     }
 
