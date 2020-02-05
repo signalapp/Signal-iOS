@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -33,6 +33,10 @@ public class AccountManager: NSObject {
 
     private var accountServiceClient: AccountServiceClient {
         return SSKEnvironment.shared.accountServiceClient
+    }
+
+    private var deviceService: DeviceService {
+        return DeviceService.shared
     }
 
     var pushRegistrationManager: PushRegistrationManager {
@@ -151,7 +155,7 @@ public class AccountManager: NSObject {
                 }
             }
 
-            return self.accountServiceClient.updateAttributes()
+            return self.accountServiceClient.updatePrimaryDeviceAccountAttributes()
         }.then {
             self.createPreKeys()
         }.done {
@@ -164,7 +168,8 @@ public class AccountManager: NSObject {
                     // - simulators, none of which support receiving push notifications
                     // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
                     Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
-                    return self.enableManualMessageFetching()
+                    self.tsAccountManager.setIsManualMessageFetchEnabled(true)
+                    return self.tsAccountManager.performUpdateAccountAttributes()
                 default:
                     throw error
                 }
@@ -179,17 +184,19 @@ public class AccountManager: NSObject {
     }
 
     func completeSecondaryLinking(provisionMessage: ProvisionMessage, deviceName: String) -> Promise<Void> {
-        identityManager.generateNewIdentityKey()
         tsAccountManager.phoneNumberAwaitingVerification = provisionMessage.phoneNumber
         tsAccountManager.uuidAwaitingVerification = provisionMessage.uuid
 
         let serverAuthToken = generateServerAuthToken()
 
-        return firstly {
-            accountServiceClient.verifySecondaryDevice(deviceName: deviceName,
-                                                       verificationCode: provisionMessage.provisioningCode,
-                                                       phoneNumber: provisionMessage.phoneNumber,
-                                                       authKey: serverAuthToken)
+        return firstly { () throws -> Promise<UInt32> in
+            let encryptedDeviceName = try DeviceNames.encryptDeviceName(plaintext: deviceName,
+                                                                        identityKeyPair: provisionMessage.identityKeyPair)
+
+            return accountServiceClient.verifySecondaryDevice(verificationCode: provisionMessage.provisioningCode,
+                                                              phoneNumber: provisionMessage.phoneNumber,
+                                                              authKey: serverAuthToken,
+                                                              encryptedDeviceName: encryptedDeviceName)
         }.done { (deviceId: UInt32) in
             self.databaseStorage.write { transaction in
                 self.identityManager.storeIdentityKeyPair(provisionMessage.identityKeyPair,
@@ -210,23 +217,25 @@ public class AccountManager: NSObject {
                 self.tsAccountManager.setStoredDeviceName(deviceName,
                                                           transaction: transaction)
             }
-        }.then {
-            self.accountServiceClient.updateAttributes()
         }.then { _ -> Promise<Void> in
             self.createPreKeys()
         }.then { _ -> Promise<Void> in
-            return self.syncPushTokens().recover { (error) -> Promise<Void> in
+            return self.syncPushTokens().recover { error in
                 switch error {
                 case PushRegistrationError.pushNotSupported(let description):
                     // This can happen with:
                     // - simulators, none of which support receiving push notifications
                     // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
-                    Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
-                    return self.enableManualMessageFetching()
+                    Logger.info("Recovered push registration error. Leaving as manual message fetcher because push not supported: \(description)")
+
+                    // no-op since secondary devices already start as manual message fetchers
+                    return
                 default:
                     throw error
                 }
             }
+        }.then {
+            self.deviceService.updateCapabilities()
         }.then { _ -> Promise<Void> in
             self.completeRegistration()
 
@@ -360,11 +369,6 @@ public class AccountManager: NSObject {
                                                           success: { resolver.fulfill(()) },
                                                           failure: resolver.reject)
         }
-    }
-
-    func enableManualMessageFetching() -> Promise<Void> {
-        tsAccountManager.setIsManualMessageFetchEnabled(true)
-        return Promise(tsAccountManager.performUpdateAccountAttributes()).asVoid()
     }
 
     // MARK: Turn Server

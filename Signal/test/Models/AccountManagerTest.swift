@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -44,8 +44,8 @@ class VerifyingTSAccountManager: FailingTSAccountManager {
         successBlock(nil)
     }
 
-    override func performUpdateAccountAttributes() -> AnyPromise {
-        return AnyPromise(Promise.value(()))
+    override func performUpdateAccountAttributes() -> Promise<Void> {
+        return Promise.value(())
     }
 }
 

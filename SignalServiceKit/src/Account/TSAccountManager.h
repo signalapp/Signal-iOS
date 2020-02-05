@@ -168,9 +168,6 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 - (AnyPromise *)updateAccountAttributes __attribute__((warn_unused_result));
 
-// This should only be used during the registration process.
-- (AnyPromise *)performUpdateAccountAttributes __attribute__((warn_unused_result));
-
 @end
 
 NS_ASSUME_NONNULL_END
