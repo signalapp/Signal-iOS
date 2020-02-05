@@ -13,7 +13,7 @@ Install [Carthage](https://github.com/Carthage/Carthage#installing-carthage)
 Clone the repo to a working directory:
 
 ```
-git clone --recurse-submodules https://github.com/signalapp/Signal-iOS
+git clone --recurse-submodules https://github.com/loki-project/session-ios
 ```
 
 Since we make use of submodules, you must use `git clone`, rather than
@@ -22,28 +22,22 @@ downloading a prepared zip file from Github.
 We recommend you fork the repo on GitHub, then clone your fork:
 
 ```
-git clone --recurse-submodules https://github.com/<USERNAME>/Signal-iOS.git
+git clone --recurse-submodules https://github.com/<USERNAME>/session-ios.git
 ```
 
-You can then add the Signal repo to sync with upstream changes:
+You can then add the Session repo to sync with upstream changes:
 
 ```
-git remote add upstream https://github.com/signalapp/Signal-iOS
+git remote add upstream https://github.com/loki-project/session-ios
 ```
 
 ## 2. Dependencies
 
-To build and configure the libraries Signal uses, just run:
+To build and configure the libraries Session uses, just run:
 
 ```
 make dependencies
 ```
-
-### Building WebRTC
-
-A prebuilt version of WebRTC.framework resides in a submodule and should be
-installed by the above steps.  However, if you'd like to build it from source,
-see: https://github.com/signalapp/signal-webrtc-ios
 
 ## 3. Xcode
 
@@ -74,6 +68,4 @@ Features related to push notifications are known to be not working for
 third-party contributors since Apple's Push Notification service pushes
 will only work with Open Whisper Systems production code signing
 certificate.
-
-If you have any other issues, please ask on the [community forum](https://whispersystems.discoursehosting.net/).
 
