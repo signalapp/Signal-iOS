@@ -61,8 +61,6 @@ class ExperienceUpgradeManager: NSObject {
 
     private static func hasSplash(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
         switch experienceUpgrade.id {
-        case .introducingPins:
-            return true
         case .messageRequests:
             // Only use a splash for message requests if the user doesn't have a profile name.
             return OWSProfileManager.shared().localFullName()?.isEmpty != false

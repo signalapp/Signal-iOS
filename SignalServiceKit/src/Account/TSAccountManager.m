@@ -877,7 +877,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 }
 
 - (AnyPromise *)updateAccountAttributesIfNecessary {
-    if (!self.isRegistered) {
+    if (!self.isRegisteredPrimaryDevice) {
         return [AnyPromise promiseWithValue:@(1)];
     }
 
@@ -904,20 +904,6 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
             }
         }];
     });
-    return promise;
-}
-
-- (AnyPromise *)performUpdateAccountAttributes
-{
-    AnyPromise *promise = [[SignalServiceRestClient new] updateAccountAttributesObjC];
-    promise = promise.then(^(id value) {
-        // Fetch the local profile, as we may have changed its
-        // account attributes.  Specifically, we need to determine
-        // if all devices for our account now support UD for sync
-        // messages.
-        [self.profileManager fetchAndUpdateLocalUsersProfile];
-    });
-    [promise retainUntilComplete];
     return promise;
 }
 

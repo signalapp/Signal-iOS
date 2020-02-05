@@ -6,23 +6,22 @@ import Foundation
 import PromiseKit
 import SignalMetadataKit
 
-@objc
-public protocol SignalServiceClientObjC {
-    @objc func updateAccountAttributesObjC() -> AnyPromise
-}
-
-public protocol SignalServiceClient: SignalServiceClientObjC {
+public protocol SignalServiceClient {
     func requestPreauthChallenge(recipientId: String, pushToken: String) -> Promise<Void>
     func requestVerificationCode(recipientId: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
-    func verifySecondaryDevice(deviceName: String, verificationCode: String, phoneNumber: String, authKey: String) -> Promise<UInt32>
+    func verifySecondaryDevice(verificationCode: String, phoneNumber: String, authKey: String, encryptedDeviceName: Data) -> Promise<UInt32>
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
     func requestUDSenderCertificate(includeUuid: Bool) -> Promise<Data>
-    func updateAccountAttributes() -> Promise<Void>
+    func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
     func getAccountUuid() -> Promise<UUID>
     func requestStorageAuth() -> Promise<(username: String, password: String)>
     func getRemoteConfig() -> Promise<[String: Bool]>
+
+    // MARK: - Secondary Devices
+
+    func updateDeviceCapabilities() -> Promise<Void>
 }
 
 /// Based on libsignal-service-java's PushServiceSocket class
@@ -35,8 +34,8 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         return TSNetworkManager.shared()
     }
 
-    private var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
+    private var tsAccountManager: TSAccountManager {
+        return SSKEnvironment.shared.tsAccountManager
     }
 
     // MARK: - Public
@@ -100,13 +99,12 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }
     }
 
-    @objc
-    public func updateAccountAttributesObjC() -> AnyPromise {
-        return AnyPromise(updateAccountAttributes())
-    }
+    public func updatePrimaryDeviceAccountAttributes() -> Promise<Void> {
+        guard tsAccountManager.isPrimaryDevice else {
+            return Promise(error: OWSAssertionError("only primary device should update account attributes"))
+        }
 
-    public func updateAccountAttributes() -> Promise<Void> {
-        let request = OWSRequestFactory.updateAttributesRequest()
+        let request = OWSRequestFactory.updatePrimaryDeviceAttributesRequest()
         return networkManager.makePromise(request: request).asVoid()
     }
 
@@ -142,15 +140,15 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }
     }
 
-    public func verifySecondaryDevice(deviceName: String,
-                                      verificationCode: String,
+    public func verifySecondaryDevice(verificationCode: String,
                                       phoneNumber: String,
-                                      authKey: String) -> Promise<UInt32> {
+                                      authKey: String,
+                                      encryptedDeviceName: Data) -> Promise<UInt32> {
 
         let request = OWSRequestFactory.verifySecondaryDeviceRequest(verificationCode: verificationCode,
                                                                      phoneNumber: phoneNumber,
                                                                      authKey: authKey,
-                                                                     deviceName: deviceName)
+                                                                     encryptedDeviceName: encryptedDeviceName)
 
         return networkManager.makePromise(request: request).map { _, responseObject in
             guard let parser = ParamParser(responseObject: responseObject) else {
@@ -186,6 +184,13 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
                 return accum
             }
         }
+    }
+
+    // MARK: - Secondary Devices
+
+    public func updateDeviceCapabilities() -> Promise<Void> {
+        let request = OWSRequestFactory.updateSecondaryDeviceCapabilitiesRequest()
+        return self.networkManager.makePromise(request: request).asVoid()
     }
 
     // MARK: - Helpers

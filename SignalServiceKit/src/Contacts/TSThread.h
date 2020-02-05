@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -30,7 +30,7 @@ extern ConversationColorName const ConversationColorNamePlum;
 extern ConversationColorName const ConversationColorNameTaupe;
 extern ConversationColorName const ConversationColorNameSteel;
 
-extern ConversationColorName const kConversationColorName_Default;
+extern ConversationColorName const ConversationColorNameDefault;
 
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread

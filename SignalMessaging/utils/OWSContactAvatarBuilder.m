@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(TSAccountManager.localAddress.isValid);
 
     return [self initWithAddress:TSAccountManager.localAddress
-                       colorName:kConversationColorName_Default
+                       colorName:ConversationColorNameDefault
                         diameter:diameter];
 }
 

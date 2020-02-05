@@ -192,6 +192,11 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     return SSKEnvironment.shared.messageFetcherJob;
 }
 
+- (DeviceService *)deviceService
+{
+    return DeviceService.shared;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -1263,10 +1268,12 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         AppVersion *appVersion = AppVersion.sharedInstance;
         if (appVersion.lastAppVersion.length > 0
             && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]) {
-            [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 
             if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+                [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
                 [self.syncManager sendConfigurationSyncMessage];
+            } else {
+                [[self.deviceService updateCapabilities] retainUntilComplete];
             }
         }
     }

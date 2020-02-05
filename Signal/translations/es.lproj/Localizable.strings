@@ -1780,7 +1780,7 @@
 "ONBOARDING_2FA_TITLE" = "Bloqueo de registro";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Para proteger tu privacidad y la seguridad de tu cuenta de Signal, hemos bloqueado tu número por 7 días.\n\nTras 7 días con tu cuenta inactiva, podrás volver a registrar este número de teléfono sin necesidad de tu PIN. Se borrará todo el contenido de tu cuenta.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Para proteger tu privacidad y la seguridad de tu cuenta de Signal, hemos bloqueado tu número por 7 días.\n\nTras 7 días con tu cuenta inactiva, podrás volver a registrar este número de teléfono sin necesidad de tu PIN. Se eliminará todo el contenido de tu cuenta.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Saber más sobre cuentas bloqueadas";
@@ -2242,7 +2242,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Vídeo";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacción a tu mensaje: %@";
@@ -2290,16 +2290,16 @@
 "REGISTER_2FA_FORGOT_PIN" = "He olvidado mi PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Para proteger tu privacidad y seguridad, no hay manera de recuperar tu PIN. Si no lo puedes recordar, podrás verificar tu cuenta por SMS tras 7 días con tu cuenta inactiva. En este caso, tu cuenta se borrará junto con todo su contenido.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Para proteger tu privacidad y seguridad, no hay manera de recuperar tu PIN. Si no lo puedes recordar, podrás verificar tu cuenta por SMS tras 7 días con tu cuenta inactiva. En este caso, tu cuenta se eliminará junto con todo su contenido.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "¿Has olvidado el PIN?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Te quedan %lu intentos. Cuando superes el número de intentos permitidos, tu cuenta se bloqueará. Tras 7 días con tu cuenta inactiva, podrás volver a registrar este número sin tu PIN. Se borrará tu cuenta y todo su contenido.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Te quedan %lu intentos. Cuando superes el número de intentos permitidos, tu cuenta se bloqueará. Tras 7 días con tu cuenta inactiva, podrás volver a registrar este número sin tu PIN. Se eliminará tu cuenta y todo su contenido.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Tan sólo te queda 1 intento. Si fallas, tu cuenta se bloqueará. Tras 7 días con tu cuenta inactiva, podrás volver a registrar este número sin tu PIN. Se borrará tu cuenta y todo su contenido.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Tan sólo te queda 1 intento. Si fallas, tu cuenta se bloqueará. Tras 7 días con tu cuenta inactiva, podrás volver a registrar este número sin tu PIN. Se eliminará tu cuenta y todo su contenido.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorrecto";
@@ -3097,7 +3097,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Saber más sobre el PIN";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "El bloqueo de registro ahora se llama PIN, y permite más funciones. Actualiza ahora.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "El bloqueo de registro ahora se llama PIN y permite más funciones. Actualiza ahora.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Bloqueo de registro = PIN";

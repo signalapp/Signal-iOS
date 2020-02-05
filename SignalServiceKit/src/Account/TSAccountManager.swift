@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import PromiseKit
 
-@objc
 public extension TSAccountManager {
 
     // MARK: - Dependencies
@@ -13,8 +13,13 @@ public extension TSAccountManager {
         return SDSDatabaseStorage.shared
     }
 
+    var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
+    }
+
     // MARK: -
 
+    @objc
     private class func getLocalThread(transaction: SDSAnyReadTransaction) -> TSThread? {
         guard let localAddress = self.localAddress(with: transaction) else {
             owsFailDebug("Missing localAddress.")
@@ -23,12 +28,14 @@ public extension TSAccountManager {
         return TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
     }
 
+    @objc
     private class func getLocalThreadWithSneakyTransaction() -> TSThread? {
         return databaseStorage.read { transaction in
             return getLocalThread(transaction: transaction)
         }
     }
 
+    @objc
     class func getOrCreateLocalThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
         guard let localAddress = self.localAddress(with: transaction) else {
             owsFailDebug("Missing localAddress.")
@@ -37,6 +44,7 @@ public extension TSAccountManager {
         return TSContactThread.getOrCreateThread(withContactAddress: localAddress, transaction: transaction)
     }
 
+    @objc
     class func getOrCreateLocalThreadWithSneakyTransaction() -> TSThread? {
         assert(!Thread.isMainThread)
 
@@ -49,19 +57,43 @@ public extension TSAccountManager {
         }
     }
 
+    @objc
     var isRegisteredPrimaryDevice: Bool {
         return isRegistered && self.storedDeviceId() == OWSDevicePrimaryDeviceId
     }
 
+    @objc
     var isPrimaryDevice: Bool {
         return storedDeviceId() == OWSDevicePrimaryDeviceId
     }
 
+    @objc
     var storedServerUsername: String? {
         guard let serviceIdentifier = self.localAddress?.serviceIdentifier else {
             return nil
         }
 
         return isRegisteredPrimaryDevice ? serviceIdentifier : "\(serviceIdentifier).\(storedDeviceId())"
+    }
+
+    @objc(performUpdateAccountAttributes)
+    func objc_performUpdateAccountAttributes() -> AnyPromise {
+        return AnyPromise(performUpdateAccountAttributes())
+    }
+
+    func performUpdateAccountAttributes() -> Promise<Void> {
+        return firstly { () -> Promise<Void> in
+            guard isRegisteredPrimaryDevice else {
+                throw OWSAssertionError("only update account attributes on primary")
+            }
+
+            return SignalServiceRestClient().updatePrimaryDeviceAccountAttributes()
+        }.done {
+            // Fetch the local profile, as we may have changed its
+            // account attributes.  Specifically, we need to determine
+            // if all devices for our account now support UD for sync
+            // messages.
+            self.profileManager.fetchAndUpdateLocalUsersProfile()
+        }
     }
 }

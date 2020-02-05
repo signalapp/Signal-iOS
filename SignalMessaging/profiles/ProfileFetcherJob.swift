@@ -208,7 +208,7 @@ public class ProfileFetcherJob: NSObject {
         return DispatchQueue.main.async(.promise) {
             self.addBackgroundTask()
         }.then(on: DispatchQueue.global()) { _ in
-            return self.requestProfileAttempt()
+            return self.requestProfile()
         }.map(on: DispatchQueue.global()) { profile in
             if self.options.shouldUpdateProfile {
                 self.updateProfile(signalServiceProfile: profile)

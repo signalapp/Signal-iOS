@@ -271,16 +271,19 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                           }];
 }
 
-+ (TSRequest *)updateAttributesRequest
++ (TSRequest *)updatePrimaryDeviceAttributesRequest
 {
+    // If you are updating capabilities for a secondary device, use `updateSecondaryDeviceCapabilities` instead
+    OWSAssertDebug(self.tsAccountManager.isPrimaryDevice);
     NSString *authKey = self.tsAccountManager.storedServerAuthToken;
     OWSAssertDebug(authKey.length > 0);
     NSString *_Nullable pin = [self.ows2FAManager pinCode];
-    NSString *_Nullable deviceName = self.tsAccountManager.storedDeviceName;
+    BOOL isManualMessageFetchEnabled = self.tsAccountManager.isManualMessageFetchEnabled;
 
     NSDictionary<NSString *, id> *accountAttributes = [self accountAttributesWithAuthKey:authKey
                                                                                      pin:pin
-                                                                              deviceName:deviceName];
+                                                                     encryptedDeviceName:nil
+                                                             isManualMessageFetchEnabled:isManualMessageFetchEnabled];
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureAttributesAPI]
                               method:@"PUT"
@@ -392,9 +395,12 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     NSString *path = [NSString stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode];
 
-    NSMutableDictionary<NSString *, id> *accountAttributes = [[self accountAttributesWithAuthKey:authKey
-                                                                                             pin:pin
-                                                                                      deviceName:nil] mutableCopy];
+    BOOL isManualMessageFetchEnabled = self.tsAccountManager.isManualMessageFetchEnabled;
+    NSMutableDictionary<NSString *, id> *accountAttributes =
+        [[self accountAttributesWithAuthKey:authKey
+                                        pin:pin
+                        encryptedDeviceName:nil
+                isManualMessageFetchEnabled:isManualMessageFetchEnabled] mutableCopy];
     [accountAttributes removeObjectForKey:OWSRequestKey_AuthKey];
 
     TSRequest *request =
@@ -408,17 +414,20 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 + (TSRequest *)verifySecondaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
                                                     phoneNumber:(NSString *)phoneNumber
                                                         authKey:(NSString *)authKey
-                                                     deviceName:(NSString *)deviceName
+                                            encryptedDeviceName:(NSData *)encryptedDeviceName
 {
     OWSAssertDebug(verificationCode.length > 0);
     OWSAssertDebug(phoneNumber.length > 0);
     OWSAssertDebug(authKey.length > 0);
-    OWSAssertDebug(deviceName.length > 0);
+    OWSAssertDebug(encryptedDeviceName.length > 0);
 
     NSString *path = [NSString stringWithFormat:@"v1/devices/%@", verificationCode];
 
-    NSMutableDictionary<NSString *, id> *accountAttributes =
-        [[self accountAttributesWithAuthKey:authKey pin:nil deviceName:deviceName] mutableCopy];
+    NSMutableDictionary<NSString *, id> *accountAttributes = [[self accountAttributesWithAuthKey:authKey
+                                                                                             pin:nil
+                                                                             encryptedDeviceName:encryptedDeviceName
+                                                                     isManualMessageFetchEnabled:YES] mutableCopy];
+
     [accountAttributes removeObjectForKey:OWSRequestKey_AuthKey];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
@@ -432,12 +441,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (NSDictionary<NSString *, id> *)accountAttributesWithAuthKey:(NSString *)authKey
                                                            pin:(nullable NSString *)pin
-                                                    deviceName:(nullable NSString *)deviceName
+                                           encryptedDeviceName:(nullable NSData *)encryptedDeviceName
+                                   isManualMessageFetchEnabled:(BOOL)isManualMessageFetchEnabled
 {
     OWSAssertDebug(authKey.length > 0);
     uint32_t registrationId = [self.tsAccountManager getOrGenerateRegistrationId];
-
-    BOOL isManualMessageFetchEnabled = self.tsAccountManager.isManualMessageFetchEnabled;
 
     OWSAES256Key *profileKey = [self.profileManager localProfileKey];
     NSError *error;
@@ -467,25 +475,34 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         accountAttributes[@"pin"] = pin;
     }
 
-    if (deviceName.length > 0) {
-        NSError *error;
-        ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
-        OWSAssert(identityKeyPair);
-        NSData *_Nullable encryptedDeviceName = [DeviceNames encryptDeviceNameWithPlaintext:deviceName
-                                                                            identityKeyPair:identityKeyPair
-                                                                                      error:&error];
-        if (encryptedDeviceName != nil) {
-            accountAttributes[@"name"] = encryptedDeviceName.base64EncodedString;
-        } else {
-            OWSFailDebug(@"failure: %@", error);
-        }
+    if (encryptedDeviceName.length > 0) {
+        accountAttributes[@"name"] = encryptedDeviceName.base64EncodedString;
     }
 
-    if (SSKFeatureFlags.uuidCapabilities) {
-        accountAttributes[@"capabilities"] = @{ @"uuid" : @(YES) };
-    }
+    accountAttributes[@"capabilities"] = self.deviceCapabilities;
 
     return [accountAttributes copy];
+}
+
++ (TSRequest *)updateSecondaryDeviceCapabilitiesRequest
+{
+    // If you are updating capabilities for a primary device, use `updateAccountAttributes` instead
+    OWSAssertDebug(!self.tsAccountManager.isPrimaryDevice);
+
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/devices/capabilities"]
+                              method:@"PUT"
+                          parameters:@{
+                              @"capabilities": self.deviceCapabilities
+                          }];
+}
+
++ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilities
+{
+    NSMutableDictionary<NSString *, NSNumber *> *capabilities = [NSMutableDictionary new];
+    if (SSKFeatureFlags.uuidCapabilities) {
+        capabilities[@"uuid"] = @(YES);
+    }
+    return [capabilities copy];
 }
 
 + (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
