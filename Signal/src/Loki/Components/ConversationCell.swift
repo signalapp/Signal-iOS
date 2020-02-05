@@ -135,16 +135,21 @@ final class ConversationCell : UITableViewCell {
         LokiAPI.populateUserHexEncodedPublicKeyCacheIfNeeded(for: threadViewModel.threadRecord.uniqueId!) // FIXME: This is a terrible place to do this
         unreadMessagesIndicatorView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
         if threadViewModel.isGroupThread {
-            let users = LokiAPI.userHexEncodedPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
-            let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
-            if !randomUsers.isEmpty {
-                profilePictureView.hexEncodedPublicKey = randomUsers[0]
-                profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
-            } else {
+            if threadViewModel.name == "Session Public Chat" {
                 profilePictureView.hexEncodedPublicKey = ""
-                profilePictureView.additionalHexEncodedPublicKey = ""
+                profilePictureView.isRSSFeed = true
+            } else {
+                let users = LokiAPI.userHexEncodedPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
+                let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
+                if !randomUsers.isEmpty {
+                    profilePictureView.hexEncodedPublicKey = randomUsers[0]
+                    profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
+                } else {
+                    profilePictureView.hexEncodedPublicKey = ""
+                    profilePictureView.additionalHexEncodedPublicKey = ""
+                }
+                profilePictureView.isRSSFeed = (threadViewModel.threadRecord as? TSGroupThread)?.isRSSFeed ?? false
             }
-            profilePictureView.isRSSFeed = (threadViewModel.threadRecord as? TSGroupThread)?.isRSSFeed ?? false
         } else {
             profilePictureView.hexEncodedPublicKey = threadViewModel.contactIdentifier!
             profilePictureView.additionalHexEncodedPublicKey = nil

@@ -949,16 +949,8 @@ const CGFloat kIconViewLength = 24;
     [stackView setLayoutMarginsRelativeArrangement:YES];
     
     if (self.isGroupThread) {
-        NSMutableArray<NSString *> *sortedUsers = @[].mutableCopy;
-        NSSet<NSString *> *users = LKAPI.userHexEncodedPublicKeyCache[self.thread.uniqueId];
-        if (users != nil) {
-            for (NSString *user in users) {
-                [sortedUsers addObject:user];
-            }
-        }
-        sortedUsers = [sortedUsers sortedArrayUsingSelector:@selector(compare:)].mutableCopy;
-        profilePictureView.hexEncodedPublicKey = (sortedUsers.count > 0) ? sortedUsers[0] : @"";
-        profilePictureView.isRSSFeed = ((TSGroupThread *)self.thread).isRSSFeed;
+        profilePictureView.hexEncodedPublicKey = @"";
+        profilePictureView.isRSSFeed = true; // For now just always show the Session logo
     } else {
         profilePictureView.hexEncodedPublicKey = self.thread.contactIdentifier;
         
