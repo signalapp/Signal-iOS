@@ -938,11 +938,6 @@ public class GroupManager: NSObject {
 
     // MARK: - Leave Group / Decline Invite
 
-    @objc
-    public static func leaveGroupOrDeclineInviteObjc(groupThread: TSGroupThread) -> AnyPromise {
-        return AnyPromise(leaveGroupOrDeclineInvite(groupThread: groupThread))
-    }
-
     public static func leaveGroupOrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
         switch groupThread.groupModel.groupsVersion {
         case .V1:
@@ -977,7 +972,7 @@ public class GroupManager: NSObject {
             var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
             groupMembershipBuilder.remove(localAddress)
             let newGroupMembership = groupMembershipBuilder.build()
-            let groupAccess = try oldGroupModel.groupAccess
+            let groupAccess = oldGroupModel.groupAccess
             let newGroupModel = try self.buildGroupModel(groupId: groupId,
                                                          name: oldGroupModel.groupName,
                                                          avatarData: oldGroupModel.groupAvatarData,
@@ -1127,11 +1122,6 @@ public class GroupManager: NSObject {
                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                      transaction: transaction)
 
-        // GroupsV2 TODO: This is temporary until we build the "accept invites" UI.
-        transaction.addAsyncCompletion {
-            self.autoAcceptInviteToGroupV2IfNecessary(groupThread: groupThread)
-        }
-
         return groupThread
     }
 
@@ -1195,11 +1185,6 @@ public class GroupManager: NSObject {
                                          transaction: transaction)
         }
 
-        // GroupsV2 TODO: This is temporary until we build the "accept invites" UI.
-        transaction.addAsyncCompletion {
-            self.autoAcceptInviteToGroupV2IfNecessary(groupThread: groupThread)
-        }
-
         return UpsertGroupResult(action: .updated, groupThread: groupThread)
     }
 
@@ -1222,29 +1207,6 @@ public class GroupManager: NSObject {
                                         messageType: .typeGroupUpdate,
                                         infoMessageUserInfo: userInfo)
         infoMessage.anyInsert(transaction: transaction)
-    }
-
-    // GroupsV2 TODO: This is temporary until we build the "accept invites" UI.
-    private static func autoAcceptInviteToGroupV2IfNecessary(groupThread: TSGroupThread) {
-        guard FeatureFlags.groupsV2AutoAcceptInvites else {
-            return
-        }
-        guard let localAddress = self.tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
-            return
-        }
-        let groupMembership = groupThread.groupModel.groupMembership
-        let isPendingMember = groupMembership.isPending(localAddress)
-        guard isPendingMember else {
-            return
-        }
-        firstly {
-            acceptInviteToGroupV2(groupThread: groupThread)
-        }.done(on: .global()) { _ in
-            Logger.debug("Accept invite succeeded.")
-        }.catch(on: .global()) { error in
-            owsFailDebug("Accept invite failed: \(error)")
-        }.retainUntilComplete()
     }
 
     // MARK: - Group Database

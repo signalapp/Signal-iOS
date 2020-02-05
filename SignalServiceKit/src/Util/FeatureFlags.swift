@@ -187,10 +187,6 @@ public class FeatureFlags: NSObject {
     @objc
     public static let groupsV2IncomingMessages = groupsV2
 
-    // GroupsV2 TODO: Use this until we have "accept invites" UI.
-    @objc
-    public static let groupsV2AutoAcceptInvites = false
-
     @objc
     public static let groupsV2IgnoreCapability = false
 

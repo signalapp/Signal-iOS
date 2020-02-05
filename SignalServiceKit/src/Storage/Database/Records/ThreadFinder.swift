@@ -192,6 +192,13 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
 
     @objc
     public class func hasPendingMessageRequest(thread: TSThread, transaction: GRDBReadTransaction) -> Bool {
+
+        if let groupThread = thread as? TSGroupThread,
+            groupThread.isGroupV2Thread,
+            groupThread.isLocalUserPendingMember {
+            return true
+        }
+
         // If the feature isn't enabled, do nothing.
         guard RemoteConfig.messageRequests else { return false }
 
@@ -199,7 +206,7 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         guard thread.shouldThreadBeVisible else { return false }
 
         let isGroupThread = thread is TSGroupThread
-        let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserInGroup() == true
+        let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserInGroup == true
 
         // If this is a group thread and we're not a member, never show the message request.
         if isGroupThread, !isLocalUserInGroup { return false }
