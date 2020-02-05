@@ -120,8 +120,6 @@ class ReactionsDetailSheet: UIViewController {
     func setReactionState(_ reactionState: InteractionReactionState, transaction: SDSAnyReadTransaction) {
         self.reactionState = reactionState
 
-        emojiPagingScrollView.isScrollEnabled = allEmoji.count > 1
-
         buildEmojiCountItems()
 
         // If the currently selected emoji still exists, keep it selected.
@@ -386,7 +384,6 @@ class ReactionsDetailSheet: UIViewController {
 
     private func setupPaging() {
         emojiPagingScrollView.isPagingEnabled = true
-        emojiPagingScrollView.isScrollEnabled = allEmoji.count > 1
         emojiPagingScrollView.showsHorizontalScrollIndicator = false
         emojiPagingScrollView.isDirectionalLockEnabled = true
         emojiPagingScrollView.delegate = self
