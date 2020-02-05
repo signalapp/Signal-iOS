@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,7 +30,7 @@ class FakeAccountServiceClient: AccountServiceClient {
         return Promise { $0.fulfill(()) }
     }
 
-    public override func updateAttributes() -> Promise<Void> {
+    public override func updatePrimaryDeviceAccountAttributes() -> Promise<Void> {
         return Promise { $0.fulfill(()) }
     }
 
