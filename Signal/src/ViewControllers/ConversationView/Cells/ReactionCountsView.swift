@@ -110,7 +110,7 @@ private class ReactionPillView: UIView {
         emojiLabel.font = .boldSystemFont(ofSize: 12)
         emojiLabel.textAlignment = .center
 
-        countLabel.font = .boldSystemFont(ofSize: 12)
+        countLabel.font = .monospacedDigitSystemFont(ofSize: 12, weight: .bold)
         countLabel.textAlignment = .center
 
         layer.borderWidth = pillBorderWidth

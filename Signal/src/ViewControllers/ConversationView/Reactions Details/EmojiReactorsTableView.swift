@@ -143,7 +143,7 @@ private class EmojiReactorCell: UITableViewCell {
         profileLabel.textColor = Theme.secondaryTextAndIconColor
         labelStackView.addArrangedSubview(profileLabel)
 
-        emojiLabel.font = .boldSystemFont(ofSize: 28)
+        emojiLabel.font = .boldSystemFont(ofSize: 24)
         contentView.addSubview(emojiLabel)
         emojiLabel.autoPinLeading(toTrailingEdgeOf: labelStackView, offset: 8)
         emojiLabel.setContentHuggingHorizontalHigh()
@@ -166,10 +166,7 @@ private class EmojiReactorCell: UITableViewCell {
         emojiLabel.text = item.emoji
 
         if item.address.isLocalAddress {
-            nameLabel.text = String(format: NSLocalizedString(
-                "LOCAL_REACTOR_INDICATOR_FORMAT",
-                comment: "Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}}"
-            ), item.displayName)
+            nameLabel.text = item.displayName
             avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
             profileLabel.isHidden = true
         } else {
