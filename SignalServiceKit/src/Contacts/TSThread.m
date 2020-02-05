@@ -38,7 +38,7 @@ ConversationColorName const ConversationColorNamePlum = @"pink";
 ConversationColorName const ConversationColorNameTaupe = @"blue_grey";
 ConversationColorName const ConversationColorNameSteel = @"grey";
 
-ConversationColorName const kConversationColorName_Default = ConversationColorNameSteel;
+ConversationColorName const ConversationColorNameDefault = ConversationColorNameSteel;
 
 @interface TSThread ()
 
@@ -162,7 +162,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
         if (!mappedColorName) {
             OWSFailDebug(@"failure: unexpected unmappable conversationColorName: %@", _conversationColorName);
-            mappedColorName = kConversationColorName_Default;
+            mappedColorName = ConversationColorNameDefault;
         }
 
         _conversationColorName = mappedColorName;
@@ -632,7 +632,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 + (NSArray<ConversationColorName> *)conversationColorNames
 {
-    return [self.colorNamesForNewConversation arrayByAddingObject:kConversationColorName_Default];
+    return [self.colorNamesForNewConversation arrayByAddingObject:ConversationColorNameDefault];
 }
 
 + (ConversationColorName)stableConversationColorNameForString:(NSString *)colorSeed
@@ -668,7 +668,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
     if (!mappedColorName) {
         OWSFailDebug(@"failure: unexpected unmappable legacyColorName: %@", legacyColorName);
-        return kConversationColorName_Default;
+        return ConversationColorNameDefault;
     }
 
     return mappedColorName;
