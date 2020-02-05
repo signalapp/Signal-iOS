@@ -5,7 +5,15 @@
 import Foundation
 
 class EmojiReactorsTableView: UITableView {
-    private var reactorItems = [(thread: TSContactThread, displayName: String, profileName: String?, emoji: String?)]() {
+    struct ReactorItem {
+        let address: SignalServiceAddress
+        let conversationColorName: ConversationColorName
+        let displayName: String
+        let profileName: String?
+        let emoji: String
+    }
+
+    private var reactorItems = [ReactorItem]() {
         didSet { reloadData() }
     }
 
@@ -31,12 +39,8 @@ class EmojiReactorsTableView: UITableView {
 
     func configureForAll(transaction: SDSAnyReadTransaction) {
         reactorItems = finder.allReactions(transaction: transaction).compactMap { reaction in
-            guard let thread = TSContactThread.getWithContactAddress(reaction.reactor, transaction: transaction) else {
-                owsFailDebug("unexpectedly missing thread for address: \(reaction.reactor)")
-                return nil
-            }
-
-            let displayName = contactsManager.displayName(for: thread, transaction: transaction)
+            let thread = TSContactThread.getWithContactAddress(reaction.reactor, transaction: transaction)
+            let displayName = contactsManager.displayName(for: reaction.reactor, transaction: transaction)
 
             let profileName: String?
             if FeatureFlags.profileDisplayChanges || contactsManager.hasNameInSystemContacts(for: reaction.reactor) {
@@ -45,19 +49,21 @@ class EmojiReactorsTableView: UITableView {
                 profileName = contactsManager.formattedProfileName(for: reaction.reactor, transaction: transaction)
             }
 
-            return (thread: thread, displayName: displayName, profileName: profileName, emoji: reaction.emoji)
+            return ReactorItem(
+                address: reaction.reactor,
+                conversationColorName: thread?.conversationColorName ?? .default,
+                displayName: displayName,
+                profileName: profileName,
+                emoji: reaction.emoji
+            )
         }
     }
 
     func configure(for emoji: String?, transaction: SDSAnyReadTransaction) {
         guard let emoji = emoji else { return configureForAll(transaction: transaction) }
         reactorItems = finder.reactors(for: emoji, transaction: transaction).compactMap { address in
-            guard let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) else {
-                owsFailDebug("unexpectedly missing thread for address: \(address)")
-                return nil
-            }
-
-            let displayName = contactsManager.displayName(for: thread, transaction: transaction)
+            let thread = TSContactThread.getWithContactAddress(address, transaction: transaction)
+            let displayName = contactsManager.displayName(for: address, transaction: transaction)
 
             let profileName: String?
             if FeatureFlags.profileDisplayChanges || contactsManager.hasNameInSystemContacts(for: address) {
@@ -66,7 +72,13 @@ class EmojiReactorsTableView: UITableView {
                 profileName = contactsManager.formattedProfileName(for: address, transaction: transaction)
             }
 
-            return (thread: thread, displayName: displayName, profileName: profileName, emoji: emoji)
+            return ReactorItem(
+                address: address,
+                conversationColorName: thread?.conversationColorName ?? .default,
+                displayName: displayName,
+                profileName: profileName,
+                emoji: emoji
+            )
         }
     }
 }
@@ -83,13 +95,13 @@ extension EmojiReactorsTableView: UITableViewDataSource {
             return cell
         }
 
-        guard let (thread, displayName, profileName, emoji) = reactorItems[safe: indexPath.row] else {
+        guard let item = reactorItems[safe: indexPath.row] else {
             owsFailDebug("unexpected indexPath")
             return cell
         }
 
         contactCell.backgroundColor = .clear
-        contactCell.configure(thread: thread, displayName: displayName, profileName: profileName, emoji: emoji)
+        contactCell.configure(item: item)
 
         return contactCell
     }
@@ -143,28 +155,28 @@ private class EmojiReactorCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(thread: TSContactThread, displayName: String, profileName: String?, emoji: String?) {
+    func configure(item: EmojiReactorsTableView.ReactorItem) {
 
         let avatarBuilder = OWSContactAvatarBuilder(
-            address: thread.contactAddress,
-            colorName: thread.conversationColorName,
+            address: item.address,
+            colorName: item.conversationColorName,
             diameter: UInt(avatarDiameter)
         )
 
-        emojiLabel.text = emoji
+        emojiLabel.text = item.emoji
 
-        if thread.contactAddress.isLocalAddress {
+        if item.address.isLocalAddress {
             nameLabel.text = String(format: NSLocalizedString(
                 "LOCAL_REACTOR_INDICATOR_FORMAT",
                 comment: "Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}}"
-            ), displayName)
+            ), item.displayName)
             avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
             profileLabel.isHidden = true
         } else {
-            nameLabel.text = displayName
+            nameLabel.text = item.displayName
             avatarView.image = avatarBuilder.build()
-            profileLabel.text = profileName
-            profileLabel.isHidden = profileName == nil
+            profileLabel.text = item.profileName
+            profileLabel.isHidden = item.profileName == nil
         }
     }
 }

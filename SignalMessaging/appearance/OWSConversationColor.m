@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSConversationColor.h"
@@ -351,7 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSConversationColor *)defaultConversationColor
 {
-    return [self conversationColorForColorName:kConversationColorName_Default];
+    return [self conversationColorForColorName:ConversationColorNameDefault];
 }
 
 @end
