@@ -60,12 +60,7 @@ class ExperienceUpgradeManager: NSObject {
     // MARK: - Splash
 
     private static func hasSplash(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
-        switch experienceUpgrade.id {
-        case .introducingPins:
-            return true
-        default:
-            return false
-        }
+        return false
     }
 
     fileprivate static func splash(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> UIViewController? {
