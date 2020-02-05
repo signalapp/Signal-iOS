@@ -2047,10 +2047,10 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "A PIN kód hossza minimum 6 számjegy.";
 
 /* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "PIN kód frissítése";
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "PIN frissítése";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "A regisztrációs zárat mostantól PIN kódnak hívják. A frissítés pár pillanatot vesz igénybe.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "A regisztrációs zár neve mostantól PIN kód. A frissítés csak pár pillanat.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Később újra emlékeztetünk. PIN kódod frissítése %ld nap múlva kötelezővé válik.";
@@ -2242,7 +2242,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Videó";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reakció az üzenetedre: %@";

@@ -856,7 +856,7 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "最終利用: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "リンクした日: %@";
+"DEVICE_LINKED_AT_LABEL" = "リンク: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "端末リストの更新に失敗";
@@ -2050,7 +2050,7 @@
 "PINS_MEGAPHONE_HAS_PIN_ACTION" = "PINをアップデート";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "登録ロックは今後PINと呼ばれます。アップデートは数秒で終わります。";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "登録ロックは今後、PINと呼ばれます。アップデートは数秒で終わります。";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "あとで再度お知らせします。PINのアップデートは%ld日後に必須になります。";
@@ -2242,7 +2242,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "動画";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ があなたのメッセージに反応";

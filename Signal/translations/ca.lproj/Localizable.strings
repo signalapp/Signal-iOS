@@ -366,7 +366,7 @@
 "BUTTON_OKAY" = "D'acord";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Seleccionar";
+"BUTTON_SELECT" = "Selecció";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Tramet";
@@ -375,19 +375,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Torna a trucar";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Podeu activar l'accés al micròfon a la Configuració de l'iOS per a poder telefonar i enviar missatges de veu al Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Podeu activar l'accés al micròfon a la Configuració de l'iOS per a poder trucar i enviar missatges de veu al Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "Es necessita accés al micròfon";
+"CALL_AUDIO_PERMISSION_TITLE" = "Cal l'accés al micròfon";
 
 /* notification body */
 "CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Trucada entrant";
 
 /* Accessibility label for placing call button */
-"CALL_LABEL" = "Telefona";
+"CALL_LABEL" = "Truca";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Trucada perduda perquè el número de seguretat de l'emissor ha canviat.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Trucada perduda perquè el número de seguretat del remitent ha canviat.";
 
 /* notification body */
 "CALL_MISSED_NOTIFICATION_BODY" = "☎️ Trucada perduda";
@@ -2242,7 +2242,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Vídeo";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ ha reaccionat al vostre missatge";

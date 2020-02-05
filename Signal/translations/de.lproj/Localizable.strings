@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Nicht jetzt";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Jetzt nicht";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Neue Sicherheitsnummer akzeptieren";
@@ -2050,7 +2050,7 @@
 "PINS_MEGAPHONE_HAS_PIN_ACTION" = "PIN aktualisieren";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Deine Registrierungssperre heißt nun PIN. Ihre Aktualisierung dauert Sekunden.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Deine Registrierungssperre heißt nun PIN. Die Aktualisierung dauert nur Sekunden.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Wir erinnern dich später. Das Aktualisieren deiner PIN wird in %ld Tagen zwingend erforderlich.";
@@ -2242,7 +2242,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All (%@)";
+"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ hat auf deine Nachricht reagiert";
