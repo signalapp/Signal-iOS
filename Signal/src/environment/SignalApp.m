@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didChangeCallLoggingPreference:(NSNotification *)notitication
 {
-    [AppEnvironment.shared.callService createCallUIAdapter];
+//    [AppEnvironment.shared.callService createCallUIAdapter];
 }
 
 #pragma mark - Methods

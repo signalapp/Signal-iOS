@@ -158,24 +158,24 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 #pragma mark - Mutable Accessors
 
-- (nullable id<OWSCallMessageHandler>)callMessageHandler
-{
-    @synchronized(self) {
-        OWSAssertDebug(_callMessageHandler);
-
-        return _callMessageHandler;
-    }
-}
-
-- (void)setCallMessageHandler:(nullable id<OWSCallMessageHandler>)callMessageHandler
-{
-    @synchronized(self) {
-        OWSAssertDebug(callMessageHandler);
-        OWSAssertDebug(!_callMessageHandler);
-
-        _callMessageHandler = callMessageHandler;
-    }
-}
+//- (nullable id<OWSCallMessageHandler>)callMessageHandler
+//{
+//    @synchronized(self) {
+//        OWSAssertDebug(_callMessageHandler);
+//
+//        return _callMessageHandler;
+//    }
+//}
+//
+//- (void)setCallMessageHandler:(nullable id<OWSCallMessageHandler>)callMessageHandler
+//{
+//    @synchronized(self) {
+//        OWSAssertDebug(callMessageHandler);
+//        OWSAssertDebug(!_callMessageHandler);
+//
+//        _callMessageHandler = callMessageHandler;
+//    }
+//}
 
 - (nullable id<NotificationsProtocol>)notificationsManager
 {
@@ -207,7 +207,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 - (BOOL)isComplete
 {
-    return (self.callMessageHandler != nil && self.notificationsManager != nil);
+    return self.notificationsManager != nil;
 }
 
 - (YapDatabaseConnection *)objectReadWriteConnection

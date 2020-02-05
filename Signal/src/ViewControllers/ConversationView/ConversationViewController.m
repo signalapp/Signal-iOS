@@ -315,10 +315,10 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.networkManager;
 }
 
-- (OutboundCallInitiator *)outboundCallInitiator
-{
-    return AppEnvironment.shared.outboundCallInitiator;
-}
+//- (OutboundCallInitiator *)outboundCallInitiator
+//{
+//    return AppEnvironment.shared.outboundCallInitiator;
+//}
 
 - (id<OWSTypingIndicators>)typingIndicators
 {
@@ -1766,7 +1766,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier isVideo:isVideo];
+//    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier isVideo:isVideo];
 }
 
 - (BOOL)canCall

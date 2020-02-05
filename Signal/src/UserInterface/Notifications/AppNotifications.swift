@@ -25,15 +25,15 @@ enum AppNotificationCategory: CaseIterable {
     case incomingMessageFromNoLongerVerifiedIdentity
     case errorMessage
     case threadlessErrorMessage
-    case incomingCall
-    case missedCall
-    case missedCallFromNoLongerVerifiedIdentity
+//    case incomingCall
+//    case missedCall
+//    case missedCallFromNoLongerVerifiedIdentity
 }
 
 enum AppNotificationAction: CaseIterable {
-    case answerCall
-    case callBack
-    case declineCall
+//    case answerCall
+//    case callBack
+//    case declineCall
     case markAsRead
     case reply
     case showThread
@@ -56,12 +56,12 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.errorMessage"
         case .threadlessErrorMessage:
             return "Signal.AppNotificationCategory.threadlessErrorMessage"
-        case .incomingCall:
-            return "Signal.AppNotificationCategory.incomingCall"
-        case .missedCall:
-            return "Signal.AppNotificationCategory.missedCall"
-        case .missedCallFromNoLongerVerifiedIdentity:
-            return "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
+//        case .incomingCall:
+//            return "Signal.AppNotificationCategory.incomingCall"
+//        case .missedCall:
+//            return "Signal.AppNotificationCategory.missedCall"
+//        case .missedCallFromNoLongerVerifiedIdentity:
+//            return "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
         }
     }
 
@@ -75,12 +75,12 @@ extension AppNotificationCategory {
             return [.showThread]
         case .threadlessErrorMessage:
             return []
-        case .incomingCall:
-            return [.answerCall, .declineCall]
-        case .missedCall:
-            return [.callBack, .showThread]
-        case .missedCallFromNoLongerVerifiedIdentity:
-            return [.showThread]
+//        case .incomingCall:
+//            return [.answerCall, .declineCall]
+//        case .missedCall:
+//            return [.callBack, .showThread]
+//        case .missedCallFromNoLongerVerifiedIdentity:
+//            return [.showThread]
         }
     }
 }
@@ -88,12 +88,12 @@ extension AppNotificationCategory {
 extension AppNotificationAction {
     var identifier: String {
         switch self {
-        case .answerCall:
-            return "Signal.AppNotifications.Action.answerCall"
-        case .callBack:
-            return "Signal.AppNotifications.Action.callBack"
-        case .declineCall:
-            return "Signal.AppNotifications.Action.declineCall"
+//        case .answerCall:
+//            return "Signal.AppNotifications.Action.answerCall"
+//        case .callBack:
+//            return "Signal.AppNotifications.Action.callBack"
+//        case .declineCall:
+//            return "Signal.AppNotifications.Action.declineCall"
         case .markAsRead:
             return "Signal.AppNotifications.Action.markAsRead"
         case .reply:
@@ -209,139 +209,139 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return adaptee.registerNotificationSettings()
     }
 
-    func presentIncomingCall(_ call: SignalCall, callerName: String) {
-
-        let notificationTitle: String?
-        switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = nil
-        case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
-        }
-        let notificationBody = NotificationStrings.incomingCallBody
-
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.localCallId: call.localId.uuidString
-        ]
-
-        DispatchQueue.main.async {
-            self.adaptee.notify(category: .incomingCall,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                userInfo: userInfo,
-                                sound: .defaultiOSIncomingRingtone,
-                                replacingIdentifier: call.localId.uuidString)
-        }
-    }
-
-    func presentMissedCall(_ call: SignalCall, callerName: String) {
-        let notificationTitle: String?
-        switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = nil
-        case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
-        }
-        let notificationBody = NotificationStrings.missedCallBody
-
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
-        ]
-
-        DispatchQueue.main.async {
-            let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .missedCall,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                userInfo: userInfo,
-                                sound: sound,
-                                replacingIdentifier: call.localId.uuidString)
-        }
-    }
-
-    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
-        let notificationTitle: String?
-        switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = nil
-        case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
-        }
-        let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
-        ]
-
-        DispatchQueue.main.async {
-            let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .missedCallFromNoLongerVerifiedIdentity,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                userInfo: userInfo,
-                                sound: sound,
-                                replacingIdentifier: call.localId.uuidString)
-        }
-    }
-
-    public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
-        let notificationTitle: String?
-        switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = nil
-        case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
-        }
-        let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
-        ]
-
-        DispatchQueue.main.async {
-            let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .missedCall,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                userInfo: userInfo,
-                                sound: sound,
-                                replacingIdentifier: call.localId.uuidString)
-        }
-    }
+//    func presentIncomingCall(_ call: SignalCall, callerName: String) {
+//
+//        let notificationTitle: String?
+//        switch previewType {
+//        case .noNameNoPreview:
+//            notificationTitle = nil
+//        case .nameNoPreview, .namePreview:
+//            notificationTitle = callerName
+//        }
+//        let notificationBody = NotificationStrings.incomingCallBody
+//
+//        let remotePhoneNumber = call.remotePhoneNumber
+//        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+//
+//        guard let threadId = thread.uniqueId else {
+//            owsFailDebug("threadId was unexpectedly nil")
+//            return
+//        }
+//
+//        let userInfo = [
+//            AppNotificationUserInfoKey.threadId: threadId,
+//            AppNotificationUserInfoKey.localCallId: call.localId.uuidString
+//        ]
+//
+//        DispatchQueue.main.async {
+//            self.adaptee.notify(category: .incomingCall,
+//                                title: notificationTitle,
+//                                body: notificationBody,
+//                                userInfo: userInfo,
+//                                sound: .defaultiOSIncomingRingtone,
+//                                replacingIdentifier: call.localId.uuidString)
+//        }
+//    }
+//
+//    func presentMissedCall(_ call: SignalCall, callerName: String) {
+//        let notificationTitle: String?
+//        switch previewType {
+//        case .noNameNoPreview:
+//            notificationTitle = nil
+//        case .nameNoPreview, .namePreview:
+//            notificationTitle = callerName
+//        }
+//        let notificationBody = NotificationStrings.missedCallBody
+//
+//        let remotePhoneNumber = call.remotePhoneNumber
+//        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+//
+//        guard let threadId = thread.uniqueId else {
+//            owsFailDebug("threadId was unexpectedly nil")
+//            return
+//        }
+//
+//        let userInfo = [
+//            AppNotificationUserInfoKey.threadId: threadId,
+//            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
+//        ]
+//
+//        DispatchQueue.main.async {
+//            let sound = self.requestSound(thread: thread)
+//            self.adaptee.notify(category: .missedCall,
+//                                title: notificationTitle,
+//                                body: notificationBody,
+//                                userInfo: userInfo,
+//                                sound: sound,
+//                                replacingIdentifier: call.localId.uuidString)
+//        }
+//    }
+//
+//    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
+//        let notificationTitle: String?
+//        switch previewType {
+//        case .noNameNoPreview:
+//            notificationTitle = nil
+//        case .nameNoPreview, .namePreview:
+//            notificationTitle = callerName
+//        }
+//        let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
+//
+//        let remotePhoneNumber = call.remotePhoneNumber
+//        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+//        guard let threadId = thread.uniqueId else {
+//            owsFailDebug("threadId was unexpectedly nil")
+//            return
+//        }
+//
+//        let userInfo = [
+//            AppNotificationUserInfoKey.threadId: threadId
+//        ]
+//
+//        DispatchQueue.main.async {
+//            let sound = self.requestSound(thread: thread)
+//            self.adaptee.notify(category: .missedCallFromNoLongerVerifiedIdentity,
+//                                title: notificationTitle,
+//                                body: notificationBody,
+//                                userInfo: userInfo,
+//                                sound: sound,
+//                                replacingIdentifier: call.localId.uuidString)
+//        }
+//    }
+//
+//    public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
+//        let notificationTitle: String?
+//        switch previewType {
+//        case .noNameNoPreview:
+//            notificationTitle = nil
+//        case .nameNoPreview, .namePreview:
+//            notificationTitle = callerName
+//        }
+//        let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
+//
+//        let remotePhoneNumber = call.remotePhoneNumber
+//        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+//
+//        guard let threadId = thread.uniqueId else {
+//            owsFailDebug("threadId was unexpectedly nil")
+//            return
+//        }
+//
+//        let userInfo = [
+//            AppNotificationUserInfoKey.threadId: threadId,
+//            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
+//        ]
+//
+//        DispatchQueue.main.async {
+//            let sound = self.requestSound(thread: thread)
+//            self.adaptee.notify(category: .missedCall,
+//                                title: notificationTitle,
+//                                body: notificationBody,
+//                                userInfo: userInfo,
+//                                sound: sound,
+//                                replacingIdentifier: call.localId.uuidString)
+//        }
+//    }
 
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
 
@@ -557,9 +557,9 @@ class NotificationActionHandler {
         return SSKEnvironment.shared.messageSender
     }
 
-    var callUIAdapter: CallUIAdapter {
-        return AppEnvironment.shared.callService.callUIAdapter
-    }
+//    var callUIAdapter: CallUIAdapter {
+//        return AppEnvironment.shared.callService.callUIAdapter
+//    }
 
     var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
@@ -571,40 +571,40 @@ class NotificationActionHandler {
 
     // MARK: -
 
-    func answerCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
-            throw NotificationError.failDebug("localCallIdString was unexpectedly nil")
-        }
-
-        guard let localCallId = UUID(uuidString: localCallIdString) else {
-            throw NotificationError.failDebug("unable to build localCallId. localCallIdString: \(localCallIdString)")
-        }
-
-        callUIAdapter.answerCall(localId: localCallId)
-        return Promise.value(())
-    }
-
-    func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        guard let recipientId = userInfo[AppNotificationUserInfoKey.callBackNumber] as? String else {
-            throw NotificationError.failDebug("recipientId was unexpectedly nil")
-        }
-
-        callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: false)
-        return Promise.value(())
-    }
-
-    func declineCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
-            throw NotificationError.failDebug("localCallIdString was unexpectedly nil")
-        }
-
-        guard let localCallId = UUID(uuidString: localCallIdString) else {
-            throw NotificationError.failDebug("unable to build localCallId. localCallIdString: \(localCallIdString)")
-        }
-
-        callUIAdapter.declineCall(localId: localCallId)
-        return Promise.value(())
-    }
+//    func answerCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+//        guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
+//            throw NotificationError.failDebug("localCallIdString was unexpectedly nil")
+//        }
+//
+//        guard let localCallId = UUID(uuidString: localCallIdString) else {
+//            throw NotificationError.failDebug("unable to build localCallId. localCallIdString: \(localCallIdString)")
+//        }
+//
+//        callUIAdapter.answerCall(localId: localCallId)
+//        return Promise.value(())
+//    }
+//
+//    func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+//        guard let recipientId = userInfo[AppNotificationUserInfoKey.callBackNumber] as? String else {
+//            throw NotificationError.failDebug("recipientId was unexpectedly nil")
+//        }
+//
+//        callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: false)
+//        return Promise.value(())
+//    }
+//
+//    func declineCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+//        guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
+//            throw NotificationError.failDebug("localCallIdString was unexpectedly nil")
+//        }
+//
+//        guard let localCallId = UUID(uuidString: localCallIdString) else {
+//            throw NotificationError.failDebug("unable to build localCallId. localCallIdString: \(localCallIdString)")
+//        }
+//
+//        callUIAdapter.declineCall(localId: localCallId)
+//        return Promise.value(())
+//    }
 
     func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {

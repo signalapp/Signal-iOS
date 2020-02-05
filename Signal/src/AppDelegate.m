@@ -935,20 +935,20 @@ static NSTimeInterval launchStartedAt;
             // * It can be received if the user taps the "video" button for a contact in the
             //   contacts app.  If so, the correct response is to try to initiate a new call
             //   to that user - unless there already is another call in progress.
-            if (AppEnvironment.shared.callService.call != nil) {
-                if ([phoneNumber isEqualToString:AppEnvironment.shared.callService.call.remotePhoneNumber]) {
-                    OWSLogWarn(@"trying to upgrade ongoing call to video.");
-                    [AppEnvironment.shared.callService handleCallKitStartVideo];
-                    return;
-                } else {
-                    OWSLogWarn(@"ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.");
-                    return;
-                }
-            }
-
-            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
-            OWSAssertDebug(outboundCallInitiator);
-            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+//            if (AppEnvironment.shared.callService.call != nil) {
+//                if ([phoneNumber isEqualToString:AppEnvironment.shared.callService.call.remotePhoneNumber]) {
+//                    OWSLogWarn(@"trying to upgrade ongoing call to video.");
+//                    [AppEnvironment.shared.callService handleCallKitStartVideo];
+//                    return;
+//                } else {
+//                    OWSLogWarn(@"ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.");
+//                    return;
+//                }
+//            }
+//
+//            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
+//            OWSAssertDebug(outboundCallInitiator);
+//            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
         }];
         return YES;
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
@@ -986,14 +986,14 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
-            if (AppEnvironment.shared.callService.call != nil) {
-                OWSLogWarn(@"ignoring INStartAudioCallIntent due to ongoing WebRTC call.");
-                return;
-            }
-
-            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
-            OWSAssertDebug(outboundCallInitiator);
-            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+//            if (AppEnvironment.shared.callService.call != nil) {
+//                OWSLogWarn(@"ignoring INStartAudioCallIntent due to ongoing WebRTC call.");
+//                return;
+//            }
+//
+//            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
+//            OWSAssertDebug(outboundCallInitiator);
+//            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
         }];
         return YES;
     } else {
@@ -1027,22 +1027,22 @@ static NSTimeInterval launchStartedAt;
 
 - (nullable NSString *)phoneNumberForIntentHandle:(NSString *)handle
 {
-    OWSAssertDebug(handle.length > 0);
-
-    if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-        NSString *_Nullable phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
-        if (phoneNumber.length < 1) {
-            OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
-            return nil;
-        }
-        return phoneNumber;
-    }
-
-    for (PhoneNumber *phoneNumber in
-        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:handle
-                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
-        return phoneNumber.toE164;
-    }
+//    OWSAssertDebug(handle.length > 0);
+//
+//    if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
+//        NSString *_Nullable phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
+//        if (phoneNumber.length < 1) {
+//            OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
+//            return nil;
+//        }
+//        return phoneNumber;
+//    }
+//
+//    for (PhoneNumber *phoneNumber in
+//        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:handle
+//                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
+//        return phoneNumber.toE164;
+//    }
     return nil;
 }
 

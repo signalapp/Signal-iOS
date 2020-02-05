@@ -40,18 +40,18 @@ class DebugUINotifications: DebugUIPage {
                 OWSTableItem(title: "All Notifications in Sequence") { [weak self] in
                     self?.notifyForEverythingInSequence(contactThread: contactThread).retainUntilComplete()
                 },
-                OWSTableItem(title: "Incoming Call") { [weak self] in
-                    self?.notifyForIncomingCall(thread: contactThread).retainUntilComplete()
-                },
-                OWSTableItem(title: "Call Missed") { [weak self] in
-                    self?.notifyForMissedCall(thread: contactThread).retainUntilComplete()
-                },
-                OWSTableItem(title: "Call Rejected: New Safety Number") { [weak self] in
-                    self?.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread).retainUntilComplete()
-                },
-                OWSTableItem(title: "Call Rejected: No Longer Verified") { [weak self] in
-                    self?.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread).retainUntilComplete()
-                }
+//                OWSTableItem(title: "Incoming Call") { [weak self] in
+//                    self?.notifyForIncomingCall(thread: contactThread).retainUntilComplete()
+//                },
+//                OWSTableItem(title: "Call Missed") { [weak self] in
+//                    self?.notifyForMissedCall(thread: contactThread).retainUntilComplete()
+//                },
+//                OWSTableItem(title: "Call Rejected: New Safety Number") { [weak self] in
+//                    self?.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread).retainUntilComplete()
+//                },
+//                OWSTableItem(title: "Call Rejected: No Longer Verified") { [weak self] in
+//                    self?.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread).retainUntilComplete()
+//                }
             ]
         }
 
@@ -100,28 +100,29 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
-    func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (SignalCall) -> Void) -> Guarantee<Void> {
-        let call = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: 0)
-
-        return delayedNotificationDispatch {
-            callBlock(call)
-        }
-    }
+//    func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (SignalCall) -> Void) -> Guarantee<Void> {
+//        let call = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: 0)
+//
+//        return delayedNotificationDispatch {
+//            callBlock(call)
+//        }
+//    }
 
     // MARK: Notification Methods
 
     func notifyForEverythingInSequence(contactThread: TSContactThread) -> Guarantee<Void> {
         let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 
+//        return firstly {
+//            self.notifyForIncomingCall(thread: contactThread)
+//        }.then {
+//            self.notifyForMissedCall(thread: contactThread)
+//        }.then {
+//            self.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
+//        }.then {
+//            self.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
+//        }.then
         return firstly {
-            self.notifyForIncomingCall(thread: contactThread)
-        }.then {
-            self.notifyForMissedCall(thread: contactThread)
-        }.then {
-            self.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
-        }.then {
-            self.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
-        }.then {
             self.notifyForIncomingMessage(thread: contactThread)
         }.then {
             self.notifyForErrorMessage(thread: contactThread)
@@ -132,33 +133,33 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
-    func notifyForIncomingCall(thread: TSContactThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
-        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenter.presentIncomingCall(call, callerName: thread.name())
-        }
-    }
-
-    func notifyForMissedCall(thread: TSContactThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
-        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenter.presentMissedCall(call, callerName: thread.name())
-        }
-    }
-
-    func notifyForMissedCallBecauseOfNewIdentity(thread: TSContactThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
-        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: thread.name())
-        }
-    }
-
-    func notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: TSContactThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
-        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: thread.name())
-        }
-    }
+//    func notifyForIncomingCall(thread: TSContactThread) -> Guarantee<Void> {
+//        Logger.info("⚠️ will present notification after delay")
+//        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
+//            self.notificationPresenter.presentIncomingCall(call, callerName: thread.name())
+//        }
+//    }
+//
+//    func notifyForMissedCall(thread: TSContactThread) -> Guarantee<Void> {
+//        Logger.info("⚠️ will present notification after delay")
+//        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
+//            self.notificationPresenter.presentMissedCall(call, callerName: thread.name())
+//        }
+//    }
+//
+//    func notifyForMissedCallBecauseOfNewIdentity(thread: TSContactThread) -> Guarantee<Void> {
+//        Logger.info("⚠️ will present notification after delay")
+//        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
+//            self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: thread.name())
+//        }
+//    }
+//
+//    func notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: TSContactThread) -> Guarantee<Void> {
+//        Logger.info("⚠️ will present notification after delay")
+//        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
+//            self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: thread.name())
+//        }
+//    }
 
     func notifyForIncomingMessage(thread: TSThread) -> Guarantee<Void> {
         Logger.info("⚠️ will present notification after delay")

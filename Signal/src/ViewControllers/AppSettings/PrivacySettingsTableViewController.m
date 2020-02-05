@@ -499,7 +499,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [self.preferences setIsSystemCallLogEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
-    [AppEnvironment.shared.callService createCallUIAdapter];
+//    [AppEnvironment.shared.callService createCallUIAdapter];
 }
 
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender
@@ -508,7 +508,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [self.preferences setIsCallKitEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit vs not changed.
-    [AppEnvironment.shared.callService createCallUIAdapter];
+//    [AppEnvironment.shared.callService createCallUIAdapter];
 
     // Show/Hide dependent switch: CallKit privacy
     [self updateTableContents];
@@ -520,7 +520,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [self.preferences setIsCallKitPrivacyEnabled:!sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
-    [AppEnvironment.shared.callService createCallUIAdapter];
+//    [AppEnvironment.shared.callService createCallUIAdapter];
 }
 
 - (void)didToggleUDUnrestrictedAccessSwitch:(UISwitch *)sender
