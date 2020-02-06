@@ -134,8 +134,14 @@ public class TSOutgoingMessageBuilder: NSObject {
             : 0)
     }
 
+    private var hasBuilt = false
+
     @objc
     public func build() -> TSOutgoingMessage {
+        if hasBuilt {
+            owsFailDebug("Don't build more than once.")
+        }
+        hasBuilt = true
         return TSOutgoingMessage(outgoingMessageWithBuilder: self)
     }
 }
