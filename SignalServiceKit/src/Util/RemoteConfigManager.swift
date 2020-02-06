@@ -21,12 +21,12 @@ public class RemoteConfig: NSObject {
         // If we've turned off the KBS feature we don't want to present the
         // pins for everyone migration even if this user is in the bucket.
         guard kbs else { return false }
-        return isEnabled("ios.pinsForEveryone")
+        return isEnabled(.pinsForEveryone)
     }
 
     @objc
     public static var profileNameReminder: Bool {
-        return isEnabled("ios.profileNameReminder")
+        return isEnabled(.profileNameReminder)
     }
 
     @objc
@@ -34,15 +34,47 @@ public class RemoteConfig: NSObject {
         // This feature latches "on" – once they have a master key in KBS,
         // even if we turn it off on the server they will keep using KBS.
         guard !KeyBackupService.hasMasterKey else { return true }
-        return isEnabled("ios.kbs")
+        return isEnabled(.kbs)
     }
 
-    private static func isEnabled(_ key: String, defaultValue: Bool = false) -> Bool {
+    private static func isEnabled(_ flag: Flags.Supported, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
             return defaultValue
         }
-        return remoteConfig.config[key] ?? defaultValue
+        return remoteConfig.config[flag.rawFlag] ?? defaultValue
     }
+}
+
+private struct Flags {
+    static let prefix = "ios."
+
+    // Values defined in this array remain forever true once they are
+    // marked true regardless of the remote state.
+    enum Sticky: String, FlagType {
+        case pinsForEveryone
+    }
+
+    // We filter the received config down to just the supported flags.
+    // This ensures if we have a sticky flag it doesn't get inadvertently
+    // set because we cached a value before it went public. e.g. if we set
+    // a sticky flag to 100% in beta then turn it back to 0% before going
+    // to production.
+    enum Supported: String, FlagType {
+        case pinsForEveryone
+        case kbs
+        case profileNameReminder
+    }
+}
+
+private protocol FlagType: CaseIterable {
+    var rawValue: String { get }
+    var rawFlag: String { get }
+    static var allRawFlags: [String] { get }
+}
+
+fileprivate extension FlagType {
+    var rawFlag: String { Flags.prefix + rawValue }
+    static var allRawFlags: [String] { allCases.map { $0.rawFlag } }
 }
 
 @objc
@@ -73,12 +105,6 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     let keyValueStore: SDSKeyValueStore = SDSKeyValueStore(collection: "RemoteConfigManager")
 
     // MARK: -
-
-    // Values defined in this array remain forever true once they are
-    // marked true regardless of the remote state.
-    private let stickyFlags = [
-        "ios.pinsForEveryone"
-    ]
 
     @objc
     public private(set) var cachedConfig: RemoteConfig?
@@ -154,11 +180,11 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         return firstly {
             self.serviceClient.getRemoteConfig()
         }.done(on: .global()) { fetchedConfig in
-            var configToStore = fetchedConfig
+            var configToStore = fetchedConfig.filter { Flags.Supported.allRawFlags.contains($0.key) }
             self.databaseStorage.write { transaction in
                 // Update fetched config to reflect any sticky flags.
                 if let existingConfig = self.keyValueStore.getRemoteConfig(transaction: transaction) {
-                    existingConfig.lazy.filter { self.stickyFlags.contains($0.key) }.forEach {
+                    existingConfig.lazy.filter { Flags.Sticky.allRawFlags.contains($0.key) }.forEach {
                         configToStore[$0.key] = $0.value || (fetchedConfig[$0.key] ?? false)
                     }
                 }
