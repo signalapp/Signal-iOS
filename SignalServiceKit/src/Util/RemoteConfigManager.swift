@@ -34,8 +34,6 @@ public class RemoteConfig: NSObject {
         // This feature latches "on" – once they have a master key in KBS,
         // even if we turn it off on the server they will keep using KBS.
         guard !KeyBackupService.hasMasterKey else { return true }
-        // For now, KBS does not work for censorship circumvention users.
-        guard !OWSSignalService.sharedInstance().isCensorshipCircumventionActive else { return false }
         return isEnabled("ios.kbs")
     }
 

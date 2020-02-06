@@ -6,17 +6,18 @@ private protocol TSConstantsProtocol: class {
     var textSecureWebSocketAPI: String { get }
     var textSecureServerURL: String { get }
     var textSecureCDNServerURL: String { get }
-    var textSecureServiceReflectorHost: String { get }
-    var textSecureCDNReflectorHost: String { get }
     var contactDiscoveryURL: String { get }
     var keyBackupURL: String { get }
     var storageServiceURL: String { get }
     var kUDTrustRoot: String { get }
 
+    var censorshipReflectorHost: String { get }
+
     var serviceCensorshipPrefix: String { get }
     var cdnCensorshipPrefix: String { get }
     var contactDiscoveryCensorshipPrefix: String { get }
     var keyBackupCensorshipPrefix: String { get }
+    var storageServiceCensorshipPrefix: String { get }
 
     var contactDiscoveryEnclaveName: String { get }
     var contactDiscoveryMrEnclave: String { get }
@@ -48,10 +49,6 @@ public class TSConstants: NSObject {
     @objc
     public static var textSecureCDNServerURL: String { return shared.textSecureCDNServerURL }
     @objc
-    public static var textSecureServiceReflectorHost: String { return shared.textSecureServiceReflectorHost }
-    @objc
-    public static var textSecureCDNReflectorHost: String { return shared.textSecureCDNReflectorHost }
-    @objc
     public static var contactDiscoveryURL: String { return shared.contactDiscoveryURL }
     @objc
     public static var keyBackupURL: String { return shared.keyBackupURL }
@@ -61,6 +58,9 @@ public class TSConstants: NSObject {
     public static var kUDTrustRoot: String { return shared.kUDTrustRoot }
 
     @objc
+    public static var censorshipReflectorHost: String { return shared.censorshipReflectorHost }
+
+    @objc
     public static var serviceCensorshipPrefix: String { return shared.serviceCensorshipPrefix }
     @objc
     public static var cdnCensorshipPrefix: String { return shared.cdnCensorshipPrefix }
@@ -68,6 +68,8 @@ public class TSConstants: NSObject {
     public static var contactDiscoveryCensorshipPrefix: String { return shared.contactDiscoveryCensorshipPrefix }
     @objc
     public static var keyBackupCensorshipPrefix: String { return shared.keyBackupCensorshipPrefix }
+    @objc
+    public static var storageServiceCensorshipPrefix: String { return shared.storageServiceCensorshipPrefix }
 
     @objc
     public static var contactDiscoveryEnclaveName: String { return shared.contactDiscoveryEnclaveName }
@@ -145,18 +147,18 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let textSecureWebSocketAPI = "wss://textsecure-service.whispersystems.org/v1/websocket/"
     public let textSecureServerURL = "https://textsecure-service.whispersystems.org/"
     public let textSecureCDNServerURL = "https://cdn.signal.org"
-    // Use same reflector for service and CDN
-    public let textSecureServiceReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
-    public let textSecureCDNReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
     public let contactDiscoveryURL = "https://api.directory.signal.org"
     public let keyBackupURL = "https://api.backup.signal.org"
     public let storageServiceURL = "https://storage.signal.org"
     public let kUDTrustRoot = "BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
 
+    public let censorshipReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
+
     public let serviceCensorshipPrefix = "service"
     public let cdnCensorshipPrefix = "cdn"
     public let contactDiscoveryCensorshipPrefix = "directory"
     public let keyBackupCensorshipPrefix = "backup"
+    public let storageServiceCensorshipPrefix = "storage"
 
     public let contactDiscoveryEnclaveName = "cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
     public var contactDiscoveryMrEnclave: String {
@@ -185,17 +187,18 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let textSecureWebSocketAPI = "wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
     public let textSecureServerURL = "https://textsecure-service-staging.whispersystems.org/"
     public let textSecureCDNServerURL = "https://cdn-staging.signal.org"
-    public let textSecureServiceReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
-    public let textSecureCDNReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
     public let contactDiscoveryURL = "https://api-staging.directory.signal.org"
     public let keyBackupURL = "https://api-staging.backup.signal.org"
     public let storageServiceURL = "https://storage-staging.signal.org"
     public let kUDTrustRoot = "BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
 
+    public let censorshipReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
+
     public let serviceCensorshipPrefix = "service-staging"
     public let cdnCensorshipPrefix = "cdn-staging"
     public let contactDiscoveryCensorshipPrefix = "directory-staging"
     public let keyBackupCensorshipPrefix = "backup-staging"
+    public let storageServiceCensorshipPrefix = "storage-staging"
 
     // CDS uses the same EnclaveName and MrEnclave
     public let contactDiscoveryEnclaveName = "e0f7dee77dc9d705ccc1376859811da12ecec3b6119a19dc39bdfbf97173aa18"
