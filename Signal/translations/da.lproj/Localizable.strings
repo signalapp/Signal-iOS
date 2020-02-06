@@ -2050,7 +2050,7 @@
 "PINS_MEGAPHONE_HAS_PIN_ACTION" = "Opdatér PIN";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Din registreringskode kaldes nu en PIN. Opdater den på få sekunder";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
@@ -3097,7 +3097,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Din registreringskode kaldes nu en PIN, og den gør mere. Opdater den nu";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registreringsnøgle = PIN";

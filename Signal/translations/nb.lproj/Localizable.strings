@@ -1138,10 +1138,10 @@
 "GROUP_CREATED" = "Gruppe opprettet.";
 
 /* conversation history entry when the local user created a group */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "Du laget gruppen.";
 
 /* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ la deg til gruppen.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Ikke alle medlemmene kunne legges til gruppen. Trykk for å forsøke på nytt.";
@@ -1174,31 +1174,31 @@
 "GROUP_UPDATED" = "Gruppen oppdatert.";
 
 /* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
-"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ og %@ ble med i gruppen.";
 
 /* conversation history entry. Embeds the {{added user's name}} */
-"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ ble med i gruppen.";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Fjernet gruppeavataren.";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Oppdaterte gruppeavataren.";
 
 /* conversation history entry. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Du har oppdatert gruppa.";
 
 /* conversation history entry. Embeds {{remote user's name}} */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@oppdaterte gruppen.";
 
 /* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+"GROUP_UPDATED_NAME_REMOVED" = "Fjernet navnet.";
 
 /* conversation history entry. Embeds {{group name}} */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Gruppens navn er nå \"1%@\".";
 
 /* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
+"GROUP_UPDATED_READDED_YOU" = "La deg til på nytt i gruppen.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Du har forlatt gruppen.";
@@ -1441,10 +1441,10 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Denne måneden";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "Minn meg på senere";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "Vi vil minne deg på senere.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopier meldingstekst";
@@ -1753,10 +1753,10 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Feil PIN-kode. Forsøk oppbrukt.";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Skriv inn alfanumerisk PIN";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Skriv inn numerisk PIN";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Dette telefonnummeret er låst i Signal med registreringslås. Skriv inn registrerings-PIN.";
@@ -1798,10 +1798,10 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Koble til iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Trykk på \"Registrer iPad\" vil la deg lage en helt ny Signal konto eller flytte en eksisterende konto til denne iPaden. Dette vil stanse Signal på alle andre enheter som for øyeblikket er registrert på samme telefonnummer.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Trykk \"Link iPhone\" for å koble din telefon til en eksisterende konto. Å linke din telefon er normalt ikke anbefalt, og vil begrense en del funksjonalitet som f.eks. samtaler.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrer denne iPaden";
@@ -1912,16 +1912,16 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Feil ved håndtering av innkommende melding";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Vis en gang media";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Vis en gang bilde";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Vis en gang video";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Se bilde";
@@ -1993,10 +1993,10 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Bekreft den nye PIN-koden.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Lag alfanumerisk PIN";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+"PIN_CREATION_CREATE_NUMERIC" = "Lag numerisk PIN";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "PIN-koden din ble ikke lagret. Vi ber deg om å opprette en PIN-kode senere.";
@@ -2005,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Oppretting av PIN-kode mislyktes";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
+"PIN_CREATION_EXPLANATION" = "En PIN gir din konto et ekstra sikkerhetslag. Det er viktig å huske denne PIN koden, da den kan ikke hentes frem på noen måte.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-koder stemmer ikke overens. Prøv igjen.";
@@ -2017,10 +2017,10 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Skriv inn PIN-koden på nytt";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "Lager PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Du kan velge en ny PIN fordi denne enheten er registrert. Dersom du glemmer din PIN så må du vente inntil 7 dager for å kunne registrere igjen.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Opprett en ny PIN-kode";
@@ -2047,31 +2047,31 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koden må være minst 6 sifre.";
 
 /* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Update PIN";
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Oppdater PIN";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Din registreringslås kalles nå PIN. Oppdatering tar noen sekunder.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Vi vil minne deg på det senere. Å lage en PIN blir obligatorisk om %ld dager.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "Vi introduserer PIN-koder";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Lag PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+"PINS_MEGAPHONE_NO_PIN_BODY" = "En PIN gir din Signal konto et ekstra lag sikkerhet.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Vi vil minne deg på det senere. Å lage en PIN blir obligatorisk om %ld dager.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Lag en PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN created.";
+"PINS_MEGAPHONE_TOAST" = "PIN laget.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spill av media";
@@ -2128,22 +2128,22 @@
 "PROCEED_BUTTON" = "Fortsett";
 
 /* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Kom i gang";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Din profil kan nå inkludere et etternavn som en opsjon.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Bekreft ditt profilnavn";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Dette vil bli vist når du starter en ny samtale eller deler det.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Legg til et profilnavn";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Profilnavnet ditt har blitt lagret.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Velg profilbilde";
@@ -2242,49 +2242,49 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "Alle · 1%@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagerte %@ på meldingen din";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagerte 1%@ på ditt album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagerte 1%@ på din lyd";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagerte 1%@ på din delte kontaktinfo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagerte 1%@ på din fil";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagerte 1%@ på din GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagerte 1%@ på ditt bilde";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagerte 1%@ på ditt klistremerke";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagerte 1%@ til: \"1%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagerte 1%@ på din video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagerte 1%@ på din engangsmedia";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagerte 1%@ på din lydmelding";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Trykk og hold på en beskjed for å raskt svare med en reaksjon.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "Vi introduserer reaksjoner";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Jeg har glemt min PIN.";
@@ -2500,7 +2500,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installer Signal på din telefon";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Trykk på ditt profilbilde for å åpne Signal innstillingene på din telefon. Deretter \"Linkede enheter\" og \"link ny enhet\" for å scanne denne koden med din telefon:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Få hjelp til å koble iPad-en din her";
@@ -2731,13 +2731,13 @@
 "SETTINGS_NOTIFICATIONS" = "Varslinger";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "Din PIN gir et ekstra lag med sikkerhet til din konto. Du vil bli spurt om den når du registrerer ditt telefonnummer med Signal. Dersom du glemmer din PIN så blir du stengt ute av din konto i 7 dager.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Endre PIN-koden";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "Lag en PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2773,7 +2773,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Tid før automatisk skjermlås";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lås opp Signal med Touch ID, Face ID eller din iOS låsekode. Du kan fortsatt svare innkommende samtaler og ta i mot telefon og meldingsvarsler mens skjermlås er aktivert. Signals meldingsvarsler gjør at du kan velge hvilken informasjon som skal vises.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Skjermlås";
@@ -3067,7 +3067,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Trekk tilbake godkjenning for \"%@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "Enhet ikke lengre linket. Re-link Signal med din telefon for å fortsette med meldinger.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal kunne ikke koble fra din enhet.";
@@ -3097,13 +3097,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Lær mer om PIN-koder";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Din registreringskode kalles nå PIN, og den gjør mer. Oppdater den nå.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registreringslås = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "En PIN gir din konto et ekstra lag sikkerhet. Lag din PIN nå.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Vi introduserer PIN-koder";
@@ -3190,7 +3190,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Trykk her for å få denne meldingen til å forsvinne etter at den er sett.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Utgående vis en gang mediafiler blir automatisk slettet etter at de er sendt.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Skyv for å avbryte";

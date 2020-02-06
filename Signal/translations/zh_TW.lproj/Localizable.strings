@@ -1138,10 +1138,10 @@
 "GROUP_CREATED" = "群組已建立。";
 
 /* conversation history entry when the local user created a group */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "你建立了一個群組。";
 
 /* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@新增你到此群組。";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "不是所有的組員都可以加入此群組。請點擊重試。";
@@ -1174,31 +1174,31 @@
 "GROUP_UPDATED" = "群組已更新。";
 
 /* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
-"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@及%@加入了此群組。";
 
 /* conversation history entry. Embeds the {{added user's name}} */
-"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@已加入了此群組。";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "已移除了此群組的頭像。";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "已更新了此群組的頭像。";
 
 /* conversation history entry. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "你已更新群組。";
 
 /* conversation history entry. Embeds {{remote user's name}} */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@更新了此群組。";
 
 /* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+"GROUP_UPDATED_NAME_REMOVED" = "已移除了此名字。";
 
 /* conversation history entry. Embeds {{group name}} */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "群組名稱現在是\"%@\"。";
 
 /* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
+"GROUP_UPDATED_READDED_YOU" = "將你重新新增到該群組。";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "你已退出了群組。";
@@ -1441,10 +1441,10 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "本月";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "稍後提醒我";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "我們將稍後提醒你。";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "複製訊息文字";
@@ -2005,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN碼建立失敗";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
+"PIN_CREATION_EXPLANATION" = "PIN碼為你的帳號增加了一層額外的安全保護。 請記住此PIN碼，因為它無法恢復，這一點很重要。";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN 碼不符，請再試一次。";
@@ -2017,10 +2017,10 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "重新輸入 PIN 碼";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "建立PIN碼中...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "你可以選擇一個新的PIN碼，因為此裝置已被註冊。 如果你忘記了PIN碼，則可能需要等待7天才能再次註冊。";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "建立一個新 PIN 碼";
@@ -2050,25 +2050,25 @@
 "PINS_MEGAPHONE_HAS_PIN_ACTION" = "升級PIN碼";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "你的註冊鎖現在稱為PIN碼。 更新需要幾秒鐘。";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "我們稍後會提醒您。 在%ld天內，更新PIN碼將為強制性。";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "介紹 PIN 碼";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "建立PIN碼";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+"PINS_MEGAPHONE_NO_PIN_BODY" = "PIN碼為你的Signal帳號增加了另一層安全保護。";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "我們稍後會提醒你。 在%ld 天內，創建PIN碼將成為強制性。";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "建立一個PIN碼";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN碼已建立。";
@@ -2128,22 +2128,22 @@
 "PROCEED_BUTTON" = "繼續";
 
 /* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "開始吧";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "你的個人資料現在可以包含可選的姓氏。";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "確認你的個人資料名稱";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "當你開始新的對話或分享時，將顯示此內容。";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "新增一個個人資料名稱";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "你的個人資料名稱已被儲存。";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "設定頭像";
@@ -2242,7 +2242,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "影片";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "所有。%@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "到%@檢視你的訊息";
@@ -2281,10 +2281,10 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "到%@檢視你的語音訊息";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "點擊並按住在任何訊息上以快速地回覆你的感受。";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "介紹\"回應\"";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "我忘了 PIN 碼。";
@@ -2731,13 +2731,13 @@
 "SETTINGS_NOTIFICATIONS" = "通知";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "你的PIN碼為你的帳號新增了一層額外的安全保護。 在Signal上註冊電話號碼時，系統會要求你輸入。 如果你忘記了PIN碼，則將被鎖定7天。";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "變更你的 PIN 碼";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "建立一個PIN碼";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN 碼";
@@ -3097,13 +3097,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "了解更多有關 PIN 碼";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "你的註冊鎖現在稱為PIN碼，並且功能更多。 請立即更新。";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "註冊鎖 = PIN 碼";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN碼為你的帳戶增加了另一層級的安全性。 立即建立你的PIN碼。";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "介紹 PIN 碼";

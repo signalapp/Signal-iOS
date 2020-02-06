@@ -2284,7 +2284,7 @@
 "REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "Memperkenalkan Reaksi";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Saya lupa PIN saya.";

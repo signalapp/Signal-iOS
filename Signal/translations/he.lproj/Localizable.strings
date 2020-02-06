@@ -2284,7 +2284,7 @@
 "REACTION_MEGAPHONE_BODY" = "הקש והחזק הודעה כלשהי כדי להשיב בזריזות איך אתה מרגיש.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "היכרות עם תגובות";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "שכחתי את ה־PIN שלי.";

@@ -2014,7 +2014,7 @@
 "PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
 
 /* Label indication the user must confirm their PIN. */
-"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Re-enter PIN";
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Muling ilagay ang PIN";
 
 /* Indicates the work we are doing while creating the user's pin */
 "PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
@@ -2050,7 +2050,7 @@
 "PINS_MEGAPHONE_HAS_PIN_ACTION" = "I-update ang PIN";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "Ang iyong Lock sa Pagpaparehistro ay tinatawag na ngayong PIN. Ilang segundo lang ang kailangan upang i-update ito.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
@@ -2059,16 +2059,16 @@
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "Ipinakikilala ang mga PIN";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "Lumikha ng PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+"PINS_MEGAPHONE_NO_PIN_BODY" = "Ang mga PIN ay naglalagay ng karagdagang seguridad para sa iyong account sa Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "Lumikha ng PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "Nalikha na ang PIN.";
@@ -2284,7 +2284,7 @@
 "REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "Ipinakikilala ang Mga Reaksyon";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Nakalimutan ko ang aking PIN";
@@ -2737,7 +2737,7 @@
 "SETTINGS_PINS_ITEM" = "Change your PIN";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "Lumikha ng PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -3097,7 +3097,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Ang iyong Lock sa Pagpaparehistro ay tinatawag na ngayong PIN, at mas marami itong nagagawa. I-update ito ngayon.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Lock ng Rehistrasyon = PIN";

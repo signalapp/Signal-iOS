@@ -2242,7 +2242,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "Krejt · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagoi me %@ te mesazhi juaj";

@@ -1198,7 +1198,7 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "O nome do grupo é a agora \"%@\".";
 
 /* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
+"GROUP_UPDATED_READDED_YOU" = "Readicionou-o(a) ao grupo.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Você abandonou o grupo.";
@@ -1444,7 +1444,7 @@
 "MEGAPHONE_REMIND_LATER" = "Lembrar-me mais tarde";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "iremos lembrar-lhe mais tarde.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensagem";
@@ -2005,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Falha ao criar PIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
+"PIN_CREATION_EXPLANATION" = "Os PINs adicionam uma camada extra de segurança à sua conta. É importante recordar-se deste PIN visto o mesmo não poder ser recuperado.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Os PINs não coincidem. Tente novamente.";
@@ -2017,10 +2017,10 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Reintroduza o PIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "A criar PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Pode escolher um PIN novo porque este dispositivo está registado. Se se esquecer do seu PIN poderá necessitar de esperar 7 dias para registar novamente.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Criar um novo PIN";
@@ -2053,7 +2053,7 @@
 "PINS_MEGAPHONE_HAS_PIN_BODY" = "O seu 'Bloqueio de registo' é agora chamado de PIN. A atualização apenas demora uns segundos.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Iremos lembrá-lo(a) mais tarde. Atualizar o seu PIN será obrigatório dentro de %ld dias.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "Introdução aos PINs";
@@ -2065,7 +2065,7 @@
 "PINS_MEGAPHONE_NO_PIN_BODY" = "Os PINs adicionam outra camada de segurança à sua conta do Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Iremos lembrá-lo(a) mais tarde. Criar um PIN será obrigatório dentro de %ld dias.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Criar um PIN";
@@ -2137,13 +2137,13 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirme o seu nome de perfil";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Isto será exibido quando você começar uma nova conversa ou a partilhar.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Adicionar um nome de perfil";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "O seu nome de perfil foi guardado.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Definir avatar do perfil";
@@ -2242,7 +2242,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Vídeo";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "Todas %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagiu à sua mensagem com %@";
@@ -2281,7 +2281,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagiu %@ à sua mensagem de voz";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Toque e mantenha em qualquer mensagem para responder rapidamente com aquilo que sente.";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Introdução às reações";
@@ -2731,7 +2731,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notificações";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "O seu PIN dá-lhe uma camada de proteção extra à sua conta. Ser-lhe-á pedido quando registar o seu número de telemóvel com o Signal. Se se esquecer do seu PIN, a sua conta será bloqueada durante 7 dias.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Alterar o seu PIN";
@@ -3103,7 +3103,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Bloqueio do registo = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Os PINs adicionam outro nível de segurança à sua conta. Crie agora o seu PIN.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introdução os PINs";
