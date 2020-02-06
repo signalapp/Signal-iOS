@@ -73,6 +73,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
  *  @return YES if is a group thread, NO otherwise.
  */
 @property (nonatomic, readonly) BOOL isGroupThread;
+@property (nonatomic, readonly) BOOL isGroupV1Thread;
 @property (nonatomic, readonly) BOOL isGroupV2Thread;
 
 @property (nonatomic) ConversationColorName conversationColorName;

@@ -166,6 +166,11 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
     return NO;
 }
 
+- (BOOL)isGroupV1Thread
+{
+    return NO;
+}
+
 - (BOOL)isGroupV2Thread
 {
     return NO;
