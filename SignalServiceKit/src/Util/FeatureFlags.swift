@@ -254,6 +254,9 @@ public class FeatureFlags: NSObject {
     public static let groupsV2embedProtosInGroupUpdates = false
 
     @objc
+    public static let groupsV2processProtosInGroupUpdates = false
+
+    @objc
     public static let groupsV2showV2Indicator = groupsV2 && build.includes(.internalPreview)
 
     @objc
