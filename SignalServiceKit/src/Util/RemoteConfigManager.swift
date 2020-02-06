@@ -25,6 +25,12 @@ public class RemoteConfig: NSObject {
     }
 
     @objc
+    public static var mandatoryPins: Bool {
+        guard pinsForEveryone else { return false }
+        return isEnabled(.mandatoryPins)
+    }
+
+    @objc
     public static var profileNameReminder: Bool {
         return isEnabled(.profileNameReminder)
     }
@@ -63,6 +69,7 @@ private struct Flags {
         case pinsForEveryone
         case kbs
         case profileNameReminder
+        case mandatoryPins
     }
 }
 
