@@ -2005,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Vytvorenie PINu zlyhalo";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN kódy pridávajú k vášmu účtu ďalšiu vrstvu zabezpečenia. Je dôležité zapamätať si tento PIN, pretože ho nie je možné obnoviť.";
+"PIN_CREATION_EXPLANATION" = "PINs add extra security to your account and can’t be recovered. You’ll need your PIN to register with Signal again.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINy sa nezhodujú. Skúste to znovu.";
@@ -2071,7 +2071,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Vytvoriť PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN kód sa vytvoril.";
+"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spustiť média";
@@ -2281,7 +2281,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagoval(a) %@ na vašu hlasovú správu";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Ťuknite a podržte na akúkoľvek správu, aby ste rýchlo odpovedali, ako sa cítite.";
+"REACTION_MEGAPHONE_BODY" = "Ťuknite na akúkoľvek správu a podržte, pre rýchlu odpoveď, ako sa cítite.";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Predstavujeme reakcie";

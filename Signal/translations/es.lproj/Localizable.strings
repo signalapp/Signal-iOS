@@ -1390,7 +1390,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Enlazar nuevo dispositivo";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Previsualizar enlace";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Vista previa de enlaces";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Dispositivos enlazados";
@@ -2005,7 +2005,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Fallo al crear el PIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "El PIN añade una capa extra de seguridad a tu cuenta. Anota tu PIN y mantenlo en un lugar seguro. No se puede recuperar.";
+"PIN_CREATION_EXPLANATION" = "PINs add extra security to your account and can’t be recovered. You’ll need your PIN to register with Signal again.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "El PIN no coincide. Inténtalo de nuevo.";
@@ -2071,7 +2071,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Crear PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN creado.";
+"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproducir adjunto multimedia";
@@ -2704,13 +2704,13 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Aviso legal y privacidad";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Enviar previsualizaciones";
+"SETTINGS_LINK_PREVIEWS" = "Enviar vista previa de enlaces";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Las previsualizaciones están disponibles para enlaces hacia Imgur, Instagram, Pinterest, Reddit y YouTube.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "La vista previa está disponible para enlaces hacia Imgur, Instagram, Pinterest, Reddit y YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Previsualizar enlaces";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Vista previa de enlaces";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Ajustes";
@@ -3097,7 +3097,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Saber más sobre el PIN";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "El bloqueo de registro ahora se llama PIN y permite más funciones. Actualiza ahora.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "El bloqueo de registro ahora es el PIN y permite más funciones. Actualiza ahora.";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Bloqueo de registro = PIN";
