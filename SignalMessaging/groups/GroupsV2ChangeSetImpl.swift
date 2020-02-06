@@ -254,7 +254,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         guard let groupsV2Impl = groupsV2 as? GroupsV2Impl else {
             return Promise(error: OWSAssertionError("Invalid groupsV2: \(type(of: groupsV2))"))
         }
-        guard let localUuid = self.tsAccountManager.localUuid else {
+        guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
 
@@ -311,7 +311,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         let groupV2Params = try GroupV2Params(groupModel: currentGroupModel)
 
         let actionsBuilder = GroupsProtoGroupChangeActions.builder()
-        guard let localUuid = self.tsAccountManager.localUuid else {
+        guard let localUuid = tsAccountManager.localUuid else {
             throw OWSAssertionError("Missing localUuid.")
         }
         let localAddress = SignalServiceAddress(uuid: localUuid)

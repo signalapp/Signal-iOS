@@ -22,6 +22,10 @@ public class GroupsV2Test: NSObject {
         return SSKEnvironment.shared.groupsV2
     }
 
+    private class var groupsV2Swift: GroupsV2Swift {
+        return self.groupsV2 as! GroupsV2Swift
+    }
+
     private class var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
@@ -60,19 +64,16 @@ public class GroupsV2Test: NSObject {
         let otherAddresses = Set(stagingAccounts).subtracting([localAddress])
         let localAddressSet = Set([SignalServiceAddress(uuid: localUuid)])
         Logger.verbose("otherAddresses: \(otherAddresses)")
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            owsFailDebug("Missing groupsV2Swift.")
-            return
-        }
-        GroupManager.createNewGroup(members: members,
-                                    name: title0,
-                                    shouldSendMessage: true)
-            .then(on: .global()) { (groupThread: TSGroupThread) -> Promise<(Data, GroupV2Snapshot)> in
+        firstly {
+            GroupManager.createNewGroup(members: members,
+                                        name: title0,
+                                        shouldSendMessage: true)
+        }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<(Data, GroupV2Snapshot)> in
                 let groupModel = groupThread.groupModel
                 guard groupModel.groupsVersion == .V2 else {
                     throw OWSAssertionError("Not a V2 group.")
                 }
-                return groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+            return self.groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
                     .map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
                         return (groupThread.groupModel.groupId, groupV2Snapshot)
                 }

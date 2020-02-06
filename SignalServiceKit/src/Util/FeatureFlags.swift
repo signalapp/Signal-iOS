@@ -266,6 +266,10 @@ public class FeatureFlags: NSObject {
     @objc
     public static let groupsV2IgnoreServerFlags = groupsV2
 
+    // If set, this will invite instead of adding other users.
+    @objc
+    public static let groupsV2forceInvites = false
+
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
 

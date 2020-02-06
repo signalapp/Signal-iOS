@@ -316,7 +316,7 @@ public class GroupManager: NSObject {
                                       newGroupSeed: NewGroupSeed? = nil,
                                       shouldSendMessage: Bool) -> Promise<TSGroupThread> {
 
-        guard let localAddress = self.tsAccountManager.localAddress else {
+        guard let localAddress = tsAccountManager.localAddress else {
             return Promise(error: OWSAssertionError("Missing localAddress."))
         }
 
@@ -407,10 +407,11 @@ public class GroupManager: NSObject {
     private static func separatePendingMembers(in newGroupMembership: GroupMembership,
                                                oldGroupModel: TSGroupModel?,
                                                transaction: SDSAnyReadTransaction) -> GroupMembership {
-        guard let localUuid = self.tsAccountManager.localUuid else {
+        guard let localUuid = tsAccountManager.localUuid else {
             owsFailDebug("Missing localUuid.")
             return newGroupMembership
         }
+        let localAddress = SignalServiceAddress(uuid: localUuid)
         let newMembers: Set<SignalServiceAddress>
         var builder = GroupMembership.Builder()
         if let oldGroupModel = oldGroupModel {
@@ -461,7 +462,13 @@ public class GroupManager: NSObject {
             let isPending = !groupsV2.hasProfileKeyCredential(for: address,
                                                               transaction: transaction)
             let isAdministrator = newGroupMembership.isAdministrator(address)
-            if isPending {
+
+            // If groupsV2forceInvites is set, we invite other members
+            // instead of adding them.
+            if address != localAddress &&
+                FeatureFlags.groupsV2forceInvites {
+                builder.addPendingMember(address, isAdministrator: isAdministrator, addedByUuid: localUuid)
+            } else if isPending {
                 builder.addPendingMember(address, isAdministrator: isAdministrator, addedByUuid: localUuid)
             } else {
                 builder.addNonPendingMember(address, isAdministrator: isAdministrator)
@@ -555,6 +562,10 @@ public class GroupManager: NSObject {
                                            groupsVersion: GroupsVersion? = nil,
                                            transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
+        guard let localAddress = tsAccountManager.localAddress else {
+            throw OWSAssertionError("Missing localAddress.")
+        }
+
         // GroupsV2 TODO: Elaborate tests to include admins, pending members, etc.
         let groupMembership = GroupMembership(v1Members: Set(members))
         // GroupsV2 TODO: Let tests specify access levels.
@@ -573,7 +584,7 @@ public class GroupManager: NSObject {
         //
         // GroupsV2 TODO: Update method to handle admins, pending members, etc.
         return try upsertExistingGroup(groupModel: groupModel,
-                                       groupUpdateSourceAddress: tsAccountManager.localAddress!,
+                                       groupUpdateSourceAddress: localAddress,
                                        transaction: transaction).groupThread
     }
 
@@ -773,7 +784,7 @@ public class GroupManager: NSObject {
             throw OWSAssertionError("Thread does not exist.")
         }
         let oldGroupModel = thread.groupModel
-        guard let localAddress = self.tsAccountManager.localAddress else {
+        guard let localAddress = tsAccountManager.localAddress else {
             throw OWSAssertionError("Missing localAddress.")
         }
 
@@ -977,14 +988,10 @@ public class GroupManager: NSObject {
     }
 
     private static func leaveGroupV2OrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
-        }
-
         return firstly {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            return groupsV2Swift.leaveGroupV2OrDeclineInvite(groupThread: groupThread)
+            return self.groupsV2Swift.leaveGroupV2OrDeclineInvite(groupThread: groupThread)
         }
     }
 
@@ -1298,9 +1305,6 @@ public class GroupManager: NSObject {
         guard let localAddress = self.tsAccountManager.localAddress else {
             return Promise(error: OWSAssertionError("Missing localAddress."))
         }
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
-        }
 
         guard FeatureFlags.versionedProfiledUpdate else {
             // We don't need a profile key credential for the local user
@@ -1330,7 +1334,7 @@ public class GroupManager: NSObject {
             // for the local user (which should last forever) we'll abort above.
             // Group v2 actions will use tryToEnsureProfileKeyCredentials()
             // and we want to set them up to succeed.
-            return groupsV2Swift.reuploadLocalProfilePromise()
+            return self.groupsV2Swift.reuploadLocalProfilePromise()
         }
     }
 }

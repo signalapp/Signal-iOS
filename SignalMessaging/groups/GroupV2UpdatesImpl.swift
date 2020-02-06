@@ -24,6 +24,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         return SSKEnvironment.shared.groupsV2
     }
 
+    private var groupsV2Swift: GroupsV2Swift {
+        return self.groupsV2 as! GroupsV2Swift
+    }
+
     private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
     }
@@ -370,15 +374,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     private func fetchAndApplyChangeActionsFromService(groupSecretParamsData: Data,
                                                        groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
-        }
-        return groupsV2Swift.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData)
-            .then(on: DispatchQueue.global()) { (groupChanges) throws -> Promise<TSGroupThread> in
-                let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
-                return self.tryToApplyGroupChangesFromService(groupId: groupId,
-                                                              groupChanges: groupChanges,
-                                                              groupUpdateMode: groupUpdateMode)
+        return firstly {
+            groupsV2Swift.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData)
+        }.then(on: DispatchQueue.global()) { (groupChanges) throws -> Promise<TSGroupThread> in
+            let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
+            return self.tryToApplyGroupChangesFromService(groupId: groupId,
+                                                          groupChanges: groupChanges,
+                                                          groupUpdateMode: groupUpdateMode)
         }
     }
 
@@ -462,13 +464,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     private func fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: Data,
                                                                 groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
-        }
-        return groupsV2Swift.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
-            .then(on: .global()) { groupV2Snapshot in
-                return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
-                                                                        groupUpdateMode: groupUpdateMode)
+        return firstly {
+            self.groupsV2Swift.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
+        }.then(on: .global()) { groupV2Snapshot in
+            return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
+                                                                    groupUpdateMode: groupUpdateMode)
         }
     }
 
