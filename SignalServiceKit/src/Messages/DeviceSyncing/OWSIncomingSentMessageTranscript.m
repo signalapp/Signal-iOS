@@ -64,7 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
     _body = _dataMessage.body;
     _dataMessageTimestamp = _dataMessage.timestamp;
 
-    // GroupsV2 TODO: Assert and abort if the group v2 is unknown.
     SSKProtoGroupContext *_Nullable groupContextV1 = _dataMessage.group;
     SSKProtoGroupContextV2 *_Nullable groupContextV2 = _dataMessage.groupV2;
     if (groupContextV1 != nil) {

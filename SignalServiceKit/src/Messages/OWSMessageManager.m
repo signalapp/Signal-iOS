@@ -584,7 +584,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // GroupsV2 TODO: Review this, in light of early exit immediately above.
     if ((dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0) {
         [self handleEndSessionMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0) {
@@ -740,12 +739,6 @@ NS_ASSUME_NONNULL_BEGIN
             // GroupsV2 TODO: Arguably we could process the data message.
             return nil;
         }
-
-        // GroupsV2 TODO: Remove Logging
-        OWSLogVerbose(@"%@, %lu >= %lu",
-            groupId.hexadecimalString,
-            (unsigned long)groupThread.groupModel.groupV2Revision,
-            (unsigned long)revision);
 
         if (!groupThread.isLocalUserInGroup) {
             OWSLogInfo(@"Ignoring messages for left group.");
@@ -1044,7 +1037,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     switch (groupContext.unwrappedType) {
-            // GroupsV2 TODO
         case SSKProtoGroupContextTypeUpdate: {
             SignalServiceAddress *groupUpdateSourceAddress;
             if (envelope.sourceAddress == nil) {

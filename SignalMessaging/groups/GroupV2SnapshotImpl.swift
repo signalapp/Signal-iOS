@@ -7,8 +7,7 @@ import PromiseKit
 import SignalServiceKit
 import ZKGroup
 
-// GroupsV2 TODO: This class is likely to be reworked heavily as we
-// start to apply it.
+// GroupsV2 TODO: We could build a TSGroupModel and/or GroupMembership.
 public struct GroupV2SnapshotImpl: GroupV2Snapshot {
 
     public struct Member {

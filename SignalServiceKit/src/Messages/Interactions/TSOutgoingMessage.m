@@ -1269,7 +1269,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     TSGroupModel *groupModel = groupThread.groupModel;
     OWSAssertDebug(groupModel.groupsVersion == GroupsVersionV2);
 
-    // GroupsV2 TODO: Populate groupChangeData.
     NSError *error;
     SSKProtoGroupContextV2 *_Nullable groupContextV2 =
         [self.groupsV2 buildGroupContextV2ProtoWithGroupModel:groupModel

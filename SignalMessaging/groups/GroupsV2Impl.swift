@@ -71,7 +71,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void> {
-        // GroupsV2 TODO: Should we make sure we have a local profile credential?
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise<Void>(error: OWSAssertionError("Missing localUuid."))
         }
@@ -142,7 +141,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> {
         let groupId = changeSet.groupId
 
-        // GroupsV2 TODO: Should we make sure we have a local profile credential?
         let groupSecretParamsData = changeSet.groupSecretParamsData
         let groupV2Params: GroupV2Params
         do {
@@ -187,8 +185,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                                                                             transaction: transaction)
             }
 
-            // GroupsV2 TODO: Handle conflicts.
-            // GroupsV2 TODO: Handle success.
             // GroupsV2 TODO: Propagate failure in a consumable way.
             /*
              If the group change is successfully applied, the service will respond:
@@ -240,7 +236,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot> {
-        // GroupsV2 TODO: Should we make sure we have a local profile credential?
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise<GroupV2Snapshot>(error: OWSAssertionError("Missing localUuid."))
         }
@@ -249,10 +244,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         }.then(on: DispatchQueue.global()) { (groupV2Params: GroupV2Params) -> Promise<GroupV2Snapshot> in
             return self.fetchCurrentGroupV2Snapshot(groupV2Params: groupV2Params,
                                                     localUuid: localUuid)
-        }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) -> GroupV2Snapshot in
-            // GroupsV2 TODO: Remove this logging.
-            Logger.verbose("GroupV2Snapshot: \(groupV2Snapshot.debugDescription)")
-            return groupV2Snapshot
         }
     }
 
@@ -280,7 +271,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     // MARK: - Fetch Group Change Actions
 
     public func fetchGroupChangeActions(groupSecretParamsData: Data) -> Promise<[GroupV2Change]> {
-        // GroupsV2 TODO: Should we make sure we have a local profile credential?
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
@@ -532,7 +522,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                         continue
                     }
                 } catch {
-                    // GroupsV2 TODO: Should we throw here?
                     owsFailDebug("Error: \(error)")
                 }
                 uuidsWithoutCredentials.append(uuid)

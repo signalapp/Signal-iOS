@@ -89,7 +89,6 @@ public class MessageProcessing: NSObject {
     //       reflected in this promise yet.
     @objc
     public func flushMessageDecryptionAndProcessingPromise() -> AnyPromise {
-        // GroupsV2 TODO: Make sure the "groups v2" processing queue is flushed as well.
         return AnyPromise(decryptStepPromise().then { _ in
             return self.processingStepPromise()
         })

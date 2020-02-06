@@ -191,7 +191,7 @@ public class FeatureFlags: NSObject {
     @objc
     public static let groupsV2IgnoreCapability = false
 
-    // GroupsV2 TODO: We can use this to test recovery from "missed updates".
+    // We can use this to test recovery from "missed updates".
     @objc
     public static let groupsV2dontSendUpdates = false
 
