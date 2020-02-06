@@ -94,21 +94,23 @@ public class GroupsV2Changes {
             guard let userId = member.userID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            guard let role = member.role else {
+            guard let protoRole = member.role else {
                 throw OWSAssertionError("Missing role.")
+            }
+            guard let role = TSGroupMemberRole.role(for: protoRole) else {
+                throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
             guard let profileKeyCiphertextData = member.profileKey else {
                 throw OWSAssertionError("Missing profileKeyCiphertext.")
             }
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
-            let isAdministrator = role == .administrator
 
             guard !oldGroupMembership.allUsers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.remove(address)
-            groupMembershipBuilder.addNonPendingMember(address, isAdministrator: isAdministrator)
+            groupMembershipBuilder.addNonPendingMember(address, role: role)
 
             let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
             let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
@@ -133,18 +135,21 @@ public class GroupsV2Changes {
             guard let userId = action.userID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            guard let role = action.role else {
+            guard let protoRole = action.role else {
                 throw OWSAssertionError("Missing role.")
             }
+            guard let role = TSGroupMemberRole.role(for: protoRole) else {
+                throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
+            }
+
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
-            let isAdministrator = role == .administrator
 
             guard oldGroupMembership.nonPendingMembers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.remove(address)
-            groupMembershipBuilder.addNonPendingMember(address, isAdministrator: isAdministrator)
+            groupMembershipBuilder.addNonPendingMember(address, role: role)
         }
 
         for action in changeActionsProto.modifyMemberProfileKeys {
@@ -174,12 +179,14 @@ public class GroupsV2Changes {
             guard let userId = member.userID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            guard let role = member.role else {
+            guard let protoRole = member.role else {
                 throw OWSAssertionError("Missing role.")
+            }
+            guard let role = TSGroupMemberRole.role(for: protoRole) else {
+                throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
-            let isAdministrator = role == .administrator
             guard let addedByUserID = pendingMember.addedByUserID else {
                 throw OWSAssertionError("Group pending member missing addedByUserID.")
             }
@@ -189,7 +196,7 @@ public class GroupsV2Changes {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.remove(address)
-            groupMembershipBuilder.addPendingMember(address, isAdministrator: isAdministrator, addedByUuid: addedByUuid)
+            groupMembershipBuilder.addPendingMember(address, role: role, addedByUuid: addedByUuid)
         }
 
         for action in changeActionsProto.deletePendingMembers {
@@ -222,9 +229,11 @@ public class GroupsV2Changes {
             guard !oldGroupMembership.nonPendingMembers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            let isAdministrator = oldGroupMembership.isAdministrator(address)
+            guard let role = oldGroupMembership.role(for: address) else {
+                throw OWSAssertionError("Missing role.")
+            }
             groupMembershipBuilder.remove(address)
-            groupMembershipBuilder.addNonPendingMember(address, isAdministrator: isAdministrator)
+            groupMembershipBuilder.addNonPendingMember(address, role: role)
 
             profileKeys[uuid] = profileKey
         }

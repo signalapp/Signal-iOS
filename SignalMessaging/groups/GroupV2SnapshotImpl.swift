@@ -81,21 +81,19 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
     public var groupMembership: GroupMembership {
         var builder = GroupMembership.Builder()
         for member in members {
-            switch member.role {
-            case .administrator:
-                builder.addNonPendingMember(member.address, isAdministrator: true)
-            default:
-                builder.addNonPendingMember(member.address, isAdministrator: false)
+            guard let role = TSGroupMemberRole.role(for: member.role) else {
+                owsFailDebug("Invalid value: \(member.role.rawValue)")
+                continue
             }
+            builder.addNonPendingMember(member.address, role: role)
         }
 
         for member in pendingMembers {
-            switch member.role {
-            case .administrator:
-                builder.addPendingMember(member.address, isAdministrator: true, addedByUuid: member.addedByUuid)
-            default:
-                builder.addPendingMember(member.address, isAdministrator: false, addedByUuid: member.addedByUuid)
+            guard let role = TSGroupMemberRole.role(for: member.role) else {
+                owsFailDebug("Invalid value: \(member.role.rawValue)")
+                continue
             }
+            builder.addPendingMember(member.address, role: role, addedByUuid: member.addedByUuid)
         }
 
         return builder.build()

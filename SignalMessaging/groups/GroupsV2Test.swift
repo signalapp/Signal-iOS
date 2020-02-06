@@ -127,7 +127,7 @@ public class GroupsV2Test: NSObject {
             var groupMembershipBuilder = groupModel.groupMembership.asBuilder
             for address in otherAddresses {
                 groupMembershipBuilder.remove(address)
-                groupMembershipBuilder.addNonPendingMember(address, isAdministrator: false)
+                groupMembershipBuilder.addNonPendingMember(address, role: .normal)
             }
             let groupMembership = groupMembershipBuilder.build()
 

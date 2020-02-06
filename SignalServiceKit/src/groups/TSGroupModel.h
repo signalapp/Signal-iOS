@@ -16,7 +16,8 @@ extern const int32_t kGroupIdLengthV2;
 
 typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVersionV2 };
 
-typedef NS_CLOSED_ENUM(NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal = 0, TSGroupMemberRole_Administrator };
+typedef NS_CLOSED_ENUM(
+    NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal = 0, TSGroupMemberRole_Administrator = 1 };
 
 // NOTE: This class is tightly coupled to GroupManager.
 //       If you modify this class - especially if you

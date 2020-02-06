@@ -4,15 +4,31 @@
 
 import Foundation
 
+public extension TSGroupMemberRole {
+    static func role(for value: GroupsProtoMemberRole) -> TSGroupMemberRole? {
+        switch value {
+        case .`default`:
+            return .normal
+        case .administrator:
+            return .administrator
+        default:
+            owsFailDebug("Invalid value: \(value.rawValue)")
+            return nil
+        }
+    }
+}
+
+// MARK: -
+
 // This class is immutable.
 @objc
 public class GroupMembership: MTLModel {
     // This class is immutable.
     @objc
     class State: MTLModel {
-        // GroupsV2 TODO: Use TSGroupMemberRole instead.
         @objc
-        var isAdministrator: Bool = false
+        var role: TSGroupMemberRole = .normal
+
         @objc
         var isPending: Bool = false
 
@@ -25,10 +41,10 @@ public class GroupMembership: MTLModel {
             super.init()
         }
 
-        init(isAdministrator: Bool,
+        init(role: TSGroupMemberRole,
              isPending: Bool,
              addedByUuid: UUID? = nil) {
-            self.isAdministrator = isAdministrator
+            self.role = role
             self.isPending = isPending
             self.addedByUuid = addedByUuid
 
@@ -43,6 +59,11 @@ public class GroupMembership: MTLModel {
         @objc
         public required init(dictionary dictionaryValue: [String: Any]!) throws {
             try super.init(dictionary: dictionaryValue)
+        }
+
+        @objc
+        public var isAdministrator: Bool {
+            return role == .administrator
         }
     }
 
@@ -109,34 +130,34 @@ public class GroupMembership: MTLModel {
         }
 
         public mutating func addNonPendingMember(_ address: SignalServiceAddress,
-                                                 isAdministrator: Bool) {
-            addNonPendingMembers([address], isAdministrator: isAdministrator)
+                                                 role: TSGroupMemberRole) {
+            addNonPendingMembers([address], role: role)
         }
 
         public mutating func addNonPendingMembers(_ addresses: Set<SignalServiceAddress>,
-                                                  isAdministrator: Bool) {
+                                                  role: TSGroupMemberRole) {
             for address in addresses {
                 if stateMap[address] != nil {
                     owsFailDebug("Duplicate address.")
                 }
-                stateMap[address] = State(isAdministrator: isAdministrator, isPending: false, addedByUuid: nil)
+                stateMap[address] = State(role: role, isPending: false, addedByUuid: nil)
             }
         }
 
         public mutating func addPendingMember(_ address: SignalServiceAddress,
-                                              isAdministrator: Bool,
+                                              role: TSGroupMemberRole,
                                               addedByUuid: UUID) {
-            addPendingMembers([address], isAdministrator: isAdministrator, addedByUuid: addedByUuid)
+            addPendingMembers([address], role: role, addedByUuid: addedByUuid)
         }
 
         public mutating func addPendingMembers(_ addresses: Set<SignalServiceAddress>,
-                                               isAdministrator: Bool,
+                                               role: TSGroupMemberRole,
                                                addedByUuid: UUID) {
             for address in addresses {
                 if stateMap[address] != nil {
                     owsFailDebug("Duplicate address.")
                 }
-                stateMap[address] = State(isAdministrator: isAdministrator, isPending: true, addedByUuid: addedByUuid)
+                stateMap[address] = State(role: role, isPending: true, addedByUuid: addedByUuid)
             }
         }
 
@@ -189,7 +210,7 @@ public class GroupMembership: MTLModel {
     @objc
     public init(v1Members: Set<SignalServiceAddress>) {
         var builder = Builder()
-        builder.addNonPendingMembers(v1Members, isAdministrator: false)
+        builder.addNonPendingMembers(v1Members, role: .normal)
         self.stateMap = builder.asStateMap()
 
         super.init()
@@ -198,6 +219,13 @@ public class GroupMembership: MTLModel {
     @objc
     public static var empty: GroupMembership {
         return Builder().build()
+    }
+
+    public func role(for address: SignalServiceAddress) -> TSGroupMemberRole? {
+        guard let state = stateMap[address] else {
+            return nil
+        }
+        return state.role
     }
 
     public func isPending(_ address: SignalServiceAddress) -> Bool {

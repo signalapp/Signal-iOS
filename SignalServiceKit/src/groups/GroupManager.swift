@@ -327,9 +327,9 @@ public class GroupManager: NSObject {
             //
             // GroupsV2 TODO: Handle roles, etc.
             var builder = GroupMembership.Builder()
-            builder.addNonPendingMembers(Set(membersParam), isAdministrator: false)
+            builder.addNonPendingMembers(Set(membersParam), role: .normal)
             builder.remove(localAddress)
-            builder.addNonPendingMember(localAddress, isAdministrator: true)
+            builder.addNonPendingMember(localAddress, role: .administrator)
             return builder.build()
         }.then(on: .global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
             // Try to obtain profile key credentials for all group members
@@ -461,17 +461,20 @@ public class GroupManager: NSObject {
             // GroupsV2 TODO: We may need to consult the user's capabilities.
             let isPending = !groupsV2.hasProfileKeyCredential(for: address,
                                                               transaction: transaction)
-            let isAdministrator = newGroupMembership.isAdministrator(address)
+            guard let role = newGroupMembership.role(for: address) else {
+                owsFailDebug("Missing role: \(address)")
+                continue
+            }
 
             // If groupsV2forceInvites is set, we invite other members
             // instead of adding them.
             if address != localAddress &&
                 FeatureFlags.groupsV2forceInvites {
-                builder.addPendingMember(address, isAdministrator: isAdministrator, addedByUuid: localUuid)
+                builder.addPendingMember(address, role: role, addedByUuid: localUuid)
             } else if isPending {
-                builder.addPendingMember(address, isAdministrator: isAdministrator, addedByUuid: localUuid)
+                builder.addPendingMember(address, role: role, addedByUuid: localUuid)
             } else {
-                builder.addNonPendingMember(address, isAdministrator: isAdministrator)
+                builder.addNonPendingMember(address, role: role)
             }
         }
         return builder.build()
@@ -796,7 +799,7 @@ public class GroupManager: NSObject {
             // Always ensure we're a member of any v1 group we're updating.
             var builder = proposedGroupMembership.asBuilder
             builder.remove(localAddress)
-            builder.addNonPendingMember(localAddress, isAdministrator: false)
+            builder.addNonPendingMember(localAddress, role: .normal)
             groupMembership = builder.build()
         } else {
             for address in proposedGroupMembership.allUsers {

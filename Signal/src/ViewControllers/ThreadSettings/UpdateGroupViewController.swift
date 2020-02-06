@@ -45,7 +45,7 @@ public extension UpdateGroupViewController {
                         continue
                     }
                     if !oldGroupMembership.allUsers.contains(address) {
-                        groupMembershipBuilder.addNonPendingMember(address, isAdministrator: false)
+                        groupMembershipBuilder.addNonPendingMember(address, role: .normal)
                     }
                 }
             }
