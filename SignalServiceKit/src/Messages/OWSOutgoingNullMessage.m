@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage
 {
-    // MJK TODO - remove senderTimestamp
-    self = [super initOutgoingMessageWithThread:contactThread messageBody:nil];
+    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:contactThread];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (!self) {
         return self;
     }

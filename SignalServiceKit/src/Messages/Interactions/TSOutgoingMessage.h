@@ -57,6 +57,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @class SSKProtoDataMessageBuilder;
 @class SignalRecipient;
 @class SignalServiceAddress;
+@class TSOutgoingMessageBuilder;
 
 @interface TSOutgoingMessageRecipientState : MTLModel
 
@@ -86,25 +87,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                           messageSticker:(nullable MessageSticker *)messageSticker
                        isViewOnceMessage:(BOOL)isViewOnceMessage NS_UNAVAILABLE;
 
-// MJK TODO - Can we remove the sender timestamp param?
-- (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(TSThread *)thread
-                                     messageBody:(nullable NSString *)body
-                                   attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                                expiresInSeconds:(uint32_t)expiresInSeconds
-                                 expireStartedAt:(uint64_t)expireStartedAt
-                                  isVoiceMessage:(BOOL)isVoiceMessage
-                                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
-                                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                                  messageSticker:(nullable MessageSticker *)messageSticker
-                               isViewOnceMessage:(BOOL)isViewOnceMessage
-                          changeActionsProtoData:(nullable NSData *)changeActionsProtoData NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initOutgoingMessageWithThread:(TSThread *)thread
-                                  messageBody:(nullable NSString *)body NS_DESIGNATED_INITIALIZER
-    NS_SWIFT_NAME(init(outgoingMessageWithThread:messageBody:));
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+    NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(outgoingMessageWithBuilder:));
 
 // --- CODE GENERATION MARKER
 

@@ -127,21 +127,21 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
-    TSOutgoingMessage *outgoingMessage =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:transcript.timestamp
-                                                           inThread:transcript.thread
-                                                        messageBody:transcript.body
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:transcript.expirationDuration
-                                                    expireStartedAt:transcript.expirationStartedAt
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:transcript.quotedMessage
-                                                       contactShare:transcript.contact
-                                                        linkPreview:transcript.linkPreview
-                                                     messageSticker:transcript.messageSticker
-                                                  isViewOnceMessage:transcript.isViewOnceMessage
-                                             changeActionsProtoData:nil];
+    TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessageBuilder builderWithThread:transcript.thread
+                                                                            timestamp:transcript.timestamp
+                                                                          messageBody:transcript.body
+                                                                        attachmentIds:[NSMutableArray new]
+                                                                     expiresInSeconds:transcript.expirationDuration
+                                                                      expireStartedAt:transcript.expirationStartedAt
+                                                                       isVoiceMessage:false
+                                                                     groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                                        quotedMessage:transcript.quotedMessage
+                                                                         contactShare:transcript.contact
+                                                                          linkPreview:transcript.linkPreview
+                                                                       messageSticker:transcript.messageSticker
+                                                                    isViewOnceMessage:transcript.isViewOnceMessage
+                                                               changeActionsProtoData:nil
+                                                                 additionalRecipients:nil] build];
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos

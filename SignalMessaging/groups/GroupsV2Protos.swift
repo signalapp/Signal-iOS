@@ -35,12 +35,8 @@ public class GroupsV2Protos {
                                        groupV2Params: GroupV2Params) throws -> GroupsProtoMember {
         let builder = GroupsProtoMember.builder()
         builder.setRole(role)
-
-        let serverPublicParams = try self.serverPublicParams()
-        let profileOperations = ClientZkProfileOperations(serverPublicParams: serverPublicParams)
-        let presentation = try profileOperations.createProfileKeyCredentialPresentation(groupSecretParams: groupV2Params.groupSecretParams,
-                                                                                        profileKeyCredential: profileKeyCredential)
-        builder.setPresentation(presentation.serialize().asData)
+        builder.setPresentation(try presentationData(profileKeyCredential: profileKeyCredential,
+                                                     groupV2Params: groupV2Params))
 
         return try builder.build()
     }
@@ -65,6 +61,16 @@ public class GroupsV2Protos {
         builder.setAddedByUserID(localUserID)
 
         return try builder.build()
+    }
+
+    public class func presentationData(profileKeyCredential: ProfileKeyCredential,
+                                       groupV2Params: GroupV2Params) throws -> Data {
+
+        let serverPublicParams = try self.serverPublicParams()
+        let profileOperations = ClientZkProfileOperations(serverPublicParams: serverPublicParams)
+        let presentation = try profileOperations.createProfileKeyCredentialPresentation(groupSecretParams: groupV2Params.groupSecretParams,
+                                                                                        profileKeyCredential: profileKeyCredential)
+        return presentation.serialize().asData
     }
 
     public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
@@ -226,11 +232,11 @@ public class GroupsV2Protos {
 
         var pendingMembers = [GroupV2SnapshotImpl.PendingMember]()
         for pendingMemberProto in groupProto.pendingMembers {
-            guard let userID = pendingMemberProto.addedByUserID else {
-                throw OWSAssertionError("Group pending member missing userID.")
-            }
             guard let memberProto = pendingMemberProto.member else {
                 throw OWSAssertionError("Group pending member missing memberProto.")
+            }
+            guard let userID = memberProto.userID else {
+                throw OWSAssertionError("Group pending member missing userID.")
             }
             guard pendingMemberProto.hasTimestamp else {
                 throw OWSAssertionError("Group pending member missing timestamp.")

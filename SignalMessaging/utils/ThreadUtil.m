@@ -331,7 +331,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         OWSDisappearingMessagesConfiguration *configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-        // MJK TODO - remove senderTimestamp
         TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
         builder.expiresInSeconds = expiresInSeconds;
         builder.contactShare = contactShare;

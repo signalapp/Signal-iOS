@@ -14,9 +14,6 @@ public enum GroupsV2Error: Error {
     case unauthorized
     case shouldRetry
     case shouldDiscard
-    // GroupsV2 TODO: Indicates errors that represent future work.
-    //                We'll remove this error when they are no longer necessary.
-    case todo
     case groupNotInDatabase
 }
 
@@ -63,6 +60,8 @@ public protocol GroupsV2Swift {
     // latest state in the service, which (due to races) might
     // reflect changes after the change set.
     func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group>
+
+    func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<UpdatedV2Group>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
 }
@@ -236,6 +235,10 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> {
+        owsFail("Not implemented.")
+    }
+
+    public func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<UpdatedV2Group> {
         owsFail("Not implemented.")
     }
 

@@ -293,13 +293,20 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                 guard groupThread.groupModel.groupsVersion == .V2 else {
                     throw OWSAssertionError("Invalid groupsVersion.")
                 }
-                return groupThread.groupModel.groupV2Revision
-            }
-            guard fromRevision > 0 else {
-                // GroupsV2 TODO: This is temporary.
-                //                There appears to be a bug in the service.
-                //                GET /v1/groups/logs/0 always fails.
-                throw GroupsV2Error.todo
+                // * fromRevision is inclusive.
+                // * It's an error to request group changes where fromRevision = 0,
+                //   so we max(1, ....).
+                // * The key thing is to request the revisions we don't yet know about,
+                //   i.e. "local current" revision + 1.
+                // * However, we also re-request the "local current" revision.  When
+                //   applying this revision, we'll only apply it if it differs from
+                //   database state.  If it does differ, we apply its snapshot and
+                //   assert. This will ensure that the client converges with the
+                //   service if they ever deviate (e.g. due to bugs or differences
+                //   between how they apply "group changes", etc.).
+                //
+                // GroupsV2 TODO: This isn't finalized.
+                return max(1, groupThread.groupModel.groupV2Revision)
             }
 
             let redemptionTime = self.daysSinceEpoch
@@ -316,6 +323,26 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             }
             let groupChangesProto = try GroupsProtoGroupChanges.parseData(groupChangesProtoData)
             return try GroupsV2Protos.parse(groupChangesProto: groupChangesProto, groupV2Params: groupV2Params)
+        }
+    }
+
+    // MARK: - Accept Invites
+
+    public func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<UpdatedV2Group> {
+        guard let localUuid = tsAccountManager.localUuid else {
+            return Promise(error: OWSAssertionError("Missing localUuid."))
+        }
+        return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSetAcceptInvite in
+            let groupId = groupThread.groupModel.groupId
+            guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
+                throw OWSAssertionError("Missing groupSecretParamsData.")
+            }
+            let changeSet = GroupsV2ChangeSetAcceptInvite(groupId: groupId,
+                                                          groupSecretParamsData: groupSecretParamsData,
+                                                          localUserUuid: localUuid)
+            return changeSet
+        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> in
+            return self.updateExistingGroupOnService(changeSet: changeSet)
         }
     }
 
@@ -507,7 +534,6 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             promises.append(ProfileFetcherJob.fetchAndUpdateProfilePromise(address: address,
                                                                            mainAppOnly: false,
                                                                            ignoreThrottling: true,
-                                                                           shouldUpdateProfile: true,
                                                                            fetchType: .versioned))
         }
         return when(fulfilled: promises).asVoid()

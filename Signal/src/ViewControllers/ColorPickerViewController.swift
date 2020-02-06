@@ -498,8 +498,8 @@ private class MockIncomingMessage: TSIncomingMessage {
 
 private class MockOutgoingMessage: TSOutgoingMessage {
     init(messageBody: String, thread: TSThread) {
-        super.init(outgoingMessageWithThread: thread,
-                   messageBody: messageBody)
+        let builder = TSOutgoingMessageBuilder(thread: thread, messageBody: messageBody)
+        super.init(outgoingMessageWithBuilder: builder)
     }
 
     required init?(coder: NSCoder) {

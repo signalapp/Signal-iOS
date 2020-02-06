@@ -133,22 +133,21 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     @objc
     public func build(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
-        let item = TSOutgoingMessage(outgoingMessageWithTimestamp: timestampBuilder(),
-                                     in: threadCreator(transaction),
-                                     messageBody: messageBodyBuilder(),
-                                     attachmentIds: attachmentIdsBuilder(),
-                                     expiresInSeconds: expiresInSecondsBuilder(),
-                                     expireStartedAt: expireStartedAtBuilder(),
-                                     isVoiceMessage: isVoiceMessageBuilder(),
-                                     groupMetaMessage: groupMetaMessageBuilder(),
-                                     quotedMessage: quotedMessageBuilder(),
-                                     contactShare: contactShareBuilder(),
-                                     linkPreview: linkPreviewBuilder(),
-                                     messageSticker: messageStickerBuilder(),
-                                     isViewOnceMessage: isViewOnceMessageBuilder(),
-                                     changeActionsProtoData: changeActionsProtoDataBuilder())
-
-        return item
+        return TSOutgoingMessageBuilder.builder(thread: threadCreator(transaction),
+                                                timestamp: timestampBuilder(),
+                                                messageBody: messageBodyBuilder(),
+                                                attachmentIds: attachmentIdsBuilder(),
+                                                expiresInSeconds: expiresInSecondsBuilder(),
+                                                expireStartedAt: expireStartedAtBuilder(),
+                                                isVoiceMessage: isVoiceMessageBuilder(),
+                                                groupMetaMessage: groupMetaMessageBuilder(),
+                                                quotedMessage: quotedMessageBuilder(),
+                                                contactShare: contactShareBuilder(),
+                                                linkPreview: linkPreviewBuilder(),
+                                                messageSticker: messageStickerBuilder(),
+                                                isViewOnceMessage: isViewOnceMessageBuilder(),
+                                                changeActionsProtoData: changeActionsProtoDataBuilder(),
+                                                additionalRecipients: additionalRecipientsBuilder()).build()
     }
 
     @objc
@@ -230,6 +229,11 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     @objc
     public var changeActionsProtoDataBuilder: () -> Data? = {
+        return nil
+    }
+
+    @objc
+    public var additionalRecipientsBuilder: () -> [SignalServiceAddress]? = {
         return nil
     }
 

@@ -185,7 +185,9 @@ public class MessageFetcherJob: NSObject {
     private class func fetchMessagesViaRest() -> Promise<Void> {
         Logger.debug("")
 
-        return fetchBatchViaRest().then { (envelopes: [SSKProtoEnvelope], more: Bool) -> Promise<Void> in
+        return firstly {
+            fetchBatchViaRest()
+        }.then { (envelopes: [SSKProtoEnvelope], more: Bool) -> Promise<Void> in
             for envelope in envelopes {
                 Logger.info("received envelope.")
                 do {

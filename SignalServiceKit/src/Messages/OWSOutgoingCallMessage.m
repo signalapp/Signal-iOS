@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
 {
-    // MJK TODO - safe to remove senderTimestamp
-    self = [super initOutgoingMessageWithThread:thread messageBody:nil];
+    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (!self) {
         return self;
     }

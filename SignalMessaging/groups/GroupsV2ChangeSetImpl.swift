@@ -234,10 +234,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         uuidsForProfileKeyCredentials.formUnion(membersToAdd.keys)
         let addressesForProfileKeyCredentials: [SignalServiceAddress] = uuidsForProfileKeyCredentials.map { SignalServiceAddress(uuid: $0) }
 
-        return groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
-            .then { (_) -> Promise<ProfileKeyCredentialMap> in
+        return firstly {
+            groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
+        }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
                 return groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
-        }.then { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
+        }.then(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
             return self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
                                               profileKeyCredentialMap: profileKeyCredentialMap)
         }
@@ -361,6 +362,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 didChange = true
             }
 
+            // NOTE: We don't populate PromotePendingMemberAction here;
+            //       GroupsV2ChangeSetAcceptInvite is used to accept invites.
+
             guard didChange else {
                 throw GroupsV2Error.redundantChange
             }
@@ -377,11 +381,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     //    bytes presentation = 1;
     //    }
     //
-    // NOTE: This action is used to accept an invitation.
-    //    message PromotePendingMemberAction {
-    //    bytes presentation = 1;
-    //    }
-    //
     // NOTE: This won't be easy.
     //    message ModifyAvatarAction {
     //    string avatar = 1;
@@ -391,4 +390,84 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     //    message ModifyDisappearingMessagesTimerAction {
     //    bytes timer = 1;
     //    }
+}
+
+// MARK: -
+
+// This is a special variant of GroupsV2ChangeSet that is
+// only used to accept an invitation.
+@objc
+public class GroupsV2ChangeSetAcceptInvite: NSObject, GroupsV2ChangeSet {
+
+    // MARK: - Dependencies
+
+    private var groupsV2: GroupsV2 {
+        return SSKEnvironment.shared.groupsV2
+    }
+
+    // MARK: -
+
+    public let groupId: Data
+    public let groupSecretParamsData: Data
+
+    private let localUserUuid: UUID
+
+    @objc
+    public required init(groupId: Data,
+                         groupSecretParamsData: Data,
+                         localUserUuid: UUID) {
+        self.groupId = groupId
+        self.groupSecretParamsData = groupSecretParamsData
+
+        self.localUserUuid = localUserUuid
+    }
+
+    // MARK: - Change Protos
+
+    private typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
+
+    // Given the "current" group state, build a change proto that
+    // reflects the elements of the "original intent" that are still
+    // necessary to perform.
+    public func buildGroupChangeProto(currentGroupModel: TSGroupModel) -> Promise<GroupsProtoGroupChangeActions> {
+        guard let groupsV2Impl = groupsV2 as? GroupsV2Impl else {
+            return Promise(error: OWSAssertionError("Invalid groupsV2: \(type(of: groupsV2))"))
+        }
+
+        let uuidsForProfileKeyCredentials = [localUserUuid]
+        let addressesForProfileKeyCredentials = [SignalServiceAddress(uuid: localUserUuid)]
+        return firstly {
+            groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
+        }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
+                return groupsV2Impl.loadProfileKeyCredentialData(for: uuidsForProfileKeyCredentials)
+        }.then(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> in
+            return self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
+                                              profileKeyCredentialMap: profileKeyCredentialMap)
+        }
+    }
+
+    private func buildGroupChangeProto(currentGroupModel: TSGroupModel,
+                                       profileKeyCredentialMap: ProfileKeyCredentialMap) -> Promise<GroupsProtoGroupChangeActions> {
+        return DispatchQueue.global().async(.promise) { () throws -> GroupsProtoGroupChangeActions in
+            let groupV2Params = try GroupV2Params(groupSecretParamsData: self.groupSecretParamsData)
+
+            let actionsBuilder = GroupsProtoGroupChangeActions.builder()
+
+            let oldVersion = currentGroupModel.groupV2Revision
+            let newVersion = oldVersion + 1
+            Logger.verbose("Version: \(oldVersion) -> \(newVersion)")
+            actionsBuilder.setVersion(newVersion)
+
+            let uuid = self.localUserUuid
+            guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
+                throw OWSAssertionError("Missing profile key credential]: \(uuid)")
+            }
+            let actionBuilder = GroupsProtoGroupChangeActionsPromotePendingMemberAction.builder()
+            actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,
+                                                                              groupV2Params: groupV2Params))
+            actionsBuilder.addPromotePendingMembers(try actionBuilder.build())
+
+            return try actionsBuilder.build()
+        }
+    }
 }

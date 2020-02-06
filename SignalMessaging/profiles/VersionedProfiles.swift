@@ -79,7 +79,6 @@ public class VersionedProfiles: NSObject {
                 ProfileFetcherJob.fetchAndUpdateProfilePromise(address: localAddress,
                                                                mainAppOnly: false,
                                                                ignoreThrottling: true,
-                                                               shouldUpdateProfile: true,
                                                                fetchType: .versioned)
                     .done { _ in
                         Logger.verbose("success")

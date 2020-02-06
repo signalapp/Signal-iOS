@@ -224,11 +224,25 @@ public class FeatureFlags: NSObject {
         return TSAccountManager.sharedInstance().isRegisteredPrimaryDevice
     }
 
-    @objc
-    public static let tryToCreateNewGroupsV2 = false
+    private static let groupsV2 = build.includes(.dev) && !isUsingProductionService
 
     @objc
-    public static let incomingGroupsV2 = false
+    public static let groupsV2CreateGroups = groupsV2
+
+    @objc
+    public static let groupsV2IncomingMessages = groupsV2
+
+    // GroupsV2 TODO: Use this until we have "accept invites" UI.
+    @objc
+    public static let groupsV2AutoAcceptInvites = groupsV2
+
+    // GroupsV2 TODO: Use this until we have group v2 capability.
+    @objc
+    public static let groupsV2IgnoreCapability = groupsV2
+
+    // GroupsV2 TODO: We can use this to test recovery from "missed updates".
+    @objc
+    public static let groupsV2dontSendUpdates = false
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
@@ -243,12 +257,12 @@ public class FeatureFlags: NSObject {
     public static let isUsingProductionService = true
 
     @objc
-    public static let versionedProfiledFetches = false
+    public static let versionedProfiledFetches = false || groupsV2
 
     // When we activate this feature flag, we also need to ensure that all
     // users update their profile once in a durable way.
     @objc
-    public static let versionedProfiledUpdate = false
+    public static let versionedProfiledUpdate = false || groupsV2
 
     @objc
     public static let useOrphanDataCleaner = true
@@ -257,7 +271,7 @@ public class FeatureFlags: NSObject {
     public static let sendRecipientUpdates = false
 
     @objc
-    public static let useZKGroups = false
+    public static let useZKGroups = groupsV2
 
     @objc
     public static let notificationServiceExtension = build.includes(.dev)

@@ -54,7 +54,7 @@ extension OutgoingMessagePreparer {
             }
         }
 
-        let message = TSOutgoingMessage.Builder(thread: thread,
+        let message = TSOutgoingMessageBuilder(thread: thread,
                                                 messageBody: truncatedText,
                                                 expiresInSeconds: expiresInSeconds,
                                                 isVoiceMessage: isVoiceMessage,

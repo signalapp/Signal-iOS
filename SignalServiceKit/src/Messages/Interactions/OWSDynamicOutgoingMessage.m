@@ -28,7 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
                                  timestamp:(uint64_t)timestamp
                                     thread:(TSThread *)thread
 {
-    self = [super initOutgoingMessageWithThread:thread messageBody:nil];
+    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    messageBuilder.timestamp = timestamp;
+    self = [super initOutgoingMessageWithBuilder:messageBuilder];
 
     if (self) {
         _block = block;

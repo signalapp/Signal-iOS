@@ -6,22 +6,22 @@ import Foundation
 
 @objc
 public extension UpdateGroupViewController {
-    
+
     // MARK: - Dependencies
-    
+
     private static var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
     }
-    
+
     // MARK: -
-    
+
     func updateGroupThread(oldGroupModel: TSGroupModel,
                            newTitle: String?,
                            newAvatarData: Data?,
                            v1Members: Set<SignalServiceAddress>,
                            success: @escaping (TSGroupThread) -> Void,
                            failure: @escaping (Error) -> Void) {
-        
+
         let groupId = oldGroupModel.groupId
         // GroupsV2 TODO: handle membership, access, etc. in this view.
         let groupMembership: GroupMembership
@@ -39,21 +39,18 @@ public extension UpdateGroupViewController {
                     groupMembershipBuilder.add(address, isAdministrator: false, isPending: false)
                 }
             }
-            for address in oldGroupMembership.allUsers {
-                if !v1Members.contains(address) {
-                    groupMembershipBuilder.remove(address)
-                }
-            }
+            // GroupsV2 TODO: Remove members, change roles, etc. when
+            // UI supports pending members, kicking members, etc..
             groupMembership = groupMembershipBuilder.build()
         }
-        
+
         let groupAccess = GroupAccess.forV1
         let groupsVersion = oldGroupModel.groupsVersion
-        
+
         guard let localAddress = UpdateGroupViewController.tsAccountManager.localAddress else {
             return failure(OWSAssertionError("Missing localAddress."))
         }
-        
+
         GroupManager.updateExistingGroup(groupId: groupId,
                                          name: newTitle,
                                          avatarData: newAvatarData,
@@ -65,7 +62,7 @@ public extension UpdateGroupViewController {
             success(groupThread)
         }.catch(on: .global()) { (error) in
             owsFailDebug("Could not update group: \(error)")
-            
+
             failure(error)
         }.retainUntilComplete()
     }

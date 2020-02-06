@@ -143,6 +143,24 @@ public struct GroupMembership {
         return stateMap[address] != nil
     }
 
+    // When we check "is X a member?" we might mean...
+    //
+    // * Is X a "full" member or a pending member?
+    // * Is X a "full" member and not a pending member?
+    // * Is X a "normal" member and not an administrator member?
+    // * Is X a "normal" member or an administrator member?
+    // * Some combination thereof.
+    //
+    // This method is intended tests the inclusive case: pending
+    // or non-pending, any role.
+    public func isMemberOrPendingMemberOfAnyRole(_ address: SignalServiceAddress) -> Bool {
+        return contains(address)
+    }
+
+    public func isNonPendingMember(_ address: SignalServiceAddress) -> Bool {
+        return allMembers.contains(address)
+    }
+
     public func contains(_ uuid: UUID) -> Bool {
         return stateMap[SignalServiceAddress(uuid: uuid)] != nil
     }

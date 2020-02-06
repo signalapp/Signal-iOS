@@ -167,9 +167,6 @@ public class GroupsV2Changes {
             guard let role = member.role else {
                 throw OWSAssertionError("Missing role.")
             }
-            guard let profileKey = member.profileKey else {
-                throw OWSAssertionError("Missing profileKey.")
-            }
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
             let isAdministrator = role == .administrator
@@ -178,8 +175,6 @@ public class GroupsV2Changes {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.replace(address, isAdministrator: isAdministrator, isPending: true)
-
-            newProfileKeys[uuid] = profileKey
         }
 
         for action in changeActionsProto.deletePendingMembers {
@@ -209,7 +204,7 @@ public class GroupsV2Changes {
             guard oldGroupMembership.allPendingMembers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            guard !oldGroupMembership.allUsers.contains(address) else {
+            guard !oldGroupMembership.allMembers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             let isAdministrator = oldGroupMembership.isAdministrator(address)
