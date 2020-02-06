@@ -955,12 +955,7 @@ public class GroupManager: NSObject {
             self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
 
             let threadMessageCount = groupThread.numberOfInteractions(with: transaction)
-            if threadMessageCount > 0 {
-                let infoMessage = TSInfoMessage(timestamp: message.timestamp,
-                                                in: groupThread,
-                                                messageType: .typeGroupQuit)
-                infoMessage.anyInsert(transaction: transaction)
-            }
+            let skipInfoMessage = threadMessageCount == 0
 
             var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
             groupMembershipBuilder.remove(localAddress)
@@ -976,10 +971,11 @@ public class GroupManager: NSObject {
                                                          groupSecretParamsData: nil,
                                                          newGroupSeed: nil,
                                                          transaction: transaction)
-            // GroupsV2 TODO: Do we need to set groupUpdateSourceAddress here?
+            let groupUpdateSourceAddress = localAddress
             let result = try self.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                           newGroupModel: newGroupModel,
-                                                                                          groupUpdateSourceAddress: nil,
+                                                                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                          skipInfoMessage: skipInfoMessage,
                                                                                           transaction: transaction)
             return result.groupThread
         }
@@ -1147,6 +1143,7 @@ public class GroupManager: NSObject {
     public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: TSGroupThread,
                                                                                newGroupModel: TSGroupModel,
                                                                                groupUpdateSourceAddress: SignalServiceAddress?,
+                                                                               skipInfoMessage: Bool = false,
                                                                                transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         let oldGroupModel = groupThread.groupModel
@@ -1173,11 +1170,13 @@ public class GroupManager: NSObject {
 
         groupThread.update(with: newGroupModel, transaction: transaction)
 
-        insertGroupUpdateInfoMessage(groupThread: groupThread,
-                                     oldGroupModel: oldGroupModel,
-                                     newGroupModel: newGroupModel,
-                                     groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                     transaction: transaction)
+        if !skipInfoMessage {
+            insertGroupUpdateInfoMessage(groupThread: groupThread,
+                                         oldGroupModel: oldGroupModel,
+                                         newGroupModel: newGroupModel,
+                                         groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                         transaction: transaction)
+        }
 
         // GroupsV2 TODO: This is temporary until we build the "accept invites" UI.
         transaction.addAsyncCompletion {
