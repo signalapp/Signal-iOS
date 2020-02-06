@@ -69,15 +69,19 @@ public class SignalServiceProfile: NSObject {
                 if FeatureFlags.uuidCapabilities {
                     owsFailDebug("Missing uuid capability.")
                 }
-                self.supportsUUID = false
+                // The capability has been retired from the service.
+                self.supportsUUID = true
             }
-            if let value: Bool = try capabilities.optional(key: "gv2") {
+            if !FeatureFlags.groupsV2SetCapability {
+                self.supportsGroupsV2 = false
+            } else if let value: Bool = try capabilities.optional(key: "gv2") {
                 self.supportsGroupsV2 = value
             } else {
                 if FeatureFlags.groupsV2CreateGroups {
                     owsFailDebug("Missing groups v2 capability.")
                 }
-                self.supportsGroupsV2 = false
+                // The capability has been retired from the service.
+                self.supportsGroupsV2 = true
             }
         } else {
             owsFailDebug("Missing capabilities.")
