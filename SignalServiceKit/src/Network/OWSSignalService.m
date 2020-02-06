@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSignalService.h"
@@ -240,7 +240,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     sessionManager.securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy;
 
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    [sessionManager.requestSerializer setValue:censorshipConfiguration.signalServiceReflectorHost
+    [sessionManager.requestSerializer setValue:TSConstants.censorshipReflectorHost
                             forHTTPHeaderField:@"Host"];
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
     // Disable default cookie handling for all requests.
@@ -296,7 +296,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     sessionManager.securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy;
 
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    [sessionManager.requestSerializer setValue:censorshipConfiguration.CDNReflectorHost forHTTPHeaderField:@"Host"];
+    [sessionManager.requestSerializer setValue:TSConstants.censorshipReflectorHost forHTTPHeaderField:@"Host"];
 
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
 
@@ -306,6 +306,21 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 #pragma mark - Storage Service
 
 - (AFHTTPSessionManager *)storageServiceSessionManager
+{
+    AFHTTPSessionManager *result;
+    if (self.isCensorshipCircumventionActive) {
+        OWSCensorshipConfiguration *censorshipConfiguration = [self buildCensorshipConfiguration];
+        OWSLogInfo(@"using reflector storageServiceSessionManager via: %@", censorshipConfiguration.domainFrontBaseURL);
+        result = [self reflectorStorageServiceSessionManagerWithCensorshipConfiguration:censorshipConfiguration];
+    } else {
+        result = self.defaultStorageServiceSessionManager;
+    }
+    // By default, CDN content should be binary.
+    result.responseSerializer = [AFHTTPResponseSerializer serializer];
+    return result;
+}
+
+- (AFHTTPSessionManager *)defaultStorageServiceSessionManager
 {
     NSURL *baseURL = [[NSURL alloc] initWithString:TSConstants.storageServiceURL];
     OWSAssertDebug(baseURL);
@@ -320,6 +335,26 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     // Disable default cookie handling for all requests.
     sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
+
+    return sessionManager;
+}
+
+- (AFHTTPSessionManager *)reflectorStorageServiceSessionManagerWithCensorshipConfiguration:
+    (OWSCensorshipConfiguration *)censorshipConfiguration
+{
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+
+    NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
+    NSURL *baseURL = [frontingURL URLByAppendingPathComponent:TSConstants.storageServiceCensorshipPrefix];
+    AFHTTPSessionManager *sessionManager =
+        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+
+    sessionManager.securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy;
+
+    sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
+    [sessionManager.requestSerializer setValue:TSConstants.censorshipReflectorHost forHTTPHeaderField:@"Host"];
+
+    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
 
     return sessionManager;
 }

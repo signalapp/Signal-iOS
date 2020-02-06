@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSCensorshipConfiguration.h"
@@ -77,18 +77,6 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     _domainFrontSecurityPolicy = securityPolicy;
 
     return self;
-}
-
-// MARK: Public Getters
-
-- (NSString *)signalServiceReflectorHost
-{
-    return TSConstants.textSecureServiceReflectorHost;
-}
-
-- (NSString *)CDNReflectorHost
-{
-    return TSConstants.textSecureCDNReflectorHost;
 }
 
 // MARK: Util
