@@ -9,12 +9,15 @@ import Foundation
 public class GroupMembership: MTLModel {
     // This class is immutable.
     @objc
-    internal class State: MTLModel {
+    class State: MTLModel {
         // GroupsV2 TODO: Use TSGroupMemberRole instead.
+        @objc
         var isAdministrator: Bool = false
+        @objc
         var isPending: Bool = false
 
         // Only applies for pending members.
+        @objc
         var addedByUuid: UUID?
 
         @objc
@@ -44,8 +47,9 @@ public class GroupMembership: MTLModel {
     }
 
     // By using a single dictionary we ensure that no address has more than one state.
-    internal typealias StateMap = [SignalServiceAddress: State]
-    private var stateMap: StateMap
+    typealias StateMap = [SignalServiceAddress: State]
+    @objc
+    var stateMap: StateMap
 
     @objc
     public var nonAdminMembers: Set<SignalServiceAddress> {
@@ -198,7 +202,6 @@ public class GroupMembership: MTLModel {
 
     public func isPending(_ address: SignalServiceAddress) -> Bool {
         guard let state = stateMap[address] else {
-            owsFailDebug("Unknown address")
             return false
         }
         return state.isPending
@@ -206,7 +209,6 @@ public class GroupMembership: MTLModel {
 
     public func isAdministrator(_ address: SignalServiceAddress) -> Bool {
         guard let state = stateMap[address] else {
-            owsFailDebug("Unknown address")
             return false
         }
         return state.isAdministrator
