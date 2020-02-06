@@ -51,19 +51,32 @@ public extension UpdateGroupViewController {
             return failure(OWSAssertionError("Missing localAddress."))
         }
 
+        // GroupsV2 TODO: Skip change where the user didn't change anything.
+
+        // dmConfiguration: nil means don't change disappearing messages configuration.
         GroupManager.updateExistingGroup(groupId: groupId,
                                          name: newTitle,
                                          avatarData: newAvatarData,
                                          groupMembership: groupMembership,
                                          groupAccess: groupAccess,
                                          groupsVersion: groupsVersion,
+                                         dmConfiguration: nil,
                                          groupUpdateSourceAddress: localAddress)
         .done(on: .global()) { groupThread in
             success(groupThread)
         }.catch(on: .global()) { (error) in
-            owsFailDebug("Could not update group: \(error)")
+            switch error {
+            case GroupsV2Error.redundantChange:
+                // GroupsV2 TODO: Treat this as a success.
 
-            failure(error)
+                owsFailDebug("Could not update group: \(error)")
+
+                failure(error)
+            default:
+                owsFailDebug("Could not update group: \(error)")
+
+                failure(error)
+            }
         }.retainUntilComplete()
     }
 }

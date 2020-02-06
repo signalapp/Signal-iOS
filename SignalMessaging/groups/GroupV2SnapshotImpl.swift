@@ -46,6 +46,8 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
     public let accessControlForAttributes: GroupsProtoAccessControlAccessRequired
     public let accessControlForMembers: GroupsProtoAccessControlAccessRequired
 
+    public let disappearingMessageToken: DisappearingMessageToken
+
     public var debugDescription: String {
         return groupProto.debugDescription
     }
@@ -57,7 +59,8 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 members: [Member],
                 pendingMembers: [PendingMember],
                 accessControlForAttributes: GroupsProtoAccessControlAccessRequired,
-                accessControlForMembers: GroupsProtoAccessControlAccessRequired) {
+                accessControlForMembers: GroupsProtoAccessControlAccessRequired,
+                disappearingMessageToken: DisappearingMessageToken) {
 
         self.groupSecretParamsData = groupSecretParamsData
         self.groupProto = groupProto
@@ -67,6 +70,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         self.pendingMembers = pendingMembers
         self.accessControlForAttributes = accessControlForAttributes
         self.accessControlForMembers = accessControlForMembers
+        self.disappearingMessageToken = disappearingMessageToken
     }
 
     public var groupMembership: GroupMembership {

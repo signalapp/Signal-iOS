@@ -14,6 +14,18 @@ public extension TSGroupModel {
             SignalServiceAddress(uuid: $0)
         })
     }
+
+    func groupAccessOrDefault() throws -> GroupAccess {
+        if let groupAccess = self.groupAccess {
+            return groupAccess
+        }
+        switch groupsVersion {
+        case .V1:
+            return GroupAccess.forV1
+        case .V2:
+            throw OWSAssertionError("Missing groupAccess.")
+        }
+    }
 }
 
 // MARK: -

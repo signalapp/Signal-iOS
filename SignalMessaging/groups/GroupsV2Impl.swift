@@ -135,12 +135,14 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             return Promise(error: error)
         }
         return self.databaseStorage.read(.promise) { transaction in
-            return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
-        }.then(on: DispatchQueue.global()) { (thread: TSGroupThread?) -> Promise<GroupsProtoGroupChangeActions> in
-            guard let thread = thread else {
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Thread does not exist.")
             }
-            return changeSet.buildGroupChangeProto(currentGroupModel: thread.groupModel)
+            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
+            return (groupThread, dmConfiguration.asToken)
+        }.then(on: DispatchQueue.global()) { (thread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> in
+            return changeSet.buildGroupChangeProto(currentGroupModel: thread.groupModel,
+                                                   currentDisappearingMessageToken: disappearingMessageToken)
         }.then(on: DispatchQueue.global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> Promise<NSURLRequest> in
             // GroupsV2 TODO: We should implement retry for all request methods in this class.
             return self.buildUpdateGroupRequest(localUuid: localUuid,
@@ -329,17 +331,32 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     // MARK: - Accept Invites
 
     public func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<UpdatedV2Group> {
-        guard let localUuid = tsAccountManager.localUuid else {
-            return Promise(error: OWSAssertionError("Missing localUuid."))
-        }
-        return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSetAcceptInvite in
+        return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
             let groupId = groupThread.groupModel.groupId
             guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
                 throw OWSAssertionError("Missing groupSecretParamsData.")
             }
-            let changeSet = GroupsV2ChangeSetAcceptInvite(groupId: groupId,
-                                                          groupSecretParamsData: groupSecretParamsData,
-                                                          localUserUuid: localUuid)
+            let changeSet = GroupsV2ChangeSetImpl(groupId: groupId,
+                                                  groupSecretParamsData: groupSecretParamsData)
+            changeSet.setShouldAcceptInvite()
+            return changeSet
+        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> in
+            return self.updateExistingGroupOnService(changeSet: changeSet)
+        }
+    }
+
+    // MARK: - Disappearing Messages
+
+    public func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
+                                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<UpdatedV2Group> {
+        return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
+            let groupId = groupThread.groupModel.groupId
+            guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
+                throw OWSAssertionError("Missing groupSecretParamsData.")
+            }
+            let changeSet = GroupsV2ChangeSetImpl(groupId: groupId,
+                                                  groupSecretParamsData: groupSecretParamsData)
+            changeSet.setNewDisappearingMessageToken(disappearingMessageToken)
             return changeSet
         }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> in
             return self.updateExistingGroupOnService(changeSet: changeSet)
@@ -601,11 +618,16 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
     // MARK: - Change Set
 
-    public func buildChangeSet(from oldGroupModel: TSGroupModel,
-                               to newGroupModel: TSGroupModel,
+    public func buildChangeSet(oldGroupModel: TSGroupModel,
+                               newGroupModel: TSGroupModel,
+                               oldDMConfiguration: OWSDisappearingMessagesConfiguration,
+                               newDMConfiguration: OWSDisappearingMessagesConfiguration,
                                transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet {
         let changeSet = try GroupsV2ChangeSetImpl(for: oldGroupModel)
-        try changeSet.buildChangeSet(from: oldGroupModel, to: newGroupModel,
+        try changeSet.buildChangeSet(oldGroupModel: oldGroupModel,
+                                     newGroupModel: newGroupModel,
+                                     oldDMConfiguration: oldDMConfiguration,
+                                     newDMConfiguration: newDMConfiguration,
                                      transaction: transaction)
         return changeSet
     }

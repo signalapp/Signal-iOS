@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSContactThread.h"
@@ -163,6 +163,11 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 }
 
 - (BOOL)isGroupThread {
+    return NO;
+}
+
+- (BOOL)isGroupV2Thread
+{
     return NO;
 }
 

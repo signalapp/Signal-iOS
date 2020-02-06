@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,7 +27,7 @@ public class ThreadViewModel: NSObject {
     public init(thread: TSThread, transaction: SDSAnyReadTransaction) {
         self.threadRecord = thread
 
-        self.isGroupThread = thread.isGroupThread()
+        self.isGroupThread = thread.isGroupThread
         self.name = Environment.shared.contactsManager.displayName(for: thread, transaction: transaction)
 
         self.isMuted = thread.isMuted

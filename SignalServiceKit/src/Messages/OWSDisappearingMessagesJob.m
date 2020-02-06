@@ -216,6 +216,12 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
+    if (thread.isGroupV2Thread) {
+        // v2 groups update disappearing messages state like other
+        // group state.
+        return;
+    }
+
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     NSString *_Nullable remoteContactName = nil;

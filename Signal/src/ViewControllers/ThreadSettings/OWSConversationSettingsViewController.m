@@ -17,6 +17,7 @@
 #import "UpdateGroupViewController.h"
 #import <ContactsUI/ContactsUI.h>
 #import <Curve25519Kit/Curve25519.h>
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSAvatarBuilder.h>
@@ -25,7 +26,6 @@
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -44,7 +44,8 @@ const CGFloat kIconViewLength = 24;
 #ifdef SHOW_COLOR_PICKER
     ColorPickerDelegate,
 #endif
-    OWSSheetViewControllerDelegate>
+    OWSSheetViewControllerDelegate,
+    OWSNavigationView>
 
 @property (nonatomic) TSThread *thread;
 
@@ -1102,42 +1103,54 @@ const CGFloat kIconViewLength = 24;
     [self updateTableContents];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
+- (BOOL)hasUnsavedChangesToDisappearingMessagesConfiguration
 {
-    [super viewWillDisappear:animated];
-
-    __block BOOL shouldSave;
+    __block BOOL hasChanged;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        shouldSave = [self.disappearingMessagesConfiguration hasChangedWithTransaction:transaction];
+        hasChanged = [self.disappearingMessagesConfiguration hasChangedWithTransaction:transaction];
     }];
-    if (!shouldSave) {
-        // Every time we change the configuration we notify the contact and
-        // create an update interaction.
-        //
-        // We don't want to do either if these are unmodified defaults
-        // of if nothing has changed.
-        return;
+    return hasChanged;
+}
+
+#pragma mark - OWSNavigationView
+
+- (BOOL)shouldCancelNavigationBack
+{
+    BOOL result = self.hasUnsavedChangesToDisappearingMessagesConfiguration;
+    if (result) {
+        [self updateDisappearingMessagesConfigurationAndDismiss];
     }
+    return result;
+}
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
+- (void)updateDisappearingMessagesConfigurationAndDismiss
+{
+    [ModalActivityIndicatorViewController
+        presentFromViewController:self
+                        canCancel:NO
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      [[self updateDisappearingMessagesConfigurationObjc:self.disappearingMessagesConfiguration
+                                                                  thread:self.thread]
+                              .then(^{
+                                  OWSAssertIsOnMainThread();
+                                  [modalActivityIndicator dismissWithCompletion:^{
+                                      OWSAssertIsOnMainThread();
 
-        // MJK TODO - should be safe to remove this senderTimestamp
-        OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
-            [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                     initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                thread:self.thread
-                         configuration:self.disappearingMessagesConfiguration
-                   createdByRemoteName:nil
-                createdInExistingGroup:NO];
-        [infoMessage anyInsertWithTransaction:transaction];
+                                      [self.navigationController popViewControllerAnimated:YES];
+                                  }];
+                              })
+                              .catch(^(NSError *error) {
+                                  OWSAssertIsOnMainThread();
+                                  [modalActivityIndicator dismissWithCompletion:^{
+                                      OWSAssertIsOnMainThread();
 
-        OWSDisappearingMessagesConfigurationMessage *message = [[OWSDisappearingMessagesConfigurationMessage alloc]
-            initWithConfiguration:self.disappearingMessagesConfiguration
-                           thread:self.thread];
-
-        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-    }];
+                                      OWSAssertDebug(self.thread.isGroupV2Thread);
+                                      [OWSActionSheets showActionSheetWithTitle:
+                                                           NSLocalizedString(@"UPDATE_GROUP_FAILED",
+                                                               @"Error indicating that a group could not be updated.")];
+                                  }];
+                              }) retainUntilComplete];
+                  }];
 }
 
 #pragma mark - Actions

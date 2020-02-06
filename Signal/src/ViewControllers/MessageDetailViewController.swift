@@ -249,7 +249,7 @@ class MessageDetailViewController: OWSViewController {
         // Recipient(s)
         if let outgoingMessage = message as? TSOutgoingMessage {
 
-            let isGroupThread = thread.isGroupThread()
+            let isGroupThread = thread.isGroupThread
 
             let recipientStatusGroups: [MessageReceiptStatus] = [
                 .read,

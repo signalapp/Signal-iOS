@@ -248,6 +248,13 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     return NO;
 }
 
+- (BOOL)isGroupV2Thread
+{
+    OWSAbstractMethod();
+
+    return NO;
+}
+
 - (NSArray<SignalServiceAddress *> *)recipientAddresses
 {
     OWSAbstractMethod();

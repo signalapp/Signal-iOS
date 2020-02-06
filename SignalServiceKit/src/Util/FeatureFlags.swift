@@ -244,6 +244,14 @@ public class FeatureFlags: NSObject {
     @objc
     public static let groupsV2dontSendUpdates = false
 
+    // The other clients don't consider this MVP, but we already implemented it.
+    // It enables an optimization where other clients can usually update without
+    // interacting with the service.
+    //
+    // GroupsV2 TODO: Decide whether or not to set this flag.
+    @objc
+    public static let groupsV2embedProtosInGroupUpdates = false
+
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
 

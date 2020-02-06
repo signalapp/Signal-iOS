@@ -111,7 +111,7 @@ public class GroupsV2Test: NSObject {
             }
             return groupId
         }.then(on: .global()) { (groupId: Data) throws -> Promise<(Data, GroupV2Snapshot)> in
-            let groupThread = try self.fetchGroupThread(groupId: groupId)
+            let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
             let groupModel = groupThread.groupModel
             guard groupModel.groupMembership.administrators == localAddressSet else {
                 throw OWSAssertionError("Unexpected groupMembership.")
@@ -138,6 +138,7 @@ public class GroupsV2Test: NSObject {
                                                     groupMembership: groupMembership,
                                                     groupAccess: groupAccess,
                                                     groupsVersion: groupModel.groupsVersion,
+                                                    dmConfiguration: dmConfiguration,
                                                     groupUpdateSourceAddress: localAddress)
                 .then(on: .global()) { (groupThread) -> Promise<GroupV2Snapshot> in
                     // GroupsV2 TODO: This should reflect the new group.
@@ -181,7 +182,7 @@ public class GroupsV2Test: NSObject {
             }
             return groupId
         }.then(on: .global()) { (groupId: Data) throws -> Promise<(Data, GroupV2Snapshot)> in
-            let groupThread = try self.fetchGroupThread(groupId: groupId)
+            let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
             let groupModel = groupThread.groupModel
             guard groupModel.groupMembership.administrators == localAddressSet else {
                 throw OWSAssertionError("Unexpected groupMembership.")
@@ -208,6 +209,7 @@ public class GroupsV2Test: NSObject {
                                                     groupMembership: groupMembership,
                                                     groupAccess: groupAccess,
                                                     groupsVersion: groupModel.groupsVersion,
+                                                    dmConfiguration: dmConfiguration,
                                                     groupUpdateSourceAddress: localAddress)
                 .then(on: .global()) { (_) -> Promise<GroupV2Snapshot> in
                     // GroupsV2 TODO: This should reflect the new group.
@@ -251,7 +253,7 @@ public class GroupsV2Test: NSObject {
             }
             return groupId
         }.map(on: .global()) { (groupId: Data) throws -> Data in
-            let groupThread = try self.fetchGroupThread(groupId: groupId)
+            let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
             let groupModel = groupThread.groupModel
             guard groupModel.groupMembership.administrators == localAddressSet else {
                 throw OWSAssertionError("Unexpected groupMembership.")
@@ -270,13 +272,13 @@ public class GroupsV2Test: NSObject {
         }.retainUntilComplete()
     }
 
-    private static func fetchGroupThread(groupId: Data) throws -> TSGroupThread {
-        let thread = databaseStorage.read { transaction in
-            return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+    private static func fetchGroupThread(groupId: Data) throws -> (TSGroupThread, OWSDisappearingMessagesConfiguration) {
+        return try databaseStorage.read { (transaction) throws -> (TSGroupThread, OWSDisappearingMessagesConfiguration) in
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                throw OWSAssertionError("Missing groupThread.")
+            }
+            let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
+            return (groupThread, dmConfiguration)
         }
-        guard let groupThread = thread else {
-            throw OWSAssertionError("Missing groupThread.")
-        }
-        return groupThread
     }
 }

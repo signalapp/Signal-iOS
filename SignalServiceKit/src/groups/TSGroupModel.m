@@ -107,7 +107,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     } else {
         if (self.groupAccess == nil) {
             OWSFailDebug(@"Missing groupAccess.");
-            _groupAccess = GroupAccess.forV1;
+            _groupAccess = GroupAccess.allAccess;
         }
         if (self.groupsV2MemberRoles == nil) {
             OWSFailDebug(@"Missing groupsV2MemberRoles.");
