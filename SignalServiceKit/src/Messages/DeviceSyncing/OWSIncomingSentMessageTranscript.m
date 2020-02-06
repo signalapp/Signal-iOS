@@ -176,6 +176,15 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSFailDebug(@"Invalid thread for v2 group.");
                     return nil;
                 }
+                if (!groupContextV2.hasRevision) {
+                    OWSFailDebug(@"Missing revision.");
+                    return nil;
+                }
+                uint32_t revision = groupContextV2.revision;
+                if (revision > groupThread.groupModel.groupV2Revision) {
+                    OWSFailDebug(@"Unexpected revision.");
+                    return nil;
+                }
             } else {
                 OWSFailDebug(@"Missing group context.");
                 return nil;
