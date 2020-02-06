@@ -21,6 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
                forAddress:(SignalServiceAddress *)address
               transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
+    NS_SWIFT_NAME(fillInMissingProfileKeys(_:));
+
 - (void)setProfileGivenName:(nullable NSString *)firstName
                  familyName:(nullable NSString *)lastName
                  forAddress:(SignalServiceAddress *)address
@@ -33,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addThreadToProfileWhitelist:(TSThread *)thread;
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses;
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
 

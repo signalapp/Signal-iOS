@@ -61,6 +61,19 @@ NS_ASSUME_NONNULL_BEGIN
     self.profileKeys[address] = key;
 }
 
+- (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
+{
+    for (SignalServiceAddress *address in profileKeys) {
+        if (self.profileKeys[address] != nil) {
+            continue;
+        }
+        NSData *_Nullable profileKeyData = profileKeys[address];
+        OWSAssertDebug(profileKeyData);
+        OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKeyData];
+        self.profileKeys[address] = key;
+    }
+}
+
 - (void)setProfileGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
                  forAddress:(SignalServiceAddress *)address
@@ -88,6 +101,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
 {
     [self.recipientWhitelist addObject:address];
+}
+
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+{
+    [self.recipientWhitelist addObjectsFromArray:addresses];
 }
 
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address

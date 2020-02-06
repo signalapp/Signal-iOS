@@ -255,6 +255,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return [self.class stableColorNameForNewConversationWithString:[self threadIdFromGroupId:groupId]];
 }
 
+- (NSSet<SignalServiceAddress *> *)allPendingAndNonPendingMembers
+{
+    return self.groupModel.allPendingAndNonPendingMembers;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

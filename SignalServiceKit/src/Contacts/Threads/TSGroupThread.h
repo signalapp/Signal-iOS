@@ -54,6 +54,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 
 - (BOOL)isLocalUserInGroup;
 
+@property (nonatomic, readonly) NSSet<SignalServiceAddress *> *allPendingAndNonPendingMembers;
+
 // all group threads containing recipient as a member
 + (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;

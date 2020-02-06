@@ -962,10 +962,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         [self addGroupIdToProfileWhitelist:groupId];
 
         // When we add a group to the profile whitelist, we might as well
-        // also add all current members to the profile whitelist
+        // also add all current and pending members to the profile whitelist
         // individually as well just in case delivery of the profile key
         // fails.
-        [self addUsersToProfileWhitelist:groupThread.recipientAddresses];
+        [self addUsersToProfileWhitelist:groupThread.allPendingAndNonPendingMembers.allObjects];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress];
@@ -1039,6 +1039,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                forAddress:(SignalServiceAddress *)address
               transaction:(SDSAnyWriteTransaction *)transaction
 {
+    [self setProfileKeyData:profileKeyData forAddress:address onlyFillInIfMissing:NO transaction:transaction];
+}
+
+- (void)setProfileKeyData:(NSData *)profileKeyData
+               forAddress:(SignalServiceAddress *)address
+      onlyFillInIfMissing:(BOOL)onlyFillInIfMissing
+              transaction:(SDSAnyWriteTransaction *)transaction
+{
     OWSAES256Key *_Nullable profileKey = [OWSAES256Key keyWithData:profileKeyData];
     if (profileKey == nil) {
         OWSFailDebug(@"Failed to make profile key for key data");
@@ -1046,8 +1054,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     }
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
-
     OWSAssertDebug(userProfile);
+
+    if (onlyFillInIfMissing && userProfile.profileKey != nil) {
+        return;
+    }
+
     if (userProfile.profileKey && [userProfile.profileKey.keyData isEqual:profileKey.keyData]) {
         // Ignore redundant update.
         return;
@@ -1066,6 +1078,25 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                          [self updateProfileForAddress:address];
                      });
                  }];
+}
+
+- (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
+{
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        for (SignalServiceAddress *address in profileKeys) {
+            NSData *_Nullable profileKeyData = profileKeys[address];
+            if (profileKeyData == nil) {
+                OWSFailDebug(@"Missing profileKeyData.");
+                continue;
+            }
+            OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKeyData];
+            if (key == nil) {
+                OWSFailDebug(@"Invalid profileKeyData.");
+                continue;
+            }
+            [self setProfileKeyData:profileKeyData forAddress:address onlyFillInIfMissing:YES transaction:transaction];
+        }
+    }];
 }
 
 - (void)setProfileGivenName:(nullable NSString *)givenName

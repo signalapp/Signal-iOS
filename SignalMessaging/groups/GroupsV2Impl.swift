@@ -13,31 +13,31 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
     // MARK: - Dependencies
 
-    fileprivate var tsAccountManager: TSAccountManager {
+    private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
     }
 
-    fileprivate var databaseStorage: SDSDatabaseStorage {
+    private var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
 
-    fileprivate var socketManager: TSSocketManager {
+    private var socketManager: TSSocketManager {
         return TSSocketManager.shared
     }
 
-    fileprivate var networkManager: TSNetworkManager {
+    private var networkManager: TSNetworkManager {
         return SSKEnvironment.shared.networkManager
     }
 
-    fileprivate var sessionManager: AFHTTPSessionManager {
+    private var sessionManager: AFHTTPSessionManager {
         return OWSSignalService.sharedInstance().storageServiceSessionManager
     }
 
-    fileprivate var profileManager: OWSProfileManager {
+    private var profileManager: OWSProfileManager {
         return OWSProfileManager.shared()
     }
 
-    fileprivate var groupV2Updates: GroupV2Updates {
+    private var groupV2Updates: GroupV2Updates {
         return SSKEnvironment.shared.groupV2Updates
     }
 
@@ -50,6 +50,17 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         super.init()
 
         SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            guard self.tsAccountManager.isRegisteredAndReady else {
+                return
+            }
+            firstly {
+                GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+            }.catch { error in
+                owsFailDebug("Local profile update failed with error: \(error)")
+            }.retainUntilComplete()
+        }
     }
 
     // MARK: - Create Group
@@ -218,6 +229,8 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
             return UpdatedV2Group(groupThread: updatedGroupThread, changeActionsProtoData: changeActionsProtoData)
         }.then(on: DispatchQueue.global()) { (updatedV2Group: UpdatedV2Group) -> Promise<TSGroupThread> in
+
+            GroupManager.updateProfileWhitelist(withGroupThread: updatedV2Group.groupThread)
 
             // GroupsV2 TODO: We should skip sending this message if none of the
             //                group state (including disappearing messages state)

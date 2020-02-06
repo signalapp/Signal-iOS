@@ -132,7 +132,6 @@ public protocol GroupV2Snapshot {
     var title: String { get }
 
     // GroupsV2 TODO: Avatar.
-    // GroupsV2 TODO: DM state.
 
     var groupMembership: GroupMembership { get }
 
@@ -142,6 +141,8 @@ public protocol GroupV2Snapshot {
     var accessControlForMembers: GroupsProtoAccessControlAccessRequired { get }
 
     var disappearingMessageToken: DisappearingMessageToken { get }
+
+    var profileKeys: [UUID: Data] { get }
 }
 
 // MARK: -

@@ -15,6 +15,10 @@ public extension TSGroupModel {
         })
     }
 
+    var allPendingAndNonPendingMembers: Set<SignalServiceAddress> {
+        return groupMembership.allUsers
+    }
+
     func groupAccessOrDefault() throws -> GroupAccess {
         if let groupAccess = self.groupAccess {
             return groupAccess

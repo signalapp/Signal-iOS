@@ -85,10 +85,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal
 - (TSGroupMemberRole)roleForGroupsV2Member:(SignalServiceAddress *)address;
 - (TSGroupMemberRole)roleForGroupsV2PendingMember:(SignalServiceAddress *)address;
 
-@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *administrators;
-@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *pendingNormalMembers;
-@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *pendingAdministrators;
-
 @end
 
 NS_ASSUME_NONNULL_END

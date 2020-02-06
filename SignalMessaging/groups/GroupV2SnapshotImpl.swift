@@ -48,6 +48,8 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
 
     public let disappearingMessageToken: DisappearingMessageToken
 
+    public let profileKeys: [UUID: Data]
+
     public var debugDescription: String {
         return groupProto.debugDescription
     }
@@ -60,7 +62,8 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 pendingMembers: [PendingMember],
                 accessControlForAttributes: GroupsProtoAccessControlAccessRequired,
                 accessControlForMembers: GroupsProtoAccessControlAccessRequired,
-                disappearingMessageToken: DisappearingMessageToken) {
+                disappearingMessageToken: DisappearingMessageToken,
+                profileKeys: [UUID: Data]) {
 
         self.groupSecretParamsData = groupSecretParamsData
         self.groupProto = groupProto
@@ -71,6 +74,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         self.accessControlForAttributes = accessControlForAttributes
         self.accessControlForMembers = accessControlForMembers
         self.disappearingMessageToken = disappearingMessageToken
+        self.profileKeys = profileKeys
     }
 
     public var groupMembership: GroupMembership {

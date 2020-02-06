@@ -275,7 +275,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func refreshGroupFromService(groupSecretParamsData: Data,
                                          groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
 
-        return DispatchQueue.global().async(.promise) {
+        return firstly {
+            return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+        }.map(on: .global()) { () throws -> Bool in
             guard let localAddress = self.tsAccountManager.localAddress else {
                 throw OWSAssertionError("Missing localAddress.")
             }
@@ -313,6 +315,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     return self.fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: groupSecretParamsData,
                                                                                groupUpdateMode: groupUpdateMode)
             }
+        }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> TSGroupThread in
+            GroupManager.updateProfileWhitelist(withGroupThread: groupThread)
+            return groupThread
         }
     }
 
@@ -331,7 +336,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         guard groupThread.groupModel.groupsVersion == .V2 else {
             throw OWSAssertionError("Invalid groupsVersion.")
         }
-        // GroupsV2 TODO: Can we eliminate ChangedGroupModel?
         let changedGroupModel = try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
                                                                              changeActionsProto: changeActionsProto,
                                                                              transaction: transaction)
@@ -352,6 +356,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                                                           newGroupModel: changedGroupModel.newGroupModel,
                                                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
             transaction: transaction).groupThread
+
+        GroupManager.storeProfileKeysFromGroupProtos(changedGroupModel.profileKeys)
 
         guard updatedGroupThread.groupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
@@ -486,10 +492,14 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             // groupUpdateSourceAddress is nil because we don't know the
             // author(s) of changes reflected in the snapshot.
             let groupUpdateSourceAddress: SignalServiceAddress? = nil
-            return try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+            let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                                  groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                  canInsert: true,
-                transaction: transaction).groupThread
+                transaction: transaction)
+
+            GroupManager.storeProfileKeysFromGroupProtos(groupV2Snapshot.profileKeys)
+
+            return result.groupThread
         }
     }
 }

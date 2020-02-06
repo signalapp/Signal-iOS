@@ -338,7 +338,9 @@ public class GroupManager: NSObject {
             return Promise(error: OWSAssertionError("Missing localAddress."))
         }
 
-        return DispatchQueue.global().async(.promise) { () -> GroupMembership in
+        return firstly {
+            return self.ensureLocalProfileHasCommitmentIfNecessary()
+        }.map(on: .global()) { () throws -> GroupMembership in
             guard let localAddress = self.tsAccountManager.localAddress else {
                 throw OWSAssertionError("Missing localAddress.")
             }
@@ -354,25 +356,6 @@ public class GroupManager: NSObject {
                                    administrators: administrators,
                                    pendingNonAdminMembers: pendingNonAdminMembers,
                                    pendingAdministrators: pendingAdministrators)
-        }.then(on: .global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
-            // We will need a profile key credential for all users including
-            // ourself.  If we've never done a versioned profile update,
-            // try to do so now.
-            guard FeatureFlags.groupsV2CreateGroups else {
-                return Promise.value(groupMembership)
-            }
-            let hasLocalCredential = self.databaseStorage.read { transaction in
-                return self.groupsV2.hasProfileKeyCredential(for: localAddress,
-                                                             transaction: transaction)
-            }
-            guard !hasLocalCredential else {
-                return Promise.value(groupMembership)
-            }
-            return firstly {
-                self.groupsV2Swift.reuploadLocalProfilePromise()
-            }.map(on: .global()) { (_) -> GroupMembership in
-                    return groupMembership
-            }
         }.then(on: .global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
             // Try to obtain profile key credentials for all group members
             // including ourself, unless we already have them on hand.
@@ -408,7 +391,16 @@ public class GroupManager: NSObject {
                                                 newGroupSeed: newGroupSeed,
                                                 transaction: transaction)
             }
-            return self.createNewGroupOnServiceIfNecessary(groupModel: groupModel)
+
+            guard groupModel.groupsVersion == .V2 else {
+                // v1 groups don't need to be created on the service.
+                return Promise.value(groupModel)
+            }
+            return firstly {
+                self.groupsV2Swift.createNewGroupOnService(groupModel: groupModel)
+            }.map(on: .global()) { _ in
+                return groupModel
+            }
         }.then(on: .global()) { (groupModel: TSGroupModel) -> Promise<TSGroupThread> in
             let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
                 return self.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: groupModel,
@@ -475,17 +467,6 @@ public class GroupManager: NSObject {
             builder.add(address, isAdministrator: isAdministrator, isPending: isPending)
         }
         return builder.build()
-    }
-
-    private static func createNewGroupOnServiceIfNecessary(groupModel: TSGroupModel) -> Promise<TSGroupModel> {
-        guard groupModel.groupsVersion == .V2 else {
-            return Promise.value(groupModel)
-        }
-        return firstly {
-            self.groupsV2Swift.createNewGroupOnService(groupModel: groupModel)
-        }.map(on: .global()) { _ in
-                return groupModel
-        }
     }
 
     // success and failure are invoked on the main thread.
@@ -755,7 +736,9 @@ public class GroupManager: NSObject {
                                               dmConfiguration: OWSDisappearingMessagesConfiguration?,
                                               groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
-        return DispatchQueue.global().async(.promise) { () throws -> (UpdateInfo, GroupsV2ChangeSet) in
+        return firstly {
+            return self.ensureLocalProfileHasCommitmentIfNecessary()
+        }.map(on: .global()) { () throws -> (UpdateInfo, GroupsV2ChangeSet) in
             return try databaseStorage.read { transaction in
                 let updateInfo = try self.updateInfo(groupId: groupId,
                                                      name: name,
@@ -870,8 +853,12 @@ public class GroupManager: NSObject {
             return simpleUpdate()
         }
 
-        return groupsV2Swift.updateDisappearingMessageStateOnService(groupThread: groupThread,
-            disappearingMessageToken: disappearingMessageToken).asVoid()
+        return firstly {
+            return self.ensureLocalProfileHasCommitmentIfNecessary()
+        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
+            return groupsV2Swift.updateDisappearingMessageStateOnService(groupThread: groupThread,
+                                                                         disappearingMessageToken: disappearingMessageToken)
+        }.asVoid()
     }
 
     public static func updateDisappearingMessagesInDatabaseAndCreateMessages(token newToken: DisappearingMessageToken,
@@ -916,7 +903,11 @@ public class GroupManager: NSObject {
 
     public static func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
 
-        return groupsV2Swift.acceptInviteToGroupV2(groupThread: groupThread)
+        return firstly {
+            return self.ensureLocalProfileHasCommitmentIfNecessary()
+        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
+            return self.groupsV2Swift.acceptInviteToGroupV2(groupThread: groupThread)
+        }
     }
 
     // MARK: - Leave Group / Decline Invite
@@ -986,7 +977,11 @@ public class GroupManager: NSObject {
             return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
         }
 
-        return groupsV2Swift.leaveGroupV2OrDeclineInvite(groupThread: groupThread)
+        return firstly {
+            return self.ensureLocalProfileHasCommitmentIfNecessary()
+        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
+            return groupsV2Swift.leaveGroupV2OrDeclineInvite(groupThread: groupThread)
+        }
     }
 
     // MARK: - Messages
@@ -1256,6 +1251,82 @@ public class GroupManager: NSObject {
                                                     transaction: SDSAnyWriteTransaction) {
         if let uuid = address.uuid {
             groupsV2CapabilityStore.setBool(value, key: uuid.uuidString, transaction: transaction)
+        }
+    }
+
+    // MARK: - Profiles
+
+    @objc
+    public static func updateProfileWhitelist(withGroupThread groupThread: TSGroupThread) {
+        guard let localAddress = self.tsAccountManager.localAddress else {
+            owsFailDebug("Missing localAddress.")
+            return
+        }
+
+        // Ensure the thread and all members of the group are in our profile whitelist
+        // if we're a member of the group. We don't want to do this if we're just a
+        // pending member or are leaving/have already left the group.
+        let groupMembership = groupThread.groupModel.groupMembership
+        guard groupMembership.allMembers.contains(localAddress) else {
+            return
+        }
+        profileManager.addThread(toProfileWhitelist: groupThread)
+    }
+
+    @objc
+    public static func storeProfileKeysFromGroupProtos(_ profileKeysByUuid: [UUID: Data]) {
+        var profileKeysByAddress = [SignalServiceAddress: Data]()
+        for (uuid, profileKeyData) in profileKeysByUuid {
+            profileKeysByAddress[SignalServiceAddress(uuid: uuid)] = profileKeyData
+        }
+        // If we receive a profile key from a user, that's "authoritative" and
+        // can discard and previous key from them.
+        //
+        // However, if we learn of a user's profile key from v2 group protos,
+        // it might be stale.  E.g. maybe they were added by someone who
+        // doesn't know their new profile key.  So we only want to fill in
+        // missing keys, not overwrite any existing keys.
+        profileManager.fillInMissingProfileKeys(profileKeysByAddress)
+    }
+
+    public static func ensureLocalProfileHasCommitmentIfNecessary() -> Promise<Void> {
+
+        guard let localAddress = self.tsAccountManager.localAddress else {
+            return Promise(error: OWSAssertionError("Missing localAddress."))
+        }
+        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
+            return Promise(error: OWSAssertionError("Invalid groupsV2 instance."))
+        }
+
+        guard FeatureFlags.versionedProfiledUpdate else {
+            // We don't need a profile key credential for the local user
+            // if we're not even going to try to create a v2 group.
+            if FeatureFlags.groupsV2CreateGroups {
+                owsFailDebug("Can't participate in v2 groups without a profile key commitment.")
+            }
+            return Promise.value(())
+        }
+
+        return databaseStorage.read(.promise) { transaction -> Bool in
+            return self.groupsV2.hasProfileKeyCredential(for: localAddress,
+                                                         transaction: transaction)
+        }.then(on: .global()) { hasLocalCredential -> Promise<Void> in
+            guard !hasLocalCredential else {
+                return Promise.value(())
+            }
+            // We (and other clients) need a profile key credential for
+            // all group members to use groups v2.  Other clients can't
+            // request our profile key credential from the service until
+            // until we've uploaded a profile key commitment to the service.
+            //
+            // If we've never done a versioned profile update, try to do so now.
+            // This step might or might not be necessary. It's simpler and safer
+            // to always do it. It won't amount to much extra work and we'll
+            // probably do it at most once.  Once we have a profile key credential
+            // for the local user (which should last forever) we'll abort above.
+            // Group v2 actions will use tryToEnsureProfileKeyCredentials()
+            // and we want to set them up to succeed.
+            return groupsV2Swift.reuploadLocalProfilePromise()
         }
     }
 }
