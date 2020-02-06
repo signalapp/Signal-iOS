@@ -58,8 +58,6 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 + (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
 #pragma mark - Avatar
 
 // GroupsV2 TODO: Remove.
@@ -69,7 +67,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 
 #pragma mark - Update With...
 
-// GroupsV2 TODO: We need to ensure this is only called by GroupManager.
+// This method should only be called by GroupManager.
 - (void)updateWithGroupModel:(TSGroupModel *)groupModel transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark -

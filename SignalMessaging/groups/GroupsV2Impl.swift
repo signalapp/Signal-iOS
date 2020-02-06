@@ -119,7 +119,34 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
     // MARK: - Update Group
 
-    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> {
+    private struct UpdatedV2Group {
+        public let groupThread: TSGroupThread
+        public let changeActionsProtoData: Data
+
+        public init(groupThread: TSGroupThread,
+                    changeActionsProtoData: Data) {
+            self.groupThread = groupThread
+            self.changeActionsProtoData = changeActionsProtoData
+        }
+    }
+
+    // This method updates the group on the service.  This corresponds to:
+    //
+    // * The local user editing group state (e.g. adding a member).
+    // * The local user accepting an invite.
+    // * The local user reject an invite.
+    // * The local user leaving the group.
+    // * etc.
+    //
+    // Whenever we do this, there's a few follow-on actions that we always want to do (on success):
+    //
+    // * Update the group in the local database to reflect the update.
+    // * Insert "group update info" messages in the conversation history.
+    // * Send "group update" messages to other members &  linked devices.
+    //
+    // We do those things here as well, to DRY them up and to ensure they're always
+    // done immediately and in a consistent way.
+    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> {
         let groupId = changeSet.groupId
 
         // GroupsV2 TODO: Should we make sure we have a local profile credential?
@@ -190,6 +217,17 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
              */
 
             return UpdatedV2Group(groupThread: updatedGroupThread, changeActionsProtoData: changeActionsProtoData)
+        }.then(on: DispatchQueue.global()) { (updatedV2Group: UpdatedV2Group) -> Promise<TSGroupThread> in
+
+            // GroupsV2 TODO: We should skip sending this message if none of the
+            //                group state (including disappearing messages state)
+            //                changed.
+
+            return GroupManager.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
+                                                       changeActionsProtoData: updatedV2Group.changeActionsProtoData)
+            .map(on: DispatchQueue.global()) { (_) -> TSGroupThread in
+                return updatedV2Group.groupThread
+            }
         }
     }
 
@@ -330,7 +368,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
     // MARK: - Accept Invites
 
-    public func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<UpdatedV2Group> {
+    public func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
             let groupId = groupThread.groupModel.groupId
             guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
@@ -340,7 +378,24 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                                                   groupSecretParamsData: groupSecretParamsData)
             changeSet.setShouldAcceptInvite()
             return changeSet
-        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> in
+        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
+            return self.updateExistingGroupOnService(changeSet: changeSet)
+        }
+    }
+
+    // MARK: - Leave Group / Decline Invite
+
+    public func leaveGroupV2OrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+        return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
+            let groupId = groupThread.groupModel.groupId
+            guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
+                throw OWSAssertionError("Missing groupSecretParamsData.")
+            }
+            let changeSet = GroupsV2ChangeSetImpl(groupId: groupId,
+                                                  groupSecretParamsData: groupSecretParamsData)
+            changeSet.setShouldLeaveGroupDeclineInvite()
+            return changeSet
+        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
             return self.updateExistingGroupOnService(changeSet: changeSet)
         }
     }
@@ -348,7 +403,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
     // MARK: - Disappearing Messages
 
     public func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
-                                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<UpdatedV2Group> {
+                                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
             let groupId = groupThread.groupModel.groupId
             guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
@@ -358,7 +413,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                                                   groupSecretParamsData: groupSecretParamsData)
             changeSet.setNewDisappearingMessageToken(disappearingMessageToken)
             return changeSet
-        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<UpdatedV2Group> in
+        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
             return self.updateExistingGroupOnService(changeSet: changeSet)
         }
     }

@@ -209,6 +209,15 @@ const CGFloat kIconViewLength = 24;
         self.title = NSLocalizedString(
             @"CONVERSATION_SETTINGS_GROUP_INFO_TITLE", @"Navbar title when viewing settings for a group thread");
     }
+
+    // This will only appear in internal, qa & dev builds.
+    if (SSKFeatureFlags.groupsV2showV2Indicator) {
+        NSString *indicator = thread.isGroupV2Thread ? @"v2" : @"v1";
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:indicator
+                                                                                  style:UIBarButtonItemStylePlain
+                                                                                 target:nil
+                                                                                 action:nil];
+    }
 }
 
 - (BOOL)hasExistingContact
@@ -1266,12 +1275,14 @@ const CGFloat kIconViewLength = 24;
 
 - (void)leaveGroup
 {
-    TSGroupThread *gThread = (TSGroupThread *)self.thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [ThreadUtil leaveGroupThread:gThread transaction:transaction];
-    }];
+    OWSAssertDebug(self.isGroupThread);
 
-    [self.navigationController popViewControllerAnimated:YES];
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    [ThreadUtil leaveGroupThreadAsync:groupThread
+                   fromViewController:self
+                              success:^{
+                                  [self.navigationController popViewControllerAnimated:YES];
+                              }];
 }
 
 - (void)disappearingMessagesSwitchValueDidChange:(UISwitch *)sender

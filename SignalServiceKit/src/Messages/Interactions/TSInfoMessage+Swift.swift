@@ -50,6 +50,12 @@ public extension TSInfoMessage {
                                 toGroupState: TSGroupModel,
                                 groupUpdater: SignalServiceAddress,
                                 transaction: SDSAnyReadTransaction) -> String {
+
+        guard let localAddress = TSAccountManager.sharedInstance().localAddress else {
+            owsFailDebug("missing local address")
+            return NSLocalizedString("GROUP_UPDATED", comment: "conversation history entry")
+        }
+
         let updaterName = self.contactsManager.displayName(for: groupUpdater, transaction: transaction)
 
         guard let fromGroupState = fromGroupState else {
@@ -62,6 +68,13 @@ public extension TSInfoMessage {
                                                comment: "conversation history entry after a remote user added you to a group. Embeds {{remote user name}}")
                 return String(format: format, updaterName)
             }
+        }
+
+        // GroupsV2 TODO: Revisit this for v2 groups.
+        if localAddress == groupUpdater,
+            fromGroupState.groupMembership.allUsers.contains(localAddress),
+            !toGroupState.groupMembership.allUsers.contains(localAddress) {
+            return NSLocalizedString("GROUP_YOU_LEFT", comment: "")
         }
 
         // Existing Group was updated

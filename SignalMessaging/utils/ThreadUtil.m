@@ -4,6 +4,7 @@
 
 #import "ThreadUtil.h"
 #import "OWSQuotedReplyModel.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/OWSProfileManager.h>
@@ -230,30 +231,37 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-// GroupsV2 TODO: Move to GroupManager.
-+ (void)leaveGroupThread:(TSGroupThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
++ (void)leaveGroupThreadAsync:(TSGroupThread *)groupThread
+           fromViewController:(UIViewController *)fromViewController
+                      success:(void (^)(void))success
 {
-    OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
+    [ModalActivityIndicatorViewController
+        presentFromViewController:fromViewController
+                        canCancel:NO
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      [[GroupManager leaveGroupOrDeclineInviteObjcWithGroupThread:groupThread]
+                              .then(^{
+                                  OWSAssertIsOnMainThread();
+                                  [modalActivityIndicator dismissWithCompletion:^{
+                                      OWSAssertIsOnMainThread();
 
-    if (!thread.isLocalUserInGroup) {
-        OWSFailDebug(@"unexpectedly trying to leave group for which we're not a member.");
-        return;
-    }
+                                      success();
+                                  }];
+                              })
+                              .catch(^(NSError *error) {
+                                  OWSAssertIsOnMainThread();
 
-    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                           groupMetaMessage:TSGroupMetaMessageQuit
-                                                           expiresInSeconds:0];
-    [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+                                  OWSFailDebug(@"Leave group failed: %@", error);
 
-    // Only show the group quit message if there are other messages still in the group
-    if ([thread numberOfInteractionsWithTransaction:transaction] > 0) {
-        TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                                                     inThread:thread
-                                                                  messageType:TSInfoMessageTypeGroupQuit];
-        [infoMessage anyInsertWithTransaction:transaction];
-    }
+                                  [modalActivityIndicator dismissWithCompletion:^{
+                                      OWSAssertIsOnMainThread();
 
-    [thread leaveGroupWithTransaction:transaction];
+                                      [OWSActionSheets showActionSheetWithTitle:
+                                                           NSLocalizedString(@"LEAVE_GROUP_FAILED",
+                                                               @"Error indicating that a group could not be left.")];
+                                  }];
+                              }) retainUntilComplete];
+                  }];
 }
 
 // MARK: Non-Durable Sending

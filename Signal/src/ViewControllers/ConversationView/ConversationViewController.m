@@ -5373,22 +5373,25 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-            TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-
-            // Quit the group if we're a member
-            if (groupThread.isLocalUserInGroup) {
-                [ThreadUtil leaveGroupThread:groupThread transaction:transaction];
-            }
-        }
-
-        [self.thread softDeleteThreadWithTransaction:transaction];
-
-        [transaction addAsyncCompletion:^{
-            [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
+    void (^completion)(void) = ^{
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [self.thread softDeleteThreadWithTransaction:transaction];
         }];
-    }];
+        [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
+    };
+
+    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+
+        // Leave the group if we're a member.
+        if (groupThread.isLocalUserInGroup) {
+            [ThreadUtil leaveGroupThreadAsync:groupThread fromViewController:self success:completion];
+            return;
+        }
+    }
+
+    // If we don't need to leave the group, finish up immediately.
+    completion();
 }
 
 - (void)messageRequestViewDidTapAccept

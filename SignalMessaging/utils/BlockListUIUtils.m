@@ -5,6 +5,7 @@
 #import "BlockListUIUtils.h"
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
@@ -240,23 +241,24 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     // block the group regardless of the ability to deliver the "leave group" message.
     [blockingManager addBlockedGroup:groupThread.groupModel wasLocallyInitiated:YES];
 
-    // blockingManager.addBlocked* creates several sneaky transactions, so we can't pass one
-    // via params and instead have to create our own.
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [ThreadUtil leaveGroupThread:groupThread transaction:transaction];
-    }];
+    [ThreadUtil leaveGroupThreadAsync:groupThread
+                   fromViewController:fromViewController
+                              success:^{
+                                  NSString *alertTitle = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",
+                                      @"The title of the 'group blocked' alert.");
+                                  NSString *alertBodyFormat
+                                      = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
+                                          @"The message format of the 'conversation blocked' alert. Embeds the "
+                                          @"{{conversation title}}.");
+                                  NSString *alertBody =
+                                      [NSString stringWithFormat:alertBodyFormat,
+                                                [self formatDisplayNameForAlertMessage:groupThread.groupNameOrDefault]];
 
-    NSString *alertTitle
-        = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE", @"The title of the 'group blocked' alert.");
-    NSString *alertBodyFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
-        @"The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}.");
-    NSString *alertBody = [NSString
-        stringWithFormat:alertBodyFormat, [self formatDisplayNameForAlertMessage:groupThread.groupNameOrDefault]];
-
-    [self showOkAlertWithTitle:alertTitle
-                       message:alertBody
-            fromViewController:fromViewController
-               completionBlock:completionBlock];
+                                  [self showOkAlertWithTitle:alertTitle
+                                                     message:alertBody
+                                          fromViewController:fromViewController
+                                             completionBlock:completionBlock];
+                              }];
 }
 
 #pragma mark - Unblock

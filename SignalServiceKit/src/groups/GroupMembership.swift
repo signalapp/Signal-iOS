@@ -19,7 +19,8 @@ public struct GroupMembership {
     public var administrators: Set<SignalServiceAddress> {
         return Set(stateMap.filter { $0.value.isAdministrator && !$0.value.isPending }.keys)
     }
-    // allMembers includes normal and administrator members.
+    // allMembers includes all non-pending members,
+    // i.e. normal and administrator members.
     public var allMembers: Set<SignalServiceAddress> {
         return Set(stateMap.filter { !$0.value.isPending }.keys)
     }
@@ -35,7 +36,7 @@ public struct GroupMembership {
         return Set(stateMap.filter { $0.value.isPending }.keys)
     }
 
-    // allUsers includes all users:
+    // allUsers includes _all_ users:
     //
     // * Normal and administrator.
     // * Pending and non-pending.
