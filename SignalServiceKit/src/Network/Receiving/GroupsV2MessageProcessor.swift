@@ -581,13 +581,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
         // This will try to update the group using incremental "changes" but
         // failover to using a "snapshot".
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
-        return groupV2UpdatesSwift.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
+        return firstly {
+            groupV2UpdatesSwift.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
                                                                            groupSecretParamsData: groupContextInfo.groupSecretParamsData,
                                                                            groupUpdateMode: groupUpdateMode)
-            .then(on: DispatchQueue.global()) { _ in
-                return self.databaseStorage.write(.promise) { transaction in
-                    _ = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)
-                }
         }.map(on: .global()) { (_) in
             return UpdateOutcome.successShouldProcess
         }.recover(on: .global()) { error -> Guarantee<UpdateOutcome> in
