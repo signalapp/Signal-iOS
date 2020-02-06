@@ -169,7 +169,7 @@ public class AccountManager: NSObject {
                     // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
                     Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
                     self.tsAccountManager.setIsManualMessageFetchEnabled(true)
-                    return self.tsAccountManager.performUpdateAccountAttributes()
+                    return self.accountServiceClient.updatePrimaryDeviceAccountAttributes()
                 default:
                     throw error
                 }
