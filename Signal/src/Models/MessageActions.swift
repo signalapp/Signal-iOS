@@ -6,6 +6,7 @@ import Foundation
 
 @objc
 protocol MessageActionsDelegate: class {
+    func report(_ conversationViewItem: ConversationViewItem)
     func messageActionsShowDetailsForItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsReplyToItem(_ conversationViewItem: ConversationViewItem)
     func copyPublicKey(for conversationViewItem: ConversationViewItem)
@@ -46,6 +47,14 @@ struct MessageActionBuilder {
                           block: { [weak delegate] (_) in
                             delegate?.messageActionsShowDetailsForItem(conversationViewItem)
         })
+    }
+    
+    static func report(_ conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
+        return MenuAction(image: #imageLiteral(resourceName: "Flag"),
+                          title: NSLocalizedString("Report", comment: ""),
+                          subtitle: nil,
+                          block: { [weak delegate] _ in delegate?.report(conversationViewItem) }
+        )
     }
 
     static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
@@ -106,6 +115,11 @@ class ConversationViewItemActions: NSObject {
             actions.append(deleteAction)
         }
 
+        if isGroup && conversationViewItem.interaction.thread.name() == "Session Public Chat" {
+            let reportAction = MessageActionBuilder.report(conversationViewItem, delegate: delegate)
+            actions.append(reportAction)
+        }
+        
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)
 
@@ -139,6 +153,11 @@ class ConversationViewItemActions: NSObject {
             actions.append(deleteAction)
         }
 
+        if isGroup && conversationViewItem.interaction.thread.name() == "Session Public Chat" {
+            let reportAction = MessageActionBuilder.report(conversationViewItem, delegate: delegate)
+            actions.append(reportAction)
+        }
+        
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)
 
@@ -167,6 +186,11 @@ class ConversationViewItemActions: NSObject {
             actions.append(deleteAction)
         }
 
+        if isGroup && conversationViewItem.interaction.thread.name() == "Session Public Chat" {
+            let reportAction = MessageActionBuilder.report(conversationViewItem, delegate: delegate)
+            actions.append(reportAction)
+        }
+        
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)
 

@@ -360,6 +360,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }
     }
     
+    public static func reportMessageWithID(_ messageID: UInt64, in channel: UInt64, on server: String) -> Promise<Void> {
+        let url = URL(string: "\(server)/loki/v1/channels/\(channel)/messages/\(messageID)/report")!
+        let request = TSRequest(url: url, method: "POST", parameters: [:])
+        return LokiFileServerProxy(for: server).perform(request).map { _ in }
+    }
+    
     @objc public static func clearCaches(for channel: UInt64, on server: String) {
         removeLastMessageServerID(for: channel, on: server)
         removeLastDeletionServerID(for: channel, on: server)
@@ -394,5 +400,10 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     @objc(setProfilePictureURL:usingProfileKey:on:)
     public static func objc_setProfilePicture(to url: String?, using profileKey: Data, on server: String) -> AnyPromise {
         return AnyPromise.from(setProfilePictureURL(to: url, using: profileKey, on: server))
+    }
+    
+    @objc(reportMessageWithID:inChannel:onServer:)
+    public static func objc_reportMessageWithID(_ messageID: UInt64, in channel: UInt64, on server: String) -> AnyPromise {
+        return AnyPromise.from(reportMessageWithID(messageID, in: channel, on: server))
     }
 }

@@ -2083,6 +2083,20 @@ typedef enum : NSUInteger {
     [self showDetailViewForViewItem:conversationViewItem];
 }
 
+- (void)report:(id<ConversationViewItem>)conversationViewItem
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Report?" message:@"If the message is found to violate the Session Public Chat code of conduct it will be removed." preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        uint64_t messageID = 0;
+        if ([conversationViewItem.interaction isKindOfClass:TSMessage.class]) {
+            messageID = ((TSMessage *)conversationViewItem.interaction).groupChatServerID;
+        }
+        [LKPublicChatAPI reportMessageWithID:messageID inChannel:1 onServer:@"https://chat.getsession.org"];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
 - (void)messageActionsReplyToItem:(id<ConversationViewItem>)conversationViewItem
 {
     [self populateReplyForViewItem:conversationViewItem];
