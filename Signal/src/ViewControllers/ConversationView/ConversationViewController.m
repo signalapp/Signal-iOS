@@ -1439,6 +1439,14 @@ typedef enum : NSUInteger {
 
     [self updateInputToolbarLayout];
     [self ensureScrollDownButton];
+    
+    NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
+    if ([@"Session Public Chat" isEqual:self.thread.name] && ![userDefaults boolForKey:@"hasSeenSessionPublicChatNotice"]) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"The Rules" message:[LKGeneralUtilities getSessionPublicChatNotice] preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
+        [userDefaults setBool:YES forKey:@"hasSeenSessionPublicChatNotice"];
+    }
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
