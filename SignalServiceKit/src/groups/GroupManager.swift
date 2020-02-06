@@ -421,7 +421,7 @@ public class GroupManager: NSObject {
             newMembers = newGroupMembership.allUsers.subtracting(oldGroupMembership.allUsers)
 
             // Carry over existing members as they stand.
-            let existingMembers = oldGroupMembership.allUsers.subtracting(newGroupMembership.allUsers)
+            let existingMembers = oldGroupMembership.allUsers.intersection(newGroupMembership.allUsers)
             for address in existingMembers {
                 builder.copyMember(address, from: oldGroupMembership)
             }
