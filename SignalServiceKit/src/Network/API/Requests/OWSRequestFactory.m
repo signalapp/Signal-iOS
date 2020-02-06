@@ -491,9 +491,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/devices/capabilities"]
                               method:@"PUT"
-                          parameters:@{
-                              @"capabilities": self.deviceCapabilities
-                          }];
+                          parameters:self.deviceCapabilities];
 }
 
 + (NSDictionary<NSString *, NSNumber *> *)deviceCapabilities
