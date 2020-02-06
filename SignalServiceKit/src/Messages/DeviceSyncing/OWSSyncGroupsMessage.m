@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       return;
                                   }
                                   TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                  // We only sync v1 groups view sync messages.
+                                  // We only sync v1 groups via group sync messages.
                                   if (groupThread.isGroupV2Thread) {
                                       return;
                                   }

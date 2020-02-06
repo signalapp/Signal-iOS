@@ -197,7 +197,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
             owsFailDebug("Invalid group id.")
             return
         }
-        // We only sync v1 groups view sync messages.
+        // We only sync v1 groups via group sync messages.
         var groupsVersion: GroupsVersion = .V1
         if let groupsVersionReceived = groupDetails.groupsVersion {
             groupsVersion = groupsVersionReceived
