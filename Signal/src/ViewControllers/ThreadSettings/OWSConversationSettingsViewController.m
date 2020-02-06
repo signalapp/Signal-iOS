@@ -1144,6 +1144,7 @@ const CGFloat kIconViewLength = 24;
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       OWSAssertIsOnMainThread();
 
+                                      OWSAssertDebug(self.thread.isGroupV2Thread);
                                       [OWSActionSheets showActionSheetWithTitle:
                                                            NSLocalizedString(@"UPDATE_GROUP_FAILED",
                                                                @"Error indicating that a group could not be updated.")];

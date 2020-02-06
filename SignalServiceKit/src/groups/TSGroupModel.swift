@@ -21,7 +21,7 @@ public extension TSGroupModel {
         }
         switch groupsVersion {
         case .V1:
-            return GroupAccess.allAccess
+            return GroupAccess.forV1
         case .V2:
             throw OWSAssertionError("Missing groupAccess.")
         }
