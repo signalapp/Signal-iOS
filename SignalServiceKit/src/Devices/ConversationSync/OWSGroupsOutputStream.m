@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSGroupsOutputStream.h"
@@ -18,6 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(groupThread);
     OWSAssertDebug(transaction);
+    if (groupThread.isGroupV2Thread) {
+        OWSFailDebug(@"Invalid group.");
+        return;
+    }
 
     TSGroupModel *group = groupThread.groupModel;
     OWSAssertDebug(group);

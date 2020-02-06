@@ -190,21 +190,25 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
 
     private func process(groupDetails: GroupDetails, transaction: SDSAnyWriteTransaction) throws {
 
-        // GroupsV2 TODO: Eventually we might want to default to V2.
+        let groupId = groupDetails.groupId
+        guard GroupManager.isValidGroupId(groupId, groupsVersion: .V1) else {
+            // This would occur if a linked device included a
+            // v2 group in a group sync message.
+            owsFailDebug("Invalid group id.")
+            return
+        }
+        // We only sync v1 groups view sync messages.
         var groupsVersion: GroupsVersion = .V1
         if let groupsVersionReceived = groupDetails.groupsVersion {
             groupsVersion = groupsVersionReceived
         }
-        // GroupsV2 TODO: Set administrators, pending members.
         let groupMembership = GroupMembership(v1Members: Set(groupDetails.memberAddresses))
-        // GroupsV2 TODO: Set access.
-        let groupAccess = GroupAccess.allAccess
-        // GroupsV2 TODO: Set groupV2Revision.
+        let groupAccess = GroupAccess.forV1
         let groupV2Revision: UInt32 = 0
         // groupUpdateSourceAddress is nil because we don't know
         // who made any changes.
         let groupUpdateSourceAddress: SignalServiceAddress? = nil
-        let result = try GroupManager.upsertExistingGroup(groupId: groupDetails.groupId,
+        let result = try GroupManager.upsertExistingGroup(groupId: groupId,
                                                           name: groupDetails.name,
                                                           avatarData: groupDetails.avatarData,
                                                           groupMembership: groupMembership,
