@@ -17,10 +17,11 @@ final class RestoreVC : UIViewController {
         let result = UILabel()
         result.textColor = Colors.text
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
-        let text = "By using this service, you agree to our Terms and Conditions and Privacy Statement"
-        let attributedText = NSMutableAttributedString(string: text)
-        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Terms and Conditions"))
-        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Privacy Statement"))
+        let text = "By using this service, you agree to our Terms of Service, End User License Agreement (EULA) and Privacy Policy"
+        let attributedText = NSMutableAttributedString(string: text, attributes: [ .font : UIFont.systemFont(ofSize: Values.verySmallFontSize) ])
+        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Terms of Service"))
+        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "End User License Agreement (EULA)"))
+        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Privacy Policy"))
         result.attributedText = attributedText
         result.numberOfLines = 0
         result.textAlignment = .center
@@ -190,7 +191,24 @@ final class RestoreVC : UIViewController {
     }
     
     @objc private func handleLegalLabelTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
-        let url = URL(string: "https://github.com/loki-project/loki-messenger-ios/blob/master/privacy-policy.md")!
-        UIApplication.shared.open(url)
+        let urlAsString: String?
+        let tosRange = (legalLabel.text! as NSString).range(of: "Terms of Service")
+        let eulaRange = (legalLabel.text! as NSString).range(of: "End User License Agreement (EULA)")
+        let ppRange = (legalLabel.text! as NSString).range(of: "Privacy Policy")
+        let touchInLegalLabelCoordinates = tapGestureRecognizer.location(in: legalLabel)
+        let characterIndex = legalLabel.characterIndex(for: touchInLegalLabelCoordinates)
+        if tosRange.contains(characterIndex) {
+            urlAsString = "https://getsession.org/legal/#tos"
+        } else if eulaRange.contains(characterIndex) {
+            urlAsString = "https://getsession.org/legal/#eula"
+        } else if ppRange.contains(characterIndex) {
+            urlAsString = "https://getsession.org/privacy-policy/"
+        } else {
+            urlAsString = nil
+        }
+        if let urlAsString = urlAsString {
+            let url = URL(string: urlAsString)!
+            UIApplication.shared.open(url)
+        }
     }
 }
