@@ -72,7 +72,7 @@ private protocol FlagType: CaseIterable {
     static var allRawFlags: [String] { get }
 }
 
-fileprivate extension FlagType {
+private extension FlagType {
     var rawFlag: String { Flags.prefix + rawValue }
     static var allRawFlags: [String] { allCases.map { $0.rawFlag } }
 }
