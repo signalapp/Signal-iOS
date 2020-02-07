@@ -73,6 +73,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private var shouldAcceptInvite = false
     private var shouldLeaveGroupDeclineInvite = false
 
+    private var shouldUpdateLocalProfileKey = false
+
     // Non-nil if dm state changed.
     private var newDisappearingMessageToken: DisappearingMessageToken?
 
@@ -239,6 +241,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         self.newDisappearingMessageToken = newDisappearingMessageToken
     }
 
+    public func setShouldUpdateLocalProfileKey() {
+        assert(!shouldUpdateLocalProfileKey)
+        shouldUpdateLocalProfileKey = true
+    }
+
     // MARK: - Change Protos
 
     private typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
@@ -269,7 +276,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         var uuidsForProfileKeyCredentials = Set<UUID>()
         uuidsForProfileKeyCredentials.formUnion(membersToAdd.keys)
         let addressesForProfileKeyCredentials: [SignalServiceAddress] = uuidsForProfileKeyCredentials.map { SignalServiceAddress(uuid: $0) }
-        if shouldAcceptInvite {
+        if shouldAcceptInvite || shouldUpdateLocalProfileKey {
             uuidsForProfileKeyCredentials.insert(localUuid)
         }
 
@@ -472,6 +479,17 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 actionsBuilder.setModifyDisappearingMessagesTimer(try actionBuilder.build())
                 didChange = true
             }
+        }
+
+        if shouldUpdateLocalProfileKey {
+            guard let profileKeyCredential = profileKeyCredentialMap[localUuid] else {
+                throw OWSAssertionError("Missing profile key credential]: \(localUuid)")
+            }
+            let actionBuilder = GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.builder()
+            actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,
+                                                                              groupV2Params: groupV2Params))
+            actionsBuilder.addModifyMemberProfileKeys(try actionBuilder.build())
+            didChange = true
         }
 
         guard didChange else {

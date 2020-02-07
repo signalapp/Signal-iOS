@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -366,6 +366,13 @@ public class SDSKeyValueStore: NSObject {
     public func allValues(transaction: SDSAnyReadTransaction) -> [Any] {
         return allKeys(transaction: transaction).map { key in
             return self.read(key, transaction: transaction)
+        }
+    }
+
+    @objc
+    public func allDataValues(transaction: SDSAnyReadTransaction) -> [Data] {
+        return allKeys(transaction: transaction).compactMap { key in
+            return self.getData(key, transaction: transaction)
         }
     }
 

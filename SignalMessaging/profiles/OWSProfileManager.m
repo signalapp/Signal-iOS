@@ -67,6 +67,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return SDSDatabaseStorage.shared;
 }
 
+- (id<GroupsV2>)groupsV2
+{
+    return SSKEnvironment.shared.groupsV2;
+}
+
 #pragma mark -
 
 @synthesize localUserProfile = _localUserProfile;
@@ -602,6 +607,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                                      // The value doesn't matter, we just need any non-NSError value.
                                                      resolve(@(1));
                                                  }];
+
+                // Whenever a user's profile key changes, we need to fetch a new
+                // profile key credential for them.
+                [VersionedProfiles clearProfileKeyCredentialForAddress:localAddress transaction:transaction];
+
+                // We schedule the updates here but process them below using processProfileKeyUpdates.
+                // It's more efficient to process them after the intermediary steps are done.
+                [self.groupsV2 scheduleAllGroupsV2ForProfileKeyUpdateWithTransaction:transaction];
             }];
         }];
 
@@ -644,6 +657,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         promise = promise.then(^(id value) {
             [self fetchAndUpdateLocalUsersProfile];
 
+            return @(1);
+        });
+
+        promise = promise.thenInBackground(^(id value) {
+            [self.groupsV2 processProfileKeyUpdates];
             return @(1);
         });
 

@@ -38,6 +38,10 @@ public protocol GroupsV2: AnyObject {
 
     func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
                                           ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions
+
+    func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction)
+
+    func processProfileKeyUpdates()
 }
 
 // MARK: -
@@ -262,6 +266,14 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
 
     public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
                                                  ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
+        owsFail("Not implemented.")
+    }
+
+    public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
+        owsFail("Not implemented.")
+    }
+
+    public func processProfileKeyUpdates() {
         owsFail("Not implemented.")
     }
 }
