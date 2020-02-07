@@ -225,13 +225,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     }];
 }
 
-// GroupsV2 TODO: This should be done via GroupManager.
-- (void)updateGroupMembers:(NSArray<SignalServiceAddress *> *)groupMembers
-{
-    _groupMembers = [groupMembers copy];
-    // GroupsV2 TODO: Remove stale keys from groupsV2MemberRoles.
-}
-
 - (NSString *)debugDescription
 {
     NSMutableString *result = [NSMutableString new];

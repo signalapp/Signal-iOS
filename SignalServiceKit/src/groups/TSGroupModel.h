@@ -48,9 +48,6 @@ typedef NS_CLOSED_ENUM(
 // GroupsV2 TODO: This should be done via GroupManager.
 - (void)setGroupAvatarDataWithImage:(nullable UIImage *)image;
 
-// GroupsV2 TODO: This should be done via GroupManager.
-- (void)updateGroupMembers:(NSArray<SignalServiceAddress *> *)groupMembers;
-
 + (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image;
 
 - (instancetype)init NS_UNAVAILABLE;
