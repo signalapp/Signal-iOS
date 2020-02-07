@@ -15,7 +15,7 @@ import Reachability
 // group on launch), but important enough to do durably.
 //
 // This class has responsibility for tracking which groups
-// need to be updated and for updating 
+// need to be updated and for updating them.
 class GroupsV2ProfileKeyUpdater {
 
     // MARK: - Dependencies
