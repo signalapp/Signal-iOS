@@ -538,7 +538,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
         }
         let changeActionsProto: GroupsProtoGroupChangeActions
         do {
-            changeActionsProto = try groupsV2.parseAndVerifyChangeActionsProto(changeActionsProtoData)
+            // We need to verify the signature because this proto came from
+            // another client, not the service.
+            changeActionsProto = try groupsV2.parseAndVerifyChangeActionsProto(changeActionsProtoData,
+                                                                               ignoreSignature: false)
         } catch {
             owsFailDebug("Error: \(error)")
             return .failureShouldFailoverToService

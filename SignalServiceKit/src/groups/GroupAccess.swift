@@ -65,6 +65,11 @@ public class GroupAccess: MTLModel {
     }
 
     @objc
+    public static var defaultV2Access: GroupAccess {
+        return GroupAccess(members: .member, attributes: .member)
+    }
+
+    @objc
     public static var forV1: GroupAccess {
         return allAccess
     }

@@ -344,7 +344,7 @@ public class GroupManager: NSObject {
             }
         }.map(on: .global()) { (proposedGroupMembership: GroupMembership) throws -> TSGroupModel in
             // GroupsV2 TODO: Let users specify access levels in the "new group" view.
-            let groupAccess = GroupAccess.allAccess
+            let groupAccess = GroupAccess.defaultV2Access
             let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
                 // Before we create a v2 group, we need to separate out the
                 // pending and non-pending members.  If we already know we're

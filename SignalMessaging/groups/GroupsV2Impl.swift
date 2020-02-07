@@ -174,7 +174,8 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
             guard let changeActionsProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
-            let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeActionsProtoData)
+            let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeActionsProtoData,
+                                                                                         ignoreSignature: true)
 
             // GroupsV2 TODO: Instead of loading the group model from the database,
             // we should use exactly the same group model that was used to construct
@@ -299,20 +300,7 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                     guard groupThread.groupModel.groupsVersion == .V2 else {
                         throw OWSAssertionError("Invalid groupsVersion.")
                     }
-                    // * fromRevision is inclusive.
-                    // * It's an error to request group changes where fromRevision = 0,
-                    //   so we max(1, ....).
-                    // * The key thing is to request the revisions we don't yet know about,
-                    //   i.e. "local current" revision + 1.
-                    // * However, we also re-request the "local current" revision.  When
-                    //   applying this revision, we'll only apply it if it differs from
-                    //   database state.  If it does differ, we apply its snapshot and
-                    //   assert. This will ensure that the client converges with the
-                    //   service if they ever deviate (e.g. due to bugs or differences
-                    //   between how they apply "group changes", etc.).
-                    //
-                    // GroupsV2 TODO: This isn't finalized.
-                    return max(1, groupThread.groupModel.groupV2Revision)
+                    return groupThread.groupModel.groupV2Revision
                 }
 
                 return try StorageService.buildFetchGroupChangeActionsRequest(groupV2Params: groupV2Params,
@@ -769,8 +757,10 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         return try GroupsV2Protos.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: changeActionsProtoData)
     }
 
-    public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
-        return try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeProtoData)
+    public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
+                                                 ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
+        return try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeProtoData,
+                                                                   ignoreSignature: ignoreSignature)
     }
 
     // MARK: - Profiles
