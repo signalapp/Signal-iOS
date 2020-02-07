@@ -580,7 +580,7 @@ static NSTimeInterval launchStartedAt;
 
     OWSLogInfo(@"Registered for push notifications with token: %@.", deviceToken);
     [LKPushNotificationManager.shared registerWithToken:deviceToken];
-    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
+//    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error

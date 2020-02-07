@@ -12,7 +12,11 @@ final class LokiPushNotificationManager : NSObject {
     @objc(registerWithToken:)
     func register(with token: Data) {
         let hexEncodedToken = token.map { String(format: "%02.2hhx", $0) }.joined()
-        print("Registering device token: (\(hexEncodedToken))")
+        let oldToken = UserDefaults.standard.string(forKey: "deviceToken")
+        if (hexEncodedToken == oldToken) {
+            Logger.info("Token is not changed, no need to upload")
+            return
+        }
         // Send token to Loki server
         let parameters = [ "token" : hexEncodedToken ]
         let url = URL(string: "https://live.apns.getsession.org/register")!
@@ -23,6 +27,7 @@ final class LokiPushNotificationManager : NSObject {
             guard json["code"] as? Int != 0 else {
                 return print("[Loki] An error occured during device token registration: \(json["message"] as? String ?? "nil").")
             }
+            UserDefaults.standard.set(hexEncodedToken, forKey: "deviceToken")
         }, failure: { _, error in
             print("[Loki] Couldn't register device token.")
         })

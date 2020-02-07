@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithSource:(NSString *)source timestamp:(UInt64)timestamp
 {
-    OWSAssertDebug(source.length > 0);
+//    OWSAssertDebug(source.length > 0);
     OWSAssertDebug(timestamp > 0);
 
     NSString *path = [NSString stringWithFormat:@"v1/messages/%@/%llu", source, timestamp];
