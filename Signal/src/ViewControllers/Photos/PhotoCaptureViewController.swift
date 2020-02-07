@@ -45,24 +45,11 @@ class PhotoCaptureViewController: OWSViewController {
         }
     }
 
-    // MARK: - Dependencies
-
-    var audioActivity: AudioActivity?
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
-    }
-
     // MARK: - Overrides
 
     override func loadView() {
         self.view = UIView()
         self.view.backgroundColor = Colors.navigationBarBackground
-
-        let audioActivity = AudioActivity(audioDescription: "PhotoCaptureViewController", behavior: .playAndRecord)
-        self.audioActivity = audioActivity
-        if !self.audioSession.startAudioActivity(audioActivity) {
-            owsFailDebug("unexpectedly unable to start audio activity")
-        }
     }
 
     override func viewDidLoad() {

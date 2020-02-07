@@ -33,10 +33,56 @@ class PhotoCapture: NSObject {
         return currentCaptureInput?.device
     }
     private(set) var desiredPosition: AVCaptureDevice.Position = .back
+    
+    let recordingAudioActivity = AudioActivity(audioDescription: "PhotoCapture", behavior: .playAndRecord)
 
     override init() {
         self.session = AVCaptureSession()
         self.captureOutput = CaptureOutput()
+    }
+    
+    // MARK: - Dependencies
+    var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
+    }
+
+    // MARK: -
+    var audioDeviceInput: AVCaptureDeviceInput?
+    func startAudioCapture() throws {
+        assertIsOnSessionQueue()
+
+        guard audioSession.startAudioActivity(recordingAudioActivity) else {
+            throw PhotoCaptureError.assertionError(description: "unable to capture audio activity")
+        }
+
+        self.session.beginConfiguration()
+        defer { self.session.commitConfiguration() }
+
+        let audioDevice = AVCaptureDevice.default(for: .audio)
+        // verify works without audio permissions
+        let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
+        if session.canAddInput(audioDeviceInput) {
+            //                self.session.addInputWithNoConnections(audioDeviceInput)
+            session.addInput(audioDeviceInput)
+            self.audioDeviceInput = audioDeviceInput
+        } else {
+            owsFailDebug("Could not add audio device input to the session")
+        }
+    }
+
+    func stopAudioCapture() {
+        assertIsOnSessionQueue()
+
+        self.session.beginConfiguration()
+        defer { self.session.commitConfiguration() }
+
+        guard let audioDeviceInput = self.audioDeviceInput else {
+            owsFailDebug("audioDevice was unexpectedly nil")
+            return
+        }
+        session.removeInput(audioDeviceInput)
+        self.audioDeviceInput = nil
+        audioSession.endAudioActivity(recordingAudioActivity)
     }
 
     func startCapture() -> Promise<Void> {
@@ -47,15 +93,6 @@ class PhotoCapture: NSObject {
             defer { self.session.commitConfiguration() }
 
             try self.updateCurrentInput(position: .back)
-
-            let audioDevice = AVCaptureDevice.default(for: .audio)
-            // verify works without audio permissions
-            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
-            if self.session.canAddInput(audioDeviceInput) {
-                self.session.addInput(audioDeviceInput)
-            } else {
-                owsFailDebug("Could not add audio device input to the session")
-            }
 
             guard let photoOutput = self.captureOutput.photoOutput else {
                 throw PhotoCaptureError.initializationFailed
@@ -290,19 +327,21 @@ extension PhotoCapture: CaptureButtonDelegate {
         AssertIsOnMainThread()
 
         Logger.verbose("")
-        sessionQueue.async {
+        sessionQueue.async(.promise) {
+            try self.startAudioCapture()
             self.captureOutput.beginVideo(delegate: self)
-
-            DispatchQueue.main.async {
-                self.delegate?.photoCaptureDidBeginVideo(self)
-            }
-        }
+        }.done {
+            self.delegate?.photoCaptureDidBeginVideo(self)
+        }.catch { error in
+            self.delegate?.photoCapture(self, processingDidError: error)
+        }.retainUntilComplete()
     }
 
     func didCompleteLongPressCaptureButton(_ captureButton: CaptureButton) {
         Logger.verbose("")
         sessionQueue.async {
             self.captureOutput.completeVideo(delegate: self)
+            self.stopAudioCapture()
         }
         AssertIsOnMainThread()
         // immediately inform UI that capture is stopping
@@ -312,6 +351,9 @@ extension PhotoCapture: CaptureButtonDelegate {
     func didCancelLongPressCaptureButton(_ captureButton: CaptureButton) {
         Logger.verbose("")
         AssertIsOnMainThread()
+        sessionQueue.async {
+            self.stopAudioCapture()
+        }
         delegate?.photoCaptureDidCancelVideo(self)
     }
 
@@ -369,14 +411,30 @@ extension PhotoCapture: CaptureOutputDelegate {
         AssertIsOnMainThread()
 
         if let error = error {
-            delegate?.photoCapture(self, processingDidError: error)
-            return
+            guard didSucceedDespiteError(error) else {
+                delegate?.photoCapture(self, processingDidError: error)
+                return
+            }
+            Logger.info("Ignoring error, since capture succeeded.")
         }
 
         let dataSource = DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true)
 
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
         delegate?.photoCapture(self, didFinishProcessingAttachment: attachment)
+    }
+    
+    /// The AVCaptureFileOutput can return an error even though recording succeeds.
+    /// I can't find useful documentation on this, but Apple's example AVCam app silently
+    /// discards these errors, so we do the same.
+    /// These spurious errors can be reproduced 1/3 of the time when making a series of short videos.
+    private func didSucceedDespiteError(_ error: Error) -> Bool {
+        let nsError = error as NSError
+        guard let successfullyFinished = nsError.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool else {
+            return false
+        }
+
+        return successfullyFinished
     }
 }
 
@@ -410,6 +468,10 @@ class CaptureOutput {
         }
 
         movieOutput = AVCaptureMovieFileOutput()
+        // disable movie fragment writing since it's not supported on mp4
+        // leaving it enabled causes all audio to be lost on videos longer
+        // than the default length (10s).
+        movieOutput.movieFragmentInterval = CMTime.invalid
     }
 
     var photoOutput: AVCaptureOutput? {
