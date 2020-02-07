@@ -86,11 +86,7 @@ public class GroupsV2Protos {
         groupBuilder.setTitle(try groupV2Params.encryptString(groupModel.groupName ?? ""))
         // GroupsV2 TODO: Avatar
 
-        let accessControl = GroupsProtoAccessControl.builder()
-        // GroupsV2 TODO: Pull these values from the group model.
-        accessControl.setAttributes(.member)
-        accessControl.setMembers(.member)
-        groupBuilder.setAccessControl(try accessControl.build())
+        groupBuilder.setAccessControl(try buildAccessProto(groupAccess: groupModel.groupAccess))
 
         // * You will be member 0 and the only admin.
         // * Other members will be non-admin members.
@@ -134,6 +130,13 @@ public class GroupsV2Protos {
         }
 
         return try groupBuilder.build()
+    }
+
+    public class func buildAccessProto(groupAccess: GroupAccess) throws -> GroupsProtoAccessControl {
+        let builder = GroupsProtoAccessControl.builder()
+        builder.setAttributes(GroupAccess.protoAccess(forGroupV2Access: groupAccess.attributes))
+        builder.setMembers(GroupAccess.protoAccess(forGroupV2Access: groupAccess.members))
+        return try builder.build()
     }
 
     public class func buildGroupContextV2Proto(groupModel: TSGroupModel,

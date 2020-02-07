@@ -99,7 +99,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
     }
 
     public var groupAccess: GroupAccess {
-        return GroupAccess(member: GroupAccess.groupV2Access(forProtoAccess: accessControlForMembers),
+        return GroupAccess(members: GroupAccess.groupV2Access(forProtoAccess: accessControlForMembers),
                            attributes: GroupAccess.groupV2Access(forProtoAccess: accessControlForAttributes))
     }
 }

@@ -41,7 +41,7 @@ public extension UpdateGroupViewController {
             databaseStorage.read { transaction in
                 for address in v1Members {
                     guard GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction) else {
-                        owsFailDebug("Invalid address: \(address)")
+                        Logger.warn("Invalid address: \(address)")
                         continue
                     }
                     if !oldGroupMembership.allUsers.contains(address) {

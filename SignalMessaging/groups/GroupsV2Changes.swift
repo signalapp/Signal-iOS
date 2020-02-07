@@ -80,7 +80,7 @@ public class GroupsV2Changes {
         var groupMembershipBuilder = oldGroupMembership.asBuilder
 
         let oldGroupAccess = oldGroupModel.groupAccess
-        var newMemberAccess = oldGroupAccess.member
+        var newMembersAccess = oldGroupAccess.members
         var newAttributesAccess = oldGroupAccess.attributes
 
         // This client can learn of profile keys from parsing group state protos.
@@ -279,11 +279,11 @@ public class GroupsV2Changes {
             guard let protoAccess = action.membersAccess else {
                 throw OWSAssertionError("Missing access.")
             }
-            newMemberAccess = GroupAccess.groupV2Access(forProtoAccess: protoAccess)
+            newMembersAccess = GroupAccess.groupV2Access(forProtoAccess: protoAccess)
         }
 
         let newGroupMembership = groupMembershipBuilder.build()
-        let newGroupAccess = GroupAccess(member: newMemberAccess, attributes: newAttributesAccess)
+        let newGroupAccess = GroupAccess(members: newMembersAccess, attributes: newAttributesAccess)
         // GroupsV2 TODO: Avatar.
         let avatarData: Data? = oldGroupModel.groupAvatarData
 

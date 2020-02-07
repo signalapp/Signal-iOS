@@ -441,6 +441,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                         // This should match the state in the database.  If it doesn't,
                         // this reflects a bug, perhaps\ a deviation in how the service
                         // and client apply the "group changes" to the local model.
+                        Logger.verbose("oldGroupModel: \(oldGroupModel.debugDescription)")
+                        Logger.verbose("newGroupModel: \(newGroupModel.debugDescription)")
                         owsFailDebug("Group models don't match.")
                     }
                 }

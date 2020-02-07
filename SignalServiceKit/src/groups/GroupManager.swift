@@ -342,7 +342,7 @@ public class GroupManager: NSObject {
             }.map(on: .global()) { (_) -> GroupMembership in
                     return groupMembership
             }
-        }.then(on: .global()) { (proposedGroupMembership: GroupMembership) throws -> Promise<TSGroupModel> in
+        }.map(on: .global()) { (proposedGroupMembership: GroupMembership) throws -> TSGroupModel in
             // GroupsV2 TODO: Let users specify access levels in the "new group" view.
             let groupAccess = GroupAccess.allAccess
             let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
@@ -366,15 +366,26 @@ public class GroupManager: NSObject {
                                                 newGroupSeed: newGroupSeed,
                                                 transaction: transaction)
             }
-
-            guard groupModel.groupsVersion == .V2 else {
+            return groupModel
+        }.then(on: .global()) { (proposedGroupModel: TSGroupModel) -> Promise<TSGroupModel> in
+            guard proposedGroupModel.groupsVersion == .V2 else {
                 // v1 groups don't need to be created on the service.
-                return Promise.value(groupModel)
+                return Promise.value(proposedGroupModel)
             }
             return firstly {
-                self.groupsV2Swift.createNewGroupOnService(groupModel: groupModel)
-            }.map(on: .global()) { _ in
-                return groupModel
+                self.groupsV2Swift.createNewGroupOnService(groupModel: proposedGroupModel)
+            }.then(on: .global()) { _ in
+                self.groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModel)
+            }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> TSGroupModel in
+                let createdGroupModel = try self.databaseStorage.read { transaction in
+                    return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
+                }
+                if proposedGroupModel != createdGroupModel {
+                    Logger.verbose("proposedGroupModel: \(proposedGroupModel.debugDescription)")
+                    Logger.verbose("createdGroupModel: \(createdGroupModel.debugDescription)")
+                    owsFailDebug("Proposed group model does not match created group model.")
+                }
+                return createdGroupModel
             }
         }.then(on: .global()) { (groupModel: TSGroupModel) -> Promise<TSGroupThread> in
             let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
