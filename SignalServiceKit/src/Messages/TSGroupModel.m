@@ -200,14 +200,16 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (_groupsVersion != other.groupsVersion) {
         return NO;
     }
-    if (_groupV2Revision != other.groupV2Revision) {
-        return NO;
-    }
-    if (![NSObject isNullableObject:self.groupSecretParamsData equalTo:other.groupSecretParamsData]) {
-        return NO;
-    }
-    if (![NSObject isNullableObject:self.groupsV2MemberRoles equalTo:other.groupsV2MemberRoles]) {
-        return NO;
+    if (_groupsVersion == GroupsVersionV2) {
+        if (_groupV2Revision != other.groupV2Revision) {
+            return NO;
+        }
+        if (![NSObject isNullableObject:self.groupSecretParamsData equalTo:other.groupSecretParamsData]) {
+            return NO;
+        }
+        if (![NSObject isNullableObject:self.groupsV2MemberRoles equalTo:other.groupsV2MemberRoles]) {
+            return NO;
+        }
     }
     return YES;
 }
