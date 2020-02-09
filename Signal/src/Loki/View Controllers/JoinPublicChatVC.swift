@@ -259,7 +259,7 @@ private final class EnterChatURLVC : UIViewController {
     // MARK: Interaction
     @objc private func joinPublicChatIfPossible() {
         var chatURL = chatURLTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
-        if !chatURL.starts(with: "http") {
+        if !chatURL.lowercased().starts(with: "http") {
             chatURL = "https://" + chatURL
         }
         joinPublicChatVC.joinPublicChatIfPossible(with: chatURL)
