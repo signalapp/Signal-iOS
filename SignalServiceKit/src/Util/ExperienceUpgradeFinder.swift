@@ -78,9 +78,7 @@ public class ExperienceUpgradeFinder: NSObject {
 
     public class func markAsComplete(experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as complete \(experienceUpgradeId)")
-        allActiveExperienceUpgrades(transaction: transaction)
-            .filter { $0.id == experienceUpgradeId }
-            .forEach { markAsComplete(experienceUpgrade: $0, transaction: transaction) }
+        markAsComplete(experienceUpgrade: ExperienceUpgrade(uniqueId: experienceUpgradeId.rawValue), transaction: transaction)
     }
 
     public class func markAsComplete(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
@@ -101,11 +99,6 @@ public class ExperienceUpgradeFinder: NSObject {
     @objc
     public class func hasPendingPinExperienceUpgrade(transaction: GRDBReadTransaction) -> Bool {
         return hasIncomplete(experienceUpgradeId: .introducingPins, transaction: transaction)
-    }
-
-    @objc
-    class func clearProfileNameReminder(transaction: GRDBWriteTransaction) {
-        ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .profileNameReminder, transaction: transaction)
     }
 
     // MARK: -

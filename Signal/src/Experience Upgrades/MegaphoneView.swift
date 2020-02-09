@@ -71,6 +71,8 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         buttons = [primary, secondary]
     }
 
+    var isPresented: Bool { superview != nil }
+
     private let darkThemeBackgroundOverlay = UIView()
     private let stackView = UIStackView()
     init(experienceUpgrade: ExperienceUpgrade) {
@@ -168,12 +170,12 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         dismiss()
     }
 
-    func dismiss(animated: Bool = true, completionHandler: (() -> Void)? = nil) {
+    func dismiss(animated: Bool = true, completion: (() -> Void)? = nil) {
         UIView.animate(withDuration: animated ? 0.2 : 0, animations: {
             self.alpha = 0
         }) { _ in
             self.removeFromSuperview()
-            completionHandler?()
+            completion?()
         }
     }
 

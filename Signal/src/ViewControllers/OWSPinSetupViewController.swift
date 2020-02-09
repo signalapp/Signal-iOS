@@ -435,6 +435,11 @@ public class PinSetupViewController: OWSViewController {
 
             // The completion handler always dismisses this view, so we don't want to animate anything.
             progressView.loadingComplete(success: true, animated: false, completion: self.completionHandler)
+
+            // Clear the experience upgrade if it was pending.
+            SDSDatabaseStorage.shared.asyncWrite { transaction in
+                ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: transaction.unwrapGrdbWrite)
+            }
         }, failure: { error in
             AssertIsOnMainThread()
 

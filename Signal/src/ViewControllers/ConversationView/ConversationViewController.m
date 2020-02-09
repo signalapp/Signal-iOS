@@ -2122,6 +2122,11 @@ typedef enum : NSUInteger {
                                                                            emoji:reaction
                                                                       isRemoving:isRemoving
                                                                      transaction:transaction];
+
+                                   // Mark the reactions experience upgrade complete if the user
+                                   // sends a reaction, even if they didn't dismiss it directly.
+                                   [ExperienceUpgradeManager
+                                       clearReactionsExperienceUpgradeWithTransaction:transaction.unwrapGrdbWrite];
                                }];
                            }];
 }
