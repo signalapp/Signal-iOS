@@ -20,6 +20,8 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
     OWS2FAMode_V2,
 };
 
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 
 // This class can be safely accessed and used from any thread.
@@ -33,13 +35,16 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
 
 @property (nullable, nonatomic, readonly) NSString *pinCode;
 @property (nonatomic, readonly) OWS2FAMode mode;
+@property (nonatomic, readonly) BOOL isDueForV1Reminder;
+@property (nonatomic, readonly) NSTimeInterval repetitionInterval;
 
 - (BOOL)is2FAEnabled;
-- (BOOL)isDueForReminder;
 - (BOOL)hasPending2FASetup;
 - (BOOL)needsLegacyPinMigration;
-- (void)markLegacyPinAsMigrated;
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result;
+
+- (BOOL)isDueForV2ReminderWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(isDueForV2Reminder(transaction:));
 
 // Request with service
 - (void)requestEnable2FAWithPin:(NSString *)pin
@@ -54,7 +59,7 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
 - (void)updateRepetitionIntervalWithWasSuccessful:(BOOL)wasSuccessful;
 
 // used for testing
-- (void)setDefaultRepetitionInterval;
+- (void)setDefaultRepetitionIntervalWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

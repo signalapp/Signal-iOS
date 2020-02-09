@@ -620,6 +620,7 @@
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
 		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
 		886F08A7234958970085C27F /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */; };
+		887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */; };
 		8889006C23DBB39B00F40186 /* reactionsMegaphone.json in Resources */ = {isa = PBXBuildFile; fileRef = 8889006323DBB39A00F40186 /* reactionsMegaphone.json */; };
 		8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006523DBB39B00F40186 /* reactionMegaphone_1.png */; };
 		8889006E23DBB39B00F40186 /* reactionMegaphone_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006623DBB39B00F40186 /* reactionMegaphone_0.png */; };
@@ -1497,6 +1498,7 @@
 		886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccessoryViewPlaceholder.swift; sourceTree = "<group>"; };
 		887D5880236773240048B8FB /* ta */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ta; path = translations/ta.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887D5881236773410048B8FB /* te */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = te; path = translations/te.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinReminderMegaphone.swift; sourceTree = "<group>"; };
 		8889006323DBB39A00F40186 /* reactionsMegaphone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = reactionsMegaphone.json; sourceTree = "<group>"; };
 		8889006523DBB39B00F40186 /* reactionMegaphone_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_1.png; sourceTree = "<group>"; };
 		8889006623DBB39B00F40186 /* reactionMegaphone_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_0.png; sourceTree = "<group>"; };
@@ -2950,8 +2952,9 @@
 			isa = PBXGroup;
 			children = (
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
-				88A505FB23DBAE4F0005C012 /* Reactions.swift */,
+				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
 				8889007423DBD0B400F40186 /* ProfileNameReminder.swift */,
+				88A505FB23DBAE4F0005C012 /* Reactions.swift */,
 			);
 			path = "Upgrade Views";
 			sourceTree = "<group>";
@@ -4267,6 +4270,7 @@
 				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,
 				3434AE1E22AEF5A4002EE04E /* CircularProgressView.swift in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
+				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
 				34D1F0871F8678AA0066283D /* ConversationViewItem.m in Sources */,

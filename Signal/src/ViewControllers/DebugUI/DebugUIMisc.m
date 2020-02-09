@@ -151,7 +151,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [items addObject:[OWSTableItem itemWithTitle:@"Reset 2FA Repetition Interval"
                                      actionBlock:^() {
-                                         [OWS2FAManager.sharedManager setDefaultRepetitionInterval];
+                                         [SDSDatabaseStorage.shared
+                                             writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                                 [OWS2FAManager.sharedManager
+                                                     setDefaultRepetitionIntervalWithTransaction:transaction];
+                                             }];
                                      }]];
 
     [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"

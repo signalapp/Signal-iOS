@@ -7,7 +7,7 @@ import UIKit
 @objc(OWSPinReminderViewController)
 public class PinReminderViewController: OWSViewController {
 
-    private let recreatePinURL = "signal-pin://recreate"
+    private let completionHandler: (() -> Void)?
 
     private let containerView = UIView()
     private let pinTextField = UITextField()
@@ -36,7 +36,8 @@ public class PinReminderViewController: OWSViewController {
     }
     private var hasGuessedWrong = false
 
-    init() {
+    init(completionHandler: (() -> Void)? = nil) {
+        self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -212,7 +213,11 @@ public class PinReminderViewController: OWSViewController {
 
     @objc func dismissPressed() {
         Logger.info("")
-        // We'll ask again next time they launch
+
+        // The megaphone will persist and we'll deprecate their reminder interval if they
+        // tried and guessed wrong while the view was visible.
+        if hasGuessedWrong { OWS2FAManager.shared().updateRepetitionInterval(withWasSuccessful: false) }
+
         dismiss(animated: true, completion: nil)
     }
 
@@ -246,6 +251,7 @@ public class PinReminderViewController: OWSViewController {
             }
 
             self.dismissAndUpdateRepetitionInterval()
+            self.completionHandler?()
         }
     }
 

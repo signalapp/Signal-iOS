@@ -104,7 +104,8 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins,
              .reactions,
-             .profileNameReminder:
+             .profileNameReminder,
+             .pinReminder:
             return true
         default:
             return false
@@ -119,6 +120,8 @@ class ExperienceUpgradeManager: NSObject {
             return ReactionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .profileNameReminder:
             return ProfileNameReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .pinReminder:
+            return PinReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }

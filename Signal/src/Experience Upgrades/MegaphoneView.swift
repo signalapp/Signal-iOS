@@ -65,10 +65,14 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     }
 
     private var buttons: [Button] = []
-    func setButtons(primary: Button, secondary: Button) {
+    func setButtons(primary: Button, secondary: Button? = nil) {
         assert(!hasPresented)
 
-        buttons = [primary, secondary]
+        if let secondary = secondary {
+            buttons = [primary, secondary]
+        } else {
+            buttons = [primary]
+        }
     }
 
     var isPresented: Bool { superview != nil }
@@ -141,7 +145,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
 
         // Buttons
 
-        if buttons.count == 2 {
+        if buttons.count > 0 {
             stackView.addArrangedSubview(createButtonsStack())
         } else {
             assert(buttons.isEmpty)
@@ -255,53 +259,64 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         return container
     }
 
-    func createButtonsStack() -> UIStackView {
-        assert(buttons.count == 2)
+    func createButtonView(_ button: Button, font: UIFont = .systemFont(ofSize: 15)) -> OWSFlatButton {
+        let buttonView = OWSFlatButton()
 
+        buttonView.setTitle(title: button.title, font: font, titleColor: Theme.darkThemePrimaryColor)
+        buttonView.setPressedBlock { button.action() }
+
+        buttonView.autoSetDimension(.height, toSize: 44)
+
+        return buttonView
+    }
+
+    func createButtonsStack() -> UIStackView {
         let buttonsStack = UIStackView()
         buttonsStack.addBackgroundView(withBackgroundColor: .ows_blackAlpha20)
 
-        var previousButton: UIView?
-        for button in buttons {
-            let buttonView = OWSFlatButton()
+        switch buttons.count {
+        case 1:
+            buttonsStack.addArrangedSubview(createButtonView(buttons[0]))
+        case 2:
+            var previousButton: UIView?
+            for button in buttons {
+                let buttonView = createButtonView(
+                    button,
+                    font: previousButton == nil ? UIFont.systemFont(ofSize: 15).ows_semibold() : .systemFont(ofSize: 15)
+                )
 
-            let font: UIFont = previousButton == nil ? UIFont.systemFont(ofSize: 15).ows_semibold() : .systemFont(ofSize: 15)
+                switch buttonOrientation {
+                case .vertical:
+                    buttonsStack.addArrangedSubview(buttonView)
+                case .horizontal:
+                    buttonsStack.insertArrangedSubview(buttonView, at: 0)
+                }
 
-            buttonView.setTitle(title: button.title, font: font, titleColor: Theme.darkThemePrimaryColor)
-            buttonView.setPressedBlock {
-                button.action()
+                previousButton?.autoMatch(.width, to: .width, of: buttonView)
+
+                previousButton = buttonView
             }
+
+            let dividerContainer = UIView()
+            let divider = UIView()
+            divider.backgroundColor = .ows_whiteAlpha20
+            dividerContainer.addSubview(divider)
+            buttonsStack.insertArrangedSubview(dividerContainer, at: 1)
 
             switch buttonOrientation {
             case .vertical:
-                buttonsStack.addArrangedSubview(buttonView)
+                buttonsStack.axis = .vertical
+                divider.autoSetDimension(.height, toSize: 1)
+                divider.autoPinHeightToSuperview()
+                divider.autoPinWidthToSuperview(withMargin: 12)
             case .horizontal:
-                buttonsStack.insertArrangedSubview(buttonView, at: 0)
+                buttonsStack.axis = .horizontal
+                divider.autoSetDimension(.width, toSize: 1)
+                divider.autoPinWidthToSuperview()
+                divider.autoPinHeightToSuperview(withMargin: 8)
             }
-
-            buttonView.autoSetDimension(.height, toSize: 44)
-            previousButton?.autoMatch(.width, to: .width, of: buttonView)
-
-            previousButton = buttonView
-        }
-
-        let dividerContainer = UIView()
-        let divider = UIView()
-        divider.backgroundColor = .ows_whiteAlpha20
-        dividerContainer.addSubview(divider)
-        buttonsStack.insertArrangedSubview(dividerContainer, at: 1)
-
-        switch buttonOrientation {
-        case .vertical:
-            buttonsStack.axis = .vertical
-            divider.autoSetDimension(.height, toSize: 1)
-            divider.autoPinHeightToSuperview()
-            divider.autoPinWidthToSuperview(withMargin: 12)
-        case .horizontal:
-            buttonsStack.axis = .horizontal
-            divider.autoSetDimension(.width, toSize: 1)
-            divider.autoPinWidthToSuperview()
-            divider.autoPinHeightToSuperview(withMargin: 8)
+        default:
+            owsFailDebug("only supports 1 or 2 buttons")
         }
 
         return buttonsStack
