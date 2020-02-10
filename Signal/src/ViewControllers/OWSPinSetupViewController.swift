@@ -430,11 +430,16 @@ public class PinSetupViewController: OWSViewController {
             self.nextButton.alpha = 0.5
         }
 
-        OWS2FAManager.shared().requestEnable2FA(withPin: pin, success: {
+        OWS2FAManager.shared().requestEnable2FA(withPin: pin, mode: .V2, success: {
             AssertIsOnMainThread()
 
             // The completion handler always dismisses this view, so we don't want to animate anything.
             progressView.loadingComplete(success: true, animated: false, completion: self.completionHandler)
+
+            // Clear the experience upgrade if it was pending.
+            SDSDatabaseStorage.shared.asyncWrite { transaction in
+                ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: transaction.unwrapGrdbWrite)
+            }
         }, failure: { error in
             AssertIsOnMainThread()
 

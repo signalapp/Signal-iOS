@@ -68,10 +68,6 @@ public class ReactionManager: NSObject {
         }
 
         SSKEnvironment.shared.messageSenderJobQueue.add(message: outgoingMessage.asPreparer, transaction: transaction)
-
-        // Mark the reactions experience upgrade complete if the user
-        // sends a reaction, even if they didn't dismiss it directly.
-        ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .reactions, transaction: transaction.unwrapGrdbWrite)
     }
 
     @objc

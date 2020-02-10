@@ -567,7 +567,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                       // even if they didn't dismiss the reminder directly.
                                       [ProfileViewController.databaseStorage
                                           asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                              [ExperienceUpgradeFinder
+                                              [ExperienceUpgradeManager
                                                   clearProfileNameReminderWithTransaction:transaction.unwrapGrdbWrite];
                                           }];
                                   }];

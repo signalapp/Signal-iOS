@@ -337,7 +337,6 @@ public class AccountManager: NSObject {
                                                            deviceId: 1,
                                                            transaction: transaction)
         }
-        OWS2FAManager.shared().mark2FAAsEnabled(withPin: "12341234")
         completeRegistration()
     }
 

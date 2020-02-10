@@ -20,6 +20,8 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
     OWS2FAMode_V2,
 };
 
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 
 // This class can be safely accessed and used from any thread.
@@ -33,28 +35,31 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
 
 @property (nullable, nonatomic, readonly) NSString *pinCode;
 @property (nonatomic, readonly) OWS2FAMode mode;
+@property (nonatomic, readonly) BOOL isDueForV1Reminder;
+@property (nonatomic, readonly) NSTimeInterval repetitionInterval;
 
 - (BOOL)is2FAEnabled;
-- (BOOL)isDueForReminder;
 - (BOOL)hasPending2FASetup;
 - (BOOL)needsLegacyPinMigration;
-- (void)markLegacyPinAsMigrated;
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result;
+
+- (BOOL)isDueForV2ReminderWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(isDueForV2Reminder(transaction:));
 
 // Request with service
 - (void)requestEnable2FAWithPin:(NSString *)pin
+                           mode:(OWS2FAMode)mode
                         success:(nullable OWS2FASuccess)success
                         failure:(nullable OWS2FAFailure)failure;
-
-// Sore local settings if, used during registration
-- (void)mark2FAAsEnabledWithPin:(NSString *)pin;
 
 - (void)disable2FAWithSuccess:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure;
 
 - (void)updateRepetitionIntervalWithWasSuccessful:(BOOL)wasSuccessful;
 
+- (void)mark2FAAsEnabledWithPin:(NSString *)pin;
+
 // used for testing
-- (void)setDefaultRepetitionInterval;
+- (void)setDefaultRepetitionIntervalWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

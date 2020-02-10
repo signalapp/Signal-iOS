@@ -742,20 +742,14 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                     presentFullScreenViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]
                                            animated:YES
                                          completion:nil];
-            } else if ([OWS2FAManager sharedManager].isDueForReminder) {
+            } else if ([OWS2FAManager sharedManager].isDueForV1Reminder) {
                 UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
                 OWSAssertDebug(frontmostViewController);
 
-                UIViewController *reminderVC;
-                if (RemoteConfig.pinsForEveryone) {
-                    reminderVC = [OWSPinReminderViewController new];
-                } else {
-                    reminderVC = [OWS2FAReminderViewController wrappedInNavController];
-                    reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
-                }
+                UIViewController *reminderVC = [OWS2FAReminderViewController wrappedInNavController];
+                reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
 
-                if ([frontmostViewController isKindOfClass:[OWSPinReminderViewController class]] ||
-                    [frontmostViewController isKindOfClass:[OWS2FAReminderViewController class]]) {
+                if ([frontmostViewController isKindOfClass:[OWS2FAReminderViewController class]]) {
                     // We're already presenting this
                     return;
                 }

@@ -114,7 +114,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         if let pinCode = ows2FAManager.pinCode, RemoteConfig.kbs, ows2FAManager.mode == .V1 {
             // enabling 2fa v2 automatically disables v1 on the server
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { _ in
-                self.ows2FAManager.enable2FAPromise(with: pinCode)
+                self.ows2FAManager.enable2FAV2Promise(with: pinCode)
                     .ensure {
                         self.presentingViewController?.dismiss(animated: true)
                     }.catch { error in
@@ -145,9 +145,11 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
 }
 
 extension OWS2FAManager {
-    func enable2FAPromise(with pin: String) -> Promise<Void> {
+    func enable2FAV2Promise(with pin: String) -> Promise<Void> {
         return Promise { resolver in
-            requestEnable2FA(withPin: pin, success: {
+            requestEnable2FA(withPin: pin,
+                             mode: .V2,
+                             success: {
                 resolver.fulfill(())
             }, failure: { error in
                 resolver.reject(error)

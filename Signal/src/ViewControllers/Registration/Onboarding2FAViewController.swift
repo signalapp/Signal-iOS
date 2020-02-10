@@ -59,21 +59,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleText: String
-        let explanationText: String
-
-        if RemoteConfig.pinsForEveryone {
-            titleText = NSLocalizedString("ONBOARDING_PIN_TITLE", comment: "Title of the 'onboarding PIN' view.")
-            explanationText = NSLocalizedString("ONBOARDING_PIN_EXPLANATION", comment: "Title of the 'onboarding PIN' view.")
-        } else {
-            titleText = NSLocalizedString("ONBOARDING_2FA_TITLE", comment: "Title of the 'onboarding 2FA' view.")
-            let explanationText1 = NSLocalizedString("ONBOARDING_2FA_EXPLANATION_1",
-                                                     comment: "The first explanation in the 'onboarding 2FA' view.")
-            let explanationText2 = NSLocalizedString("ONBOARDING_2FA_EXPLANATION_2",
-                                                     comment: "The first explanation in the 'onboarding 2FA' view.")
-
-            explanationText = explanationText1 + "\n\n" + explanationText2
-        }
+        let titleText = NSLocalizedString("ONBOARDING_PIN_TITLE", comment: "Title of the 'onboarding PIN' view.")
+        let explanationText = NSLocalizedString("ONBOARDING_PIN_EXPLANATION", comment: "Title of the 'onboarding PIN' view.")
 
         let titleLabel = self.titleLabel(text: titleText)
         let explanationLabel = self.explanationLabel(explanationText: explanationText)

@@ -12,6 +12,7 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
 
     let experienceUpgrade: ExperienceUpgrade
     var canDismissWithGesture: Bool { return true }
+    var isPresented: Bool { presentingViewController != nil }
 
     init(experienceUpgrade: ExperienceUpgrade) {
         self.experienceUpgrade = experienceUpgrade
