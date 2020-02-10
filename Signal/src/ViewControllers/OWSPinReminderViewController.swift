@@ -84,6 +84,17 @@ public class PinReminderViewController: OWSViewController {
         containerView.autoPinWidthToSuperview()
         autoPinView(toBottomOfViewControllerOrKeyboard: containerView, avoidNotch: true)
 
+        // We want the background to extend to the bottom of the screen
+        // behind the safe area, so we add that inset to our bottom inset
+        // instead of pinning this view to the safe area
+        let safeAreaBackdrop = UIView()
+        safeAreaBackdrop.backgroundColor = Theme.backgroundColor
+        view.addSubview(safeAreaBackdrop)
+        safeAreaBackdrop.autoPinEdge(.top, to: .bottom, of: containerView)
+        safeAreaBackdrop.autoPinWidthToSuperview()
+        // We don't know the safe area insets, so just guess a big number that will extend off screen
+        safeAreaBackdrop.autoSetDimension(.height, toSize: 150)
+
         // Title
 
         let titleLabel = UILabel()
