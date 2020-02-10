@@ -153,7 +153,8 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         }
 
         fromViewController.view.addSubview(self)
-        autoPinWidthToSuperview(withMargin: 8)
+        autoPinEdge(toSuperviewSafeArea: .leading, withInset: 8)
+        autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 8)
         autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
 
         animationView?.play()
