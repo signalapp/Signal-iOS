@@ -302,7 +302,7 @@ NS_ASSUME_NONNULL_BEGIN
             publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.viewItem.interaction.uniqueThreadId transaction: transaction];
         }];
         if (publicChat != nil) {
-            BOOL isModerator = [LKPublicChatAPI isUserModerator:incomingMessage.authorId forGroup:publicChat.channel onServer:publicChat.server];
+            BOOL isModerator = [LKPublicChatAPI isUserModerator:incomingMessage.authorId forChannel:publicChat.channel onServer:publicChat.server];
             UIImage *moderatorIcon = [UIImage imageNamed:@"Crown"];
             self.moderatorIconImageView.image = moderatorIcon;
             self.moderatorIconImageView.hidden = !isModerator;

@@ -168,7 +168,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
                 })
                 task.resume()
             }.catch { error in
-                print("[Loki] Couldn't upload profile picture.")
+                print("[Loki] Couldn't upload profile picture due to error: \(error).")
                 seal.reject(error)
             }
         }
