@@ -192,7 +192,7 @@ public final class LokiPublicChatPoller : NSObject {
             if !hexEncodedPublicKeysToUpdate.isEmpty {
                 let storage = OWSPrimaryStorage.shared()
                 storage.dbReadConnection.read { transaction in
-                    LokiStorageAPI.getDeviceLinks(associatedWith: hexEncodedPublicKeysToUpdate).done(on: DispatchQueue.global()) { _ in
+                    LokiFileServerAPI.getDeviceLinks(associatedWith: hexEncodedPublicKeysToUpdate).done(on: DispatchQueue.global()) { _ in
                         proceed()
                         hexEncodedPublicKeysToUpdate.forEach {
                             LokiAPI.lastDeviceLinkUpdate[$0] = Date()

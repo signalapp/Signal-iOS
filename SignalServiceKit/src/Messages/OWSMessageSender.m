@@ -484,9 +484,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             });
         }
         failure:^(NSError *error) {
-            OWSLogError(@"Could not obtain UD sender certificate: %@", error);
-
-            // Proceed using non-UD message sends.
             dispatch_async([OWSDispatch sendingQueue], ^{
                 [self sendMessageToService:message senderCertificate:nil success:success failure:failure];
             });

@@ -1,6 +1,6 @@
 import PromiseKit
 
-/// Base class for `LokiStorageAPI` and `LokiPublicChatAPI`.
+/// Base class for `LokiFileServerAPI` and `LokiPublicChatAPI`.
 public class LokiDotNetAPI : NSObject {
 
     // MARK: Convenience
@@ -39,12 +39,13 @@ public class LokiDotNetAPI : NSObject {
 
     // MARK: Attachments (Public API)
     public static func uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
-        let isEncryptionRequired = (server == LokiStorageAPI.server)
+        let isEncryptionRequired = (server == LokiFileServerAPI.server)
         return Promise<Void>() { seal in
-            getAuthToken(for: server).done(on: DispatchQueue.global()) { token in
+            func proceed(with token: String) {
+                // Get the attachment
                 let data: Data
                 guard let unencryptedAttachmentData = try? attachment.readDataFromFile() else {
-                    print("[Loki] Couldn't read attachment data from disk.")
+                    print("[Loki] Couldn't read attachment from disk.")
                     return seal.reject(Error.generic)
                 }
                 // Encrypt the attachment if needed
@@ -71,7 +72,7 @@ public class LokiDotNetAPI : NSObject {
                 request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
                 if let error = error {
                     print("[Loki] Couldn't upload attachment due to error: \(error).")
-                    throw error
+                    return seal.reject(error)
                 }
                 // Send the request
                 func parseResponse(_ response: Any) {
@@ -87,7 +88,7 @@ public class LokiDotNetAPI : NSObject {
                     attachment.save()
                     seal.fulfill(())
                 }
-                let isProxyingRequired = (server == LokiStorageAPI.server) // Don't proxy open group requests for now
+                let isProxyingRequired = (server == LokiFileServerAPI.server) // Don't proxy open group requests for now
                 if isProxyingRequired {
                     let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done { responseObject in
                         parseResponse(responseObject)
@@ -117,9 +118,16 @@ public class LokiDotNetAPI : NSObject {
                     })
                     task.resume()
                 }
-            }.catch(on: DispatchQueue.global()) { error in
-                print("[Loki] Couldn't upload attachment.")
-                seal.reject(error)
+            }
+            if server == LokiFileServerAPI.server {
+                proceed(with: "loki") // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
+            } else {
+                getAuthToken(for: server).done(on: DispatchQueue.global()) { token in
+                    proceed(with: token)
+                }.catch(on: DispatchQueue.global()) { error in
+                    print("[Loki] Couldn't upload attachment due to error: \(error).")
+                    seal.reject(error)
+                }
             }
         }
     }
@@ -148,7 +156,7 @@ public class LokiDotNetAPI : NSObject {
                 throw Error.parsingFailed
             }
             // Discard the "05" prefix if needed
-            if (serverPublicKey.count == 33) {
+            if serverPublicKey.count == 33 {
                 let hexEncodedServerPublicKey = serverPublicKey.toHexString()
                 serverPublicKey = Data.data(fromHex: hexEncodedServerPublicKey.substring(from: 2))!
             }

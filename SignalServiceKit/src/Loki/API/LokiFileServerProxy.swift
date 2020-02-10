@@ -37,7 +37,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
 
     // MARK: Proxying
     override internal func perform(_ request: TSRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> LokiAPI.RawResponsePromise {
-        let isLokiFileServer = (server == LokiStorageAPI.server)
+        let isLokiFileServer = (server == LokiFileServerAPI.server)
         guard isLokiFileServer else { return super.perform(request, withCompletionQueue: queue) } // Don't proxy open group requests for now
         return performLokiFileServerNSURLRequest(request, withCompletionQueue: queue)
     }

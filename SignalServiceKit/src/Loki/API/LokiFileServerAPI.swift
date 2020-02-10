@@ -1,14 +1,14 @@
 import PromiseKit
 
-@objc(LKStorageAPI)
-public final class LokiStorageAPI : LokiDotNetAPI {
+@objc(LKFileServerAPI)
+public final class LokiFileServerAPI : LokiDotNetAPI {
 
     // MARK: Settings
-//    #if DEBUG
-//    private static let server = "http://file-dev.lokinet.org"
-//    #else
+    #if DEBUG
+    @objc public static let server = "http://file-dev.lokinet.org"
+    #else
     @objc public static let server = "https://file.getsession.org"
-//    #endif
+    #endif
     private static let deviceLinkType = "network.loki.messenger.devicemapping"
     private static let attachmentType = "net.app.core.oembed"
 
@@ -168,7 +168,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
                 })
                 task.resume()
             }.catch { error in
-                print("[Loki] Couldn't upload profile picture.")
+                print("[Loki] Couldn't upload profile picture due to error: \(error).")
                 seal.reject(error)
             }
         }

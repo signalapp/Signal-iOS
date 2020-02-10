@@ -65,14 +65,13 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 - (void)run
 {
     __block TSAttachmentStream *attachmentStream;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         attachmentStream = [TSAttachmentStream fetchObjectWithUniqueID:self.attachmentId transaction:transaction];
     }];
 
     if (!attachmentStream) {
-        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-        // Not finding local attachment is a terminal failure.
+        // Not finding a local attachment is a terminal failure
         error.isRetryable = NO;
         [self reportError:error];
         return;
@@ -90,9 +89,9 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.threadID transaction:transaction];
     }];
-    NSString *server = (publicChat != nil) ? publicChat.server : LKStorageAPI.server;
+    NSString *server = (publicChat != nil) ? publicChat.server : LKFileServerAPI.server;
     
-    [[LKStorageAPI uploadAttachment:attachmentStream withID:self.attachmentId toServer:server]
+    [[LKFileServerAPI uploadAttachment:attachmentStream withID:self.attachmentId toServer:server]
     .thenOn(dispatch_get_main_queue(), ^() {
         [self reportSuccess];
     })
