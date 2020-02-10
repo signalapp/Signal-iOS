@@ -445,6 +445,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 if let upToRevision = upToRevision {
                     guard upToRevision >= changeRevision else {
                         Logger.info("Ignoring group change: \(changeRevision); only updating to revision: \(upToRevision)")
+
+                        // Enqueue an update to latest.
+                        self.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
+
                         return groupThread
                     }
                 }
