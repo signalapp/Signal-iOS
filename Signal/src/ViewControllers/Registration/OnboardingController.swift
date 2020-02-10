@@ -618,6 +618,11 @@ public class OnboardingController: NSObject {
 
                                                         self.accountManager.register(verificationCode: verificationCode, pin: twoFAPin)
                                                             .done { (_) in
+                                                                // Enable 2FA with the registered pin, if any
+                                                                if let pin = twoFAPin {
+                                                                    OWS2FAManager.shared().mark2FAAsEnabled(withPin: pin)
+                                                                }
+
                                                                 DispatchQueue.main.async {
                                                                     modal.dismiss(completion: {
                                                                         self.verificationDidComplete(fromView: fromViewController)

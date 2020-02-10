@@ -137,7 +137,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         } else {
             // Convert the pin to arabic numerals, we never want to
             // operate with pins in other numbering systems.
-            [OWS2FAManager.keyValueStore setString:pin.ensureArabicNumerals key:kOWS2FAManager_PinCode transaction:transaction];
+            [OWS2FAManager.keyValueStore setString:pin.ensureArabicNumerals
+                                               key:kOWS2FAManager_PinCode
+                                       transaction:transaction];
         }
 
         // Since we just created this pin, we know it doesn't need migration. Mark it as such.

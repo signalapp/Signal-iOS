@@ -56,6 +56,8 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
 
 - (void)updateRepetitionIntervalWithWasSuccessful:(BOOL)wasSuccessful;
 
+- (void)mark2FAAsEnabledWithPin:(NSString *)pin;
+
 // used for testing
 - (void)setDefaultRepetitionIntervalWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
