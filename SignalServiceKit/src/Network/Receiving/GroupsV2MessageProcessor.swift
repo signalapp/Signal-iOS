@@ -596,7 +596,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
 
             switch error {
             case let networkManagerError as NetworkManagerError:
-                guard networkManagerError.isNetworkError else {
+                guard networkManagerError.isNetworkConnectivityError else {
                     return Guarantee.value(UpdateOutcome.failureShouldDiscard)
                 }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -82,7 +82,7 @@ public class RefreshPreKeysOperation: OWSOperation {
     override public func didFail(error: Error) {
         switch error {
         case let networkManagerError as NetworkManagerError:
-            guard !networkManagerError.isNetworkError else {
+            guard !networkManagerError.isNetworkConnectivityError else {
                 Logger.debug("don't report SPK rotation failure w/ network error")
                 return
             }

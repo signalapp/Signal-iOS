@@ -16,7 +16,7 @@ typedef NS_ERROR_ENUM(TSNetworkManagerErrorDomain, TSNetworkManagerError){
     // Other TSNetworkManagerError's use HTTP status codes (e.g. 404, etc)
 };
 
-BOOL IsNSErrorNetworkFailure(NSError *_Nullable error);
+BOOL IsNetworkConnectivityFailure(NSError *_Nullable error);
 
 typedef void (^TSNetworkManagerSuccess)(NSURLSessionDataTask *task, _Nullable id responseObject);
 typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *error);

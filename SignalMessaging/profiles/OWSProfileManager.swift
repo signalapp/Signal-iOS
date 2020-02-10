@@ -18,10 +18,17 @@ public extension OWSProfileManager {
     // (or in the unlikely fact that another error occurs) but this
     // manager will continue to retry until the update succeeds.
     class func updateLocalProfilePromise(profileGivenName: String?, profileFamilyName: String?, profileAvatarData: Data?) -> Promise<Void> {
+        assert(CurrentAppContext().isMainApp)
+
         return DispatchQueue.global().async(.promise) {
             return enqueueProfileUpdate(profileGivenName: profileGivenName, profileFamilyName: profileFamilyName, profileAvatarData: profileAvatarData)
             }.then { update in
                 return self.attemptToUpdateProfileOnService(update: update)
+            }.then { (_) throws -> Promise<Void> in
+                guard let localAddress = TSAccountManager.sharedInstance().localAddress else {
+                    throw OWSAssertionError("missing local address")
+                }
+                return ProfileFetcherJob.fetchAndUpdateProfilePromise(address: localAddress, mainAppOnly: false, ignoreThrottling: true, fetchType: .default).asVoid()
             }.done(on: .global()) { () -> Void in
                 Logger.verbose("Profile update did complete.")
         }
@@ -160,8 +167,8 @@ extension OWSProfileManager {
                 // We retry network errors forever (with exponential backoff).
                 // Other errors cause us to give up immediately.
                 // Note that we only ever retry the latest profile update.
-                if IsNSErrorNetworkFailure(error) {
-                    owsFailDebug("Retrying after error: \(error)")
+                if IsNetworkConnectivityFailure(error) {
+                    Logger.warn("Retrying after error: \(error)")
                 } else {
                     owsFailDebug("Error: \(error)")
 

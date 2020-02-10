@@ -400,8 +400,6 @@ public class ProfileFetcherJob: NSObject {
                                  hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess)
 
         databaseStorage.asyncWrite { transaction in
-            // GroupsV2 TODO: Do we need to bother clearing this state
-            // if supportsGroupsV2 is false?
             GroupManager.setUserHasGroupsV2Capability(address: address,
                                                       value: profile.supportsGroupsV2,
                                                       transaction: transaction)

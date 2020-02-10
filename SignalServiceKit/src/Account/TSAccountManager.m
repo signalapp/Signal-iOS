@@ -563,7 +563,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
                                                         failure:failureHandler
                                                remainingRetries:remainingRetries - 1];
             } else {
-                if (!IsNSErrorNetworkFailure(error)) {
+                if (!IsNetworkConnectivityFailure(error)) {
                     OWSProdError([OWSAnalyticsEvents accountsErrorRegisterPushTokensFailed]);
                 }
                 failureHandler(error);
@@ -596,7 +596,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
             }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (IsNSErrorNetworkFailure(error)) {
+            if (IsNetworkConnectivityFailure(error)) {
                 OWSLogWarn(@"network error: %@", error.debugDescription);
             } else {
                 OWSLogError(@"non-network error: %@", error.debugDescription);
@@ -731,7 +731,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
             [self.sharedInstance postRegistrationStateDidChangeNotification];
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
+            if (!IsNetworkConnectivityFailure(error)) {
                 OWSProdError([OWSAnalyticsEvents accountsErrorUnregisterAccountRequestFailed]);
             }
             OWSLogError(@"Failed to unregister with error: %@", error);
