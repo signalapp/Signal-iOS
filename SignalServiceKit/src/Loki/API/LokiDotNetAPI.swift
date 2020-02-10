@@ -101,6 +101,8 @@ public class LokiDotNetAPI : NSObject {
                 }
                 let isProxyingRequired = (server == LokiFileServerAPI.server) // Don't proxy open group requests for now
                 if isProxyingRequired {
+                    attachment.isUploaded = false
+                    attachment.save()
                     let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done { responseObject in
                         parseResponse(responseObject)
                     }.catch { error in
