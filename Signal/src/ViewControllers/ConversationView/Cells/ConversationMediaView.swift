@@ -176,7 +176,6 @@ public class ConversationMediaView: UIView {
     }
 
     private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
-        guard !isProxied else { return false } // Loki: Due to the way proxying works we can't get upload progress for those attachments right now
         guard isOutgoing else { return false }
         guard let attachmentStream = attachment as? TSAttachmentStream else { return false }
         guard let attachmentId = attachmentStream.uniqueId else {
@@ -184,12 +183,18 @@ public class ConversationMediaView: UIView {
             configure(forError: .invalid)
             return false
         }
-        guard !attachmentStream.isUploaded else {
-            return false
+        guard !attachmentStream.isUploaded else { return false }
+        let view: UIView
+        if isProxied { // Loki: Due to the way proxying works we can't get upload progress for those attachments
+            let activityIndicatorView = UIActivityIndicatorView(style: .white)
+            activityIndicatorView.isHidden = false
+            activityIndicatorView.startAnimating()
+            view = activityIndicatorView
+        } else {
+            view = MediaUploadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
         }
-        let progressView = MediaUploadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
-        self.addSubview(progressView)
-        progressView.autoPinEdgesToSuperviewEdges()
+        addSubview(view)
+        view.autoPinEdgesToSuperviewEdges()
         return true
     }
 
