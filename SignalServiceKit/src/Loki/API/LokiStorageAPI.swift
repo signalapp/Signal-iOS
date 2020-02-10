@@ -4,11 +4,11 @@ import PromiseKit
 public final class LokiStorageAPI : LokiDotNetAPI {
 
     // MARK: Settings
-//    #if DEBUG
-//    private static let server = "http://file-dev.lokinet.org"
-//    #else
+    #if DEBUG
+    @objc public static let server = "http://file-dev.lokinet.org"
+    #else
     @objc public static let server = "https://file.getsession.org"
-//    #endif
+    #endif
     private static let deviceLinkType = "network.loki.messenger.devicemapping"
     private static let attachmentType = "net.app.core.oembed"
 
