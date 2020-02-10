@@ -41,7 +41,7 @@ public class LokiDotNetAPI : NSObject {
     public static func uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
         let isEncryptionRequired = (server == LokiStorageAPI.server)
         return Promise<Void>() { seal in
-            func proceed(with token: String? = nil) {
+            func proceed(with token: String) {
                 // Get the attachment
                 let data: Data
                 guard let unencryptedAttachmentData = try? attachment.readDataFromFile() else {
@@ -69,9 +69,7 @@ public class LokiDotNetAPI : NSObject {
                 var request = AFHTTPRequestSerializer().multipartFormRequest(withMethod: "POST", urlString: url, parameters: parameters, constructingBodyWith: { formData in
                     formData.appendPart(withFileData: data, name: "content", fileName: UUID().uuidString, mimeType: "application/binary")
                 }, error: &error)
-                if let token = token {
-                    request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                }
+                request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
                 if let error = error {
                     print("[Loki] Couldn't upload attachment due to error: \(error).")
                     return seal.reject(error)
@@ -122,7 +120,7 @@ public class LokiDotNetAPI : NSObject {
                 }
             }
             if server == LokiStorageAPI.server {
-                proceed() // Uploads to the Loki File Server shouldn't include any personally identifiable information so don't include an auth token
+                proceed(with: "loki") // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
             } else {
                 getAuthToken(for: server).done(on: DispatchQueue.global()) { token in
                     proceed(with: token)
