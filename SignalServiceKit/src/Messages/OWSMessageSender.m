@@ -1027,7 +1027,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         })
         .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
-            [self messageSendDidFail:messageSend deviceMessages:@{} statusCode:0 error:error responseData:nil];
+            [self sendMessage:messageSend]; // Proceed even if updating the linked devices map failed so that message sending is independent of whether the file server is up
         }) retainUntilComplete];
     }
 }
