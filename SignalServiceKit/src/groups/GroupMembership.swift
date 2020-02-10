@@ -270,6 +270,7 @@ public class GroupMembership: MTLModel {
         return stateMap[SignalServiceAddress(uuid: uuid)] != nil
     }
 
+    @objc
     public static func normalize(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
         return Array(Set(addresses))
             .sorted(by: { (l, r) in l.compare(r) == .orderedAscending })

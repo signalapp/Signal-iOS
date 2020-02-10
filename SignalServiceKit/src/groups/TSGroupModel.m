@@ -5,6 +5,7 @@
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
 #import "UIImage+OWS.h"
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -231,107 +232,18 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     // GroupsV2 TODO: Remove stale keys from groupsV2MemberRoles.
 }
 
-@end
-
-#pragma mark -
-
-@interface TSGroupModelV2 ()
-
-@property (nonatomic) GroupMembership *membership;
-@property (nonatomic) GroupAccess *access;
-@property (nonatomic) NSData *secretParamsData;
-@property (nonatomic) uint32_t revision;
-
-@end
-
-#pragma mark -
-
-@implementation TSGroupModelV2
-
-- (instancetype)initWithGroupId:(NSData *)groupId
-                           name:(nullable NSString *)name
-                     avatarData:(nullable NSData *)avatarData
-                groupMembership:(GroupMembership *)groupMembership
-                    groupAccess:(GroupAccess *)groupAccess
-                       revision:(uint32_t)revision
-               secretParamsData:(NSData *)secretParamsData
+- (NSString *)debugDescription
 {
-    OWSAssertDebug(secretParamsData.length > 0);
-
-    self = [super initWithGroupId:groupId
-                             name:name
-                       avatarData:avatarData
-                          members:groupMembership.nonPendingMembers.allObjects];
-
-    if (!self) {
-        return self;
-    }
-
-    _membership = groupMembership;
-    _secretParamsData = secretParamsData;
-    _access = groupAccess;
-    _revision = revision;
-
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    return self;
-}
-
-- (GroupsVersion)groupsVersion
-{
-    return GroupsVersionV2;
-}
-
-- (GroupMembership *)groupMembership
-{
-    return self.membership;
-}
-
-- (GroupAccess *)groupAccess
-{
-    return self.access;
-}
-
-- (NSArray<SignalServiceAddress *> *)groupMembers
-{
-    return self.groupMembership.nonPendingMembers.allObjects;
-}
-
-- (uint32_t)groupV2Revision
-{
-    return self.revision;
-}
-
-- (nullable NSData *)groupSecretParamsData
-{
-    return self.secretParamsData;
-}
-
-- (BOOL)isEqualToGroupModel:(TSGroupModel *)other
-{
-    if (![other isKindOfClass:TSGroupModelV2.class]) {
-        return NO;
-    }
-    if (![super isEqualToGroupModel:other]) {
-        return NO;
-    }
-    if (self.groupV2Revision != other.groupV2Revision) {
-        return NO;
-    }
-    if (![NSObject isNullableObject:self.groupSecretParamsData equalTo:other.groupSecretParamsData]) {
-        return NO;
-    }
-    if (![NSObject isNullableObject:self.groupAccess equalTo:other.groupAccess]) {
-        return NO;
-    }
-    if (![NSObject isNullableObject:self.groupMembership equalTo:other.groupMembership]) {
-        return NO;
-    }
-    return YES;
+    NSMutableString *result = [NSMutableString new];
+    [result appendString:@"["];
+    [result appendFormat:@"groupId: %@,\n", self.groupId.hexadecimalString];
+    [result appendFormat:@"groupModelSchemaVersion: %lu,\n", (unsigned long)self.groupModelSchemaVersion];
+    [result appendFormat:@"groupsVersion: %lu,\n", (unsigned long)self.groupsVersion];
+    [result appendFormat:@"groupName: %@,\n", self.groupName];
+    [result appendFormat:@"groupAvatarData: %@,\n", self.groupAvatarData];
+    [result appendFormat:@"groupMembers: %@,\n", [GroupMembership normalize:self.groupMembers]];
+    [result appendString:@"]"];
+    return [result copy];
 }
 
 @end

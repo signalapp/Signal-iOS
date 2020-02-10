@@ -73,27 +73,4 @@ typedef NS_CLOSED_ENUM(
 
 @end
 
-#pragma mark -
-
-// NOTE: This class is tightly coupled to GroupManager.
-//       If you modify this class - especially if you
-//       add any new properties - make sure to update
-//       GroupManager.buildGroupModel().
-@interface TSGroupModelV2 : TSGroupModel
-
-- (instancetype)initWithGroupId:(NSData *)groupId
-                           name:(nullable NSString *)name
-                     avatarData:(nullable NSData *)avatarData
-                groupMembership:(GroupMembership *)groupMembership
-                    groupAccess:(GroupAccess *)groupAccess
-                       revision:(uint32_t)revision
-               secretParamsData:(NSData *)secretParamsData NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithGroupId:(NSData *)groupId
-                           name:(nullable NSString *)name
-                     avatarData:(nullable NSData *)avatarData
-                        members:(NSArray<SignalServiceAddress *> *)members NS_UNAVAILABLE;
-
-@end
-
 NS_ASSUME_NONNULL_END
