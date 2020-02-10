@@ -1180,10 +1180,10 @@
 "GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ הצטרף אל הקבוצה.";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "הסיר את יצגן הקבוצה.";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "עידכן את יצגן הקבוצה.";
 
 /* conversation history entry. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "עדכנת את הקבוצה.";
@@ -1192,7 +1192,7 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ עידכן את הקבוצה.";
 
 /* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+"GROUP_UPDATED_NAME_REMOVED" = "הסיר את השם.";
 
 /* conversation history entry. Embeds {{group name}} */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "שם הקבוצה הוא כעת ”%@“.";
@@ -1400,9 +1400,6 @@
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "חברי קבוצה";
-
-/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (אתה)";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "חפש לפי שם או כתובת";
@@ -2005,7 +2002,7 @@
 "PIN_CREATION_ERROR_TITLE" = "יצירת PIN נכשלה";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add extra security to your account and can’t be recovered. You’ll need your PIN to register with Signal again.";
+"PIN_CREATION_EXPLANATION" = "קודי PIN מוסיפים אקסטרה אבטחה אל החשבון שלך והם אינם ניתנים להשבה. תצטרך את ה־PIN שלך כדי להירשם שוב אל Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "מספרי PIN אינם תואמים. נסה שוב.";
@@ -2036,6 +2033,27 @@
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "שכחת את ה־PIN שלך?";
+
+/* Action text for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_ACTION" = "וודא PIN";
+
+/* Body for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+
+/* Toast indicating that we'll ask you for your PIN again in 3 days. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+
+/* Title for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_TITLE" = "וודא את Signal PIN שלך";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+
+/* Toast indicating that we'll ask you for your PIN again in a week. */
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "PIN בלתי תקף, נסה שוב.";
@@ -2071,7 +2089,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "צור PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
+"PINS_MEGAPHONE_TOAST" = "PIN נוצר. אתה יכול לשנות אותו בהגדרות.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "נגן מדיה";
@@ -2242,7 +2260,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "סרטון";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "כל ה · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "הגיב עם %@ אל ההודעה שלך";

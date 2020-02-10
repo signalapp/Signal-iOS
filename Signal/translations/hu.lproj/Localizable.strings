@@ -462,7 +462,7 @@
 "CAMERA_BUTTON_LABEL" = "Kamera";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ez a felhasználó nem erősíthető meg, amíg nem kezdesz el vele beszélgetni.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ezt a felhasználót nem teheted Ellenőrzötté, amíg nem kezdesz el vele beszélgetni.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Hiba";
@@ -738,13 +738,13 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Feloldás";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Ez a felhasználó egy ismert kontakt";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Ez a felhasználó ismert kontakt";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Ez a csoport láthatja a profilod.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Ez a felhasználó látja a profilodat";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Ez a felhasználó látja a profilod";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Profil megosztása";
@@ -1401,9 +1401,6 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Csoport tagok";
 
-/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Te)";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Keresés név, vagy cím alapján";
 
@@ -1726,10 +1723,10 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Lehetséges, hogy volt bejövő üzeneted, amíg az %@ újraindult.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Műveletek alatt ezeket értjük: \"Olvasottnak jelöl\", \"Válasz\" és \"Visszahívás\".";
+"NOTIFICATIONS_FOOTER_WARNING" = "Művelet lehet \"Olvasottnak jelöl\", \"Válasz\" és \"Visszahívás\".";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Nincs név vagy üzenet";
+"NOTIFICATIONS_NONE" = "Se név, se szöveg";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Hang megnyitott alkalmazásnál";
@@ -1738,7 +1735,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Hangok";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Név, Adat és Művelet";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Név, szöveg és művelet";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Csak név";
@@ -2005,7 +2002,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN létrehozása sikertelen.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add extra security to your account and can’t be recovered. You’ll need your PIN to register with Signal again.";
+"PIN_CREATION_EXPLANATION" = "A PIN kód plusz védelemmel láthatja el a fiókodat és nem visszanyerhető. Szükséged lesz rá, mikor legközelebb újra regisztrálsz.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kódok nem egyeznek. Próbáld újra.";
@@ -2036,6 +2033,27 @@
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Elfelejtett PIN?";
+
+/* Action text for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_ACTION" = "PIN hitelesítése";
+
+/* Body for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+
+/* Toast indicating that we'll ask you for your PIN again in 3 days. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+
+/* Title for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Signal PIN kód hitelesítése";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+
+/* Toast indicating that we'll ask you for your PIN again in a week. */
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Hibás PIN, próbáld újra.";
@@ -2071,7 +2089,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "PIN létrehozása";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
+"PINS_MEGAPHONE_TOAST" = "PIN kód létrehozva. Megváltoztathatod a Beállításokban.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Média lejátszása";
@@ -2665,7 +2683,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Minden hívás a Signal kiszolgálón keresztül haladjon - ezzel elfedhető IP címed a hívott fél számára. A funkció engedélyezése csökkentheti a hívásminőséget.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Beszélgetés előzményeinek törlése";
+"SETTINGS_CLEAR_HISTORY" = "Minden előzmény törlése";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nLicenc típusa: GPLv3";
@@ -2884,7 +2902,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Megosztás: Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Biztonsági azonosító mutatása";
+"SHOW_SAFETY_NUMBER_ACTION" = "Biztonsági azonosító";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Beszélgetés mutatása";
@@ -2983,7 +3001,7 @@
 "TIME_AMOUNT_HOURS" = "%@ óra";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ perc";

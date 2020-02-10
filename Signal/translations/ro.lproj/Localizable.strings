@@ -1279,7 +1279,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Apel ratat pentru că numărul lor de siguranță s-a schimbat.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Puteți trimite sau primi mesaje sincronizate de pe telefon sau iPad. \nPentru securitatea dvs., istoricul conversațiilor nu este transferat pe noile dispozitive asociate.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ folosește Signal!";
@@ -1400,9 +1400,6 @@
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Membrii grupului";
-
-/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Tu)";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Cautați dupa nume sau adresă";
@@ -1726,7 +1723,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "S-ar putea să fi primit mesaje în timpul repornirii %@.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "Acțiuni includ \"Marchează ca și citit\", \"Răspundeți,\" și 'Apelează înapoi.\"";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Fără nume sau conținut";
@@ -1798,10 +1795,10 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Asociați iPhone-ul";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Apăsarea pe \"Înregistrare iPad\" vă va permite să creați un nou cont de Signal      sau să mutați un cont existent pe acest iPad. Acest lucru va dezactiva Signal pe orice alt dispozitiv înregistrat în prezent cu același număr de telefon.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Apăsând pe \"Asociere iPhone\" vă va permite să vă conectați telefonul la un cont existent. În general, asocierea telefonului nu este recomandată și va limita anumite funcționalități, cum ar fi apelarea.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Înregistrează acest iPad";
@@ -2005,7 +2002,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Crearea PIN-ului a eșuat";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add extra security to your account and can’t be recovered. You’ll need your PIN to register with Signal again.";
+"PIN_CREATION_EXPLANATION" = "PIN-ul adăuga un nivel suplimentar contului dvs. și nu poate fi recuperat. Veți avea nevoie de PIN-ul dvs. pentru a vă înregistra din nou la Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-urile nu se potrivesc. Încercați din nou.";
@@ -2036,6 +2033,27 @@
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Ați uitat PIN-ul?";
+
+/* Action text for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Verificați PIN-ul";
+
+/* Body for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+
+/* Toast indicating that we'll ask you for your PIN again in 3 days. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+
+/* Title for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Verificați PIN-ul dvs. Signal.";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+
+/* Toast indicating that we'll ask you for your PIN again in a week. */
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "PIN invalid, încercați din nou.";
@@ -2071,7 +2089,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Creați un PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
+"PINS_MEGAPHONE_TOAST" = "PIN creat. Poate fi schimbat din meniul de setări.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Redă media";
@@ -2467,7 +2485,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Codul de asociere nu a putut fi obținut";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Celălalt dispozitiv rulează o versiune veche de Signal care nu acceptă scanarea codurilor QR iPad. Vă rugăm să instalați cea mai recentă versiune de Signal și să încercați din nou.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Actualizați dispozitivul de scanare";
@@ -2494,13 +2512,13 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nu am Signal pe telefonul meu...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Accesați App Store de pe telefonul dvs., instalați Signal, finalizați procesul de înregistrare și apoi puteți asocia iPad-ul la același cont.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instalați Signal pe telefonul dvs.";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Atingeți imaginea de profil pentru a deschide setările de Signal pe telefon. Apoi \"Dispozitive asociate\" și \"Asociați dispozitiv nou\" pentru a scana acest cod cu telefonul:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obțineți ajutor pentru asocierea iPad-ului dvs. aici";
@@ -2962,7 +2980,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Membru al %@, %@, și %lu grupuri adiționale";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Puteți adăuga note pentru dvs. în această conversație. Dacă contul dvs. are dispozitive asociate, notele noi vor fi sincronizate.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Membru al %@";
