@@ -12,8 +12,14 @@ public class LokiDotNetAPI : NSObject {
     private static let attachmentType = "network.loki"
     
     // MARK: Error
-    public enum Error : Swift.Error {
-        case generic, parsingFailed, encryptionFailed, decryptionFailed, signingFailed
+    @objc public class Error : NSError {
+        
+        @objc public static let generic = Error(domain: "com.loki-project.loki-messenger", code: 1, userInfo: [ NSLocalizedDescriptionKey : "An error occurred." ])
+        @objc public static let parsingFailed = Error(domain: "com.loki-project.loki-messenger", code: 2, userInfo: [ NSLocalizedDescriptionKey : "Invalid file server response." ])
+        @objc public static let signingFailed = Error(domain: "com.loki-project.loki-messenger", code: 3, userInfo: [ NSLocalizedDescriptionKey : "Couldn't sign message." ])
+        @objc public static let encryptionFailed = Error(domain: "com.loki-project.loki-messenger", code: 4, userInfo: [ NSLocalizedDescriptionKey : "Couldn't encrypt file." ])
+        @objc public static let decryptionFailed = Error(domain: "com.loki-project.loki-messenger", code: 5, userInfo: [ NSLocalizedDescriptionKey : "Couldn't decrypt file." ])
+        @objc public static let maxFileSizeExceeded = Error(domain: "com.loki-project.loki-messenger", code: 6, userInfo: [ NSLocalizedDescriptionKey : "Maximum file size exceeded." ])
     }
 
     // MARK: Database
@@ -61,6 +67,11 @@ public class LokiDotNetAPI : NSObject {
                     data = encryptedAttachmentData
                 } else {
                     data = unencryptedAttachmentData
+                }
+                // Check the file size if needed
+                let isLokiFileServer = (server == LokiFileServerAPI.server)
+                if isLokiFileServer && data.count > LokiFileServerAPI.maxFileSize {
+                    return seal.reject(Error.maxFileSizeExceeded)
                 }
                 // Create the request
                 let url = "\(server)/files"
