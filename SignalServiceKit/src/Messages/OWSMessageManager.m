@@ -1249,7 +1249,7 @@ NS_ASSUME_NONNULL_BEGIN
     }]) {
         return;
     }
-    [LKStorageAPI getDeviceLinksAssociatedWith:userHexEncodedPublicKey].thenOn(dispatch_get_main_queue(), ^(NSSet<LKDeviceLink *> *deviceLinks) {
+    [LKFileServerAPI getDeviceLinksAssociatedWith:userHexEncodedPublicKey].thenOn(dispatch_get_main_queue(), ^(NSSet<LKDeviceLink *> *deviceLinks) {
         if ([deviceLinks contains:^BOOL(LKDeviceLink *deviceLink) {
             return [deviceLink.master.hexEncodedPublicKey isEqual:senderHexEncodedPublicKey] && [deviceLink.slave.hexEncodedPublicKey isEqual:userHexEncodedPublicKey];
         }]) {

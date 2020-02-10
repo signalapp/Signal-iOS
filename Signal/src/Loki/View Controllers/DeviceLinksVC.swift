@@ -152,7 +152,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     }
     
     private func removeDeviceLink(_ deviceLink: DeviceLink) {
-        LokiStorageAPI.removeDeviceLink(deviceLink).done { [weak self] in
+        LokiFileServerAPI.removeDeviceLink(deviceLink).done { [weak self] in
             let linkedDeviceHexEncodedPublicKey = deviceLink.other.hexEncodedPublicKey
             guard let thread = TSContactThread.fetch(uniqueId: TSContactThread.threadId(fromContactId: linkedDeviceHexEncodedPublicKey)) else { return }
             let unlinkDeviceMessage = UnlinkDeviceMessage(thread: thread)!

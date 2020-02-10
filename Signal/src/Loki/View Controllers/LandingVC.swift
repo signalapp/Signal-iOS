@@ -157,7 +157,7 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair.hexEncodedPublicKey
         TSAccountManager.sharedInstance().didRegister()
         setUserInteractionEnabled(false)
-        let _ = LokiStorageAPI.getDeviceLinks(associatedWith: hexEncodedPublicKey).done(on: DispatchQueue.main) { [weak self] deviceLinks in
+        let _ = LokiFileServerAPI.getDeviceLinks(associatedWith: hexEncodedPublicKey).done(on: DispatchQueue.main) { [weak self] deviceLinks in
             guard let self = self else { return }
             defer { self.setUserInteractionEnabled(true) }
             guard deviceLinks.count < 2 else {

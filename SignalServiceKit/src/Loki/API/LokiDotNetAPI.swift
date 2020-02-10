@@ -1,6 +1,6 @@
 import PromiseKit
 
-/// Base class for `LokiStorageAPI` and `LokiPublicChatAPI`.
+/// Base class for `LokiFileServerAPI` and `LokiPublicChatAPI`.
 public class LokiDotNetAPI : NSObject {
 
     // MARK: Convenience
@@ -39,7 +39,7 @@ public class LokiDotNetAPI : NSObject {
 
     // MARK: Attachments (Public API)
     public static func uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
-        let isEncryptionRequired = (server == LokiStorageAPI.server)
+        let isEncryptionRequired = (server == LokiFileServerAPI.server)
         return Promise<Void>() { seal in
             func proceed(with token: String) {
                 // Get the attachment
@@ -88,7 +88,7 @@ public class LokiDotNetAPI : NSObject {
                     attachment.save()
                     seal.fulfill(())
                 }
-                let isProxyingRequired = (server == LokiStorageAPI.server) // Don't proxy open group requests for now
+                let isProxyingRequired = (server == LokiFileServerAPI.server) // Don't proxy open group requests for now
                 if isProxyingRequired {
                     let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done { responseObject in
                         parseResponse(responseObject)
@@ -119,7 +119,7 @@ public class LokiDotNetAPI : NSObject {
                     task.resume()
                 }
             }
-            if server == LokiStorageAPI.server {
+            if server == LokiFileServerAPI.server {
                 proceed(with: "loki") // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
             } else {
                 getAuthToken(for: server).done(on: DispatchQueue.global()) { token in

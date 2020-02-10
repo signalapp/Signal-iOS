@@ -777,7 +777,7 @@ static NSTimeInterval launchStartedAt;
             [self startLongPollerIfNeeded];
 
             // Loki: Get device links
-            [LKStorageAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber];
+            [LKFileServerAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber];
             
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");
@@ -1448,7 +1448,7 @@ static NSTimeInterval launchStartedAt;
         [self startLongPollerIfNeeded];
 
         // Loki: Get device links
-        [LKStorageAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber];
+        [LKFileServerAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber];
     }
 }
 

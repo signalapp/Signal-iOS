@@ -1,7 +1,7 @@
 import PromiseKit
 
-@objc(LKStorageAPI)
-public final class LokiStorageAPI : LokiDotNetAPI {
+@objc(LKFileServerAPI)
+public final class LokiFileServerAPI : LokiDotNetAPI {
 
     // MARK: Settings
     #if DEBUG
