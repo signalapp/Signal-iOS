@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
 
-class CDNDownloadOperation: OWSOperation {
+open class CDNDownloadOperation: OWSOperation {
 
     // MARK: - Dependencies
 
@@ -37,7 +37,7 @@ class CDNDownloadOperation: OWSOperation {
 
     let kMaxStickerDownloadSize: UInt = 100 * 1000
 
-    func tryToDownload(urlPath: String, maxDownloadSize: UInt) throws -> Promise<Data> {
+    public func tryToDownload(urlPath: String, maxDownloadSize: UInt?) throws -> Promise<Data> {
         guard !isCorrupt(urlPath: urlPath) else {
             Logger.warn("Skipping download of corrupt data.")
             throw StickerError.corruptData
@@ -95,9 +95,11 @@ class CDNDownloadOperation: OWSOperation {
                                                     //
                                                     // If the current downloaded bytes or the expected total byes
                                                     // exceed the max download size, abort the download.
-                                                    guard progress.totalUnitCount <= maxDownloadSize,
-                                                        progress.completedUnitCount <= maxDownloadSize else {
-                                                        return abortDownload("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
+                                                    if let maxDownloadSize = maxDownloadSize {
+                                                        guard progress.totalUnitCount <= maxDownloadSize,
+                                                            progress.completedUnitCount <= maxDownloadSize else {
+                                                                return abortDownload("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
+                                                        }
                                                     }
 
                                                     // We only need to check the content length header once.
@@ -123,8 +125,10 @@ class CDNDownloadOperation: OWSOperation {
                                                     guard let contentLength = Int64(contentLengthString) else {
                                                         return abortDownload("Invalid content length.")
                                                     }
-                                                    guard contentLength < maxDownloadSize else {
-                                                        return abortDownload("Content length exceeds max download size.")
+                                                    if let maxDownloadSize = maxDownloadSize {
+                                                        guard contentLength < maxDownloadSize else {
+                                                            return abortDownload("Content length exceeds max download size.")
+                                                        }
                                                     }
 
                                                     // This response has a valid content length that is less
@@ -152,9 +156,11 @@ class CDNDownloadOperation: OWSOperation {
                                                         owsFailDebug("Couldn't determine file size.")
                                                         return resolver.reject(StickerError.assertionFailure)
                                                     }
-                                                    guard fileSize.uint64Value <= maxDownloadSize else {
-                                                        owsFailDebug("Download length exceeds max size.")
-                                                        return resolver.reject(StickerError.assertionFailure)
+                                                    if let maxDownloadSize = maxDownloadSize {
+                                                        guard fileSize.uint64Value <= maxDownloadSize else {
+                                                            owsFailDebug("Download length exceeds max size.")
+                                                            return resolver.reject(StickerError.assertionFailure)
+                                                        }
                                                     }
 
                                                     do {

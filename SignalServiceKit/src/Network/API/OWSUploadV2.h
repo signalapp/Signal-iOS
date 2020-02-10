@@ -15,20 +15,32 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
 @interface OWSUploadForm : NSObject
 
-// These properties will bet set for all uploads.
-@property (nonatomic) NSString *formAcl;
-@property (nonatomic) NSString *formKey;
-@property (nonatomic) NSString *formPolicy;
-@property (nonatomic) NSString *formAlgorithm;
-@property (nonatomic) NSString *formCredential;
-@property (nonatomic) NSString *formDate;
-@property (nonatomic) NSString *formSignature;
+// These properties will be set for all uploads.
+@property (nonatomic, readonly) NSString *acl;
+@property (nonatomic, readonly) NSString *key;
+@property (nonatomic, readonly) NSString *policy;
+@property (nonatomic, readonly) NSString *algorithm;
+@property (nonatomic, readonly) NSString *credential;
+@property (nonatomic, readonly) NSString *date;
+@property (nonatomic, readonly) NSString *signature;
 
-// These properties will bet set for all attachment uploads.
-@property (nonatomic, nullable) NSNumber *attachmentId;
-@property (nonatomic, nullable) NSString *attachmentIdString;
+// These properties will be set for all attachment uploads.
+@property (nonatomic, readonly, nullable) NSNumber *attachmentId;
+@property (nonatomic, readonly, nullable) NSString *attachmentIdString;
 
-+ (nullable OWSUploadForm *)parse:(nullable NSDictionary *)formResponseObject;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithAcl:(NSString *)acl
+                        key:(NSString *)key
+                     policy:(NSString *)policy
+                  algorithm:(NSString *)algorithm
+                 credential:(NSString *)credential
+                       date:(NSString *)date
+                  signature:(NSString *)signature
+               attachmentId:(nullable NSNumber *)attachmentId
+         attachmentIdString:(nullable NSString *)attachmentIdString NS_DESIGNATED_INITIALIZER;
+
++ (nullable OWSUploadForm *)parseDictionary:(nullable NSDictionary *)formResponseObject;
 
 - (void)appendToForm:(id<AFMultipartFormData>)formData;
 

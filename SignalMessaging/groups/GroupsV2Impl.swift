@@ -37,8 +37,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return OWSProfileManager.shared()
     }
 
-    private var groupV2Updates: GroupV2Updates {
-        return SSKEnvironment.shared.groupV2Updates
+    private var groupV2Updates: GroupV2UpdatesSwift {
+        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
     }
 
     // MARK: -
@@ -106,7 +106,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
         }
 
-        return self.performServiceRequest(requestBuilder: requestBuilder).asVoid()
+        return performServiceRequest(requestBuilder: requestBuilder).asVoid()
     }
 
     // MARK: - Update Group
@@ -169,7 +169,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         return firstly {
             return self.performServiceRequest(requestBuilder: requestBuilder)
-        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> UpdatedV2Group in
+        }.then(on: DispatchQueue.global()) { (response: ServiceResponse) -> Promise<UpdatedV2Group> in
 
             guard let changeActionsProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -177,13 +177,21 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeActionsProtoData,
                                                                                          ignoreSignature: true)
 
+            // Collect avatar state from our change set so that we can
+            // avoid downloading any avatars we just uploaded while
+            // applying the change set locally.
+            let downloadedAvatars = GroupV2DownloadedAvatars.from(changeSet: changeSet)
+
             // GroupsV2 TODO: Instead of loading the group model from the database,
             // we should use exactly the same group model that was used to construct
             // the update request - which should reflect pre-update service state.
-            let updatedGroupThread = try self.databaseStorage.write { transaction throws -> TSGroupThread in
-                return try self.groupV2Updates.updateGroupWithChangeActions(groupId: groupId,
-                                                                            changeActionsProto: changeActionsProto,
-                                                                            transaction: transaction)
+            return firstly {
+                return self.updateGroupWithChangeActions(groupId: groupId,
+                                                         changeActionsProto: changeActionsProto,
+                                                         justUploadedAvatars: downloadedAvatars,
+                                                         groupV2Params: groupV2Params)
+            }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> UpdatedV2Group in
+                return UpdatedV2Group(groupThread: groupThread, changeActionsProtoData: changeActionsProtoData)
             }
 
             // GroupsV2 TODO: Propagate failure in a consumable way.
@@ -205,8 +213,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
              {encoded_current_group_record}
              
              */
-
-            return UpdatedV2Group(groupThread: updatedGroupThread, changeActionsProtoData: changeActionsProtoData)
         }.then(on: DispatchQueue.global()) { (updatedV2Group: UpdatedV2Group) -> Promise<TSGroupThread> in
 
             GroupManager.updateProfileWhitelist(withGroupThread: updatedV2Group.groupThread)
@@ -223,6 +229,80 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
+    public func updateGroupWithChangeActions(groupId: Data,
+                                             changeActionsProto: GroupsProtoGroupChangeActions,
+                                             groupSecretParamsData: Data) throws -> Promise<TSGroupThread> {
+        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        return updateGroupWithChangeActions(groupId: groupId,
+                                            changeActionsProto: changeActionsProto,
+                                            justUploadedAvatars: nil,
+                                            groupV2Params: groupV2Params)
+    }
+
+    public func updateGroupWithChangeActions(groupId: Data,
+                                             changeActionsProto: GroupsProtoGroupChangeActions,
+                                             groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
+        return updateGroupWithChangeActions(groupId: groupId,
+                                            changeActionsProto: changeActionsProto,
+                                            justUploadedAvatars: nil,
+                                            groupV2Params: groupV2Params)
+    }
+
+    private func updateGroupWithChangeActions(groupId: Data,
+                                             changeActionsProto: GroupsProtoGroupChangeActions,
+                                             justUploadedAvatars: GroupV2DownloadedAvatars?,
+                                             groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
+
+        return firstly {
+            self.fetchAllAvatarData(changeActionsProto: changeActionsProto,
+                                    justUploadedAvatars: justUploadedAvatars,
+                                    groupV2Params: groupV2Params)
+        }.map(on: DispatchQueue.global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> TSGroupThread in
+            return try self.databaseStorage.write { transaction in
+                return try self.groupV2Updates.updateGroupWithChangeActions(groupId: groupId,
+                                                                            changeActionsProto: changeActionsProto,
+                                                                            downloadedAvatars: downloadedAvatars,
+                                                                            transaction: transaction)
+            }
+        }
+    }
+
+    // MARK: - Upload Avatar
+
+    public func uploadGroupAvatar(avatarData: Data,
+                                  groupSecretParamsData: Data) -> Promise<String> {
+        return firstly { () -> Promise<String> in
+            let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+            return self.uploadGroupAvatar(avatarData: avatarData, groupV2Params: groupV2Params)
+        }
+    }
+
+    private func uploadGroupAvatar(avatarData: Data,
+                                   groupV2Params: GroupV2Params) -> Promise<String> {
+        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
+            return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
+                return try StorageService.buildGroupAvatarUploadFormRequest(groupV2Params: groupV2Params,
+                                                                            sessionManager: sessionManager,
+                                                                            authCredential: authCredential)
+            }
+        }
+
+        return firstly {
+            return self.performServiceRequest(requestBuilder: requestBuilder)
+        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoAvatarUploadAttributes in
+
+            guard let protoData = response.responseObject as? Data else {
+                throw OWSAssertionError("Invalid responseObject.")
+            }
+            return try GroupsProtoAvatarUploadAttributes.parseData(protoData)
+        }.map(on: DispatchQueue.global()) { (avatarUploadAttributes: GroupsProtoAvatarUploadAttributes) throws -> OWSUploadForm in
+            try OWSUploadForm.parse(proto: avatarUploadAttributes)
+        }.then(on: DispatchQueue.global()) { (uploadForm: OWSUploadForm) -> Promise<String> in
+            let encryptedData = try groupV2Params.encryptBlob(avatarData)
+            return OWSUploadV2.upload(data: encryptedData, uploadForm: uploadForm, uploadUrlPath: "")
+        }
+    }
+
     // MARK: - Fetch Current Group State
 
     public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot> {
@@ -233,10 +313,24 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise(error: OWSAssertionError("Missing groupSecretParamsData."))
         }
 
-        return self.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
+        // Collect the avatar state to avoid an unnecessary download in the
+        // case where we've just created this group but not yet inserted it
+        // into the database.
+        var justUploadedAvatars: GroupV2DownloadedAvatars?
+        if let groupModel = groupModel as? TSGroupModelV2 {
+            justUploadedAvatars = GroupV2DownloadedAvatars.from(groupModel: groupModel)
+        }
+        return self.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData,
+                                                justUploadedAvatars: justUploadedAvatars)
     }
 
     public func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot> {
+        return fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData,
+                                                 justUploadedAvatars: nil)
+    }
+
+    private func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data,
+                                             justUploadedAvatars: GroupV2DownloadedAvatars?) -> Promise<GroupV2Snapshot> {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise<GroupV2Snapshot>(error: OWSAssertionError("Missing localUuid."))
         }
@@ -244,12 +338,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
         }.then(on: DispatchQueue.global()) { (groupV2Params: GroupV2Params) -> Promise<GroupV2Snapshot> in
             return self.fetchCurrentGroupV2Snapshot(groupV2Params: groupV2Params,
-                                                    localUuid: localUuid)
+                                                    localUuid: localUuid,
+                                                    justUploadedAvatars: justUploadedAvatars)
         }
     }
 
     private func fetchCurrentGroupV2Snapshot(groupV2Params: GroupV2Params,
-                                             localUuid: UUID) -> Promise<GroupV2Snapshot> {
+                                             localUuid: UUID,
+                                             justUploadedAvatars: GroupV2DownloadedAvatars?) -> Promise<GroupV2Snapshot> {
         let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
             return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
                 return try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: groupV2Params,
@@ -260,12 +356,19 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         return firstly { () -> Promise<ServiceResponse> in
             return self.performServiceRequest(requestBuilder: requestBuilder)
-        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupV2Snapshot in
+        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoGroup in
             guard let groupProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
-            let groupProto = try GroupsProtoGroup.parseData(groupProtoData)
-            return try GroupsV2Protos.parse(groupProto: groupProto, groupV2Params: groupV2Params)
+            return try GroupsProtoGroup.parseData(groupProtoData)
+        }.then(on: DispatchQueue.global()) { (groupProto: GroupsProtoGroup) -> Promise<(GroupsProtoGroup, GroupV2DownloadedAvatars)> in
+            return firstly {
+                self.fetchAllAvatarData(groupProto: groupProto, justUploadedAvatars: justUploadedAvatars, groupV2Params: groupV2Params)
+            }.map(on: DispatchQueue.global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> (GroupsProtoGroup, GroupV2DownloadedAvatars) in
+                return (groupProto, downloadedAvatars)
+            }
+        }.map(on: DispatchQueue.global()) { (groupProto: GroupsProtoGroup, downloadedAvatars: GroupV2DownloadedAvatars) -> GroupV2Snapshot in
+            return try GroupsV2Protos.parse(groupProto: groupProto, downloadedAvatars: downloadedAvatars, groupV2Params: groupV2Params)
         }
     }
 
@@ -319,12 +422,113 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         return firstly { () -> Promise<ServiceResponse> in
             return self.performServiceRequest(requestBuilder: requestBuilder)
-        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> [GroupV2Change] in
+        }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoGroupChanges in
             guard let groupChangesProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
-            let groupChangesProto = try GroupsProtoGroupChanges.parseData(groupChangesProtoData)
-            return try GroupsV2Protos.parse(groupChangesProto: groupChangesProto, groupV2Params: groupV2Params)
+            return try GroupsProtoGroupChanges.parseData(groupChangesProtoData)
+        }.then(on: DispatchQueue.global()) { (groupChangesProto: GroupsProtoGroupChanges) -> Promise<[GroupV2Change]> in
+            return firstly {
+                self.fetchAllAvatarData(groupChangesProto: groupChangesProto, groupV2Params: groupV2Params)
+            }.map(on: DispatchQueue.global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> [GroupV2Change] in
+                try GroupsV2Protos.parse(groupChangesProto: groupChangesProto,
+                                         downloadedAvatars: downloadedAvatars,
+                                         groupV2Params: groupV2Params)
+            }
+        }
+    }
+
+    // MARK: - Avatar Downloads
+
+    // Before we can apply snapshots/changes from the service, we
+    // need to download all avatars they use.  We can skip downloads
+    // in a couple of cases:
+    //
+    // * We just created the group.
+    // * We just updated the group and we're applying those changes.
+    private func fetchAllAvatarData(groupProto: GroupsProtoGroup? = nil,
+                                    groupChangesProto: GroupsProtoGroupChanges? = nil,
+                                    changeActionsProto: GroupsProtoGroupChangeActions? = nil,
+                                    justUploadedAvatars: GroupV2DownloadedAvatars? = nil,
+                                    groupV2Params: GroupV2Params) -> Promise<GroupV2DownloadedAvatars> {
+
+        var downloadedAvatars = GroupV2DownloadedAvatars()
+
+        // Creating or updating a group is a multi-step process
+        // that can involve uploading an avatar, updating the
+        // group on the service, then updating the local database.
+        // We can skip downloading an avatar that we just uploaded
+        // using justUploadedAvatars.
+        if let justUploadedAvatars = justUploadedAvatars {
+            downloadedAvatars.merge(justUploadedAvatars)
+        }
+
+        return DispatchQueue.global().async(.promise) { () throws -> Void in
+            // First step - try to skip downloading the current group avatar.
+            let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
+            guard let groupThread = (self.databaseStorage.read { transaction in
+                return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+            }) else {
+                // Thread doesn't exist in database yet.
+                return ()
+            }
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid groupModel.")
+            }
+            // Try to add avatar from group model, if any.
+            downloadedAvatars.merge(GroupV2DownloadedAvatars.from(groupModel: groupModel))
+            return ()
+        }.then(on: DispatchQueue.global()) { () -> Promise<[String]> in
+            GroupsV2Protos.collectAvatarUrlPaths(groupProto: groupProto,
+                                                 groupChangesProto: groupChangesProto,
+                                                 changeActionsProto: changeActionsProto,
+                                                 groupV2Params: groupV2Params)
+        }.then(on: DispatchQueue.global()) { (protoAvatarUrlPaths: [String]) -> Promise<GroupV2DownloadedAvatars> in
+
+            let undownloadedAvatarUrlPaths = Set(protoAvatarUrlPaths).subtracting(downloadedAvatars.avatarUrlPaths)
+            guard !undownloadedAvatarUrlPaths.isEmpty else {
+                return Promise.value(downloadedAvatars)
+            }
+
+            // We need to "populate" any group changes that have a
+            // avatar with the avatar data.
+            var promises = [Promise<(String, Data)>]()
+            for avatarUrlPath in undownloadedAvatarUrlPaths {
+                let promise = firstly {
+                    self.fetchAvatarData(avatarUrlPath: avatarUrlPath,
+                                         groupV2Params: groupV2Params)
+                }.map(on: DispatchQueue.global()) { (avatarData: Data) -> (String, Data) in
+                    return (avatarUrlPath, avatarData)
+                }
+                promises.append(promise)
+            }
+            return firstly {
+                when(fulfilled: promises)
+            }.map(on: DispatchQueue.global()) { (avatars: [(String, Data)]) -> GroupV2DownloadedAvatars in
+                for (avatarUrlPath, avatarData) in avatars {
+                    downloadedAvatars.set(avatarData: avatarData, avatarUrlPath: avatarUrlPath)
+                }
+                return downloadedAvatars
+            }
+        }
+    }
+
+    let avatarDownloadQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "avatarDownloadQueue"
+        operationQueue.maxConcurrentOperationCount = 3
+        return operationQueue
+    }()
+
+    private func fetchAvatarData(avatarUrlPath: String,
+                                 groupV2Params: GroupV2Params) -> Promise<Data> {
+        let operation = GroupsV2AvatarDownloadOperation(urlPath: avatarUrlPath)
+        let promise = operation.promise
+        avatarDownloadQueue.addOperation(operation)
+        return firstly {
+            return promise
+        }.map(on: DispatchQueue.global()) { (avatarData: Data) -> Data in
+            return try groupV2Params.decryptBlob(avatarData)
         }
     }
 
@@ -488,6 +692,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     }
 
                     owsFailDebug("Response error: \(error)")
+                    #if TESTABLE_BUILD
+                    TSNetworkManager.logCurl(for: blockTask)
+                    #endif
                     return resolver.reject(error)
                 }
 
@@ -496,6 +703,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     Logger.info("Request succeeded: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
                 case 401:
                     Logger.warn("Request not authorized.")
+                    #if TESTABLE_BUILD
+                    TSNetworkManager.logCurl(for: blockTask)
+                    #endif
                     return resolver.reject(GroupsV2Error.unauthorized)
                 default:
                     #if TESTABLE_BUILD

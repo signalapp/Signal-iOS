@@ -32,11 +32,13 @@ public class TSGroupModelV2: TSGroupModel {
     @objc
     var membership: GroupMembership = GroupMembership.empty
     @objc
-    var access: GroupAccess = GroupAccess.defaultForV2
+    var access: GroupAccess = .defaultV2Access
     @objc
     var secretParamsData: Data = Data()
     @objc
     var revision: UInt32 = 0
+    @objc
+    var avatarUrlPath: String?
 
     @objc
     public required init(groupId: Data,
@@ -45,13 +47,15 @@ public class TSGroupModelV2: TSGroupModel {
                          groupMembership: GroupMembership,
                          groupAccess: GroupAccess,
                          revision: UInt32,
-                         secretParamsData: Data) {
+                         secretParamsData: Data,
+                         avatarUrlPath: String?) {
         assert(secretParamsData.count > 0)
 
         self.membership = groupMembership
         self.secretParamsData = secretParamsData
         self.access = groupAccess
         self.revision = revision
+        self.avatarUrlPath = avatarUrlPath
 
         super.init(groupId: groupId,
                    name: name,
@@ -104,6 +108,11 @@ public class TSGroupModelV2: TSGroupModel {
     }
 
     @objc
+    public var groupAvatarUrlPath: String? {
+        return avatarUrlPath
+    }
+
+    @objc
     public override func isEqual(to model: TSGroupModel) -> Bool {
         guard super.isEqual(to: model) else {
             return false
@@ -123,6 +132,9 @@ public class TSGroupModelV2: TSGroupModel {
         guard other.revision == revision else {
             return false
         }
+        guard other.avatarUrlPath == avatarUrlPath else {
+            return false
+        }
         return true
     }
 
@@ -132,11 +144,12 @@ public class TSGroupModelV2: TSGroupModel {
         result += "groupId: \(groupId.hexadecimalString),\n"
         result += "groupsVersion: \(groupsVersion),\n"
         result += "groupName: \(String(describing: groupName)),\n"
-        result += "groupAvatarData: \(String(describing: groupAvatarData?.hexadecimalString)),\n"
+        result += "groupAvatarData: \(String(describing: groupAvatarData?.hexadecimalString.prefix(256))),\n"
         result += "membership: \(groupMembership.debugDescription),\n"
         result += "groupAccess: \(groupAccess.debugDescription),\n"
         result += "groupSecretParamsData: \(secretParamsData.hexadecimalString),\n"
         result += "revision: \(revision),\n"
+        result += "avatarUrlPath: \(String(describing: avatarUrlPath)),\n"
         result += "]"
         return result
     }

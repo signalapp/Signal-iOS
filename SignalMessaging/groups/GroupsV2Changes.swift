@@ -49,6 +49,7 @@ public class GroupsV2Changes {
     // exactly 1 higher.
     class func applyChangesToGroupModel(groupThread: TSGroupThread,
                                         changeActionsProto: GroupsProtoGroupChangeActions,
+                                        downloadedAvatars: GroupV2DownloadedAvatars,
                                         transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
         let oldGroupModel = groupThread.groupModel
         let groupsVersion = oldGroupModel.groupsVersion
@@ -75,6 +76,12 @@ public class GroupsV2Changes {
         }
 
         var newGroupName: String? = oldGroupModel.groupName
+        var newAvatarData: Data? = oldGroupModel.groupAvatarData
+        var newAvatarUrlPath: String?
+        if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
+            newAvatarUrlPath = oldGroupModelV2.groupAvatarUrlPath
+        }
+
         let oldGroupMembership = oldGroupModel.groupMembership
         var groupMembershipBuilder = oldGroupMembership.asBuilder
 
@@ -241,14 +248,21 @@ public class GroupsV2Changes {
             if let titleData = action.title {
                 newGroupName = try groupV2Params.decryptString(titleData)
             } else {
-                // Other client cleared the group title.
+                // Change clears the group title.
                 newGroupName = nil
             }
         }
 
         if let action = changeActionsProto.modifyAvatar {
-            // GroupsV2 TODO: Handle avatars.
-            // GroupsProtoGroupChangeActionsModifyAvatarAction
+            if let avatarUrl = action.avatar,
+                !avatarUrl.isEmpty {
+                newAvatarData = try downloadedAvatars.avatarData(for: avatarUrl)
+                newAvatarUrlPath = avatarUrl
+            } else {
+                // Change clears the group avatar.
+                newAvatarData = nil
+                newAvatarUrlPath = nil
+            }
         }
 
         var newDisappearingMessageToken: DisappearingMessageToken?
@@ -280,8 +294,6 @@ public class GroupsV2Changes {
 
         let newGroupMembership = groupMembershipBuilder.build()
         let newGroupAccess = GroupAccess(members: newMembersAccess, attributes: newAttributesAccess)
-        // GroupsV2 TODO: Avatar.
-        let newAvatarData: Data? = oldGroupModel.groupAvatarData
 
         var builder = oldGroupModel.asBuilder
         builder.name = newGroupName

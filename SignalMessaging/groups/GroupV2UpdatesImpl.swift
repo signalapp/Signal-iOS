@@ -339,6 +339,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     public func updateGroupWithChangeActions(groupId: Data,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
+                                             downloadedAvatars: GroupV2DownloadedAvatars,
                                              transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
         // GroupsV2 TODO: When applying snapshots and change actions to the local
         // database, we should check revision in the local database.
@@ -355,6 +356,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
         let changedGroupModel = try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
                                                                              changeActionsProto: changeActionsProto,
+                                                                             downloadedAvatars: downloadedAvatars,
                                                                              transaction: transaction)
         guard changedGroupModel.newGroupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")

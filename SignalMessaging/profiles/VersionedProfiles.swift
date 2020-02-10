@@ -41,10 +41,6 @@ public class VersionedProfiles: NSObject {
         return SSKEnvironment.shared.networkManager
     }
 
-    private class var uploadHTTPManager: AFHTTPSessionManager {
-        return OWSSignalService.sharedInstance().cdnSessionManager
-    }
-
     private class var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
@@ -134,48 +130,19 @@ public class VersionedProfiles: NSObject {
 
     private class func parseFormAndUpload(formResponseObject: Any?,
                                           profileAvatarData: Data) -> Promise<VersionedProfileUpdate> {
-        let urlPath: String = ""
-        let (promise, resolver) = Promise<VersionedProfileUpdate>.pending()
-        DispatchQueue.global().async {
+        return firstly { () throws -> Promise<OWSUploadForm> in
             guard let response = formResponseObject as? [AnyHashable: Any] else {
-                resolver.reject(OWSAssertionError("Unexpected response."))
-                return
+                throw OWSAssertionError("Unexpected response.")
             }
-            guard let form = OWSUploadForm.parse(response) else {
-                resolver.reject(OWSAssertionError("Could not parse response."))
-                return
+            guard let form = OWSUploadForm.parseDictionary(response) else {
+                throw OWSAssertionError("Could not parse response.")
             }
-
-            // TODO: We will probably (continue to) use this within profile manager.
-            let avatarUrlPath = form.formKey
-
-            self.uploadHTTPManager.post(urlPath,
-                                        parameters: nil,
-                                        constructingBodyWith: { (formData: AFMultipartFormData) -> Void in
-
-                                            // We have to build up the form manually vs. simply passing in a paramaters dict
-                                            // because AWS is sensitive to the order of the form params (at least the "key"
-                                            // field must occur early on).
-                                            //
-                                            // For consistency, all fields are ordered here in a known working order.
-                                            form.append(toForm: formData)
-
-                                            AppendMultipartFormPath(formData, "Content-Type", OWSMimeTypeApplicationOctetStream)
-
-                                            formData.appendPart(withForm: profileAvatarData, name: "file")
-            },
-                                        progress: { progress in
-                                            Logger.verbose("progress: \(progress.fractionCompleted)")
-            },
-                                        success: { (_, _) in
-                                            Logger.verbose("Success.")
-                                            resolver.fulfill(VersionedProfileUpdate(avatarUrlPath: avatarUrlPath))
-            }, failure: { (_, error) in
-                owsFailDebug("Error: \(error)")
-                resolver.reject(error)
-            })
+            return Promise.value(form)
+        }.then(on: DispatchQueue.global()) { (uploadForm: OWSUploadForm) -> Promise<String> in
+            OWSUploadV2.upload(data: profileAvatarData, uploadForm: uploadForm, uploadUrlPath: "")
+        }.map(on: DispatchQueue.global()) { (avatarUrlPath: String) -> VersionedProfileUpdate in
+            return VersionedProfileUpdate(avatarUrlPath: avatarUrlPath)
         }
-        return promise
     }
 
     // MARK: - Get

@@ -60,6 +60,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     // When clearing the title, this will be the empty string.
     private var title: String?
 
+    public var newAvatarData: Data?
+    public var newAvatarUrlPath: String?
+    private var shouldUpdateAvatar = false
+
     private var membersToAdd = [UUID: GroupsProtoMemberRole]()
     private var membersToRemove = [UUID]()
     private var membersToChangeRole = [UUID: GroupsProtoMemberRole]()
@@ -107,15 +111,34 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                                oldDMConfiguration: OWSDisappearingMessagesConfiguration,
                                newDMConfiguration: OWSDisappearingMessagesConfiguration,
                                transaction: SDSAnyReadTransaction) throws {
-
-        if oldGroupModel.groupName != newGroupModel.groupName {
-            setTitle(newGroupModel.groupName)
+        guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
+            throw OWSAssertionError("Invalid oldGroupModel.")
+        }
+        guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
+            throw OWSAssertionError("Invalid newGroupModel.")
         }
         guard groupId == oldGroupModel.groupId else {
             throw OWSAssertionError("Mismatched groupId.")
         }
         guard groupId == newGroupModel.groupId else {
             throw OWSAssertionError("Mismatched groupId.")
+        }
+
+        // GroupsV2 TODO: Will production implementation of encryptString() pad?
+        let newTitle = newGroupModel.groupName?.stripped ?? " "
+        if oldGroupModel.groupName != newTitle {
+            setTitle(newTitle)
+        }
+
+        if oldGroupModel.groupAvatarData != newGroupModel.groupAvatarData {
+            let hasAvatarUrlPath = newGroupModel.groupAvatarUrlPath != nil
+            let hasAvatarData = newGroupModel.groupAvatarData != nil
+            guard hasAvatarUrlPath == hasAvatarData else {
+                throw OWSAssertionError("hasAvatarUrlPath: \(hasAvatarData) != hasAvatarData.")
+            }
+
+            setAvatar(avatarData: newGroupModel.groupAvatarData,
+                      avatarUrlPath: newGroupModel.groupAvatarUrlPath)
         }
 
         let oldGroupMembership = oldGroupModel.groupMembership
@@ -179,8 +202,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         if oldDisappearingMessageToken != newDisappearingMessageToken {
             setNewDisappearingMessageToken(newDisappearingMessageToken)
         }
-
-        // GroupsV2 TODO: Calculate other changed state, e.g. avatar.
     }
 
     @objc
@@ -188,6 +209,17 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         assert(self.title == nil)
         // Non-nil if the title changed.
         self.title = value ?? ""
+    }
+
+    @objc
+    public func setAvatar(avatarData: Data?, avatarUrlPath: String?) {
+        assert(self.newAvatarData == nil)
+        assert(self.newAvatarUrlPath == nil)
+        assert(!self.shouldUpdateAvatar)
+
+        self.newAvatarData = avatarData
+        self.newAvatarUrlPath = avatarUrlPath
+        self.shouldUpdateAvatar = true
     }
 
     @objc
@@ -315,6 +347,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private func buildGroupChangeProto(currentGroupModel: TSGroupModel,
                                        currentDisappearingMessageToken: DisappearingMessageToken,
                                        profileKeyCredentialMap: ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions {
+        guard let currentGroupModel = currentGroupModel as? TSGroupModelV2 else {
+            throw OWSAssertionError("Invalid currentGroupModel.")
+        }
         let groupV2Params = try GroupV2Params(groupModel: currentGroupModel)
 
         let actionsBuilder = GroupsProtoGroupChangeActions.builder()
@@ -336,6 +371,18 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             let actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
             actionBuilder.setTitle(encryptedData)
             actionsBuilder.setModifyTitle(try actionBuilder.build())
+            didChange = true
+        }
+
+        if shouldUpdateAvatar,
+            newAvatarUrlPath != currentGroupModel.groupAvatarUrlPath {
+            let actionBuilder = GroupsProtoGroupChangeActionsModifyAvatarAction.builder()
+            if let avatarUrlPath = newAvatarUrlPath {
+                actionBuilder.setAvatar(avatarUrlPath)
+            } else {
+                // We're clearing the avatar.
+            }
+            actionsBuilder.setModifyAvatar(try actionBuilder.build())
             didChange = true
         }
 
@@ -498,17 +545,4 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         return try actionsBuilder.build()
     }
-
-    // GroupsV2 TODO: Ensure that we are correctly building all of the following actions:
-    //
-    // NOTE: This should be used after you rotate your profile key.
-    //       This presumably needs to be done in a durable way.
-    //    message ModifyMemberProfileKeyAction {
-    //    bytes presentation = 1;
-    //    }
-    //
-    // NOTE: This won't be easy.
-    //    message ModifyAvatarAction {
-    //    string avatar = 1;
-    //    }
 }

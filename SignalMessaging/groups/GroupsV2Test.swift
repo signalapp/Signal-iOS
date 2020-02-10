@@ -40,6 +40,11 @@ public class GroupsV2Test: NSObject {
         let members = [SignalServiceAddress]()
         let title0 = "hello"
         let title1 = "goodbye"
+        let avatar1Image = UIImage(color: .red, size: CGSize(width: 1, height: 1))
+        guard let avatar1Data = avatar1Image.pngData() else {
+            owsFailDebug("Invalid avatar1Data.")
+            return
+        }
         guard let localUuid = tsAccountManager.localUuid else {
             owsFailDebug("Missing localUuid.")
             return
@@ -64,19 +69,17 @@ public class GroupsV2Test: NSObject {
             GroupManager.localCreateNewGroup(members: members,
                                         name: title0,
                                         shouldSendMessage: true)
-        }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<(Data, GroupV2Snapshot)> in
-                let groupModel = groupThread.groupModel
-                guard groupModel.groupsVersion == .V2 else {
-                    throw OWSAssertionError("Not a V2 group.")
-                }
+        }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<GroupV2Snapshot> in
+            let groupModel = groupThread.groupModel
+            guard groupModel.groupsVersion == .V2 else {
+                throw OWSAssertionError("Not a V2 group.")
+            }
             return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
-                    .map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
-                        return (groupThread.groupModel.groupId, groupV2Snapshot)
-                }
-        }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
+        }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> Data in
             let groupModel = try self.databaseStorage.read { transaction in
                 return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
             }
+            let groupId = groupModel.groupId
             guard groupModel.groupV2Revision == 0 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
             }
@@ -86,6 +89,15 @@ public class GroupsV2Test: NSObject {
             }
             guard groupV2Snapshot.title == title0 else {
                 throw OWSAssertionError("Unexpected group title: \(groupV2Snapshot.title).")
+            }
+            guard groupV2Snapshot.avatarData == nil else {
+                throw OWSAssertionError("Unexpected group avatarData: \(groupV2Snapshot.avatarData?.hexadecimalString).")
+            }
+            guard groupModel.groupName == title0 else {
+                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+            }
+            guard groupModel.groupAvatarData == nil else {
+                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
             }
 
             let groupMembership = groupModel.groupMembership
@@ -106,7 +118,7 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected accessControlForAttributes: \(groupV2Snapshot.accessControlForAttributes).")
             }
             return groupId
-        }.then(on: .global()) { (groupId: Data) throws -> Promise<(Data, GroupV2Snapshot)> in
+        }.then(on: .global()) { (groupId: Data) throws -> Promise<TSGroupThread> in
             let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
             let groupModel = groupThread.groupModel
             guard groupModel.groupMembership.administrators == localAddressSet else {
@@ -117,6 +129,12 @@ public class GroupsV2Test: NSObject {
             }
             guard groupModel.groupV2Revision == 0 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
+            }
+            guard groupModel.groupName == title0 else {
+                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+            }
+            guard groupModel.groupAvatarData == nil else {
+                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
             }
 
             var groupMembershipBuilder = groupModel.groupMembership.asBuilder
@@ -131,22 +149,19 @@ public class GroupsV2Test: NSObject {
 
             return GroupManager.localUpdateExistingGroup(groupId: groupId,
                                                          name: title1,
-                                                         avatarData: nil,
+                                                         avatarData: avatar1Data,
                                                          groupMembership: groupMembership,
                                                          groupAccess: groupAccess,
                                                          groupsVersion: groupModel.groupsVersion,
                                                          dmConfiguration: dmConfiguration,
                                                          groupUpdateSourceAddress: localAddress)
-                .then(on: .global()) { (groupThread) -> Promise<GroupV2Snapshot> in
-                    // GroupsV2 TODO: This should reflect the new group.
-                    return groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupThread.groupModel)
-            }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
-                return (groupId, groupV2Snapshot)
-            }
-        }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
+        }.then(on: .global()) { (groupThread) -> Promise<GroupV2Snapshot> in
+            return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupThread.groupModel)
+        }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> Data in
             let groupModel = try self.databaseStorage.read { transaction in
                 return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
             }
+            let groupId = groupModel.groupId
             guard groupModel.groupV2Revision == 1 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
             }
@@ -156,6 +171,15 @@ public class GroupsV2Test: NSObject {
             }
             guard groupV2Snapshot.title == title1 else {
                 throw OWSAssertionError("Unexpected group title: \(groupV2Snapshot.title).")
+            }
+            guard groupV2Snapshot.avatarData == avatar1Data else {
+                throw OWSAssertionError("Unexpected group avatarData: \(groupV2Snapshot.avatarData?.hexadecimalString).")
+            }
+            guard groupModel.groupName == title1 else {
+                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+            }
+            guard groupModel.groupAvatarData == avatar1Data else {
+                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
             }
 
             let groupMembership = groupModel.groupMembership
@@ -177,7 +201,7 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected accessControlForAttributes: \(groupV2Snapshot.accessControlForAttributes).")
             }
             return groupId
-        }.then(on: .global()) { (groupId: Data) throws -> Promise<(Data, GroupV2Snapshot)> in
+        }.then(on: .global()) { (groupId: Data) throws -> Promise<TSGroupThread> in
             let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
             let groupModel = groupThread.groupModel
             guard groupModel.groupMembership.administrators == localAddressSet else {
@@ -188,6 +212,12 @@ public class GroupsV2Test: NSObject {
             }
             guard groupModel.groupV2Revision == 1 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
+            }
+            guard groupModel.groupName == title1 else {
+                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+            }
+            guard groupModel.groupAvatarData == avatar1Data else {
+                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
             }
 
             var groupMembershipBuilder = groupModel.groupMembership.asBuilder
@@ -200,23 +230,20 @@ public class GroupsV2Test: NSObject {
             // GroupsV2 TODO: Add and remove members, change avatar, etc.
 
             return GroupManager.localUpdateExistingGroup(groupId: groupId,
-                                                         name: title1,
-                                                         avatarData: nil,
-                                                         groupMembership: groupMembership,
-                                                         groupAccess: groupAccess,
-                                                         groupsVersion: groupModel.groupsVersion,
-                                                         dmConfiguration: dmConfiguration,
-                                                         groupUpdateSourceAddress: localAddress)
-                .then(on: .global()) { (_) -> Promise<GroupV2Snapshot> in
-                    // GroupsV2 TODO: This should reflect the new group.
-                    return groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
-            }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
-                return (groupId, groupV2Snapshot)
-            }
-        }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
+                                                    name: title1,
+                                                    avatarData: nil,
+                                                    groupMembership: groupMembership,
+                                                    groupAccess: groupAccess,
+                                                    groupsVersion: groupModel.groupsVersion,
+                                                    dmConfiguration: dmConfiguration,
+                                                    groupUpdateSourceAddress: localAddress)
+        }.then(on: .global()) { (groupThread) -> Promise<GroupV2Snapshot> in
+            return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupThread.groupModel)
+        }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> Data in
             let groupModel = try self.databaseStorage.read { transaction in
                 return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
             }
+            let groupId: Data = groupModel.groupId
             guard groupModel.groupV2Revision == 2 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
             }
@@ -226,6 +253,15 @@ public class GroupsV2Test: NSObject {
             }
             guard groupV2Snapshot.title == title1 else {
                 throw OWSAssertionError("Unexpected group title: \(groupV2Snapshot.title).")
+            }
+            guard groupV2Snapshot.avatarData == nil else {
+                throw OWSAssertionError("Unexpected group avatarData: \(groupV2Snapshot.avatarData?.hexadecimalString).")
+            }
+            guard groupModel.groupName == title1 else {
+                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+            }
+            guard groupModel.groupAvatarData == nil else {
+                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
             }
 
             let groupMembership = groupModel.groupMembership
@@ -258,6 +294,12 @@ public class GroupsV2Test: NSObject {
             }
             guard groupModel.groupV2Revision == 2 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
+            }
+            guard groupModel.groupName == title1 else {
+                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+            }
+            guard groupModel.groupAvatarData == nil else {
+                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
             }
             return groupId
         }.done { (_: Data) -> Void in

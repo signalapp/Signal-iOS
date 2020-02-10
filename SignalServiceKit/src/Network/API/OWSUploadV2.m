@@ -30,7 +30,33 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
 @implementation OWSUploadForm
 
-+ (nullable OWSUploadForm *)parse:(nullable NSDictionary *)formResponseObject
+- (instancetype)initWithAcl:(NSString *)acl
+                        key:(NSString *)key
+                     policy:(NSString *)policy
+                  algorithm:(NSString *)algorithm
+                 credential:(NSString *)credential
+                       date:(NSString *)date
+                  signature:(NSString *)signature
+               attachmentId:(nullable NSNumber *)attachmentId
+         attachmentIdString:(nullable NSString *)attachmentIdString
+{
+    self = [super init];
+
+    if (self) {
+        _acl = acl;
+        _key = key;
+        _policy = policy;
+        _algorithm = algorithm;
+        _credential = credential;
+        _date = date;
+        _signature = signature;
+        _attachmentId = attachmentId;
+        _attachmentIdString = attachmentIdString;
+    }
+    return self;
+}
+
++ (nullable OWSUploadForm *)parseDictionary:(nullable NSDictionary *)formResponseObject
 {
     if (![formResponseObject isKindOfClass:[NSDictionary class]]) {
         OWSFailDebug(@"Invalid upload form.");
@@ -89,22 +115,15 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
         return nil;
     }
 
-    OWSUploadForm *form = [OWSUploadForm new];
-    
-    // Required properties.
-    form.formAcl = formAcl;
-    form.formKey = formKey;
-    form.formPolicy = formPolicy;
-    form.formAlgorithm = formAlgorithm;
-    form.formCredential = formCredential;
-    form.formDate = formDate;
-    form.formSignature = formSignature;
-
-    // Optional properties.
-    form.attachmentId = attachmentId;
-    form.attachmentIdString = attachmentIdString;
-
-    return form;
+    return [[OWSUploadForm alloc] initWithAcl:formAcl
+                                          key:formKey
+                                       policy:formPolicy
+                                    algorithm:formAlgorithm
+                                   credential:formCredential
+                                         date:formDate
+                                    signature:formSignature
+                                 attachmentId:attachmentId
+                           attachmentIdString:attachmentIdString];
 }
 
 - (void)appendToForm:(id<AFMultipartFormData>)formData
@@ -114,13 +133,13 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     // field must occur early on).
     //
     // For consistency, all fields are ordered here in a known working order.
-    AppendMultipartFormPath(formData, @"key", self.formKey);
-    AppendMultipartFormPath(formData, @"acl", self.formAcl);
-    AppendMultipartFormPath(formData, @"x-amz-algorithm", self.formAlgorithm);
-    AppendMultipartFormPath(formData, @"x-amz-credential", self.formCredential);
-    AppendMultipartFormPath(formData, @"x-amz-date", self.formDate);
-    AppendMultipartFormPath(formData, @"policy", self.formPolicy);
-    AppendMultipartFormPath(formData, @"x-amz-signature", self.formSignature);
+    AppendMultipartFormPath(formData, @"key", self.key);
+    AppendMultipartFormPath(formData, @"acl", self.acl);
+    AppendMultipartFormPath(formData, @"x-amz-algorithm", self.algorithm);
+    AppendMultipartFormPath(formData, @"x-amz-credential", self.credential);
+    AppendMultipartFormPath(formData, @"x-amz-date", self.date);
+    AppendMultipartFormPath(formData, @"policy", self.policy);
+    AppendMultipartFormPath(formData, @"x-amz-signature", self.signature);
 }
 
 @end
@@ -175,7 +194,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                     }
 
                     // TODO: Should we use a non-empty urlPath?
-                    [[strongSelf parseFormAndUpload:formResponseObject urlPath:@"" progressBlock:progressBlock]
+                    [[strongSelf parseFormAndUpload:formResponseObject progressBlock:progressBlock]
                             .thenInBackground(^{
                                 return resolve(@(1));
                             })
@@ -194,61 +213,18 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 }
 
 - (AnyPromise *)parseFormAndUpload:(nullable id)formResponseObject
-                           urlPath:(NSString *)urlPath
                      progressBlock:(UploadProgressBlock)progressBlock
 {
-    OWSUploadForm *_Nullable form = [OWSUploadForm parse:formResponseObject];
+    OWSUploadForm *_Nullable form = [OWSUploadForm parseDictionary:formResponseObject];
     if (!form) {
         return [AnyPromise
             promiseWithValue:OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Invalid upload form.")];
     }
 
-    self.urlPath = form.formKey;
+    self.urlPath = form.key;
 
-    __weak OWSAvatarUploadV2 *weakSelf = self;
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [self.uploadHTTPManager POST:urlPath
-            parameters:nil
-            constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-                OWSAvatarUploadV2 *_Nullable strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
-                }
-
-                // We have to build up the form manually vs. simply passing in a paramaters dict
-                // because AWS is sensitive to the order of the form params (at least the "key"
-                // field must occur early on).
-                //
-                // For consistency, all fields are ordered here in a known working order.
-                [form appendToForm:formData];
-                AppendMultipartFormPath(formData, @"Content-Type", OWSMimeTypeApplicationOctetStream);
-
-                NSData *_Nullable uploadData = strongSelf.avatarData;
-                if (uploadData.length < 1) {
-                    OWSCFailDebug(@"Could not load upload data.");
-                    return resolve(
-                        OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Could not load upload data."));
-                }
-                OWSCAssertDebug(uploadData.length > 0);
-                [formData appendPartWithFormData:uploadData name:@"file"];
-
-                OWSLogVerbose(@"constructed body");
-            }
-            progress:^(NSProgress *progress) {
-                OWSLogVerbose(@"Upload progress: %.2f%%", progress.fractionCompleted * 100);
-
-                progressBlock(progress);
-            }
-            success:^(NSURLSessionDataTask *uploadTask, id _Nullable responseObject) {
-                OWSLogInfo(@"Upload succeeded with key: %@", form.formKey);
-                return resolve(@(1));
-            }
-            failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *error) {
-                OWSLogError(@"Upload failed with error: %@", error);
-                resolve(error);
-            }];
-    }];
-    return promise;
+    NSString *uploadUrlPath = @"";
+    return [OWSUploadV2 uploadObjcWithData:self.avatarData uploadForm:form uploadUrlPath:uploadUrlPath];
 }
 
 @end
@@ -343,7 +319,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
             return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
         }
 
-        [[strongSelf parseFormAndUpload:formResponseObject urlPath:@"attachments/" progressBlock:progressBlock]
+        [[strongSelf parseFormAndUpload:formResponseObject progressBlock:progressBlock]
                 .thenInBackground(^{
                     resolve(@(1));
                 })
@@ -381,10 +357,9 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 #pragma mark -
 
 - (AnyPromise *)parseFormAndUpload:(nullable id)formResponseObject
-                           urlPath:(NSString *)urlPath
                      progressBlock:(UploadProgressBlock)progressBlock
 {
-    OWSUploadForm *_Nullable form = [OWSUploadForm parse:formResponseObject];
+    OWSUploadForm *_Nullable form = [OWSUploadForm parseDictionary:formResponseObject];
     if (!form) {
         return [AnyPromise
             promiseWithValue:OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Invalid upload form.")];
@@ -397,55 +372,8 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
     self.serverId = serverId;
 
-    __weak OWSAttachmentUploadV2 *weakSelf = self;
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [self.uploadHTTPManager POST:urlPath
-            parameters:nil
-            constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-                OWSAttachmentUploadV2 *_Nullable strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
-                }
-
-                // We have to build up the form manually vs. simply passing in a paramaters dict
-                // because AWS is sensitive to the order of the form params (at least the "key"
-                // field must occur early on).
-                //
-                // For consistency, all fields are ordered here in a known working order.
-                [form appendToForm:formData];
-                AppendMultipartFormPath(formData, @"Content-Type", OWSMimeTypeApplicationOctetStream);
-
-                NSData *_Nullable uploadData = [strongSelf attachmentData];
-                if (uploadData.length < 1) {
-                    OWSCFailDebug(@"Could not load upload data.");
-                    return resolve(
-                        OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Could not load upload data."));
-                }
-                OWSAssertDebug(uploadData.length > 0);
-                [formData appendPartWithFormData:uploadData name:@"file"];
-
-                OWSLogVerbose(@"constructed %@ body", [NSByteCountFormatter stringFromByteCount:uploadData.length countStyle:NSByteCountFormatterCountStyleFile]);
-            }
-            progress:^(NSProgress *progress) {
-                OWSLogVerbose(@"Upload progress: %.2f%%", progress.fractionCompleted * 100);
-
-                progressBlock(progress);
-            }
-            success:^(NSURLSessionDataTask *uploadTask, id _Nullable responseObject) {
-                OWSAttachmentUploadV2 *_Nullable strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
-                }
-
-                OWSLogInfo(@"Upload succeeded with key: %@", form.formKey);
-                return resolve(@(1));
-            }
-            failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *error) {
-                OWSLogError(@"Upload failed with error: %@", error);
-                resolve(error);
-            }];
-    }];
-    return promise;
+    NSString *uploadUrlPath = @"attachments/";
+    return [OWSUploadV2 uploadObjcWithData:self.attachmentData uploadForm:form uploadUrlPath:uploadUrlPath];
 }
 
 @end
