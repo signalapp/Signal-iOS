@@ -99,7 +99,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 {
     // Identify what version of 2FA we're using
     if (OWSKeyBackupService.hasMasterKey) {
-        OWSAssertDebug(RemoteConfig.kbs);
         return OWS2FAMode_V2;
     } else if (self.pinCode != nil) {
         return OWS2FAMode_V1;
@@ -136,11 +135,11 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     pin = pin.ensureArabicNumerals;
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        if (!RemoteConfig.kbs) {
-            [OWS2FAManager.keyValueStore setString:pin key:kOWS2FAManager_PinCode transaction:transaction];
-        } else {
+        if (OWSKeyBackupService.hasMasterKey) {
             // Remove any old pin when we're migrating
             [OWS2FAManager.keyValueStore removeValueForKey:kOWS2FAManager_PinCode transaction:transaction];
+        } else {
+            [OWS2FAManager.keyValueStore setString:pin key:kOWS2FAManager_PinCode transaction:transaction];
         }
 
         // Since we just created this pin, we know it doesn't need migration. Mark it as such.
@@ -161,6 +160,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 }
 
 - (void)requestEnable2FAWithPin:(NSString *)pin
+                           mode:(OWS2FAMode)mode
                         success:(nullable OWS2FASuccess)success
                         failure:(nullable OWS2FAFailure)failure
 {
@@ -172,51 +172,61 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     // operate with pins in other numbering systems.
     pin = pin.ensureArabicNumerals;
 
-    if (RemoteConfig.kbs) {
-        [[OWSKeyBackupService generateAndBackupKeysWithPin:pin].then(^{
-            NSString *token = [OWSKeyBackupService deriveRegistrationLockToken];
-            TSRequest *request = [OWSRequestFactory enableRegistrationLockV2RequestWithToken:token];
+    switch (mode) {
+        case OWS2FAMode_V2: {
+            [[OWSKeyBackupService generateAndBackupKeysWithPin:pin]
+                    .then(^{
+                        NSString *token = [OWSKeyBackupService deriveRegistrationLockToken];
+                        TSRequest *request = [OWSRequestFactory enableRegistrationLockV2RequestWithToken:token];
+                        [self.networkManager makeRequest:request
+                            success:^(NSURLSessionDataTask *task, id responseObject) {
+                                OWSAssertIsOnMainThread();
+
+                                [self mark2FAAsEnabledWithPin:pin];
+
+                                if (success) {
+                                    success();
+                                }
+                            }
+                            failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                OWSAssertIsOnMainThread();
+
+                                if (failure) {
+                                    failure(error);
+                                }
+                            }];
+                    })
+                    .catch(^(NSError *error) {
+                        if (failure) {
+                            failure(error);
+                        }
+                    }) retainUntilComplete];
+            break;
+        }
+        case OWS2FAMode_V1: {
+            TSRequest *request = [OWSRequestFactory enable2FARequestWithPin:pin];
             [self.networkManager makeRequest:request
-                                     success:^(NSURLSessionDataTask *task, id responseObject) {
-                                         OWSAssertIsOnMainThread();
+                success:^(NSURLSessionDataTask *task, id responseObject) {
+                    OWSAssertIsOnMainThread();
 
-                                         [self mark2FAAsEnabledWithPin:pin];
+                    [self mark2FAAsEnabledWithPin:pin];
 
-                                         if (success) {
-                                             success();
-                                         }
-                                     }
-                                     failure:^(NSURLSessionDataTask *task, NSError *error) {
-                                         OWSAssertIsOnMainThread();
+                    if (success) {
+                        success();
+                    }
+                }
+                failure:^(NSURLSessionDataTask *task, NSError *error) {
+                    OWSAssertIsOnMainThread();
 
-                                         if (failure) {
-                                             failure(error);
-                                         }
-                                     }];
-        }).catch(^(NSError *error){
-            if (failure) {
-                failure(error);
-            }
-        }) retainUntilComplete];
-    } else {
-        TSRequest *request = [OWSRequestFactory enable2FARequestWithPin:pin];
-        [self.networkManager makeRequest:request
-                                 success:^(NSURLSessionDataTask *task, id responseObject) {
-                                     OWSAssertIsOnMainThread();
-
-                                     [self mark2FAAsEnabledWithPin:pin];
-
-                                     if (success) {
-                                         success();
-                                     }
-                                 }
-                                 failure:^(NSURLSessionDataTask *task, NSError *error) {
-                                     OWSAssertIsOnMainThread();
-
-                                     if (failure) {
-                                         failure(error);
-                                     }
-                                 }];
+                    if (failure) {
+                        failure(error);
+                    }
+                }];
+            break;
+        }
+        case OWS2FAMode_Disabled:
+            OWSFailDebug(@"Unexpectedly attempting to enable 2fa for disabled mode");
+            break;
     }
 }
 

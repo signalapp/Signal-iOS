@@ -48,11 +48,9 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
 
 // Request with service
 - (void)requestEnable2FAWithPin:(NSString *)pin
+                           mode:(OWS2FAMode)mode
                         success:(nullable OWS2FASuccess)success
                         failure:(nullable OWS2FAFailure)failure;
-
-// Sore local settings if, used during registration
-- (void)mark2FAAsEnabledWithPin:(NSString *)pin;
 
 - (void)disable2FAWithSuccess:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure;
 

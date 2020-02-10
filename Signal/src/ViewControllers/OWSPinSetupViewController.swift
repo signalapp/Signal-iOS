@@ -430,7 +430,7 @@ public class PinSetupViewController: OWSViewController {
             self.nextButton.alpha = 0.5
         }
 
-        OWS2FAManager.shared().requestEnable2FA(withPin: pin, success: {
+        OWS2FAManager.shared().requestEnable2FA(withPin: pin, mode: .V2, success: {
             AssertIsOnMainThread()
 
             // The completion handler always dismisses this view, so we don't want to animate anything.

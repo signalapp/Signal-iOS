@@ -137,7 +137,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^() {
                                          UIViewController *reminderVC;
                                          if (RemoteConfig.pinsForEveryone) {
-                                             reminderVC = [OWSPinReminderViewController new];
+                                             reminderVC =
+                                                 [[OWSPinReminderViewController alloc] initWithCompletionHandler:nil];
                                          } else {
                                              reminderVC = [OWS2FAReminderViewController wrappedInNavController];
                                              reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;

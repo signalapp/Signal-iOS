@@ -36,6 +36,7 @@ public class PinReminderViewController: OWSViewController {
     }
     private var hasGuessedWrong = false
 
+    @objc
     init(completionHandler: (() -> Void)? = nil) {
         self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)

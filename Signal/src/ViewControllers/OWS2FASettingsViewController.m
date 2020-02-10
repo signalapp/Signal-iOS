@@ -406,6 +406,7 @@ NS_ASSUME_NONNULL_BEGIN
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       [OWS2FAManager.sharedManager requestEnable2FAWithPin:self.candidatePin
+                          mode:RemoteConfig.kbs ? OWS2FAMode_V2 : OWS2FAMode_V1
                           success:^{
                               [modalActivityIndicator dismissWithCompletion:^{
                                   [weakSelf showCompleteUI];
