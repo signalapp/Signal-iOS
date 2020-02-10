@@ -25,7 +25,7 @@ public extension TSGroupMemberRole {
 public class GroupMembership: MTLModel {
     // This class is immutable.
     @objc
-    class State: MTLModel {
+    class MemberState: MTLModel {
         @objc
         var role: TSGroupMemberRole = .normal
 
@@ -68,37 +68,35 @@ public class GroupMembership: MTLModel {
     }
 
     // By using a single dictionary we ensure that no address has more than one state.
-    typealias StateMap = [SignalServiceAddress: State]
+    typealias MemberStateMap = [SignalServiceAddress: MemberState]
     @objc
-    var stateMap: StateMap
+    var memberStateMap: MemberStateMap
 
     @objc
     public var nonAdminMembers: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { !$0.value.isAdministrator && !$0.value.isPending }.keys)
+        return Set(memberStateMap.filter { !$0.value.isAdministrator && !$0.value.isPending }.keys)
     }
     @objc
     public var administrators: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { $0.value.isAdministrator && !$0.value.isPending }.keys)
+        return Set(memberStateMap.filter { $0.value.isAdministrator && !$0.value.isPending }.keys)
     }
-    // allMembers includes all non-pending members,
-    // i.e. normal and administrator members.
     @objc
     public var nonPendingMembers: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { !$0.value.isPending }.keys)
+        return Set(memberStateMap.filter { !$0.value.isPending }.keys)
     }
 
     @objc
     public var pendingNonAdminMembers: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { !$0.value.isAdministrator && $0.value.isPending }.keys)
+        return Set(memberStateMap.filter { !$0.value.isAdministrator && $0.value.isPending }.keys)
     }
     @objc
     public var pendingAdministrators: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { $0.value.isAdministrator && $0.value.isPending }.keys)
+        return Set(memberStateMap.filter { $0.value.isAdministrator && $0.value.isPending }.keys)
     }
     // pendingMembers includes normal and administrator "pending members".
     @objc
     public var pendingMembers: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { $0.value.isPending }.keys)
+        return Set(memberStateMap.filter { $0.value.isPending }.keys)
     }
 
     // allUsers includes _all_ users:
@@ -107,20 +105,20 @@ public class GroupMembership: MTLModel {
     // * Pending and non-pending.
     @objc
     public var allUsers: Set<SignalServiceAddress> {
-        return Set(stateMap.keys)
+        return Set(memberStateMap.keys)
     }
 
     public struct Builder {
-        private var stateMap = StateMap()
+        private var memberStateMap = MemberStateMap()
 
         public init() {}
 
-        internal init(stateMap: StateMap) {
-            self.stateMap = stateMap
+        internal init(memberStateMap: MemberStateMap) {
+            self.memberStateMap = memberStateMap
         }
 
         public mutating func remove(_ address: SignalServiceAddress) {
-            stateMap.removeValue(forKey: address)
+            memberStateMap.removeValue(forKey: address)
         }
 
         public mutating func remove(_ addresses: Set<SignalServiceAddress>) {
@@ -137,10 +135,10 @@ public class GroupMembership: MTLModel {
         public mutating func addNonPendingMembers(_ addresses: Set<SignalServiceAddress>,
                                                   role: TSGroupMemberRole) {
             for address in addresses {
-                if stateMap[address] != nil {
+                if memberStateMap[address] != nil {
                     owsFailDebug("Duplicate address.")
                 }
-                stateMap[address] = State(role: role, isPending: false, addedByUuid: nil)
+                memberStateMap[address] = MemberState(role: role, isPending: false, addedByUuid: nil)
             }
         }
 
@@ -154,55 +152,55 @@ public class GroupMembership: MTLModel {
                                                role: TSGroupMemberRole,
                                                addedByUuid: UUID) {
             for address in addresses {
-                if stateMap[address] != nil {
+                if memberStateMap[address] != nil {
                     owsFailDebug("Duplicate address.")
                 }
-                stateMap[address] = State(role: role, isPending: true, addedByUuid: addedByUuid)
+                memberStateMap[address] = MemberState(role: role, isPending: true, addedByUuid: addedByUuid)
             }
         }
 
         public mutating func copyMember(_ address: SignalServiceAddress,
                                         from oldGroupMembership: GroupMembership) {
-            guard let state = oldGroupMembership.stateMap[address] else {
+            guard let memberState = oldGroupMembership.memberStateMap[address] else {
                 owsFailDebug("Unknown address")
                 return
             }
-            if stateMap[address] != nil {
+            if memberStateMap[address] != nil {
                 owsFailDebug("Duplicate address.")
             }
-            stateMap[address] = state
+            memberStateMap[address] = memberState
         }
 
-        internal func asStateMap() -> StateMap {
-            return stateMap
+        internal func asMemberStateMap() -> MemberStateMap {
+            return memberStateMap
         }
 
         public func build() -> GroupMembership {
-            return GroupMembership(stateMap: stateMap)
+            return GroupMembership(memberStateMap: memberStateMap)
         }
     }
 
     @objc
     public override init() {
-        self.stateMap = StateMap()
+        self.memberStateMap = MemberStateMap()
 
         super.init()
     }
 
     @objc
     required public init?(coder aDecoder: NSCoder) {
-        self.stateMap = StateMap()
+        self.memberStateMap = MemberStateMap()
         super.init(coder: aDecoder)
     }
 
     @objc
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        self.stateMap = StateMap()
+        self.memberStateMap = MemberStateMap()
         try super.init(dictionary: dictionaryValue)
     }
 
-    internal init(stateMap: StateMap) {
-        self.stateMap = stateMap
+    internal init(memberStateMap: MemberStateMap) {
+        self.memberStateMap = memberStateMap
 
         super.init()
     }
@@ -211,7 +209,7 @@ public class GroupMembership: MTLModel {
     public init(v1Members: Set<SignalServiceAddress>) {
         var builder = Builder()
         builder.addNonPendingMembers(v1Members, role: .normal)
-        self.stateMap = builder.asStateMap()
+        self.memberStateMap = builder.asMemberStateMap()
 
         super.init()
     }
@@ -222,24 +220,24 @@ public class GroupMembership: MTLModel {
     }
 
     public func role(for address: SignalServiceAddress) -> TSGroupMemberRole? {
-        guard let state = stateMap[address] else {
+        guard let memberState = memberStateMap[address] else {
             return nil
         }
-        return state.role
+        return memberState.role
     }
 
     public func isPending(_ address: SignalServiceAddress) -> Bool {
-        guard let state = stateMap[address] else {
+        guard let memberState = memberStateMap[address] else {
             return false
         }
-        return state.isPending
+        return memberState.isPending
     }
 
     public func isAdministrator(_ address: SignalServiceAddress) -> Bool {
-        guard let state = stateMap[address] else {
+        guard let memberState = memberStateMap[address] else {
             return false
         }
-        return state.isAdministrator
+        return memberState.isAdministrator
     }
 
     // When we check "is X a member?" we might mean...
@@ -262,12 +260,12 @@ public class GroupMembership: MTLModel {
 
     // GroupsV2 TODO: We may remove this method.
     public func contains(_ address: SignalServiceAddress) -> Bool {
-        return stateMap[address] != nil
+        return memberStateMap[address] != nil
     }
 
     // GroupsV2 TODO: We may remove this method.
     public func contains(_ uuid: UUID) -> Bool {
-        return stateMap[SignalServiceAddress(uuid: uuid)] != nil
+        return memberStateMap[SignalServiceAddress(uuid: uuid)] != nil
     }
 
     @objc
@@ -278,17 +276,17 @@ public class GroupMembership: MTLModel {
     }
 
     public var asBuilder: Builder {
-        return Builder(stateMap: stateMap)
+        return Builder(memberStateMap: memberStateMap)
     }
 
     public override var debugDescription: String {
         var result = "["
         for address in GroupMembership.normalize(Array(allUsers)) {
-            guard let state = stateMap[address] else {
-                owsFailDebug("Missing state.")
+            guard let memberState = memberStateMap[address] else {
+                owsFailDebug("Missing memberState.")
                 continue
             }
-            result += "\(address), isPending: \(state.isPending), isAdministrator: \(state.isAdministrator)\n"
+            result += "\(address), isPending: \(memberState.isPending), isAdministrator: \(memberState.isAdministrator)\n"
         }
         result += "]"
         return result
