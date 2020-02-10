@@ -130,16 +130,14 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 {
     OWSAssertDebug(pin.length > 0);
 
-    // Convert the pin to arabic numerals, we never want to
-    // operate with pins in other numbering systems.
-    pin = pin.ensureArabicNumerals;
-
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if (OWSKeyBackupService.hasMasterKey) {
             // Remove any old pin when we're migrating
             [OWS2FAManager.keyValueStore removeValueForKey:kOWS2FAManager_PinCode transaction:transaction];
         } else {
-            [OWS2FAManager.keyValueStore setString:pin key:kOWS2FAManager_PinCode transaction:transaction];
+            // Convert the pin to arabic numerals, we never want to
+            // operate with pins in other numbering systems.
+            [OWS2FAManager.keyValueStore setString:pin.ensureArabicNumerals key:kOWS2FAManager_PinCode transaction:transaction];
         }
 
         // Since we just created this pin, we know it doesn't need migration. Mark it as such.
@@ -167,10 +165,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     OWSAssertDebug(pin.length > 0);
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
-
-    // Convert the pin to arabic numerals, we never want to
-    // operate with pins in other numbering systems.
-    pin = pin.ensureArabicNumerals;
 
     switch (mode) {
         case OWS2FAMode_V2: {
@@ -204,7 +198,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
             break;
         }
         case OWS2FAMode_V1: {
-            TSRequest *request = [OWSRequestFactory enable2FARequestWithPin:pin];
+            // Convert the pin to arabic numerals, we never want to
+            // operate with pins in other numbering systems.
+            TSRequest *request = [OWSRequestFactory enable2FARequestWithPin:pin.ensureArabicNumerals];
             [self.networkManager makeRequest:request
                 success:^(NSURLSessionDataTask *task, id responseObject) {
                     OWSAssertIsOnMainThread();
@@ -379,16 +375,14 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result
 {
-    // Convert the pin to arabic numerals, we never want to
-    // operate with pins in other numbering systems.
-    pin = pin.ensureArabicNumerals;
-
     switch (self.mode) {
     case OWS2FAMode_V2:
         [OWSKeyBackupService verifyPin:pin resultHandler:result];
         break;
     case OWS2FAMode_V1:
-        result([self.pinCode.ensureArabicNumerals isEqualToString:pin]);
+        // Convert the pin to arabic numerals, we never want to
+        // operate with pins in other numbering systems.
+        result([self.pinCode.ensureArabicNumerals isEqualToString:pin.ensureArabicNumerals]);
         break;
     case OWS2FAMode_Disabled:
         OWSFailDebug(@"unexpectedly attempting to verify pin when 2fa is disabled");
