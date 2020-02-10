@@ -52,6 +52,15 @@ public class PinReminderViewController: OWSViewController {
         pinTextField.becomeFirstResponder()
     }
 
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // For now, the design only allows for portrait layout on non-iPads
+        if !UIDevice.current.isIPad && CurrentAppContext().interfaceOrientation != .portrait {
+            UIDevice.current.ows_setOrientation(.portrait)
+        }
+    }
+
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         pinTextField.resignFirstResponder()
@@ -59,6 +68,10 @@ public class PinReminderViewController: OWSViewController {
 
     override public var preferredStatusBarStyle: UIStatusBarStyle {
         return Theme.isDarkThemeEnabled ? .lightContent : .default
+    }
+
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.isIPad ? .all : .portrait
     }
 
     override public func loadView() {
@@ -98,6 +111,7 @@ public class PinReminderViewController: OWSViewController {
         pinTextField.keyboardType = KeyBackupService.currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
+        pinTextField.textAlignment = .center
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
         pinTextField.keyboardAppearance = Theme.keyboardAppearance
@@ -294,9 +308,11 @@ private class PinReminderPresentationController: UIPresentationController {
 
     override func presentationTransitionWillBegin() {
         guard let containerView = containerView else { return }
-        backdropView.frame = containerView.frame
+
         backdropView.alpha = 0
-        containerView.insertSubview(backdropView, at: 0)
+        containerView.addSubview(backdropView)
+        backdropView.autoPinEdgesToSuperviewEdges()
+        containerView.layoutIfNeeded()
 
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.backdropView.alpha = 1
@@ -309,6 +325,15 @@ private class PinReminderPresentationController: UIPresentationController {
         }, completion: { _ in
             self.backdropView.removeFromSuperview()
         })
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        guard let presentedView = presentedView else { return }
+        coordinator.animate(alongsideTransition: { _ in
+            presentedView.frame = self.frameOfPresentedViewInContainerView
+            presentedView.layoutIfNeeded()
+        }, completion: nil)
     }
 }
 
