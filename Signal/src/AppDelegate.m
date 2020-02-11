@@ -522,9 +522,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             }
             return [SignalApp.sharedApp receivedVerificationCode:[url.path substringFromIndex:1]];
         } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
-            if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
-                return NO;
-            }
             StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
             if (stickerPackInfo == nil) {
                 OWSFailDebug(@"Invalid URL: %@", url);
@@ -565,12 +562,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 - (BOOL)tryToShowStickerPackView:(StickerPackInfo *)stickerPackInfo
 {
     OWSAssertDebug(!self.didAppLaunchFail);
-
-    if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
-        OWSFailDebug(@"Ignoring sticker pack URL; stickers not enabled.");
-        return NO;
-    }
-
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (!self.tsAccountManager.isRegistered) {
             OWSFailDebug(@"Ignoring sticker pack URL; not registered.");

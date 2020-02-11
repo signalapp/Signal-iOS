@@ -238,10 +238,6 @@ NS_ASSUME_NONNULL_BEGIN
                                              outgoingMessage);
                                      }];
     }
-
-    if (outgoingMessage.messageSticker != nil) {
-        [StickerManager.shared setHasUsedStickersWithTransaction:transaction];
-    }
 }
 
 + (void)insertUnknownProtocolVersionErrorForTranscript:(OWSIncomingSentMessageTranscript *)transcript

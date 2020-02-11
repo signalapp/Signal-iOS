@@ -284,10 +284,8 @@ public class ManageStickersViewController: OWSTableViewController {
     }
 
     private func buildTableCell(installedStickerPack dataSource: StickerPackDataSource) -> UITableViewCell {
-        var actionIconName: String?
-        if FeatureFlags.stickerSharing {
-            actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
-        }
+        let actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
+
         return buildTableCell(dataSource: dataSource,
                               actionIconName: actionIconName) { [weak self] in
                                 guard let packInfo = dataSource.info else {
