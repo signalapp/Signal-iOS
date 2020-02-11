@@ -320,7 +320,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didPressViewErrorLog
 {
-    OWSAssert(SSKDebugFlags.audibleErrorLogging);
+    OWSAssertDebug(SSKDebugFlags.audibleErrorLogging);
 
     [DDLog flushLog];
     NSURL *errorLogsDir = DebugLogger.sharedLogger.errorLogsDir;
