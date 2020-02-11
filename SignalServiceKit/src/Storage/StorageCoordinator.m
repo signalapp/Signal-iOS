@@ -119,10 +119,7 @@ NSString *NSStringForDataStore(DataStore value)
     }
 
     // A check to avoid trying to revert to YDB when we've already migrated to GRDB.
-    if ((prefersYdb || willUseYdb) && hasValidGrdb &&
-        // Allow developers to do this, but not QA, internal,
-        // public beta or production.
-        !SSKFeatureFlags.canRevertToYDB) {
+    if ((prefersYdb || willUseYdb) && hasValidGrdb) {
         OWSFailDebug(@"Reverting to YDB.");
         return YES;
     }

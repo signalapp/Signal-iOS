@@ -116,14 +116,6 @@ public class FeatureFlags: NSObject {
     public static let uuidCapabilities = !isUsingProductionService
 
     @objc
-    public static var canRevertToYDB: Bool {
-        // Only developers should be allowed to use YDB after migrating to GRDB.
-        // We don't want to let QA, public beta or production users risk
-        // data loss.
-        return build == .dev
-    }
-
-    @objc
     public static var storageModeDescription: String {
         return "\(storageMode)"
     }
