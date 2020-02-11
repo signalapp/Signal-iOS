@@ -839,21 +839,16 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         @"COMPOSE_BUTTON_HINT", @"Accessibility hint describing what you can do with the compose button");
     compose.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose");
 
-    if (SSKFeatureFlags.cameraFirstCaptureFlow) {
-        UIBarButtonItem *camera = [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconCameraButton]
-                                                                   style:UIBarButtonItemStylePlain
-                                                                  target:self
-                                                                  action:@selector(showCameraView)];
-        camera.accessibilityLabel
-            = NSLocalizedString(@"CAMERA_BUTTON_LABEL", @"Accessibility label for camera button.");
-        camera.accessibilityHint = NSLocalizedString(
-            @"CAMERA_BUTTON_HINT", @"Accessibility hint describing what you can do with the camera button");
-        camera.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"camera");
+    UIBarButtonItem *camera = [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconCameraButton]
+                                                               style:UIBarButtonItemStylePlain
+                                                              target:self
+                                                              action:@selector(showCameraView)];
+    camera.accessibilityLabel = NSLocalizedString(@"CAMERA_BUTTON_LABEL", @"Accessibility label for camera button.");
+    camera.accessibilityHint = NSLocalizedString(
+        @"CAMERA_BUTTON_HINT", @"Accessibility hint describing what you can do with the camera button");
+    camera.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"camera");
 
-        self.navigationItem.rightBarButtonItems = @[ compose, camera ];
-    } else {
-        self.navigationItem.rightBarButtonItems = @[ compose ];
-    }
+    self.navigationItem.rightBarButtonItems = @[ compose, camera ];
 }
 
 - (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext

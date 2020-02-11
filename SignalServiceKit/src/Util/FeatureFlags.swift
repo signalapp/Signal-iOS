@@ -160,9 +160,6 @@ public class FeatureFlags: NSObject {
     public static let socialGraphOnServer = false
 
     @objc
-    public static let cameraFirstCaptureFlow = true
-
-    @objc
     public static let complainAboutSlowDBWrites = true
 
     @objc
