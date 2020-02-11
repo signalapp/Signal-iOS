@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,7 +39,8 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
             NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).asVoid(),
             NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
-            NotificationCenter.default.observe(once: .OWSBlockingManagerBlockedSyncDidComplete).asVoid()
+            NotificationCenter.default.observe(once: .OWSBlockingManagerBlockedSyncDidComplete).asVoid(),
+            NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
         ])
     }
 
@@ -74,6 +75,10 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
         }
 
         KeyBackupService.storeSyncedKey(type: .storageService, data: syncMessage.storageService, transaction: transaction)
+
+        transaction.addAsyncCompletion {
+            NotificationCenter.default.postNotificationNameAsync(.OWSSyncManagerKeysSyncDidComplete, object: nil)
+        }
     }
 
     @objc

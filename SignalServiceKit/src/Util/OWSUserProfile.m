@@ -324,10 +324,14 @@ NSUInteger const kUserProfileSchemaVersion = 1;
         return;
     }
 
-    // Profile changes, record updates with storage service
-    [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ self.address ]];
-
     BOOL isLocalUserProfile = [self.address.phoneNumber isEqualToString:kLocalProfileUniqueId];
+
+    // Profile changes, record updates with storage service
+    if (self.tsAccountManager.isRegisteredAndReady) {
+        [self.storageServiceManager
+            recordPendingUpdatesWithUpdatedAddresses:@[ isLocalUserProfile ? self.tsAccountManager.localAddress
+                                                                           : self.address ]];
+    }
 
     [transaction
         addAsyncCompletionWithQueue:dispatch_get_main_queue()

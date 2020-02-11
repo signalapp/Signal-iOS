@@ -14,7 +14,9 @@ public protocol StorageServiceManagerProtocol {
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
 
     func backupPendingChanges()
-    func restoreOrCreateManifestIfNecessary()
+
+    @discardableResult
+    func restoreOrCreateManifestIfNecessary() -> AnyPromise
 }
 
 public struct StorageService {
@@ -306,7 +308,6 @@ public struct StorageService {
                     case 404:
                         status = .notFound
                     default:
-                        owsFailDebug("invalid response \(response.statusCode)")
                         if response.statusCode >= 500 {
                             // This is a server error, retry
                             return resolver.reject(StorageError.retryableAssertion)

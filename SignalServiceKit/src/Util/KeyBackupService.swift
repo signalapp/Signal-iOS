@@ -293,10 +293,7 @@ public class KeyBackupService: NSObject {
             default:
                 // Most keys derive directly from the master key.
                 // Only a few exceptions derive from another derived key.
-                guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else {
-                    owsFailDebug("missing master key")
-                    return nil
-                }
+                guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else { return nil }
                 return masterKey
             }
         }
@@ -543,15 +540,13 @@ public class KeyBackupService: NSObject {
         }
 
         // Only continue if we didn't previously have a master key or our master key has changed
-        guard masterKey != previousMasterKey else { return }
+        guard masterKey != previousMasterKey, tsAccountManager.isRegisteredAndReady else { return }
 
         // Trigger a re-creation of the storage manifest, our keys have changed
         storageServiceManager.restoreOrCreateManifestIfNecessary()
 
-        if tsAccountManager.isRegisteredAndReady {
-            // Sync our new keys with linked devices.
-            syncManager.sendKeysSyncMessage()
-        }
+        // Sync our new keys with linked devices.
+        syncManager.sendKeysSyncMessage()
     }
 
     public static func storeSyncedKey(type: DerivedKey, data: Data?, transaction: SDSAnyWriteTransaction) {

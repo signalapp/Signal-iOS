@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import PromiseKit
 
 @objc(OWSFakeStorageServiceManager)
 class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol {
@@ -13,5 +14,5 @@ class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol {
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
 
     func backupPendingChanges() {}
-    func restoreOrCreateManifestIfNecessary() {}
+    func restoreOrCreateManifestIfNecessary() -> AnyPromise { AnyPromise(Promise.value(())) }
 }

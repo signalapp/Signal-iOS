@@ -1050,6 +1050,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         return;
     }
 
+    // We also keep track of our local profile key under a special hard coded address,
+    // update it accordingly. This should generally only happen if we're restoring
+    // our profile data from the storage service.
+    if (address.isLocalAddress) {
+        [self setLocalProfileKey:profileKey transaction:transaction];
+    }
+
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
 
     OWSAssertDebug(userProfile);
@@ -1082,6 +1089,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
     [userProfile updateWithGivenName:givenName familyName:familyName transaction:transaction completion:nil];
+
+    if (address.isLocalAddress) {
+        [self.localUserProfile updateWithGivenName:givenName
+                                        familyName:familyName
+                                       transaction:transaction
+                                        completion:nil];
+    }
 }
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address

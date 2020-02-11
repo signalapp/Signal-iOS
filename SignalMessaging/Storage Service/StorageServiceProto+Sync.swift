@@ -148,6 +148,12 @@ extension StorageServiceProtoContactRecord {
             mergeState = .needsUpdate(recipient.accountId)
         }
 
+        // The only thing we currently want to preserve for the local user is profile
+        // information. Everything else doesn't make sense to store / update and can
+        // lead to us being in a weird state such as thinking our own safety number changed.
+        // If more data needs to be restored for the local user it should be done above this line.
+        guard !address.isLocalAddress else { return mergeState }
+
         // If our local identity differs from the service, use the service's value.
         if let identityKey = identity?.key, let identityState = identity?.state?.verificationState,
             localIdentityKey != identityKey || localIdentityState != identityState {
