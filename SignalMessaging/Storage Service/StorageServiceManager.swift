@@ -103,7 +103,7 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     // MARK: - Backup Scheduling
 
-    private static var backupDebounceInterval: TimeInterval = kSecondInterval * 10
+    private static var backupDebounceInterval: TimeInterval = 0.2
     private var backupTimer: Timer?
 
     // Schedule a one time backup. By default, this will happen ten
