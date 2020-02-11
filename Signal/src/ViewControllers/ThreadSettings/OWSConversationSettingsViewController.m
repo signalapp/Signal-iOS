@@ -364,22 +364,20 @@ const CGFloat kIconViewLength = 24;
                                  [weakSelf showMediaGallery];
                              }]];
 
-    if (SSKFeatureFlags.conversationSearch) {
-        [mainSection addItem:[OWSTableItem
-                                 itemWithCustomCellBlock:^{
-                                     NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_SEARCH",
-                                         @"Table cell label in conversation settings which returns the user to the "
-                                         @"conversation with 'search mode' activated");
-                                     return [weakSelf
-                                          disclosureCellWithName:title
-                                                            icon:ThemeIconSettingsSearch
-                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                                     OWSConversationSettingsViewController, @"search")];
-                                 }
-                                 actionBlock:^{
-                                     [weakSelf tappedConversationSearch];
-                                 }]];
-    }
+    [mainSection addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_SEARCH",
+                                     @"Table cell label in conversation settings which returns the user to the "
+                                     @"conversation with 'search mode' activated");
+                                 return [weakSelf
+                                      disclosureCellWithName:title
+                                                        icon:ThemeIconSettingsSearch
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                 OWSConversationSettingsViewController, @"search")];
+                             }
+                             actionBlock:^{
+                                 [weakSelf tappedConversationSearch];
+                             }]];
 
     if (!isNoteToSelf && !self.isGroupThread && self.thread.hasSafetyNumbers) {
         [mainSection
