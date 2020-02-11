@@ -33,6 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
     UINavigationControllerDelegate,
     OWSNavigationView>
 
+@property (nonatomic, readonly) TSGroupThread *thread;
+@property (nonatomic, readonly) UpdateGroupMode mode;
+
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) AvatarViewHelper *avatarViewHelper;
@@ -42,11 +45,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UIImageView *cameraImageView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
+@property (nonatomic) TSGroupModel *oldGroupModel;
 @property (nonatomic, nullable) NSData *groupAvatarData;
 @property (nonatomic, nullable) NSSet<PickedRecipient *> *previousMemberRecipients;
 @property (nonatomic) NSMutableSet<PickedRecipient *> *memberRecipients;
 
-@property (nonatomic) BOOL hasUnsavedChanges;
+// If there are unsaved changes, this group model reflects them.
+// If not, it is nil.
+@property (nonatomic, nullable) TSGroupModel *unsavedChangeGroupModel;
 
 @end
 
@@ -65,24 +71,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (instancetype)init
+- (instancetype)initWithGroupThread:(TSGroupThread *)groupThread mode:(UpdateGroupMode)mode
 {
-    self = [super init];
+    OWSAssertDebug(groupThread);
+
+    self = [super initWithNibName:nil bundle:nil];
     if (!self) {
         return self;
     }
 
-    [self commonInit];
-
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
+    _thread = groupThread;
+    _mode = mode;
 
     [self commonInit];
 
@@ -104,10 +103,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    OWSAssertDebug(self.thread);
-    OWSAssertDebug(self.thread.groupModel);
-    OWSAssertDebug(self.thread.groupModel.groupMembers);
-
     self.view.backgroundColor = Theme.backgroundColor;
 
     [self.memberRecipients
@@ -115,6 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
             return [PickedRecipient forAddress:address];
         }]];
     self.previousMemberRecipients = [self.memberRecipients copy];
+    self.oldGroupModel = self.thread.groupModel;
 
     self.title = NSLocalizedString(@"EDIT_GROUP_DEFAULT_TITLE", @"The navbar title for the 'update group' view.");
 
@@ -141,11 +137,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientPicker.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 }
 
-- (void)setHasUnsavedChanges:(BOOL)hasUnsavedChanges
+- (void)updateHasUnsavedChanges
 {
-    _hasUnsavedChanges = hasUnsavedChanges;
+    TSGroupModel *_Nullable newGroupModel = [self buildNewGroupModelIfHasUnsavedChanges];
+    BOOL didChange = ![NSObject isNullableObject:newGroupModel equalTo:self.unsavedChangeGroupModel];
+    self.unsavedChangeGroupModel = newGroupModel;
+    if (didChange) {
+        [self updateNavigationBar];
+    }
+}
 
-    [self updateNavigationBar];
+- (BOOL)hasUnsavedChanges
+{
+    return self.unsavedChangeGroupModel != nil;
 }
 
 - (void)updateNavigationBar
@@ -175,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
     // Only perform these actions the first time the view appears.
-    self.mode = UpdateGroupMode_Default;
+    _mode = UpdateGroupMode_Default;
 }
 
 - (UIView *)firstSectionHeader
@@ -266,9 +270,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(recipient.address.isValid);
 
-    self.hasUnsavedChanges = YES;
-    [self.memberRecipients addObject:recipient];
-    self.recipientPicker.pickedRecipients = self.memberRecipients.allObjects;
+    if (![self canAddOrInviteMemberWithOldGroupModel:self.oldGroupModel address:recipient.address]) {
+        [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"GROUP_CANNOT_ADD_INVALID_MEMBER",
+                                                      @"Error indicating that a member cannot be added to a group.")];
+    } else {
+        [self.memberRecipients addObject:recipient];
+        self.recipientPicker.pickedRecipients = self.memberRecipients.allObjects;
+        [self updateHasUnsavedChanges];
+    }
 }
 
 - (void)removeRecipient:(PickedRecipient *)recipient
@@ -277,36 +286,22 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.memberRecipients removeObject:recipient];
     self.recipientPicker.pickedRecipients = self.memberRecipients.allObjects;
+    [self updateHasUnsavedChanges];
 }
 
 #pragma mark - Methods
 
-- (void)updateGroup
+- (void)updateGroupWithNewGroupModel:(TSGroupModel *)newGroupModel
 {
     OWSAssertDebug(self.conversationSettingsViewDelegate);
-
-    [self.groupNameTextField acceptAutocorrectSuggestion];
-
-    NSArray<SignalServiceAddress *> *memberList = [self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
-        OWSAssertDebug(recipient.address.isValid);
-        return recipient.address;
-    }];
-    NSMutableSet<SignalServiceAddress *> *memberSet = [NSMutableSet setWithArray:memberList];
-    [memberSet addObject:self.tsAccountManager.localAddress];
-
-    TSGroupModel *oldGroupModel = self.thread.groupModel;
-    NSString *_Nullable newTitle = self.groupNameTextField.text;
-    NSData *_Nullable newAvatarData = self.groupAvatarData;
 
     __weak UpdateGroupViewController *weakSelf = self;
     [ModalActivityIndicatorViewController
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [self updateGroupThreadWithOldGroupModel:oldGroupModel
-                          newTitle:newTitle
-                          newAvatarData:newAvatarData
-                          v1Members:memberSet
+                      [self updateGroupThreadWithOldGroupModel:self.oldGroupModel
+                          newGroupModel:newGroupModel
                           success:^(TSGroupThread *groupThread) {
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{
@@ -349,9 +344,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     _groupAvatarData = groupAvatarData;
 
-    self.hasUnsavedChanges = YES;
-
     [self updateAvatarView];
+
+    [self updateHasUnsavedChanges];
 }
 
 - (void)updateAvatarView
@@ -371,15 +366,38 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Event Handling
 
+- (nullable TSGroupModel *)buildNewGroupModelIfHasUnsavedChanges
+{
+    [self.groupNameTextField acceptAutocorrectSuggestion];
+
+    NSString *_Nullable newTitle = self.groupNameTextField.text;
+    NSData *_Nullable newAvatarData = self.groupAvatarData;
+    NSArray<SignalServiceAddress *> *memberList = [self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
+        OWSAssertDebug(recipient.address.isValid);
+        return recipient.address;
+    }];
+    NSMutableSet<SignalServiceAddress *> *memberSet = [NSMutableSet setWithArray:memberList];
+    [memberSet addObject:self.tsAccountManager.localAddress];
+    TSGroupModel *newGroupModel = [self buildNewGroupModelWithOldGroupModel:self.oldGroupModel
+                                                                   newTitle:newTitle
+                                                              newAvatarData:newAvatarData
+                                                                  v1Members:memberSet];
+    if ([self.oldGroupModel isEqualToGroupModel:newGroupModel]) {
+        return nil;
+    }
+    return newGroupModel;
+}
+
 - (void)backButtonPressed
 {
     [self.groupNameTextField resignFirstResponder];
 
-    if (!self.hasUnsavedChanges) {
+    if (self.unsavedChangeGroupModel == nil) {
         // If user made no changes, return to conversation settings view.
         [self.navigationController popViewControllerAnimated:YES];
         return;
     }
+    TSGroupModel *newGroupModel = self.unsavedChangeGroupModel;
 
     ActionSheetController *alert = [[ActionSheetController alloc]
         initWithTitle:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
@@ -393,7 +411,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       handler:^(ActionSheetAction *action) {
                                                           OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-                                                          [self updateGroup];
+                                                          [self updateGroupWithNewGroupModel:newGroupModel];
                                                       }]];
     [alert addAction:[[ActionSheetAction alloc]
                                    initWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
@@ -410,12 +428,20 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-    [self updateGroup];
+    if (self.unsavedChangeGroupModel == nil) {
+        OWSFailDebug(@"This button should not be enabled if there are no unsaved changes.");
+        // If user made no changes, return to conversation settings view.
+        [self.navigationController popViewControllerAnimated:YES];
+        return;
+    }
+    TSGroupModel *newGroupModel = self.unsavedChangeGroupModel;
+
+    [self updateGroupWithNewGroupModel:newGroupModel];
 }
 
 - (void)groupNameDidChange:(id)sender
 {
-    self.hasUnsavedChanges = YES;
+    [self updateHasUnsavedChanges];
 }
 
 #pragma mark - Text Field Delegate

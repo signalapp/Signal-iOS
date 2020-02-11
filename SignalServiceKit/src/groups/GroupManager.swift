@@ -259,6 +259,10 @@ public class GroupManager: NSObject {
     public static func doesUserSupportGroupsV2(address: SignalServiceAddress,
                                                transaction: SDSAnyReadTransaction) -> Bool {
 
+        guard address.isValid else {
+            Logger.warn("Invalid address: \(address).")
+            return false
+        }
         guard address.uuid != nil else {
             Logger.warn("Member without UUID.")
             return false
