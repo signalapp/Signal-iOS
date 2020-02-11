@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -169,8 +169,6 @@ class MessageActionsViewController: UIViewController {
     // MARK: - Reaction handling
 
     lazy var interactionAllowsReactions: Bool = {
-        guard FeatureFlags.reactionSend else { return false }
-
         switch focusedInteraction {
         case let outgoingMessage as TSOutgoingMessage:
             switch outgoingMessage.messageState {
