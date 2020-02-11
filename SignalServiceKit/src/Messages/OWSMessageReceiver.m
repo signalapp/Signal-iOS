@@ -383,7 +383,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     AssertOnDispatchQueue(self.serialQueue);
 
-    if (SSKFeatureFlags.suppressBackgroundActivity) {
+    if (SSKDebugFlags.suppressBackgroundActivity) {
         // Don't process queues.
         return;
     }

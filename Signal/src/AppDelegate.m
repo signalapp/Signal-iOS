@@ -242,7 +242,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     if (isLoggingEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
     }
-    if (SSKFeatureFlags.audibleErrorLogging) {
+    if (SSKDebugFlags.audibleErrorLogging) {
         [DebugLogger.sharedLogger enableErrorReporting];
     }
 

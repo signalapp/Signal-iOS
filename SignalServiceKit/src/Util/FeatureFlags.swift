@@ -132,9 +132,6 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static var audibleErrorLogging = build.includes(.internalPreview)
-
-    @objc
     public static var storageModeDescription: String {
         return "\(storageMode)"
     }
@@ -207,16 +204,6 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let profileDisplayChanges = build.includes(.dev)
-
-    // This can be used to shut down various background operations.
-    @objc
-    public static let suppressBackgroundActivity = false
-
-    @objc
-    public static let verboseAboutView = build.includes(.qa)
-
-    @objc
-    public static let logSQLQueries = build.includes(.dev)
 
     @objc
     public static var calling: Bool {
@@ -301,11 +288,29 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let notificationServiceExtension = build.includes(.dev)
+}
 
+/// Flags that we'll leave in the code base indefinitely that are helpful for
+/// development should go here, rather than cluttering up FeatureFlags.
+@objc(SSKDebugFlags)
+public class DebugFlags: NSObject {
     // DEBUG builds won't receive push notifications, which prevents receiving messages
     // while the app is backgrounded or the system call screen is active.
     //
     // Set this flag to true to be able to download messages even when the app is in the background.
     @objc
     public static let keepWebSocketOpenInBackground = false
+
+    @objc
+    public static var audibleErrorLogging = build.includes(.internalPreview)
+
+    @objc
+    public static let verboseAboutView = build.includes(.qa)
+
+    // This can be used to shut down various background operations.
+    @objc
+    public static let suppressBackgroundActivity = false
+
+    @objc
+    public static let logSQLQueries = build.includes(.dev)
 }

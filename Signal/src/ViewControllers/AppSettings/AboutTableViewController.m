@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "AboutTableViewController.h"
@@ -101,7 +101,7 @@
     helpSection.customFooterView = copyrightLabel;
     helpSection.customFooterHeight = @(60.f);
 
-    if (SSKFeatureFlags.verboseAboutView) {
+    if (SSKDebugFlags.verboseAboutView) {
         [self addVerboseContents:contents];
     }
 

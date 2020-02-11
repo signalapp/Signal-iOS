@@ -256,7 +256,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 {
     AssertOnDispatchQueue(self.serialQueue);
 
-    if (SSKFeatureFlags.suppressBackgroundActivity) {
+    if (SSKDebugFlags.suppressBackgroundActivity) {
         // Don't process queues.
         return;
     }
