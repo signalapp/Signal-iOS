@@ -55,7 +55,8 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
 
-    func fetchGroupChangeActions(groupSecretParamsData: Data) -> Promise<[GroupV2Change]>
+    func fetchGroupChangeActions(groupSecretParamsData: Data,
+                                 firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]>
 
     func buildChangeSet(oldGroupModel: TSGroupModel,
                         newGroupModel: TSGroupModel,
@@ -94,6 +95,8 @@ public enum GroupUpdateMode {
     // * Group update should halt at a specific revision.
     // * Group update _should not_ block on message processing.
     // * Group update _should not_ be throttled.
+    //
+    // upToRevision is inclusive.
     case upToSpecificRevisionImmediately(upToRevision: UInt32)
     // * Group update should continue until current revision.
     // * Group update _should_ block on message processing.
@@ -222,7 +225,8 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func fetchGroupChangeActions(groupSecretParamsData: Data) -> Promise<[GroupV2Change]> {
+    public func fetchGroupChangeActions(groupSecretParamsData: Data,
+                                        firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
         owsFail("Not implemented.")
     }
 

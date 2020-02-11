@@ -589,8 +589,8 @@ class IncomingGroupsV2MessageQueue: NSObject {
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
         return firstly {
             groupV2UpdatesSwift.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
-                                                                           groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                           groupUpdateMode: groupUpdateMode)
+                                                                        groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                        groupUpdateMode: groupUpdateMode)
         }.map(on: .global()) { (_) in
             return UpdateOutcome.successShouldProcess
         }.recover(on: .global()) { error -> Guarantee<UpdateOutcome> in

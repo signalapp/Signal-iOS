@@ -271,7 +271,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Fetch Group Change Actions
 
-    public func fetchGroupChangeActions(groupSecretParamsData: Data) -> Promise<[GroupV2Change]> {
+    public func fetchGroupChangeActions(groupSecretParamsData: Data,
+                                        firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
@@ -282,19 +283,25 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }.then(on: DispatchQueue.global()) { (groupId: Data, groupV2Params: GroupV2Params) -> Promise<[GroupV2Change]> in
             return self.fetchGroupChangeActions(groupId: groupId,
                                                 groupV2Params: groupV2Params,
-                                                localUuid: localUuid)
+                                                localUuid: localUuid,
+                                                firstKnownRevision: firstKnownRevision)
         }
     }
 
     private func fetchGroupChangeActions(groupId: Data,
                                          groupV2Params: GroupV2Params,
-                                         localUuid: UUID) -> Promise<[GroupV2Change]> {
+                                         localUuid: UUID,
+                                         firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
 
         let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
             return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
                 let fromRevision = try self.databaseStorage.read { (transaction) throws -> UInt32 in
                     guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                         // This probably isn't an error and will be handled upstream.
+                        if let firstKnownRevision = firstKnownRevision {
+                            Logger.info("Group not in database, using first known revision.")
+                            return firstKnownRevision
+                        }
                         throw GroupsV2Error.groupNotInDatabase
                     }
                     guard groupThread.groupModel.groupsVersion == .V2 else {
