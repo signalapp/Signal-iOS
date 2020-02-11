@@ -65,8 +65,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     private var options: AttachmentApprovalViewControllerOptions {
         var options = receivedOptions
 
-        if FeatureFlags.viewOnceSending,
-            attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
+        if attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
             let firstItem = attachmentApprovalItemCollection.attachmentApprovalItems.first,
             firstItem.attachment.isValidImage || firstItem.attachment.isValidVideo {
             options.insert(.canToggleViewOnce)

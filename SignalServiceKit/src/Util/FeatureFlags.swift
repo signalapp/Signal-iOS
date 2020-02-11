@@ -130,9 +130,6 @@ public class FeatureFlags: NSObject {
     @objc
     public static let strictSyncTranscriptTimestamps = false
 
-    @objc
-    public static let viewOnceSending = true
-
     // Don't enable this flag in production.
     @objc
     public static let strictYDBExtensions = build.includes(.beta)

@@ -361,9 +361,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     }
 
     private var shouldShowViewOnceTooltip: Bool {
-        guard FeatureFlags.viewOnceSending else {
-            return false
-        }
         guard !isViewOnceEnabled else {
             return false
         }
