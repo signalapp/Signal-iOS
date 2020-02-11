@@ -84,7 +84,10 @@ public struct StorageService {
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest.parseData(response.data)
                 let manifestData: Data
                 do {
-                    manifestData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedManifestContainer.value)
+                    manifestData = try KeyBackupService.decrypt(
+                        keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                        encryptedData: encryptedManifestContainer.value
+                    )
                 } catch {
                     throw StorageError.decryptionFailed(manifestVersion: encryptedManifestContainer.version)
                 }
@@ -115,7 +118,10 @@ public struct StorageService {
 
             // Encrypt the manifest
             let manifestData = try manifest.serializedData()
-            let encryptedManifestData = try KeyBackupService.encrypt(keyType: .storageService, data: manifestData)
+            let encryptedManifestData = try KeyBackupService.encrypt(
+                keyType: .storageServiceManifest(version: manifest.version),
+                data: manifestData
+            )
 
             let manifestWrapperBuilder = StorageServiceProtoStorageManifest.builder(
                 version: manifest.version,
@@ -126,7 +132,10 @@ public struct StorageService {
             // Encrypt the new items
             builder.setInsertItem(try newItems.map { item in
                 let itemData = try item.record.serializedData()
-                let encryptedItemData = try KeyBackupService.encrypt(keyType: .storageService, data: itemData)
+                let encryptedItemData = try KeyBackupService.encrypt(
+                    keyType: .storageServiceRecord(identifier: item.identifier),
+                    data: itemData
+                )
                 let itemWrapperBuilder = StorageServiceProtoStorageItem.builder(key: item.identifier.data, value: encryptedItemData)
                 return try itemWrapperBuilder.build()
             })
@@ -145,8 +154,11 @@ public struct StorageService {
                 return nil
             case .conflict:
                 // Our version was out of date, we should've received a copy of the latest version
-                let encryptedManifestData = try StorageServiceProtoStorageManifest.parseData(response.data).value
-                let manifestData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedManifestData)
+                let encryptedManifestContainer = try StorageServiceProtoStorageManifest.parseData(response.data)
+                let manifestData = try KeyBackupService.decrypt(
+                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                    encryptedData: encryptedManifestContainer.value
+                )
                 return try StorageServiceProtoManifestRecord.parseData(manifestData)
             default:
                 owsFailDebug("unexpected response \(response.status)")
@@ -184,9 +196,13 @@ public struct StorageService {
 
             return try itemsProto.items.map { item in
                 let encryptedItemData = item.value
-                let itemData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedItemData)
+                let itemIdentifier = StorageIdentifier(data: item.key)
+                let itemData = try KeyBackupService.decrypt(
+                    keyType: .storageServiceRecord(identifier: itemIdentifier),
+                    encryptedData: encryptedItemData
+                )
                 let record = try StorageServiceProtoStorageRecord.parseData(itemData)
-                return StorageItem(identifier: StorageIdentifier(data: item.key), record: record)
+                return StorageItem(identifier: itemIdentifier, record: record)
             }
         }
     }

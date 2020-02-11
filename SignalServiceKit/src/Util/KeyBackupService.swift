@@ -260,21 +260,58 @@ public class KeyBackupService: NSObject {
 
     // PRAGMA MARK: - Master Key Encryption
 
-    public enum DerivedKey: String, CaseIterable {
-        case storageService = "Storage Service Encryption"
-        case registrationLock = "Registration Lock"
+    public enum DerivedKey: Hashable {
+        case registrationLock
+        case storageService
+
+        case storageServiceManifest(version: UInt64)
+        case storageServiceRecord(identifier: StorageService.StorageIdentifier)
+
+        var rawValue: String {
+            switch self {
+            case .registrationLock:
+                return "Registration Lock"
+            case .storageService:
+                return "Storage Service Encryption"
+            case .storageServiceManifest(let version):
+                return "Manifest_\(version)"
+            case .storageServiceRecord(let identifier):
+                return "Item_\(identifier.data.base64EncodedString())"
+            }
+        }
+
+        static var syncableKeys: [DerivedKey] {
+            return [
+                .storageService
+            ]
+        }
+
+        private var dataToDeriveFrom: Data? {
+            switch self {
+            case .storageServiceManifest, .storageServiceRecord:
+                return DerivedKey.storageService.data
+            default:
+                // Most keys derive directly from the master key.
+                // Only a few exceptions derive from another derived key.
+                guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else {
+                    owsFailDebug("missing master key")
+                    return nil
+                }
+                return masterKey
+            }
+        }
 
         public var data: Data? {
             // If we have this derived key stored in the database, use it.
             // This should only happen if we're a linked device and received
             // the derived key via a sync message, since we won't know about
             // the master key.
-            if tsAccountManager.isPrimaryDevice,
+            if (!tsAccountManager.isPrimaryDevice || CurrentAppContext().isRunningTests),
                 let cachedData = cacheQueue.sync(execute: { cachedSyncedDerivedKeys[self] }) {
                 return cachedData
             }
 
-            guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else {
+            guard let dataToDeriveFrom = dataToDeriveFrom else {
                 return nil
             }
 
@@ -283,7 +320,7 @@ public class KeyBackupService: NSObject {
                 return nil
             }
 
-            return Cryptography.computeSHA256HMAC(data, withHMACKey: masterKey)
+            return Cryptography.computeSHA256HMAC(data, withHMACKey: dataToDeriveFrom)
         }
 
         public var isAvailable: Bool { return data != nil }
@@ -444,7 +481,7 @@ public class KeyBackupService: NSObject {
             }
             encodedVerificationString = keyValueStore.getString(encodedVerificationStringIdentifier, transaction: transaction)
 
-            for type in DerivedKey.allCases {
+            for type in DerivedKey.syncableKeys {
                 syncedDerivedKeys[type] = keyValueStore.getData(type.rawValue, transaction: transaction)
             }
         }
@@ -518,8 +555,12 @@ public class KeyBackupService: NSObject {
     }
 
     public static func storeSyncedKey(type: DerivedKey, data: Data?, transaction: SDSAnyWriteTransaction) {
-        guard !tsAccountManager.isPrimaryDevice else {
+        guard !tsAccountManager.isPrimaryDevice || CurrentAppContext().isRunningTests else {
             return owsFailDebug("primary device should never store synced keys")
+        }
+
+        guard DerivedKey.syncableKeys.contains(type) else {
+            return owsFailDebug("tried to store a non-syncable key")
         }
 
         keyValueStore.setData(data, key: type.rawValue, transaction: transaction)

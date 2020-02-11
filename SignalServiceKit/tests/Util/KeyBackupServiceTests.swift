@@ -98,6 +98,68 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
         AssertPin("notmypassword", isValid: false)
     }
 
+    func test_storageServiceEncryption() throws {
+        struct Vector: Codable {
+            enum VectorType: String, Codable {
+                case storageServiceManifest
+                case storageServiceRecord
+            }
+            let type: VectorType
+
+            enum VectorMode: String, Codable {
+                case local
+                case synced
+            }
+            let mode: VectorMode
+
+            let masterKeyData: Data?
+            let storageServiceKeyData: Data
+            let derivedKeyData: Data
+            let associatedValueData: Data
+            let rawData: Data
+            let encryptedData: Data
+
+            var derivedKey: KeyBackupService.DerivedKey {
+                switch type {
+                case .storageServiceRecord:
+                    return .storageServiceRecord(identifier: StorageService.StorageIdentifier(data: associatedValueData))
+                case .storageServiceManifest:
+                    return .storageServiceManifest(version: associatedValueData.withUnsafeBytes { $0.pointee })
+                }
+            }
+
+            func storeKey(transaction: SDSAnyWriteTransaction) {
+                KeyBackupService.clearKeys(transaction: transaction)
+                switch mode {
+                case .local:
+                    KeyBackupService.store(masterKeyData!, pinType: .numeric, encodedVerificationString: "", transaction: transaction)
+                case .synced:
+                    KeyBackupService.storeSyncedKey(type: .storageService, data: storageServiceKeyData, transaction: transaction)
+                }
+            }
+        }
+
+        let vectorsUrl = Bundle(for: type(of: self)).url(forResource: "kbs_storage_service_encryption_vectors", withExtension: "json")!
+        let jsonData = try Data(contentsOf: vectorsUrl)
+        let vectors = try decoder.decode([Vector].self, from: jsonData)
+
+        for vector in vectors {
+            databaseStorage.write { vector.storeKey(transaction: $0) }
+
+            XCTAssertEqual(KeyBackupService.hasMasterKey, vector.masterKeyData != nil)
+
+            XCTAssertEqual(vector.derivedKeyData, vector.derivedKey.data)
+            XCTAssertEqual(vector.storageServiceKeyData, KeyBackupService.DerivedKey.storageService.data)
+
+            let encryptedData = try KeyBackupService.encrypt(keyType: vector.derivedKey, data: vector.rawData)
+            let decryptedData = try KeyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: encryptedData)
+            XCTAssertEqual(vector.rawData, decryptedData)
+
+            let decryptedVectorData = try KeyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: vector.encryptedData)
+            XCTAssertEqual(vector.rawData, decryptedVectorData)
+        }
+    }
+
     func AssertPin(
         _ pin: String,
         isValid expectedResult: Bool,
