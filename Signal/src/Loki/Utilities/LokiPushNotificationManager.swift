@@ -13,10 +13,10 @@ final class LokiPushNotificationManager : NSObject {
     func register(with token: Data) {
         let hexEncodedToken = token.map { String(format: "%02.2hhx", $0) }.joined()
         let oldToken = UserDefaults.standard.string(forKey: "deviceToken")
-        let lastUploadTime = UserDefaults.standard.integer(forKey: "lastUploadTime")
-        let now = Int(Date().timeIntervalSince1970)
-        if hexEncodedToken == oldToken && now - lastUploadTime < 48 * 60 * 60  {
-            Logger.info("Token is not changed, no need to upload")
+        let lastUploadTime = UserDefaults.standard.double(forKey: "lastDeviceTokenUploadTime")
+        let now = Date().timeIntervalSince1970
+        if hexEncodedToken == oldToken && now - lastUploadTime < 2 * 24 * 60 * 60  {
+            print("[Loki] Device token hasn't changed; no need to upload.")
             return
         }
         // Send token to Loki server
@@ -30,7 +30,7 @@ final class LokiPushNotificationManager : NSObject {
                 return print("[Loki] An error occured during device token registration: \(json["message"] as? String ?? "nil").")
             }
             UserDefaults.standard.set(hexEncodedToken, forKey: "deviceToken")
-            UserDefaults.standard.set(now, forKey: "lastUploadTime")
+            UserDefaults.standard.set(now, forKey: "lastDeviceTokenUploadTime")
         }, failure: { _, error in
             print("[Loki] Couldn't register device token.")
         })
