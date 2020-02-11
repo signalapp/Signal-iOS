@@ -297,11 +297,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
                 let fromRevision = try self.databaseStorage.read { (transaction) throws -> UInt32 in
                     guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                        // This probably isn't an error and will be handled upstream.
                         if let firstKnownRevision = firstKnownRevision {
                             Logger.info("Group not in database, using first known revision.")
                             return firstKnownRevision
                         }
+                        // This probably isn't an error and will be handled upstream.
                         throw GroupsV2Error.groupNotInDatabase
                     }
                     guard groupThread.groupModel.groupsVersion == .V2 else {
