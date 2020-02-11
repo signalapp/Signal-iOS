@@ -201,11 +201,6 @@ class StorageServiceOperation: OWSOperation {
     override public func run() {
         Logger.info("\(mode)")
 
-        // Do nothing until the feature is enabled.
-        guard FeatureFlags.socialGraphOnServer else {
-            return reportSuccess()
-        }
-
         // We don't have backup keys, do nothing. We'll try a
         // fresh restore once the keys are set.
         guard KeyBackupService.DerivedKey.storageService.isAvailable else {
