@@ -113,11 +113,6 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static var preserveYdb: Bool {
-        return false
-    }
-
-    @objc
     public static let uuidCapabilities = !isUsingProductionService
 
     @objc

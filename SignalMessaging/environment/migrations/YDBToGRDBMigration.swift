@@ -173,10 +173,6 @@ extension YDBToGRDBMigration {
         // is set if there are YDB files.
         SSKPreferences.setIsYdbMigrated(true)
 
-        guard !FeatureFlags.preserveYdb else {
-            return
-        }
-
         guard let primaryStorage = primaryStorage else {
             owsFail("Missing primaryStorage.")
         }

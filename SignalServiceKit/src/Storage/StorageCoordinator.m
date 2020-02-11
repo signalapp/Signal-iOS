@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
+#import "StorageCoordinator.h"
 #import "AppReadiness.h"
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/StorageCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -383,10 +383,6 @@ NSString *NSStringForDataStore(DataStore value)
 
 - (void)removeYdbFiles
 {
-    if (SSKFeatureFlags.preserveYdb) {
-        // Don't clean up YDB..
-        return;
-    }
     if (SSKFeatureFlags.storageMode == StorageModeGrdbThrowawayIfMigrating) {
         // Don't clean up YDB; we're in throwaway mode.
         return;
