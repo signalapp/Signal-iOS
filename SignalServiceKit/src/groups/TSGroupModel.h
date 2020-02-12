@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class GroupAccess;
+@class GroupMembership;
 @class SignalServiceAddress;
 
 extern const int32_t kGroupIdLengthV1;
@@ -15,7 +16,8 @@ extern const int32_t kGroupIdLengthV2;
 
 typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVersionV2 };
 
-typedef NS_CLOSED_ENUM(NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal = 0, TSGroupMemberRole_Administrator };
+typedef NS_CLOSED_ENUM(
+    NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal = 0, TSGroupMemberRole_Administrator = 1 };
 
 // NOTE: This class is tightly coupled to GroupManager.
 //       If you modify this class - especially if you
@@ -36,15 +38,12 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal
 @property (nonatomic, readonly, nullable) NSData *groupAvatarData;
 
 @property (nonatomic, readonly) GroupsVersion groupsVersion;
+@property (nonatomic, readonly) GroupMembership *groupMembership;
 
 // These properties only apply if groupsVersion == GroupsVersionV2.
-@property (nonatomic, readonly, nullable) NSData *groupSecretParamsData;
+@property (nonatomic, readonly) GroupAccess *groupAccess;
 @property (nonatomic, readonly) uint32_t groupV2Revision;
-// Note that this property uses TSGroupMemberRole, not GroupsProtoMemberRole.
-@property (nonatomic, readonly, nullable) NSDictionary<NSUUID *, NSNumber *> *groupsV2MemberRoles;
-// Note that this property uses TSGroupMemberRole, not GroupsProtoMemberRole.
-@property (nonatomic, readonly, nullable) NSDictionary<NSUUID *, NSNumber *> *groupsV2PendingMemberRoles;
-@property (nonatomic, readonly, nullable) GroupAccess *groupAccess;
+@property (nonatomic, readonly, nullable) NSData *groupSecretParamsData;
 
 // GroupsV2 TODO: This should be done via GroupManager.
 - (void)setGroupAvatarDataWithImage:(nullable UIImage *)image;
@@ -62,13 +61,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal
 - (instancetype)initWithGroupId:(NSData *)groupId
                            name:(nullable NSString *)name
                      avatarData:(nullable NSData *)avatarData
-                        members:(NSArray<SignalServiceAddress *> *)members
-            groupsV2MemberRoles:(NSDictionary<NSUUID *, NSNumber *> *)groupsV2MemberRoles
-     groupsV2PendingMemberRoles:(NSDictionary<NSUUID *, NSNumber *> *)groupsV2PendingMemberRoles
-                    groupAccess:(GroupAccess *)groupAccess
-                  groupsVersion:(GroupsVersion)groupsVersion
-                groupV2Revision:(uint32_t)groupV2Revision
-          groupSecretParamsData:(nullable NSData *)groupSecretParamsData NS_DESIGNATED_INITIALIZER;
+                        members:(NSArray<SignalServiceAddress *> *)members NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;
@@ -77,13 +70,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
 
 + (NSData *)generateRandomV1GroupId;
-
-// Note that these methods use TSGroupMemberRole, not GroupsProtoMemberRole.
-//
-// Generally it should be more convenient to use groupMembership rather than
-// these properties.
-- (TSGroupMemberRole)roleForGroupsV2Member:(SignalServiceAddress *)address;
-- (TSGroupMemberRole)roleForGroupsV2PendingMember:(SignalServiceAddress *)address;
 
 @end
 

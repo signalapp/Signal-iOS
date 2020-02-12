@@ -254,6 +254,9 @@ public class FeatureFlags: NSObject {
     public static let groupsV2embedProtosInGroupUpdates = false
 
     @objc
+    public static let groupsV2processProtosInGroupUpdates = false
+
+    @objc
     public static let groupsV2showV2Indicator = groupsV2 && build.includes(.internalPreview)
 
     @objc
@@ -262,6 +265,10 @@ public class FeatureFlags: NSObject {
     // This flag auto-enables the groupv2 flags in RemoteConfig.
     @objc
     public static let groupsV2IgnoreServerFlags = groupsV2
+
+    // If set, this will invite instead of adding other users.
+    @objc
+    public static let groupsV2forceInvites = false
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)

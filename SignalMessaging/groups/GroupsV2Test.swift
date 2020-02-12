@@ -22,6 +22,10 @@ public class GroupsV2Test: NSObject {
         return SSKEnvironment.shared.groupsV2
     }
 
+    private class var groupsV2Swift: GroupsV2Swift {
+        return self.groupsV2 as! GroupsV2Swift
+    }
+
     private class var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
@@ -60,19 +64,16 @@ public class GroupsV2Test: NSObject {
         let otherAddresses = Set(stagingAccounts).subtracting([localAddress])
         let localAddressSet = Set([SignalServiceAddress(uuid: localUuid)])
         Logger.verbose("otherAddresses: \(otherAddresses)")
-        guard let groupsV2Swift = self.groupsV2 as? GroupsV2Swift else {
-            owsFailDebug("Missing groupsV2Swift.")
-            return
-        }
-        GroupManager.createNewGroup(members: members,
-                                    name: title0,
-                                    shouldSendMessage: true)
-            .then(on: .global()) { (groupThread: TSGroupThread) -> Promise<(Data, GroupV2Snapshot)> in
+        firstly {
+            GroupManager.createNewGroup(members: members,
+                                        name: title0,
+                                        shouldSendMessage: true)
+        }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<(Data, GroupV2Snapshot)> in
                 let groupModel = groupThread.groupModel
                 guard groupModel.groupsVersion == .V2 else {
                     throw OWSAssertionError("Not a V2 group.")
                 }
-                return groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+            return self.groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
                     .map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
                         return (groupThread.groupModel.groupId, groupV2Snapshot)
                 }
@@ -96,8 +97,8 @@ public class GroupsV2Test: NSObject {
 
             // GroupsV2 TODO: Test around administrators and pending members.
             let expectedMembers = localAddressSet
-            guard groupMembership.allMembers == expectedMembers else {
-                throw OWSAssertionError("Unexpected members: \(groupMembership.allMembers).")
+            guard groupMembership.nonPendingMembers == expectedMembers else {
+                throw OWSAssertionError("Unexpected members: \(groupMembership.nonPendingMembers).")
             }
             let expectedAdministrators = expectedMembers
             guard groupMembership.administrators == expectedAdministrators else {
@@ -125,11 +126,12 @@ public class GroupsV2Test: NSObject {
 
             var groupMembershipBuilder = groupModel.groupMembership.asBuilder
             for address in otherAddresses {
-                groupMembershipBuilder.replace(address, isAdministrator: false, isPending: false)
+                groupMembershipBuilder.remove(address)
+                groupMembershipBuilder.addNonPendingMember(address, role: .normal)
             }
             let groupMembership = groupMembershipBuilder.build()
 
-            let groupAccess = groupModel.groupAccess!
+            let groupAccess = groupModel.groupAccess
             // GroupsV2 TODO: Add and remove members, change avatar, etc.
 
             return GroupManager.updateExistingGroup(groupId: groupId,
@@ -167,8 +169,8 @@ public class GroupsV2Test: NSObject {
             // GroupsV2 TODO: Test around administrators and pending members.
 
             let expectedMembers = Set(stagingAccounts)
-            guard groupMembership.allMembers == expectedMembers else {
-                throw OWSAssertionError("Unexpected members: \(groupMembership.allMembers).")
+            guard groupMembership.nonPendingMembers == expectedMembers else {
+                throw OWSAssertionError("Unexpected members: \(groupMembership.nonPendingMembers).")
             }
             let expectedAdministrators = localAddressSet
             guard groupMembership.administrators == expectedAdministrators else {
@@ -200,7 +202,7 @@ public class GroupsV2Test: NSObject {
             }
             let groupMembership = groupMembershipBuilder.build()
 
-            let groupAccess = groupModel.groupAccess!
+            let groupAccess = groupModel.groupAccess
             // GroupsV2 TODO: Add and remove members, change avatar, etc.
 
             return GroupManager.updateExistingGroup(groupId: groupId,
@@ -238,8 +240,8 @@ public class GroupsV2Test: NSObject {
             // GroupsV2 TODO: Test around administrators and pending members.
 
             let expectedMembers = localAddressSet
-            guard groupMembership.allMembers == expectedMembers else {
-                throw OWSAssertionError("Unexpected members: \(groupMembership.allMembers).")
+            guard groupMembership.nonPendingMembers == expectedMembers else {
+                throw OWSAssertionError("Unexpected members: \(groupMembership.nonPendingMembers).")
             }
             let expectedAdministrators = localAddressSet
             guard groupMembership.administrators == expectedAdministrators else {

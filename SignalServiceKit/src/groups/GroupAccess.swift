@@ -10,6 +10,21 @@ public enum GroupV2Access: UInt, Codable {
     case any
     case member
     case administrator
+
+    var description: String {
+        get {
+            switch self {
+            case .unknown:
+                return "unknown"
+            case .any:
+                return "any"
+            case .member:
+                return "member"
+            case .administrator:
+                return "administrator"
+            }
+        }
+    }
 }
 
 // MARK: -
@@ -54,6 +69,11 @@ public class GroupAccess: MTLModel {
         return allAccess
     }
 
+    @objc
+    public static var defaultForV2: GroupAccess {
+        return GroupAccess(member: .member, attributes: .member)
+    }
+
     public class func groupV2Access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
         switch value {
         case .any:
@@ -78,5 +98,9 @@ public class GroupAccess: MTLModel {
         default:
             return .unknown
         }
+    }
+
+    public override var debugDescription: String {
+        return "[members: \(member.description), attributes: \(attributes.description), ]"
     }
 }

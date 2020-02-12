@@ -5,6 +5,7 @@
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
 #import "UIImage+OWS.h"
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -20,8 +21,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
 @property (nonatomic, readonly) NSUInteger groupModelSchemaVersion;
 
-@property (nonatomic) uint32_t groupV2Revision;
-
 @end
 
 #pragma mark -
@@ -36,37 +35,19 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
                            name:(nullable NSString *)name
                      avatarData:(nullable NSData *)avatarData
                         members:(NSArray<SignalServiceAddress *> *)members
-            groupsV2MemberRoles:(NSDictionary<NSUUID *, NSNumber *> *)groupsV2MemberRoles
-     groupsV2PendingMemberRoles:(NSDictionary<NSUUID *, NSNumber *> *)groupsV2PendingMemberRoles
-                    groupAccess:(GroupAccess *)groupAccess
-                  groupsVersion:(GroupsVersion)groupsVersion
-                groupV2Revision:(uint32_t)groupV2Revision
-          groupSecretParamsData:(nullable NSData *)groupSecretParamsData
 {
-    OWSAssertDebug(members != nil);
-    OWSAssertDebug([GroupManager isValidGroupId:groupId groupsVersion:groupsVersion]);
-    if (groupsVersion == GroupsVersionV1) {
-        OWSAssertDebug(groupSecretParamsData == nil);
-    } else {
-        OWSAssertDebug(groupSecretParamsData.length > 0);
-    }
-
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _groupName = name;
-    _groupMembers = [members copy];
-    _groupAvatarData = avatarData;
     _groupId = groupId;
+    _groupName = name;
+    _groupAvatarData = avatarData;
+    _groupMembers = members;
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
-    _groupsVersion = groupsVersion;
-    _groupSecretParamsData = groupSecretParamsData;
-    _groupsV2MemberRoles = [groupsV2MemberRoles copy];
-    _groupsV2PendingMemberRoles = [groupsV2PendingMemberRoles copy];
-    _groupAccess = groupAccess;
-    _groupV2Revision = groupV2Revision;
+
+    OWSAssertDebug([GroupManager isValidGroupId:groupId groupsVersion:self.groupsVersion]);
 
     return self;
 }
@@ -102,24 +83,32 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
         }
     }
 
-    if (self.groupsVersion == GroupsVersionV1) {
-        // Do nothing.
-    } else {
-        if (self.groupAccess == nil) {
-            OWSFailDebug(@"Missing groupAccess.");
-            _groupAccess = GroupAccess.allAccess;
-        }
-        if (self.groupsV2MemberRoles == nil) {
-            OWSFailDebug(@"Missing groupsV2MemberRoles.");
-            _groupsV2MemberRoles = @{};
-        }
-        if (self.groupsV2PendingMemberRoles == nil) {
-            OWSFailDebug(@"Missing groupsV2PendingMemberRoles.");
-            _groupsV2PendingMemberRoles = @{};
-        }
-    }
-
     return self;
+}
+
+- (GroupsVersion)groupsVersion
+{
+    return GroupsVersionV1;
+}
+
+- (GroupMembership *)groupMembership
+{
+    return [[GroupMembership alloc] initWithV1Members:[NSSet setWithArray:self.groupMembers]];
+}
+
+- (GroupAccess *)groupAccess
+{
+    return GroupAccess.forV1;
+}
+
+- (uint32_t)groupV2Revision
+{
+    return 0;
+}
+
+- (nullable NSData *)groupSecretParamsData
+{
+    return nil;
 }
 
 + (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image
@@ -188,8 +177,9 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 }
 
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)other {
-    if (self == other)
+    if (self == other) {
         return YES;
+    }
     if (![_groupId isEqualToData:other.groupId]) {
         return NO;
     }
@@ -204,19 +194,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![myGroupMembersSet isEqualToSet:otherGroupMembersSet]) {
         return NO;
     }
-    if (_groupsVersion != other.groupsVersion) {
-        return NO;
-    }
-    if (_groupV2Revision != other.groupV2Revision) {
-        return NO;
-    }
-    if (![NSObject isNullableObject:self.groupSecretParamsData equalTo:other.groupSecretParamsData]) {
-        return NO;
-    }
-    if (![NSObject isNullableObject:self.groupsV2MemberRoles equalTo:other.groupsV2MemberRoles]) {
-        return NO;
-    }
-    if (![NSObject isNullableObject:self.groupsV2PendingMemberRoles equalTo:other.groupsV2PendingMemberRoles]) {
+    if (self.groupsVersion != other.groupsVersion) {
         return NO;
     }
     return YES;
@@ -247,43 +225,25 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     }];
 }
 
-- (TSGroupMemberRole)roleForAddress:(SignalServiceAddress *)address
-                            roleMap:(NSDictionary<NSUUID *, NSNumber *> *)roleMap
-{
-    TSGroupMemberRole defaultRole = TSGroupMemberRole_Normal;
-
-    NSUUID *_Nullable uuid = address.uuid;
-    if (address.uuid == nil) {
-        OWSLogVerbose(@"Address: %@", address);
-        OWSFailDebug(@"Address is missing uuid.");
-        return defaultRole;
-    }
-    NSNumber *_Nullable nsRole = roleMap[uuid];
-    if (nsRole == nil) {
-        OWSLogVerbose(@"Address: %@", address);
-        if (self.groupsVersion == GroupsVersionV2) {
-            OWSFailDebug(@"Address is missing role.");
-        }
-        return defaultRole;
-    }
-    return (TSGroupMemberRole)nsRole.unsignedIntegerValue;
-}
-
-- (TSGroupMemberRole)roleForGroupsV2Member:(SignalServiceAddress *)address
-{
-    return [self roleForAddress:address roleMap:self.groupsV2MemberRoles];
-}
-
-- (TSGroupMemberRole)roleForGroupsV2PendingMember:(SignalServiceAddress *)address
-{
-    return [self roleForAddress:address roleMap:self.groupsV2PendingMemberRoles];
-}
-
 // GroupsV2 TODO: This should be done via GroupManager.
 - (void)updateGroupMembers:(NSArray<SignalServiceAddress *> *)groupMembers
 {
     _groupMembers = [groupMembers copy];
     // GroupsV2 TODO: Remove stale keys from groupsV2MemberRoles.
+}
+
+- (NSString *)debugDescription
+{
+    NSMutableString *result = [NSMutableString new];
+    [result appendString:@"["];
+    [result appendFormat:@"groupId: %@,\n", self.groupId.hexadecimalString];
+    [result appendFormat:@"groupModelSchemaVersion: %lu,\n", (unsigned long)self.groupModelSchemaVersion];
+    [result appendFormat:@"groupsVersion: %lu,\n", (unsigned long)self.groupsVersion];
+    [result appendFormat:@"groupName: %@,\n", self.groupName];
+    [result appendFormat:@"groupAvatarData: %@,\n", self.groupAvatarData];
+    [result appendFormat:@"groupMembers: %@,\n", [GroupMembership normalize:self.groupMembers]];
+    [result appendString:@"]"];
+    return [result copy];
 }
 
 @end

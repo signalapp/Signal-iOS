@@ -150,8 +150,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         // Don't include already-invited members.
         // Persist list of invited members on TSGroupModel.
 
-        let oldMemberUuids = Set(oldGroupMembership.allMembers.compactMap { $0.uuid })
-        let newMemberUuids = Set(newGroupMembership.allMembers.compactMap { $0.uuid })
+        let oldMemberUuids = Set(oldGroupMembership.nonPendingMembers.compactMap { $0.uuid })
+        let newMemberUuids = Set(newGroupMembership.nonPendingMembers.compactMap { $0.uuid })
         for uuid in oldMemberUuids.intersection(newMemberUuids) {
             let address = SignalServiceAddress(uuid: uuid)
             let oldIsAdministrator = oldGroupMembership.isAdministrator(address)
@@ -163,12 +163,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             changeRoleForMember(uuid, role: role)
         }
 
-        guard let oldAccess = oldGroupModel.groupAccess else {
-            throw OWSAssertionError("Missing groupAccess.")
-        }
-        guard let newAccess = newGroupModel.groupAccess else {
-            throw OWSAssertionError("Missing groupAccess.")
-        }
+        let oldAccess = oldGroupModel.groupAccess
+        let newAccess = newGroupModel.groupAccess
         if oldAccess.member != newAccess.member {
             self.accessForMembers = newAccess.member
         }
@@ -258,7 +254,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         guard let groupsV2Impl = groupsV2 as? GroupsV2Impl else {
             return Promise(error: OWSAssertionError("Invalid groupsV2: \(type(of: groupsV2))"))
         }
-        guard let localUuid = self.tsAccountManager.localUuid else {
+        guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
 
@@ -280,7 +276,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         return firstly {
             groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
         }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
-                return groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
+            return groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
         }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
             return try self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
                                                   currentDisappearingMessageToken: currentDisappearingMessageToken,
@@ -315,7 +311,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         let groupV2Params = try GroupV2Params(groupModel: currentGroupModel)
 
         let actionsBuilder = GroupsProtoGroupChangeActions.builder()
-        guard let localUuid = self.tsAccountManager.localUuid else {
+        guard let localUuid = tsAccountManager.localUuid else {
             throw OWSAssertionError("Missing localUuid.")
         }
         let localAddress = SignalServiceAddress(uuid: localUuid)
@@ -410,9 +406,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             didChange = true
         }
 
-        guard let currentAccess = currentGroupModel.groupAccess else {
-            throw OWSAssertionError("Missing groupAccess.")
-        }
+        let currentAccess = currentGroupModel.groupAccess
         if let access = self.accessForMembers {
             if currentAccess.member != access {
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.builder()
@@ -432,7 +426,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         if self.shouldAcceptInvite {
             // Check that we are still invited.
-            if currentGroupMembership.allPendingMembers.contains(localAddress) {
+            if currentGroupMembership.pendingMembers.contains(localAddress) {
                 guard let profileKeyCredential = profileKeyCredentialMap[localUuid] else {
                     throw OWSAssertionError("Missing profile key credential]: \(localUuid)")
                 }
@@ -446,14 +440,14 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         if self.shouldLeaveGroupDeclineInvite {
             // Check that we are still invited or in group.
-            if currentGroupMembership.allPendingMembers.contains(localAddress) {
+            if currentGroupMembership.pendingMembers.contains(localAddress) {
                 // Decline invite
                 let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let localUserId = try groupV2Params.userId(forUuid: localUuid)
                 actionBuilder.setDeletedUserID(localUserId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
                 didChange = true
-            } else if currentGroupMembership.allMembers.contains(localAddress) {
+            } else if currentGroupMembership.nonPendingMembers.contains(localAddress) {
                 // Leave group
                 let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
                 let localUserId = try groupV2Params.userId(forUuid: localUuid)

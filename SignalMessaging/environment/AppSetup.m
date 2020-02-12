@@ -177,6 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:[ExperienceUpgrade collection]];
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:@"Signal.ExperienceUpgrade"];
         [NSKeyedUnarchiver setClass:[OWSGroupInfoRequestMessage class] forClassName:@"OWSSyncGroupsRequestMessage"];
+        [NSKeyedUnarchiver setClass:[TSGroupModelV2 class] forClassName:@"TSGroupModelV2"];
 
         // Prevent device from sleeping during migrations.
         // This protects long migrations (e.g. the YDB-to-GRDB migration)

@@ -4,57 +4,121 @@
 
 import Foundation
 
-public struct GroupMembership {
-    internal struct State {
-        let isAdministrator: Bool
-        let isPending: Bool
+public extension TSGroupMemberRole {
+    static func role(for value: GroupsProtoMemberRole) -> TSGroupMemberRole? {
+        switch value {
+        case .`default`:
+            return .normal
+        case .administrator:
+            return .administrator
+        default:
+            owsFailDebug("Invalid value: \(value.rawValue)")
+            return nil
+        }
     }
+}
+
+// MARK: -
+
+// This class is immutable.
+@objc
+public class GroupMembership: MTLModel {
+    // This class is immutable.
+    @objc
+    class MemberState: MTLModel {
+        @objc
+        var role: TSGroupMemberRole = .normal
+
+        @objc
+        var isPending: Bool = false
+
+        // Only applies for pending members.
+        @objc
+        var addedByUuid: UUID?
+
+        @objc
+        public override init() {
+            super.init()
+        }
+
+        init(role: TSGroupMemberRole,
+             isPending: Bool,
+             addedByUuid: UUID? = nil) {
+            self.role = role
+            self.isPending = isPending
+            self.addedByUuid = addedByUuid
+
+            super.init()
+        }
+
+        @objc
+        required public init?(coder aDecoder: NSCoder) {
+            super.init(coder: aDecoder)
+        }
+
+        @objc
+        public required init(dictionary dictionaryValue: [String: Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+
+        @objc
+        public var isAdministrator: Bool {
+            return role == .administrator
+        }
+    }
+
     // By using a single dictionary we ensure that no address has more than one state.
-    internal typealias StateMap = [SignalServiceAddress: State]
-    private let stateMap: StateMap
+    typealias MemberStateMap = [SignalServiceAddress: MemberState]
+    @objc
+    var memberStateMap: MemberStateMap
 
+    @objc
     public var nonAdminMembers: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { !$0.value.isAdministrator && !$0.value.isPending }.keys)
+        return Set(memberStateMap.filter { !$0.value.isAdministrator && !$0.value.isPending }.keys)
     }
+    @objc
     public var administrators: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { $0.value.isAdministrator && !$0.value.isPending }.keys)
+        return Set(memberStateMap.filter { $0.value.isAdministrator && !$0.value.isPending }.keys)
     }
-    // allMembers includes all non-pending members,
-    // i.e. normal and administrator members.
-    public var allMembers: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { !$0.value.isPending }.keys)
+    @objc
+    public var nonPendingMembers: Set<SignalServiceAddress> {
+        return Set(memberStateMap.filter { !$0.value.isPending }.keys)
     }
 
+    @objc
     public var pendingNonAdminMembers: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { !$0.value.isAdministrator && $0.value.isPending }.keys)
+        return Set(memberStateMap.filter { !$0.value.isAdministrator && $0.value.isPending }.keys)
     }
+    @objc
     public var pendingAdministrators: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { $0.value.isAdministrator && $0.value.isPending }.keys)
+        return Set(memberStateMap.filter { $0.value.isAdministrator && $0.value.isPending }.keys)
     }
-    // allPendingMembers includes normal and administrator "pending members".
-    public var allPendingMembers: Set<SignalServiceAddress> {
-        return Set(stateMap.filter { $0.value.isPending }.keys)
+    // pendingMembers includes normal and administrator "pending members".
+    @objc
+    public var pendingMembers: Set<SignalServiceAddress> {
+        return Set(memberStateMap.filter { $0.value.isPending }.keys)
     }
 
     // allUsers includes _all_ users:
     //
     // * Normal and administrator.
     // * Pending and non-pending.
+    @objc
     public var allUsers: Set<SignalServiceAddress> {
-        return allMembers.union(allPendingMembers)
+        return Set(memberStateMap.keys)
     }
 
     public struct Builder {
-        private var stateMap = StateMap()
+        private var memberStateMap = MemberStateMap()
 
-        internal init() {}
+        public init() {}
 
-        internal init(stateMap: StateMap) {
-            self.stateMap = stateMap
+        internal init(memberStateMap: MemberStateMap) {
+            self.memberStateMap = memberStateMap
         }
 
         public mutating func remove(_ address: SignalServiceAddress) {
-            stateMap.removeValue(forKey: address)
+            memberStateMap.removeValue(forKey: address)
         }
 
         public mutating func remove(_ addresses: Set<SignalServiceAddress>) {
@@ -63,85 +127,117 @@ public struct GroupMembership {
             }
         }
 
-        public mutating func add(_ address: SignalServiceAddress,
-                                 isAdministrator: Bool,
-                                 isPending: Bool) {
-            add([address], isAdministrator: isAdministrator, isPending: isPending)
+        public mutating func addNonPendingMember(_ address: SignalServiceAddress,
+                                                 role: TSGroupMemberRole) {
+            addNonPendingMembers([address], role: role)
         }
 
-        public mutating func add(_ addresses: Set<SignalServiceAddress>,
-                                 isAdministrator: Bool,
-                                 isPending: Bool) {
+        public mutating func addNonPendingMembers(_ addresses: Set<SignalServiceAddress>,
+                                                  role: TSGroupMemberRole) {
             for address in addresses {
-                guard stateMap[address] == nil else {
+                if memberStateMap[address] != nil {
                     owsFailDebug("Duplicate address.")
-                    continue
                 }
-                stateMap[address] = State(isAdministrator: isAdministrator, isPending: isPending)
+                memberStateMap[address] = MemberState(role: role, isPending: false, addedByUuid: nil)
             }
         }
 
-        public mutating func replace(_ address: SignalServiceAddress,
-                                 isAdministrator: Bool,
-                                 isPending: Bool) {
-            remove(address)
-            add([address], isAdministrator: isAdministrator, isPending: isPending)
+        public mutating func addPendingMember(_ address: SignalServiceAddress,
+                                              role: TSGroupMemberRole,
+                                              addedByUuid: UUID) {
+            addPendingMembers([address], role: role, addedByUuid: addedByUuid)
         }
 
-        internal func asStateMap() -> StateMap {
-            return stateMap
+        public mutating func addPendingMembers(_ addresses: Set<SignalServiceAddress>,
+                                               role: TSGroupMemberRole,
+                                               addedByUuid: UUID) {
+            for address in addresses {
+                if memberStateMap[address] != nil {
+                    owsFailDebug("Duplicate address.")
+                }
+                memberStateMap[address] = MemberState(role: role, isPending: true, addedByUuid: addedByUuid)
+            }
+        }
+
+        public mutating func copyMember(_ address: SignalServiceAddress,
+                                        from oldGroupMembership: GroupMembership) {
+            guard let memberState = oldGroupMembership.memberStateMap[address] else {
+                owsFailDebug("Unknown address")
+                return
+            }
+            if memberStateMap[address] != nil {
+                owsFailDebug("Duplicate address.")
+            }
+            memberStateMap[address] = memberState
+        }
+
+        internal func asMemberStateMap() -> MemberStateMap {
+            return memberStateMap
         }
 
         public func build() -> GroupMembership {
-            return GroupMembership(stateMap: stateMap)
+            return GroupMembership(memberStateMap: memberStateMap)
         }
     }
 
-    public init(nonAdminMembers: Set<SignalServiceAddress>,
-                administrators: Set<SignalServiceAddress>,
-                pendingNonAdminMembers: Set<SignalServiceAddress>,
-                pendingAdministrators: Set<SignalServiceAddress>) {
+    @objc
+    public override init() {
+        self.memberStateMap = MemberStateMap()
 
-        var builder = Builder()
-        builder.add(nonAdminMembers, isAdministrator: false, isPending: false)
-        builder.add(administrators, isAdministrator: true, isPending: false)
-        builder.add(pendingNonAdminMembers, isAdministrator: false, isPending: true)
-        builder.add(pendingAdministrators, isAdministrator: true, isPending: true)
-        self.stateMap = builder.asStateMap()
+        super.init()
     }
 
-    internal init(stateMap: StateMap) {
-        self.stateMap = stateMap
+    @objc
+    required public init?(coder aDecoder: NSCoder) {
+        self.memberStateMap = MemberStateMap()
+        super.init(coder: aDecoder)
     }
 
+    @objc
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
+        self.memberStateMap = MemberStateMap()
+        try super.init(dictionary: dictionaryValue)
+    }
+
+    internal init(memberStateMap: MemberStateMap) {
+        self.memberStateMap = memberStateMap
+
+        super.init()
+    }
+
+    @objc
     public init(v1Members: Set<SignalServiceAddress>) {
         var builder = Builder()
-        builder.add(v1Members, isAdministrator: false, isPending: false)
-        self.stateMap = builder.asStateMap()
+        builder.addNonPendingMembers(v1Members, role: .normal)
+        self.memberStateMap = builder.asMemberStateMap()
+
+        super.init()
     }
 
+    @objc
     public static var empty: GroupMembership {
         return Builder().build()
     }
 
+    public func role(for address: SignalServiceAddress) -> TSGroupMemberRole? {
+        guard let memberState = memberStateMap[address] else {
+            return nil
+        }
+        return memberState.role
+    }
+
     public func isPending(_ address: SignalServiceAddress) -> Bool {
-        guard let state = stateMap[address] else {
-            owsFailDebug("Unknown address")
+        guard let memberState = memberStateMap[address] else {
             return false
         }
-        return state.isPending
+        return memberState.isPending
     }
 
     public func isAdministrator(_ address: SignalServiceAddress) -> Bool {
-        guard let state = stateMap[address] else {
-            owsFailDebug("Unknown address")
+        guard let memberState = memberStateMap[address] else {
             return false
         }
-        return state.isAdministrator
-    }
-
-    public func contains(_ address: SignalServiceAddress) -> Bool {
-        return stateMap[address] != nil
+        return memberState.isAdministrator
     }
 
     // When we check "is X a member?" we might mean...
@@ -159,13 +255,20 @@ public struct GroupMembership {
     }
 
     public func isNonPendingMember(_ address: SignalServiceAddress) -> Bool {
-        return allMembers.contains(address)
+        return nonPendingMembers.contains(address)
     }
 
+    // GroupsV2 TODO: We may remove this method.
+    public func contains(_ address: SignalServiceAddress) -> Bool {
+        return memberStateMap[address] != nil
+    }
+
+    // GroupsV2 TODO: We may remove this method.
     public func contains(_ uuid: UUID) -> Bool {
-        return stateMap[SignalServiceAddress(uuid: uuid)] != nil
+        return memberStateMap[SignalServiceAddress(uuid: uuid)] != nil
     }
 
+    @objc
     public static func normalize(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
         return Array(Set(addresses))
             .sorted(by: { (l, r) in l.compare(r) == .orderedAscending })
@@ -173,25 +276,17 @@ public struct GroupMembership {
     }
 
     public var asBuilder: Builder {
-        return Builder(stateMap: stateMap)
+        return Builder(memberStateMap: memberStateMap)
     }
 
-    // Can be used to force a single user to be a member,
-    // namely the local user.
-    public func withNonAdminMember(address: SignalServiceAddress) -> GroupMembership {
-        var builder = self.asBuilder
-        builder.replace(address, isAdministrator: false, isPending: false)
-        return builder.build()
-    }
-
-    public var debugDescription: String {
+    public override var debugDescription: String {
         var result = "["
         for address in GroupMembership.normalize(Array(allUsers)) {
-            guard let state = stateMap[address] else {
-                owsFailDebug("Missing state.")
+            guard let memberState = memberStateMap[address] else {
+                owsFailDebug("Missing memberState.")
                 continue
             }
-            result += "\(address), isPending: \(state.isPending), isAdministrator: \(state.isAdministrator)\n"
+            result += "\(address), isPending: \(memberState.isPending), isAdministrator: \(memberState.isAdministrator)\n"
         }
         result += "]"
         return result

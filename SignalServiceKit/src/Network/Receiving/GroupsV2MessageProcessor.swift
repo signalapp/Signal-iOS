@@ -529,6 +529,9 @@ class IncomingGroupsV2MessageQueue: NSObject {
             // one revision.
             return .failureShouldFailoverToService
         }
+        guard FeatureFlags.groupsV2processProtosInGroupUpdates else {
+            return .failureShouldFailoverToService
+        }
         guard let changeActionsProtoData = groupContext.groupChange else {
             // No embedded group change.
             return .failureShouldFailoverToService

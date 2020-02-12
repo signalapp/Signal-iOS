@@ -196,7 +196,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
             groupsVersion = groupsVersionReceived
         }
         // GroupsV2 TODO: Set administrators, pending members.
-        let groupMembership = GroupMembership(nonAdminMembers: Set(groupDetails.memberAddresses), administrators: Set(), pendingNonAdminMembers: Set(), pendingAdministrators: Set())
+        let groupMembership = GroupMembership(v1Members: Set(groupDetails.memberAddresses))
         // GroupsV2 TODO: Set access.
         let groupAccess = GroupAccess.allAccess
         // GroupsV2 TODO: Set groupV2Revision.

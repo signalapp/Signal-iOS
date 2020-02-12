@@ -6,66 +6,138 @@ import Foundation
 
 @objc
 public extension TSGroupModel {
-    var allPendingMembers: Set<SignalServiceAddress> {
-        guard let groupsV2PendingMemberRoles = self.groupsV2PendingMemberRoles else {
-            return Set()
-        }
-        return Set(groupsV2PendingMemberRoles.keys.map {
-            SignalServiceAddress(uuid: $0)
-        })
+    // GroupsV2 TODO: Remove?
+    var pendingMembers: Set<SignalServiceAddress> {
+        return groupMembership.pendingMembers
     }
 
+    // GroupsV2 TODO: Remove?
     var allPendingAndNonPendingMembers: Set<SignalServiceAddress> {
         return groupMembership.allUsers
-    }
-
-    func groupAccessOrDefault() throws -> GroupAccess {
-        if let groupAccess = self.groupAccess {
-            return groupAccess
-        }
-        switch groupsVersion {
-        case .V1:
-            return GroupAccess.forV1
-        case .V2:
-            throw OWSAssertionError("Missing groupAccess.")
-        }
     }
 }
 
 // MARK: -
 
-public extension TSGroupModel {
-    var groupMembership: GroupMembership {
-        switch groupsVersion {
-        case .V1:
-            return GroupMembership(v1Members: Set(groupMembers))
-        case .V2:
-            var nonAdminMembers = Set<SignalServiceAddress>()
-            var administrators = Set<SignalServiceAddress>()
-            for member in groupMembers {
-                switch role(forGroupsV2Member: member) {
-                case .administrator:
-                    administrators.insert(member)
-                default:
-                    nonAdminMembers.insert(member)
-                }
-            }
+// Like TSGroupModel, TSGroupModelV2 is intended to be immutable.
+//
+// NOTE: This class is tightly coupled to GroupManager.
+//       If you modify this class - especially if you
+//       add any new properties - make sure to update
+//       GroupManager.buildGroupModel().
+@objc
+public class TSGroupModelV2: TSGroupModel {
 
-            var pendingNonAdminMembers = Set<SignalServiceAddress>()
-            var pendingAdministrators = Set<SignalServiceAddress>()
-            for member in allPendingMembers {
-                switch self.role(forGroupsV2PendingMember: member) {
-                case .administrator:
-                    pendingAdministrators.insert(member)
-                default:
-                    pendingNonAdminMembers.insert(member)
-                }
-            }
+    // These properties TSGroupModel, TSGroupModelV2 is intended to be immutable.
+    @objc
+    var membership: GroupMembership = GroupMembership.empty
+    @objc
+    var access: GroupAccess = GroupAccess.defaultForV2
+    @objc
+    var secretParamsData: Data = Data()
+    @objc
+    var revision: UInt32 = 0
 
-            return GroupMembership(nonAdminMembers: nonAdminMembers,
-                                   administrators: administrators,
-                                   pendingNonAdminMembers: pendingNonAdminMembers,
-                                   pendingAdministrators: pendingAdministrators)
+    @objc
+    public required init(groupId: Data,
+                         name: String?,
+                         avatarData: Data?,
+                         groupMembership: GroupMembership,
+                         groupAccess: GroupAccess,
+                         revision: UInt32,
+                         secretParamsData: Data) {
+        assert(secretParamsData.count > 0)
+
+        self.membership = groupMembership
+        self.secretParamsData = secretParamsData
+        self.access = groupAccess
+        self.revision = revision
+
+        super.init(groupId: groupId,
+                   name: name,
+                   avatarData: avatarData,
+                   members: Array(groupMembership.nonPendingMembers))
+    }
+
+    // MARK: - MTLModel
+
+    @objc
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    @objc
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
+        try super.init(dictionary: dictionaryValue)
+    }
+
+    // MARK: -
+
+    @objc
+    public override var groupsVersion: GroupsVersion {
+        return .V2
+    }
+
+    @objc
+    public override var groupMembership: GroupMembership {
+        return membership
+    }
+
+    @objc
+    public override var groupAccess: GroupAccess {
+        return access
+    }
+
+    @objc
+    public override var groupMembers: [SignalServiceAddress] {
+        return Array(groupMembership.nonPendingMembers)
+    }
+
+    @objc
+    public override var groupV2Revision: UInt32 {
+        return revision
+    }
+
+    @objc
+    public override var groupSecretParamsData: Data? {
+        return secretParamsData
+    }
+
+    @objc
+    public override func isEqual(to model: TSGroupModel) -> Bool {
+        guard super.isEqual(to: model) else {
+            return false
         }
+        guard let other = model as? TSGroupModelV2 else {
+            return false
+        }
+        guard other.membership == membership else {
+            return false
+        }
+        guard other.access == access else {
+            return false
+        }
+        guard other.secretParamsData == secretParamsData else {
+            return false
+        }
+        guard other.revision == revision else {
+            return false
+        }
+        return true
+    }
+
+    @objc
+    public override var debugDescription: String {
+        var result = "["
+        result += "groupId: \(groupId.hexadecimalString),\n"
+        result += "groupsVersion: \(groupsVersion),\n"
+        result += "groupName: \(String(describing: groupName)),\n"
+        result += "groupAvatarData: \(String(describing: groupAvatarData?.hexadecimalString)),\n"
+        result += "membership: \(groupMembership.debugDescription),\n"
+        result += "groupAccess: \(groupAccess.debugDescription),\n"
+        result += "groupSecretParamsData: \(secretParamsData.hexadecimalString),\n"
+        result += "revision: \(revision),\n"
+        result += "]"
+        return result
     }
 }

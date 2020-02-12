@@ -220,8 +220,8 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
 
             return GroupManager.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
                                                        changeActionsProtoData: updatedV2Group.changeActionsProtoData)
-            .map(on: DispatchQueue.global()) { (_) -> TSGroupThread in
-                return updatedV2Group.groupThread
+                .map(on: DispatchQueue.global()) { (_) -> TSGroupThread in
+                    return updatedV2Group.groupThread
             }
         }
     }
@@ -709,19 +709,19 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { (_: URLSessionDataTask, responseObject: Any?) -> AuthCredentialMap in
-                let temporalCredentials = try self.parseCredentialResponse(responseObject: responseObject)
-                let localZKGUuid = try localUuid.asZKGUuid()
-                let serverPublicParams = try GroupsV2Protos.serverPublicParams()
-                let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
-                var credentialMap = AuthCredentialMap()
-                for temporalCredential in temporalCredentials {
-                    // Verify the credentials.
-                    let authCredential: AuthCredential = try clientZkAuthOperations.receiveAuthCredential(uuid: localZKGUuid,
-                                                                                                          redemptionTime: temporalCredential.redemptionTime,
-                                                                                                          authCredentialResponse: temporalCredential.authCredentialResponse)
-                    credentialMap[temporalCredential.redemptionTime] = authCredential
-                }
-                return credentialMap
+            let temporalCredentials = try self.parseCredentialResponse(responseObject: responseObject)
+            let localZKGUuid = try localUuid.asZKGUuid()
+            let serverPublicParams = try GroupsV2Protos.serverPublicParams()
+            let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
+            var credentialMap = AuthCredentialMap()
+            for temporalCredential in temporalCredentials {
+                // Verify the credentials.
+                let authCredential: AuthCredential = try clientZkAuthOperations.receiveAuthCredential(uuid: localZKGUuid,
+                                                                                                      redemptionTime: temporalCredential.redemptionTime,
+                                                                                                      authCredentialResponse: temporalCredential.authCredentialResponse)
+                credentialMap[temporalCredential.redemptionTime] = authCredential
+            }
+            return credentialMap
         }
     }
 

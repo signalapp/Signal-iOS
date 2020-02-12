@@ -606,7 +606,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [currentThreadRecipients addObjectsFromArray:groupThread.groupModel.groupMembers];
         if ([GroupManager shouldMessageHaveAdditionalRecipients:message groupThread:groupThread]) {
             // ...or latest known list of "additional recipients".
-            NSSet<SignalServiceAddress *> *additionalRecipients = groupThread.groupModel.allPendingMembers;
+            NSSet<SignalServiceAddress *> *additionalRecipients = groupThread.groupModel.pendingMembers;
             [currentThreadRecipients unionSet:additionalRecipients];
         }
         [recipientAddresses intersectSet:currentThreadRecipients];

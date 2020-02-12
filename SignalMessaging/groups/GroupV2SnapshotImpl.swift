@@ -30,6 +30,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         }
         let timestamp: UInt64
         let role: GroupsProtoMemberRole
+        let addedByUuid: UUID
     }
 
     public let groupSecretParamsData: Data
@@ -78,32 +79,24 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
     }
 
     public var groupMembership: GroupMembership {
-        var nonAdminMembers = Set<SignalServiceAddress>()
-        var administrators = Set<SignalServiceAddress>()
+        var builder = GroupMembership.Builder()
         for member in members {
-            switch member.role {
-            case .administrator:
-                administrators.insert(member.address)
-            default:
-                nonAdminMembers.insert(member.address)
+            guard let role = TSGroupMemberRole.role(for: member.role) else {
+                owsFailDebug("Invalid value: \(member.role.rawValue)")
+                continue
             }
+            builder.addNonPendingMember(member.address, role: role)
         }
 
-        var pendingNonAdminMembers = Set<SignalServiceAddress>()
-        var pendingAdministrators = Set<SignalServiceAddress>()
         for member in pendingMembers {
-            switch member.role {
-            case .administrator:
-                pendingAdministrators.insert(member.address)
-            default:
-                pendingNonAdminMembers.insert(member.address)
+            guard let role = TSGroupMemberRole.role(for: member.role) else {
+                owsFailDebug("Invalid value: \(member.role.rawValue)")
+                continue
             }
+            builder.addPendingMember(member.address, role: role, addedByUuid: member.addedByUuid)
         }
 
-        return GroupMembership(nonAdminMembers: nonAdminMembers,
-                               administrators: administrators,
-                               pendingNonAdminMembers: pendingNonAdminMembers,
-                               pendingAdministrators: pendingAdministrators)
+        return builder.build()
     }
 
     public var groupAccess: GroupAccess {
