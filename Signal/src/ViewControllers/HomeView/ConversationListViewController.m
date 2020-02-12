@@ -213,6 +213,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(localProfileDidChange:)
                                                  name:kNSNotificationNameLocalProfileDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(profileWhitelistDidChange:)
+                                                 name:kNSNotificationName_ProfileWhitelistDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -1910,6 +1914,31 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         // We don't need to do this if we're not observing db modifications since we'll
         // do it when we resume.
         [self resetMappings];
+    }
+}
+
+#pragma mark Profile Whitelist Changes
+
+- (void)profileWhitelistDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    // If profile whitelist just changed, we need to update the associated
+    // thread to reflect the latest message request state.
+    SignalServiceAddress *_Nullable address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
+
+    __block NSString *_Nullable changedThreadId;
+    if (address.isValid) {
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            changedThreadId = [TSContactThread getThreadWithContactAddress:address transaction:transaction].uniqueId;
+        }];
+    } else if (groupId.length > 0) {
+        changedThreadId = [TSGroupThread threadIdFromGroupId:groupId];
+    }
+
+    if (changedThreadId) {
+        [self anyUIDBDidUpdateWithUpdatedThreadIds:[NSSet setWithObject:changedThreadId]];
     }
 }
 
