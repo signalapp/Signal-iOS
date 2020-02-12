@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/Contact.h>
@@ -102,7 +102,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (NSString *)conversationColorNameForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction;
 
-// Legacy display name helpers, once the `profileDisplayChanges` feature is enabled these can go away.
+// Legacy display name helpers, once the `messageRequests` feature is enabled these can go away.
 - (NSString *)legacyDisplayNameForAddress:(SignalServiceAddress *)address;
 - (NSAttributedString *)attributedLegacyDisplayNameForAddress:(SignalServiceAddress *)address
                                                   primaryFont:(UIFont *)primaryFont

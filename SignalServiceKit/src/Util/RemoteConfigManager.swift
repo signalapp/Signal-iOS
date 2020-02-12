@@ -36,6 +36,11 @@ public class RemoteConfig: NSObject {
     }
 
     @objc
+    public static var messageRequests: Bool {
+        return isEnabled(.messageRequests)
+    }
+
+    @objc
     public static var kbs: Bool {
         // This feature latches "on" – once they have a master key in KBS,
         // even if we turn it off on the server they will keep using KBS.
@@ -70,6 +75,7 @@ private struct Flags {
         case kbs
         case profileNameReminder
         case mandatoryPins
+        case messageRequests
     }
 }
 

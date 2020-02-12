@@ -761,73 +761,33 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssertDebug(addresses);
 
     // Try to avoid opening a write transaction.
-    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction * readTransaction) {
-        NSMutableSet<SignalServiceAddress *> *newAddresses = [NSMutableSet new];
-        for (SignalServiceAddress *address in addresses) {
-            
-            // Normally we add all system contacts to the whitelist, but we don't want to do that for
-            // blocked contacts.
-            if ([self.blockingManager isAddressBlocked:address]) {
-                continue;
-            }
-            
-            // We want to add both the UUID and the phone number to the white list.
-            // It's possible we white listed one but not both, so we check each.
-            
-            BOOL shouldAdd = NO;
-            if (address.uuidString) {
-                BOOL currentlyWhitelisted =
-                [self.whitelistedUUIDsStore hasValueForKey:address.uuidString transaction:readTransaction];
-                if (!currentlyWhitelisted) {
-                    shouldAdd = YES;
-                }
-            }
-            
-            if (address.phoneNumber) {
-                BOOL currentlyWhitelisted =
-                [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber transaction:readTransaction];
-                if (!currentlyWhitelisted) {
-                    shouldAdd = YES;
-                }
-            }
-            
-            if (shouldAdd) {
-                [newAddresses addObject:address];
-            }
-        }
-        
-        if (newAddresses.count < 1) {
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
+        NSSet<SignalServiceAddress *> *addressesToAdd = [self addressesNotBlockedOrInWhitelist:addresses
+                                                                                   transaction:readTransaction];
+
+        if (addressesToAdd.count < 1) {
             return;
         }
-        
-        [self.databaseStorage
-         asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
-             for (SignalServiceAddress *address in newAddresses) {
-                 if (address.uuidString) {
-                     [self.whitelistedUUIDsStore setBool:YES key:address.uuidString transaction:writeTransaction];
-                 }
-                 
-                 if (address.phoneNumber) {
-                     [self.whitelistedPhoneNumbersStore setBool:YES key:address.phoneNumber transaction:writeTransaction];
-                 }
-             }
-         }
-         completion:^{
-             // Mark the new whitelisted addresses for update
-             if (newAddresses.count > 0) {
-                 [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:newAddresses.allObjects];
-             }
-             
-             for (SignalServiceAddress *address in newAddresses) {
-                 [[NSNotificationCenter defaultCenter]
-                  postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                  object:nil
-                  userInfo:@{
-                      kNSNotificationKey_ProfileAddress : address,
-                  }];
-             }
-         }];
+
+        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+            [self addConfirmedUnwhitelistedAddresses:addressesToAdd
+                                 wasLocallyInitiated:YES
+                                         transaction:writeTransaction];
+        }];
     }];
+}
+
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
+              wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                      transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug(transaction);
+
+    NSSet *addressesToAdd = [self addressesNotBlockedOrInWhitelist:@[ address ] transaction:transaction];
+    [self addConfirmedUnwhitelistedAddresses:addressesToAdd
+                         wasLocallyInitiated:wasLocallyInitiated
+                                 transaction:transaction];
 }
 
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
@@ -837,73 +797,189 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     [self removeUsersFromProfileWhitelist:@[ address ]];
 }
 
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
+                   wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug(transaction);
+
+    NSSet *addressesToRemove = [self addressesInWhitelist:@[ address ] transaction:transaction];
+    [self removeConfirmedWhitelistedAddresses:addressesToRemove
+                          wasLocallyInitiated:wasLocallyInitiated
+                                  transaction:transaction];
+}
+
 - (void)removeUsersFromProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
 {
     OWSAssertDebug(addresses);
 
     // Try to avoid opening a write transaction.
     [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
-        NSMutableSet<SignalServiceAddress *> *removedAddresses = [NSMutableSet new];
-        for (SignalServiceAddress *address in addresses) {
+        NSSet<SignalServiceAddress *> *addressesToRemove = [self addressesInWhitelist:addresses
+                                                                          transaction:readTransaction];
 
-            // We want to remove both the UUID and the phone number from the white list.
-            // It's possible we white listed one but not both, so we check each.
-
-            BOOL shouldRemove = NO;
-            if (address.uuidString) {
-                BOOL currentlyWhitelisted = [self.whitelistedUUIDsStore hasValueForKey:address.uuidString
-                                                                           transaction:readTransaction];
-                if (currentlyWhitelisted) {
-                    shouldRemove = YES;
-                }
-            }
-
-            if (address.phoneNumber) {
-                BOOL currentlyWhitelisted = [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber
-                                                                                  transaction:readTransaction];
-                if (currentlyWhitelisted) {
-                    shouldRemove = YES;
-                }
-            }
-
-            if (shouldRemove) {
-                [removedAddresses addObject:address];
-            }
-        }
-
-        if (removedAddresses.count < 1) {
+        if (addressesToRemove.count < 1) {
             return;
         }
 
-        [self.databaseStorage
-            asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
-                for (SignalServiceAddress *address in removedAddresses) {
-                    if (address.uuidString) {
-                        [self.whitelistedUUIDsStore removeValueForKey:address.uuidString transaction:writeTransaction];
-                    }
+        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+            [self removeConfirmedWhitelistedAddresses:addressesToRemove
+                                  wasLocallyInitiated:YES
+                                          transaction:writeTransaction];
+        }];
+    }];
+}
 
-                    if (address.phoneNumber) {
-                        [self.whitelistedPhoneNumbersStore removeValueForKey:address.phoneNumber
-                                                                 transaction:writeTransaction];
-                    }
-                }
+- (NSSet<SignalServiceAddress *> *)addressesNotBlockedOrInWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+                                                        transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(addresses);
+
+    NSMutableSet<SignalServiceAddress *> *notBlockedOrInWhitelist = [NSMutableSet new];
+
+    for (SignalServiceAddress *address in addresses) {
+
+        // If the address is blocked, we don't want to include it
+        if ([self.blockingManager isAddressBlocked:address]) {
+            continue;
+        }
+
+        // We want to include both the UUID and the phone number in the white list.
+        // It's possible we white listed one but not both, so we check each.
+
+        BOOL notInWhitelist = NO;
+        if (address.uuidString) {
+            BOOL currentlyWhitelisted = [self.whitelistedUUIDsStore hasValueForKey:address.uuidString
+                                                                       transaction:transaction];
+            if (!currentlyWhitelisted) {
+                notInWhitelist = YES;
             }
-            completion:^{
-                // Mark the removed whitelisted addresses for update
-                if (removedAddresses.count > 0) {
-                    [OWSStorageServiceManager.shared
-                        recordPendingUpdatesWithUpdatedAddresses:removedAddresses.allObjects];
-                }
+        }
 
-                for (SignalServiceAddress *address in removedAddresses) {
-                    [[NSNotificationCenter defaultCenter]
-                        postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                           object:nil
-                                         userInfo:@{
-                                             kNSNotificationKey_ProfileAddress : address,
-                                         }];
-                }
-            }];
+        if (address.phoneNumber) {
+            BOOL currentlyWhitelisted = [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber
+                                                                              transaction:transaction];
+            if (!currentlyWhitelisted) {
+                notInWhitelist = YES;
+            }
+        }
+
+        if (notInWhitelist) {
+            [notBlockedOrInWhitelist addObject:address];
+        }
+    }
+
+    return [notBlockedOrInWhitelist copy];
+}
+
+- (NSSet<SignalServiceAddress *> *)addressesInWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+                                            transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(addresses);
+
+    NSMutableSet<SignalServiceAddress *> *whitelistedAddresses = [NSMutableSet new];
+
+    for (SignalServiceAddress *address in addresses) {
+
+        // We only consider an address whitelisted if either the UUID and phone
+        // number are represented. It's possible we white listed one but not both,
+        // so we check each.
+
+        BOOL isInWhitelist = NO;
+        if (address.uuidString) {
+            BOOL currentlyWhitelisted = [self.whitelistedUUIDsStore hasValueForKey:address.uuidString
+                                                                       transaction:transaction];
+            if (currentlyWhitelisted) {
+                isInWhitelist = YES;
+            }
+        }
+
+        if (address.phoneNumber) {
+            BOOL currentlyWhitelisted = [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber
+                                                                              transaction:transaction];
+            if (currentlyWhitelisted) {
+                isInWhitelist = YES;
+            }
+        }
+
+        if (isInWhitelist) {
+            [whitelistedAddresses addObject:address];
+        }
+    }
+
+    return [whitelistedAddresses copy];
+}
+
+- (void)removeConfirmedWhitelistedAddresses:(NSSet<SignalServiceAddress *> *)addressesToRemove
+                        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                                transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (addressesToRemove.count == 0) {
+        // Do nothing.
+        return;
+    }
+
+    for (SignalServiceAddress *address in addressesToRemove) {
+        if (address.uuidString) {
+            [self.whitelistedUUIDsStore removeValueForKey:address.uuidString transaction:transaction];
+        }
+
+        if (address.phoneNumber) {
+            [self.whitelistedPhoneNumbersStore removeValueForKey:address.phoneNumber transaction:transaction];
+        }
+    }
+
+    [transaction addSyncCompletion:^{
+        // Mark the removed whitelisted addresses for update
+        if (wasLocallyInitiated) {
+            [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects];
+        }
+
+        for (SignalServiceAddress *address in addressesToRemove) {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                   object:nil
+                                 userInfo:@ {
+                                     kNSNotificationKey_ProfileAddress : address,
+                                 }];
+        }
+    }];
+}
+
+- (void)addConfirmedUnwhitelistedAddresses:(NSSet<SignalServiceAddress *> *)addressesToAdd
+                       wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (addressesToAdd.count == 0) {
+        // Do nothing.
+        return;
+    }
+
+    for (SignalServiceAddress *address in addressesToAdd) {
+        if (address.uuidString) {
+            [self.whitelistedUUIDsStore setBool:YES key:address.uuidString transaction:transaction];
+        }
+
+        if (address.phoneNumber) {
+            [self.whitelistedPhoneNumbersStore setBool:YES key:address.phoneNumber transaction:transaction];
+        }
+    }
+
+    [transaction addSyncCompletion:^{
+        // Mark the new whitelisted addresses for update
+        if (wasLocallyInitiated) {
+            [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects];
+        }
+
+        for (SignalServiceAddress *address in addressesToAdd) {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                   object:nil
+                                 userInfo:@ {
+                                     kNSNotificationKey_ProfileAddress : address,
+                                 }];
+        }
     }];
 }
 
@@ -937,23 +1013,108 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     NSString *groupIdKey = [self groupKeyForGroupId:groupId];
 
     // Try to avoid opening a write transaction.
-    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction * readTransaction) {
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
         if ([self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:readTransaction]) {
             // Do nothing.
             return;
         }
-        [self.databaseStorage
-         asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
-             [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:writeTransaction];
-         }
-         completion:^{
-             [[NSNotificationCenter defaultCenter]
-              postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-              object:nil
-              userInfo:@{
-                         kNSNotificationKey_ProfileGroupId : groupId,
-                         }];
-         }];
+        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+            [self addConfirmedUnwhitelistedGroupId:groupId wasLocallyInitiated:YES transaction:writeTransaction];
+        }];
+    }];
+}
+
+- (void)addGroupIdToProfileWhitelist:(NSData *)groupId
+                 wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                         transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(groupId.length > 0);
+
+    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
+
+    if (![self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:transaction]) {
+        [self addConfirmedUnwhitelistedGroupId:groupId wasLocallyInitiated:wasLocallyInitiated transaction:transaction];
+    }
+}
+
+- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
+{
+    OWSAssertDebug(groupId.length > 0);
+
+    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
+
+    // Try to avoid opening a write transaction.
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
+        if (![self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:readTransaction]) {
+            // Do nothing.
+            return;
+        }
+        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+            [self removeConfirmedWhitelistedGroupId:groupId wasLocallyInitiated:YES transaction:writeTransaction];
+        }];
+    }];
+}
+
+- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
+                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                              transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(groupId.length > 0);
+
+    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
+
+    if ([self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:transaction]) {
+        [self removeConfirmedWhitelistedGroupId:groupId
+                            wasLocallyInitiated:wasLocallyInitiated
+                                    transaction:transaction];
+    }
+}
+
+- (void)removeConfirmedWhitelistedGroupId:(NSData *)groupId
+                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                              transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(groupId.length > 0);
+
+    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
+
+    [self.whitelistedGroupsStore removeValueForKey:groupIdKey transaction:transaction];
+
+    [transaction addSyncCompletion:^{
+        // Mark the group for update
+        if (wasLocallyInitiated) {
+            [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+        }
+
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                                                 object:nil
+                                                               userInfo:@ {
+                                                                   kNSNotificationKey_ProfileGroupId : groupId,
+                                                               }];
+    }];
+}
+
+- (void)addConfirmedUnwhitelistedGroupId:(NSData *)groupId
+                     wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                             transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(groupId.length > 0);
+
+    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
+
+    [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:transaction];
+
+    [transaction addSyncCompletion:^{
+        // Mark the group for update
+        if (wasLocallyInitiated) {
+            [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+        }
+
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                                                 object:nil
+                                                               userInfo:@ {
+                                                                   kNSNotificationKey_ProfileGroupId : groupId,
+                                                               }];
     }];
 }
 

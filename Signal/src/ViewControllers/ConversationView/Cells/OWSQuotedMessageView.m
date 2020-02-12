@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQuotedMessageView.h"
@@ -549,7 +549,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     } else {
         OWSContactsManager *contactsManager = Environment.shared.contactsManager;
         NSString *quotedAuthor;
-        if (SSKFeatureFlags.profileDisplayChanges) {
+        if (RemoteConfig.messageRequests) {
             quotedAuthor = [contactsManager displayNameForAddress:self.quotedMessage.authorAddress];
         } else {
             quotedAuthor = [contactsManager legacyDisplayNameForAddress:self.quotedMessage.authorAddress];

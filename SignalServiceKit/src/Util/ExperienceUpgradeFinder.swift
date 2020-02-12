@@ -23,11 +23,11 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .reactions:
             return FeatureFlags.reactionSend
         case .profileNameReminder:
-            return RemoteConfig.profileNameReminder
+            return RemoteConfig.profileNameReminder && !RemoteConfig.messageRequests
         case .pinReminder:
             return OWS2FAManager.shared().isDueForV2Reminder(transaction: transaction.asAnyRead)
         case .messageRequests:
-            return FeatureFlags.messageRequest
+            return RemoteConfig.messageRequests
         }
     }
 

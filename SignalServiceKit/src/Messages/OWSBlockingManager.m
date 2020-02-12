@@ -420,7 +420,14 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     wasLocallyInitiated:(BOOL)wasLocallyInitiated
             transaction:(SDSAnyWriteTransaction *)transaction
 {
-    NSData *groupId = groupModel.groupId;
+    OWSAssertDebug(groupModel);
+    [self addBlockedGroupId:groupModel.groupId wasLocallyInitiated:wasLocallyInitiated transaction:transaction];
+}
+
+- (void)addBlockedGroupId:(NSData *)groupId
+      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+              transaction:(SDSAnyWriteTransaction *)transaction
+{
     OWSAssertDebug(groupId.length > 0);
 
     OWSLogInfo(@"groupId: %@", groupId);
@@ -432,7 +439,17 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
             // Ignore redundant changes.
             return;
         }
-        self.blockedGroupMap[groupId] = groupModel;
+
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+        if (groupThread != nil) {
+            self.blockedGroupMap[groupId] = groupThread.groupModel;
+        } else {
+            OWSFailDebug(@"missing group thread");
+        }
+
+        if (wasLocallyInitiated) {
+            [self.storageServiceManager recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+        }
     }
 
     [self handleUpdateAndSendSyncMessage:wasLocallyInitiated transaction:transaction];
@@ -453,6 +470,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         }
 
         [self.blockedGroupMap removeObjectForKey:groupId];
+
+        if (wasLocallyInitiated) {
+            [self.storageServiceManager recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+        }
     }
 
     [self handleUpdateWithSneakyTransactionAndSendSyncMessage:wasLocallyInitiated];

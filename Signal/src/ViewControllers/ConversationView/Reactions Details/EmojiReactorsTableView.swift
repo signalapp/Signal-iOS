@@ -43,7 +43,7 @@ class EmojiReactorsTableView: UITableView {
             let displayName = contactsManager.displayName(for: reaction.reactor, transaction: transaction)
 
             let profileName: String?
-            if FeatureFlags.profileDisplayChanges || contactsManager.hasNameInSystemContacts(for: reaction.reactor) {
+            if RemoteConfig.messageRequests || contactsManager.hasNameInSystemContacts(for: reaction.reactor) {
                 profileName = nil
             } else {
                 profileName = contactsManager.formattedProfileName(for: reaction.reactor, transaction: transaction)
@@ -66,7 +66,7 @@ class EmojiReactorsTableView: UITableView {
             let displayName = contactsManager.displayName(for: address, transaction: transaction)
 
             let profileName: String?
-            if FeatureFlags.profileDisplayChanges || contactsManager.hasNameInSystemContacts(for: address) {
+            if RemoteConfig.messageRequests || contactsManager.hasNameInSystemContacts(for: address) {
                 profileName = nil
             } else {
                 profileName = contactsManager.formattedProfileName(for: address, transaction: transaction)

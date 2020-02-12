@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -52,6 +52,10 @@ extern NSNotificationName const OWSBlockingManagerBlockedSyncDidComplete;
 - (void)addBlockedGroup:(TSGroupModel *)groupModel
     wasLocallyInitiated:(BOOL)wasLocallyInitiated
             transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)addBlockedGroupId:(NSData *)groupId
+      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+              transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)removeBlockedGroupId:(NSData *)groupId wasLocallyInitiated:(BOOL)wasLocallyInitiated;
 

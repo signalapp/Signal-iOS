@@ -519,7 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         if (self.thread.threadRecord.isNoteToSelf) {
             name = MessageStrings.noteToSelf;
-        } else if (SSKFeatureFlags.profileDisplayChanges) {
+        } else if (RemoteConfig.messageRequests) {
             name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         } else {
             attributedName = [self.contactsManager attributedLegacyDisplayNameForAddress:thread.contactAddress

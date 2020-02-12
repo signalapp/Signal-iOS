@@ -660,12 +660,14 @@ extension StorageServiceProtoWriteOperation.StorageServiceProtoWriteOperationBui
 public enum StorageServiceProtoStorageRecordType: Int32 {
     case unknown = 0
     case contact = 1
+    case groupv1 = 2
 }
 
 private func StorageServiceProtoStorageRecordTypeWrap(_ value: StorageServiceProtos_StorageRecord.TypeEnum) -> StorageServiceProtoStorageRecordType {
     switch value {
     case .unknown: return .unknown
     case .contact: return .contact
+    case .groupv1: return .groupv1
     }
 }
 
@@ -673,6 +675,7 @@ private func StorageServiceProtoStorageRecordTypeUnwrap(_ value: StorageServiceP
     switch value {
     case .unknown: return .unknown
     case .contact: return .contact
+    case .groupv1: return .groupv1
     }
 }
 
@@ -694,6 +697,9 @@ public class StorageServiceProtoStorageRecord: NSObject {
         let builder = StorageServiceProtoStorageRecordBuilder(type: type)
         if let _value = contact {
             builder.setContact(_value)
+        }
+        if let _value = groupV1 {
+            builder.setGroupV1(_value)
         }
         return builder
     }
@@ -730,6 +736,17 @@ public class StorageServiceProtoStorageRecord: NSObject {
         }
 
         @objc
+        @available(swift, obsoleted: 1.0)
+        public func setGroupV1(_ valueParam: StorageServiceProtoGroupV1Record?) {
+            guard let valueParam = valueParam else { return }
+            proto.groupV1 = valueParam.proto
+        }
+
+        public func setGroupV1(_ valueParam: StorageServiceProtoGroupV1Record) {
+            proto.groupV1 = valueParam.proto
+        }
+
+        @objc
         public func build() throws -> StorageServiceProtoStorageRecord {
             return try StorageServiceProtoStorageRecord.parseProto(proto)
         }
@@ -748,12 +765,17 @@ public class StorageServiceProtoStorageRecord: NSObject {
     @objc
     public let contact: StorageServiceProtoContactRecord?
 
+    @objc
+    public let groupV1: StorageServiceProtoGroupV1Record?
+
     private init(proto: StorageServiceProtos_StorageRecord,
                  type: UInt32,
-                 contact: StorageServiceProtoContactRecord?) {
+                 contact: StorageServiceProtoContactRecord?,
+                 groupV1: StorageServiceProtoGroupV1Record?) {
         self.proto = proto
         self.type = type
         self.contact = contact
+        self.groupV1 = groupV1
     }
 
     @objc
@@ -778,13 +800,19 @@ public class StorageServiceProtoStorageRecord: NSObject {
             contact = try StorageServiceProtoContactRecord.parseProto(proto.contact)
         }
 
+        var groupV1: StorageServiceProtoGroupV1Record?
+        if proto.hasGroupV1 {
+            groupV1 = try StorageServiceProtoGroupV1Record.parseProto(proto.groupV1)
+        }
+
         // MARK: - Begin Validation Logic for StorageServiceProtoStorageRecord -
 
         // MARK: - End Validation Logic for StorageServiceProtoStorageRecord -
 
         let result = StorageServiceProtoStorageRecord(proto: proto,
                                                       type: type,
-                                                      contact: contact)
+                                                      contact: contact,
+                                                      groupV1: groupV1)
         return result
     }
 
@@ -1463,6 +1491,157 @@ extension StorageServiceProtoContactRecord {
 extension StorageServiceProtoContactRecord.StorageServiceProtoContactRecordBuilder {
     @objc
     public func buildIgnoringErrors() -> StorageServiceProtoContactRecord? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoGroupV1Record
+
+@objc
+public class StorageServiceProtoGroupV1Record: NSObject {
+
+    // MARK: - StorageServiceProtoGroupV1RecordBuilder
+
+    @objc
+    public class func builder(id: Data) -> StorageServiceProtoGroupV1RecordBuilder {
+        return StorageServiceProtoGroupV1RecordBuilder(id: id)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> StorageServiceProtoGroupV1RecordBuilder {
+        let builder = StorageServiceProtoGroupV1RecordBuilder(id: id)
+        if hasBlocked {
+            builder.setBlocked(blocked)
+        }
+        if hasWhitelisted {
+            builder.setWhitelisted(whitelisted)
+        }
+        return builder
+    }
+
+    @objc
+    public class StorageServiceProtoGroupV1RecordBuilder: NSObject {
+
+        private var proto = StorageServiceProtos_GroupV1Record()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(id: Data) {
+            super.init()
+
+            setId(id)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setId(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.id = valueParam
+        }
+
+        public func setId(_ valueParam: Data) {
+            proto.id = valueParam
+        }
+
+        @objc
+        public func setBlocked(_ valueParam: Bool) {
+            proto.blocked = valueParam
+        }
+
+        @objc
+        public func setWhitelisted(_ valueParam: Bool) {
+            proto.whitelisted = valueParam
+        }
+
+        @objc
+        public func build() throws -> StorageServiceProtoGroupV1Record {
+            return try StorageServiceProtoGroupV1Record.parseProto(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try StorageServiceProtoGroupV1Record.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: StorageServiceProtos_GroupV1Record
+
+    @objc
+    public let id: Data
+
+    @objc
+    public var blocked: Bool {
+        return proto.blocked
+    }
+    @objc
+    public var hasBlocked: Bool {
+        return proto.hasBlocked
+    }
+
+    @objc
+    public var whitelisted: Bool {
+        return proto.whitelisted
+    }
+    @objc
+    public var hasWhitelisted: Bool {
+        return proto.hasWhitelisted
+    }
+
+    private init(proto: StorageServiceProtos_GroupV1Record,
+                 id: Data) {
+        self.proto = proto
+        self.id = id
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoGroupV1Record {
+        let proto = try StorageServiceProtos_GroupV1Record(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: StorageServiceProtos_GroupV1Record) throws -> StorageServiceProtoGroupV1Record {
+        guard proto.hasID else {
+            throw StorageServiceProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
+        let id = proto.id
+
+        // MARK: - Begin Validation Logic for StorageServiceProtoGroupV1Record -
+
+        // MARK: - End Validation Logic for StorageServiceProtoGroupV1Record -
+
+        let result = StorageServiceProtoGroupV1Record(proto: proto,
+                                                      id: id)
+        return result
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension StorageServiceProtoGroupV1Record {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoGroupV1Record.StorageServiceProtoGroupV1RecordBuilder {
+    @objc
+    public func buildIgnoringErrors() -> StorageServiceProtoGroupV1Record? {
         return try! self.build()
     }
 }

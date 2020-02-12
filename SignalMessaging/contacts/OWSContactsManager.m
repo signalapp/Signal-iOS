@@ -979,7 +979,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     NSString *_Nullable profileName = [self.profileManager fullNameForAddress:address transaction:transaction];
 
     // We only include the profile name in the display name if the feature is enabled.
-    if (SSKFeatureFlags.profileDisplayChanges && profileName.length > 0) {
+    if (RemoteConfig.messageRequests && profileName.length > 0) {
         return profileName;
     }
 

@@ -33,8 +33,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addThreadToProfileWhitelist:(TSThread *)thread;
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
+              wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                      transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
+                   wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                           transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
+- (void)addGroupIdToProfileWhitelist:(NSData *)groupId
+                 wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                         transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId;
+- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
+                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                              transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)fetchAndUpdateLocalUsersProfile;
 

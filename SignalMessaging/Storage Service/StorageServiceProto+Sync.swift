@@ -4,7 +4,7 @@
 
 import Foundation
 
-// Helpers for building and restoring contact records.
+// MARK: - Contact Record
 
 extension StorageServiceProtoContactRecord {
 
@@ -186,9 +186,9 @@ extension StorageServiceProtoContactRecord {
         // If our local whitelisted state differs from the service state, use the service's value.
         if hasWhitelisted, whitelisted != localIsWhitelisted {
             if whitelisted {
-                profileManager.addUser(toProfileWhitelist: address)
+                profileManager.addUser(toProfileWhitelist: address, wasLocallyInitiated: false, transaction: transaction)
             } else {
-                profileManager.removeUser(fromProfileWhitelist: address)
+                profileManager.removeUser(fromProfileWhitelist: address, wasLocallyInitiated: false, transaction: transaction)
             }
 
         // If the service is missing a whitelisted state, mark it as needing update.
@@ -223,5 +223,99 @@ extension StorageServiceProtoContactRecordIdentityState {
         case .unverified:
             return .noLongerVerified
         }
+    }
+}
+
+// MARK: - Group V1 Record
+
+extension StorageServiceProtoGroupV1Record {
+
+    // MARK: - Dependencies
+
+    static var profileManager: OWSProfileManager {
+        return .shared()
+    }
+
+    var profileManager: OWSProfileManager {
+        return .shared()
+    }
+
+    static var blockingManager: OWSBlockingManager {
+        return .shared()
+    }
+
+    var blockingManager: OWSBlockingManager {
+        return .shared()
+    }
+
+    // MARK: -
+
+    static func build(
+        for groupId: Data,
+        transaction: SDSAnyReadTransaction
+    ) throws -> StorageServiceProtoGroupV1Record {
+
+        let builder = StorageServiceProtoGroupV1Record.builder(id: groupId)
+
+        builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
+        builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
+
+        return try builder.build()
+    }
+
+    enum MergeState {
+        case resolved(Data)
+        case needsUpdate(Data)
+        case invalid
+    }
+
+    func mergeWithLocalGroup(transaction: SDSAnyWriteTransaction) -> MergeState {
+        // Our general merge philosophy is that the latest value on the service
+        // is always right. There are some edge cases where this could cause
+        // user changes to get blown away, such as if you're changing values
+        // simultaneously on two devices or if you force quit the application,
+        // your battery dies, etc. before it has had a chance to sync.
+        //
+        // In general, to try and mitigate these issues, we try and very proactively
+        // push any changes up to the storage service as contact information
+        // should not be changing very frequently.
+        //
+        // Should this prove unreliable, we may need to start maintaining time stamps
+        // representing the remote and local last update time for every value we sync.
+        // For now, we'd like to avoid that as it adds its own set of problems.
+
+        var mergeState: MergeState = .resolved(id)
+
+        // Gather some local contact state to do comparisons against.
+        let localIsBlocked = blockingManager.isGroupIdBlocked(id)
+        let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: id, transaction: transaction)
+
+        // If our local blocked state differs from the service state, use the service's value.
+        if hasBlocked, blocked != localIsBlocked {
+            if blocked {
+                blockingManager.addBlockedGroupId(id, wasLocallyInitiated: false, transaction: transaction)
+            } else {
+                blockingManager.removeBlockedGroupId(id, wasLocallyInitiated: false, transaction: transaction)
+            }
+
+        // If the service is missing a blocked state, mark it as needing update.
+        } else if !hasBlocked {
+            mergeState = .needsUpdate(id)
+        }
+
+        // If our local whitelisted state differs from the service state, use the service's value.
+        if hasWhitelisted, whitelisted != localIsWhitelisted {
+            if whitelisted {
+                profileManager.addGroupId(toProfileWhitelist: id, wasLocallyInitiated: false, transaction: transaction)
+            } else {
+                profileManager.removeGroupId(fromProfileWhitelist: id, wasLocallyInitiated: false, transaction: transaction)
+            }
+
+        // If the service is missing a whitelisted state, mark it as needing update.
+        } else if !hasWhitelisted {
+            mergeState = .needsUpdate(id)
+        }
+
+        return mergeState
     }
 }
