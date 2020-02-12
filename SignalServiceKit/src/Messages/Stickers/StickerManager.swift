@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -119,7 +119,7 @@ public class StickerManager: NSObject {
     @objc
     public class func refreshContents() {
         // Try to download the manifests for "default" sticker packs.
-        tryToDownloadDefaultStickerPacks(shouldInstall: false)
+        tryToDownloadDefaultStickerPacks()
 
         // Try to download the stickers for "installed" sticker packs.
         ensureAllStickerDownloadsAsync()
@@ -421,7 +421,7 @@ public class StickerManager: NSObject {
         return when(fulfilled: fetches)
     }
 
-    private class func tryToDownloadDefaultStickerPacks(shouldInstall: Bool) {
+    private class func tryToDownloadDefaultStickerPacks() {
         DispatchQueue.global().async {
             self.tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToAutoInstall,
                                            installMode: .installIfUnsaved)
@@ -1259,7 +1259,7 @@ public class StickerManager: NSObject {
             }
         }
 
-        tryToDownloadDefaultStickerPacks(shouldInstall: true)
+        tryToDownloadDefaultStickerPacks()
     }
     #endif
 }
