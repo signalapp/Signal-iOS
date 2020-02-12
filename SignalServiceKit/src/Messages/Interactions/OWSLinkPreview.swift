@@ -290,6 +290,7 @@ public class OWSLinkPreviewManager: NSObject {
 
         // Reddit
         "reddit.com",
+        "old.reddit.com",
         "www.reddit.com",
         "m.reddit.com",
         // NOTE: We don't use redd.it.

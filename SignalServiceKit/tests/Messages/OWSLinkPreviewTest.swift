@@ -123,6 +123,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         // Allow all whitelisted domains.
         Assert(validPreviewLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
         Assert(validPreviewLink: "https://youtu.be/tP-Ipsat90c")
+        Assert(validPreviewLink: "https://old.reddit.com/r/androiddev/comments/a7gctz/androidx_release_notes_this_is_the_first_release/")
         Assert(validPreviewLink: "https://www.reddit.com/r/androiddev/comments/a7gctz/androidx_release_notes_this_is_the_first_release/")
         Assert(validPreviewLink: "https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/")
         Assert(validPreviewLink: "https://imgur.com/gallery/KFCL8fm")
