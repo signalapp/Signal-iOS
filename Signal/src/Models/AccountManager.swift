@@ -178,15 +178,17 @@ public class AccountManager: NSObject {
             self.completeRegistration()
         }.then { _ -> Promise<Void> in
             BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
-            return StorageServiceManager.shared.restoreOrCreateManifestIfNecessary().asVoid().ensure {
+            return firstly {
+                StorageServiceManager.shared.restoreOrCreateManifestIfNecessary().asVoid()
+            }.then {
+                // In the case that we restored our profile from a previous registration,
+                // re-upload it so that the user does not need to refill in all the details.
+                // Right now the avatar will always be lost since we do not store avatars in
+                // the storage service.
+                self.profileManager.reuploadLocalProfilePromise()
+            }.ensure {
                 BenchEventComplete(eventId: "initial-storage-service-restore")
             }.timeout(seconds: 60)
-        }.then { _ -> Promise<Void> in
-            // In the case that we restored our profile from a previous registration,
-            // re-upload it so that the user does not need to refill in all the details.
-            // Right now the avatar will always be lost since we do not store avatars in
-            // the storage service.
-            self.profileManager.reuploadLocalProfilePromise()
         }
 
         registrationPromise.retainUntilComplete()

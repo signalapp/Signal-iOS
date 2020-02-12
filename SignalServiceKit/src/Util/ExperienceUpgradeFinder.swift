@@ -48,9 +48,10 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     }
 
     // If false, this will not be marked complete after registration.
-    var completeForNewUsers: Bool {
+    var skipForNewUsers: Bool {
         switch self {
-        case .messageRequests:
+        case .messageRequests,
+             .introducingPins:
             return false
         default:
             return true
@@ -139,7 +140,7 @@ public class ExperienceUpgradeFinder: NSObject {
     @objc
     public class func markAllCompleteForNewUser(transaction: GRDBWriteTransaction) {
         ExperienceUpgradeId.allCases
-            .filter { $0.completeForNewUsers }
+            .filter { $0.skipForNewUsers }
             .forEach { markAsComplete(experienceUpgradeId: $0, transaction: transaction) }
     }
 
