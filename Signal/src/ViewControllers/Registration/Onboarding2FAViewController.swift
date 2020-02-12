@@ -70,6 +70,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTextField.delegate = self
         pinTextField.isSecureTextEntry = true
         pinTextField.textColor = Theme.primaryTextColor
+        pinTextField.textAlignment = .center
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
@@ -80,6 +81,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTextField.accessibilityIdentifier = "onboarding.2fa.pinTextField"
 
         validationWarningLabel.textColor = .ows_accentRed
+        validationWarningLabel.textAlignment = .center
         validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "onboarding.2fa.validationWarningLabel"
         validationWarningLabel.numberOfLines = 0

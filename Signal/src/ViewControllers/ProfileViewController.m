@@ -483,6 +483,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         case ProfileViewMode_Registration:
             self.navigationItem.hidesBackButton = YES;
             self.navigationItem.rightBarButtonItem = nil;
+
+            // During registration, if you have a name pre-populatd we want
+            // to enable the save button even if you haven't edited anything.
+            if (self.givenNameTextField.text.length > 0) {
+                forceSaveButtonEnabled = YES;
+            }
             break;
         case ProfileViewMode_ExperienceUpgrade:
             self.navigationItem.rightBarButtonItem = nil;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -65,7 +65,7 @@ public class OnboardingBaseViewController: OWSViewController {
     }
 
     func linkButton(title: String, selector: Selector) -> OWSFlatButton {
-        return button(title: title, selector: selector, titleColor: .ows_signalBlue, backgroundColor: .white)
+        return button(title: title, selector: selector, titleColor: .ows_signalBlue, backgroundColor: .clear)
     }
 
     func shouldShowBackButton() -> Bool {

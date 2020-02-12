@@ -174,8 +174,21 @@ public class AccountManager: NSObject {
                     throw error
                 }
             }
-        }.done { (_) -> Void in
+        }.done {
             self.completeRegistration()
+        }.then { _ -> Promise<Void> in
+            BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
+            return firstly {
+                StorageServiceManager.shared.restoreOrCreateManifestIfNecessary().asVoid()
+            }.then {
+                // In the case that we restored our profile from a previous registration,
+                // re-upload it so that the user does not need to refill in all the details.
+                // Right now the avatar will always be lost since we do not store avatars in
+                // the storage service.
+                self.profileManager.reuploadLocalProfilePromise()
+            }.ensure {
+                BenchEventComplete(eventId: "initial-storage-service-restore")
+            }.timeout(seconds: 60)
         }
 
         registrationPromise.retainUntilComplete()
@@ -236,15 +249,32 @@ public class AccountManager: NSObject {
             }
         }.then {
             self.deviceService.updateCapabilities()
-        }.then { _ -> Promise<Void> in
+        }.done {
             self.completeRegistration()
+        }.then { _ -> Promise<Void> in
+            BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
+
+            self.databaseStorage.asyncWrite { transaction in
+                OWSSyncManager.shared().sendKeysSyncRequestMessage(transaction: transaction)
+            }
+
+            let storageServiceRestorePromise = firstly {
+                NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
+            }.then {
+                StorageServiceManager.shared.restoreOrCreateManifestIfNecessary().asVoid()
+            }.ensure {
+                BenchEventComplete(eventId: "initial-storage-service-restore")
+            }.timeout(seconds: 60)
 
             // we wait a bit for the initial syncs to come in before proceeding to the inbox
             // because we want to present the inbox already populated with groups and contacts,
             // rather than have the trickle in moments later.
+            // TODO: Eventually, we can rely entirely on the storage service and will no longer
+            // need to do any initial sync beyond the "keys" sync. For now, we try and do both
+            // operations in parallel.
             BenchEventStart(title: "waiting for initial contact and group sync", eventId: "initial-contact-sync")
 
-            return firstly {
+            let initialSyncMessagePromise = firstly {
                 OWSSyncManager.shared().sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: 60)
             }.done(on: .global() ) { orderedThreadIds in
                 Logger.debug("orderedThreadIds: \(orderedThreadIds)")
@@ -265,6 +295,8 @@ public class AccountManager: NSObject {
             }.ensure {
                 BenchEventComplete(eventId: "initial-contact-sync")
             }
+
+            return when(fulfilled: [storageServiceRestorePromise, initialSyncMessagePromise])
         }
     }
 

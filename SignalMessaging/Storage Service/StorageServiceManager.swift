@@ -1,14 +1,15 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import PromiseKit
 
 @objc(OWSStorageServiceManager)
-class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
+public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
-    static let shared = StorageServiceManager()
+    public static let shared = StorageServiceManager()
 
     var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
@@ -18,33 +19,22 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         super.init()
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            self.registrationStateDidChange()
-
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(self.registrationStateDidChange),
-                name: .RegistrationStateDidChange,
-                object: nil
-            )
-
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(self.willResignActive),
                 name: .OWSApplicationWillResignActive,
                 object: nil
             )
+
+            guard self.tsAccountManager.isRegisteredAndReady else { return }
+
+            // Schedule a restore. This will do nothing unless we've never
+            // registered a manifest before.
+            self.restoreOrCreateManifestIfNecessary()
+
+            // If we have any pending changes since we last launch, back them up now.
+            self.backupPendingChanges()
         }
-    }
-
-    @objc private func registrationStateDidChange() {
-        guard self.tsAccountManager.isRegisteredAndReady else { return }
-
-        // Schedule a restore. This will do nothing unless we've never
-        // registered a manifest before.
-        restoreOrCreateManifestIfNecessary()
-
-        // If we have any pending changes since we last launch, back them up now.
-        backupPendingChanges()
     }
 
     @objc private func willResignActive() {
@@ -58,7 +48,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     // MARK: -
 
     @objc
-    func recordPendingDeletions(deletedIds: [AccountId]) {
+    public func recordPendingDeletions(deletedIds: [AccountId]) {
         let operation = StorageServiceOperation.recordPendingDeletions(deletedIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -68,7 +58,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     @objc
-    func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) {
+    public func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) {
         let operation = StorageServiceOperation.recordPendingDeletions(deletedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -78,7 +68,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     @objc
-    func recordPendingUpdates(updatedIds: [AccountId]) {
+    public func recordPendingUpdates(updatedIds: [AccountId]) {
         let operation = StorageServiceOperation.recordPendingUpdates(updatedIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -88,7 +78,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     @objc
-    func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {
+    public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {
         let operation = StorageServiceOperation.recordPendingUpdates(updatedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -98,20 +88,22 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     @objc
-    func backupPendingChanges() {
+    public func backupPendingChanges() {
         let operation = StorageServiceOperation(mode: .backup)
         StorageServiceOperation.operationQueue.addOperation(operation)
     }
 
     @objc
-    func restoreOrCreateManifestIfNecessary() {
+    @discardableResult
+    public func restoreOrCreateManifestIfNecessary() -> AnyPromise {
         let operation = StorageServiceOperation(mode: .restoreOrCreate)
         StorageServiceOperation.operationQueue.addOperation(operation)
+        return AnyPromise(operation.promise)
     }
 
     // MARK: - Backup Scheduling
 
-    private static var backupDebounceInterval: TimeInterval = kSecondInterval * 10
+    private static var backupDebounceInterval: TimeInterval = 0.2
     private var backupTimer: Timer?
 
     // Schedule a one time backup. By default, this will happen ten
@@ -183,22 +175,31 @@ class StorageServiceOperation: OWSOperation {
     }
     private let mode: Mode
 
+    let promise: Promise<Void>
+    private let resolver: Resolver<Void>
+
     fileprivate init(mode: Mode) {
         self.mode = mode
+        (self.promise, self.resolver) = Promise<Void>.pending()
         super.init()
         self.remainingRetries = 4
     }
 
     // MARK: - Run
 
+    override func didSucceed() {
+        super.didSucceed()
+        resolver.fulfill(())
+    }
+
+    override func didFail(error: Error) {
+        super.didFail(error: error)
+        resolver.reject(error)
+    }
+
     // Called every retry, this is where the bulk of the operation's work should go.
     override public func run() {
         Logger.info("\(mode)")
-
-        // Do nothing until the feature is enabled.
-        guard FeatureFlags.socialGraphOnServer else {
-            return reportSuccess()
-        }
 
         // We don't have backup keys, do nothing. We'll try a
         // fresh restore once the keys are set.

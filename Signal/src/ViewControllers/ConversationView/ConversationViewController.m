@@ -432,10 +432,12 @@ typedef enum : NSUInteger {
     NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
     if (address.isValid && [self.thread.recipientAddresses containsObject:address]) {
         [self ensureBannerState];
+        [self showMessageRequestDialogIfRequired];
     } else if (groupId.length > 0 && self.thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
             [self ensureBannerState];
+            [self showMessageRequestDialogIfRequired];
         }
     }
 }
@@ -5321,18 +5323,21 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    // If we're already showing the message request view, don't render it again
-    if (self.messageRequestView) {
-        return;
-    }
-
     __block BOOL hasPendingMessageRequest = NO;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         hasPendingMessageRequest = [ThreadUtil hasPendingMessageRequest:self.thread transaction:transaction];
     }];
 
-    if (!hasPendingMessageRequest) {
+    // We're currently showing the message request view but no longer need to,
+    // probably because this request was accepted on another device. Dismiss it.
+    if (self.messageRequestView && !hasPendingMessageRequest) {
+        [self dismissMessageRequestView];
+        return;
+    }
+
+    // If we don't have a pending message request, or it's already presented, do nothing.
+    if (!hasPendingMessageRequest || self.messageRequestView) {
         return;
     }
 

@@ -47,9 +47,16 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         return Date().timeIntervalSince1970 > expirationDate
     }
 
-    // If false, this will be marked complete after registration
-    // without ever presenting to the user.
-    var showNewUsers: Bool { false }
+    // If false, this will not be marked complete after registration.
+    var skipForNewUsers: Bool {
+        switch self {
+        case .messageRequests,
+             .introducingPins:
+            return false
+        default:
+            return true
+        }
+    }
 
     // In addition to being sorted by their order as defined in this enum,
     // experience upgrades are also sorted by priority. For example, a high
@@ -132,10 +139,9 @@ public class ExperienceUpgradeFinder: NSObject {
 
     @objc
     public class func markAllCompleteForNewUser(transaction: GRDBWriteTransaction) {
-        allActiveExperienceUpgrades(transaction: transaction)
-            .lazy
-            .filter { !$0.id.showNewUsers }
-            .forEach { markAsComplete(experienceUpgrade: $0, transaction: transaction) }
+        ExperienceUpgradeId.allCases
+            .filter { $0.skipForNewUsers }
+            .forEach { markAsComplete(experienceUpgradeId: $0, transaction: transaction) }
     }
 
     // MARK: - Experience Specific Helpers

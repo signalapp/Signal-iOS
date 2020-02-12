@@ -351,10 +351,13 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     sessionManager.securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy;
 
-    sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
+    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
     [sessionManager.requestSerializer setValue:TSConstants.censorshipReflectorHost forHTTPHeaderField:@"Host"];
 
-    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    // Disable default cookie handling for all requests.
+    sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
+
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
 
     return sessionManager;
 }
