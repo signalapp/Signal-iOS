@@ -52,8 +52,6 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         let operation = StorageServiceOperation.recordPendingDeletions(deletedIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
-        // Schedule a backup to run in the next ten seconds
-        // if one hasn't been scheduled already.
         scheduleBackupIfNecessary()
     }
 
@@ -62,8 +60,6 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         let operation = StorageServiceOperation.recordPendingDeletions(deletedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
-        // Schedule a backup to run in the next ten seconds
-        // if one hasn't been scheduled already.
         scheduleBackupIfNecessary()
     }
 
@@ -72,8 +68,6 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         let operation = StorageServiceOperation.recordPendingDeletions(deletedGroupIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
-        // Schedule a backup to run in the next ten seconds
-        // if one hasn't been scheduled already.
         scheduleBackupIfNecessary()
     }
 
@@ -82,8 +76,6 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         let operation = StorageServiceOperation.recordPendingUpdates(updatedIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
-        // Schedule a backup to run in the next ten seconds
-        // if one hasn't been scheduled already.
         scheduleBackupIfNecessary()
     }
 
@@ -92,8 +84,6 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         let operation = StorageServiceOperation.recordPendingUpdates(updatedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
-        // Schedule a backup to run in the next ten seconds
-        // if one hasn't been scheduled already.
         scheduleBackupIfNecessary()
     }
 
@@ -102,8 +92,6 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         let operation = StorageServiceOperation.recordPendingUpdates(updatedGroupIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
-        // Schedule a backup to run in the next ten seconds
-        // if one hasn't been scheduled already.
         scheduleBackupIfNecessary()
     }
 
@@ -126,7 +114,7 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     private static var backupDebounceInterval: TimeInterval = 0.2
     private var backupTimer: Timer?
 
-    // Schedule a one time backup. By default, this will happen ten
+    // Schedule a one time backup. By default, this will happen `backupDebounceInterval`
     // seconds after the first pending change is recorded.
     private func scheduleBackupIfNecessary() {
         DispatchQueue.main.async {
