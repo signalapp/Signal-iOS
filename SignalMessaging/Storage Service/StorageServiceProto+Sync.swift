@@ -186,9 +186,9 @@ extension StorageServiceProtoContactRecord {
         // If our local whitelisted state differs from the service state, use the service's value.
         if hasWhitelisted, whitelisted != localIsWhitelisted {
             if whitelisted {
-                profileManager.addUser(toProfileWhitelist: address)
+                profileManager.addUser(toProfileWhitelist: address, wasLocallyInitiated: false, transaction: transaction)
             } else {
-                profileManager.removeUser(fromProfileWhitelist: address)
+                profileManager.removeUser(fromProfileWhitelist: address, wasLocallyInitiated: false, transaction: transaction)
             }
 
         // If the service is missing a whitelisted state, mark it as needing update.
@@ -306,9 +306,9 @@ extension StorageServiceProtoGroupV1Record {
         // If our local whitelisted state differs from the service state, use the service's value.
         if hasWhitelisted, whitelisted != localIsWhitelisted {
             if whitelisted {
-                profileManager.addGroupId(toProfileWhitelist: id)
+                profileManager.addGroupId(toProfileWhitelist: id, wasLocallyInitiated: false, transaction: transaction)
             } else {
-                profileManager.removeGroupId(fromProfileWhitelist: id)
+                profileManager.removeGroupId(fromProfileWhitelist: id, wasLocallyInitiated: false, transaction: transaction)
             }
 
         // If the service is missing a whitelisted state, mark it as needing update.

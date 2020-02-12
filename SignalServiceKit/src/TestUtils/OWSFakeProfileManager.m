@@ -94,7 +94,21 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientWhitelist addObject:address];
 }
 
+- (void)addUserToProfileWhitelist:(nonnull SignalServiceAddress *)address
+              wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                      transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    [self.recipientWhitelist addObject:address];
+}
+
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
+{
+    [self.recipientWhitelist removeObject:address];
+}
+
+- (void)removeUserFromProfileWhitelist:(nonnull SignalServiceAddress *)address
+                   wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                           transaction:(nonnull SDSAnyWriteTransaction *)transaction
 {
     [self.recipientWhitelist removeObject:address];
 }
@@ -109,7 +123,21 @@ NS_ASSUME_NONNULL_BEGIN
     [self.threadWhitelist addObject:groupId.hexadecimalString];
 }
 
+- (void)addGroupIdToProfileWhitelist:(nonnull NSData *)groupId
+                 wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                         transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    [self.threadWhitelist addObject:groupId.hexadecimalString];
+}
+
 - (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
+{
+    [self.threadWhitelist removeObject:groupId.hexadecimalString];
+}
+
+- (void)removeGroupIdFromProfileWhitelist:(nonnull NSData *)groupId
+                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                              transaction:(nonnull SDSAnyWriteTransaction *)transaction
 {
     [self.threadWhitelist removeObject:groupId.hexadecimalString];
 }
