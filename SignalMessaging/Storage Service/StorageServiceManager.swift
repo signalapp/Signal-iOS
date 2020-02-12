@@ -579,9 +579,7 @@ class StorageServiceOperation: OWSOperation {
             }
 
             TSGroupThread.anyEnumerate(transaction: transaction) { thread, _ in
-                guard let groupThread = thread as? TSGroupThread else {
-                    return owsFailDebug("unexpected thread type")
-                }
+                guard let groupThread = thread as? TSGroupThread else { return }
 
                 // TODO: Support v2 groups
                 guard case .V1 = groupThread.groupModel.groupsVersion else { return }
