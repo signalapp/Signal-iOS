@@ -435,9 +435,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     @synchronized(self) {
         [self ensureLazyInitialization];
 
-        BOOL wasBlocked = [self isGroupIdBlocked:groupId];
-
-        if (wasBlocked) {
+        if ([self isGroupIdBlocked:groupId]) {
             // Ignore redundant changes.
             return;
         }
@@ -449,7 +447,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
             OWSFailDebug(@"missing group thread");
         }
 
-        if (wasLocallyInitiated && wasBlocked != [self isGroupIdBlocked:groupId]) {
+        if (wasLocallyInitiated) {
             [self.storageServiceManager recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
         }
     }
@@ -466,16 +464,14 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     @synchronized(self) {
         [self ensureLazyInitialization];
 
-        BOOL wasBlocked = [self isGroupIdBlocked:groupId];
-
-        if (!wasBlocked) {
+        if (![self isGroupIdBlocked:groupId]) {
             // Ignore redundant changes.
             return;
         }
 
         [self.blockedGroupMap removeObjectForKey:groupId];
 
-        if (wasLocallyInitiated && wasBlocked != [self isGroupIdBlocked:groupId]) {
+        if (wasLocallyInitiated) {
             [self.storageServiceManager recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
         }
     }

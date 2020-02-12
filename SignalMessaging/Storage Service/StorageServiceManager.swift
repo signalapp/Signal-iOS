@@ -597,7 +597,7 @@ class StorageServiceOperation: OWSOperation {
                     )
                 } catch {
                     // We'll just skip it, something may be wrong with our local data.
-                    // We'll try and backup this contact again when something changes.
+                    // We'll try and backup this group again when something changes.
                     owsFailDebug("unexpectedly failed to build group record")
                 }
             }
