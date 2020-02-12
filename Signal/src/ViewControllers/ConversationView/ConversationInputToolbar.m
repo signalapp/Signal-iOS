@@ -126,10 +126,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                                                  name:OWSApplicationDidBecomeActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(isStickerSendEnabledDidChange:)
-                                                 name:StickerManager.isStickerSendEnabledDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardFrameDidChange:)
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
@@ -649,7 +645,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     }
 
     void (^updateBlock)(void) = ^{
-        BOOL hideStickerButton = hasTextInput || self.quotedReply != nil || !StickerManager.shared.isStickerSendEnabled;
+        BOOL hideStickerButton = hasTextInput || self.quotedReply != nil;
         ensureViewHiddenState(self.stickerButton, hideStickerButton);
         if (!hideStickerButton) {
             self.stickerButton.imageView.tintColor
@@ -1562,13 +1558,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     OWSAssertIsOnMainThread();
 
     [self restoreDesiredKeyboardIfNecessary];
-}
-
-- (void)isStickerSendEnabledDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self ensureButtonVisibilityWithIsAnimated:YES doLayout:YES];
 }
 
 - (void)ensureFirstResponderState

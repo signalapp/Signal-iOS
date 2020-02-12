@@ -96,9 +96,6 @@ public enum StorageModeStrictness: Int {
 public class FeatureFlags: NSObject {
 
     @objc
-    public static let conversationSearch = true
-
-    @objc
     public static var storageMode: StorageMode {
         if CurrentAppContext().isRunningTests {
             // We should be running the tests using both .ydbTests or .grdbTests.
@@ -116,43 +113,12 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static var preserveYdb: Bool {
-        return false
-    }
-
-    @objc
     public static let uuidCapabilities = !isUsingProductionService
-
-    @objc
-    public static var canRevertToYDB: Bool {
-        // Only developers should be allowed to use YDB after migrating to GRDB.
-        // We don't want to let QA, public beta or production users risk
-        // data loss.
-        return build == .dev
-    }
-
-    @objc
-    public static var audibleErrorLogging = build.includes(.internalPreview)
 
     @objc
     public static var storageModeDescription: String {
         return "\(storageMode)"
     }
-
-    @objc
-    public static let stickerReceive = true
-
-    // Don't consult this flag directly; instead consult
-    // StickerManager.isStickerSendEnabled.  Sticker sending is
-    // auto-enabled once the user receives any sticker content.
-    @objc
-    public static let stickerSend = true
-
-    @objc
-    public static let stickerSharing = true
-
-    @objc
-    public static let stickerAutoEnable = true
 
     @objc
     public static let stickerSearch = false
@@ -163,9 +129,6 @@ public class FeatureFlags: NSObject {
     // Don't enable this flag until the Desktop changes have been in production for a while.
     @objc
     public static let strictSyncTranscriptTimestamps = false
-
-    @objc
-    public static let viewOnceSending = true
 
     // Don't enable this flag in production.
     @objc
@@ -194,9 +157,6 @@ public class FeatureFlags: NSObject {
     public static let socialGraphOnServer = false
 
     @objc
-    public static let cameraFirstCaptureFlow = true
-
-    @objc
     public static let complainAboutSlowDBWrites = true
 
     @objc
@@ -207,16 +167,6 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let profileDisplayChanges = build.includes(.dev)
-
-    // This can be used to shut down various background operations.
-    @objc
-    public static let suppressBackgroundActivity = false
-
-    @objc
-    public static let verboseAboutView = build.includes(.qa)
-
-    @objc
-    public static let logSQLQueries = build.includes(.dev)
 
     @objc
     public static var calling: Bool {
@@ -274,12 +224,6 @@ public class FeatureFlags: NSObject {
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
-    public static let reactionReceive = true
-
-    @objc
-    public static let reactionSend = true
-
-    @objc
     public static let isUsingProductionService = true
 
     @objc
@@ -301,11 +245,29 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let notificationServiceExtension = build.includes(.dev)
+}
 
+/// Flags that we'll leave in the code base indefinitely that are helpful for
+/// development should go here, rather than cluttering up FeatureFlags.
+@objc(SSKDebugFlags)
+public class DebugFlags: NSObject {
     // DEBUG builds won't receive push notifications, which prevents receiving messages
     // while the app is backgrounded or the system call screen is active.
     //
     // Set this flag to true to be able to download messages even when the app is in the background.
     @objc
     public static let keepWebSocketOpenInBackground = false
+
+    @objc
+    public static var audibleErrorLogging = build.includes(.internalPreview)
+
+    @objc
+    public static let verboseAboutView = build.includes(.qa)
+
+    // This can be used to shut down various background operations.
+    @objc
+    public static let suppressBackgroundActivity = false
+
+    @objc
+    public static let logSQLQueries = build.includes(.dev)
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingSentMessageTranscript.h"
@@ -102,8 +102,6 @@ NS_ASSUME_NONNULL_BEGIN
         SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
         [dataBuilder setTimestamp:self.message.timestamp];
         [dataBuilder setExpireTimer:self.message.expiresInSeconds];
-
-        OWSAssertDebug(SSKFeatureFlags.viewOnceSending);
         [dataBuilder setIsViewOnce:YES];
         [dataBuilder setRequiredProtocolVersion:(uint32_t)SSKProtoDataMessageProtocolVersionViewOnceVideo];
 

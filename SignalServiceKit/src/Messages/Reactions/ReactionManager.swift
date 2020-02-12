@@ -18,11 +18,6 @@ public class ReactionManager: NSObject {
 
     @objc(localUserReactedToMessage:emoji:isRemoving:transaction:)
     public class func localUserReacted(to message: TSMessage, emoji: String, isRemoving: Bool, transaction: SDSAnyWriteTransaction) {
-        guard FeatureFlags.reactionSend else {
-            Logger.info("Not sending reaction, feature disabled")
-            return
-        }
-
         assert(emoji.isSingleEmoji)
 
         Logger.info("Sending reaction: \(emoji) isRemoving: \(isRemoving)")
@@ -82,11 +77,6 @@ public class ReactionManager: NSObject {
         timestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard FeatureFlags.reactionReceive else {
-            Logger.info("Ignoring incoming reaction, feature disabled")
-            return
-        }
-
         guard reaction.emoji.isSingleEmoji else {
             owsFailDebug("Received invalid emoji")
             return

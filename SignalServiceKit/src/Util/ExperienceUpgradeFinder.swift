@@ -19,7 +19,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return RemoteConfig.pinsForEveryone &&
                 SSKEnvironment.shared.reachabilityManager.isReachable
         case .reactions:
-            return FeatureFlags.reactionSend
+            return true
         case .profileNameReminder:
             return RemoteConfig.profileNameReminder
         case .messageRequests:

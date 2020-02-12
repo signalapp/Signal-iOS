@@ -264,7 +264,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     ]
 
     var selectedConversationKeyCommands: [UIKeyCommand] {
-        var commands = [
+        return [
             UIKeyCommand(
                 input: "i",
                 modifierFlags: [.command, .shift],
@@ -300,11 +300,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                     "KEY_COMMAND_ATTACHMENTS",
                     comment: "A keyboard command to open the current conversation's attachment picker."
                 )
-            )
-        ]
-
-        if (StickerManager.shared.isStickerSendEnabled) {
-            commands.append(UIKeyCommand(
+            ),
+            UIKeyCommand(
                 input: "s",
                 modifierFlags: [.command, .shift],
                 action: #selector(openStickerKeyboard),
@@ -312,10 +309,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                     "KEY_COMMAND_STICKERS",
                     comment: "A keyboard command to open the current conversation's sticker picker."
                 )
-            ))
-        }
-
-        commands += [
+            ),
             UIKeyCommand(
                 input: "a",
                 modifierFlags: [.command, .shift],
@@ -344,8 +338,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 )
             )
         ]
-
-        return commands
     }
 
     override var keyCommands: [UIKeyCommand]? {

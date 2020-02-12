@@ -1042,12 +1042,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     NSUInteger requiredProtocolVersion = SSKProtoDataMessageProtocolVersionInitial;
 
     if (self.isViewOnceMessage) {
-        if (SSKFeatureFlags.viewOnceSending) {
-            [builder setIsViewOnce:YES];
-            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionViewOnceVideo;
-        } else {
-            OWSFailDebug(@"Feature flag not set.");
-        }
+        [builder setIsViewOnce:YES];
+        requiredProtocolVersion = SSKProtoDataMessageProtocolVersionViewOnceVideo;
     }
 
     [builder setRequiredProtocolVersion:(uint32_t)requiredProtocolVersion];

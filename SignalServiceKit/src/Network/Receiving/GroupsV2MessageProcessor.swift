@@ -168,7 +168,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
     private func drainQueueWorkStep() {
         assertOnQueue(serialQueue)
 
-        guard !FeatureFlags.suppressBackgroundActivity else {
+        guard !DebugFlags.suppressBackgroundActivity else {
             // Don't process queues.
             return
         }

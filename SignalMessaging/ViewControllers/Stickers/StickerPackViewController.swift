@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -129,11 +129,9 @@ public class StickerPackViewController: OWSViewController {
         defaultPackIconView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBlue)
         defaultPackIconView.isHidden = true
 
-        if FeatureFlags.stickerSharing {
-            shareButton.setTemplateImageName("forward-solid-24", tintColor: Theme.darkThemePrimaryColor)
-            shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
-            shareButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "shareButton")
-        }
+        shareButton.setTemplateImageName("forward-solid-24", tintColor: Theme.darkThemePrimaryColor)
+        shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
+        shareButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "shareButton")
 
         view.addSubview(dismissButton)
         dismissButton.autoPinEdge(toSuperviewEdge: .leading)

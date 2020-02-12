@@ -937,7 +937,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     if (self.appIsActive) {
         // If app is active, keep web socket alive.
         return YES;
-    } else if (SSKFeatureFlags.keepWebSocketOpenInBackground) {
+    } else if (SSKDebugFlags.keepWebSocketOpenInBackground) {
         return YES;
     } else if (self.backgroundKeepAliveUntilDate && [self.backgroundKeepAliveUntilDate timeIntervalSinceNow] > 0.f) {
         OWSAssertDebug(self.backgroundKeepAliveTimer);

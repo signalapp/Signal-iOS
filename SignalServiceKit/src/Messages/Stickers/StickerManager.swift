@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -41,8 +41,6 @@ public class StickerManager: NSObject {
     public static let stickersOrPacksDidChange = Notification.Name("stickersOrPacksDidChange")
     @objc
     public static let recentStickersDidChange = Notification.Name("recentStickersDidChange")
-    @objc
-    public static let isStickerSendEnabledDidChange = Notification.Name("isStickerSendEnabledDidChange")
 
     // MARK: - Dependencies
 
@@ -101,7 +99,6 @@ public class StickerManager: NSObject {
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             // Warm the caches.
-            StickerManager.shared.warmIsStickerSendEnabled()
             StickerManager.shared.warmTooltipState()
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
@@ -386,10 +383,6 @@ public class StickerManager: NSObject {
         Logger.verbose("Installing sticker pack: \(stickerPack.info).")
 
         stickerPack.update(withIsInstalled: true, transaction: transaction)
-
-        if !isDefaultStickerPack(stickerPack.info) {
-            shared.setHasUsedStickers(transaction: transaction)
-        }
 
         installStickerPackContents(stickerPack: stickerPack, transaction: transaction).retainUntilComplete()
 
@@ -919,54 +912,6 @@ public class StickerManager: NSObject {
         return result
     }
 
-    // MARK: - Auto-Enable
-
-    private let kHasReceivedStickersKey = "hasReceivedStickersKey"
-    // This property should only be accessed on serialQueue.
-    private var isStickerSendEnabledCached = false
-
-    @objc
-    public func setHasUsedStickers(transaction: SDSAnyWriteTransaction) {
-        var shouldSet = false
-        StickerManager.serialQueue.sync {
-            guard !self.isStickerSendEnabledCached else {
-                return
-            }
-            self.isStickerSendEnabledCached = true
-            shouldSet = true
-        }
-        guard shouldSet else {
-            return
-        }
-
-        StickerManager.store.setBool(true, key: kHasReceivedStickersKey, transaction: transaction)
-
-        NotificationCenter.default.postNotificationNameAsync(StickerManager.isStickerSendEnabledDidChange, object: nil)
-    }
-
-    @objc
-    public var isStickerSendEnabled: Bool {
-        if FeatureFlags.stickerSend {
-            return true
-        }
-        guard FeatureFlags.stickerAutoEnable else {
-            return false
-        }
-        return StickerManager.serialQueue.sync {
-            return isStickerSendEnabledCached
-        }
-    }
-
-    private func warmIsStickerSendEnabled() {
-        let value = databaseStorage.read { transaction in
-            return StickerManager.store.getBool(self.kHasReceivedStickersKey, defaultValue: false, transaction: transaction)
-        }
-
-        StickerManager.serialQueue.sync {
-            isStickerSendEnabledCached = value
-        }
-    }
-
     // MARK: - Tooltips
 
     @objc
@@ -1009,9 +954,6 @@ public class StickerManager: NSObject {
 
     @objc
     public var shouldShowStickerTooltip: Bool {
-        guard isStickerSendEnabled else {
-            return false
-        }
         return StickerManager.serialQueue.sync {
             return self.tooltipState == .shouldShowTooltip
         }
@@ -1084,7 +1026,7 @@ public class StickerManager: NSObject {
     }
 
     private class func cleanupOrphans() {
-        guard !FeatureFlags.suppressBackgroundActivity else {
+        guard !DebugFlags.suppressBackgroundActivity else {
             // Don't clean up.
             return
         }

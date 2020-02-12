@@ -151,7 +151,7 @@ public extension JobQueue {
     func workStep() {
         Logger.debug("")
 
-        guard !FeatureFlags.suppressBackgroundActivity else {
+        guard !DebugFlags.suppressBackgroundActivity else {
             // Don't process queues.
             return
         }
@@ -205,7 +205,7 @@ public extension JobQueue {
     }
 
     func restartOldJobs() {
-        guard !FeatureFlags.suppressBackgroundActivity else {
+        guard !DebugFlags.suppressBackgroundActivity else {
             // Don't process queues.
             return
         }

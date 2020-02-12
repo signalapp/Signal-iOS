@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -103,9 +103,6 @@ public class MessageSticker: MTLModel {
     @objc
     public class func buildValidatedMessageSticker(dataMessage: SSKProtoDataMessage,
                                                    transaction: SDSAnyWriteTransaction) throws -> MessageSticker {
-        guard FeatureFlags.stickerReceive else {
-            throw StickerError.noSticker
-        }
         guard let stickerProto: SSKProtoDataMessageSticker = dataMessage.sticker else {
             throw StickerError.noSticker
         }

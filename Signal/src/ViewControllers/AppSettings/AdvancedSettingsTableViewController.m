@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          }]];
     }
 
-    if (SSKFeatureFlags.audibleErrorLogging) {
+    if (SSKDebugFlags.audibleErrorLogging) {
         [loggingSection
             addItem:[OWSTableItem actionItemWithText:NSLocalizedString(
                                                          @"SETTINGS_ADVANCED_VIEW_ERROR_LOG", @"table cell label")
@@ -320,7 +320,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didPressViewErrorLog
 {
-    OWSAssert(SSKFeatureFlags.audibleErrorLogging);
+    OWSAssertDebug(SSKDebugFlags.audibleErrorLogging);
 
     [DDLog flushLog];
     NSURL *errorLogsDir = DebugLogger.sharedLogger.errorLogsDir;
