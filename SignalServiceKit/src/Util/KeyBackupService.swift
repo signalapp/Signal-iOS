@@ -308,6 +308,7 @@ public class KeyBackupService: NSObject {
                 return cachedData
             }
 
+            // TODO: Derive Storage Service Key – Delete this.
             // This key is *only* used for storage service backup / restore.
             // It is sync'd with your linked devices, but is never stored on
             // our servers. Eventually, we'll switch storage service over to
@@ -497,6 +498,7 @@ public class KeyBackupService: NSObject {
             }
         }
 
+        // TODO: Derive Storage Service Key – Delete this.
         // For now, if we don't have a storage service key, create one.
         // Eventually this will be derived from the master key and not
         // its own independent key.
@@ -521,13 +523,13 @@ public class KeyBackupService: NSObject {
     @objc
     public static func clearKeys(transaction: SDSAnyWriteTransaction) {
         // Delete everything but the storageServiceKey, which is persistent.
-        // TODO: When we migrate to deriving the storage service key from
-        // the KBS master key, this should be updated to "removeAll"
+        // TODO: Derive Storage Service Key – When we migrate to deriving the storage
+        // service key from the KBS master key, this should be updated to "removeAll"
         keyValueStore.removeValues(
             forKeys: [
                 masterKeyIdentifer,
                 pinTypeIdentifier,
-                encodedVerificationStringIdentifier,
+                encodedVerificationStringIdentifier
             ] + DerivedKey.syncableKeys.map { $0.rawValue },
             transaction: transaction
         )
@@ -544,6 +546,7 @@ public class KeyBackupService: NSObject {
     private static var cachedMasterKey: Data?
     // Should only be interacted with on the serial cache queue
     // Always contains an in memory reference to our current storageServiceKey
+    // TODO: Derive Storage Service Key – Delete this
     private static var cachedStorageServiceKey: Data?
     // Always contains an in memory reference to our current PIN's type
     private static var cachedPinType: PinType?
