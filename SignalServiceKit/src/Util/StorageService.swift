@@ -9,9 +9,11 @@ import PromiseKit
 public protocol StorageServiceManagerProtocol {
     func recordPendingDeletions(deletedIds: [AccountId])
     func recordPendingDeletions(deletedAddresses: [SignalServiceAddress])
+    func recordPendingDeletions(deletedGroupIds: [Data])
 
     func recordPendingUpdates(updatedIds: [AccountId])
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
+    func recordPendingUpdates(updatedGroupIds: [Data])
 
     func backupPendingChanges()
 
@@ -62,9 +64,24 @@ public struct StorageService {
             return contact
         }
 
+        public var groupV1Record: StorageServiceProtoGroupV1Record? {
+            guard type == StorageServiceProtoStorageRecordType.groupv1.rawValue else { return nil }
+            guard let groupV1 = record.groupV1 else {
+                owsFailDebug("unexpectedly missing group record")
+                return nil
+            }
+            return groupV1
+        }
+
         public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) throws {
             let storageRecord = StorageServiceProtoStorageRecord.builder(type: UInt32(StorageServiceProtoStorageRecordType.contact.rawValue))
             storageRecord.setContact(contact)
+            self.init(identifier: identifier, record: try storageRecord.build())
+        }
+
+        public init(identifier: StorageIdentifier, groupV1: StorageServiceProtoGroupV1Record) throws {
+            let storageRecord = StorageServiceProtoStorageRecord.builder(type: UInt32(StorageServiceProtoStorageRecordType.groupv1.rawValue))
+            storageRecord.setGroupV1(groupV1)
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 

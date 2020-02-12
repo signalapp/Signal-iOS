@@ -937,23 +937,56 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     NSString *groupIdKey = [self groupKeyForGroupId:groupId];
 
     // Try to avoid opening a write transaction.
-    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction * readTransaction) {
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
         if ([self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:readTransaction]) {
             // Do nothing.
             return;
         }
         [self.databaseStorage
-         asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
-             [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:writeTransaction];
-         }
-         completion:^{
-             [[NSNotificationCenter defaultCenter]
-              postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-              object:nil
-              userInfo:@{
-                         kNSNotificationKey_ProfileGroupId : groupId,
-                         }];
-         }];
+            asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+                [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:writeTransaction];
+            }
+            completion:^{
+                // Mark the new group for update
+                [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                       object:nil
+                                     userInfo:@ {
+                                         kNSNotificationKey_ProfileGroupId : groupId,
+                                     }];
+            }];
+    }];
+}
+
+- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
+{
+    OWSAssertDebug(groupId.length > 0);
+
+    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
+
+    // Try to avoid opening a write transaction.
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
+        if (![self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:readTransaction]) {
+            // Do nothing.
+            return;
+        }
+        [self.databaseStorage
+            asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+                [self.whitelistedGroupsStore removeValueForKey:groupIdKey transaction:writeTransaction];
+            }
+            completion:^{
+                // Mark the new group for update
+                [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                       object:nil
+                                     userInfo:@ {
+                                         kNSNotificationKey_ProfileGroupId : groupId,
+                                     }];
+            }];
     }];
 }
 

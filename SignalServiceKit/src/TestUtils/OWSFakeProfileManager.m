@@ -99,9 +99,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientWhitelist removeObject:address];
 }
 
+- (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.threadWhitelist containsObject:groupId.hexadecimalString];
+}
+
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId
 {
     [self.threadWhitelist addObject:groupId.hexadecimalString];
+}
+
+- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
+{
+    [self.threadWhitelist removeObject:groupId.hexadecimalString];
 }
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread

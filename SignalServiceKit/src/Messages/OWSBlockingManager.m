@@ -420,7 +420,14 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     wasLocallyInitiated:(BOOL)wasLocallyInitiated
             transaction:(SDSAnyWriteTransaction *)transaction
 {
-    NSData *groupId = groupModel.groupId;
+    OWSAssertDebug(groupModel);
+    [self addBlockedGroupId:groupModel.groupId wasLocallyInitiated:wasLocallyInitiated transaction:transaction];
+}
+
+- (void)addBlockedGroupId:(NSData *)groupId
+      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+              transaction:(SDSAnyWriteTransaction *)transaction
+{
     OWSAssertDebug(groupId.length > 0);
 
     OWSLogInfo(@"groupId: %@", groupId);
@@ -428,11 +435,23 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     @synchronized(self) {
         [self ensureLazyInitialization];
 
-        if ([self isGroupIdBlocked:groupId]) {
+        BOOL wasBlocked = [self isGroupIdBlocked:groupId];
+
+        if (wasBlocked) {
             // Ignore redundant changes.
             return;
         }
-        self.blockedGroupMap[groupId] = groupModel;
+
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+        if (groupThread != nil) {
+            self.blockedGroupMap[groupId] = groupThread.groupModel;
+        } else {
+            OWSFailDebug(@"missing group thread");
+        }
+
+        if (wasLocallyInitiated && wasBlocked != [self isGroupIdBlocked:groupId]) {
+            [self.storageServiceManager recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+        }
     }
 
     [self handleUpdateAndSendSyncMessage:wasLocallyInitiated transaction:transaction];
@@ -447,12 +466,18 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     @synchronized(self) {
         [self ensureLazyInitialization];
 
-        if (![self isGroupIdBlocked:groupId]) {
+        BOOL wasBlocked = [self isGroupIdBlocked:groupId];
+
+        if (!wasBlocked) {
             // Ignore redundant changes.
             return;
         }
 
         [self.blockedGroupMap removeObjectForKey:groupId];
+
+        if (wasLocallyInitiated && wasBlocked != [self isGroupIdBlocked:groupId]) {
+            [self.storageServiceManager recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+        }
     }
 
     [self handleUpdateWithSneakyTransactionAndSendSyncMessage:wasLocallyInitiated];
