@@ -1945,6 +1945,16 @@ struct SignalServiceProtos_SyncMessage {
     var hasBlob: Bool {return _storage._blob != nil}
     /// Clears the value of `blob`. Subsequent reads from it will return its default value.
     mutating func clearBlob() {_uniqueStorage()._blob = nil}
+    
+    /// Loki
+    var data: Data {
+      get {return _storage._data ?? SwiftProtobuf.Internal.emptyData}
+      set {_uniqueStorage()._data = newValue}
+    }
+    /// Returns true if `data` has been explicitly set.
+    var hasData: Bool {return _storage._data != nil}
+    /// Clears the value of `data`. Subsequent reads from it will return its default value.
+    mutating func clearData() {_uniqueStorage()._data = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2533,6 +2543,12 @@ struct SignalServiceProtos_GroupDetails {
   var members: [String] {
     get {return _storage._members}
     set {_uniqueStorage()._members = newValue}
+  }
+  
+  ///Loki
+  var admins: [String] {
+    get {return _storage._admins}
+    set {_uniqueStorage()._admins = newValue}
   }
 
   var avatar: SignalServiceProtos_GroupDetails.Avatar {
@@ -4627,10 +4643,12 @@ extension SignalServiceProtos_SyncMessage.Groups: SwiftProtobuf.Message, SwiftPr
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Groups"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "blob"),
+    101: .same(proto: "data"),
   ]
 
   fileprivate class _StorageClass {
     var _blob: SignalServiceProtos_AttachmentPointer? = nil
+    var _data: Data? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -4638,6 +4656,7 @@ extension SignalServiceProtos_SyncMessage.Groups: SwiftProtobuf.Message, SwiftPr
 
     init(copying source: _StorageClass) {
       _blob = source._blob
+      _data = source._data
     }
   }
 
@@ -4654,6 +4673,7 @@ extension SignalServiceProtos_SyncMessage.Groups: SwiftProtobuf.Message, SwiftPr
       while let fieldNumber = try decoder.nextFieldNumber() {
         switch fieldNumber {
         case 1: try decoder.decodeSingularMessageField(value: &_storage._blob)
+        case 101: try decoder.decodeSingularBytesField(value: &_storage._data)
         default: break
         }
       }
@@ -4665,6 +4685,9 @@ extension SignalServiceProtos_SyncMessage.Groups: SwiftProtobuf.Message, SwiftPr
       if let v = _storage._blob {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
       }
+      if let v = _storage._data {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 101)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4675,6 +4698,7 @@ extension SignalServiceProtos_SyncMessage.Groups: SwiftProtobuf.Message, SwiftPr
         let _storage = _args.0
         let rhs_storage = _args.1
         if _storage._blob != rhs_storage._blob {return false}
+        if _storage._data != rhs_storage._data {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -5223,6 +5247,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
     6: .same(proto: "expireTimer"),
     7: .same(proto: "color"),
     8: .same(proto: "blocked"),
+    9: .same(proto: "admins"),
   ]
 
   fileprivate class _StorageClass {
@@ -5234,6 +5259,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
     var _expireTimer: UInt32? = nil
     var _color: String? = nil
     var _blocked: Bool? = nil
+    var _admins: [String] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -5248,6 +5274,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
       _expireTimer = source._expireTimer
       _color = source._color
       _blocked = source._blocked
+      _admins = source._admins
     }
   }
 
@@ -5271,6 +5298,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
         case 6: try decoder.decodeSingularUInt32Field(value: &_storage._expireTimer)
         case 7: try decoder.decodeSingularStringField(value: &_storage._color)
         case 8: try decoder.decodeSingularBoolField(value: &_storage._blocked)
+        case 9: try decoder.decodeRepeatedStringField(value: &_storage._admins)
         default: break
         }
       }
@@ -5303,6 +5331,9 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
       if let v = _storage._blocked {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 8)
       }
+      if !_storage._admins.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._admins, fieldNumber: 9)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5320,6 +5351,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._expireTimer != rhs_storage._expireTimer {return false}
         if _storage._color != rhs_storage._color {return false}
         if _storage._blocked != rhs_storage._blocked {return false}
+        if _storage._admins != rhs_storage._admins {return false}
         return true
       }
       if !storagesAreEqual {return false}

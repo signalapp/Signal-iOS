@@ -11,6 +11,7 @@
 #import "TSGroupThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import "OWSPrimaryStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,22 +29,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    if (self.attachmentIds.count != 1) {
-        OWSLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
-            (unsigned long)self.attachmentIds.count);
-    }
-
-    SSKProtoAttachmentPointer *_Nullable attachmentProto =
-        [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
-    if (!attachmentProto) {
-        OWSFailDebug(@"could not build protobuf.");
-        return nil;
-    }
-
-    SSKProtoSyncMessageGroupsBuilder *groupsBuilder = [SSKProtoSyncMessageGroups builder];
-    [groupsBuilder setBlob:attachmentProto];
-
     NSError *error;
+    if (self.attachmentIds.count > 1) {
+        OWSLogError(@"Expected sync group message to have one or zero attachments, but found %lu.", (unsigned long)self.attachmentIds.count);
+    }
+    
+    SSKProtoSyncMessageGroupsBuilder *groupsBuilder;
+    if (self.attachmentIds.count == 0) {
+        SSKProtoAttachmentPointerBuilder *attachmentProtoBuilder = [SSKProtoAttachmentPointer builderWithId:0];
+        SSKProtoAttachmentPointer *attachmentProto = [attachmentProtoBuilder buildAndReturnError:&error];
+        groupsBuilder = [SSKProtoSyncMessageGroups builder];
+        [groupsBuilder setBlob:attachmentProto];
+        __block NSData *data;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            data = [self buildPlainTextAttachmentDataWithTransaction:transaction];
+        }];
+        [groupsBuilder setData:data];
+    } else {
+        SSKProtoAttachmentPointer *attachmentProto = [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
+        if (attachmentProto == nil) {
+            OWSFailDebug(@"Couldn't build protobuf.");
+            return nil;
+        }
+        groupsBuilder = [SSKProtoSyncMessageGroups builder];
+        [groupsBuilder setBlob:attachmentProto];
+    }
+
     SSKProtoSyncMessageGroups *_Nullable groupsProto = [groupsBuilder buildAndReturnError:&error];
     if (error || !groupsProto) {
         OWSFailDebug(@"could not build protobuf: %@", error);
@@ -68,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     [TSGroupThread
         enumerateCollectionObjectsWithTransaction:transaction
                                        usingBlock:^(id obj, BOOL *stop) {
-                                           if (![obj isKindOfClass:[TSGroupThread class]]) {
+                                           if (![obj isKindOfClass:[TSGroupThread class]] || ((TSGroupThread *)obj).groupModel.groupType != closedGroup) {
                                                if (![obj isKindOfClass:[TSContactThread class]]) {
                                                    OWSLogWarn(
                                                        @"Ignoring non group thread in thread collection: %@", obj);

@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     [groupBuilder setName:group.groupName];
     [groupBuilder setMembers:group.groupMemberIds];
     [groupBuilder setColor:groupThread.conversationColorName];
+    [groupBuilder setAdmins:group.groupAdminIds];
 
     if ([OWSBlockingManager.sharedManager isGroupIdBlocked:group.groupId]) {
         [groupBuilder setBlocked:YES];

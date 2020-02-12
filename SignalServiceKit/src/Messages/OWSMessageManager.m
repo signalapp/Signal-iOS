@@ -1074,7 +1074,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else if (syncMessage.contacts != nil) {
         if (wasSentByMasterDevice && syncMessage.contacts.data.length > 0) {
-            NSLog(@"[Loki] Received contact sync message.");
+            OWSLogInfo(@"[Loki] Received contact sync message.");
             NSData *data = syncMessage.contacts.data;
             ContactParser *parser = [[ContactParser alloc] initWithData:data];
             NSArray<NSString *> *hexEncodedPublicKeys = [parser parseHexEncodedPublicKeys];
@@ -1101,6 +1101,12 @@ NS_ASSUME_NONNULL_BEGIN
                     default: break; // Do nothing
                 }
             }
+        }
+    } else if (syncMessage.groups != nil) {
+        if (wasSentByMasterDevice && syncMessage.groups.data.length > 0) {
+            OWSLogInfo(@"[Loki] Received group sync message.");
+            NSData *data = syncMessage.groups.data;
+            //  TODO: decode the data and handle the group info
         }
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");

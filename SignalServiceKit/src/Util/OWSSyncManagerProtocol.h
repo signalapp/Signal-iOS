@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts __attribute__((warn_unused_result));
 
+- (AnyPromise *)syncAllGroups __attribute__((warn_unused_result));
+
 @end
 
 NS_ASSUME_NONNULL_END

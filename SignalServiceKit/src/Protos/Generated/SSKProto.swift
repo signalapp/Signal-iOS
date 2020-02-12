@@ -4551,6 +4551,9 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
         if let _value = blob {
             builder.setBlob(_value)
         }
+        if let _value = data {
+            builder.setData(_value)
+        }
         return builder
     }
 
@@ -4562,6 +4565,10 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
 
         @objc public func setBlob(_ valueParam: SSKProtoAttachmentPointer) {
             proto.blob = valueParam.proto
+        }
+        
+        @objc public func setData(_ valueParam: Data) {
+            proto.data = valueParam
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageGroups {
@@ -4576,6 +4583,16 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
     fileprivate let proto: SignalServiceProtos_SyncMessage.Groups
 
     @objc public let blob: SSKProtoAttachmentPointer?
+    
+    @objc public var data: Data? {
+        guard proto.hasData else {
+            return nil
+        }
+        return proto.data
+    }
+    @objc public var hasData: Bool {
+        return proto.hasData
+    }
 
     private init(proto: SignalServiceProtos_SyncMessage.Groups,
                  blob: SSKProtoAttachmentPointer?) {
@@ -6343,6 +6360,16 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         @objc public func setMembers(_ wrappedItems: [String]) {
             proto.members = wrappedItems
         }
+        
+        @objc public func addAdmins(_ valueParam: String) {
+            var items = proto.admins
+            items.append(valueParam)
+            proto.admins = items
+        }
+        
+        @objc public func setAdmins(_ wrappedItems: [String]) {
+            proto.admins = wrappedItems
+        }
 
         @objc public func setAvatar(_ valueParam: SSKProtoGroupDetailsAvatar) {
             proto.avatar = valueParam.proto
@@ -6391,6 +6418,10 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 
     @objc public var members: [String] {
         return proto.members
+    }
+    
+    @objc public var admins: [String] {
+        return proto.admins
     }
 
     @objc public var active: Bool {
