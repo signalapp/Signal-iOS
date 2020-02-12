@@ -233,8 +233,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         self.nameLabel.text = [self.contactsManager displayNameForAddress:self.address];
     }
 
-    if (!SSKFeatureFlags.profileDisplayChanges
-        && ![self.contactsManager hasNameInSystemContactsForAddress:self.address]) {
+    if (!RemoteConfig.messageRequests && ![self.contactsManager hasNameInSystemContactsForAddress:self.address]) {
         self.profileNameLabel.text = [self.contactsManager formattedProfileNameForAddress:self.address];
         [self.profileNameLabel setNeedsLayout];
     }

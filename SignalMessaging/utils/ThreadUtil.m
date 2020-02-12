@@ -500,7 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)hasPendingMessageRequest:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     // If the feature isn't enabled, do nothing.
-    if (!SSKFeatureFlags.messageRequest) {
+    if (!RemoteConfig.messageRequests) {
         return NO;
     }
 

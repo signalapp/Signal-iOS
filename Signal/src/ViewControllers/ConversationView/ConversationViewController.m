@@ -1304,7 +1304,7 @@ typedef enum : NSUInteger {
 
         if (thread.isNoteToSelf) {
             name = MessageStrings.noteToSelf;
-        } else if (SSKFeatureFlags.profileDisplayChanges) {
+        } else if (RemoteConfig.messageRequests) {
             name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         } else {
             attributedName =
@@ -1314,8 +1314,7 @@ typedef enum : NSUInteger {
         }
 
         // If the user is in the system contacts, show a badge
-        if (SSKFeatureFlags.profileDisplayChanges &&
-            [self.contactsManager hasSignalAccountForAddress:thread.contactAddress]) {
+        if (RemoteConfig.messageRequests && [self.contactsManager hasSignalAccountForAddress:thread.contactAddress]) {
             icon =
                 [[UIImage imageNamed:@"profile-outline-16"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         }

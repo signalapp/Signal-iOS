@@ -999,7 +999,7 @@ const CGFloat kIconViewLength = 24;
             }
         }
 
-        if (!SSKFeatureFlags.profileDisplayChanges
+        if (!RemoteConfig.messageRequests
             && ![self.contactsManager hasNameInSystemContactsForAddress:recipientAddress]) {
             NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:recipientAddress];
             if (profileName) {

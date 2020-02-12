@@ -203,12 +203,6 @@ public class FeatureFlags: NSObject {
     @objc
     public static let usernames = allowUUIDOnlyContacts && build.includes(.dev)
 
-    @objc
-    public static let messageRequest = true
-
-    @objc
-    public static let profileDisplayChanges = messageRequest
-
     // This can be used to shut down various background operations.
     @objc
     public static let suppressBackgroundActivity = false
