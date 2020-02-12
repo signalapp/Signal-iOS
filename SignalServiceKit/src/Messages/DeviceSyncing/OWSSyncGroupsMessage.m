@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncGroupsMessage.h"
@@ -76,6 +76,11 @@ NS_ASSUME_NONNULL_BEGIN
                                       return;
                                   }
                                   TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                  // We only sync v1 groups via group sync messages.
+                                  if (groupThread.isGroupV2Thread) {
+                                      return;
+                                  }
+
                                   [groupsOutputStream writeGroup:groupThread transaction:transaction];
                               }];
 
