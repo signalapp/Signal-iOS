@@ -1108,6 +1108,11 @@ NS_ASSUME_NONNULL_BEGIN
             NSData *data = syncMessage.groups.data;
             //  TODO: decode the data and handle the group info
             GroupParser *parser = [[GroupParser alloc] initWithData:data];
+            NSArray<TSGroupModel *> *groupModels = [parser parseGroupModels];
+            for (TSGroupModel *groupModel in groupModels) {
+                TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel];
+                [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
+            }
         }
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
