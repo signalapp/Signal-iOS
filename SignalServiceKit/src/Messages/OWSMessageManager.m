@@ -1107,6 +1107,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"[Loki] Received group sync message.");
             NSData *data = syncMessage.groups.data;
             //  TODO: decode the data and handle the group info
+            GroupParser *parser = [[GroupParser alloc] initWithData:data];
         }
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
