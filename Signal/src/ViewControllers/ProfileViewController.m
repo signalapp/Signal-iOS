@@ -643,7 +643,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     OWSLogVerbose(@"");
 
     // If the user already has a pin, just go home
-    if ([OWS2FAManager sharedManager].is2FAEnabled) {
+    if ([OWS2FAManager sharedManager].is2FAEnabled || !SSKFeatureFlags.pinsForNewUsers) {
         return [self showConversationSplitView];
     }
 
