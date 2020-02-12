@@ -164,7 +164,7 @@ public struct StorageService {
 
             return try builder.buildSerializedData()
         }.then(on: .global()) { data in
-            storageRequest(withMethod: "PUT", endpoint: "/v1/storage", body: data)
+            storageRequest(withMethod: "PUT", endpoint: "v1/storage", body: data)
         }.map(on: .global()) { response in
             switch response.status {
             case .success:
