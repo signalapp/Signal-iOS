@@ -1539,6 +1539,24 @@
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Bendrinti profilį";
 
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Jūsų profilio vardas įrašytas.";
+
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Pristatyta";
 
@@ -2038,22 +2056,22 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Patvirtinti PIN kodą";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Retkarčiais, tam kad prisimintumėte savo PIN kodą, prašysime jūsų jį patvirtinti.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Po kelių dienų priminsime jums dar kartą.";
 
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Patvirtinkite savo Signal PIN kodą";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Rytoj priminsime jums dar kartą.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Po kelių savaičių priminsime jums dar kartą.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Po savaitės priminsime jums dar kartą.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Neteisingas PIN, bandykite dar kartą.";

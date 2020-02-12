@@ -1539,6 +1539,24 @@
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Share Profile";
 
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Aizsūtīts";
 
@@ -1909,22 +1927,22 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Kļūda, apstrādājot ienākošo ziņu";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Vienreiz skatāma multivide";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Multivide";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Vienreiz skatāms attēls";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Vienreiz skatāms video";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Skatīt attēlu";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Skatīt video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Skatīts";
@@ -2035,7 +2053,7 @@
 "PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Verify PIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Pārbaudīt PIN";
 
 /* Body for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
@@ -2044,7 +2062,7 @@
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Verify your Signal PIN";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Signal PIN verificēšana";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
@@ -2206,10 +2224,10 @@
 "PROFILE_VIEW_SAVE_BUTTON" = "Saglabāt";
 
 /* Title for the profile view. */
-"PROFILE_VIEW_TITLE" = "Profile";
+"PROFILE_VIEW_TITLE" = "Profils";
 
 /* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "Username";
+"PROFILE_VIEW_USERNAME_FIELD" = "Lietotājvārds";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Mark as Read";
@@ -2302,7 +2320,7 @@
 "REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "Iepazīstinām ar reakcijām";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Es aizmirsu savu PIN";
@@ -2461,7 +2479,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Atbloķēt signālu";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Name, username, or number";
@@ -3139,7 +3157,7 @@
 "USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
 
 /* Label for the username field in the username view. */
-"USERNAME_FIELD" = "Username";
+"USERNAME_FIELD" = "Lietotājvārds";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
@@ -3163,7 +3181,7 @@
 "USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
 
 /* The title for the username view. */
-"USERNAME_TITLE" = "Username";
+"USERNAME_TITLE" = "Lietotājvārds";
 
 /* An error indicating that the supplied username is too short. */
 "USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
@@ -3205,7 +3223,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Pieskarieties šeit, lai šis ziņojums pēc skatīšanas pazustu.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";

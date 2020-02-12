@@ -1441,7 +1441,7 @@
 "MEGAPHONE_REMIND_LATER" = "Me le rappeler plus tard";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "Nous vous le rappellerons plus tard.";
+"MEGAPHONE_WILL_REMIND_LATER" = "Nous vous le rappellerons ultérieurement.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copier le texto";
@@ -1538,6 +1538,24 @@
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Partager le profil";
+
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Votre nom de profil a été enregistré.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Remis";
@@ -1996,7 +2014,7 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Créer un NIP numérique";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Votre NIP n’a pas été enregistré. Nous vous proposerons de créer un NIP plus tard.";
+"PIN_CREATION_ERROR_MESSAGE" = "Votre NIP n’a pas été enregistré. Nous vous proposerons de créer un NIP ultérieurement.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_TITLE" = "Échec de la création du NIP";
@@ -2035,25 +2053,25 @@
 "PIN_REMINDER_FORGOT_PIN" = "Avez-vous oublié votre NIP ?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Verify PIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Confirmer le NIP";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Nous vous demanderons occasionnellement de confirmer votre NIP afin que vous vous en souveniez.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Nous vous ferons un rappel dans quelques jours.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Verify your Signal PIN";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Confirmez votre NIP Signal";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Nous vous ferons un rappel demain.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Nous vous ferons un rappel dans deux semaines.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Nous vous ferons un rappel dans une semaine.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "NIP invalide, essayez encore.";
@@ -2071,7 +2089,7 @@
 "PINS_MEGAPHONE_HAS_PIN_BODY" = "Votre blocage de l’inscription s’appelle désormais un NIP. Le mettre à jour ne prendra que quelques secondes.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Nous vous ferons un rappel plus tard. La mise à jour de votre NIP deviendra obligatoire dans %ld jours.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Nous vous le rappellerons ultérieurement. La mise à jour de votre NIP deviendra obligatoire dans %ld jours.";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "Nous présentons les NIP";
@@ -2083,7 +2101,7 @@
 "PINS_MEGAPHONE_NO_PIN_BODY" = "Les NIP ajoutent une couche supplémentaire de sécurité à votre compte Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Nous vous le rappellerons plus tard. La création d’un NIP deviendra obligatoire dans %ld jours.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Nous vous le rappellerons ultérieurement. La création d’un NIP deviendra obligatoire dans %ld jours.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Créer un NIP";
@@ -2149,13 +2167,13 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Votre profil peut désormais comporter un nom de famille facultatif.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirmez votre nom de profil";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Il s’affichera lorsque vous entamerez ou partagerez une nouvelle conversation.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Ajouter un nom de profil.";
@@ -2176,7 +2194,7 @@
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Votre nom de famille est trop long.";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Votre nom de famille est requis.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Votre prénom est requis.";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Votre prénom est trop long.";
@@ -2299,7 +2317,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "A réagi avec %@ à votre message vocal";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Touchez et maintenez n’importe quel message pour répondre rapidement ce que vous ressentez.";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Nous présentons les réactions";
@@ -2749,7 +2767,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "Votre NIP ajoute une couche supplémentaire de sécurité à votre compte. Il vous sera demandé quand vous enregistrerez votre numéro de téléphone sur Signal. Si vous oubliez votre NIP, votre compte sera verrouillé pendant 7 jours.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Changer votre NIP";

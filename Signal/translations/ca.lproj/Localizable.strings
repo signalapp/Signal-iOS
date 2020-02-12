@@ -525,7 +525,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per a veure quins contactes són usuaris del Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Se suprimiran els missatges i deixareu d'estar registrat al servidor. L'aplicació es tancarà una vegada se suprimeixin les dades.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Això restablirà l'aplicació: se suprimiran els missatges i deixareu d'estar registrat al servidor. L'aplicació es tancarà un cop s'acabi el procés.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Segur que voleu suprimir el compte?";
@@ -732,7 +732,7 @@
 "CONVERSATION_SETTINGS_SEARCH" = "Cerca la conversa";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Toca per canviar";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Canvieu-ho";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "No silenciïs";
@@ -850,7 +850,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Torna a registrar aquest número de telèfon";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Dispositiu desenregistrat. El número de telèfon pot ser registrat amb Signal en un altre dispositiu. Toca per tornar a registrar.";
+"DEREGISTRATION_WARNING" = "El dispositiu ja no està registrat. El número de telèfon es pot registrar al Signal des d'un altre dispositiu. Toqueu per tornar a registrar-lo.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Darrera connexió: %@";
@@ -1060,13 +1060,13 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Usuari no registrat: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "La versió del Signal ha caducat! Els missatges ja no s'enviaran correctament. Premeu per actualitzar-lo a la versió més recent.";
+"EXPIRATION_ERROR" = "La versió del Signal ha caducat! Els missatges ja no s'enviaran correctament. Toqueu per actualitzar-lo a la versió més recent.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "La vostra versió del Signal caducarà d'aquí %d dies. Premeu per a actualitzar-la a la versió més recent.";
+"EXPIRATION_WARNING_SOON" = "La versió del Signal caducarà d'aquí a %d dies. Toqueu per a actualitzar-la a la versió més recent.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "La vostra versió del Signal caducarà avui. Premeu per actualitzar-la a la versió més recent.";
+"EXPIRATION_WARNING_TODAY" = "La versió del Signal caducarà avui. Toqueu per actualitzar-la a la versió més recent.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Massa errors amb aquest contacte. Torna-ho a intentar més tard";
@@ -1120,7 +1120,7 @@
 "GIF_PICKER_VIEW_TITLE" = "Cerca GIF";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Toca per a tornar-ho a intentar";
+"GIF_VIEW_SEARCH_ERROR" = "Error. Torneu-ho a intentar.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "No hi ha cap resultat.";
@@ -1144,7 +1144,7 @@
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ us ha afegit al grup.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "No s'ha pogut afegir a tots els membres al grup. Toqueu per a tornar a provar-ho.";
+"GROUP_CREATION_FAILED" = "No tots els membres s'han pogut afegir al grup. Toqueu per tornar a provar-ho.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Gestió del grup";
@@ -1539,6 +1539,24 @@
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Comparteix el perfil";
 
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "S'ha desat el nom de perfil.";
+
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "S'ha enviat";
 
@@ -1573,7 +1591,7 @@
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Missatge nou";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ja no és marcat com a verificat. Toqueu per a més opcions.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ja no està marcat com a verificat. Toqueu per a més opcions.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Heu blocat aquest usuari";
@@ -1591,10 +1609,10 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Heu blocat %@ membres d'aquest grup";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Més d'un membre del grup ja no és marcat com a verificat. Toqueu per a més opcions.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Més d'un membre del grup ja no està marcat com a verificat. Toqueu per a més opcions.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toqueu aquí per anar a la configuració";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toqueu aquí per anar a la configuració.";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "MIssatges nous";
@@ -2002,7 +2020,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Ha fallat crear el PIN.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add extra security to your account and can’t be recovered. You’ll need your PIN to register with Signal again.";
+"PIN_CREATION_EXPLANATION" = "Els PIN afegeixen seguretat extra al compte i no es poden recuperar. Us caldrà el PIN per registrar-vos al Signal un altre cop.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Els PIN no coincideixen. Torneu-ho a provar.";
@@ -2035,25 +2053,25 @@
 "PIN_REMINDER_FORGOT_PIN" = "Heu oblidat el PIN?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Verify PIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Verifica el PIN";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "De tant en tant us demanarem de verificar el PIN perquè el recordeu.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Us ho recordarem d'aquí a uns dies.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Verify your Signal PIN";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Verifiqueu el PIN del Signal";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Us ho recordarem demà.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Us ho recordarem d'aquí a un parell de setmanes.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Us ho recordarem d'aquí a una setmana.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "PIN no vàlid. Torneu-ho a provar.";
@@ -2089,7 +2107,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Crea un PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
+"PINS_MEGAPHONE_TOAST" = "S'ha creat el PIN. El podeu canviar des de la configuració.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reprodueix el contingut";
@@ -2107,7 +2125,7 @@
 "PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Més informació";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Toqueu per a escanejar";
+"PRIVACY_TAP_TO_SCAN" = "Toqueu per escanejar";
 
 /* Button that lets user mark another user's identity as unverified. */
 "PRIVACY_UNVERIFY_BUTTON" = "Esborra la verificació";
@@ -2134,7 +2152,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "El codi escanejat no sembla un número de seguretat. Teniu la versió més nova de Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si voleu verificar la seguretat del xifratge extrem a extrem amb %@, compareu els números de sobre amb els números del seu dispositiu.\n\nTambé podeu escanejar el codi del seu telèfon, o demanar-li que escanegi el vostre.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si voleu verificar la seguretat de l'encriptació de cap a cap amb %@, compareu els números de dalt amb els números del seu dispositiu.\n\nTambé podeu escanejar el codi del seu telèfon, o demanar-li que escanegi el vostre.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Verificació de la seguretat";
@@ -3217,7 +3235,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Missatge de veu";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Manteniu premut per a enregistrar un missatge de veu.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Mantingueu un toc per gravar un missatge de veu.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Missatge de veu";

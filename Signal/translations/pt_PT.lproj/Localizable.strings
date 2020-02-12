@@ -1539,6 +1539,24 @@
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Partilhar perfil";
 
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "O seu nome de perfil foi guardado.";
+
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Entregue";
 
@@ -2002,7 +2020,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Falha ao criar PIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add extra security to your account and can’t be recovered. You’ll need your PIN to register with Signal again.";
+"PIN_CREATION_EXPLANATION" = "Os PINs adicionam uma camada de segurança extra à sua conta e não podem ser recuperados. Necessita do seu PIN para registar-se novamente no Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Os PINs não coincidem. Tente novamente.";
@@ -2035,25 +2053,25 @@
 "PIN_REMINDER_FORGOT_PIN" = "Esqueceu-se do seu PIN?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Verify PIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Verificar PIN";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Iremos ocasionalmente pedir-lhe para verificar o seu PIN para que não se esqueça dele.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Iremos recordar-lhe de novo dentro de alguns dias.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Verify your Signal PIN";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Verifique o seu PIN do Signal";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Iremos recordar-lhe de novo amanhã.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Iremos recordar-lhe dentro de algumas semanas.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Iremos recordar-lhe dentro de uma semana.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "PIN inválido, tente novamente.";
@@ -2089,7 +2107,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Criar um PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
+"PINS_MEGAPHONE_TOAST" = "PIN criado. Poderá alterá-lo nas 'Definições'.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproduzir";
