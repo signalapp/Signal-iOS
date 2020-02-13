@@ -384,7 +384,8 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 + (BOOL)shouldAudioPlayerLoopForSound:(OWSSound)sound
 {
-    return (sound == OWSSound_CallConnecting || sound == OWSSound_CallOutboundRinging);
+    return (sound == OWSSound_CallConnecting || sound == OWSSound_CallOutboundRinging
+        || sound == OWSSound_DefaultiOSIncomingRingtone);
 }
 
 + (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound audioBehavior:(OWSAudioBehavior)audioBehavior

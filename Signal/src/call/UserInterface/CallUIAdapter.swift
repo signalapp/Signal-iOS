@@ -214,6 +214,7 @@ extension CallUIAdaptee {
     internal func didTerminateCall(_ call: SignalCall?) {
         AssertIsOnMainThread()
 
+        self.audioSession.isRTCAudioEnabled = false
         if let call = call {
             self.audioSession.endAudioActivity(call.audioActivity)
         }
