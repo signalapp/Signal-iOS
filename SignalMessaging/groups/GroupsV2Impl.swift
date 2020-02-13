@@ -9,7 +9,7 @@ import SignalMetadataKit
 import ZKGroup
 
 @objc
-public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
+public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Dependencies
 

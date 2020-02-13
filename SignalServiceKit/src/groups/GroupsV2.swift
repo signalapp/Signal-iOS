@@ -38,13 +38,11 @@ public protocol GroupsV2: AnyObject {
 
     func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
                                           ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions
-
-    func updateAllGroupsV2WithNewProfileKey(transaction: SDSAnyWriteTransaction)
 }
 
 // MARK: -
 
-public protocol GroupsV2Swift {
+public protocol GroupsV2Swift: GroupsV2 {
     func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void>
 
     func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
@@ -264,10 +262,6 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
 
     public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
                                                  ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
-        owsFail("Not implemented.")
-    }
-
-    public func updateAllGroupsV2WithNewProfileKey(transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 }
