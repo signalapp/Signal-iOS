@@ -1085,10 +1085,12 @@ NS_ASSUME_NONNULL_BEGIN
                 switch (friendRequestStatus) {
                     case LKThreadFriendRequestStatusNone: {
                         OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-                        OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey];
-                        dispatch_async(OWSDispatch.sendingQueue, ^{
-                            [messageSender sendMessage:automatedFriendRequestMessage];
-                        });
+//                        OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey];
+//                        dispatch_async(OWSDispatch.sendingQueue, ^{
+//                            [messageSender sendMessage:automatedFriendRequestMessage];
+//                        });
+                        LKFriendRequestMessage *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey inThread:thread transaction:transaction];
+                        [self.messageSenderJobQueue addMessage:automatedFriendRequestMessage transaction:transaction];
                         break;
                     }
                     case LKThreadFriendRequestStatusRequestReceived: {
@@ -1106,11 +1108,11 @@ NS_ASSUME_NONNULL_BEGIN
         if (wasSentByMasterDevice && syncMessage.groups.data.length > 0) {
             OWSLogInfo(@"[Loki] Received group sync message.");
             NSData *data = syncMessage.groups.data;
-            //  TODO: decode the data and handle the group info
             GroupParser *parser = [[GroupParser alloc] initWithData:data];
             NSArray<TSGroupModel *> *groupModels = [parser parseGroupModels];
             for (TSGroupModel *groupModel in groupModels) {
                 TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                //TODO: Join the group and send update group information
                 [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
             }
         }
