@@ -1,9 +1,16 @@
 import CryptoSwift
 import Curve25519Kit
 
-public enum DiffieHellman {
+@objc public final class DiffieHellman : NSObject {
+    
+    @objc public class DiffieHellmanError : NSError { // Not called `Error` for Obj-C interoperablity
+        
+        @objc public static let decryptionFailed = DiffieHellmanError(domain: "DiffieHellmanErrorDomain", code: 1, userInfo: [ NSLocalizedDescriptionKey : "Couldn't decrypt data." ])
+    }
     
     public static let ivLength: Int32 = 16;
+    
+    private override init() { }
     
     public static func encrypt(_ plainTextData: Data, using symmetricKey: Data) throws -> Data {
         let iv = Randomness.generateRandomBytes(ivLength)!
@@ -24,7 +31,7 @@ public enum DiffieHellman {
     
     public static func decrypt(_ encryptedData: Data, using symmetricKey: Data) throws -> Data {
         let symmetricKeyBytes = [UInt8](symmetricKey)
-        guard encryptedData.count >= ivLength else { throw "Couldn't decrypt data." }
+        guard encryptedData.count >= ivLength else { throw DiffieHellmanError.decryptionFailed }
         let ivBytes = [UInt8](encryptedData[..<ivLength])
         let cipherBytes = [UInt8](encryptedData[ivLength...])
         let blockMode = CBC(iv: ivBytes)

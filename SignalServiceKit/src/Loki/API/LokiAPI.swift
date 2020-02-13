@@ -26,17 +26,12 @@ public final class LokiAPI : NSObject {
     // MARK: Types
     public typealias RawResponse = Any
     
-    public enum Error : LocalizedError {
-        /// Only applicable to snode targets as proof of work isn't required for P2P messaging.
-        case proofOfWorkCalculationFailed
-        case messageConversionFailed
+    @objc public class LokiAPIError : NSError { // Not called `Error` for Obj-C interoperablity
         
-        public var errorDescription: String? {
-            switch self {
-            case .proofOfWorkCalculationFailed: return NSLocalizedString("Failed to calculate proof of work.", comment: "")
-            case .messageConversionFailed: return "Failed to convert Signal message to Loki message."
-            }
-        }
+        @objc public static let proofOfWorkCalculationFailed = LokiAPIError(domain: "LokiAPIErrorDomain", code: 1, userInfo: [ NSLocalizedDescriptionKey : "Failed to calculate proof of work." ])
+        @objc public static let messageConversionFailed = LokiAPIError(domain: "LokiAPIErrorDomain", code: 2, userInfo: [ NSLocalizedDescriptionKey : "Failed to construct message." ])
+        @objc public static let clockOutOfSync = LokiAPIError(domain: "LokiAPIErrorDomain", code: 3, userInfo: [ NSLocalizedDescriptionKey : "Your clock is out of sync with the service node network." ])
+        @objc public static let randomSnodePoolUpdatingFailed = LokiAPIError(domain: "LokiAPIErrorDomain", code: 4, userInfo: [ NSLocalizedDescriptionKey : "Failed to update random service node pool." ])
     }
     
     @objc(LKDestination)
@@ -136,7 +131,7 @@ public final class LokiAPI : NSObject {
                     getDestinations()
                     lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
                 }.catch(on: DispatchQueue.global()) { error in
-                    if (error as? LokiDotNetAPI.Error) == LokiDotNetAPI.Error.parsingFailed {
+                    if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
                         // Don't immediately re-fetch in case of failure due to a parsing error
                         lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
                         getDestinations()
@@ -152,7 +147,7 @@ public final class LokiAPI : NSObject {
     }
     
     public static func sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
-        guard let lokiMessage = LokiMessage.from(signalMessage: signalMessage) else { return Promise(error: Error.messageConversionFailed) }
+        guard let lokiMessage = LokiMessage.from(signalMessage: signalMessage) else { return Promise(error: LokiAPIError.messageConversionFailed) }
         let notificationCenter = NotificationCenter.default
         let destination = lokiMessage.destination
         func sendLokiMessage(_ lokiMessage: LokiMessage, to target: LokiAPITarget) -> RawResponsePromise {
