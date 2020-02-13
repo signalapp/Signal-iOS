@@ -76,6 +76,11 @@ public extension TSInfoMessage {
             !toGroupState.groupMembership.allUsers.contains(localAddress) {
             return NSLocalizedString("GROUP_YOU_LEFT", comment: "")
         }
+        if fromGroupState.groupMembership.allUsers.contains(groupUpdater),
+            !toGroupState.groupMembership.allUsers.contains(groupUpdater) {
+            let format = NSLocalizedString("GROUP_MEMBER_LEFT", comment: "")
+            return String(format: format, updaterName)
+        }
 
         // Existing Group was updated
 

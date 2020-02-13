@@ -1036,16 +1036,16 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    SignalServiceAddress *groupUpdateSourceAddress;
+    if (!envelope.sourceAddress.isValid) {
+        OWSFailDebug(@"Invalid envelope.sourceAddress");
+        return;
+    } else {
+        groupUpdateSourceAddress = envelope.sourceAddress;
+    }
+
     switch (groupContext.unwrappedType) {
         case SSKProtoGroupContextTypeUpdate: {
-            SignalServiceAddress *groupUpdateSourceAddress;
-            if (envelope.sourceAddress == nil) {
-                OWSFailDebug(@"failure: envelope.sourceAddress == nil");
-                return;
-            } else {
-                groupUpdateSourceAddress = envelope.sourceAddress;
-            }
-
             // Ensures that the thread exists but doesn't update it.
             NSError *_Nullable error;
             UpsertGroupResult *_Nullable result =
@@ -1083,30 +1083,19 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             [newMembers removeObject:envelope.sourceAddress];
-            [oldGroupThread
-                anyUpdateGroupThreadWithTransaction:transaction
-                                              block:^(TSGroupThread *thread) {
-                                                  [thread.groupModel updateGroupMembers:newMembers.allObjects];
-                                              }];
 
-            // If we sent this message (it's from a sent transcript), show a self quit.
-            if (envelope.sourceAddress.isLocalAddress) {
-                // MJK TODO - should be safe to remove senderTimestamp
-                [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 inThread:oldGroupThread
-                                              messageType:TSInfoMessageTypeGroupQuit]
-                    anyInsertWithTransaction:transaction];
-
-                // Otherwise, show that the other member quit.
-            } else {
-                NSString *nameString = [self.contactsManager displayNameForAddress:envelope.sourceAddress];
-                NSString *updateGroupInfo =
-                    [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
-                // MJK TODO - should be safe to remove senderTimestamp
-                [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 inThread:oldGroupThread
-                                              messageType:TSInfoMessageTypeGroupUpdate
-                                            customMessage:updateGroupInfo] anyInsertWithTransaction:transaction];
+            NSError *_Nullable error;
+            UpsertGroupResult *_Nullable result =
+                [GroupManager upsertExistingGroupV1WithGroupId:groupId
+                                                          name:oldGroupThread.groupModel.groupName
+                                                    avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                       members:newMembers.allObjects
+                                      groupUpdateSourceAddress:groupUpdateSourceAddress
+                                                   transaction:transaction
+                                                         error:&error];
+            if (error != nil || result == nil) {
+                OWSFailDebug(@"Error: %@", error);
+                return;
             }
             return;
         }
