@@ -260,8 +260,6 @@ public class GroupsV2Protos {
             pendingMembers.append(pendingMember)
         }
 
-        // GroupsV2 TODO: Do we need the public key?
-
         var title = ""
         if let titleData = groupProto.title {
             do {

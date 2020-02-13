@@ -841,9 +841,6 @@ public class GroupManager: NSObject {
             throw GroupsV2Error.redundantChange
         }
 
-        // GroupsV2 TODO: Convert this method and callers to return a promise.
-        //                We need to audit usage of upsertExistingGroup();
-        //                It's possible that it should only be used for v1 groups?
         return UpdateInfo(groupId: groupId,
                           oldGroupModel: oldGroupModel,
                           newGroupModel: newGroupModel,

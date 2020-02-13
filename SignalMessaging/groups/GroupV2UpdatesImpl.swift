@@ -330,6 +330,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     public func updateGroupWithChangeActions(groupId: Data,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
                                              transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
+        // GroupsV2 TODO: When applying snapshots and change actions to the local
+        // database, we should check revision in the local database.
+        //
         // GroupsV2 TODO: Instead of loading the group model from the database,
         // we should use exactly the same group model that was used to construct
         // the update request - which should reflect pre-update service state.
