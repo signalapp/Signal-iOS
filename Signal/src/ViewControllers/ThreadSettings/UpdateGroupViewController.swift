@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 public extension UpdateGroupViewController {
@@ -66,15 +67,16 @@ public extension UpdateGroupViewController {
         // GroupsV2 TODO: Skip change where the user didn't change anything.
 
         // dmConfiguration: nil means don't change disappearing messages configuration.
-        GroupManager.updateExistingGroup(groupId: groupId,
-                                         name: newTitle,
-                                         avatarData: newAvatarData,
-                                         groupMembership: groupMembership,
-                                         groupAccess: groupAccess,
-                                         groupsVersion: groupsVersion,
-                                         dmConfiguration: nil,
-                                         groupUpdateSourceAddress: localAddress)
-        .done(on: .global()) { groupThread in
+        firstly {
+            GroupManager.localUpdateExistingGroup(groupId: groupId,
+                                                  name: newTitle,
+                                                  avatarData: newAvatarData,
+                                                  groupMembership: groupMembership,
+                                                  groupAccess: groupAccess,
+                                                  groupsVersion: groupsVersion,
+                                                  dmConfiguration: nil,
+                                                  groupUpdateSourceAddress: localAddress)
+        }.done(on: .global()) { groupThread in
             success(groupThread)
         }.catch(on: .global()) { (error) in
             switch error {

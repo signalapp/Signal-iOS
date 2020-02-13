@@ -201,12 +201,12 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         // who made any changes.
         let groupUpdateSourceAddress: SignalServiceAddress? = nil
         // We only sync v1 groups via group sync messages.
-        let result = try GroupManager.upsertExistingGroupV1(groupId: groupId,
-                                                            name: groupDetails.name,
-                                                            avatarData: groupDetails.avatarData,
-                                                            members: groupDetails.memberAddresses,
-                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                            transaction: transaction)
+        let result = try GroupManager.remoteUpsertExistingGroupV1(groupId: groupId,
+                                                                  name: groupDetails.name,
+                                                                  avatarData: groupDetails.avatarData,
+                                                                  members: groupDetails.memberAddresses,
+                                                                  groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                  transaction: transaction)
 
         let groupThread = result.groupThread
         let groupModel = groupThread.groupModel

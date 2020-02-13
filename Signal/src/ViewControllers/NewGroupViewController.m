@@ -300,7 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [GroupManager createNewGroupObjcWithMembers:members
+                      [GroupManager localCreateNewGroupObjcWithMembers:members
                           groupId:nil
                           name:groupName
                           avatarImage:self.groupAvatar
