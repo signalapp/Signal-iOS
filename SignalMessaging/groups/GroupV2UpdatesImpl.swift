@@ -20,12 +20,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         return SSKEnvironment.shared.messageProcessing
     }
 
-    private var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
-    }
-
-    private var groupsV2Swift: GroupsV2Swift {
-        return self.groupsV2 as! GroupsV2Swift
+    private var groupsV2: GroupsV2Swift {
+        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
     private var tsAccountManager: TSAccountManager {
@@ -305,15 +301,25 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                               groupUpdateMode: groupUpdateMode)
                 .recover { (error) throws -> Promise<TSGroupThread> in
-                    switch error {
-                    case GroupsV2Error.groupNotInDatabase:
-                        // Unknown groups are handled by snapshot.
-                        break
-                    default:
-                        owsFailDebug("Error: \(error)")
-                    }
+                    let shouldTrySnapshot = { () -> Bool in
+                        // GroupsV2 TODO: This should not fail over in the case of networking problems.
+                        switch error {
+                        case GroupsV2Error.groupNotInDatabase:
+                            // Unknown groups are handled by snapshot.
+                            return true
+                        case GroupsV2Error.unauthorized:
+                            // We can recover from some auth edge cases
+                            // using a snapshot.
+                            return true
+                        default:
+                            owsFailDebug("Error: \(error)")
+                            return false
+                        }
+                    }()
 
-                    // GroupsV2 TODO: This should not fail over in the case of networking problems.
+                    guard shouldTrySnapshot else {
+                        throw error
+                    }
 
                     // Failover to applying latest snapshot.
                     return self.fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: groupSecretParamsData,
@@ -362,7 +368,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                           newGroupModel: changedGroupModel.newGroupModel,
                                                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
-            transaction: transaction).groupThread
+                                                                                                          transaction: transaction).groupThread
 
         GroupManager.storeProfileKeysFromGroupProtos(changedGroupModel.profileKeys)
 
@@ -377,9 +383,17 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     private func fetchAndApplyChangeActionsFromService(groupSecretParamsData: Data,
                                                        groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
-        return firstly {
-            groupsV2Swift.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData)
-        }.then(on: DispatchQueue.global()) { (groupChanges) throws -> Promise<TSGroupThread> in
+        return firstly { () -> Promise<[GroupV2Change]> in
+            var firstKnownRevision: UInt32?
+            switch groupUpdateMode {
+            case .upToSpecificRevisionImmediately(let upToRevision):
+                firstKnownRevision = upToRevision
+            default:
+                break
+            }
+            return self.groupsV2.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData,
+                                                         firstKnownRevision: firstKnownRevision)
+        }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]) throws -> Promise<TSGroupThread> in
             let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
             return self.tryToApplyGroupChangesFromService(groupId: groupId,
                                                           groupChanges: groupChanges,
@@ -462,7 +476,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                                        newGroupModel: newGroupModel,
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
-                    transaction: transaction).groupThread
+                                                                                                       transaction: transaction).groupThread
 
             }
             return groupThread
@@ -474,7 +488,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: Data,
                                                                 groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         return firstly {
-            self.groupsV2Swift.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
+            self.groupsV2.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
         }.then(on: .global()) { groupV2Snapshot in
             return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
                                                                     groupUpdateMode: groupUpdateMode)
@@ -502,9 +516,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             // author(s) of changes reflected in the snapshot.
             let groupUpdateSourceAddress: SignalServiceAddress? = nil
             let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
-                                                                                                 groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                                 canInsert: true,
-                transaction: transaction)
+                                                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                                       canInsert: true,
+                                                                                                       transaction: transaction)
 
             GroupManager.storeProfileKeysFromGroupProtos(groupV2Snapshot.profileKeys)
 
