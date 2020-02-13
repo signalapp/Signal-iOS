@@ -1110,7 +1110,7 @@ NS_ASSUME_NONNULL_BEGIN
             GroupParser *parser = [[GroupParser alloc] initWithData:data];
             NSArray<TSGroupModel *> *groupModels = [parser parseGroupModels];
             for (TSGroupModel *groupModel in groupModels) {
-                TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel];
+                TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
                 [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
             }
         }
