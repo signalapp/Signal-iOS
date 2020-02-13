@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -367,6 +367,26 @@ public class SDSKeyValueStore: NSObject {
         return allKeys(transaction: transaction).map { key in
             return self.read(key, transaction: transaction)
         }
+    }
+
+    @objc
+    public func allDataValues(transaction: SDSAnyReadTransaction) -> [Data] {
+        return allKeys(transaction: transaction).compactMap { key in
+            return self.getData(key, transaction: transaction)
+        }
+    }
+
+    @objc
+    public func anyDataValue(transaction: SDSAnyReadTransaction) -> Data? {
+        let keys = allKeys(transaction: transaction).shuffled()
+        guard let firstKey = keys.first else {
+            return nil
+        }
+        guard let data = self.getData(firstKey, transaction: transaction) else {
+            owsFailDebug("Missing data for key: \(firstKey)")
+            return nil
+        }
+        return data
     }
 
     @objc

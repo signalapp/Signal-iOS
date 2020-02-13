@@ -355,6 +355,20 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
+    // MARK: - Rotate Profile Key
+
+    private let profileKeyUpdater = GroupsV2ProfileKeyUpdater()
+
+    @objc
+    public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
+        profileKeyUpdater.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: transaction)
+    }
+
+    @objc
+    public func processProfileKeyUpdates() {
+        profileKeyUpdater.processProfileKeyUpdates()
+    }
+
     // MARK: - Disappearing Messages
 
     public func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
