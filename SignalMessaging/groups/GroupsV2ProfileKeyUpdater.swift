@@ -160,12 +160,13 @@ class GroupsV2ProfileKeyUpdater {
                         // Retry later.
                         self.didFail(groupId: groupId, retryDelay: retryDelay)
                     } else {
-                        switch networkManagerError.statusCode {
-                        case 400, 401:
+                        let statusCode = networkManagerError.statusCode
+                        if 400 <= statusCode && statusCode <= 599 {
                             // If a non-recoverable error occurs (e.g. we've been kicked
                             // out of the group), give up.
+                            Logger.info("Failed: \(networkManagerError.statusCode)")
                             self.markAsComplete(groupId: groupId)
-                        default:
+                        } else {
                             // Retry later.
                             self.didFail(groupId: groupId, retryDelay: retryDelay)
                         }
