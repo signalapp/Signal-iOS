@@ -1291,11 +1291,12 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         // enables this feature
         [self.disappearingMessagesJob startIfNecessary];
 
-        // TODO MULTIRING
-        // Currently, we only build the CallUIAdapter for the primary device, which we can't determine
-        // until *after* the user has registered. Once we create calling on all devices, we can
-        // create the callUIAdapter unconditionally, on all devices, and get rid of this.
-        [AppEnvironment.shared.callService createCallUIAdapter];
+        if (!SSKFeatureFlags.multiRing) {
+            // Currently, we only build the CallUIAdapter for the primary device, which we can't determine
+            // until *after* the user has registered. Once we create calling on all devices, we can
+            // create the callUIAdapter unconditionally, on all devices, and get rid of this.
+            [AppEnvironment.shared.callService createCallUIAdapter];
+        }
     }
 }
 

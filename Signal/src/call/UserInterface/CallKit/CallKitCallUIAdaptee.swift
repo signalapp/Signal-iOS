@@ -53,8 +53,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         providerConfiguration.supportsVideo = true
 
-        providerConfiguration.maximumCallGroups = 1
-
         providerConfiguration.maximumCallsPerCallGroup = 1
 
         providerConfiguration.supportedHandleTypes = [.phoneNumber, .generic]
@@ -106,11 +104,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // MARK: CallUIAdaptee
 
-    func startOutgoingCall(handle: SignalServiceAddress) -> SignalCall {
+    func startOutgoingCall(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
-
-        let call = SignalCall.outgoingCall(localId: UUID(), remoteAddress: handle)
 
         // make sure we don't terminate audio session during call
         _ = self.audioSession.startAudioActivity(call.audioActivity)
@@ -119,8 +115,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // So we can find it in the provider delegate callbacks.
         callManager.addCall(call)
         callManager.startCall(call)
-
-        return call
     }
 
     // Called from CallService after call has ended to clean up any remaining CallKit call state.
@@ -264,7 +258,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // End any ongoing calls if the provider resets, and remove them from the app's list of calls,
         // since they are no longer valid.
-        callService.handleFailedCurrentCall(error: .providerReset)
+        callService.handleCallKitProviderReset()
 
         // Remove all calls from the app's list of calls.
         callManager.removeAllCalls()
@@ -283,7 +277,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // We can't wait for long before fulfilling the CXAction, else CallKit will show a "Failed Call". We don't 
         // actually need to wait for the outcome of the handleOutgoingCall promise, because it handles any errors by 
         // manually failing the call.
-        self.callService.handleOutgoingCall(call).retainUntilComplete()
+        self.callService.handleOutgoingCall(call)
 
         action.fulfill()
         self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
@@ -304,11 +298,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         Logger.info("Received \(#function) CXAnswerCallAction")
         // Retrieve the instance corresponding to the action's call UUID
         guard let call = callManager.callWithLocalId(action.callUUID) else {
+            owsFailDebug("call as unexpectedly nil")
             action.fail()
             return
         }
 
-        self.callService.handleAnswerCall(call)
+        self.callService.handleAcceptCall(call)
         self.showCall(call)
         action.fulfill()
     }
@@ -323,7 +318,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        self.callService.handleLocalHungupCall(call)
+        self.callService.handleLocalHangupCall(call)
 
         // Signal to the system that the action has been successfully performed.
         action.fulfill()
@@ -353,7 +348,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         Logger.info("Received \(#function) CXSetMutedCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
-            Logger.error("Failing CXSetMutedCallAction for unknown call: \(action.callUUID)")
+            Logger.info("Failing CXSetMutedCallAction for unknown (ended?) call: \(action.callUUID)")
             action.fail()
             return
         }
@@ -377,9 +372,28 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
         AssertIsOnMainThread()
 
-        owsFailDebug("Timed out while performing \(action)")
+        if #available(iOS 13, *), let muteAction = action as? CXSetMutedCallAction {
+            guard callManager.callWithLocalId(muteAction.callUUID) != nil else {
+                // When a call is over, if it was muted, CallKit "helpfully" attempts to unmute the
+                // call with "CXSetMutedCallAction", presumably to help us clean up state.
+                //
+                // That is, it calls func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction)
+                //
+                // We don't need this - we have our own mechanism for coallescing audio state, so
+                // we acknowledge the action, but perform a no-op.
+                //
+                // However, regardless of fulfilling or failing the action, the action "times out"
+                // on iOS13. CallKit similarly "auto unmutes" ended calls on iOS12, but on iOS12
+                // it doesn't timeout.
+                //
+                // Presumably this is a regression in iOS13 - so we ignore it.
+                // #RADAR FB7568405
+                Logger.info("ignoring timeout for CXSetMutedCallAction for ended call: \(muteAction.callUUID)")
+                return
+            }
+        }
 
-        // React to the action timeout if necessary, such as showing an error UI.
+        owsFailDebug("Timed out while performing \(action)")
     }
 
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {

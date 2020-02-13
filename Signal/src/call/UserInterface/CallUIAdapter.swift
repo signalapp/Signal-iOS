@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,7 +14,7 @@ protocol CallUIAdaptee {
     var callService: CallService { get }
     var hasManualRinger: Bool { get }
 
-    func startOutgoingCall(handle: SignalServiceAddress) -> SignalCall
+    func startOutgoingCall(call: SignalCall)
     func reportIncomingCall(_ call: SignalCall, callerName: String)
     func reportMissedCall(_ call: SignalCall, callerName: String)
     func answerCall(localId: UUID)
@@ -65,12 +65,17 @@ extension CallUIAdaptee {
     internal func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        guard self.callService.currentCall == nil else {
-            owsFailDebug("unexpectedly found an existing call when trying to start outgoing call: \(address)")
+        guard let call = self.callService.buildOutgoingCallIfAvailable(address: address) else {
+            // @integration This is not unexpected, it could happen if Bob tries
+            // to start an outgoing call at the same moment Alice has already
+            // sent him an Offer that is being processed.
+            Logger.info("found an existing call when trying to start outgoing call: \(address)")
             return
         }
 
-        let call = self.startOutgoingCall(handle: address)
+        Logger.debug("")
+
+        startOutgoingCall(call: call)
         call.hasLocalVideo = hasLocalVideo
         self.showCall(call)
     }
@@ -188,11 +193,10 @@ extension CallUIAdaptee {
         adaptee.reportMissedCall(call, callerName: callerName)
     }
 
-    internal func startOutgoingCall(handle: SignalServiceAddress) -> SignalCall {
+    internal func startOutgoingCall(call: SignalCall) {
         AssertIsOnMainThread()
 
-        let call = adaptee.startOutgoingCall(handle: handle)
-        return call
+        adaptee.startOutgoingCall(call: call)
     }
 
     @objc public func answerCall(localId: UUID) {

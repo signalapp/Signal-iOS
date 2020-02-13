@@ -34,12 +34,9 @@ public protocol CallObserver: class {
 
 public enum CallError: Error {
     case providerReset
-    case assertionError(description: String)
     case disconnected
     case externalError(underlyingError: Error)
     case timeout(description: String)
-    case obsoleteCall(description: String)
-    case fatalError(description: String)
     case messageSendFailure(underlyingError: Error)
 }
 
@@ -48,14 +45,74 @@ public enum CallError: Error {
  *
  * This class' state should only be accessed on the main queue.
  */
-@objc public class SignalCall: NSObject {
+@objc
+public class SignalCall: NSObject, SignalCallNotificationInfo {
 
-    var observers = [Weak<CallObserver>]()
+    // Mark -
+
+    var backgroundTask: OWSBackgroundTask? {
+        didSet {
+            AssertIsOnMainThread()
+
+            Logger.info("")
+        }
+    }
+
+    var callId: UInt64? {
+        didSet {
+            AssertIsOnMainThread()
+
+            Logger.info("")
+        }
+    }
+
+    weak var localCaptureSession: AVCaptureSession? {
+        didSet {
+            AssertIsOnMainThread()
+
+            Logger.info("")
+        }
+    }
+
+    weak var remoteVideoTrack: RTCVideoTrack? {
+        didSet {
+            AssertIsOnMainThread()
+
+            Logger.info("")
+        }
+    }
+
+    var isRemoteVideoEnabled = false {
+        didSet {
+            AssertIsOnMainThread()
+
+            Logger.info("\(isRemoteVideoEnabled)")
+        }
+    }
+
+    // MARK: -
+
+    // tracking cleanup
+    var wasReportedToSystem = false
+    var wasRemovedFromSystem = false
+    var didCallTerminate = false
+
+    public func terminate() {
+        AssertIsOnMainThread()
+
+        Logger.debug("")
+        assert(!didCallTerminate)
+        didCallTerminate = true
+
+        removeAllObservers()
+    }
+
+    var observers: WeakArray<CallObserver> = []
 
     @objc
     public let remoteAddress: SignalServiceAddress
 
-    public var isTerminated: Bool {
+    public var isEnded: Bool {
         switch state {
         case .localFailure, .localHangup, .remoteHangup, .remoteBusy:
             return true
@@ -63,9 +120,6 @@ public enum CallError: Error {
             return false
         }
     }
-
-    // Signal Service identifier for this Call. Used to coordinate the call across remote clients.
-    public let signalingId: UInt64
 
     public let direction: CallDirection
 
@@ -88,8 +142,8 @@ public enum CallError: Error {
         didSet {
             AssertIsOnMainThread()
 
-            for observer in observers {
-                observer.value?.hasLocalVideoDidChange(call: self, hasLocalVideo: hasLocalVideo)
+            for observer in observers.elements {
+                observer.hasLocalVideoDidChange(call: self, hasLocalVideo: hasLocalVideo)
             }
         }
     }
@@ -97,7 +151,7 @@ public enum CallError: Error {
     public var state: CallState {
         didSet {
             AssertIsOnMainThread()
-            Logger.debug("state changed: \(oldValue) -> \(self.state) for call: \(self.identifiersForLogs)")
+            Logger.debug("state changed: \(oldValue) -> \(self.state) for call: \(self)")
 
             // Update connectedDate
             if case .connected = self.state {
@@ -109,8 +163,8 @@ public enum CallError: Error {
 
             updateCallRecordType()
 
-            for observer in observers {
-                observer.value?.stateDidChange(call: self, state: state)
+            for observer in observers.elements {
+                observer.stateDidChange(call: self, state: state)
             }
         }
     }
@@ -121,8 +175,8 @@ public enum CallError: Error {
 
             Logger.debug("muted changed: \(oldValue) -> \(self.isMuted)")
 
-            for observer in observers {
-                observer.value?.muteDidChange(call: self, isMuted: isMuted)
+            for observer in observers.elements {
+                observer.muteDidChange(call: self, isMuted: isMuted)
             }
         }
     }
@@ -134,8 +188,8 @@ public enum CallError: Error {
             AssertIsOnMainThread()
             Logger.debug("audioSource changed: \(String(describing: oldValue)) -> \(String(describing: audioSource))")
 
-            for observer in observers {
-                observer.value?.audioSourceDidChange(call: self, audioSource: audioSource)
+            for observer in observers.elements {
+                observer.audioSourceDidChange(call: self, audioSource: audioSource)
             }
         }
     }
@@ -153,8 +207,8 @@ public enum CallError: Error {
             AssertIsOnMainThread()
             Logger.debug("isOnHold changed: \(oldValue) -> \(self.isOnHold)")
 
-            for observer in observers {
-                observer.value?.holdDidChange(call: self, isOnHold: isOnHold)
+            for observer in observers.elements {
+                observer.holdDidChange(call: self, isOnHold: isOnHold)
             }
         }
     }
@@ -165,27 +219,44 @@ public enum CallError: Error {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, localId: UUID, signalingId: UInt64, state: CallState, remoteAddress: SignalServiceAddress) {
+    init(direction: CallDirection, localId: UUID, state: CallState, remoteAddress: SignalServiceAddress) {
         self.direction = direction
         self.localId = localId
-        self.signalingId = signalingId
         self.state = state
         self.remoteAddress = remoteAddress
         self.thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
         self.audioActivity = AudioActivity(audioDescription: "[SignalCall] with \(remoteAddress)", behavior: .call)
     }
 
-    // A string containing the three identifiers for this call.
-    public var identifiersForLogs: String {
-        return "{\(remoteAddress), \(localId), \(signalingId)}"
+    deinit {
+        Logger.debug("")
+        if !isEnded {
+            owsFailDebug("isEnded was unexpectedly false")
+        }
+        if !didCallTerminate {
+            owsFailDebug("didCallTerminate was unexpectedly false")
+        }
+        if wasReportedToSystem {
+            if !wasRemovedFromSystem {
+                owsFailDebug("wasRemovedFromSystem was unexpectedly false")
+            }
+        } else {
+            if wasRemovedFromSystem {
+                owsFailDebug("wasRemovedFromSystem was unexpectedly true")
+            }
+        }
+    }
+
+    override public var description: String {
+        return "SignalCall: {\(remoteAddress), localId: \(localId), signalingId: \(callId as Optional)))}"
     }
 
     public class func outgoingCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
-        return SignalCall(direction: .outgoing, localId: localId, signalingId: newCallSignalingId(), state: .dialing, remoteAddress: remoteAddress)
+        return SignalCall(direction: .outgoing, localId: localId, state: .dialing, remoteAddress: remoteAddress)
     }
 
-    public class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress, signalingId: UInt64) -> SignalCall {
-        return SignalCall(direction: .incoming, localId: localId, signalingId: signalingId, state: .answering, remoteAddress: remoteAddress)
+    public class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
+        return SignalCall(direction: .incoming, localId: localId, state: .answering, remoteAddress: remoteAddress)
     }
 
     // -
@@ -193,7 +264,7 @@ public enum CallError: Error {
     public func addObserverAndSyncState(observer: CallObserver) {
         AssertIsOnMainThread()
 
-        observers.append(Weak(value: observer))
+        observers.append(observer)
 
         // Synchronize observer with current call state
         observer.stateDidChange(call: self, state: state)
@@ -202,9 +273,7 @@ public enum CallError: Error {
     public func removeObserver(_ observer: CallObserver) {
         AssertIsOnMainThread()
 
-        while let index = observers.firstIndex(where: { $0.value === observer }) {
-            observers.remove(at: index)
-        }
+        observers.removeAll { $0 === observer }
     }
 
     public func removeAllObservers() {
@@ -237,18 +306,8 @@ public enum CallError: Error {
         return lhs.localId == rhs.localId
     }
 
-    static func newCallSignalingId() -> UInt64 {
-        return UInt64.ows_random()
-    }
-
     // This method should only be called when the call state is "connected".
     public func connectionDuration() -> TimeInterval {
         return -connectedDate!.timeIntervalSinceNow
-    }
-}
-
-fileprivate extension UInt64 {
-    static func ows_random() -> UInt64 {
-        return Cryptography.randomUInt64()
     }
 }

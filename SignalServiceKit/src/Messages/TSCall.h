@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -29,9 +29,8 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         callType:(RPRecentCallType)callType
-                         inThread:(TSContactThread *)thread NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithCallType:(RPRecentCallType)callType
+                        inThread:(TSContactThread *)thread NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

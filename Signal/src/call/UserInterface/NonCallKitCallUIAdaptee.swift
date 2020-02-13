@@ -34,18 +34,14 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
     // MARK: 
 
-    func startOutgoingCall(handle: SignalServiceAddress) -> SignalCall {
+    func startOutgoingCall(call: SignalCall) {
         AssertIsOnMainThread()
-
-        let call = SignalCall.outgoingCall(localId: UUID(), remoteAddress: handle)
 
         // make sure we don't terminate audio session during call
         let success = self.audioSession.startAudioActivity(call.audioActivity)
         assert(success)
 
-        self.callService.handleOutgoingCall(call).retainUntilComplete()
-
-        return call
+        self.callService.handleOutgoingCall(call)
     }
 
     func reportIncomingCall(_ call: SignalCall, callerName: String) {
@@ -61,12 +57,6 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         } else {
             notificationPresenter.presentIncomingCall(call, callerName: callerName)
         }
-    }
-
-    func reportMissedCall(_ call: SignalCall, callerName: String) {
-        AssertIsOnMainThread()
-
-        notificationPresenter.presentMissedCall(call, callerName: callerName)
     }
 
     func answerCall(localId: UUID) {
@@ -94,7 +84,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         }
 
         self.audioSession.isRTCAudioEnabled = true
-        self.callService.handleAnswerCall(call)
+        self.callService.handleAcceptCall(call)
     }
 
     func recipientAcceptedCall(_ call: SignalCall) {
@@ -129,7 +119,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             return
         }
 
-        self.callService.handleLocalHungupCall(call)
+        self.callService.handleLocalHangupCall(call)
     }
 
     internal func remoteDidHangupCall(_ call: SignalCall) {

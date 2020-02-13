@@ -208,7 +208,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return adaptee.registerNotificationSettings()
     }
 
-    public func presentIncomingCall(_ call: SignalCall, callerName: String) {
+    public func presentIncomingCall(_ call: SignalCallNotificationInfo, callerName: String) {
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -240,7 +240,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCall(_ call: SignalCall, callerName: String) {
+    public func presentMissedCall(_ call: SignalCallNotificationInfo, callerName: String) {
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -273,7 +273,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
+    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCallNotificationInfo, callerName: String) {
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -305,7 +305,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
+    public func presentMissedCallBecauseOfNewIdentity(call: SignalCallNotificationInfo, callerName: String) {
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -700,4 +700,9 @@ extension TruncatedList: Collection {
     func index(after i: Index) -> Index {
         return contents.index(after: i)
     }
+}
+
+public protocol SignalCallNotificationInfo {
+    var remoteAddress: SignalServiceAddress { get }
+    var localId: UUID { get }
 }

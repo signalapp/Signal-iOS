@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 /**
@@ -24,5 +24,34 @@ public struct Weak<T> {
 
     public init(value: T) {
         self.value = value
+    }
+}
+
+public struct WeakArray<Element> {
+    private var array: [Weak<Element>] = []
+
+    public var elements: [Element] {
+        array.compactMap { $0.value }
+    }
+
+    public mutating func append(_ element: Element) {
+        array = array.filter { $0.value != nil } + [Weak(value: element)]
+    }
+
+    public mutating func removeAll(where shouldDelete: (Element) throws -> Bool) rethrows {
+        try array.removeAll { weakBox in
+            guard let element = weakBox.value else { return true }
+            return try shouldDelete(element)
+        }
+    }
+}
+
+extension WeakArray: ExpressibleByArrayLiteral {
+    public typealias ArrayLiteralElement = Element
+    public init(arrayLiteral elements: Element...) {
+        self.init()
+        for element in elements {
+            self.append(element)
+        }
     }
 }

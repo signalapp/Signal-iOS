@@ -57,21 +57,21 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         // while the RTC iOS API requires a signed int.
         let lineIndex = Int32(iceUpdate.sdpMlineIndex)
 
-        self.callService.handleRemoteAddedIceCandidate(thread: thread, callId: iceUpdate.id, sdp: iceUpdate.sdp, lineIndex: lineIndex, mid: iceUpdate.sdpMid)
+        self.callService.handleReceivedIceCandidate(thread: thread, callId: iceUpdate.id, sdp: iceUpdate.sdp, lineIndex: lineIndex, mid: iceUpdate.sdpMid)
     }
 
     public func receivedHangup(_ hangup: SSKProtoCallMessageHangup, from caller: SignalServiceAddress) {
         AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleRemoteHangup(thread: thread, callId: hangup.id)
+        self.callService.handleReceivedHangup(thread: thread, callId: hangup.id)
     }
 
     public func receivedBusy(_ busy: SSKProtoCallMessageBusy, from caller: SignalServiceAddress) {
         AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleRemoteBusy(thread: thread, callId: busy.id)
+        self.callService.handleReceivedBusy(thread: thread, callId: busy.id)
     }
 
 }

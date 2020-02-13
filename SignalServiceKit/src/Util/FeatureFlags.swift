@@ -170,9 +170,12 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var calling: Bool {
-        // TODO MULTIRING
-        return TSAccountManager.sharedInstance().isRegisteredPrimaryDevice
+        return multiRing || TSAccountManager.sharedInstance().isRegisteredPrimaryDevice
     }
+
+    // TODO MULTIRING
+    @objc
+    public static let multiRing: Bool = false
 
     private static let groupsV2 = build.includes(.dev) && !isUsingProductionService
 
