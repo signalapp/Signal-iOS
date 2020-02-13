@@ -471,7 +471,7 @@ class StorageServiceOperation: OWSOperation {
         do {
             manifest = try manifestBuilder.build()
         } catch {
-            return reportError(OWSAssertionError("failed to build proto"))
+            return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
 
         StorageService.updateManifest(
@@ -550,7 +550,7 @@ class StorageServiceOperation: OWSOperation {
                 return self.reportError(storageError)
             }
 
-            self.reportError(OWSAssertionError("received unexpected error when fetching manifest"))
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 
@@ -573,7 +573,7 @@ class StorageServiceOperation: OWSOperation {
                     } catch {
                         // We'll just skip it, something may be wrong with our local data.
                         // We'll try and backup this contact again when something changes.
-                        owsFailDebug("unexpectedly failed to build contact record")
+                        owsFailDebug("failed to build contact record with error: \(error)")
                     }
                 }
             }
@@ -596,7 +596,7 @@ class StorageServiceOperation: OWSOperation {
                 } catch {
                     // We'll just skip it, something may be wrong with our local data.
                     // We'll try and backup this group again when something changes.
-                    owsFailDebug("unexpectedly failed to build group record")
+                    owsFailDebug("failed to build group record with error: \(error)")
                 }
             }
         }
@@ -608,7 +608,7 @@ class StorageServiceOperation: OWSOperation {
         do {
             manifest = try manifestBuilder.build()
         } catch {
-            return reportError(OWSAssertionError("failed to build proto"))
+            return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
 
         StorageService.updateManifest(
@@ -763,11 +763,12 @@ class StorageServiceOperation: OWSOperation {
                 self.reportSuccess()
             }
         }.catch { error in
-            if let storageError = error as? StorageService.StorageError {
-                return self.reportError(storageError)
+            switch error {
+            case let operationError as OperationError:
+                return self.reportError(operationError)
+            default:
+                self.reportError(withUndefinedRetry: error)
             }
-
-            self.reportError(OWSAssertionError("received unexpected error when fetching items"))
         }.retainUntilComplete()
     }
 
