@@ -197,25 +197,16 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
             owsFailDebug("Invalid group id.")
             return
         }
-        // We only sync v1 groups via group sync messages.
-        let groupsVersion: GroupsVersion = .V1
-        let groupMembership = GroupMembership(v1Members: Set(groupDetails.memberAddresses))
-        let groupAccess = GroupAccess.forV1
-        let groupV2Revision: UInt32 = 0
-        let groupSecretParamsData: Data? = nil
         // groupUpdateSourceAddress is nil because we don't know
         // who made any changes.
         let groupUpdateSourceAddress: SignalServiceAddress? = nil
-        let result = try GroupManager.upsertExistingGroup(groupId: groupId,
-                                                          name: groupDetails.name,
-                                                          avatarData: groupDetails.avatarData,
-                                                          groupMembership: groupMembership,
-                                                          groupAccess: groupAccess,
-                                                          groupsVersion: groupsVersion,
-                                                          groupV2Revision: groupV2Revision,
-                                                          groupSecretParamsData: groupSecretParamsData,
-                                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                          transaction: transaction)
+        // We only sync v1 groups via group sync messages.
+        let result = try GroupManager.upsertExistingGroupV1(groupId: groupId,
+                                                            name: groupDetails.name,
+                                                            avatarData: groupDetails.avatarData,
+                                                            members: groupDetails.memberAddresses,
+                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                            transaction: transaction)
 
         let groupThread = result.groupThread
         let groupModel = groupThread.groupModel
