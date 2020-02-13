@@ -100,11 +100,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                 threadUniqueId:(NSString *)threadUniqueId
                                                    transaction:(SDSAnyReadTransaction *)transaction;
 
-#pragma mark - Message Request
-
-+ (BOOL)hasPendingMessageRequest:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
-+ (BOOL)existsOutgoingMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

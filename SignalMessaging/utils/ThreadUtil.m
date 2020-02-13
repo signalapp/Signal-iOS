@@ -495,41 +495,6 @@ NS_ASSUME_NONNULL_BEGIN
     return interactions.firstObject;
 }
 
-#pragma mark - Message Request
-
-+ (BOOL)hasPendingMessageRequest:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
-{
-    // If the feature isn't enabled, do nothing.
-    if (!RemoteConfig.messageRequests) {
-        return NO;
-    }
-
-    // If we're creating the thread, don't show the message request view
-    if (!thread.shouldThreadBeVisible) {
-        return NO;
-    }
-
-    // If the thread is already whitelisted, do nothing. The user has already
-    // accepted the request for this thread.
-    if ([self.profileManager isThreadInProfileWhitelist:thread transaction:transaction]) {
-        return NO;
-    }
-
-    BOOL hasSentMessages = [self existsOutgoingMessage:thread transaction:transaction];
-
-    if (hasSentMessages && !SSKFeatureFlags.phoneNumberPrivacy) {
-        return NO;
-    }
-
-    return YES;
-}
-
-+ (BOOL)existsOutgoingMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
-{
-    InteractionFinder *finder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
-    return [finder existsOutgoingMessageWithTransaction:transaction];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

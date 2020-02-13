@@ -5325,7 +5325,8 @@ typedef enum : NSUInteger {
     __block BOOL hasPendingMessageRequest = NO;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasPendingMessageRequest = [ThreadUtil hasPendingMessageRequest:self.thread transaction:transaction];
+        hasPendingMessageRequest = [AnyThreadFinder hasPendingMessageRequestWithThread:self.thread
+                                                                           transaction:transaction];
     }];
 
     // We're currently showing the message request view but no longer need to,

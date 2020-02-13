@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -59,6 +59,35 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         case .yapRead(let yap):
             return yapAdapter.sortIndex(thread: thread, transaction: yap)
         }
+    }
+
+    @objc
+    public class func hasPendingMessageRequest(thread: TSThread, transaction: ReadTransaction) -> Bool {
+        // If the feature isn't enabled, do nothing.
+        guard RemoteConfig.messageRequests else { return false }
+
+        // If we're creating the thread, don't show the message request view
+        guard thread.shouldThreadBeVisible else { return false }
+
+        // If the thread is already whitelisted, do nothing. The user has already
+        // accepted the request for this thread.
+        guard !SSKEnvironment.shared.profileManager.isThread(
+            inProfileWhitelist: thread,
+            transaction: transaction
+        ) else { return false }
+
+        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+
+        let hasSentMessages = interactionFinder.existsOutgoingMessage(transaction: transaction)
+        guard !hasSentMessages || FeatureFlags.phoneNumberPrivacy else { return false }
+
+        // This thread is likely only visible because of system messages like so-and-so
+        // is on signal or sync status. Some of the "possibly" incoming messages might
+        // actually have been triggered by us, but if we sent one of these then the thread
+        // should be in our profile white list and not make it to this check.
+        guard interactionFinder.possiblyHasIncomingMessages(transaction: transaction.unwrapGrdbRead) else { return false }
+
+        return true
     }
 }
 

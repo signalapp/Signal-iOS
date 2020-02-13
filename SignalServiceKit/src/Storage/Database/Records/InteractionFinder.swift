@@ -347,6 +347,11 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    @objc
+    public func possiblyHasIncomingMessages(transaction: GRDBReadTransaction) -> Bool {
+        return grdbAdapter.possiblyHasIncomingMessages(transaction: transaction)
+    }
+
     #if DEBUG
     @objc
     public func enumerateUnstartedExpiringMessages(transaction: SDSAnyReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
@@ -1032,6 +1037,40 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         )
         """
         let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
+        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+    }
+
+    func possiblyHasIncomingMessages(transaction: GRDBReadTransaction) -> Bool {
+        // All of these message types could have been triggered by anyone in
+        // the conversation. So, if one of them exists we have to assume the conversation
+        // *might* have received messages. At some point it'd be nice to refactor this to
+        // be more explict, but not all our interaction types allow for that level of
+        // granularity presently.
+
+        let interactionTypes: [SDSRecordType] = [
+            .incomingMessage,
+            .disappearingConfigurationUpdateInfoMessage,
+            .unknownProtocolVersionMessage,
+            .verificationStateChangeMessage,
+            .call,
+            .errorMessage,
+            .invalidIdentityKeyErrorMessage,
+            .invalidIdentityKeyReceivingErrorMessage,
+            .invalidIdentityKeySendingErrorMessage
+        ]
+
+        let sqlInteractionTypes = interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")
+
+        let sql = """
+        SELECT EXISTS(
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) IN (\(sqlInteractionTypes))
+            LIMIT 1
+        )
+        """
+        let arguments: StatementArguments = [threadUniqueId]
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
     }
 
