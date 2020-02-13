@@ -26,10 +26,22 @@ public struct StorageService {
         case assertion
         case retryableAssertion
         case decryptionFailed(manifestVersion: UInt64)
+        case networkError(statusCode: Int, underlyingError: Error)
+
+        // MARK: 
 
         public var isRetryable: Bool {
-            guard case .retryableAssertion = self else { return false }
-            return true
+            switch self {
+            case .assertion:
+                return false
+            case .retryableAssertion:
+                return true
+            case .decryptionFailed:
+                return false
+            case .networkError(let statusCode, _):
+                // If this is a server error, retry
+                return statusCode >= 500
+            }
         }
     }
 
@@ -311,7 +323,7 @@ public struct StorageService {
                             return resolver.reject(StorageError.assertion)
                         }
 
-                        owsFailDebug("response error \(error)")
+                        Logger.error("response error \(error)")
                         return resolver.reject(error)
                     }
 
@@ -325,14 +337,10 @@ public struct StorageService {
                     case 404:
                         status = .notFound
                     default:
-                        if response.statusCode >= 500 {
-                            // This is a server error, retry
-                            return resolver.reject(StorageError.retryableAssertion)
-                        } else if let error = error {
-                            return resolver.reject(error)
-                        } else {
-                            return resolver.reject(StorageError.assertion)
+                        guard let error = error else {
+                            return resolver.reject(OWSAssertionError("error was nil for statusCode: \(response.statusCode)"))
                         }
+                        return resolver.reject(StorageError.networkError(statusCode: response.statusCode, underlyingError: error))
                     }
 
                     // We should always receive response data, for some responses it will be empty.
