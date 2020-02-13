@@ -130,10 +130,9 @@ class GroupsV2ProfileKeyUpdater {
                 // Only one update should be in flight at a time.
                 return
             }
-            let groupIds = self.databaseStorage.read { transaction in
-                return self.keyValueStore.allDataValues(transaction: transaction)
-            }
-            guard let groupId = groupIds.first else {
+            guard let groupId = (self.databaseStorage.read { transaction in
+                return self.keyValueStore.anyDataValue(transaction: transaction)
+            }) else {
                 return
             }
 

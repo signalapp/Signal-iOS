@@ -377,6 +377,19 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
+    public func anyDataValue(transaction: SDSAnyReadTransaction) -> Data? {
+        let keys = allKeys(transaction: transaction).shuffled()
+        guard let firstKey = keys.first else {
+            return nil
+        }
+        guard let data = self.getData(firstKey, transaction: transaction) else {
+            owsFailDebug("Missing data for key: \(firstKey)")
+            return nil
+        }
+        return data
+    }
+
+    @objc
     public func allKeys(transaction: SDSAnyReadTransaction) -> [String] {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
