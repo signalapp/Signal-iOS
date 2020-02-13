@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -222,6 +222,55 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             if let outgoingMessage = message as? TSOutgoingMessage,
                 author.isLocalAddress {
                 return outgoingMessage
+            }
+        }
+
+        return nil
+    }
+
+    @objc
+    public class func findThread(
+        forInteractionWithTimestamp timestamp: UInt64,
+        author: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) -> TSThread? {
+        guard timestamp > 0 else {
+            owsFailDebug("invalid timestamp: \(timestamp)")
+            return nil
+        }
+
+        guard author.isValid else {
+            owsFailDebug("Invalid author \(author)")
+            return nil
+        }
+
+        let interactions: [TSInteraction]
+
+        do {
+            interactions = try InteractionFinder.interactions(
+                withTimestamp: timestamp,
+                filter: { $0 is TSMessage },
+                transaction: transaction
+            )
+        } catch {
+            owsFailDebug("Error loading interactions \(error.localizedDescription)")
+            return nil
+        }
+
+        for interaction in interactions {
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("received unexpected non-message interaction")
+                continue
+            }
+
+            if let incomingMessage = message as? TSIncomingMessage,
+                incomingMessage.authorAddress.isEqualToAddress(author) {
+                return incomingMessage.thread(transaction: transaction)
+            }
+
+            if let outgoingMessage = message as? TSOutgoingMessage,
+                author.isLocalAddress {
+                return outgoingMessage.thread(transaction: transaction)
             }
         }
 

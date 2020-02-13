@@ -171,6 +171,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return SSKEnvironment.shared.syncManager;
 }
 
+- (OWSOutgoingReceiptManager *)outgoingReceiptManager
+{
+    return SSKEnvironment.shared.outgoingReceiptManager;
+}
+
 - (id<OWSUDManager>)udManager
 {
     OWSAssertDebug(SSKEnvironment.shared.udManager);
@@ -793,6 +798,23 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                  transaction:transaction];
 }
 
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+               wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                       transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(addresses);
+    OWSAssertDebug(transaction);
+
+    NSSet<SignalServiceAddress *> *addressesToAdd = [self addressesNotBlockedOrInWhitelist:addresses
+                                                                               transaction:transaction];
+
+    if (addressesToAdd.count < 1) {
+        return;
+    }
+
+    [self addConfirmedUnwhitelistedAddresses:addressesToAdd wasLocallyInitiated:YES transaction:transaction];
+}
+
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
@@ -939,6 +961,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects];
         }
 
+        // If we've updated our whitelist, there may be new read receipts ready to process.
+        [self.outgoingReceiptManager process];
+
         for (SignalServiceAddress *address in addressesToRemove) {
             [[NSNotificationCenter defaultCenter]
                 postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
@@ -974,6 +999,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         if (wasLocallyInitiated) {
             [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects];
         }
+
+        // If we've updated our whitelist, there may be new read receipts ready to process.
+        [self.outgoingReceiptManager process];
 
         for (SignalServiceAddress *address in addressesToAdd) {
             [[NSNotificationCenter defaultCenter]
@@ -1089,6 +1117,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
         }
 
+        // If we've updated our whitelist, there may be new read receipts ready to process.
+        [self.outgoingReceiptManager process];
+
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
                                                                  object:nil
                                                                userInfo:@ {
@@ -1112,6 +1143,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         if (wasLocallyInitiated) {
             [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
         }
+
+        // If we've updated our whitelist, there may be new read receipts ready to process.
+        [self.outgoingReceiptManager process];
 
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
                                                                  object:nil

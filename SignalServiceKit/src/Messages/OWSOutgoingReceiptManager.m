@@ -163,6 +163,19 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
     });
 }
 
+- (SignalServiceAddress *)addressForIdentifier:(NSString *)identifier
+{
+    // The identifier could be either a UUID or a phone number,
+    // check if it's a valid UUID. If not, assume it's a phone number.
+
+    NSUUID *_Nullable uuid = [[NSUUID alloc] initWithUUIDString:identifier];
+    if (uuid) {
+        return [[SignalServiceAddress alloc] initWithUuid:uuid phoneNumber:nil];
+    } else {
+        return [[SignalServiceAddress alloc] initWithPhoneNumber:identifier];
+    }
+}
+
 - (NSArray<AnyPromise *> *)sendReceiptsForReceiptType:(OWSReceiptType)receiptType {
     SDSKeyValueStore *store = [self storeForReceiptType:receiptType];
 
@@ -171,8 +184,38 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         [store enumerateKeysAndObjectsWithTransaction:transaction
                                                 block:^(NSString *key, id object, BOOL *stop) {
                                                     NSString *recipientId = key;
-                                                    NSSet<NSNumber *> *timestamps = object;
-                                                    queuedReceiptMap[recipientId] = [timestamps copy];
+                                                    NSMutableSet<NSNumber *> *timestamps = [object mutableCopy];
+
+                                                    // Filter the pending receipts to remove any for threads that have a
+                                                    // pending message request. We wait to send read receipts until a
+                                                    // message request is approved.
+                                                    if (receiptType == OWSReceiptType_Read && RemoteConfig.messageRequests) {
+                                                        SignalServiceAddress *address =
+                                                            [self addressForIdentifier:recipientId];
+                                                        if (!address.isValid) {
+                                                            OWSFailDebug(@"Unexpected identifier.");
+                                                            return;
+                                                        }
+
+                                                        for (NSNumber *timestamp in [timestamps copy]) {
+                                                            TSThread *_Nullable messageThread = [InteractionFinder
+                                                                findThreadForInteractionWithTimestamp:
+                                                                    [timestamp unsignedLongLongValue]
+                                                                                               author:address
+                                                                                          transaction:transaction];
+
+                                                            if (messageThread &&
+                                                                [AnyThreadFinder
+                                                                    hasPendingMessageRequestWithThread:messageThread
+                                                                                           transaction:transaction]) {
+                                                                [timestamps removeObject:timestamp];
+                                                            }
+                                                        }
+                                                    }
+
+                                                    if (timestamps.count > 0) {
+                                                        queuedReceiptMap[recipientId] = [timestamps copy];
+                                                    }
                                                 }];
     }];
 
@@ -182,13 +225,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         // The identifier could be either a UUID or a phone number,
         // check if it's a valid UUID. If not, assume it's a phone number.
 
-        SignalServiceAddress *address;
-        NSUUID *_Nullable uuid = [[NSUUID alloc] initWithUUIDString:identifier];
-        if (uuid) {
-            address = [[SignalServiceAddress alloc] initWithUuid:uuid phoneNumber:nil];
-        } else {
-            address = [[SignalServiceAddress alloc] initWithPhoneNumber:identifier];
-        }
+        SignalServiceAddress *address = [self addressForIdentifier:identifier];
 
         if (!address.isValid) {
             OWSFailDebug(@"Unexpected identifier.");
