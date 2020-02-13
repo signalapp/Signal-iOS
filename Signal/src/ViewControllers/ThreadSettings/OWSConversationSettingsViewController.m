@@ -1120,6 +1120,9 @@ const CGFloat kIconViewLength = 24;
     }
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        // We're sending a message, so we're accepting any pending message request.
+        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread transaction:transaction];
+
         [self.disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
 
         // MJK TODO - should be safe to remove this senderTimestamp

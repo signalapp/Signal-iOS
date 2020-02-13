@@ -400,26 +400,40 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Profile Whitelist
 
-+ (BOOL)addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:(TSThread *)thread
++ (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:(TSThread *)thread
 {
     OWSAssertDebug(thread);
 
-    if (thread.shouldThreadBeVisible) {
-        return NO;
-    }
-
-    __block BOOL isThreadInProfileWhitelist;
+    __block BOOL hasPendingMessageRequest;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        isThreadInProfileWhitelist =
-            [OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread transaction:transaction];
+        hasPendingMessageRequest = [AnyThreadFinder hasPendingMessageRequestWithThread:thread transaction:transaction];
     }];
-    if (isThreadInProfileWhitelist) {
-        return NO;
+
+    // If we're creating this thread or we have a pending message request,
+    // any action we trigger should share our profile.
+    if (!thread.shouldThreadBeVisible || hasPendingMessageRequest) {
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+        return YES;
     }
 
-    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+    return NO;
+}
 
-    return YES;
++ (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequest:(TSThread *)thread
+                                               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(thread);
+
+    BOOL hasPendingMessageRequest = [AnyThreadFinder hasPendingMessageRequestWithThread:thread transaction:transaction];
+
+    // If we're creating this thread or we have a pending message request,
+    // any action we trigger should share our profile.
+    if (!thread.shouldThreadBeVisible || hasPendingMessageRequest) {
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread transaction:transaction];
+        return YES;
+    }
+
+    return NO;
 }
 
 #pragma mark - Delete Content

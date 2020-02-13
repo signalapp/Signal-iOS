@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -52,6 +52,9 @@ class AttachmentMultisend {
                     case .group(let groupThread):
                         thread = groupThread
                     }
+
+                    // If this thread has a pending message request, treat it as accepted.
+                    ThreadUtil.addThread(toProfileWhitelistIfEmptyOrPendingRequest: thread, transaction: transaction)
 
                     let message = try! ThreadUtil.createUnsentMessage(withText: approvalMessageText,
                                                                       mediaAttachments: attachments,

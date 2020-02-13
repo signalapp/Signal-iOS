@@ -1662,6 +1662,9 @@ typedef enum : NSUInteger {
         return;
     }
 
+    // We initiated a call, so if there was a pending message request we should accept it.
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
+
     [self.outboundCallInitiator initiateCallWithAddress:contactThread.contactAddress isVideo:isVideo];
 }
 
@@ -3281,11 +3284,12 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"Sending contact share.");
 
-    BOOL didAddToProfileWhitelist =
-        [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
-
+    __block BOOL didAddToProfileWhitelist;
     [self.databaseStorage
         asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread
+                                                                                          transaction:transaction];
+
             // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
             // preparation rather than duplicated here and in the SAE
             if (contactShare.avatarImage) {
@@ -3735,6 +3739,9 @@ typedef enum : NSUInteger {
                                         groupUpdateSourceAddress:localAddress
                                                      transaction:transaction
                                                            error:&error];
+
+        // We updated the group, so if there was a pending message request we should accept it.
+        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:newThread transaction:transaction];
     }];
     if (error != nil || newThread == nil) {
         OWSFailDebug(@"Error: %@", error);
@@ -3909,7 +3916,7 @@ typedef enum : NSUInteger {
         }
 
         BOOL didAddToProfileWhitelist =
-            [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
+            [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
 
         __block TSOutgoingMessage *message;
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
@@ -4359,7 +4366,7 @@ typedef enum : NSUInteger {
     }
 
     BOOL didAddToProfileWhitelist =
-        [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
+        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
     __block TSOutgoingMessage *message;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
