@@ -5056,6 +5056,8 @@ typedef enum : NSUInteger {
         // will be run async.
         [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 
+        [self showMessageRequestDialogIfRequired];
+
         if (scrollToBottom) {
             [self scrollToBottomAnimated:NO];
         }
