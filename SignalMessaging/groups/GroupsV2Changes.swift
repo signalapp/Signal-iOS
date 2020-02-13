@@ -262,9 +262,7 @@ public class GroupsV2Changes {
                 let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
                 let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
                 let durationSeconds = disappearingMessagesProto.duration
-                if durationSeconds != 0 {
-                    newDisappearingMessageToken = DisappearingMessageToken(isEnabled: true, durationSeconds: durationSeconds)
-                }
+                newDisappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: disappearingMessagesProto.duration)
             }
         }
 

@@ -312,11 +312,11 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             contactThread.anyOverwritingUpdate(transaction: transaction)
         }
 
-        OWSDisappearingMessagesJob.shared().becomeConsistent(withDisappearingDuration: contactDetails.expireTimer,
-                                                             thread: contactThread,
-                                                             createdByRemoteRecipient: nil,
-                                                             createdInExistingGroup: false,
-                                                             transaction: transaction)
+        let disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: contactDetails.expireTimer)
+        GroupManager.remoteUpdateDisappearingMessages(withContactOrV1GroupThread: contactThread,
+                                                      disappearingMessageToken: disappearingMessageToken,
+                                                      groupUpdateSourceAddress: nil,
+                                                      transaction: transaction)
 
         if let verifiedProto = contactDetails.verifiedProto {
             try self.identityManager.processIncomingVerifiedProto(verifiedProto,

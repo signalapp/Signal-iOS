@@ -33,6 +33,8 @@ typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;
 
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldGroupModel;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyNewGroupModel;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldDisappearingMessageToken;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyNewDisappearingMessageToken;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyGroupUpdateSourceAddress;
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread address:(SignalServiceAddress *)address;

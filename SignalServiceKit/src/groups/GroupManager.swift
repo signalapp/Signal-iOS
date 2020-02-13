@@ -319,6 +319,9 @@ public class GroupManager: NSObject {
             return Promise(error: OWSAssertionError("Missing localAddress."))
         }
 
+        // By default, DMs are disable for new groups.
+        let disappearingMessageToken = DisappearingMessageToken.disabledToken
+
         return firstly {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.map(on: .global()) { () throws -> GroupMembership in
@@ -377,7 +380,7 @@ public class GroupManager: NSObject {
                 self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModel)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> TSGroupModel in
                 let createdGroupModel = try self.databaseStorage.read { transaction in
-                    return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
+                    return try self.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
                 }
                 if proposedGroupModel != createdGroupModel {
                     Logger.verbose("proposedGroupModel: \(proposedGroupModel.debugDescription)")
@@ -389,6 +392,7 @@ public class GroupManager: NSObject {
         }.then(on: .global()) { (groupModel: TSGroupModel) -> Promise<TSGroupThread> in
             let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
                 return self.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: groupModel,
+                                                                            disappearingMessageToken: disappearingMessageToken,
                                                                             groupUpdateSourceAddress: localAddress,
                                                                             transaction: transaction)
             }
@@ -597,6 +601,7 @@ public class GroupManager: NSObject {
         //
         // GroupsV2 TODO: Update method to handle admins, pending members, etc.
         return try remoteUpsertExistingGroup(groupModel: groupModel,
+                                             disappearingMessageToken: nil,
                                              groupUpdateSourceAddress: localAddress,
                                              transaction: transaction).groupThread
     }
@@ -606,12 +611,14 @@ public class GroupManager: NSObject {
     // MARK: - Upsert Existing Group
     //
     // "Existing" groups have already been created, we just need to make sure they're in the database.
-
-    @objc(remoteUpsertExistingGroupV1WithGroupId:name:avatarData:members:groupUpdateSourceAddress:transaction:error:)
+    //
+    // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
+    @objc
     public static func remoteUpsertExistingGroupV1(groupId: Data,
                                                    name: String? = nil,
                                                    avatarData: Data? = nil,
                                                    members: [SignalServiceAddress],
+                                                   disappearingMessageToken: DisappearingMessageToken?,
                                                    groupUpdateSourceAddress: SignalServiceAddress?,
                                                    transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
@@ -625,10 +632,12 @@ public class GroupManager: NSObject {
                                              groupsVersion: .V1,
                                              groupV2Revision: 0,
                                              groupSecretParamsData: nil,
+                                             disappearingMessageToken: disappearingMessageToken,
                                              groupUpdateSourceAddress: groupUpdateSourceAddress,
                                              transaction: transaction)
     }
 
+    // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
     public static func remoteUpsertExistingGroup(groupId: Data,
                                                  name: String? = nil,
                                                  avatarData: Data? = nil,
@@ -637,6 +646,7 @@ public class GroupManager: NSObject {
                                                  groupsVersion: GroupsVersion,
                                                  groupV2Revision: UInt32,
                                                  groupSecretParamsData: Data? = nil,
+                                                 disappearingMessageToken: DisappearingMessageToken?,
                                                  groupUpdateSourceAddress: SignalServiceAddress?,
                                                  transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
@@ -651,15 +661,19 @@ public class GroupManager: NSObject {
                                              transaction: transaction)
 
         return try remoteUpsertExistingGroup(groupModel: groupModel,
+                                             disappearingMessageToken: disappearingMessageToken,
                                              groupUpdateSourceAddress: groupUpdateSourceAddress,
                                              transaction: transaction)
     }
 
+    // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
     public static func remoteUpsertExistingGroup(groupModel: TSGroupModel,
+                                                 disappearingMessageToken: DisappearingMessageToken?,
                                                  groupUpdateSourceAddress: SignalServiceAddress?,
                                                  transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: groupModel,
+                                                                                     newDisappearingMessageToken: disappearingMessageToken,
                                                                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                      canInsert: true,
                                                                                      transaction: transaction)
@@ -668,11 +682,14 @@ public class GroupManager: NSObject {
     // MARK: - Update Existing Group
 
     // Unlike remoteUpsertExistingGroupV1(), this method never inserts.
+    //
+    // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
     @objc
     public static func remoteUpdateToExistingGroupV1(groupId: Data,
                                                      name: String? = nil,
                                                      avatarData: Data? = nil,
                                                      groupMembership: GroupMembership,
+                                                     disappearingMessageToken: DisappearingMessageToken?,
                                                      groupUpdateSourceAddress: SignalServiceAddress?,
                                                      transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
@@ -693,6 +710,7 @@ public class GroupManager: NSObject {
         }
         let newGroupModel = updateInfo.newGroupModel
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                                     newDisappearingMessageToken: disappearingMessageToken,
                                                                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                      canInsert: false,
                                                                                      transaction: transaction)
@@ -758,15 +776,21 @@ public class GroupManager: NSObject {
                                                  transaction: transaction)
             let newGroupModel = updateInfo.newGroupModel
             let upsertGroupResult = try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                                                          newDisappearingMessageToken: dmConfiguration?.asToken,
                                                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                           canInsert: false,
                                                                                                           transaction: transaction)
 
             if let dmConfiguration = dmConfiguration {
                 let groupThread = upsertGroupResult.groupThread
-                self.updateDisappearingMessagesInDatabaseAndCreateMessages(token: dmConfiguration.asToken,
-                                                                           thread: groupThread,
-                                                                           transaction: transaction)
+                let updateResult = self.updateDisappearingMessagesInDatabaseAndCreateMessages(token: dmConfiguration.asToken,
+                                                                                              thread: groupThread,
+                                                                                              shouldInsertInfoMessage: true,
+                                                                                              groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                              transaction: transaction)
+                self.sendDisappearingMessagesConfigurationMessage(updateResult: updateResult,
+                                                                  thread: groupThread,
+                                                                  transaction: transaction)
             }
 
             return upsertGroupResult
@@ -893,14 +917,37 @@ public class GroupManager: NSObject {
 
     // MARK: - Disappearing Messages
 
+    // This method works with v1 group threads and contact threads.
+    @objc
+    public static func remoteUpdateDisappearingMessages(withContactOrV1GroupThread thread: TSThread,
+                                                        disappearingMessageToken: DisappearingMessageToken,
+                                                        groupUpdateSourceAddress: SignalServiceAddress?,
+
+                                                        transaction: SDSAnyWriteTransaction) {
+        guard !thread.isGroupV2Thread else {
+            owsFailDebug("Invalid thread.")
+            return
+        }
+        _ = self.updateDisappearingMessagesInDatabaseAndCreateMessages(token: disappearingMessageToken,
+                                                                       thread: thread,
+                                                                       shouldInsertInfoMessage: true,
+                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                       transaction: transaction)
+    }
+
     public static func localUpdateDisappearingMessages(thread: TSThread,
                                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<Void> {
 
         let simpleUpdate = {
             return databaseStorage.write(.promise) { transaction in
-                self.updateDisappearingMessagesInDatabaseAndCreateMessages(token: disappearingMessageToken,
-                                                                           thread: thread,
-                                                                           transaction: transaction)
+                let updateResult = self.updateDisappearingMessagesInDatabaseAndCreateMessages(token: disappearingMessageToken,
+                                                                                              thread: thread,
+                                                                                              shouldInsertInfoMessage: true,
+                                                                                              groupUpdateSourceAddress: nil,
+                                                                                              transaction: transaction)
+                self.sendDisappearingMessagesConfigurationMessage(updateResult: updateResult,
+                                                                  thread: thread,
+                                                                  transaction: transaction)
             }
         }
 
@@ -919,15 +966,33 @@ public class GroupManager: NSObject {
         }.asVoid()
     }
 
-    public static func updateDisappearingMessagesInDatabaseAndCreateMessages(token newToken: DisappearingMessageToken,
-                                                                             thread: TSThread,
-                                                                             transaction: SDSAnyWriteTransaction) {
+    private struct UpdateDMConfigurationResult {
+        enum Action: UInt {
+            case updated
+            case unchanged
+        }
+
+        let action: Action
+        let oldDisappearingMessageToken: DisappearingMessageToken?
+        let newDisappearingMessageToken: DisappearingMessageToken
+        let newConfiguration: OWSDisappearingMessagesConfiguration
+    }
+
+    private static func updateDisappearingMessagesInDatabaseAndCreateMessages(token newToken: DisappearingMessageToken,
+                                                                              thread: TSThread,
+                                                                              shouldInsertInfoMessage: Bool,
+                                                                              groupUpdateSourceAddress: SignalServiceAddress?,
+                                                                              transaction: SDSAnyWriteTransaction) -> UpdateDMConfigurationResult {
 
         let oldConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: thread, transaction: transaction)
-        let hasUnsavedChanges = oldConfiguration.asToken != newToken
+        let oldToken = oldConfiguration.asToken
+        let hasUnsavedChanges = oldToken != newToken
         guard hasUnsavedChanges else {
             // Skip redundant updates.
-            return
+            return UpdateDMConfigurationResult(action: .unchanged,
+                                               oldDisappearingMessageToken: oldToken,
+                                               newDisappearingMessageToken: newToken,
+                                               newConfiguration: oldConfiguration)
         }
         let newConfiguration: OWSDisappearingMessagesConfiguration
         if newToken.isEnabled {
@@ -937,22 +1002,39 @@ public class GroupManager: NSObject {
         }
         newConfiguration.anyUpsert(transaction: transaction)
 
-        // GroupsV2 TODO: We could eventually merge this with insertGroupUpdateInfoMessage.
-        //                If not, we should populate createdByRemoteName.
-        //
-        // MJK TODO - should be safe to remove this senderTimestamp
-        let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                                                        thread: thread,
-                                                                        configuration: newConfiguration,
-                                                                        createdByRemoteName: nil,
-                                                                        createdInExistingGroup: false)
-        infoMessage.anyInsert(transaction: transaction)
+        if shouldInsertInfoMessage {
+            var remoteContactName: String?
+            if let groupUpdateSourceAddress = groupUpdateSourceAddress,
+                groupUpdateSourceAddress.isValid,
+                !groupUpdateSourceAddress.isLocalAddress {
+                remoteContactName = contactsManager.displayName(for: groupUpdateSourceAddress, transaction: transaction)
+            }
+            let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                                                            thread: thread,
+                                                                            configuration: newConfiguration,
+                                                                            createdByRemoteName: remoteContactName,
+                                                                            createdInExistingGroup: false)
+            infoMessage.anyInsert(transaction: transaction)
+        }
 
+        return UpdateDMConfigurationResult(action: .updated,
+                                           oldDisappearingMessageToken: oldToken,
+                                           newDisappearingMessageToken: newToken,
+                                           newConfiguration: newConfiguration)
+    }
+
+    private static func sendDisappearingMessagesConfigurationMessage(updateResult: UpdateDMConfigurationResult,
+                                                                       thread: TSThread,
+                                                                       transaction: SDSAnyWriteTransaction) {
+        guard updateResult.action == .updated else {
+            // The update was redundant, don't send an update message.
+            return
+        }
         guard !thread.isGroupV2Thread else {
             // Don't send DM configuration messages for v2 groups.
             return
         }
-
+        let newConfiguration = updateResult.newConfiguration
         let message = OWSDisappearingMessagesConfigurationMessage(configuration: newConfiguration, thread: thread)
         messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
@@ -1016,8 +1098,8 @@ public class GroupManager: NSObject {
                                                          newGroupSeed: nil,
                                                          transaction: transaction)
             let groupUpdateSourceAddress = localAddress
-            let result = try self.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
-                                                                                          newGroupModel: newGroupModel,
+            let result = try self.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                                          newDisappearingMessageToken: nil,
                                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                           skipInfoMessage: skipInfoMessage,
                                                                                           transaction: transaction)
@@ -1142,77 +1224,131 @@ public class GroupManager: NSObject {
 
     // MARK: - Group Database
 
+    // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
     public static func insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: TSGroupModel,
+                                                                       disappearingMessageToken: DisappearingMessageToken?,
                                                                        groupUpdateSourceAddress: SignalServiceAddress?,
                                                                        transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let groupThread = TSGroupThread(groupModelPrivate: groupModel)
         groupThread.anyInsert(transaction: transaction)
 
+        let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
+
         insertGroupUpdateInfoMessage(groupThread: groupThread,
                                      oldGroupModel: nil,
                                      newGroupModel: groupModel,
+                                     oldDisappearingMessageToken: nil,
+                                     newDisappearingMessageToken: newDisappearingMessageToken,
                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                      transaction: transaction)
 
         return groupThread
     }
 
+    // If newDisappearingMessageToken is nil, don't update the disappearing messages configuration.
     public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: TSGroupModel,
+                                                                                    newDisappearingMessageToken: DisappearingMessageToken?,
                                                                                     groupUpdateSourceAddress: SignalServiceAddress?,
                                                                                     canInsert: Bool,
                                                                                     transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
-        let groupId = newGroupModel.groupId
-        guard let oldThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+        let threadId = TSGroupThread.threadId(fromGroupId: newGroupModel.groupId)
+        guard TSGroupThread.anyExists(uniqueId: threadId, transaction: transaction) else {
             guard canInsert else {
                 throw OWSAssertionError("Missing groupThread.")
             }
-            let thread = GroupManager.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: newGroupModel,
-                                                                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                      transaction: transaction)
+            let thread = insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: newGroupModel,
+                                                                         disappearingMessageToken: newDisappearingMessageToken,
+                                                                         groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                         transaction: transaction)
             return UpsertGroupResult(action: .inserted, groupThread: thread)
         }
 
-        return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: oldThread,
-                                                                           newGroupModel: newGroupModel,
+        return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                           newDisappearingMessageToken: newDisappearingMessageToken,
                                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                            transaction: transaction)
     }
 
-    public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: TSGroupThread,
-                                                                               newGroupModel: TSGroupModel,
+    // If newDisappearingMessageToken is nil, don't update the disappearing messages configuration.
+    public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: TSGroupModel,
+                                                                               newDisappearingMessageToken: DisappearingMessageToken?,
                                                                                groupUpdateSourceAddress: SignalServiceAddress?,
                                                                                skipInfoMessage: Bool = false,
                                                                                transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
-        let oldGroupModel = groupThread.groupModel
-        guard !oldGroupModel.isEqual(to: newGroupModel) else {
-            // Skip redundant update.
-            return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
+        // Step 1: First reload latest thread state. This ensures:
+        //
+        // * The thread (still) exists in the database.
+        // * The update is working off latest database state.
+        //
+        // We always have the groupThread at the call sites of this method, but this
+        // future-proofs us against bugs.
+        let groupId = newGroupModel.groupId
+        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            throw OWSAssertionError("Missing groupThread.")
         }
 
-        if groupThread.groupModel.groupsVersion == .V2 {
-            guard newGroupModel.groupV2Revision >= groupThread.groupModel.groupV2Revision else {
-                // This is a key check.  We never want to revert group state
-                // in the database to an earlier revision. Races are
-                // unavoidable: there are multiple triggers for group updates
-                // and some of them require interacting with the service.
-                // Ultimately it is safe to ignore stale writes and treat
-                // them as successful.
-                //
-                // NOTE: As always, we return the group thread with the
-                // latest group state.
-                Logger.warn("Skipping stale update for v2 group.")
+        // Step 2: Update DM configuration in database, if necessary.
+        let updateDMResult: UpdateDMConfigurationResult
+        if let newDisappearingMessageToken = newDisappearingMessageToken {
+            // shouldInsertInfoMessage is false because we only want to insert a
+            // single info message if we update both DM config and thread model.
+            updateDMResult = updateDisappearingMessagesInDatabaseAndCreateMessages(token: newDisappearingMessageToken,
+                                                                                   thread: groupThread,
+                                                                                   shouldInsertInfoMessage: false,
+                                                                                   groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                   transaction: transaction)
+        } else {
+            let oldConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
+            let oldToken = oldConfiguration.asToken
+            updateDMResult = UpdateDMConfigurationResult(action: .unchanged,
+                                                         oldDisappearingMessageToken: oldToken,
+                                                         newDisappearingMessageToken: oldToken,
+                                                         newConfiguration: oldConfiguration)
+        }
+
+        // Step 3: Update group in database, if necessary.
+        let oldGroupModel = groupThread.groupModel
+        let updateThreadResult: UpsertGroupResult = {
+            guard !oldGroupModel.isEqual(to: newGroupModel) else {
+                // Skip redundant update.
                 return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
             }
-        }
 
-        groupThread.update(with: newGroupModel, transaction: transaction)
+            if groupThread.groupModel.groupsVersion == .V2 {
+                guard newGroupModel.groupV2Revision >= groupThread.groupModel.groupV2Revision else {
+                    // This is a key check.  We never want to revert group state
+                    // in the database to an earlier revision. Races are
+                    // unavoidable: there are multiple triggers for group updates
+                    // and some of them require interacting with the service.
+                    // Ultimately it is safe to ignore stale writes and treat
+                    // them as successful.
+                    //
+                    // NOTE: As always, we return the group thread with the
+                    // latest group state.
+                    Logger.warn("Skipping stale update for v2 group.")
+                    return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
+                }
+            }
+
+            groupThread.update(with: newGroupModel, transaction: transaction)
+
+            return UpsertGroupResult(action: .updated, groupThread: groupThread)
+        }()
+
+        if updateDMResult.action == .unchanged &&
+            updateThreadResult.action == .unchanged {
+            // Neither DM config nor thread model changed.
+            return updateThreadResult
+        }
 
         if !skipInfoMessage {
             insertGroupUpdateInfoMessage(groupThread: groupThread,
                                          oldGroupModel: oldGroupModel,
                                          newGroupModel: newGroupModel,
+                                         oldDisappearingMessageToken: updateDMResult.oldDisappearingMessageToken,
+                                         newDisappearingMessageToken: updateDMResult.newDisappearingMessageToken,
                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
                                          transaction: transaction)
         }
@@ -1223,14 +1359,20 @@ public class GroupManager: NSObject {
     private static func insertGroupUpdateInfoMessage(groupThread: TSGroupThread,
                                                      oldGroupModel: TSGroupModel?,
                                                      newGroupModel: TSGroupModel,
+                                                     oldDisappearingMessageToken: DisappearingMessageToken?,
+                                                     newDisappearingMessageToken: DisappearingMessageToken,
                                                      groupUpdateSourceAddress: SignalServiceAddress?,
                                                      transaction: SDSAnyWriteTransaction) {
 
         var userInfo: [InfoMessageUserInfoKey: Any] = [
-            .newGroupModel: newGroupModel
+            .newGroupModel: newGroupModel,
+            .newDisappearingMessageToken: newDisappearingMessageToken
         ]
         if let oldGroupModel = oldGroupModel {
             userInfo[.oldGroupModel] = oldGroupModel
+        }
+        if let oldDisappearingMessageToken = oldDisappearingMessageToken {
+            userInfo[.oldDisappearingMessageToken] = oldDisappearingMessageToken
         }
         if let groupUpdateSourceAddress = groupUpdateSourceAddress {
             userInfo[.groupUpdateSourceAddress] = groupUpdateSourceAddress

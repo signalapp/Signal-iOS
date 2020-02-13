@@ -676,7 +676,6 @@ NS_ASSUME_NONNULL_BEGIN
                         && groupThread.groupModel.nonLocalGroupMembers.count == 0) {
                         [self sendGroupInfoRequestWithGroupId:groupId envelope:envelope transaction:transaction];
                     }
-
                     return groupThread;
                 case SSKProtoGroupContextTypeRequestInfo:
                     [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
@@ -752,6 +751,44 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            transaction:transaction];
         return thread;
     }
+}
+
+- (void)updateDisappearingMessageConfigurationWithEnvelope:(SSKProtoEnvelope *)envelope
+                                               dataMessage:(SSKProtoDataMessage *)dataMessage
+                                                    thread:(TSThread *)thread
+                                               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (!envelope) {
+        OWSFailDebug(@"Missing envelope.");
+        return;
+    }
+    if (!dataMessage) {
+        OWSFailDebug(@"Missing dataMessage.");
+        return;
+    }
+    if (!transaction) {
+        OWSFail(@"Missing transaction.");
+        return;
+    }
+    if (!thread) {
+        OWSFail(@"Missing thread.");
+        return;
+    }
+    if (thread.isGroupV2Thread) {
+        return;
+    }
+
+    SignalServiceAddress *authorAddress = envelope.sourceAddress;
+    if (!authorAddress.isValid) {
+        OWSFailDebug(@"invalid authorAddress");
+        return;
+    }
+    DisappearingMessageToken *disappearingMessageToken =
+        [DisappearingMessageToken tokenForProtoExpireTimer:dataMessage.expireTimer];
+    [GroupManager remoteUpdateDisappearingMessagesWithContactOrV1GroupThread:thread
+                                                    disappearingMessageToken:disappearingMessageToken
+                                                    groupUpdateSourceAddress:authorAddress
+                                                                 transaction:transaction];
 }
 
 - (void)sendGroupInfoRequestWithGroupId:(NSData *)groupId
@@ -1046,13 +1083,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (groupContext.unwrappedType) {
         case SSKProtoGroupContextTypeUpdate: {
-            // Ensures that the thread exists but doesn't update it.
+            // Ensures that the thread exists.
+            DisappearingMessageToken *disappearingMessageToken =
+                [DisappearingMessageToken tokenForProtoExpireTimer:dataMessage.expireTimer];
             NSError *_Nullable error;
             UpsertGroupResult *_Nullable result =
                 [GroupManager remoteUpsertExistingGroupV1WithGroupId:groupId
                                                                 name:groupContext.name
                                                           avatarData:oldGroupThread.groupModel.groupAvatarData
                                                              members:newMembers.allObjects
+                                            disappearingMessageToken:disappearingMessageToken
                                             groupUpdateSourceAddress:groupUpdateSourceAddress
                                                          transaction:transaction
                                                                error:&error];
@@ -1060,14 +1100,6 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Error: %@", error);
                 return;
             }
-            TSGroupThread *newGroupThread = result.groupThread;
-
-            [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                                                                      thread:newGroupThread
-                                                                    createdByRemoteRecipient:nil
-                                                                      createdInExistingGroup:YES
-                                                                                 transaction:transaction];
-
             if (groupContext.avatar != nil) {
                 OWSLogVerbose(@"Data message had group avatar attachment");
                 [self handleReceivedGroupAvatarUpdateWithEnvelope:envelope
@@ -1090,6 +1122,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 name:oldGroupThread.groupModel.groupName
                                                           avatarData:oldGroupThread.groupModel.groupAvatarData
                                                              members:newMembers.allObjects
+                                            disappearingMessageToken:nil
                                             groupUpdateSourceAddress:groupUpdateSourceAddress
                                                          transaction:transaction
                                                                error:&error];
@@ -1443,54 +1476,15 @@ NS_ASSUME_NONNULL_BEGIN
                                                 thread:(TSThread *)thread
                                            transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!dataMessage) {
-        OWSFailDebug(@"Missing dataMessage.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-    if (!thread) {
-        OWSFail(@"Missing thread.");
-        return;
-    }
     if (thread.isGroupV2Thread) {
         OWSFailDebug(@"Unexpected dm timer update for v2 group.");
         return;
     }
 
-    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
-    if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
-        OWSLogInfo(
-            @"Expiring messages duration turned to %u for thread %@", (unsigned int)dataMessage.expireTimer, thread);
-        disappearingMessagesConfiguration =
-            [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:dataMessage.expireTimer];
-    } else {
-        OWSLogInfo(@"Expiring messages have been turned off for thread %@", thread);
-        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
-    }
-    OWSAssertDebug(disappearingMessagesConfiguration);
-
-    // NOTE: We always update the configuration here, even if it hasn't changed
-    //       to leave an audit trail.
-    [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
-
-    NSString *name = [self.contactsManager displayNameForAddress:envelope.sourceAddress transaction:transaction];
-
-    // MJK TODO - safe to remove senderTimestamp
-    OWSDisappearingConfigurationUpdateInfoMessage *message =
-        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                          thread:thread
-                                                                   configuration:disappearingMessagesConfiguration
-                                                             createdByRemoteName:name
-                                                          createdInExistingGroup:NO];
-    [message anyInsertWithTransaction:transaction];
+    [self updateDisappearingMessageConfigurationWithEnvelope:envelope
+                                                 dataMessage:dataMessage
+                                                      thread:thread
+                                                 transaction:transaction];
 }
 
 - (void)handleProfileKeyMessageWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -1709,17 +1703,18 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    // GroupsV2 TODO: We could move this into preprocessDataMessage.
+    [self updateDisappearingMessageConfigurationWithEnvelope:envelope
+                                                 dataMessage:dataMessage
+                                                      thread:thread
+                                                 transaction:transaction];
+
     TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
                                                                                      thread:thread
                                                                                 transaction:transaction];
 
     OWSContact *_Nullable contact;
     OWSLinkPreview *_Nullable linkPreview;
-    [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                                                              thread:thread
-                                                            createdByRemoteRecipient:authorAddress
-                                                              createdInExistingGroup:NO
-                                                                         transaction:transaction];
 
     contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
 

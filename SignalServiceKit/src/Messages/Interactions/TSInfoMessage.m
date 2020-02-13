@@ -12,6 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyOldGroupModel = @"InfoMessageUserInfoKeyOldGroupModel";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewGroupModel = @"InfoMessageUserInfoKeyNewGroupModel";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyOldDisappearingMessageToken
+    = @"InfoMessageUserInfoKeyOldDisappearingMessageToken";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewDisappearingMessageToken
+    = @"InfoMessageUserInfoKeyNewDisappearingMessageToken";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceAddress
     = @"InfoMessageUserInfoKeyGroupUpdateSourceAddress";
 

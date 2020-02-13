@@ -8,7 +8,6 @@
 #import "ContactsManagerProtocol.h"
 #import "NSTimer+OWS.h"
 #import "OWSBackgroundTask.h"
-#import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "SSKEnvironment.h"
@@ -203,64 +202,6 @@ void AssertIsOnDisappearingMessagesQueue()
         // expiration configuration.
         [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:message.expiresAt]];
     }];
-}
-
-#pragma mark - Apply Remote Configuration
-
-- (void)becomeConsistentWithDisappearingDuration:(uint32_t)duration
-                                          thread:(TSThread *)thread
-                        createdByRemoteRecipient:(nullable SignalServiceAddress *)remoteRecipient
-                          createdInExistingGroup:(BOOL)createdInExistingGroup
-                                     transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(thread);
-    OWSAssertDebug(transaction);
-
-    if (thread.isGroupV2Thread) {
-        // v2 groups update disappearing messages state like other
-        // group state.
-        return;
-    }
-
-    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
-    NSString *_Nullable remoteContactName = nil;
-    if (remoteRecipient.isValid) {
-        remoteContactName = [self.contactsManager displayNameForAddress:remoteRecipient transaction:transaction];
-    }
-
-    // Become eventually consistent in the case that the remote changed their settings at the same time.
-    // Also in case remote doesn't support expiring messages
-    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-        [thread disappearingMessagesConfigurationWithTransaction:transaction];
-
-    if (duration == 0) {
-        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
-    } else {
-        disappearingMessagesConfiguration =
-            [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:duration];
-    }
-
-    if (![disappearingMessagesConfiguration hasChangedWithTransaction:transaction]) {
-        return;
-    }
-
-    OWSLogInfo(@"becoming consistent with disappearing message configuration: %@",
-        disappearingMessagesConfiguration.dictionaryValue);
-
-    [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
-
-    // MJK TODO - should be safe to remove this senderTimestamp
-    OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
-        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                          thread:thread
-                                                                   configuration:disappearingMessagesConfiguration
-                                                             createdByRemoteName:remoteContactName
-                                                          createdInExistingGroup:createdInExistingGroup];
-    [infoMessage anyInsertWithTransaction:transaction];
-
-    OWSAssertDebug(backgroundTask);
-    backgroundTask = nil;
 }
 
 #pragma mark -
