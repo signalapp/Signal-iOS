@@ -36,12 +36,13 @@ public protocol GroupsV2: AnyObject {
 
     func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo
 
-    func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions
+    func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
+                                          ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions
 }
 
 // MARK: -
 
-public protocol GroupsV2Swift {
+public protocol GroupsV2Swift: GroupsV2 {
     func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void>
 
     func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
@@ -259,7 +260,8 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
+    public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
+                                                 ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
         owsFail("Not implemented.")
     }
 }

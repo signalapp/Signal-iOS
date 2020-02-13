@@ -162,23 +162,28 @@ public class GroupsV2Protos {
     // MARK: -
 
     // This method throws if verification fails.
-    public class func parseAndVerifyChangeActionsProto(_ changeProtoData: Data) throws -> GroupsProtoGroupChangeActions {
+    public class func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
+                                                       ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
         let changeProto = try GroupsProtoGroupChange.parseData(changeProtoData)
-        return try parseAndVerifyChangeActionsProto(changeProto)
+        return try parseAndVerifyChangeActionsProto(changeProto,
+                                                    ignoreSignature: ignoreSignature)
     }
 
     // This method throws if verification fails.
-    public class func parseAndVerifyChangeActionsProto(_ changeProto: GroupsProtoGroupChange) throws -> GroupsProtoGroupChangeActions {
-        guard let serverSignatureData = changeProto.serverSignature else {
-            throw OWSAssertionError("Missing serverSignature.")
-        }
-        let serverSignature = try NotarySignature(contents: [UInt8](serverSignatureData))
+    public class func parseAndVerifyChangeActionsProto(_ changeProto: GroupsProtoGroupChange,
+                                                       ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
         guard let changeActionsProtoData = changeProto.actions else {
             throw OWSAssertionError("Missing changeActionsProtoData.")
         }
-        let serverPublicParams = try self.serverPublicParams()
-        try serverPublicParams.verifySignature(message: [UInt8](changeActionsProtoData),
-                                               notarySignature: serverSignature)
+        if !ignoreSignature {
+            guard let serverSignatureData = changeProto.serverSignature else {
+                throw OWSAssertionError("Missing serverSignature.")
+            }
+            let serverSignature = try NotarySignature(contents: [UInt8](serverSignatureData))
+            let serverPublicParams = try self.serverPublicParams()
+            try serverPublicParams.verifySignature(message: [UInt8](changeActionsProtoData),
+                                                   notarySignature: serverSignature)
+        }
         let changeActionsProto = try GroupsProtoGroupChangeActions.parseData(changeActionsProtoData)
         return changeActionsProto
     }
@@ -320,7 +325,7 @@ public class GroupsV2Protos {
             guard let changeProto = changeStateProto.groupChange else {
                 throw OWSAssertionError("Missing groupChange proto.")
             }
-            let changeActionsProto: GroupsProtoGroupChangeActions = try parseAndVerifyChangeActionsProto(changeProto)
+            let changeActionsProto: GroupsProtoGroupChangeActions = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: true)
             result.append(GroupV2Change(snapshot: snapshot, changeActionsProto: changeActionsProto))
         }
         return result

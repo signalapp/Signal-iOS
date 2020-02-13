@@ -29,9 +29,11 @@ public extension UpdateGroupViewController {
         let groupId = oldGroupModel.groupId
         // GroupsV2 TODO: handle membership, access, etc. in this view.
         let groupMembership: GroupMembership
+        let groupAccess: GroupAccess
         switch oldGroupModel.groupsVersion {
         case .V1:
             groupMembership = GroupMembership(v1Members: v1Members)
+            groupAccess = GroupAccess.forV1
         case .V2:
             // GroupsV2 TODO: This is a temporary implementation until we
             // rewrite groups v2 to be aware of roles.  For now, new users
@@ -52,9 +54,9 @@ public extension UpdateGroupViewController {
             // GroupsV2 TODO: Remove members, change roles, etc. when
             // UI supports pending members, kicking members, etc..
             groupMembership = groupMembershipBuilder.build()
+            groupAccess = oldGroupModel.groupAccess
         }
 
-        let groupAccess = GroupAccess.forV1
         let groupsVersion = oldGroupModel.groupsVersion
 
         guard let localAddress = tsAccountManager.localAddress else {

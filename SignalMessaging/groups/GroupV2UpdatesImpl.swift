@@ -422,6 +422,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
             var groupThread = oldGroupThread
 
+            if groupChanges.count < 1 {
+                owsFailDebug("No group changes.")
+            }
+
             for groupChange in groupChanges {
                 let changeRevision = groupChange.snapshot.revision
                 if let upToRevision = upToRevision {
