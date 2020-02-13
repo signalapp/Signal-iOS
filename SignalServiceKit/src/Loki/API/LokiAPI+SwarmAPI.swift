@@ -137,6 +137,8 @@ internal extension Promise {
                         LokiAPI.randomSnodePool.remove(target) // Remove it from the random snode pool
                         LokiAPI.failureCount[target] = 0
                     }
+                case 406:
+                    break // TODO: Handle clock out of sync
                 case 421:
                     // The snode isn't associated with the given public key anymore
                     print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")

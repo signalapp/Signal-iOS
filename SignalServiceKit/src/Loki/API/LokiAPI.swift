@@ -21,7 +21,7 @@ public final class LokiAPI : NSObject {
     private static var userIDScanLimit: UInt = 4096
     internal static var powDifficulty: UInt = 4
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
-    public static let deviceLinkUpdateInterval: TimeInterval = 60
+    public static let deviceLinkUpdateInterval: TimeInterval = 20
     
     // MARK: Types
     public typealias RawResponse = Any
