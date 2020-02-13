@@ -43,6 +43,14 @@ public struct StorageService {
                 return statusCode >= 500
             }
         }
+
+        public var errorUserInfo: [String: Any] {
+            var userInfo: [String: Any] = [OWSOperationIsRetryableKey: self.isRetryable]
+            if case .networkError(_, let underlyingError) = self {
+                userInfo[NSUnderlyingErrorKey] = underlyingError
+            }
+            return userInfo
+        }
     }
 
     /// An identifier representing a given storage item.
