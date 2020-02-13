@@ -165,8 +165,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         let oldAccess = oldGroupModel.groupAccess
         let newAccess = newGroupModel.groupAccess
-        if oldAccess.member != newAccess.member {
-            self.accessForMembers = newAccess.member
+        if oldAccess.members != newAccess.members {
+            self.accessForMembers = newAccess.members
         }
         if oldAccess.attributes != newAccess.attributes {
             self.accessForAttributes = newAccess.attributes
@@ -408,7 +408,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         let currentAccess = currentGroupModel.groupAccess
         if let access = self.accessForMembers {
-            if currentAccess.member != access {
+            if currentAccess.members != access {
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.builder()
                 actionBuilder.setMembersAccess(GroupAccess.protoAccess(forGroupV2Access: access))
                 actionsBuilder.setModifyMemberAccess(try actionBuilder.build())

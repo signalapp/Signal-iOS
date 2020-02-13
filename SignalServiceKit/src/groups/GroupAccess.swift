@@ -32,13 +32,13 @@ public enum GroupV2Access: UInt, Codable {
 @objc
 public class GroupAccess: MTLModel {
     @objc
-    public var member: GroupV2Access = .unknown
+    public var members: GroupV2Access = .unknown
     @objc
     public var attributes: GroupV2Access = .unknown
 
-    public init(member: GroupV2Access,
+    public init(members: GroupV2Access,
                 attributes: GroupV2Access) {
-        self.member = member
+        self.members = members
         self.attributes = attributes
 
         super.init()
@@ -61,7 +61,7 @@ public class GroupAccess: MTLModel {
 
     @objc
     public static var allAccess: GroupAccess {
-        return GroupAccess(member: .any, attributes: .any)
+        return GroupAccess(members: .any, attributes: .any)
     }
 
     @objc
@@ -71,7 +71,7 @@ public class GroupAccess: MTLModel {
 
     @objc
     public static var defaultForV2: GroupAccess {
-        return GroupAccess(member: .member, attributes: .member)
+        return GroupAccess(members: .member, attributes: .member)
     }
 
     public class func groupV2Access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
@@ -101,6 +101,6 @@ public class GroupAccess: MTLModel {
     }
 
     public override var debugDescription: String {
-        return "[members: \(member.description), attributes: \(attributes.description), ]"
+        return "[members: \(members.description), attributes: \(attributes.description), ]"
     }
 }
