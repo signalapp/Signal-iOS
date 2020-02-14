@@ -150,7 +150,7 @@ public struct StorageService {
         newItems: [StorageItem],
         deletedIdentifiers: [StorageIdentifier]
     ) -> Promise<StorageServiceProtoManifestRecord?> {
-        Logger.info("")
+        Logger.info("newItems: \(newItems.count), deletedIdentifiers: \(deletedIdentifiers.count)")
 
         return DispatchQueue.global().async(.promise) {
             let builder = StorageServiceProtoWriteOperation.builder()
@@ -218,6 +218,7 @@ public struct StorageService {
     /// The response will include only the items that could be found on the service
     public static func fetchItems(for keys: [StorageIdentifier]) -> Promise<[StorageItem]> {
         Logger.info("")
+        guard !keys.isEmpty else { return Promise.value([]) }
 
         return DispatchQueue.global().async(.promise) {
             let builder = StorageServiceProtoReadOperation.builder()
