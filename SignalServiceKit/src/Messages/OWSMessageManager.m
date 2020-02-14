@@ -59,6 +59,8 @@
 #import <YapDatabase/YapDatabase.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import "OWSDispatch.h"
+#import "OWSBatchMessageProcessor.h"
+#import "OWSQueues.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -277,6 +279,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(![self isEnvelopeSenderBlocked:envelope]);
 
+    // Loki: Ignore any friend requests that we got before restoration
+    uint64_t restorationTime = [NSNumber numberWithDouble:[OWSPrimaryStorage.sharedManager getRestorationTime]].unsignedLongLongValue;
+    if (envelope.type == SSKProtoEnvelopeTypeFriendRequest && envelope.timestamp < restorationTime * 1000) {
+        [LKLogger print:@"[Loki] Ignoring friend request received before restoration."];
+        return;
+    }
+    
     [self checkForUnknownLinkedDevice:envelope transaction:transaction];
 
     switch (envelope.type) {
@@ -1389,6 +1398,19 @@ NS_ASSUME_NONNULL_BEGIN
     if (dataMessage.group.type == SSKProtoGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
         return nil;
+    }
+
+    dispatch_queue_t messageProcessingQueue = SSKEnvironment.shared.batchMessageProcessor.processingQueue.serialQueue;
+    AssertOnDispatchQueue(messageProcessingQueue);
+    
+    if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source]) {
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [[LKAPI getDestinationsFor:envelope.source inTransaction:transaction].ensureOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^() {
+            dispatch_semaphore_signal(semaphore);
+        }).catchOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(NSError *error) {
+            dispatch_semaphore_signal(semaphore);
+        }) retainUntilComplete];
+        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
     }
 
     if (groupId.length > 0) {

@@ -105,9 +105,17 @@ public final class LokiAPI : NSObject {
     }
     
     public static func getDestinations(for hexEncodedPublicKey: String) -> Promise<[Destination]> {
+        var result: Promise<[Destination]>!
+        storage.dbReadConnection.readWrite { transaction in
+            result = getDestinations(for: hexEncodedPublicKey, in: transaction)
+        }
+        return result
+    }
+    
+    public static func getDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Promise<[Destination]> {
         let (promise, seal) = Promise<[Destination]>.pending()
-        func getDestinations() {
-            storage.dbReadConnection.read { transaction in
+        func getDestinations(in transaction: YapDatabaseReadTransaction? = nil) {
+            func getDestinationsInternal(in transaction: YapDatabaseReadTransaction) {
                 var destinations: [Destination] = []
                 let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
                 let masterDestination = Destination(hexEncodedPublicKey: masterHexEncodedPublicKey, kind: .master)
@@ -117,6 +125,13 @@ public final class LokiAPI : NSObject {
                 destinations.append(contentsOf: slaveDestinations)
                 seal.fulfill(destinations)
             }
+            if let transaction = transaction {
+                getDestinationsInternal(in: transaction)
+            } else {
+                storage.dbReadConnection.read { transaction in
+                    getDestinationsInternal(in: transaction)
+                }
+            }
         }
         let timeSinceLastUpdate: TimeInterval
         if let lastDeviceLinkUpdate = lastDeviceLinkUpdate[hexEncodedPublicKey] {
@@ -125,23 +140,21 @@ public final class LokiAPI : NSObject {
             timeSinceLastUpdate = .infinity
         }
         if timeSinceLastUpdate > deviceLinkUpdateInterval {
-            storage.dbReadConnection.read { transaction in
-                let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-                LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done(on: DispatchQueue.global()) { _ in
-                    getDestinations()
+            let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey, in: transaction).done(on: DispatchQueue.global()) { _ in
+                getDestinations()
+                lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
+            }.catch(on: DispatchQueue.global()) { error in
+                if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
+                    // Don't immediately re-fetch in case of failure due to a parsing error
                     lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
-                }.catch(on: DispatchQueue.global()) { error in
-                    if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
-                        // Don't immediately re-fetch in case of failure due to a parsing error
-                        lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
-                        getDestinations()
-                    } else {
-                        seal.reject(error)
-                    }
+                    getDestinations()
+                } else {
+                    seal.reject(error)
                 }
             }
         } else {
-            getDestinations()
+            getDestinations(in: transaction)
         }
         return promise
     }
@@ -202,6 +215,12 @@ public final class LokiAPI : NSObject {
     @objc(getDestinationsFor:)
     public static func objc_getDestinations(for hexEncodedPublicKey: String) -> AnyPromise {
         let promise = getDestinations(for: hexEncodedPublicKey)
+        return AnyPromise.from(promise)
+    }
+    
+    @objc(getDestinationsFor:inTransaction:)
+    public static func objc_getDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+        let promise = getDestinations(for: hexEncodedPublicKey, in: transaction)
         return AnyPromise.from(promise)
     }
     

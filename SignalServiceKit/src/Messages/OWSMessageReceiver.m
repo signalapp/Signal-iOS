@@ -423,6 +423,15 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
             OWSAssertDebug(transaction);
 
+            // Loki: Don't process any messages from ourself
+            ECKeyPair *_Nullable keyPair = OWSIdentityManager.sharedManager.identityKeyPair;
+            if (keyPair && [result.source isEqualToString:keyPair.hexEncodedPublicKey]) {
+                dispatch_async(self.serialQueue, ^{
+                    completion(YES);
+                });
+                return;
+            }
+        
             // We persist the decrypted envelope data in the same transaction within which
             // it was decrypted to prevent data loss.  If the new job isn't persisted,
             // the session state side effects of its decryption are also rolled back.

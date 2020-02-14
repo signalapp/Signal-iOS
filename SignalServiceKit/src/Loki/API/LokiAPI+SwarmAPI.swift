@@ -10,23 +10,9 @@ public extension LokiAPI {
     fileprivate static let failureThreshold = 2
     
     // MARK: Caching
+    internal static var swarmCache: [String:[LokiAPITarget]] = [:]
     private static let swarmCacheKey = "swarmCacheKey"
     private static let swarmCacheCollection = "swarmCacheCollection"
-    
-    internal static var swarmCache: [String:[LokiAPITarget]] {
-        get {
-            var result: [String:[LokiAPITarget]]? = nil
-            storage.dbReadConnection.read { transaction in
-                result = transaction.object(forKey: swarmCacheKey, inCollection: swarmCacheCollection) as! [String:[LokiAPITarget]]?
-            }
-            return result ?? [:]
-        }
-        set {
-            storage.dbReadWriteConnection.readWrite { transaction in
-                transaction.setObject(newValue, forKey: swarmCacheKey, inCollection: swarmCacheCollection)
-            }
-        }
-    }
     
     internal static func dropIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
         let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]
