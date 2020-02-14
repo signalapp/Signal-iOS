@@ -1,7 +1,5 @@
 import PromiseKit
 
-extension String : Error { }
-
 public extension LokiAPI {
     
     fileprivate static var failureCount: [LokiAPITarget:UInt] = [:]
@@ -67,7 +65,7 @@ public extension LokiAPI {
             print("[Loki] Invoking get_n_service_nodes on \(target).")
             return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { intermediate in
                 let rawResponse = intermediate.responseObject
-                guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }
+                guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }
                 randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
                     guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, let idKey = rawTarget["pubkey_ed25519"] as? String, let encryptionKey = rawTarget["pubkey_x25519"] as? String, address != "0.0.0.0" else {
                         print("[Loki] Failed to parse target from: \(rawTarget).")
@@ -138,7 +136,8 @@ internal extension Promise {
                         LokiAPI.failureCount[target] = 0
                     }
                 case 406:
-                    break // TODO: Handle clock out of sync
+                    print("[Loki] The user's clock is out of sync with the service node network.")
+                    throw LokiAPI.LokiAPIError.clockOutOfSync
                 case 421:
                     // The snode isn't associated with the given public key anymore
                     print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")

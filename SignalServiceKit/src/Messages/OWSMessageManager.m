@@ -1754,7 +1754,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NSLog(@"[Loki] Ignoring friend request in group chat.", @"");
     }
     if (envelope.type != SSKProtoEnvelopeTypeFriendRequest) {
-        return NSLog(@"[Loki] handleFriendRequestMessageIfNeededWithEnvelope:data:message:thread:transaction was called with an envelope that isn't of type SSKProtoEnvelopeTypeFriendRequest.");
+        return NSLog(@"[Loki] Ignoring friend request logic for non friend request type envelope.");
     }
     if ([self canFriendRequestBeAutoAcceptedForThread:thread transaction:transaction]) {
         [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];

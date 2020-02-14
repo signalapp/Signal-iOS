@@ -1245,7 +1245,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
     
     void (^failedMessageSend)(NSError *error) = ^(NSError *error) {
-        // Handle the error
         NSUInteger statusCode = 0;
         NSData *_Nullable responseData = nil;
         if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
@@ -1256,9 +1255,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             } else {
                 OWSFailDebug(@"Missing underlying error: %@.", error);
             }
-        } else {
-            // TODO: Re-enable?
-            // OWSFailDebug(@"Unexpected error: %@.", error);
         }
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
@@ -1502,7 +1498,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     switch (statusCode) {
         case 0: { // Loki
-            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+            NSError *error;
+            if ([responseError isKindOfClass:LokiAPIError.class] || [responseError isKindOfClass:LokiDotNetAPIError.class] || [responseError isKindOfClass:DiffieHellmanError.class]) {
+                error = responseError;
+            } else {
+                error = OWSErrorMakeFailedToSendOutgoingMessageError();
+            }
             [error setIsRetryable:NO];
             return messageSend.failure(error);
         }

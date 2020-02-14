@@ -196,7 +196,7 @@ public final class LokiPublicChatPoller : NSObject {
                             LokiAPI.lastDeviceLinkUpdate[$0] = Date()
                         }
                     }.catch(on: DispatchQueue.global()) { error in
-                        if (error as? LokiDotNetAPI.Error) == LokiDotNetAPI.Error.parsingFailed {
+                        if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
                             // Don't immediately re-fetch in case of failure due to a parsing error
                             hexEncodedPublicKeysToUpdate.forEach {
                                 LokiAPI.lastDeviceLinkUpdate[$0] = Date()
