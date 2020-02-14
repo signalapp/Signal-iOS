@@ -35,6 +35,10 @@ public class AccountManager: NSObject {
         return SSKEnvironment.shared.accountServiceClient
     }
 
+    private var storageServiceManager: StorageServiceManagerProtocol {
+        return SSKEnvironment.shared.storageServiceManager
+    }
+
     private var deviceService: DeviceService {
         return DeviceService.shared
     }
@@ -179,7 +183,7 @@ public class AccountManager: NSObject {
         }.then { _ -> Promise<Void> in
             BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
             return firstly {
-                StorageServiceManager.shared.restoreOrCreateManifestIfNecessary().asVoid()
+                self.storageServiceManager.restoreOrCreateManifestIfNecessary().asVoid()
             }.done {
                 // In the case that we restored our profile from a previous registration,
                 // re-upload it so that the user does not need to refill in all the details.

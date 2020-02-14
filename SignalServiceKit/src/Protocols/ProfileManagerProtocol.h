@@ -14,6 +14,16 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ProfileManagerProtocol <NSObject>
 
 - (OWSAES256Key *)localProfileKey;
+// localUserProfileExists is true if there is _ANY_ local profile.
+- (BOOL)localProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
+// hasLocalProfile is true if there is a local profile with a name or avatar.
+- (BOOL)hasLocalProfile;
+- (nullable NSString *)localGivenName;
+- (nullable NSString *)localFamilyName;
+- (nullable NSString *)localFullName;
+- (nullable NSString *)localUsername;
+- (nullable UIImage *)localProfileAvatarImage;
+- (nullable NSData *)localProfileAvatarData;
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction;

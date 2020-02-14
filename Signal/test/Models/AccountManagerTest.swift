@@ -44,9 +44,6 @@ class VerifyingTSAccountManager: FailingTSAccountManager {
         successBlock(nil)
     }
 
-    override func performUpdateAccountAttributes() -> Promise<Void> {
-        return Promise.value(())
-    }
 }
 
 class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
