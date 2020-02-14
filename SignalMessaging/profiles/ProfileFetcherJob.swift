@@ -272,7 +272,7 @@ public class ProfileFetcherJob: NSObject {
                     return
                 default:
                     guard remainingRetries > 0 else {
-                        owsFailDebug("failed to get profile with error: \(error)")
+                        Logger.warn("failed to get profile with error: \(error)")
                         resolver.reject(error)
                         return
                     }
