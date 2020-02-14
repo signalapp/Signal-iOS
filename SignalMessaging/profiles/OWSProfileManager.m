@@ -396,6 +396,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         nameComponents.givenName = givenName;
         nameComponents.familyName = familyName;
         NSData *_Nullable encryptedPaddedName = [self encryptLocalProfileNameComponents:nameComponents];
+        if (encryptedPaddedName == nil) {
+            failureBlock(OWSErrorMakeAssertionError(@"encryptedPaddedName was unexpectedly nil"));
+        }
 
         TSRequest *request = [OWSRequestFactory profileNameSetRequestWithEncryptedPaddedName:encryptedPaddedName];
         [self.networkManager makeRequest:request

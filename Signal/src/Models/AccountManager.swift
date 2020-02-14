@@ -180,13 +180,21 @@ public class AccountManager: NSObject {
             BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
             return firstly {
                 StorageServiceManager.shared.restoreOrCreateManifestIfNecessary().asVoid()
-            }.then {
+            }.done {
                 // In the case that we restored our profile from a previous registration,
                 // re-upload it so that the user does not need to refill in all the details.
                 // Right now the avatar will always be lost since we do not store avatars in
                 // the storage service.
-                self.profileManager.reuploadLocalProfilePromise()
-            }.ensure {
+
+                if self.profileManager.localGivenName() != nil {
+                    // if we don't have a `localGivenName`, there's nothing to upload, and trying
+                    // to upload would fail.
+
+                    // Note we *don't* return this promise. There's no need to block registration on
+                    // it completing, and if there are any errors, it's durable.
+                    self.profileManager.reuploadLocalProfilePromise().retainUntilComplete()
+                }
+
                 BenchEventComplete(eventId: "initial-storage-service-restore")
             }.timeout(seconds: 60)
         }
