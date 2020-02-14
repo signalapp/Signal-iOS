@@ -80,26 +80,42 @@ class GroupsV2ProfileKeyUpdater {
         return groupId.hexadecimalString
     }
 
+    @objc
+    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
+        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            owsFailDebug("Missing groupThread.")
+            return
+        }
+        self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread,
+                                                   transaction: transaction)
+    }
+
     public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
+        TSGroupThread.anyEnumerate(transaction: transaction) { (thread, _) in
+            guard let groupThread = thread as? TSGroupThread else {
+                return
+            }
+            self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread,
+                                                       transaction: transaction)
+        }
+    }
+
+    private func tryToScheduleGroupForProfileKeyUpdate(groupThread: TSGroupThread,
+                                                       transaction: SDSAnyWriteTransaction) {
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("missing local address")
             return
         }
 
-        TSGroupThread.anyEnumerate(transaction: transaction) { (thread, _) in
-            guard let groupThread = thread as? TSGroupThread else {
+        let groupMembership = groupThread.groupModel.groupMembership
+        // We only need to update v2 groups of which we are a full member.
+        guard groupThread.isGroupV2Thread,
+            groupMembership.isNonPendingMember(localAddress) else {
                 return
-            }
-            let groupMembership = groupThread.groupModel.groupMembership
-            // We only need to update v2 groups of which we are a full member.
-            guard groupThread.isGroupV2Thread,
-                groupMembership.isNonPendingMember(localAddress) else {
-                    return
-            }
-            let groupId = groupThread.groupModel.groupId
-            let key = self.key(for: groupId)
-            self.keyValueStore.setData(groupId, key: key, transaction: transaction)
         }
+        let groupId = groupThread.groupModel.groupId
+        let key = self.key(for: groupId)
+        self.keyValueStore.setData(groupId, key: key, transaction: transaction)
     }
 
     @objc

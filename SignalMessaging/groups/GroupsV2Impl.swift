@@ -376,6 +376,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         profileKeyUpdater.processProfileKeyUpdates()
     }
 
+    @objc
+    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
+        profileKeyUpdater.updateLocalProfileKeyInGroup(groupId: groupId, transaction: transaction)
+    }
+
     // MARK: - Disappearing Messages
 
     public func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
