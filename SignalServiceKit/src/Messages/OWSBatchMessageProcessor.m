@@ -237,7 +237,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 #pragma mark - Queue Processing
 
-@interface OWSMessageContentQueue : NSObject
+@interface OWSMessageContentQueue ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageContentJobFinder *finder;
@@ -431,10 +431,8 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
             void (^reportFailure)(YapDatabaseReadWriteTransaction *transaction) = ^(
                 YapDatabaseReadWriteTransaction *transaction) {
-                // TODO: Add analytics.
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                    transaction:transaction];
+                [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage transaction:transaction];
             };
 
             @try {
@@ -449,9 +447,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                                                        serverID:0];
                 }
             } @catch (NSException *exception) {
-//                OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
                 reportFailure(transaction);
             }
+
             [processedJobs addObject:job];
 
             if (self.isAppInBackground) {
@@ -473,7 +471,6 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 @interface OWSBatchMessageProcessor ()
 
-@property (nonatomic, readonly) OWSMessageContentQueue *processingQueue;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
