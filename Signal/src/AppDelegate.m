@@ -1614,7 +1614,7 @@ static NSTimeInterval launchStartedAt;
 
 - (void)createRSSFeedsIfNeeded
 {
-    NSArray *feeds = @[ self.lokiNewsFeed, self.lokiMessengerUpdatesFeed ];
+    NSArray *feeds = @[ /*self.lokiNewsFeed,*/ self.lokiMessengerUpdatesFeed ];
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     for (LKRSSFeed *feed in feeds) {
         NSString *userDefaultsKey = [@"isRSSFeedSetUp." stringByAppendingString:feed.id];
