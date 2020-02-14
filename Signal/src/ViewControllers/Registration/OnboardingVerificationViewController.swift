@@ -406,7 +406,10 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         if let phoneNumber = onboardingController.phoneNumber {
             e164PhoneNumber = phoneNumber.e164
         }
-        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: e164PhoneNumber)
+
+        let formattedPhoneNumber =
+            PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: e164PhoneNumber)
+                .replacingOccurrences(of: " ", with: "\u{00a0}")
 
         // Update titleLabel
         switch codeState {
