@@ -370,7 +370,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.groupNameTextField acceptAutocorrectSuggestion];
 
-    NSString *_Nullable newTitle = self.groupNameTextField.text;
+    NSString *_Nullable newTitle = self.groupNameTextField.text.ows_stripped;
     NSData *_Nullable newAvatarData = self.groupAvatarData;
     NSArray<SignalServiceAddress *> *memberList = [self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
         OWSAssertDebug(recipient.address.isValid);
