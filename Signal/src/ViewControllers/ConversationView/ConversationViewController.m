@@ -136,6 +136,8 @@ typedef enum : NSUInteger {
     ForwardMessageDelegate>
 
 @property (nonatomic) TSThread *thread;
+@property (nonatomic) ThreadViewModel *threadViewModel;
+
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
@@ -483,6 +485,10 @@ typedef enum : NSUInteger {
     OWSLogInfo(@"configureForThread.");
 
     _thread = thread;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        self->_threadViewModel = [[ThreadViewModel alloc] initWithThread:thread transaction:transaction];
+    }];
+
     self.actionOnOpen = action;
     _cellMediaCache = [NSCache new];
     // Cache the cell media for ~24 cells.
@@ -748,7 +754,9 @@ typedef enum : NSUInteger {
     // unless it ever becomes possible to load this VC without going via the ConversationListViewController.
     [self.contactsManager requestSystemContactsOnce];
 
-    [self updateDisappearingMessagesConfigurationWithSneakyTransaction];
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
+    }];
 
     [self updateBarButtonItems];
     [self updateNavigationTitle];
@@ -1683,13 +1691,7 @@ typedef enum : NSUInteger {
         return NO;
     }
 
-    __block BOOL hasPendingMessageRequest;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasPendingMessageRequest = [AnyThreadFinder hasPendingMessageRequestWithThread:contactThread
-                                                                           transaction:transaction];
-    }];
-
-    if (hasPendingMessageRequest) {
+    if (self.threadViewModel.hasPendingMessageRequest) {
         return NO;
     }
 
@@ -1845,13 +1847,6 @@ typedef enum : NSUInteger {
     if (valueChanged) {
         [self resetContentAndLayoutWithTransaction:transaction];
     }
-}
-
-- (void)updateDisappearingMessagesConfigurationWithSneakyTransaction
-{
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
-    }];
 }
 
 - (void)updateDisappearingMessagesConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -4985,9 +4980,11 @@ typedef enum : NSUInteger {
         // viewWillAppear will call resetContentAndLayout.
         return;
     }
-
+    [self.thread anyReloadWithTransaction:transaction];
+    self.threadViewModel = [[ThreadViewModel alloc] initWithThread:self.thread transaction:transaction];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
+    [self updateBarButtonItems];
 
     // If the message has been deleted / disappeared, we need to dismiss
     [self dismissMessageActionsIfNecessary];
@@ -4995,7 +4992,6 @@ typedef enum : NSUInteger {
     [self reloadReactionsDetailSheetWithTransaction:transaction];
 
     if (self.isGroupConversation) {
-        [self.thread anyReloadWithTransaction:transaction];
         [self updateNavigationTitle];
     }
     [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
