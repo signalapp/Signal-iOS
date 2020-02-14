@@ -36,6 +36,10 @@ class GroupsV2ProfileKeyUpdater {
         return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
+    private var messageProcessing: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
+    }
+
     // MARK: -
 
     var reachability: Reachability?
@@ -227,11 +231,15 @@ class GroupsV2ProfileKeyUpdater {
             return Promise(error: GroupsV2Error.shouldDiscard)
         }
 
-        return databaseStorage.read(.promise) { transaction in
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                throw GroupsV2Error.shouldDiscard
+        return firstly {
+            self.messageProcessing.allMessageFetchingAndProcessingPromise()
+        }.map(on: .global()) { () throws -> TSGroupThread in
+            return try self.databaseStorage.read { transaction in
+                guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                    throw GroupsV2Error.shouldDiscard
+                }
+                return groupThread
             }
-            return groupThread
         }.then(on: .global()) { (groupThread: TSGroupThread) throws -> Promise<TSGroupThread> in
             // Get latest group state from service and verify that this update is still necessary.
             return firstly {
