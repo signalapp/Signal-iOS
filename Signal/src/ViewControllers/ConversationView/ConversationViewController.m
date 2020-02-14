@@ -1674,12 +1674,26 @@ typedef enum : NSUInteger {
         return NO;
     }
 
-    TSContactThread *_Nullable contactThread;
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        contactThread = (TSContactThread *)self.thread;
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        return NO;
     }
 
-    return !(self.isGroupConversation || contactThread.contactAddress.isLocalAddress);
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    if (contactThread.isNoteToSelf) {
+        return NO;
+    }
+
+    __block BOOL hasPendingMessageRequest;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        hasPendingMessageRequest = [AnyThreadFinder hasPendingMessageRequestWithThread:contactThread
+                                                                           transaction:transaction];
+    }];
+
+    if (hasPendingMessageRequest) {
+        return NO;
+    }
+
+    return YES;
 }
 
 #pragma mark - Dynamic Text
