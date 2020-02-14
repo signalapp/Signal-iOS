@@ -456,7 +456,7 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
             // members who's test devices are constantly reinstalled. We could add a
             // purpose-built DB view, but I think in the real world this is rare to be a
             // hotspot.
-            if (missedCount > 50) {
+            if missedCount > 50 {
                 Logger.warn("found last interaction for inbox after skipping \(missedCount) items")
             }
         }
@@ -1067,6 +1067,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) IN (\(sqlInteractionTypes))
+            OR (
+                \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+                AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
+            )
             LIMIT 1
         )
         """
