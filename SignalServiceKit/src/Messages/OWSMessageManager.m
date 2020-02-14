@@ -1035,6 +1035,7 @@ NS_ASSUME_NONNULL_BEGIN
             // acceptable.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [[self.syncManager syncAllContacts] retainUntilComplete];
+                [[self.syncManager syncAllGroups] retainUntilComplete];
             });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
@@ -1090,6 +1091,7 @@ NS_ASSUME_NONNULL_BEGIN
 //                            [messageSender sendMessage:automatedFriendRequestMessage];
 //                        });
                         LKFriendRequestMessage *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey inThread:thread transaction:transaction];
+                        [automatedFriendRequestMessage saveWithTransaction:transaction];
                         [self.messageSenderJobQueue addMessage:automatedFriendRequestMessage transaction:transaction];
                         break;
                     }
@@ -1113,7 +1115,7 @@ NS_ASSUME_NONNULL_BEGIN
             for (TSGroupModel *groupModel in groupModels) {
                 TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
                 //TODO: Join the group and send update group information
-                [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
+//                [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
             }
         }
     } else {
