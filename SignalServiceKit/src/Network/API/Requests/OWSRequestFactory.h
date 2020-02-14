@@ -168,7 +168,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 #pragma mark - Profiles
 
-+ (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(nullable NSData *)encryptedPaddedName;
++ (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(NSData *)encryptedPaddedName;
 
 + (TSRequest *)versionedProfileSetRequestWithName:(nullable NSData *)name
                                         hasAvatar:(BOOL)hasAvatar
