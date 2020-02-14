@@ -131,6 +131,7 @@ class ConversationViewItemActions: NSObject {
         var actions: [MenuAction] = []
 
         let isGroup = conversationViewItem.isGroupThread;
+        let isRSSFeed = conversationViewItem.isRSSFeed;
         
         if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
@@ -146,6 +147,11 @@ class ConversationViewItemActions: NSObject {
                 let saveMediaAction = MessageActionBuilder.saveMedia(conversationViewItem: conversationViewItem, delegate: delegate)
                 actions.append(saveMediaAction)
             }
+        }
+        
+        if isGroup && !isRSSFeed && conversationViewItem.interaction is TSIncomingMessage {
+            let copyPublicKeyAction = MessageActionBuilder.copyPublicKey(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(copyPublicKeyAction)
         }
 
         if !isGroup || conversationViewItem.userCanDeleteGroupMessage {
