@@ -2296,11 +2296,30 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewCellDelegate
 
+- (BOOL)conversationCell:(ConversationViewCell *)cell shouldAllowReplyForItem:(nonnull id<ConversationViewItem>)viewItem
+{
+    if (self.threadViewModel.hasPendingMessageRequest) {
+        return NO;
+    }
+
+    if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
+            // Don't allow "delete" or "reply" on "failed" outgoing messages.
+            return NO;
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
+            // Don't allow "delete" or "reply" on "sending" outgoing messages.
+            return NO;
+        }
+    }
+
+    return YES;
+}
+
 - (void)conversationCell:(ConversationViewCell *)cell
-             shouldAllowReply:(BOOL)shouldAllowReplyParam
+             shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem
 {
-    BOOL shouldAllowReply = shouldAllowReplyParam && !self.threadViewModel.hasPendingMessageRequest;
     NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem
                                                          shouldAllowReply:shouldAllowReply
@@ -2309,10 +2328,9 @@ typedef enum : NSUInteger {
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell
-            shouldAllowReply:(BOOL)shouldAllowReplyParam
+            shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressTextViewItem:(id<ConversationViewItem>)viewItem
 {
-    BOOL shouldAllowReply = shouldAllowReplyParam && !self.threadViewModel.hasPendingMessageRequest;
     NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions textActionsWithConversationViewItem:viewItem
                                                         shouldAllowReply:shouldAllowReply
@@ -2321,10 +2339,9 @@ typedef enum : NSUInteger {
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell
-             shouldAllowReply:(BOOL)shouldAllowReplyParam
+             shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem
 {
-    BOOL shouldAllowReply = shouldAllowReplyParam && !self.threadViewModel.hasPendingMessageRequest;
     NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions quotedMessageActionsWithConversationViewItem:viewItem
                                                                  shouldAllowReply:shouldAllowReply
@@ -2340,10 +2357,11 @@ typedef enum : NSUInteger {
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressSticker:(id<ConversationViewItem>)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell
+        shouldAllowReply:(BOOL)shouldAllowReply
+     didLongpressSticker:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
-    BOOL shouldAllowReply = !self.threadViewModel.hasPendingMessageRequest;
     NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem
                                                          shouldAllowReply:shouldAllowReply
