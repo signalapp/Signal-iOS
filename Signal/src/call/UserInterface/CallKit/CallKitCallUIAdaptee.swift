@@ -53,6 +53,29 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         providerConfiguration.supportsVideo = true
 
+        // Default maximumCallGroups is 2. We previously overrode this value to be 1.
+        //
+        // The terminology can be confusing. Even though we don't currently support "group calls"
+        // *every* call is in a call group. Our call groups all just happen to be "groups" with 1
+        // call in them.
+        //
+        // maximumCallGroups is limits how many different calls CallKit can know about at one time.
+        // Exceeding this limit will cause CallKit to error when reporting an additional call when
+        // it already knows about the maximumCallGroups.
+        //
+        // Generally for us, the number of call groups is 1 or 0, *however* when handling a rapid
+        // sequence of offers and hangups, due to the async nature of CXTransactions, there can
+        // be a brief moment where the old limit of 1 caused CallKit to fail the newly reported
+        // call, even though we were properly requesting hangup of the old call before reporting the
+        // new incoming call.
+        //
+        // Specifically after 10 or so rapid fire call/hangup/call/hangup, eventually an incoming
+        // call would fail to report due to CXErrorCodeRequestTransactionErrorMaximumCallGroupsReached
+        //
+        // ...so that's why we no longer use the non-default value of 1, which I assume was only ever
+        // set to 1 out of confusion.
+        // providerConfiguration.maximumCallGroups = 1
+
         providerConfiguration.maximumCallsPerCallGroup = 1
 
         providerConfiguration.supportedHandleTypes = [.phoneNumber, .generic]
