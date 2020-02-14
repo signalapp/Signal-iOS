@@ -1789,7 +1789,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (thread.friendRequestStatus == LKThreadFriendRequestStatusNone) { return; }
     // Become happy friends and go on great adventures
     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
-    TSOutgoingMessage *existingFriendRequestMessage = [thread.lastInteraction as:TSOutgoingMessage.class];
+    TSOutgoingMessage *existingFriendRequestMessage = [[thread getLastInteractionWithTransaction:transaction] as:TSOutgoingMessage.class];
     if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
         [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
     }

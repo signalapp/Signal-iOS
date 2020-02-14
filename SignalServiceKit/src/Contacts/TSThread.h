@@ -216,6 +216,8 @@ typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
  */
 - (void)removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+- (TSInteraction *)getLastInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END
