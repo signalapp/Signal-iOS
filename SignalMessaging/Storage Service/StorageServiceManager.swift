@@ -165,6 +165,12 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: -
 
+    override var description: String {
+        return "StorageServiceOperation.\(mode)"
+    }
+
+    // MARK: -
+
     // We only ever want to be doing one storage operation at a time.
     // Pending updates queued up after a backup operation will not get
     // applied until the following backup. This allows us to be certain
