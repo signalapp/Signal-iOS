@@ -123,7 +123,7 @@ class GroupsV2ProfileKeyUpdater {
         tryToUpdateNext()
     }
 
-    private let serialQueue = DispatchQueue(label: "SystemContactsFetcherQueue", qos: .background)
+    private let serialQueue = DispatchQueue(label: "GroupsV2ProfileKeyUpdater", qos: .background)
 
     // This property should only be accessed on serialQueue.
     private var isUpdating = false
