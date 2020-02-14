@@ -336,7 +336,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     }
     
     NSString *recipientId = envelope.source;
-    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId identityKeyStore:self.identityManager];
+    ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
+    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId privateKey:identityKeyPair.privateKey];
     
     NSData *_Nullable plaintextData = [[cipher decryptWithMessage:encryptedData] removePadding];
     if (!plaintextData) {
