@@ -1086,12 +1086,7 @@ NS_ASSUME_NONNULL_BEGIN
                 switch (friendRequestStatus) {
                     case LKThreadFriendRequestStatusNone: {
                         OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-//                        OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey];
-//                        dispatch_async(OWSDispatch.sendingQueue, ^{
-//                            [messageSender sendMessage:automatedFriendRequestMessage];
-//                        });
                         LKFriendRequestMessage *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey inThread:thread transaction:transaction];
-                        [automatedFriendRequestMessage saveWithTransaction:transaction];
                         [self.messageSenderJobQueue addMessage:automatedFriendRequestMessage transaction:transaction];
                         break;
                     }

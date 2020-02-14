@@ -958,6 +958,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Please accept to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]
            expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
     message.skipSave = YES;
+    [message saveWithTransaction:transaction];
     return message;
 }
 
