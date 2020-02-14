@@ -177,7 +177,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
         // Ensure all blocked messages are discarded.
         if ([self isEnvelopeSenderBlocked:envelope]) {
-            OWSLogInfo(@"Ignoring blocked envelope: %@", envelope.source);
+            OWSLogInfo(@"Ignoring blocked envelope from: %@.", envelope.source);
             return failureBlock();
         }
 
@@ -195,21 +195,21 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     };
 
     @try {
-        OWSLogInfo(@"decrypting envelope: %@", [self descriptionForEnvelope:envelope]);
+        OWSLogInfo(@"Decrypting envelope: %@.", [self descriptionForEnvelope:envelope]);
 
         if (envelope.type != SSKProtoEnvelopeTypeUnidentifiedSender) {
             if (!envelope.hasSource || envelope.source.length < 1 || ![ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source]) {
-                OWSFailDebug(@"incoming envelope has invalid source");
+                OWSFailDebug(@"Incoming envelope with invalid source.");
                 return failureBlock();
             }
             if (!envelope.hasSourceDevice || envelope.sourceDevice < 1) {
-                OWSFailDebug(@"incoming envelope has invalid source device");
+                OWSFailDebug(@"Incoming envelope with invalid source device.");
                 return failureBlock();
             }
 
             // We block UD messages later, after they are decrypted.
             if ([self isEnvelopeSenderBlocked:envelope]) {
-                OWSLogInfo(@"ignoring blocked envelope: %@", envelope.source);
+                OWSLogInfo(@"Ignoring blocked envelope from: %@.", envelope.source);
                 return failureBlock();
             }
         }
@@ -224,7 +224,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                              successBlock(result, transaction);
                          }
                          failureBlock:^(NSError * _Nullable error) {
-                             OWSLogError(@"Decrypting friend request message from address: %@ failed with error: %@.",
+                             OWSLogError(@"Decrypting friend request message from: %@ failed with error: %@.",
                                 envelopeAddress(envelope),
                                 error);
                              failureBlock();
@@ -237,11 +237,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 [self throws_decryptSecureMessage:envelope
                     envelopeData:envelopeData
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
-                        OWSLogDebug(@"decrypted secure message.");
+                        OWSLogDebug(@"Decrypted secure message.");
                         successBlock(result, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
-                        OWSLogError(@"decrypting secure message from address: %@ failed with error: %@",
+                        OWSLogError(@"Decrypting secure message from: %@ failed with error: %@.",
                             envelopeAddress(envelope),
                             error);
                         OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandleSecureMessage]);
@@ -254,12 +254,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 [self throws_decryptPreKeyBundle:envelope
                     envelopeData:envelopeData
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
-                        OWSLogDebug(@"decrypted pre-key whisper message");
+                        OWSLogDebug(@"Decrypted pre key bundle message.");
                         successBlock(result, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
-                        OWSLogError(@"decrypting pre-key whisper message from address: %@ failed "
-                                    @"with error: %@",
+                        OWSLogError(@"Decrypting pre key bundle message from: %@ failed with error: %@.",
                             envelopeAddress(envelope),
                             error);
                         OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandlePrekeyBundle]);
@@ -287,12 +286,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             case SSKProtoEnvelopeTypeUnidentifiedSender: {
                 [self decryptUnidentifiedSender:envelope
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
-                        OWSLogDebug(@"decrypted unidentified sender message");
+                        OWSLogDebug(@"Decrypted unidentified sender message.");
                         successBlock(result, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
-                        OWSLogError(@"decrypting unidentified sender message from address: %@ failed "
-                                    @"with error: %@",
+                        OWSLogError(@"Decrypting unidentified sender message from: %@ failed with error: %@.",
                             envelopeAddress(envelope),
                             error);
                         OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandleUnidentifiedSenderMessage]);
@@ -302,11 +300,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
             default:
-                OWSLogWarn(@"Received unhandled envelope type: %d", (int)envelope.type);
+                OWSLogWarn(@"Received unhandled envelope type: %d.", (int)envelope.type);
                 break;
         }
     } @catch (NSException *exception) {
-        OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
+        OWSFailDebug(@"Received an invalid envelope: %@.", exception.debugDescription);
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
 
         [[self.primaryStorage newDatabaseConnection]
@@ -342,7 +340,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     
     NSData *_Nullable plaintextData = [[cipher decryptWithMessage:encryptedData] removePadding];
     if (!plaintextData) {
-        NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message for: %@.", recipientId];
+        NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message from: %@.", recipientId];
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorString);
         return failureBlock(error);
     }
@@ -419,7 +417,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     NSData *encryptedData = envelope.content ?: envelope.legacyMessage;
     if (!encryptedData) {
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, @"Envelope has no content");
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, @"Envelope has no content.");
         return failureBlock(error);
     }
 
@@ -435,15 +433,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                                            deviceId:deviceId];
 
                 // plaintextData may be nil for some envelope types.
-                NSData *_Nullable plaintextData =
-                    [[cipher throws_lokiDecrypt:cipherMessage protocolContext:transaction] removePadding];
-                
-                /* Loki: Original code
-                 * ================
-                NSData *_Nullable plaintextData =
-                    [[cipher throws_decrypt:cipherMessage protocolContext:transaction] removePadding];
-                 * ================
-                 */
+                NSData *_Nullable plaintextData = [[cipher throws_lokiDecrypt:cipherMessage protocolContext:transaction] removePadding];
+
                 OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                                                     plaintextData:plaintextData
                                                                                            source:envelope.source
@@ -454,7 +445,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     [self processException:exception envelope:envelope];
                     NSString *errorDescription = [NSString
-                        stringWithFormat:@"Exception while decrypting %@: %@", cipherTypeName, exception.description];
+                        stringWithFormat:@"Exception while decrypting %@: %@.", cipherTypeName, exception.description];
                     OWSLogError(@"%@", errorDescription);
                     NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
                     failureBlock(error);
@@ -497,8 +488,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                    identityStore:self.identityManager
                                                            error:&cipherError];
         if (cipherError || !cipher) {
-            OWSFailDebug(@"Could not create secret session cipher: %@", cipherError);
-            cipherError = EnsureDecryptError(cipherError, @"Could not create secret session cipher");
+            OWSFailDebug(@"Could not create secret session cipher: %@.", cipherError);
+            cipherError = EnsureDecryptError(cipherError, @"Could not create secret session cipher.");
             return failureBlock(cipherError);
         }
 
@@ -514,9 +505,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         if (!decryptResult) {
             if (!decryptError) {
-                OWSFailDebug(@"Caller should provide specific error");
+                OWSFailDebug(@"Caller should provide specific error.");
                 NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeFailedToDecryptUDMessage, @"Could not decrypt UD message");
+                    OWSErrorCodeFailedToDecryptUDMessage, @"Could not decrypt UD message.");
                 return failureBlock(error);
             }
 
@@ -565,7 +556,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     [self processException:underlyingException envelope:identifiedEnvelope];
                     NSString *errorDescription = [NSString
-                        stringWithFormat:@"Exception while decrypting ud message: %@", underlyingException.description];
+                        stringWithFormat:@"Exception while decrypting UD message: %@.", underlyingException.description];
                     OWSLogError(@"%@", errorDescription);
                     NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
                     failureBlock(error);
@@ -580,7 +571,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
 
-            OWSFailDebug(@"Could not decrypt UD message: %@", underlyingError);
+            OWSFailDebug(@"Could not decrypt UD message: %@.", underlyingError);
             failureBlock(underlyingError);
             return;
         }

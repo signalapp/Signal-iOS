@@ -27,9 +27,9 @@ NSString *const kNSNotificationKey_ContactPubKey = @"kNSNotificationKey_ContactP
     // Our state before we decrypt the message
     SessionState *_Nullable state = [self getCurrentState:protocolContext];
     
-    // Loki: Verify incoming friend request messages
+    // Verify incoming friend request messages
     if (!state) {
-        [self throws_verifyFriendRequestAcceptPreKeyForMessage:whisperMessage protocolContext:protocolContext];
+        [self throws_validatePreKeysForFriendRequestAcceptance:whisperMessage protocolContext:protocolContext];
     }
     
     // While decrypting our state may change internally
@@ -132,16 +132,16 @@ NSString *const kNSNotificationKey_ContactPubKey = @"kNSNotificationKey_ContactP
     [self.sessionStore storeSession:self.recipientId deviceId:self.deviceId session:record protocolContext:protocolContext];
 }
 
-/// Check that we have matching prekeys in the case of a `PreKeyWhisperMessage`
-/// This is so that we don't trigger a false friend request accept on unknown contacts
-- (void)throws_verifyFriendRequestAcceptPreKeyForMessage:(id<CipherMessage>)whisperMessage protocolContext:(nullable id)protocolContext {
+/// Check that we have matching pre keys in the case of a `PreKeyWhisperMessage`.
+/// This is so that we don't trigger a false friend request accept on unknown contacts.
+- (void)throws_validatePreKeysForFriendRequestAcceptance:(id<CipherMessage>)whisperMessage protocolContext:(nullable id)protocolContext {
     OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadTransaction class]]);
     YapDatabaseReadTransaction *transaction = protocolContext;
     
-    // We only want to look at `PreKeyWhisperMessage`
+    // Ignore anything that isn't a `PreKeyWhisperMessage`
     if (![whisperMessage isKindOfClass:[PreKeyWhisperMessage class]]) { return; }
 
-    // We need the primary storage to access contact prekeys
+    // Check the pre key store
     if (![self.prekeyStore isKindOfClass:[OWSPrimaryStorage class]]) { return; }
     
     PreKeyWhisperMessage *preKeyMessage = whisperMessage;
@@ -149,11 +149,11 @@ NSString *const kNSNotificationKey_ContactPubKey = @"kNSNotificationKey_ContactP
     
     PreKeyRecord *_Nullable storedPreKey = [primaryStorage getPreKeyForContact:self.recipientId transaction:transaction];
     if (!storedPreKey) {
-        OWSRaiseException(@"LokiInvalidPreKey", @"Received a friend request from a public key for which no prekey bundle was created.");
+        OWSRaiseException(@"Loki", @"Received a friend request from a public key for which no pre key bundle was created.");
     }
     
     if (storedPreKey.Id != preKeyMessage.prekeyID) {
-        OWSRaiseException(@"LokiPreKeyIdsDontMatch", @"Received a PreKeyWhisperMessage (friend request accept) from an unknown source.");
+        OWSRaiseException(@"Loki", @"Received a PreKeyWhisperMessage (friend request accept) from an unknown source.");
     }
 }
 
