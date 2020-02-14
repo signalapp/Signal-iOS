@@ -116,7 +116,6 @@ typedef enum : NSUInteger {
     LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,
-    MessageActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
     OWSMessageStickerViewDelegate,
     OWSMessageViewOnceViewDelegate,
@@ -2082,67 +2081,7 @@ typedef enum : NSUInteger {
     [self.navigationController popToViewController:self animated:YES];
 }
 
-#pragma mark - MessageActionsViewControllerDelegate
-
-- (void)messageActionsViewControllerRequestedDismissal:(MessageActionsViewController *)messageActionsViewController
-                                            withAction:(nullable MessageAction *)action
-{
-    NSString *_Nullable messageActionInteractionId = messageActionsViewController.focusedInteraction.uniqueId;
-    if (messageActionInteractionId == nil) {
-        OWSFailDebug(@"Missing message action interaction.");
-        return;
-    }
-
-    UIView *_Nullable sender;
-    NSNumber *_Nullable interactionIndex
-        = self.conversationViewModel.viewState.interactionIndexMap[messageActionInteractionId];
-    if (interactionIndex) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:interactionIndex.integerValue inSection:0];
-        if ([self.collectionView.indexPathsForVisibleItems containsObject:indexPath]) {
-            UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
-            if ([cell isKindOfClass:[OWSMessageCell class]]) {
-                sender = [(OWSMessageCell *)cell messageView];
-            } else {
-                sender = cell;
-            }
-        }
-    }
-
-    [self dismissMessageActionsAnimated:YES
-                             completion:^{
-                                 if (action) {
-                                     action.block(sender);
-                                 }
-                             }];
-}
-
-- (void)messageActionsViewControllerRequestedDismissal:(MessageActionsViewController *)messageActionsViewController
-                                          withReaction:(NSString *)reaction
-                                            isRemoving:(BOOL)isRemoving
-{
-    [self
-        dismissMessageActionsAnimated:YES
-                           completion:^{
-                               if (![messageActionsViewController.focusedInteraction isKindOfClass:[TSMessage class]]) {
-                                   OWSFailDebug(@"Not sending reaction for unexpected interaction type");
-                                   return;
-                               }
-
-                               TSMessage *message = (TSMessage *)messageActionsViewController.focusedInteraction;
-
-                               [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                   [OWSReactionManager localUserReactedToMessage:message
-                                                                           emoji:reaction
-                                                                      isRemoving:isRemoving
-                                                                     transaction:transaction];
-
-                                   // Mark the reactions experience upgrade complete if the user
-                                   // sends a reaction, even if they didn't dismiss it directly.
-                                   [ExperienceUpgradeManager
-                                       clearReactionsExperienceUpgradeWithTransaction:transaction.unwrapGrdbWrite];
-                               }];
-                           }];
-}
+#pragma mark -
 
 - (void)presentMessageActions:(NSArray<MessageAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -13,12 +13,13 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
     ConversationViewActionVideoCall,
 };
 
-@class TSInteraction;
 @class TSThread;
+@class ThreadViewModel;
 
 @interface ConversationViewController : OWSViewController
 
 @property (nonatomic, readonly) TSThread *thread;
+@property (nonatomic, readonly) ThreadViewModel *threadViewModel;
 
 - (void)configureForThread:(TSThread *)thread
                     action:(ConversationViewAction)action
@@ -42,6 +43,7 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 - (void)openAttachmentKeyboard;
 - (void)openGifSearch;
 - (void)dismissMessageActionsAnimated:(BOOL)animated;
+- (void)dismissMessageActionsAnimated:(BOOL)animated completion:(void (^)(void))completion;
 
 @end
 
