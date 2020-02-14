@@ -2297,9 +2297,10 @@ typedef enum : NSUInteger {
 #pragma mark - ConversationViewCellDelegate
 
 - (void)conversationCell:(ConversationViewCell *)cell
-             shouldAllowReply:(BOOL)shouldAllowReply
+             shouldAllowReply:(BOOL)shouldAllowReplyParam
     didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem
 {
+    BOOL shouldAllowReply = shouldAllowReplyParam && !self.threadViewModel.hasPendingMessageRequest;
     NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem
                                                          shouldAllowReply:shouldAllowReply
@@ -2308,9 +2309,10 @@ typedef enum : NSUInteger {
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell
-            shouldAllowReply:(BOOL)shouldAllowReply
+            shouldAllowReply:(BOOL)shouldAllowReplyParam
     didLongpressTextViewItem:(id<ConversationViewItem>)viewItem
 {
+    BOOL shouldAllowReply = shouldAllowReplyParam && !self.threadViewModel.hasPendingMessageRequest;
     NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions textActionsWithConversationViewItem:viewItem
                                                         shouldAllowReply:shouldAllowReply
@@ -2319,9 +2321,10 @@ typedef enum : NSUInteger {
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell
-             shouldAllowReply:(BOOL)shouldAllowReply
+             shouldAllowReply:(BOOL)shouldAllowReplyParam
     didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem
 {
+    BOOL shouldAllowReply = shouldAllowReplyParam && !self.threadViewModel.hasPendingMessageRequest;
     NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions quotedMessageActionsWithConversationViewItem:viewItem
                                                                  shouldAllowReply:shouldAllowReply
@@ -2340,9 +2343,11 @@ typedef enum : NSUInteger {
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressSticker:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
-
+    BOOL shouldAllowReply = !self.threadViewModel.hasPendingMessageRequest;
     NSArray<MessageAction *> *messageActions =
-        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem shouldAllowReply:YES delegate:self];
+        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem
+                                                         shouldAllowReply:shouldAllowReply
+                                                                 delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
