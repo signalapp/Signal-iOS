@@ -3675,6 +3675,7 @@ typedef enum : NSUInteger {
                                     [OWSReadReceiptManager.sharedManager
                                         markAsReadLocallyBeforeSortId:self.lastVisibleSortId
                                                                thread:self.thread
+                                             hasPendingMessageRequest:self.threadViewModel.hasPendingMessageRequest
                                                            completion:^{
                                                                OWSAssertIsOnMainThread();
                                                                self.isMarkingAsRead = NO;

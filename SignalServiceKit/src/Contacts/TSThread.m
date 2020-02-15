@@ -360,7 +360,13 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 - (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] sendReadReceipt:YES transaction:transaction];
+        BOOL hasPendingMessageRequest = [self hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbWrite];
+        OWSReadCircumstance circumstance = hasPendingMessageRequest
+            ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
+            : OWSReadCircumstanceReadOnThisDevice;
+        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
+                          circumstance:circumstance
+                           transaction:transaction];
     }
 
     // Just to be defensive, we'll also check for unread messages.

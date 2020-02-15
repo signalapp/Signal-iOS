@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
@@ -116,9 +116,13 @@ NS_ASSUME_NONNULL_BEGIN
         [message anyInsertWithTransaction:transaction];
 
         if (expireStartedAt > 0) {
-            [message markAsReadAtTimestamp:expireStartedAt sendReadReceipt:NO transaction:transaction];
+            [message markAsReadAtTimestamp:expireStartedAt
+                              circumstance:OWSReadCircumstanceReadOnLinkedDevice
+                               transaction:transaction];
         } else if (markAsRead) {
-            [message markAsReadAtTimestamp:self.now - 1000 sendReadReceipt:NO transaction:transaction];
+            [message markAsReadAtTimestamp:self.now - 1000
+                              circumstance:OWSReadCircumstanceReadOnLinkedDevice
+                               transaction:transaction];
         }
     }];
     return message;

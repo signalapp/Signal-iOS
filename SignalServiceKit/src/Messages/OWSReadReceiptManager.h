@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -13,6 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSIncomingMessage;
 @class TSOutgoingMessage;
 @class TSThread;
+
+typedef NS_ENUM(NSInteger, OWSReadCircumstance) {
+    OWSReadCircumstanceReadOnLinkedDevice,
+    OWSReadCircumstanceReadOnThisDevice,
+    OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
+};
 
 extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
@@ -91,18 +97,15 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:recipientMap:sentTimestamp:));
 
 #pragma mark - Locally Read
 
-// This method cues this manager:
-//
-// * ...to inform the sender that this message was read (if read receipts
-//      are enabled).
-// * ...to inform the local user's other devices that this message was read.
-//
-// Both types of messages are deduplicated.
-//
 // This method can be called from any thread.
-- (void)messageWasReadLocally:(TSIncomingMessage *)message transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)messageWasRead:(TSIncomingMessage *)message
+          circumstance:(OWSReadCircumstance)circumstance
+           transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread completion:(void (^)(void))completion;
+- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId
+                               thread:(TSThread *)thread
+             hasPendingMessageRequest:(BOOL)hasPendingMessageRequest
+                           completion:(void (^)(void))completion;
 
 #pragma mark - Settings
 
