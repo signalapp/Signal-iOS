@@ -863,3 +863,11 @@ CREATE
         ON "model_ExperienceUpgrade"("uniqueId"
 )
 ;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_threadUniqueId_recordType_messagType"
+        ON "model_TSInteraction"("threadUniqueId"
+    ,"recordType"
+    ,"messageType"
+)
+;

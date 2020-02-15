@@ -58,6 +58,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addUserInfoToInteractions
         case recreateExperienceUpgradeWithNewColumns
         case recreateExperienceUpgradeIndex
+        case indexInfoMessageOnType
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -394,6 +395,12 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.recreateExperienceUpgradeIndex.rawValue) { db in
             try db.create(index: "index_model_ExperienceUpgrade_on_uniqueId", on: "model_ExperienceUpgrade", columns: ["uniqueId"])
+        }
+
+        migrator.registerMigration(MigrationId.indexInfoMessageOnType.rawValue) { db in
+            try db.create(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messagType",
+                          on: "model_TSInteraction",
+                          columns: ["threadUniqueId", "recordType", "messageType"])
         }
 
         // MARK: - Schema Migration Insertion Point
