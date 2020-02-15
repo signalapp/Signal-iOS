@@ -3670,6 +3670,11 @@ typedef enum : NSUInteger {
 
 - (void)markVisibleMessagesAsRead
 {
+    // Don't mark messages as read until the message request has been processed
+    if (self.messageRequestView) {
+        return;
+    }
+
     if (self.presentedViewController) {
         return;
     }

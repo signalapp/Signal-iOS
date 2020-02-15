@@ -184,38 +184,8 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         [store enumerateKeysAndObjectsWithTransaction:transaction
                                                 block:^(NSString *key, id object, BOOL *stop) {
                                                     NSString *recipientId = key;
-                                                    NSMutableSet<NSNumber *> *timestamps = [object mutableCopy];
-
-                                                    // Filter the pending receipts to remove any for threads that have a
-                                                    // pending message request. We wait to send read receipts until a
-                                                    // message request is approved.
-                                                    if (receiptType == OWSReceiptType_Read && RemoteConfig.messageRequests) {
-                                                        SignalServiceAddress *address =
-                                                            [self addressForIdentifier:recipientId];
-                                                        if (!address.isValid) {
-                                                            OWSFailDebug(@"Unexpected identifier.");
-                                                            return;
-                                                        }
-
-                                                        for (NSNumber *timestamp in [timestamps copy]) {
-                                                            TSThread *_Nullable messageThread = [InteractionFinder
-                                                                findThreadForInteractionWithTimestamp:
-                                                                    [timestamp unsignedLongLongValue]
-                                                                                               author:address
-                                                                                          transaction:transaction];
-
-                                                            if (messageThread &&
-                                                                [AnyThreadFinder
-                                                                    hasPendingMessageRequestWithThread:messageThread
-                                                                                           transaction:transaction]) {
-                                                                [timestamps removeObject:timestamp];
-                                                            }
-                                                        }
-                                                    }
-
-                                                    if (timestamps.count > 0) {
-                                                        queuedReceiptMap[recipientId] = [timestamps copy];
-                                                    }
+                                                    NSSet<NSNumber *> *timestamps = object;
+                                                    queuedReceiptMap[recipientId] = [timestamps copy];
                                                 }];
     }];
 
