@@ -699,7 +699,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)logProfileWhitelist
 {
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         OWSLogError(@"%@: %lu",
             self.whitelistedPhoneNumbersStore.collection,
             (unsigned long)[self.whitelistedPhoneNumbersStore numberOfKeysWithTransaction:transaction]);

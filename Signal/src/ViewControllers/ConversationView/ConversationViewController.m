@@ -1736,7 +1736,7 @@ typedef enum : NSUInteger {
 {
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThread:self.thread];
+    [settingsVC configureWithThreadViewModel:self.threadViewModel];
     settingsVC.showVerificationOnAppear = showVerification;
 
     [self.navigationController setViewControllers:[self.viewControllersUpToSelf arrayByAddingObject:settingsVC]
@@ -1747,7 +1747,7 @@ typedef enum : NSUInteger {
 {
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThread:self.thread];
+    [settingsVC configureWithThreadViewModel:self.threadViewModel];
 
     MediaTileViewController *allMedia = [[MediaTileViewController alloc] initWithThread:self.thread];
 
