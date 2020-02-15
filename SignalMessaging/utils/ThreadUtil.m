@@ -180,7 +180,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                 [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
             attachments = [mediaAttachments arrayByAddingObject:oversizeTextAttachment];
         } else {
-            OWSFailDebug(@"dataSource was unexpectedly nil");
+            OWSFailDebug(@"dataSource was unexpectedly nil.");
         }
     }
 
@@ -232,8 +232,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
                                   NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
                                   for (SignalAttachment *attachment in attachments) {
-                                      OWSOutgoingAttachmentInfo *attachmentInfo =
-                                          [attachment buildOutgoingAttachmentInfoWithMessage:message];
+                                      OWSOutgoingAttachmentInfo *attachmentInfo = [attachment buildOutgoingAttachmentInfoWithMessage:message];
                                       [attachmentInfos addObject:attachmentInfo];
                                   }
                                   completionBlock(message, attachmentInfos, writeTransaction);

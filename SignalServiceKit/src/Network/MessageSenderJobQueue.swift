@@ -34,8 +34,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         }
     }
 
-    // MARK: 
-
     @objc(addMessage:transaction:)
     public func add(message: TSOutgoingMessage, transaction: YapDatabaseReadWriteTransaction) {
         self.add(message: message, removeMessageAfterSending: false, transaction: transaction)
@@ -71,7 +69,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         do {
             jobRecord = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, label: self.jobRecordLabel)
         } catch {
-            owsFailDebug("failed to build job: \(error)")
+            owsFailDebug("Failed to build job due to error: \(error).")
             return
         }
         self.add(jobRecord: jobRecord, transaction: transaction)
@@ -121,7 +119,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             message = fetchedMessage
         } else {
             assert(jobRecord.messageId != nil)
-            throw JobError.obsolete(description: "message no longer exists")
+            throw JobError.obsolete(description: "Message no longer exists.")
         }
 
         return MessageSenderOperation(message: message, jobRecord: jobRecord)
@@ -205,8 +203,6 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didReportError(_ error: Error) {
-        Logger.debug("remainingRetries: \(self.remainingRetries)")
-
         self.dbConnection.readWrite { transaction in
             self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
         }

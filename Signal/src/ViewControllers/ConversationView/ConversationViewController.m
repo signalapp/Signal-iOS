@@ -3919,8 +3919,6 @@ typedef enum : NSUInteger {
 
 - (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageText:(NSString *_Nullable)messageText
 {
-    OWSLogError(@"");
-
     DispatchMainThreadSafe(^{
         __weak ConversationViewController *weakSelf = self;
         if ([self isBlockedConversation]) {

@@ -425,14 +425,14 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     
     private func generateSenderCertificate() -> Promise<(certificateData: Data, certificate: SMKSenderCertificate)> {
         return Promise<(certificateData: Data, certificate: SMKSenderCertificate)> { seal in
-            //Loki: Generate a sender certifate locally
+            // Loki: Generate a sender certifate locally
             let sender = OWSIdentityManager.shared().identityKeyPair()?.hexEncodedPublicKey
             let certificate = SMKSenderCertificate(senderDeviceId: OWSDevicePrimaryDeviceId, senderRecipientId: sender!)
-            let certificateData = try certificate.serialized()
-            guard self.isValidCertificate(certificate) else {
-                throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
+            let certificateAsData = try certificate.serialized()
+            guard isValidCertificate(certificate) else {
+                throw OWSUDError.invalidData(description: "Invalid sender certificate.")
             }
-            seal.fulfill((certificateData: certificateData, certificate: certificate))
+            seal.fulfill((certificateData: certificateAsData, certificate: certificate))
         }
     }
     
