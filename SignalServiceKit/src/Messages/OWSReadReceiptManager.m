@@ -22,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMarkedAsReadNotification";
 NSUInteger const TSRecipientReadReceiptSchemaVersion = 1;
 
+/// TSRecipientReadReceipt aka "early read receipts"
+///
+/// When we send a message to Alice from our linked device, and this device receives the read
+/// receipt from Alice before it receives the synced transcript from our linked device, we persist
+/// this class as a reminder to mark the eventually synced transcript as already read by Alice.
 @interface TSRecipientReadReceipt ()
 
 @property (nonatomic, readonly) NSUInteger recipientReadReceiptSchemaVersion;
