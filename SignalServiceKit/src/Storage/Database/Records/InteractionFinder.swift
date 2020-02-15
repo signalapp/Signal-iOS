@@ -347,11 +347,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    @objc
-    public func possiblyHasIncomingMessages(transaction: GRDBReadTransaction) -> Bool {
-        return grdbAdapter.possiblyHasIncomingMessages(transaction: transaction)
-    }
-
     #if DEBUG
     @objc
     public func enumerateUnstartedExpiringMessages(transaction: SDSAnyReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
@@ -1040,6 +1035,21 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
     }
 
+    func hasGroupUpdateInfoMessage(transaction: GRDBReadTransaction) -> Bool {
+        let sql = """
+        SELECT EXISTS(
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+            AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
+            LIMIT 1
+        )
+        """
+        let arguments: StatementArguments = [threadUniqueId]
+        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
+    }
+
     func possiblyHasIncomingMessages(transaction: GRDBReadTransaction) -> Bool {
         // All of these message types could have been triggered by anyone in
         // the conversation. So, if one of them exists we have to assume the conversation
@@ -1067,15 +1077,11 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) IN (\(sqlInteractionTypes))
-            OR (
-                \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
-                AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
-            )
             LIMIT 1
         )
         """
         let arguments: StatementArguments = [threadUniqueId]
-        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
     }
 
     #if DEBUG

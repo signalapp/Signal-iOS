@@ -44,7 +44,7 @@ public class ThreadViewModel: NSObject {
 
         self.unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction)
         self.hasUnreadMessages = unreadCount > 0
-        self.hasPendingMessageRequest = AnyThreadFinder.hasPendingMessageRequest(thread: thread, transaction: transaction)
+        self.hasPendingMessageRequest = GRDBThreadFinder.hasPendingMessageRequest(thread: thread, transaction: transaction.unwrapGrdbRead)
     }
 
     @objc

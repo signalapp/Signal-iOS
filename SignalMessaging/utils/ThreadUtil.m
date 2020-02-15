@@ -406,7 +406,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block BOOL hasPendingMessageRequest;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasPendingMessageRequest = [AnyThreadFinder hasPendingMessageRequestWithThread:thread transaction:transaction];
+        hasPendingMessageRequest = [GRDBThreadFinder hasPendingMessageRequestWithThread:thread
+                                                                            transaction:transaction.unwrapGrdbRead];
     }];
 
     // If we're creating this thread or we have a pending message request,
@@ -424,7 +425,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(thread);
 
-    BOOL hasPendingMessageRequest = [AnyThreadFinder hasPendingMessageRequestWithThread:thread transaction:transaction];
+    BOOL hasPendingMessageRequest = [GRDBThreadFinder hasPendingMessageRequestWithThread:thread
+                                                                             transaction:transaction.unwrapGrdbWrite];
 
     // If we're creating this thread or we have a pending message request,
     // any action we trigger should share our profile.
