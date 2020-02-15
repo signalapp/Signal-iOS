@@ -871,3 +871,20 @@ CREATE
     ,"messageType"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "pending_read_receipts" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"threadId" INTEGER NOT NULL
+            ,"messageTimestamp" INTEGER NOT NULL
+            ,"authorPhoneNumber" TEXT
+            ,"authorUuid" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_pending_read_receipts_on_threadId"
+        ON "pending_read_receipts"("threadId"
+)
+;

@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class GRDBWriteTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SSKProtoSyncMessageRead;
@@ -119,6 +120,14 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:recipientMap:sentTimestamp:));
 
 - (void)setAreReadReceiptsEnabled:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction;
 
+
+@end
+
+@protocol PendingReadReceiptRecorder
+
+- (void)recordPendingReadReceiptForMessage:(TSIncomingMessage *)message
+                                    thread:(TSThread *)thread
+                               transaction:(GRDBWriteTransaction *)transaction;
 
 @end
 

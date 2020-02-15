@@ -107,6 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
                        linkPreviewManager:linkPreviewManager
                             messageSender:messageSender
                     messageSenderJobQueue:messageSenderJobQueue
+               pendingReadReceiptRecorder:[NoopPendingReadReceiptRecorder new]
                            profileManager:[OWSFakeProfileManager new]
                            primaryStorage:primaryStorage
                           contactsUpdater:[OWSFakeContactsUpdater new]

@@ -254,6 +254,11 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     return SDSDatabaseStorage.shared;
 }
 
+- (id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
+{
+    return SSKEnvironment.shared.pendingReadReceiptRecorder;
+}
+
 #pragma mark -
 
 // Schedules a processing pass, unless one is already scheduled.
@@ -394,7 +399,11 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             break;
         case OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest:
             [self enqueueLinkedDeviceReadReceiptForMessage:message transaction:transaction];
-            OWSFailDebug(@"TODO - enqueue pending read receipts");
+            if ([self areReadReceiptsEnabled]) {
+                [self.pendingReadReceiptRecorder recordPendingReadReceiptForMessage:message
+                                                                             thread:thread
+                                                                        transaction:transaction.unwrapGrdbWrite];
+            }
             break;
     }
 

@@ -61,6 +61,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(OWSMessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
+             pendingReadReceiptRecorder:(id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          primaryStorage:(nullable OWSPrimaryStorage *)primaryStorage
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
@@ -106,6 +107,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(linkPreviewManager);
     OWSAssertDebug(messageSender);
     OWSAssertDebug(messageSenderJobQueue);
+    OWSAssertDebug(pendingReadReceiptRecorder);
     OWSAssertDebug(profileManager);
     OWSAssertDebug(contactsUpdater);
     OWSAssertDebug(networkManager);
@@ -145,6 +147,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _linkPreviewManager = linkPreviewManager;
     _messageSender = messageSender;
     _messageSenderJobQueue = messageSenderJobQueue;
+    _pendingReadReceiptRecorder = pendingReadReceiptRecorder;
     _profileManager = profileManager;
     _primaryStorage = primaryStorage;
     _contactsUpdater = contactsUpdater;
