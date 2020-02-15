@@ -32,9 +32,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kNSNotificationName_ProfileWhitelistDidChange = @"kNSNotificationName_ProfileWhitelistDidChange";
+NSNotificationName const kNSNotificationNameProfileWhitelistDidChange = @"kNSNotificationNameProfileWhitelistDidChange";
 
-NSString *const kNSNotificationName_ProfileKeyDidChange = @"kNSNotificationName_ProfileKeyDidChange";
+NSNotificationName const kNSNotificationNameProfileKeyDidChange = @"kNSNotificationNameProfileKeyDidChange";
 
 // The max bytes for a user's profile name, encoded in UTF8.
 // Before encrypting and submitting we NULL pad the name data to this length.
@@ -663,7 +663,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         }
 
         promise = promise.thenInBackground(^(id value) {
-            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileKeyDidChange
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileKeyDidChange
                                                                      object:nil
                                                                    userInfo:nil];
 
@@ -957,12 +957,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         }
 
         for (SignalServiceAddress *address in addressesToRemove) {
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                   object:nil
-                                 userInfo:@ {
-                                     kNSNotificationKey_ProfileAddress : address,
-                                 }];
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
+                                                                     object:nil
+                                                                   userInfo:@ {
+                                                                       kNSNotificationKey_ProfileAddress : address,
+                                                                   }];
         }
     }];
 }
@@ -993,12 +992,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         }
 
         for (SignalServiceAddress *address in addressesToAdd) {
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                   object:nil
-                                 userInfo:@ {
-                                     kNSNotificationKey_ProfileAddress : address,
-                                 }];
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
+                                                                     object:nil
+                                                                   userInfo:@ {
+                                                                       kNSNotificationKey_ProfileAddress : address,
+                                                                   }];
         }
     }];
 }
@@ -1106,7 +1104,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
         }
 
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
                                                                  object:nil
                                                                userInfo:@ {
                                                                    kNSNotificationKey_ProfileGroupId : groupId,
@@ -1130,7 +1128,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
         }
 
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
                                                                  object:nil
                                                                userInfo:@ {
                                                                    kNSNotificationKey_ProfileGroupId : groupId,
