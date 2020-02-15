@@ -365,6 +365,7 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
             ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
             : OWSReadCircumstanceReadOnThisDevice;
         [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
+                                thread:self
                           circumstance:circumstance
                            transaction:transaction];
     }

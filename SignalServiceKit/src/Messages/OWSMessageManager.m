@@ -1786,6 +1786,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Incoming messages from yourself are not supported.");
         // Don't send a read receipt for messages sent by ourselves.
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp
+                                        thread:thread
                                   circumstance:OWSReadCircumstanceReadOnLinkedDevice
                                    transaction:transaction];
     }
@@ -1840,6 +1841,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // In case we already have a read receipt for this new message (this happens sometimes).
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
+                                                                           thread:thread
                                                                       transaction:transaction];
 
     // TODO: Is this still necessary?

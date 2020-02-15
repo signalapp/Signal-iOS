@@ -311,6 +311,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+                       thread:(TSThread *)thread
                  circumstance:(OWSReadCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction
 {

@@ -167,6 +167,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+                       thread:(TSThread *)thread
                  circumstance:(OWSReadCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction
 {

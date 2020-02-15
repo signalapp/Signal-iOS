@@ -194,11 +194,13 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     // We want to do this without triggering sending read receipts, so we pretend it was
     // read on a linked device.
     [self markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
+                         thread:[self threadWithTransaction:transaction]
                    circumstance:OWSReadCircumstanceReadOnLinkedDevice
                     transaction:transaction];
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+                       thread:(TSThread *)thread
                  circumstance:(OWSReadCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -224,7 +226,10 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                                      expirationStartedAt:readTimestamp
                                                              transaction:transaction];
 
-    [OWSReadReceiptManager.sharedManager messageWasRead:self circumstance:circumstance transaction:transaction];
+    [OWSReadReceiptManager.sharedManager messageWasRead:self
+                                                 thread:thread
+                                           circumstance:circumstance
+                                            transaction:transaction];
 
     [transaction addAsyncCompletion:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification

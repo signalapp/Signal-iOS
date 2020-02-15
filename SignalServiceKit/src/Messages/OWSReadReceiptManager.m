@@ -359,6 +359,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
                 : OWSReadCircumstanceReadOnThisDevice;
             [self markMessagesAsRead:unreadMessages
+                              thread:thread
                        readTimestamp:readTimestamp
                         circumstance:circumstance
                          transaction:transaction];
@@ -368,6 +369,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 }
 
 - (void)messageWasRead:(TSIncomingMessage *)message
+                thread:(TSThread *)thread
           circumstance:(OWSReadCircumstance)circumstance
            transaction:(SDSAnyWriteTransaction *)transaction;
 {
@@ -505,6 +507,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 #pragma mark - Linked Device Read Receipts
 
 - (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
+                                          thread:(TSThread *)thread
                                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(message);
@@ -526,6 +529,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
 
     [message markAsReadAtTimestamp:readReceipt.readTimestamp
+                            thread:thread
                       circumstance:OWSReadCircumstanceReadOnLinkedDevice
                        transaction:transaction];
     [readReceipt anyRemoveWithTransaction:transaction];
@@ -567,10 +571,18 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
         if (messages.count > 0) {
             for (TSIncomingMessage *message in messages) {
+                TSThread *_Nullable thread = [message threadWithTransaction:transaction];
+                if (thread == nil) {
+                    OWSFailDebug(@"thread was unexpectedly nil");
+                    continue;
+                }
                 NSTimeInterval secondsSinceRead = [NSDate new].timeIntervalSince1970 - readTimestamp / 1000;
                 OWSAssertDebug([message isKindOfClass:[TSIncomingMessage class]]);
                 OWSLogDebug(@"read on linked device %f seconds ago", secondsSinceRead);
-                [self markAsReadOnLinkedDevice:message readTimestamp:readTimestamp transaction:transaction];
+                [self markAsReadOnLinkedDevice:message
+                                        thread:thread
+                                 readTimestamp:readTimestamp
+                                   transaction:transaction];
             }
         } else {
             // Received read receipt for unknown incoming message.
@@ -585,20 +597,23 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 }
 
 - (void)markAsReadOnLinkedDevice:(TSIncomingMessage *)message
+                          thread:(TSThread *)thread
                    readTimestamp:(uint64_t)readTimestamp
                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(message);
+    OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
     // Always re-mark the message as read to ensure any earlier read time is applied to disappearing messages.
     [message markAsReadAtTimestamp:readTimestamp
+                            thread:thread
                       circumstance:OWSReadCircumstanceReadOnLinkedDevice
                        transaction:transaction];
 
     // Also mark any unread messages appearing earlier in the thread as read as well.
     [self markAsReadBeforeSortId:message.sortId
-                          thread:[message threadWithTransaction:transaction]
+                          thread:thread
                    readTimestamp:readTimestamp
                     circumstance:OWSReadCircumstanceReadOnLinkedDevice
                      transaction:transaction];
@@ -623,12 +638,14 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         return;
     }
     [self markMessagesAsRead:unreadMessages
+                      thread:thread
                readTimestamp:readTimestamp
                 circumstance:circumstance
                  transaction:transaction];
 }
 
 - (void)markMessagesAsRead:(NSArray<id<OWSReadTracking>> *)unreadMessages
+                    thread:(TSThread *)thread
              readTimestamp:(uint64_t)readTimestamp
               circumstance:(OWSReadCircumstance)circumstance
                transaction:(SDSAnyWriteTransaction *)transaction
@@ -649,7 +666,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             break;
     }
     for (id<OWSReadTracking> readItem in unreadMessages) {
-        [readItem markAsReadAtTimestamp:readTimestamp circumstance:circumstance transaction:transaction];
+        [readItem markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
     }
 }
 

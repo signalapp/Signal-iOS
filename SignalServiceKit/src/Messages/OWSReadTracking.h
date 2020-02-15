@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Used both for *responding* to a remote read receipt and in response to the local user's activity.
  */
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+                       thread:(TSThread *)thread
                  circumstance:(OWSReadCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction;
 

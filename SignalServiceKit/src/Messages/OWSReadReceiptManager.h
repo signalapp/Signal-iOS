@@ -93,12 +93,14 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:recipientMap:sentTimestamp:));
                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
+                                          thread:(TSThread *)thread
                                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Locally Read
 
 // This method can be called from any thread.
 - (void)messageWasRead:(TSIncomingMessage *)message
+                thread:(TSThread *)thread
           circumstance:(OWSReadCircumstance)circumstance
            transaction:(SDSAnyWriteTransaction *)transaction;
 
