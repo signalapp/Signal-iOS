@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 BOOL IsNoteToSelfEnabled(void);
 
+@class GRDBReadTransaction;
 @class OWSDisappearingMessagesConfiguration;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
@@ -127,6 +128,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 - (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
+- (BOOL)hasPendingMessageRequestWithTransaction:(GRDBReadTransaction *)transaction
+    NS_SWIFT_NAME(hasPendingMessageRequest(transaction:));
 
 #pragma mark Archival
 

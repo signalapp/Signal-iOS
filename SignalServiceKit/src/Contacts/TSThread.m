@@ -512,6 +512,11 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
                              }];
 }
 
+- (BOOL)hasPendingMessageRequestWithTransaction:(GRDBReadTransaction *)transaction
+{
+    return [GRDBThreadFinder hasPendingMessageRequestWithThread:self transaction:transaction];
+}
+
 #pragma mark - Disappearing Messages
 
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
