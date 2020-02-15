@@ -5303,22 +5303,17 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    __block BOOL hasPendingMessageRequest = NO;
-
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasPendingMessageRequest = [AnyThreadFinder hasPendingMessageRequestWithThread:self.thread
-                                                                           transaction:transaction];
-    }];
-
-    // We're currently showing the message request view but no longer need to,
-    // probably because this request was accepted on another device. Dismiss it.
-    if (self.messageRequestView && !hasPendingMessageRequest) {
-        [self dismissMessageRequestView];
+    if (!self.threadViewModel.hasPendingMessageRequest) {
+        if (self.messageRequestView) {
+            // We're currently showing the message request view but no longer need to,
+            // probably because this request was accepted on another device. Dismiss it.
+            [self dismissMessageRequestView];
+        }
         return;
     }
 
-    // If we don't have a pending message request, or it's already presented, do nothing.
-    if (!hasPendingMessageRequest || self.messageRequestView) {
+    // If it's already presented, do nothing.
+    if (self.messageRequestView) {
         return;
     }
 
