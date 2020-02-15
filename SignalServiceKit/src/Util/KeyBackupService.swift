@@ -358,7 +358,9 @@ public class KeyBackupService: NSObject {
 
         // TODO: Maybe rename this since it's no longer profile specific
         guard let data = Cryptography.decryptAESGCMProfileData(encryptedData: encryptedData, key: key) else {
-            owsFailDebug("failed to decrypt data")
+            // TODO: Derive Storage Service Key - until we use the restored key for storage service,
+            // this is expected after every reinstall. After that this should propably become an owsFailDebug
+            Logger.info("failed to decrypt data")
             throw KBSError.assertion
         }
 

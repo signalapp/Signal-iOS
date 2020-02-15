@@ -18,6 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSMutableSet<SignalServiceAddress *> *recipientWhitelist;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *threadWhitelist;
 @property (nonatomic, readonly) OWSAES256Key *localProfileKey;
+@property (nonatomic, nullable) NSString *localGivenName;
+@property (nonatomic, nullable) NSString *localFamilyName;
+@property (nonatomic, nullable) NSString *localFullName;
+@property (nonatomic, nullable) NSString *localUsername;
+@property (nonatomic, nullable) NSData *localProfileAvatarData;
 
 @end
 
@@ -49,11 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
         _localProfileKey = [OWSAES256Key generateRandomKey];
     }
     return _localProfileKey;
-}
-
-- (BOOL)hasProfileName
-{
-    return NO;
 }
 
 - (void)setProfileKeyData:(NSData *)profileKey
@@ -166,6 +166,31 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)warmCaches
 {
     // Do nothing.
+}
+
+- (BOOL)hasLocalProfile
+{
+    return (self.localGivenName.length > 0 || self.localProfileAvatarImage != nil);
+}
+
+- (BOOL)hasProfileName
+{
+    return self.localGivenName.length > 0;
+}
+
+- (nullable UIImage *)localProfileAvatarImage
+{
+    NSData *_Nullable data = self.localProfileAvatarData;
+    if (data == nil) {
+        return nil;
+    }
+
+    return [UIImage imageWithData:data];
+}
+
+- (BOOL)localProfileExistsWithTransaction:(nonnull SDSAnyReadTransaction *)transaction
+{
+    return self.hasLocalProfile;
 }
 
 @end

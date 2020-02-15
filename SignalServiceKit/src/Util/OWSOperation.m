@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOperation.h"
@@ -49,7 +49,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)dealloc
 {
-    OWSLogDebug(@"[%@]", self.class);
+    OWSLogDebug(@"[%@]", self);
 }
 
 #pragma mark - Subclass Overrides
@@ -124,9 +124,8 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // Do not override this method in a subclass instead, override `run`
 - (void)main
 {
-    OWSLogDebug(@"[%@] started: %@", self.class, self.eventId);
-    [BenchManager startEventWithTitle:[NSString stringWithFormat:@"%@-%p", self.class, self]
-                              eventId:self.eventId];
+    OWSLogDebug(@"[%@] started: %@", self, self.eventId);
+    [BenchManager startEventWithTitle:[NSString stringWithFormat:@"%@-%p", self, self] eventId:self.eventId];
     NSError *_Nullable preconditionError = [self checkForPreconditionError];
     if (preconditionError) {
         [self failOperationWithError:preconditionError];
@@ -163,7 +162,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // These methods are not intended to be subclassed
 - (void)reportSuccess
 {
-    OWSLogDebug(@"[%@] succeeded", self.class);
+    OWSLogDebug(@"[%@] succeeded", self);
     [self didSucceed];
     [self markAsComplete];
 }
@@ -171,7 +170,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // These methods are not intended to be subclassed
 - (void)reportCancelled
 {
-    OWSLogDebug(@"[%@] cancelled", self.class);
+    OWSLogDebug(@"[%@] cancelled", self);
     [self didCancel];
     [self markAsComplete];
 }
@@ -234,7 +233,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)failOperationWithError:(NSError *)error
 {
-    OWSLogDebug(@"[%@] failed terminally", self.class);
+    OWSLogDebug(@"[%@] failed terminally", self);
     self.failingError = error;
 
     [self didFailWithError:error];

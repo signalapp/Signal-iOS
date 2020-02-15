@@ -35,6 +35,10 @@ public class AccountManager: NSObject {
         return SSKEnvironment.shared.accountServiceClient
     }
 
+    private var storageServiceManager: StorageServiceManagerProtocol {
+        return SSKEnvironment.shared.storageServiceManager
+    }
+
     private var deviceService: DeviceService {
         return DeviceService.shared
     }
@@ -179,7 +183,7 @@ public class AccountManager: NSObject {
         }.then { _ -> Promise<Void> in
             BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
             return firstly {
-                StorageServiceManager.shared.restoreOrCreateManifestIfNecessary().asVoid()
+                self.storageServiceManager.restoreOrCreateManifestIfNecessary().asVoid()
             }.done {
                 // In the case that we restored our profile from a previous registration,
                 // re-upload it so that the user does not need to refill in all the details.
@@ -187,12 +191,15 @@ public class AccountManager: NSObject {
                 // the storage service.
 
                 if self.profileManager.localGivenName() != nil {
+                    Logger.debug("restored local profile name. Uploading...")
                     // if we don't have a `localGivenName`, there's nothing to upload, and trying
                     // to upload would fail.
 
                     // Note we *don't* return this promise. There's no need to block registration on
                     // it completing, and if there are any errors, it's durable.
                     self.profileManager.reuploadLocalProfilePromise().retainUntilComplete()
+                } else {
+                    Logger.debug("no local profile name restored.")
                 }
 
                 BenchEventComplete(eventId: "initial-storage-service-restore")
