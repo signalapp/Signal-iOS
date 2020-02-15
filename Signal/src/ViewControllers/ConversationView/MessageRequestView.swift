@@ -121,7 +121,7 @@ class MessageRequestView: UIStackView {
             let displayName = contactManager.displayName(for: thread.contactAddress)
 
             // Update the length of the range to reflect the length of the string that will be inserted
-            boldRange.length = displayName.count
+            boldRange.length = displayName.utf16.count
 
             promptString = String(format: formatString, displayName)
         } else {
