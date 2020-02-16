@@ -169,7 +169,10 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         }
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         let members = [String](selectedContacts) + [ userHexEncodedPublicKey ]
-        let admins = [ userHexEncodedPublicKey ]
+        var admins: [String]!
+        OWSPrimaryStorage.shared().dbReadConnection.readWrite { transaction in
+            admins = Array(LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction))
+        }
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(Randomness.generateRandomBytes(kGroupIdLength)!.toHexString())
         let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         let thread = TSGroupThread.getOrCreateThread(with: group)
