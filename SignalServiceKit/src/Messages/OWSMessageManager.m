@@ -1783,8 +1783,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if (envelope.sourceAddress.isLocalAddress) {
+        OWSFailDebug(@"Incoming messages from yourself are not supported.");
         // Don't send a read receipt for messages sent by ourselves.
-        [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
+        [incomingMessage markAsReadAtTimestamp:envelope.timestamp
+                                        thread:thread
+                                  circumstance:OWSReadCircumstanceReadOnLinkedDevice
+                                   transaction:transaction];
     }
 
     // Download the "non-message body" attachments.
@@ -1837,6 +1841,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // In case we already have a read receipt for this new message (this happens sometimes).
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
+                                                                           thread:thread
                                                                       transaction:transaction];
 
     // TODO: Is this still necessary?

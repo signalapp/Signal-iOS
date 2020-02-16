@@ -6,8 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const kNSNotificationName_ProfileWhitelistDidChange;
-extern NSString *const kNSNotificationName_ProfileKeyDidChange;
+extern NSNotificationName const kNSNotificationNameProfileWhitelistDidChange;
+extern NSNotificationName const kNSNotificationNameProfileKeyDidChange;
 
 extern const NSUInteger kOWSProfileManager_NameDataLength;
 extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
@@ -100,6 +100,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 // These methods are for debugging.
 - (void)clearProfileWhitelist;
+- (void)removeThreadFromProfileWhitelist:(TSThread *)thread;
 - (void)logProfileWhitelist;
 - (void)debug_regenerateLocalProfileWithSneakyTransaction;
 - (void)setLocalProfileKey:(OWSAES256Key *)key transaction:(SDSAnyWriteTransaction *)transaction;

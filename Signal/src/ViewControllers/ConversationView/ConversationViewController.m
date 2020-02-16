@@ -388,7 +388,7 @@ typedef enum : NSUInteger {
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileWhitelistDidChange:)
-                                                 name:kNSNotificationName_ProfileWhitelistDidChange
+                                                 name:kNSNotificationNameProfileWhitelistDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(themeDidChange:)
@@ -3646,11 +3646,6 @@ typedef enum : NSUInteger {
 
 - (void)markVisibleMessagesAsRead
 {
-    // Don't mark messages as read until the message request has been processed
-    if (self.messageRequestView) {
-        return;
-    }
-
     if (self.presentedViewController) {
         return;
     }
@@ -3680,6 +3675,7 @@ typedef enum : NSUInteger {
                                     [OWSReadReceiptManager.sharedManager
                                         markAsReadLocallyBeforeSortId:self.lastVisibleSortId
                                                                thread:self.thread
+                                             hasPendingMessageRequest:self.threadViewModel.hasPendingMessageRequest
                                                            completion:^{
                                                                OWSAssertIsOnMainThread();
                                                                self.isMarkingAsRead = NO;

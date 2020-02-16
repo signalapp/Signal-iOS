@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSErrorMessage.h"
@@ -311,7 +311,8 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-              sendReadReceipt:(BOOL)sendReadReceipt
+                       thread:(TSThread *)thread
+                 circumstance:(OWSReadCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -327,7 +328,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                                              message.read = YES;
                                          }];
 
-    // Ignore sendReadReceipt - it doesn't apply to error messages.
+    // Ignore `circumstance` - we never send read receipts for error messages.
 }
 
 - (BOOL)isSpecialMessage

@@ -1,6 +1,8 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
+
+#import "OWSReadReceiptManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,7 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Used both for *responding* to a remote read receipt and in response to the local user's activity.
  */
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-              sendReadReceipt:(BOOL)sendReadReceipt
+                       thread:(TSThread *)thread
+                 circumstance:(OWSReadCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end

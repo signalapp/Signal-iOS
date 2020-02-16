@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -113,7 +113,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
 @property (nonatomic, readonly, nullable) NSString *authorUUID;
 
 // convenience method for expiring a message which was just read
-- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)debugonly_markAsReadNowWithTransaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(debugonly_markAsReadNow(transaction:));
 
 @end
 

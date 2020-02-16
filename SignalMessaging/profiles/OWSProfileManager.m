@@ -32,9 +32,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kNSNotificationName_ProfileWhitelistDidChange = @"kNSNotificationName_ProfileWhitelistDidChange";
+NSNotificationName const kNSNotificationNameProfileWhitelistDidChange = @"kNSNotificationNameProfileWhitelistDidChange";
 
-NSString *const kNSNotificationName_ProfileKeyDidChange = @"kNSNotificationName_ProfileKeyDidChange";
+NSNotificationName const kNSNotificationNameProfileKeyDidChange = @"kNSNotificationNameProfileKeyDidChange";
 
 // The max bytes for a user's profile name, encoded in UTF8.
 // Before encrypting and submitting we NULL pad the name data to this length.
@@ -663,7 +663,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         }
 
         promise = promise.thenInBackground(^(id value) {
-            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileKeyDidChange
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileKeyDidChange
                                                                      object:nil
                                                                    userInfo:nil];
 
@@ -694,6 +694,29 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         OWSAssertDebug(0 == [self.whitelistedPhoneNumbersStore numberOfKeysWithTransaction:transaction]);
         OWSAssertDebug(0 == [self.whitelistedUUIDsStore numberOfKeysWithTransaction:transaction]);
         OWSAssertDebug(0 == [self.whitelistedGroupsStore numberOfKeysWithTransaction:transaction]);
+    }];
+}
+
+- (void)removeThreadFromProfileWhitelist:(TSThread *)thread
+{
+    OWSLogWarn(@"Removing thread from profile whitelist: %@", thread);
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        if ([thread isKindOfClass:TSContactThread.class]) {
+            TSContactThread *contactThread = (TSContactThread *)thread;
+            NSString *_Nullable phoneNumber = contactThread.contactAddress.phoneNumber;
+            if (phoneNumber != nil) {
+                [self.whitelistedPhoneNumbersStore removeValueForKey:phoneNumber transaction:transaction];
+            }
+
+            NSString *_Nullable uuidString = contactThread.contactAddress.uuidString;
+            if (uuidString != nil) {
+                [self.whitelistedUUIDsStore removeValueForKey:uuidString transaction:transaction];
+            }
+        } else {
+            TSGroupThread *groupThread = (TSGroupThread *)thread;
+            NSString *groupKey = [self groupKeyForGroupId:groupThread.groupModel.groupId];
+            [self.whitelistedGroupsStore removeValueForKey:groupKey transaction:transaction];
+        }
     }];
 }
 
@@ -957,12 +980,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         }
 
         for (SignalServiceAddress *address in addressesToRemove) {
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                   object:nil
-                                 userInfo:@ {
-                                     kNSNotificationKey_ProfileAddress : address,
-                                 }];
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
+                                                                     object:nil
+                                                                   userInfo:@ {
+                                                                       kNSNotificationKey_ProfileAddress : address,
+                                                                   }];
         }
     }];
 }
@@ -993,12 +1015,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         }
 
         for (SignalServiceAddress *address in addressesToAdd) {
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                   object:nil
-                                 userInfo:@ {
-                                     kNSNotificationKey_ProfileAddress : address,
-                                 }];
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
+                                                                     object:nil
+                                                                   userInfo:@ {
+                                                                       kNSNotificationKey_ProfileAddress : address,
+                                                                   }];
         }
     }];
 }
@@ -1106,7 +1127,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
         }
 
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
                                                                  object:nil
                                                                userInfo:@ {
                                                                    kNSNotificationKey_ProfileGroupId : groupId,
@@ -1130,7 +1151,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
         }
 
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
                                                                  object:nil
                                                                userInfo:@ {
                                                                    kNSNotificationKey_ProfileGroupId : groupId,

@@ -360,7 +360,14 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 - (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] sendReadReceipt:YES transaction:transaction];
+        BOOL hasPendingMessageRequest = [self hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbWrite];
+        OWSReadCircumstance circumstance = hasPendingMessageRequest
+            ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
+            : OWSReadCircumstanceReadOnThisDevice;
+        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
+                                thread:self
+                          circumstance:circumstance
+                           transaction:transaction];
     }
 
     // Just to be defensive, we'll also check for unread messages.
@@ -510,6 +517,11 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
                                  thread.messageDraft = nil;
                                  thread.shouldThreadBeVisible = NO;
                              }];
+}
+
+- (BOOL)hasPendingMessageRequestWithTransaction:(GRDBReadTransaction *)transaction
+{
+    return [GRDBThreadFinder hasPendingMessageRequestWithThread:self transaction:transaction];
 }
 
 #pragma mark - Disappearing Messages

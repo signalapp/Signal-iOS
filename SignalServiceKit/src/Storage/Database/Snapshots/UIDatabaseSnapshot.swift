@@ -40,7 +40,7 @@ public class UIDatabaseObserver: NSObject {
 
     public static let kMaxIncrementalRowChanges = 200
 
-    private lazy var nonModelTables: Set<String> = Set([MediaGalleryRecord.databaseTableName])
+    private lazy var nonModelTables: Set<String> = Set([MediaGalleryRecord.databaseTableName, PendingReadReceiptRecord.databaseTableName])
 
     // tldr; Instead, of protecting UIDatabaseObserver state with a nested DispatchQueue,
     // which would break GRDB's SchedulingWatchDog, we use objc_sync
