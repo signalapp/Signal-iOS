@@ -1053,23 +1053,11 @@ NS_ASSUME_NONNULL_BEGIN
             // acceptable.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [[self.syncManager syncAllContacts] retainUntilComplete];
-                [[self.syncManager syncAllGroups] retainUntilComplete];
             });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
-            OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-            NSData *_Nullable syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
-            if (!syncData) {
-                OWSFailDebug(@"Failed to serialize groups sync message.");
-                return;
-            }
-            DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
-            [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
-                                             dataSource:dataSource
-                                            contentType:OWSMimeTypeApplicationOctetStream
-                                         sourceFilename:nil
-                                                caption:nil
-                                         albumMessageId:nil
-                                  isTemporaryAttachment:YES];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [[self.syncManager syncAllGroups] retainUntilComplete];
+            });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
             OWSLogInfo(@"Received request for block list");
             [self.blockingManager syncBlockList];
