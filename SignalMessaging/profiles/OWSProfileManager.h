@@ -100,6 +100,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 // These methods are for debugging.
 - (void)clearProfileWhitelist;
+- (void)removeThreadFromProfileWhitelist:(TSThread *)thread;
 - (void)logProfileWhitelist;
 - (void)debug_regenerateLocalProfileWithSneakyTransaction;
 - (void)setLocalProfileKey:(OWSAES256Key *)key transaction:(SDSAnyWriteTransaction *)transaction;

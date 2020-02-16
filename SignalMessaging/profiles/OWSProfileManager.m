@@ -697,6 +697,29 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     }];
 }
 
+- (void)removeThreadFromProfileWhitelist:(TSThread *)thread
+{
+    OWSLogWarn(@"Removing thread from profile whitelist: %@", thread);
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        if ([thread isKindOfClass:TSContactThread.class]) {
+            TSContactThread *contactThread = (TSContactThread *)thread;
+            NSString *_Nullable phoneNumber = contactThread.contactAddress.phoneNumber;
+            if (phoneNumber != nil) {
+                [self.whitelistedPhoneNumbersStore removeValueForKey:phoneNumber transaction:transaction];
+            }
+
+            NSString *_Nullable uuidString = contactThread.contactAddress.uuidString;
+            if (uuidString != nil) {
+                [self.whitelistedUUIDsStore removeValueForKey:uuidString transaction:transaction];
+            }
+        } else {
+            TSGroupThread *groupThread = (TSGroupThread *)thread;
+            NSString *groupKey = [self groupKeyForGroupId:groupThread.groupModel.groupId];
+            [self.whitelistedGroupsStore removeValueForKey:groupKey transaction:transaction];
+        }
+    }];
+}
+
 - (void)logProfileWhitelist
 {
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
