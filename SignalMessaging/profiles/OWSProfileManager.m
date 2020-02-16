@@ -772,7 +772,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         localUserProfile = _localUserProfile;
     }
 
-    [localUserProfile clearWithProfileKey:key transaction:transaction completion:nil];
+    [localUserProfile updateWithProfileKey:key transaction:transaction completion:nil];
 }
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
