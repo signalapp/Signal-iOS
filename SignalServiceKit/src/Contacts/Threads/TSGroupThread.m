@@ -227,10 +227,13 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    NSMutableArray<NSString *> *newGroupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
-    [newGroupMemberIds removeObject:[TSAccountManager localNumber]];
-
-    self.groupModel.groupMemberIds = newGroupMemberIds;
+    NSMutableSet<NSString *> *newGroupMemberIds = [NSMutableSet setWithArray:self.groupModel.groupMemberIds];
+    NSString *userHexEncodedPublicKey = TSAccountManager.localNumber;
+    if (userHexEncodedPublicKey != nil) {
+        NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
+        [newGroupMemberIds minusSet:linkedDeviceHexEncodedPublicKeys];
+    }
+    self.groupModel.groupMemberIds = newGroupMemberIds.allObjects;
     [self saveWithTransaction:transaction];
 }
 
