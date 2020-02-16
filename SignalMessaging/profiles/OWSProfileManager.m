@@ -229,13 +229,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)updateLocalProfileName:(nullable NSString *)profileName
                    avatarImage:(nullable UIImage *)avatarImage
                        success:(void (^)(void))successBlockParameter
-                       failure:(void (^)(void))failureBlockParameter
+                       failure:(void (^)(NSError *))failureBlockParameter
 {
     OWSAssertDebug(successBlockParameter);
     OWSAssertDebug(failureBlockParameter);
 
     // Ensure that the success and failure blocks are called on the main thread.
-    void (^failureBlock)(void) = ^{
+    void (^failureBlock)(NSError *) = ^(NSError *error) {
         OWSLogError(@"Updating service with profile failed.");
 
         // We use a "self-only" contact sync to indicate to desktop
@@ -247,7 +247,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         [[self.syncManager syncLocalContact] retainUntilComplete];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            failureBlockParameter();
+            failureBlockParameter(error);
         });
     };
     void (^successBlock)(void) = ^{
@@ -288,7 +288,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                                         }];
             }
             failure:^(NSError *error) {
-                failureBlock();
+                failureBlock(error);
             }];
     };
 
@@ -319,11 +319,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                             tryToUpdateService(avatarUrlPath, fileName);
                         }
                         failure:^(NSError *error) {
-                            failureBlock();
+                            failureBlock(error);
                         }];
                 }
                 failure:^(NSError *error) {
-                    failureBlock();
+                    failureBlock(error);
                 }];
         }
     } else if (userProfile.avatarUrlPath) {
@@ -333,7 +333,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 tryToUpdateService(nil, nil);
             }
             failure:^(NSError *error) {
-                failureBlock();
+                failureBlock(error);
             }];
     } else {
         OWSLogVerbose(@"Updating local profile on service with no avatar.");

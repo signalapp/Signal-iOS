@@ -138,6 +138,9 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     // MARK: Profile Pictures (Public API)
     public static func setProfilePicture(_ profilePicture: Data) -> Promise<String> {
         return Promise<String>() { seal in
+            guard profilePicture.count < maxFileSize else {
+                return seal.reject(LokiDotNetAPIError.maxFileSizeExceeded)
+            }
             getAuthToken(for: server).done { token in
                 let url = "\(server)/users/me/avatar"
                 let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
