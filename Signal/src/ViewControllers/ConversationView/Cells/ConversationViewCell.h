@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)conversationCell:(ConversationViewCell *)cell didChangeLongpress:(id<ConversationViewItem>)viewItem;
 - (void)conversationCell:(ConversationViewCell *)cell didEndLongpress:(id<ConversationViewItem>)viewItem;
 - (void)conversationCell:(ConversationViewCell *)cell didTapReactions:(id<ConversationViewItem>)viewItem;
+- (BOOL)conversationCellHasPendingMessageRequest:(ConversationViewCell *)cell;
 
 #pragma mark - System Cell
 

@@ -2366,6 +2366,11 @@ typedef enum : NSUInteger {
     self.reactionsDetailSheet = detailSheet;
 }
 
+- (BOOL)conversationCellHasPendingMessageRequest:(ConversationViewCell *)cell
+{
+    return self.threadViewModel.hasPendingMessageRequest;
+}
+
 - (void)reloadReactionsDetailSheetWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (!self.reactionsDetailSheet) {
