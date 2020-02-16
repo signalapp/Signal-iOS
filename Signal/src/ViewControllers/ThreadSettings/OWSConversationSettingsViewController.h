@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSConversationSettingsViewDelegate.h"
@@ -8,7 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSThread;
+@class ThreadViewModel;
 
 @interface OWSConversationSettingsViewController : OWSTableViewController
 
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL showVerificationOnAppear;
 
-- (void)configureWithThread:(TSThread *)thread;
+- (void)configureWithThreadViewModel:(ThreadViewModel *)threadViewModel;
 
 @end
 

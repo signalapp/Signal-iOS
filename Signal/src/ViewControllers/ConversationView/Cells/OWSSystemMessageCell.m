@@ -523,6 +523,9 @@ typedef void (^SystemMessageActionBlock)(void);
             return nil;
         }
         case TSInfoMessageTypeDisappearingMessagesUpdate:
+            if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
+                return nil;
+            }
             return [SystemMessageAction
                         actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_TAP_TO_CHANGE",
                                             @"Label for button that opens conversation settings.")
@@ -559,6 +562,9 @@ typedef void (^SystemMessageActionBlock)(void);
         case RPRecentCallTypeIncomingMissed:
         case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
         case RPRecentCallTypeIncomingDeclined:
+            if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
+                return nil;
+            }
             return
                 [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"notification action")
                                                block:^{
@@ -567,6 +573,9 @@ typedef void (^SystemMessageActionBlock)(void);
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")];
         case RPRecentCallTypeOutgoing:
         case RPRecentCallTypeOutgoingMissed:
+            if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
+                return nil;
+            }
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALL_AGAIN_BUTTON_TITLE",
                                                             @"Label for button that lets users call a contact again.")
                                                   block:^{

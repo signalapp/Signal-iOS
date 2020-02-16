@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -44,7 +44,7 @@ public class ThreadViewModel: NSObject {
 
         self.unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction)
         self.hasUnreadMessages = unreadCount > 0
-        self.hasPendingMessageRequest = ThreadUtil.hasPendingMessageRequest(thread, transaction: transaction)
+        self.hasPendingMessageRequest = GRDBThreadFinder.hasPendingMessageRequest(thread: thread, transaction: transaction.unwrapGrdbRead)
     }
 
     @objc

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -130,13 +130,14 @@ struct YAPDBThreadFinder: ThreadFinder {
     }
 }
 
-struct GRDBThreadFinder: ThreadFinder {
+@objc
+public class GRDBThreadFinder: NSObject, ThreadFinder {
 
-    typealias ReadTransaction = GRDBReadTransaction
+    public typealias ReadTransaction = GRDBReadTransaction
 
     static let cn = ThreadRecord.columnName
 
-    func visibleThreadCount(isArchived: Bool, transaction: GRDBReadTransaction) throws -> UInt {
+    public func visibleThreadCount(isArchived: Bool, transaction: GRDBReadTransaction) throws -> UInt {
         let sql = """
             SELECT COUNT(*)
             FROM \(ThreadRecord.databaseTableName)
@@ -153,7 +154,8 @@ struct GRDBThreadFinder: ThreadFinder {
         return count
     }
 
-    func enumerateVisibleThreads(isArchived: Bool, transaction: GRDBReadTransaction, block: @escaping (TSThread) -> Void) throws {
+    @objc
+    public func enumerateVisibleThreads(isArchived: Bool, transaction: GRDBReadTransaction, block: @escaping (TSThread) -> Void) throws {
         let sql = """
             SELECT *
             FROM \(ThreadRecord.databaseTableName)
@@ -168,7 +170,7 @@ struct GRDBThreadFinder: ThreadFinder {
         }
     }
 
-    func sortIndex(thread: TSThread, transaction: GRDBReadTransaction) throws -> UInt? {
+    public func sortIndex(thread: TSThread, transaction: GRDBReadTransaction) throws -> UInt? {
         let sql = """
         SELECT sortIndex
         FROM (
@@ -186,5 +188,39 @@ struct GRDBThreadFinder: ThreadFinder {
 
         let arguments: StatementArguments = [grdbId.intValue]
         return try UInt.fetchOne(transaction.database, sql: sql, arguments: arguments)
+    }
+
+    @objc
+    public class func hasPendingMessageRequest(thread: TSThread, transaction: GRDBReadTransaction) -> Bool {
+        // If the feature isn't enabled, do nothing.
+        guard RemoteConfig.messageRequests else { return false }
+
+        // If we're creating the thread, don't show the message request view
+        guard thread.shouldThreadBeVisible else { return false }
+
+        // If the thread is already whitelisted, do nothing. The user has already
+        // accepted the request for this thread.
+        guard !SSKEnvironment.shared.profileManager.isThread(
+            inProfileWhitelist: thread,
+            transaction: transaction.asAnyRead
+        ) else { return false }
+
+        let interactionFinder = GRDBInteractionFinderAdapter(threadUniqueId: thread.uniqueId)
+
+        let hasSentMessages = interactionFinder.existsOutgoingMessage(transaction: transaction)
+        guard !hasSentMessages || FeatureFlags.phoneNumberPrivacy else { return false }
+
+        if thread.isGroupThread(),
+            interactionFinder.hasGroupUpdateInfoMessage(transaction: transaction) {
+            return true
+        }
+
+        // This thread is likely only visible because of system messages like so-and-so
+        // is on signal or sync status. Some of the "possibly" incoming messages might
+        // actually have been triggered by us, but if we sent one of these then the thread
+        // should be in our profile white list and not make it to this check.
+        guard interactionFinder.possiblyHasIncomingMessages(transaction: transaction) else { return false }
+
+        return true
     }
 }

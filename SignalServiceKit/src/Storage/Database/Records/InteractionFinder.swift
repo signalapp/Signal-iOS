@@ -451,7 +451,7 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
             // members who's test devices are constantly reinstalled. We could add a
             // purpose-built DB view, but I think in the real world this is rare to be a
             // hotspot.
-            if (missedCount > 50) {
+            if missedCount > 50 {
                 Logger.warn("found last interaction for inbox after skipping \(missedCount) items")
             }
         }
@@ -1033,6 +1033,55 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         """
         let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+    }
+
+    func hasGroupUpdateInfoMessage(transaction: GRDBReadTransaction) -> Bool {
+        let sql = """
+        SELECT EXISTS(
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+            AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
+            LIMIT 1
+        )
+        """
+        let arguments: StatementArguments = [threadUniqueId]
+        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
+    }
+
+    func possiblyHasIncomingMessages(transaction: GRDBReadTransaction) -> Bool {
+        // All of these message types could have been triggered by anyone in
+        // the conversation. So, if one of them exists we have to assume the conversation
+        // *might* have received messages. At some point it'd be nice to refactor this to
+        // be more explict, but not all our interaction types allow for that level of
+        // granularity presently.
+
+        let interactionTypes: [SDSRecordType] = [
+            .incomingMessage,
+            .disappearingConfigurationUpdateInfoMessage,
+            .unknownProtocolVersionMessage,
+            .verificationStateChangeMessage,
+            .call,
+            .errorMessage,
+            .invalidIdentityKeyErrorMessage,
+            .invalidIdentityKeyReceivingErrorMessage,
+            .invalidIdentityKeySendingErrorMessage
+        ]
+
+        let sqlInteractionTypes = interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")
+
+        let sql = """
+        SELECT EXISTS(
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) IN (\(sqlInteractionTypes))
+            LIMIT 1
+        )
+        """
+        let arguments: StatementArguments = [threadUniqueId]
+        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
     }
 
     #if DEBUG

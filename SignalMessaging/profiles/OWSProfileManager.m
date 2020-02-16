@@ -699,7 +699,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)logProfileWhitelist
 {
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         OWSLogError(@"%@: %lu",
             self.whitelistedPhoneNumbersStore.collection,
             (unsigned long)[self.whitelistedPhoneNumbersStore numberOfKeysWithTransaction:transaction]);
@@ -791,6 +791,23 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     [self addConfirmedUnwhitelistedAddresses:addressesToAdd
                          wasLocallyInitiated:wasLocallyInitiated
                                  transaction:transaction];
+}
+
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+               wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                       transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(addresses);
+    OWSAssertDebug(transaction);
+
+    NSSet<SignalServiceAddress *> *addressesToAdd = [self addressesNotBlockedOrInWhitelist:addresses
+                                                                               transaction:transaction];
+
+    if (addressesToAdd.count < 1) {
+        return;
+    }
+
+    [self addConfirmedUnwhitelistedAddresses:addressesToAdd wasLocallyInitiated:YES transaction:transaction];
 }
 
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
@@ -1138,6 +1155,28 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress];
+    }
+}
+
+- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(thread);
+
+    if (thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        NSData *groupId = groupThread.groupModel.groupId;
+        [self addGroupIdToProfileWhitelist:groupId wasLocallyInitiated:YES transaction:transaction];
+
+        // When we add a group to the profile whitelist, we might as well
+        // also add all current members to the profile whitelist
+        // individually as well just in case delivery of the profile key
+        // fails.
+        [self addUsersToProfileWhitelist:groupThread.recipientAddresses
+                     wasLocallyInitiated:YES
+                             transaction:transaction];
+    } else {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        [self addUserToProfileWhitelist:contactThread.contactAddress wasLocallyInitiated:YES transaction:transaction];
     }
 }
 

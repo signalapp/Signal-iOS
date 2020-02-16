@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -35,7 +35,7 @@ class MessageRequestView: UIStackView {
 
         var hasSentMessages = false
         databaseStorage.uiRead { transaction in
-            hasSentMessages = ThreadUtil.existsOutgoingMessage(thread, transaction: transaction)
+            hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
         }
 
         // If phone number privacy feature is not enabled, we expect this

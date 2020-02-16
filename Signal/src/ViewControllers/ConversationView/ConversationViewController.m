@@ -116,7 +116,6 @@ typedef enum : NSUInteger {
     LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,
-    MessageActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
     OWSMessageStickerViewDelegate,
     OWSMessageViewOnceViewDelegate,
@@ -136,6 +135,8 @@ typedef enum : NSUInteger {
     ForwardMessageDelegate>
 
 @property (nonatomic) TSThread *thread;
+@property (nonatomic) ThreadViewModel *threadViewModel;
+
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
@@ -483,6 +484,10 @@ typedef enum : NSUInteger {
     OWSLogInfo(@"configureForThread.");
 
     _thread = thread;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        self->_threadViewModel = [[ThreadViewModel alloc] initWithThread:thread transaction:transaction];
+    }];
+
     self.actionOnOpen = action;
     _cellMediaCache = [NSCache new];
     // Cache the cell media for ~24 cells.
@@ -748,7 +753,9 @@ typedef enum : NSUInteger {
     // unless it ever becomes possible to load this VC without going via the ConversationListViewController.
     [self.contactsManager requestSystemContactsOnce];
 
-    [self updateDisappearingMessagesConfigurationWithSneakyTransaction];
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
+    }];
 
     [self updateBarButtonItems];
     [self updateNavigationTitle];
@@ -1662,6 +1669,9 @@ typedef enum : NSUInteger {
         return;
     }
 
+    // We initiated a call, so if there was a pending message request we should accept it.
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
+
     [self.outboundCallInitiator initiateCallWithAddress:contactThread.contactAddress isVideo:isVideo];
 }
 
@@ -1671,12 +1681,20 @@ typedef enum : NSUInteger {
         return NO;
     }
 
-    TSContactThread *_Nullable contactThread;
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        contactThread = (TSContactThread *)self.thread;
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        return NO;
     }
 
-    return !(self.isGroupConversation || contactThread.contactAddress.isLocalAddress);
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    if (contactThread.isNoteToSelf) {
+        return NO;
+    }
+
+    if (self.threadViewModel.hasPendingMessageRequest) {
+        return NO;
+    }
+
+    return YES;
 }
 
 #pragma mark - Dynamic Text
@@ -1718,7 +1736,7 @@ typedef enum : NSUInteger {
 {
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThread:self.thread];
+    [settingsVC configureWithThreadViewModel:self.threadViewModel];
     settingsVC.showVerificationOnAppear = showVerification;
 
     [self.navigationController setViewControllers:[self.viewControllersUpToSelf arrayByAddingObject:settingsVC]
@@ -1729,7 +1747,7 @@ typedef enum : NSUInteger {
 {
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThread:self.thread];
+    [settingsVC configureWithThreadViewModel:self.threadViewModel];
 
     MediaTileViewController *allMedia = [[MediaTileViewController alloc] initWithThread:self.thread];
 
@@ -1828,13 +1846,6 @@ typedef enum : NSUInteger {
     if (valueChanged) {
         [self resetContentAndLayoutWithTransaction:transaction];
     }
-}
-
-- (void)updateDisappearingMessagesConfigurationWithSneakyTransaction
-{
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
-    }];
 }
 
 - (void)updateDisappearingMessagesConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -2070,67 +2081,7 @@ typedef enum : NSUInteger {
     [self.navigationController popToViewController:self animated:YES];
 }
 
-#pragma mark - MessageActionsViewControllerDelegate
-
-- (void)messageActionsViewControllerRequestedDismissal:(MessageActionsViewController *)messageActionsViewController
-                                            withAction:(nullable MessageAction *)action
-{
-    NSString *_Nullable messageActionInteractionId = messageActionsViewController.focusedInteraction.uniqueId;
-    if (messageActionInteractionId == nil) {
-        OWSFailDebug(@"Missing message action interaction.");
-        return;
-    }
-
-    UIView *_Nullable sender;
-    NSNumber *_Nullable interactionIndex
-        = self.conversationViewModel.viewState.interactionIndexMap[messageActionInteractionId];
-    if (interactionIndex) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:interactionIndex.integerValue inSection:0];
-        if ([self.collectionView.indexPathsForVisibleItems containsObject:indexPath]) {
-            UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
-            if ([cell isKindOfClass:[OWSMessageCell class]]) {
-                sender = [(OWSMessageCell *)cell messageView];
-            } else {
-                sender = cell;
-            }
-        }
-    }
-
-    [self dismissMessageActionsAnimated:YES
-                             completion:^{
-                                 if (action) {
-                                     action.block(sender);
-                                 }
-                             }];
-}
-
-- (void)messageActionsViewControllerRequestedDismissal:(MessageActionsViewController *)messageActionsViewController
-                                          withReaction:(NSString *)reaction
-                                            isRemoving:(BOOL)isRemoving
-{
-    [self
-        dismissMessageActionsAnimated:YES
-                           completion:^{
-                               if (![messageActionsViewController.focusedInteraction isKindOfClass:[TSMessage class]]) {
-                                   OWSFailDebug(@"Not sending reaction for unexpected interaction type");
-                                   return;
-                               }
-
-                               TSMessage *message = (TSMessage *)messageActionsViewController.focusedInteraction;
-
-                               [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                   [OWSReactionManager localUserReactedToMessage:message
-                                                                           emoji:reaction
-                                                                      isRemoving:isRemoving
-                                                                     transaction:transaction];
-
-                                   // Mark the reactions experience upgrade complete if the user
-                                   // sends a reaction, even if they didn't dismiss it directly.
-                                   [ExperienceUpgradeManager
-                                       clearReactionsExperienceUpgradeWithTransaction:transaction.unwrapGrdbWrite];
-                               }];
-                           }];
-}
+#pragma mark -
 
 - (void)presentMessageActions:(NSArray<MessageAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {
@@ -2284,6 +2235,26 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewCellDelegate
 
+- (BOOL)conversationCell:(ConversationViewCell *)cell shouldAllowReplyForItem:(nonnull id<ConversationViewItem>)viewItem
+{
+    if (self.threadViewModel.hasPendingMessageRequest) {
+        return NO;
+    }
+
+    if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
+            // Don't allow "delete" or "reply" on "failed" outgoing messages.
+            return NO;
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
+            // Don't allow "delete" or "reply" on "sending" outgoing messages.
+            return NO;
+        }
+    }
+
+    return YES;
+}
+
 - (void)conversationCell:(ConversationViewCell *)cell
              shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem
@@ -2325,12 +2296,15 @@ typedef enum : NSUInteger {
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressSticker:(id<ConversationViewItem>)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell
+        shouldAllowReply:(BOOL)shouldAllowReply
+     didLongpressSticker:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
-
     NSArray<MessageAction *> *messageActions =
-        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem shouldAllowReply:YES delegate:self];
+        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem
+                                                         shouldAllowReply:shouldAllowReply
+                                                                 delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
@@ -2390,6 +2364,11 @@ typedef enum : NSUInteger {
                                                     message:(TSMessage *)viewItem.interaction];
     [self presentViewController:detailSheet animated:YES completion:nil];
     self.reactionsDetailSheet = detailSheet;
+}
+
+- (BOOL)conversationCellHasPendingMessageRequest:(ConversationViewCell *)cell
+{
+    return self.threadViewModel.hasPendingMessageRequest;
 }
 
 - (void)reloadReactionsDetailSheetWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -3281,11 +3260,12 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"Sending contact share.");
 
-    BOOL didAddToProfileWhitelist =
-        [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
-
+    __block BOOL didAddToProfileWhitelist;
     [self.databaseStorage
         asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread
+                                                                                          transaction:transaction];
+
             // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
             // preparation rather than duplicated here and in the SAE
             if (contactShare.avatarImage) {
@@ -3735,6 +3715,9 @@ typedef enum : NSUInteger {
                                         groupUpdateSourceAddress:localAddress
                                                      transaction:transaction
                                                            error:&error];
+
+        // We updated the group, so if there was a pending message request we should accept it.
+        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:newThread transaction:transaction];
     }];
     if (error != nil || newThread == nil) {
         OWSFailDebug(@"Error: %@", error);
@@ -3909,7 +3892,7 @@ typedef enum : NSUInteger {
         }
 
         BOOL didAddToProfileWhitelist =
-            [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
+            [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
 
         __block TSOutgoingMessage *message;
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
@@ -4359,7 +4342,7 @@ typedef enum : NSUInteger {
     }
 
     BOOL didAddToProfileWhitelist =
-        [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
+        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
     __block TSOutgoingMessage *message;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -4964,9 +4947,11 @@ typedef enum : NSUInteger {
         // viewWillAppear will call resetContentAndLayout.
         return;
     }
-
+    [self.thread anyReloadWithTransaction:transaction];
+    self.threadViewModel = [[ThreadViewModel alloc] initWithThread:self.thread transaction:transaction];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
+    [self updateBarButtonItems];
 
     // If the message has been deleted / disappeared, we need to dismiss
     [self dismissMessageActionsIfNecessary];
@@ -4974,7 +4959,6 @@ typedef enum : NSUInteger {
     [self reloadReactionsDetailSheetWithTransaction:transaction];
 
     if (self.isGroupConversation) {
-        [self.thread anyReloadWithTransaction:transaction];
         [self updateNavigationTitle];
     }
     [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
@@ -5048,6 +5032,8 @@ typedef enum : NSUInteger {
         // We can't use the transaction parameter; this completion
         // will be run async.
         [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
+
+        [self showMessageRequestDialogIfRequired];
 
         if (scrollToBottom) {
             [self scrollToBottomAnimated:NO];
@@ -5322,21 +5308,17 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    __block BOOL hasPendingMessageRequest = NO;
-
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasPendingMessageRequest = [ThreadUtil hasPendingMessageRequest:self.thread transaction:transaction];
-    }];
-
-    // We're currently showing the message request view but no longer need to,
-    // probably because this request was accepted on another device. Dismiss it.
-    if (self.messageRequestView && !hasPendingMessageRequest) {
-        [self dismissMessageRequestView];
+    if (!self.threadViewModel.hasPendingMessageRequest) {
+        if (self.messageRequestView) {
+            // We're currently showing the message request view but no longer need to,
+            // probably because this request was accepted on another device. Dismiss it.
+            [self dismissMessageRequestView];
+        }
         return;
     }
 
-    // If we don't have a pending message request, or it's already presented, do nothing.
-    if (!hasPendingMessageRequest || self.messageRequestView) {
+    // If it's already presented, do nothing.
+    if (self.messageRequestView) {
         return;
     }
 
