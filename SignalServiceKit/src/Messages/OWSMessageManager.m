@@ -1360,7 +1360,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Ensure sender is in the group.
-    if (![gThread.groupModel.groupMemberIds containsObject:envelope.source]) {
+    if (![gThread isUserInGroup:envelope.source transaction:transaction]) {
         OWSLogWarn(@"Ignoring 'Request Group Info' message for non-member of group. %@ not in %@",
             envelope.source,
             gThread.groupModel.groupMemberIds);
