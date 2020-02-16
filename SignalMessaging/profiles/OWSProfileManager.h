@@ -50,7 +50,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (void)updateLocalProfileName:(nullable NSString *)profileName
                    avatarImage:(nullable UIImage *)avatarImage
                        success:(void (^)(void))successBlock
-                       failure:(void (^)(void))failureBlock;
+                       failure:(void (^)(NSError *))failureBlock;
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
 

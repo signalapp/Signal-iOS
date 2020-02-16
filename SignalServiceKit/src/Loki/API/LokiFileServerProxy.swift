@@ -106,7 +106,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                 print("[Loki] Received an invalid response.")
                 throw Error.proxyResponseParsingFailed
             }
-            let isSuccess = (200..<300).contains(statusCode)
+            let isSuccess = (200...299) ~= statusCode
             guard isSuccess else { throw HTTPError.networkError(code: statusCode, response: nil, underlyingError: Error.fileServerHTTPError(code: statusCode, message: nil)) }
             let uncheckedJSONAsData = try DiffieHellman.decrypt(cipherText, using: symmetricKey)
             if uncheckedJSONAsData.isEmpty { return () }

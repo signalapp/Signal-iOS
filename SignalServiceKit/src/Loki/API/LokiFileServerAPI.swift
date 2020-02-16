@@ -138,6 +138,9 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     // MARK: Profile Pictures (Public API)
     public static func setProfilePicture(_ profilePicture: Data) -> Promise<String> {
         return Promise<String>() { seal in
+            guard profilePicture.count < maxFileSize else {
+                return seal.reject(LokiDotNetAPIError.maxFileSizeExceeded)
+            }
             getAuthToken(for: server).done { token in
                 let url = "\(server)/users/me/avatar"
                 let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
@@ -150,24 +153,15 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                     print("[Loki] Couldn't upload profile picture due to error: \(error).")
                     throw error
                 }
-                let task = AFURLSessionManager(sessionConfiguration: .default).uploadTask(withStreamedRequest: request as URLRequest, progress: nil, completionHandler: { response, responseObject, error in
-                    if let error = error {
-                        print("[Loki] Couldn't upload profile picture due to error: \(error).")
-                        return seal.reject(error)
-                    }
-                    let statusCode = (response as! HTTPURLResponse).statusCode
-                    let isSuccessful = (200...299) ~= statusCode
-                    guard isSuccessful else {
-                        print("[Loki] Couldn't upload profile picture.")
-                        return seal.reject(LokiDotNetAPIError.generic)
-                    }
+                let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done { responseObject in
                     guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let profilePicture = data["avatar_image"] as? JSON, let downloadURL = profilePicture["url"] as? String else {
                         print("[Loki] Couldn't parse profile picture from: \(responseObject).")
                         return seal.reject(LokiDotNetAPIError.parsingFailed)
                     }
                     return seal.fulfill(downloadURL)
-                })
-                task.resume()
+                }.catch { error in
+                    seal.reject(error)
+                }
             }.catch { error in
                 print("[Loki] Couldn't upload profile picture due to error: \(error).")
                 seal.reject(error)
