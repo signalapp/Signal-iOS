@@ -210,9 +210,14 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         let hasSentMessages = interactionFinder.existsOutgoingMessage(transaction: transaction)
         guard !hasSentMessages || FeatureFlags.phoneNumberPrivacy else { return false }
 
-        if thread.isGroupThread(),
-            interactionFinder.hasGroupUpdateInfoMessage(transaction: transaction) {
-            return true
+        if let groupThread = thread as? TSGroupThread {
+            guard groupThread.isLocalUserInGroup() else {
+                return false
+            }
+
+            if interactionFinder.hasGroupUpdateInfoMessage(transaction: transaction) {
+                return true
+            }
         }
 
         // This thread is likely only visible because of system messages like so-and-so
