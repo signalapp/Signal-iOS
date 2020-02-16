@@ -1225,7 +1225,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Inizia qui la tua prima conversazione.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Richiesta Messaggio";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Richiesta di messaggio";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nessun risultato trovato per '%@'";
@@ -1540,19 +1540,19 @@
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Condividi profilo";
 
 /* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Ora puoi scegliere se accettare una nuova conversazione. Vedrai le opzioni \"Accetta\", \"Elimina\" e \"Blocca\".";
 
 /* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Nuovo: Richieste di messaggi";
 
 /* Header for message requests splash screen */
-"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Ti presentiamo le richieste di messaggi";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Aggiungi nome profilo";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Ora puoi scegliere di \"Accetta\"re o \"Elimina\"re una nuova conversazione. I nomi fanno sapere alle persone chi sta inviando loro i messaggi.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Il tuo nome profilo è stato salvato.";

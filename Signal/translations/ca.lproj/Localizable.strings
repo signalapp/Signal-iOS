@@ -29,11 +29,11 @@
 "ACTION_AUDIO_CALL" = "Trucada Signal";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Convida al Signal";
+"ACTION_INVITE" = "Convida'l al Signal";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Envia-li un missatge";
+"ACTION_SEND_MESSAGE" = "Envieu-li un missatge";
 
 /* Label for 'share contact' button. */
 "ACTION_SHARE_CONTACT" = "Comparteix el contacte";
@@ -438,7 +438,7 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Mostra la configuració de privadesa";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Vanvia direcció de la càmera";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Canvia direcció de la càmera";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Canvia a trucada d'àudio";
@@ -450,13 +450,13 @@
 "CALL_WINDOW_RETURN_TO_CALL" = "Toca per retornar la trucada";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Torna-li la trucada";
+"CALLBACK_BUTTON_TITLE" = "Torneu-li la trucada";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Usuari del Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Fes una fotografia i envia-la";
+"CAMERA_BUTTON_HINT" = "Feu una fotografia i envieu-la";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Càmera";
@@ -483,13 +483,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Restaura";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal no ha pogut determinar l'estat del compte iCloud. Identifica't amb teu compte iCloud als ajustos d'iOS per fer la còpia de seguretat de les dades de Signal";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal no ha pogut determinar l'estat del compte d'iCloud. Identifiqueu-vos amb compte d'iCloud als paràmetres d'iOS per fer la còpia de seguretat de les dades del Signal";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No hi ha compte iCloud. Identifica't amb teu compte iCloud als ajustos d'iOS per fer la còpia de seguretat de les dades de Signal";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No hi ha compte d'iCloud. Identifiqueu-vos amb compte iCloud als paràmetres d'iOS per fer la còpia de seguretat de les dades del Signal";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal no ha obtingut permís per accedir a les còpies de seguretat del teu compte iCloud. Dona accés a Signal als ajustos d'iOS per fer la còpia de seguretat de les dades de Signal.";
+"CLOUDKIT_STATUS_RESTRICTED" = "El Signal no ha obtingut permís per accedir a les còpies de seguretat del compte d'iCloud. Permeteu-hi l'accés al Signal als paràmetres d'iOS per fer la còpia de seguretat de les dades de Signal.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Trieu el color dels missatges enviats en aquesta conversa.";
@@ -819,7 +819,7 @@
 "DEBUG_LOG_ALERT_NO_LOGS" = "No s'ha pogut trobar cap registre.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Crea un informe d'error";
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Obriu un informe d'error";
 
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copia l'enllaç";
@@ -1003,7 +1003,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Resposta invàlida del servei";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Aquest dispositiu ja no està registrat amb el teu numéro de telèfon. Torna a installar Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Aquest dispositiu ja no està registrat amb el número de telèfon. Torneu a instal·lar el Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Error del servidor. Proveu de nou més tard.";
@@ -1072,7 +1072,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Massa errors amb aquest contacte. Torna-ho a intentar més tard";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "El teu codi de seguretat amb %@ ha canviat recentment. Potser vols comprovar-lo abans de tornar a enviar aquest missatge.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "El codi de seguretat amb %@ ha canviat recentment. Potser voleu comprovar-lo abans de tornar a enviar aquest missatge.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "No s'ha pogut verificar els números.";
@@ -1105,7 +1105,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Fitxer adjunt";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Error descarregant el GIF demanat. Comprova que estàs on-line.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Ha fallat obtenir el GIF demanat. Comproveu que estigueu en línia.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "S'ha produït un error desconegut.";
@@ -1114,7 +1114,7 @@
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Error descarregant el GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Entra el que vols buscar";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Si us plau, escriviu el que cerqueu.";
 
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Cerca GIF";
@@ -1126,7 +1126,7 @@
 "GIF_VIEW_SEARCH_NO_RESULTS" = "No hi ha cap resultat.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Entra el que vols buscar";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Escriviu el que cerqueu.";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Aquesta versió del Signal inclou optimitzacions de bases de dades i millores de rendiment. És possible que hàgiu d’obrir l’aplicació per completar el procés.";
@@ -1363,7 +1363,7 @@
 "LEAVE_BUTTON_TITLE" = "Surt";
 
 /* table cell label in conversation settings */
-"LEAVE_GROUP_ACTION" = "Surt del grup";
+"LEAVE_GROUP_ACTION" = "Abandona el grup";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Aquest codi QR no és vàlid. Si us plau, assegureu-vos que escanegeu el codi QR que es mostra al dispositiu que voleu enllaçar.";
@@ -1378,7 +1378,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Voleu enllaçar aquest dispositiu?";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "Trona a provar-ho";
+"LINK_DEVICE_RESTART" = "Troneu a provar-ho";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Escanegeu el codi QR que es mostra al dispositiu que voleu enllaçar.";
@@ -1387,7 +1387,7 @@
 "LINK_NEW_DEVICE_SUBTITLE" = "Escaneja el codi QR";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Enllaça un dispositiu nou";
+"LINK_NEW_DEVICE_TITLE" = "Enllaceu un dispositiu nou";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Previsualització de l'enllaç.";
@@ -1540,19 +1540,19 @@
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Comparteix el perfil";
 
 /* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Ara podeu triar si acceptar una conversa nova. Veureu les opcions d'acceptar, suprimir o blocar.";
 
 /* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Nou: peticions de missatges";
 
 /* Header for message requests splash screen */
-"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "S'introdueixen les peticions de missatges";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Afegiu un nom de perfil";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Ara podeu triar d'acceptar o suprimir una conversa nova. Els noms permeten saber qui envia els missatges.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "S'ha desat el nom de perfil.";
@@ -1900,7 +1900,7 @@
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha desactivat els missatges efímers.";
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha establit el temps dels missatges efímers en %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha establert el temps dels missatges efímers a %@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "El Signal està patint problemes tècnics. Este treballant per a recuperar el servei tan ràpid com sigui possible.";
@@ -2053,7 +2053,7 @@
 "PIN_REMINDER_FORGOT_PIN" = "Heu oblidat el PIN?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Verifica el PIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Verifiqueu el PIN";
 
 /* Body for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_BODY" = "De tant en tant us demanarem de verificar el PIN perquè el recordeu.";
@@ -2560,7 +2560,7 @@
 "SEND_BUTTON_TITLE" = "Envia";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "El teu missatge no s'ha enviat.";
+"SEND_FAILED_NOTIFICATION_BODY" = "El missatge no s'ha enviat.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Ha fallat l'enviament de la invitació, torneu a provar-ho més tard.";
@@ -3247,4 +3247,4 @@
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Heu desactivat els missatges efímers.";
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Heu establit el temps dels missatges efímers en %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Heu establert el temps dels missatges efímers a %@.";

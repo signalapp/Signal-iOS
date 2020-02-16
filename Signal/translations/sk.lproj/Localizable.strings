@@ -534,7 +534,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Toto zresetuje aplikáciu prostredníctvom vymazania všetkých vašich správ z tohoto zariadenia. Stále budete môcť váš telefón pripojiť, ale vymazané správy to neobnoví. Po dokončení tohoto procesu sa aplikácia zatvorí. ";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Ste si istý/istá, že chcete vymazať všetky dáta?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Ste si istý/á, že chcete vymazať všetky dáta?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Nebudete môcť poslať ani prijať správy z tejto skupiny.";
@@ -648,7 +648,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Túto akciu nie je možné vrátiť späť.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Zmazať konverzáciu?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Vymazať konverzáciu?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Nemôžete vybrať viac ako %@ konverzácií.";
@@ -1423,7 +1423,7 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Fotoalbum";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Zmazať %d správ";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Vymazať %d správ";
 
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Vymazať správu";
@@ -1540,19 +1540,19 @@
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Zdieľať profil";
 
 /* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Teraz si môžete vybrať, či prijmete novú konverzáciu. Zobrazia sa vám možnosti ”Prijať,“ ”Vymazať,“ alebo ”Blokovať.“";
 
 /* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Novinka: Žiadosti o správu";
 
 /* Header for message requests splash screen */
-"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Predstavujeme žiadosti o správu";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Pridať názov profilu";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Teraz si môžete vybrať, či ”Prijať” alebo ”Vymazať“ novú konverzáciu. Názvy umožňujú ľuďom vedieť, kto im píše.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Názov vášho profilu bol uložený.";
@@ -2707,7 +2707,7 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licencované pod GPLv3";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Zmazať účet";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Vymazať účet";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Vymazať všetky dáta";
@@ -3055,7 +3055,7 @@
 "TXT_CANCEL_TITLE" = "Zrušiť";
 
 /* No comment provided by engineer. */
-"TXT_DELETE_TITLE" = "Zmazať";
+"TXT_DELETE_TITLE" = "Vymazať";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Vybrať z archívu";

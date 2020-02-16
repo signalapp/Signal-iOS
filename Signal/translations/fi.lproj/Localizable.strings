@@ -1540,19 +1540,19 @@
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Jaa profiili";
 
 /* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Voit nyt valita, hyväksytkö uuden keskustelun. Tulet näkemään vaihtoehdot \"hyväksy\", \"poista\" tai \"estä\".";
 
 /* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Uusi: Viestipyyntö";
 
 /* Header for message requests splash screen */
-"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Esittelemme viestipyynnöt";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Lisää profiilinimi";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Voit nyt valita \"hyväksyä\" tai \"poistaa\" uuden keskustelun. Nimet kertovat ihmisille, kuka viestii heille.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Profiilinimesi on tallennettu.";

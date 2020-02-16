@@ -1540,19 +1540,19 @@
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Partager le profil";
 
 /* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Vous pouvez maintenant choisir d’accepter ou non une nouvelle conversation. Vous verrez les options « Accepter », « Supprimer » ou « Bloquer ».";
 
 /* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Nouveau : les demandes de contact";
 
 /* Header for message requests splash screen */
-"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Nous présentons les demandes de contact";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Ajouter un nom de profil";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Vous pouvez maintenant choisir d’« Accepter » ou de « Supprimer » une nouvelle conversation. Les noms permettent aux gens de savoir qui leur envoie un message.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Votre nom de profil a été enregistré.";
@@ -2164,7 +2164,7 @@
 "PROCEED_BUTTON" = "Continuer";
 
 /* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Commençons";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Votre profil peut désormais comporter un nom de famille facultatif.";
@@ -2173,7 +2173,7 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirmez votre nom de profil";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Il s’affichera lorsque vous entamerez ou partagerez une nouvelle conversation.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Il s’affichera quand vous lancerez une nouvelle conversation ou la partagerez.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Ajouter un nom de profil.";
@@ -2767,7 +2767,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Votre NIP ajoute une couche supplémentaire de sécurité à votre compte. Il vous sera demandé quand vous enregistrerez votre numéro de téléphone sur Signal. Si vous oubliez votre NIP, votre compte sera verrouillé pendant 7 jours.";
+"SETTINGS_PINS_FOOTER" = "Votre NIP ajoute une couche supplémentaire de sécurité à votre compte. Il vous sera demandé quand vous inscrirez votre numéro de téléphone auprès de Signal. Si vous oubliez votre NIP, votre compte sera verrouillé pendant sept jours.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Changer votre NIP";

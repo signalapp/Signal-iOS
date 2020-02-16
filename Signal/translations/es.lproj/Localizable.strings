@@ -1105,7 +1105,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Adjunto";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Fallo al descargar el GIF seleccionado. Verifica que el iPhone tiene conexión a internet.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Fallo al descargar el GIF solicitado. Verifica que tienes conexión a internet.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Ocurrió un fallo desconocido.";
@@ -1540,22 +1540,22 @@
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Compartir perfil";
 
 /* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Ahora puedes decidir si aceptas una solicitud de chat. Podrás elegir entre «Aceptar», «Eliminar» o «Bloquear».";
 
 /* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Nuevo: Solicitudes de chat";
 
 /* Header for message requests splash screen */
-"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "¡Las solicitudes de chat han llegado!";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Añadir nombre al perfil";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Ahora puedes decidir en «Aceptar» o «Eliminar» un nuevo chat. El nombre de perfil ayuda a saber quién está al otro lado.";
 
 /* Toast indicating that a profile name has been created. */
-"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Tu nombre de perfil se ha guardado.";
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "El nombre se ha guardado en tu perfil.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Entregado";
@@ -2176,10 +2176,10 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Se mostrará al iniciar un nuevo chat o al compartirlo.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Añadir un nombre de perfil";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Añade tu nombre al perfil";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Tu nombre de perfil se ha guardado.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Tu nombre se ha guardado en el perfil.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Seleccionar foto para perfil";
@@ -2536,7 +2536,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instala Signal en tu teléfono";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Toca en tu avatar de perfil para abrir los ajustes de Signal en tu teléfono. Ve a «Dispositivos enlazados» y «Enlazar nuevo dispositivo» para escanear este código con tu teléfono:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Toca en la foto de tu perfil para abrir los ajustes de Signal. Ve a «Dispositivos enlazados» y «Enlazar nuevo dispositivo» para escanear este código con tu teléfono:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Consigue ayuda para enlazar tu iPad aquí";
@@ -2875,7 +2875,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir de cualquiera";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Al activar la opción, usuarios de Signal que no estén entre tus contactos y con los que no has compartido tu perfil pueden enviarte mensajes con remitente sellado.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Activa «remitente sellado» para mensajes de usuarios de Signal que no estén entre tus contactos y con los que no has compartido tu perfil.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versión";
