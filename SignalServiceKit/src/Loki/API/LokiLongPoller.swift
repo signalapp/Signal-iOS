@@ -83,13 +83,8 @@ public final class LokiLongPoller : NSObject {
         return LokiAPI.getRawMessages(from: target, usingLongPolling: true).then(on: DispatchQueue.global()) { [weak self] rawResponse -> Promise<Void> in
             guard let strongSelf = self, !strongSelf.hasStopped else { return Promise.value(()) }
             let messages = LokiAPI.parseRawMessagesResponse(rawResponse, from: target)
-            let hexEncodedPublicKeys = Set(messages.compactMap { $0.source })
-            let promises = hexEncodedPublicKeys.map { LokiAPI.getDestinations(for: $0) }
-            return when(resolved: promises).then(on: DispatchQueue.global()) { _ -> Promise<Void> in
-                guard let strongSelf = self, !strongSelf.hasStopped else { return Promise.value(()) }
-                strongSelf.onMessagesReceived(messages)
-                return strongSelf.longPoll(target, seal: seal)
-            }
+            strongSelf.onMessagesReceived(messages)
+            return strongSelf.longPoll(target, seal: seal)
         }
     }
 }
