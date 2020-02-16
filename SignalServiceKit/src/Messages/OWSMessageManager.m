@@ -1014,6 +1014,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           messageType:TSInfoMessageTypeGroupUpdate
                                                                         customMessage:updateMessage];
                 [infoMessage saveWithTransaction:transaction];
+            } else if (transcript.isGroupQuit) {
+                TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:transcript.dataMessage.group.id groupType:closedGroup transaction:transaction];
+                [groupThread leaveGroupWithTransaction:transaction];
+                TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp
+                                                                             inThread:groupThread
+                                                                          messageType:TSInfoMessageTypeGroupQuit
+                                                                        customMessage:NSLocalizedString(@"GROUP_YOU_LEFT", nil)];
+                [infoMessage saveWithTransaction:transaction];
             } else {
                 [OWSRecordTranscriptJob
                  processIncomingSentMessageTranscript:transcript
@@ -1108,14 +1116,12 @@ NS_ASSUME_NONNULL_BEGIN
             GroupParser *parser = [[GroupParser alloc] initWithData:data];
             NSArray<TSGroupModel *> *groupModels = [parser parseGroupModels];
             for (TSGroupModel *groupModel in groupModels) {
-                NSMutableSet *members = [NSMutableSet setWithArray:groupModel.groupMemberIds];
                 NSMutableSet *admins = [NSMutableSet setWithArray:groupModel.groupAdminIds];
-                [members addObject:userHexEncodedPublicKey];
                 if ([admins containsObject:masterHexEncodedPublicKey]) {
                     [admins addObject:userHexEncodedPublicKey];
                 }
                 TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:groupModel.groupName
-                                                                        memberIds:members.allObjects
+                                                                        memberIds:groupModel.groupMemberIds
                                                                             image:groupModel.groupImage
                                                                           groupId:groupModel.groupId
                                                                         groupType:groupModel.groupType
@@ -1132,7 +1138,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [messageSender sendMessage:message
                 success:^{
                     OWSLogDebug(@"Successfully sent group update for group sync");
-                    [self establishSessionsWithMembersIfNeeded:members.allObjects forThread:thread transaction:transaction];
+                    [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
                 }
                 failure:^(NSError *error) {
                     OWSLogError(@"Failed to send group update for group sync with error: %@", error);
