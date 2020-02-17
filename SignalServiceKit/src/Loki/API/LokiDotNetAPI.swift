@@ -100,10 +100,10 @@ public class LokiDotNetAPI : NSObject {
                     return seal.reject(error)
                 }
                 // Send the request
-                func parseResponse(_ response: Any) {
+                func parseResponse(_ responseObject: Any) {
                     // Parse the server ID & download URL
-                    guard let json = response as? JSON, let data = json["data"] as? JSON, let serverID = data["id"] as? UInt64, let downloadURL = data["url"] as? String else {
-                        print("[Loki] Couldn't parse attachment from: \(response).")
+                    guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let serverID = data["id"] as? UInt64, let downloadURL = data["url"] as? String else {
+                        print("[Loki] Couldn't parse attachment from: \(responseObject).")
                         return seal.reject(LokiDotNetAPIError.parsingFailed)
                     }
                     // Update the attachment
