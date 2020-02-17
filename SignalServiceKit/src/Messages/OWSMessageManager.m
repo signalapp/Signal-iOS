@@ -1401,9 +1401,6 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    dispatch_queue_t messageProcessingQueue = SSKEnvironment.shared.batchMessageProcessor.processingQueue.serialQueue;
-    AssertOnDispatchQueue(messageProcessingQueue);
-
     // The envelope source is set during UD decryption.
 
     if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source]) {
