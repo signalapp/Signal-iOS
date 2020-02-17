@@ -155,7 +155,7 @@ final class DisplayNameVC : UIViewController {
             return showError(title: NSLocalizedString("Please pick a shorter display name", comment: ""))
         }
         TSAccountManager.sharedInstance().didRegister()
-        OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
+        OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: nil, success: { }, failure: { _ in }, requiresSync: false) // Try to save the user name but ignore the result
         let homeVC = HomeVC()
         navigationController!.setViewControllers([ homeVC ], animated: true)
     }

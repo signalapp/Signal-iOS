@@ -237,7 +237,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 #pragma mark - Queue Processing
 
-@interface OWSMessageContentQueue : NSObject
+@interface OWSMessageContentQueue ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageContentJobFinder *finder;
@@ -365,20 +365,12 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 {
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    // Don't process incoming messages in app extensions.
-    if (!CurrentAppContext().isMainApp) {
-        return;
-    }
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        return;
-    }
+    if (!CurrentAppContext().isMainApp) { return; }
+    if (!self.tsAccountManager.isRegisteredAndReady) { return; }
 
     dispatch_async(self.serialQueue, ^{
-        if (self.isDrainingQueue) {
-            return;
-        }
+        if (self.isDrainingQueue) { return; }
         self.isDrainingQueue = YES;
-
         [self drainQueueWorkStep];
     });
 }
@@ -387,7 +379,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 {
     AssertOnDispatchQueue(self.serialQueue);
 
-    // We want a value that is just high enough to yield perf benefits.
+    // We want a value that is just high enough to yield performance benefits
     const NSUInteger kIncomingMessageBatchSize = 32;
 
     NSArray<OWSMessageContentJob *> *batchJobs = [self.finder nextJobsForBatchSize:kIncomingMessageBatchSize];
@@ -431,10 +423,8 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
             void (^reportFailure)(YapDatabaseReadWriteTransaction *transaction) = ^(
                 YapDatabaseReadWriteTransaction *transaction) {
-                // TODO: Add analytics.
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                    transaction:transaction];
+                [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage transaction:transaction];
             };
 
             @try {
@@ -449,9 +439,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                                                        serverID:0];
                 }
             } @catch (NSException *exception) {
-//                OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
                 reportFailure(transaction);
             }
+
             [processedJobs addObject:job];
 
             if (self.isAppInBackground) {
@@ -473,7 +463,6 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 @interface OWSBatchMessageProcessor ()
 
-@property (nonatomic, readonly) OWSMessageContentQueue *processingQueue;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
@@ -528,7 +517,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (envelopeData.length < 1) {
-        OWSFailDebug(@"Empty envelope.");
+        OWSFailDebug(@"Received an empty envelope.");
         return;
     }
     OWSAssert(transaction);

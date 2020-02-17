@@ -170,14 +170,14 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
                                                                     self.onboardingController.profileDidComplete(fromView: self)
                                                                 })
                                                             }
-                                                        }, failure: {
+                                                        }, failure: { _ in
                                                             DispatchQueue.main.async {
                                                                 modal.dismiss(completion: {
                                                                     OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_UPDATE_FAILED",
                                                                                                                         comment: "Error message shown when a profile update fails."))
                                                                 })
                                                             }
-                                                        })
+                                                        }, requiresSync: false)
         }
     }
 

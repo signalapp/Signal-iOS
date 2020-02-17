@@ -19,23 +19,23 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     // MARK: Device Links (Public API)
     /// Gets the device links associated with the given hex encoded public key from the
     /// server and stores and returns the valid ones.
-    public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> Promise<Set<DeviceLink>> {
-        return getDeviceLinks(associatedWith: [ hexEncodedPublicKey ])
+    public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Set<DeviceLink>> {
+        return getDeviceLinks(associatedWith: [ hexEncodedPublicKey ], in: transaction)
     }
     
     /// Gets the device links associated with the given hex encoded public keys from the
     /// server and stores and returns the valid ones.
-    public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> Promise<Set<DeviceLink>> {
+    public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Set<DeviceLink>> {
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
-        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
+        return getAuthToken(for: server, in: transaction).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
-            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse -> Set<DeviceLink> in
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { $0.responseObject }.map(on: DispatchQueue.global()) { rawResponse -> Set<DeviceLink> in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
-                    throw Error.parsingFailed
+                    throw LokiDotNetAPIError.parsingFailed
                 }
                 return Set(data.flatMap { data -> [DeviceLink] in
                     guard let annotations = data["annotations"] as? [JSON], !annotations.isEmpty else { return [] }
@@ -74,7 +74,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                         return deviceLink
                     }
                 })
-            }.map { deviceLinks -> Set<DeviceLink> in
+            }.map(on: DispatchQueue.global()) { deviceLinks -> Set<DeviceLink> in
                 storage.dbReadWriteConnection.readWrite { transaction in
                     storage.setDeviceLinks(deviceLinks, in: transaction)
                 }
@@ -138,6 +138,9 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     // MARK: Profile Pictures (Public API)
     public static func setProfilePicture(_ profilePicture: Data) -> Promise<String> {
         return Promise<String>() { seal in
+            guard profilePicture.count < maxFileSize else {
+                return seal.reject(LokiDotNetAPIError.maxFileSizeExceeded)
+            }
             getAuthToken(for: server).done { token in
                 let url = "\(server)/users/me/avatar"
                 let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
@@ -150,24 +153,15 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                     print("[Loki] Couldn't upload profile picture due to error: \(error).")
                     throw error
                 }
-                let task = AFURLSessionManager(sessionConfiguration: .default).uploadTask(withStreamedRequest: request as URLRequest, progress: nil, completionHandler: { response, responseObject, error in
-                    if let error = error {
-                        print("[Loki] Couldn't upload profile picture due to error: \(error).")
-                        return seal.reject(error)
-                    }
-                    let statusCode = (response as! HTTPURLResponse).statusCode
-                    let isSuccessful = (200...299) ~= statusCode
-                    guard isSuccessful else {
-                        print("[Loki] Couldn't upload profile picture.")
-                        return seal.reject(Error.generic)
-                    }
+                let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done { responseObject in
                     guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let profilePicture = data["avatar_image"] as? JSON, let downloadURL = profilePicture["url"] as? String else {
                         print("[Loki] Couldn't parse profile picture from: \(responseObject).")
-                        return seal.reject(Error.parsingFailed)
+                        return seal.reject(LokiDotNetAPIError.parsingFailed)
                     }
                     return seal.fulfill(downloadURL)
-                })
-                task.resume()
+                }.catch { error in
+                    seal.reject(error)
+                }
             }.catch { error in
                 print("[Loki] Couldn't upload profile picture due to error: \(error).")
                 seal.reject(error)

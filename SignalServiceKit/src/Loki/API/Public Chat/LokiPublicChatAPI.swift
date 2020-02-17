@@ -85,7 +85,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map { rawResponse in
             guard let json = rawResponse as? JSON, let rawMessages = json["data"] as? [JSON] else {
                 print("[Loki] Couldn't parse messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                throw Error.parsingFailed
+                throw LokiDotNetAPIError.parsingFailed
             }
             return rawMessages.flatMap { message in
                 let isDeleted = (message["is_deleted"] as? Int == 1)
@@ -97,11 +97,11 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                         print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(message).")
                         return nil
                 }
-                var avatar: LokiPublicChatMessage.Avatar? = nil
+                var profilePicture: LokiPublicChatMessage.ProfilePicture? = nil
                 let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
-                if let userAnnotations = user["annotations"] as? [JSON], let avatarAnnotation = userAnnotations.first(where: { $0["type"] as? String == profilePictureType }),
-                    let avatarValue = avatarAnnotation["value"] as? JSON, let profileKeyString = avatarValue["profileKey"] as? String, let profileKey = Data(base64Encoded: profileKeyString), let url = avatarValue["url"] as? String {
-                    avatar = LokiPublicChatMessage.Avatar(profileKey: profileKey, url: url)
+                if let userAnnotations = user["annotations"] as? [JSON], let profilePictureAnnotation = userAnnotations.first(where: { $0["type"] as? String == profilePictureType }),
+                    let profilePictureValue = profilePictureAnnotation["value"] as? JSON, let profileKeyString = profilePictureValue["profileKey"] as? String, let profileKey = Data(base64Encoded: profileKeyString), let url = profilePictureValue["url"] as? String {
+                    profilePicture = LokiPublicChatMessage.ProfilePicture(profileKey: profileKey, url: url)
                 }
                 let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
                 if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: channel, on: server, to: serverID) }
@@ -135,7 +135,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     return LokiPublicChatMessage.Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags,
                         width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
                 }
-                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: avatar,
+                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, profilePicture: profilePicture,
                     body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
                 guard result.hasValidSignature() else {
                     print("[Loki] Ignoring public chat message with invalid signature.")
@@ -155,7 +155,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
     
     public static func sendMessage(_ message: LokiPublicChatMessage, to channel: UInt64, on server: String) -> Promise<LokiPublicChatMessage> {
-        guard let signedMessage = message.sign(with: userKeyPair.privateKey) else { return Promise(error: Error.signingFailed) }
+        guard let signedMessage = message.sign(with: userKeyPair.privateKey) else { return Promise(error: LokiDotNetAPIError.signingFailed) }
         return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<LokiPublicChatMessage> in
             print("[Loki] Sending message to public chat channel with ID: \(channel) on server: \(server).")
             let url = URL(string: "\(server)/channels/\(channel)/messages")!
@@ -170,10 +170,10 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                 guard let json = rawResponse as? JSON, let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt64, let body = messageAsJSON["text"] as? String,
                     let dateAsString = messageAsJSON["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
                     print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                    throw Error.parsingFailed
+                    throw LokiDotNetAPIError.parsingFailed
                 }
                 let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, avatar: signedMessage.avatar, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
+                return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
             }
         }.recover(on: DispatchQueue.global()) { error -> Promise<LokiPublicChatMessage> in
             if let error = error as? NetworkManagerError, error.statusCode == 401 {
@@ -197,7 +197,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map { rawResponse in
             guard let json = rawResponse as? JSON, let deletions = json["data"] as? [JSON] else {
                 print("[Loki] Couldn't parse deleted messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                throw Error.parsingFailed
+                throw LokiDotNetAPIError.parsingFailed
             }
             return deletions.flatMap { deletion in
                 guard let serverID = deletion["id"] as? UInt64, let messageServerID = deletion["message_id"] as? UInt64 else {
@@ -231,7 +231,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map { rawResponse in
             guard let json = rawResponse as? JSON, let moderators = json["moderators"] as? [String] else {
                 print("[Loki] Couldn't parse moderators for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                throw Error.parsingFailed
+                throw LokiDotNetAPIError.parsingFailed
             }
             let moderatorAsSet = Set(moderators);
             if self.moderators.keys.contains(server) {
@@ -274,7 +274,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map { rawResponse in
                 guard let json = rawResponse as? JSON, let users = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse user count for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                    throw Error.parsingFailed
+                    throw LokiDotNetAPIError.parsingFailed
                 }
                 let userCount = users.count
                 let storage = OWSPrimaryStorage.shared()
@@ -298,7 +298,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map { rawResponse in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse display names for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
-                    throw Error.parsingFailed
+                    throw LokiDotNetAPIError.parsingFailed
                 }
                 storage.dbReadWriteConnection.readWrite { transaction in
                     data.forEach { data in
@@ -361,7 +361,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                 let info = annotation["value"] as? JSON,
                 let displayName = info["name"] as? String else {
                 print("[Loki] Couldn't parse info for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                throw Error.parsingFailed
+                throw LokiDotNetAPIError.parsingFailed
             }
             return LokiPublicChatInfo(displayName: displayName)
         }

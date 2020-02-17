@@ -10,9 +10,7 @@
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
 }
 
-- (BOOL)shouldBeSaved {
-    return NO;
-}
+- (BOOL)shouldBeSaved { return NO; }
 
 #pragma mark Building
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder

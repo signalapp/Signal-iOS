@@ -419,7 +419,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                   }];
                               });
                           }
-                          failure:^{
+                          failure:^(NSError *error) {
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(
@@ -428,7 +428,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                                                @"profile update fails.")];
                                   }];
                               });
-                          }];
+                          } requiresSync:NO];
                   }];
 }
 

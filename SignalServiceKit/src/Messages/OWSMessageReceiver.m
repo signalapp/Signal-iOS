@@ -323,20 +323,12 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    // Don't decrypt messages in app extensions.
-    if (!CurrentAppContext().isMainApp) {
-        return;
-    }
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        return;
-    }
+    if (!CurrentAppContext().isMainApp) { return; }
+    if (!self.tsAccountManager.isRegisteredAndReady) { return; }
 
     dispatch_async(self.serialQueue, ^{
-        if (self.isDrainingQueue) {
-            return;
-        }
+        if (self.isDrainingQueue) { return; }
         self.isDrainingQueue = YES;
-
         [self drainQueueWorkStep];
     });
 }
@@ -346,6 +338,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     AssertOnDispatchQueue(self.serialQueue);
 
     OWSMessageDecryptJob *_Nullable job = [self.finder nextJob];
+
     if (!job) {
         self.isDrainingQueue = NO;
         OWSLogVerbose(@"Queue is drained.");
@@ -369,8 +362,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (BOOL)wasReceivedByUD:(SSKProtoEnvelope *)envelope
 {
-    return (
-        envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender && (!envelope.hasSource || envelope.source.length < 1));
+    return (envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender && (!envelope.hasSource || envelope.source.length < 1));
 }
 
 - (void)processJob:(OWSMessageDecryptJob *)job completion:(void (^)(BOOL))completion
@@ -379,9 +371,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     OWSAssertDebug(job);
 
     SSKProtoEnvelope *_Nullable envelope = job.envelopeProto;
+
     if (!envelope) {
-        OWSFailDebug(@"Could not parse proto.");
-        // TODO: Add analytics.
+        OWSFailDebug(@"Couldn't parse proto.");
 
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
@@ -392,25 +384,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         dispatch_async(self.serialQueue, ^{
             completion(NO);
         });
-        return;
-    }
-    
-    // Loki: Don't process any messages from ourself
-    ECKeyPair *_Nullable keyPair = OWSIdentityManager.sharedManager.identityKeyPair;
-    if (keyPair && [envelope.source isEqualToString:keyPair.hexEncodedPublicKey]) {
-        dispatch_async(self.serialQueue, ^{
-            completion(YES);
-        });
-        return;
-    }
-    
-    // Loki: Ignore any friend requests that we got before restoration
-    uint64_t restorationTime = [NSNumber numberWithDouble:[OWSPrimaryStorage.sharedManager getRestorationTime]].unsignedLongLongValue;
-    if (envelope.type == SSKProtoEnvelopeTypeFriendRequest && envelope.timestamp < restorationTime * 1000) {
-        [LKLogger print:@"[Loki] Ignoring friend request received before restoration."];
-        dispatch_async(self.serialQueue, ^{
-            completion(YES);
-        });
+
         return;
     }
     
@@ -423,6 +397,15 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
             OWSAssertDebug(transaction);
 
+            // Loki: Don't process any messages from ourself
+            ECKeyPair *_Nullable keyPair = OWSIdentityManager.sharedManager.identityKeyPair;
+            if (keyPair && [result.source isEqualToString:keyPair.hexEncodedPublicKey]) {
+                dispatch_async(self.serialQueue, ^{
+                    completion(YES);
+                });
+                return;
+            }
+        
             // We persist the decrypted envelope data in the same transaction within which
             // it was decrypted to prevent data loss.  If the new job isn't persisted,
             // the session state side effects of its decryption are also rolled back.
@@ -472,8 +455,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     // For coherency we use the same dbConnection to persist and read the unprocessed envelopes
     YapDatabaseConnection *dbConnection = [primaryStorage newDatabaseConnection];
     OWSMessageDecryptJobFinder *finder = [[OWSMessageDecryptJobFinder alloc] initWithDBConnection:dbConnection];
-    OWSMessageDecryptQueue *processingQueue =
-        [[OWSMessageDecryptQueue alloc] initWithDBConnection:dbConnection finder:finder];
+    OWSMessageDecryptQueue *processingQueue = [[OWSMessageDecryptQueue alloc] initWithDBConnection:dbConnection finder:finder];
 
     _processingQueue = processingQueue;
 
@@ -503,7 +485,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (void)handleReceivedEnvelopeData:(NSData *)envelopeData
 {
     if (envelopeData.length < 1) {
-        OWSFailDebug(@"Empty envelope.");
+        OWSFailDebug(@"Received an empty envelope.");
         return;
     }
 
@@ -511,7 +493,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     NSUInteger kMaxEnvelopeByteCount = 250 * 1024;
     if (envelopeData.length > kMaxEnvelopeByteCount) {
         OWSProdError([OWSAnalyticsEvents messageReceiverErrorOversizeMessage]);
-        OWSFailDebug(@"Oversize message.");
+        OWSFailDebug(@"Received an oversized message.");
         return;
     }
 
@@ -520,7 +502,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     NSUInteger kLargeEnvelopeWarningByteCount = 25 * 1024;
     if (envelopeData.length > kLargeEnvelopeWarningByteCount) {
         OWSProdError([OWSAnalyticsEvents messageReceiverErrorLargeMessage]);
-        OWSFailDebug(@"Unexpectedly large message.");
+        OWSFailDebug(@"Received an unexpectedly large message.");
     }
 
     [self.processingQueue enqueueEnvelopeData:envelopeData];

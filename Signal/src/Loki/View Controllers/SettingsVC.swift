@@ -274,15 +274,21 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
                         self.displayNameToBeUploaded = nil
                     }
                 }
-            }, failure: {
+            }, failure: { error in
                 DispatchQueue.main.async {
                     modalActivityIndicator.dismiss {
-                        let alert = UIAlertController(title: NSLocalizedString("Couldn't Update Profile", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
+                        var isMaxFileSizeExceeded = false
+                        if let error = error as? LokiDotNetAPI.LokiDotNetAPIError {
+                            isMaxFileSizeExceeded = (error == .maxFileSizeExceeded)
+                        }
+                        let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : NSLocalizedString("Couldn't Update Profile", comment: "")
+                        let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : NSLocalizedString("Please check your internet connection and try again", comment: "")
+                        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
                         self?.present(alert, animated: true, completion: nil)
                     }
                 }
-            })
+            }, requiresSync: true)
         }
     }
     

@@ -759,14 +759,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
-                                 TSOutgoingMessageRecipientState *_Nullable recipientState
-                                     = message.recipientStateMap[recipientId];
-                                 if (!recipientState) {
-                                     // OWSFailDebug(@"Missing recipient state for delivered recipient: %@", recipientId);
-                                     return;
-                                 }
+                                 TSOutgoingMessageRecipientState *_Nullable recipientState = message.recipientStateMap[recipientId];
+                                 if (!recipientState) { return; }
                                  if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
-                                     OWSLogWarn(@"marking unsent message as delivered.");
+                                     OWSLogWarn(@"Marking unsent message as delivered.");
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.readTimestamp = @(readTimestamp);

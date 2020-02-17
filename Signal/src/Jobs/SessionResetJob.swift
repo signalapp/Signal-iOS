@@ -142,13 +142,13 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                  * ================
                  */
                 
-                if (self.contactThread.sessionResetState != .requestReceived) {
+                if (self.contactThread.sessionResetStatus != .requestReceived) {
                     let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.contactThread, messageType: .typeLokiSessionResetInProgress)
                     message.save(with: transaction)
                     
                     // Loki: We have initiated a session reset
                     print("[Loki] Session reset initiated.")
-                    self.contactThread.sessionResetState = .initiated
+                    self.contactThread.sessionResetStatus = .initiated
                     self.contactThread.save(with: transaction)
                 }
             }

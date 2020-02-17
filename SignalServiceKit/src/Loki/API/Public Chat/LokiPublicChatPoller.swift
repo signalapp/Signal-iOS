@@ -1,7 +1,5 @@
 import PromiseKit
 
-// TODO: Move away from polling
-
 @objc(LKPublicChatPoller)
 public final class LokiPublicChatPoller : NSObject {
     private let publicChat: LokiPublicChat
@@ -129,9 +127,9 @@ public final class LokiPublicChatPoller : NSObject {
                     }
                     let profile = SSKProtoDataMessageLokiProfile.builder()
                     profile.setDisplayName(message.displayName)
-                    if let avatar = message.avatar {
-                        profile.setProfilePicture(avatar.url)
-                        dataMessage.setProfileKey(avatar.profileKey)
+                    if let profilePicture = message.profilePicture {
+                        profile.setProfilePicture(profilePicture.url)
+                        dataMessage.setProfileKey(profilePicture.profileKey)
                     }
                     dataMessage.setProfile(try! profile.build())
                     dataMessage.setTimestamp(message.timestamp)
@@ -170,12 +168,12 @@ public final class LokiPublicChatPoller : NSObject {
                         let messageServerID = message.serverID
                         SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: messageServerID ?? 0)
                         // If we got a message from our master device then we should use its profile picture
-                        if let avatar = message.avatar, masterHexEncodedPublicKey == message.hexEncodedPublicKey {
+                        if let profilePicture = message.profilePicture, masterHexEncodedPublicKey == message.hexEncodedPublicKey {
                             if (message.displayName.count > 0) {
                                 SSKEnvironment.shared.profileManager.updateProfileForContact(withID: masterHexEncodedPublicKey!, displayName: message.displayName, with: transaction)
                             }
-                            SSKEnvironment.shared.profileManager.updateService(withProfileName: message.displayName, avatarUrl: avatar.url)
-                            SSKEnvironment.shared.profileManager.setProfileKeyData(avatar.profileKey, forRecipientId: masterHexEncodedPublicKey!, avatarURL: avatar.url)
+                            SSKEnvironment.shared.profileManager.updateService(withProfileName: message.displayName, avatarUrl: profilePicture.url)
+                            SSKEnvironment.shared.profileManager.setProfileKeyData(profilePicture.profileKey, forRecipientId: masterHexEncodedPublicKey!, avatarURL: profilePicture.url)
                         }
                     }
                 }
@@ -198,7 +196,7 @@ public final class LokiPublicChatPoller : NSObject {
                             LokiAPI.lastDeviceLinkUpdate[$0] = Date()
                         }
                     }.catch(on: DispatchQueue.global()) { error in
-                        if (error as? LokiDotNetAPI.Error) == LokiDotNetAPI.Error.parsingFailed {
+                        if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
                             // Don't immediately re-fetch in case of failure due to a parsing error
                             hexEncodedPublicKeysToUpdate.forEach {
                                 LokiAPI.lastDeviceLinkUpdate[$0] = Date()

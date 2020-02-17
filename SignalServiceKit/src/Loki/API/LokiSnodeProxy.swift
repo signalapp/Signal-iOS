@@ -1,4 +1,5 @@
 import PromiseKit
+import SignalMetadataKit
 
 internal class LokiSnodeProxy : LokiHTTPClient {
     private let target: LokiAPITarget

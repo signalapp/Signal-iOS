@@ -1,4 +1,5 @@
 import PromiseKit
+import SignalMetadataKit
 
 internal class LokiFileServerProxy : LokiHTTPClient {
     private let server: String
@@ -48,11 +49,11 @@ internal class LokiFileServerProxy : LokiHTTPClient {
         var headers = getCanonicalHeaders(for: request)
         return LokiAPI.getRandomSnode().then { [server = self.server, keyPair = self.keyPair, httpSession = self.httpSession] proxy -> Promise<Any> in
             let url = "\(proxy.address):\(proxy.port)/file_proxy"
-            print("[Loki] Proxying file server request through \(proxy).")
             guard let urlAsString = request.url?.absoluteString, let serverURLEndIndex = urlAsString.range(of: server)?.upperBound,
                 serverURLEndIndex < urlAsString.endIndex else { throw Error.endpointParsingFailed }
             let endpointStartIndex = urlAsString.index(after: serverURLEndIndex)
             let endpoint = String(urlAsString[endpointStartIndex..<urlAsString.endIndex])
+            print("[Loki] Proxying file server request (\(endpoint)) through \(proxy).")
             let parametersAsString: String
             if let tsRequest = request as? TSRequest {
                 headers["Content-Type"] = "application/json"
@@ -106,7 +107,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                 print("[Loki] Received an invalid response.")
                 throw Error.proxyResponseParsingFailed
             }
-            let isSuccess = (200..<300).contains(statusCode)
+            let isSuccess = (200...299) ~= statusCode
             guard isSuccess else { throw HTTPError.networkError(code: statusCode, response: nil, underlyingError: Error.fileServerHTTPError(code: statusCode, message: nil)) }
             let uncheckedJSONAsData = try DiffieHellman.decrypt(cipherText, using: symmetricKey)
             if uncheckedJSONAsData.isEmpty { return () }

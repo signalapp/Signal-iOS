@@ -36,7 +36,6 @@
 #import "OWSSyncGroupsMessage.h"
 #import "OWSSyncGroupsRequestMessage.h"
 #import "ProfileManagerProtocol.h"
-#import "SessionCipher+Loki.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
@@ -53,12 +52,14 @@
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/NSObject+Casting.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import "OWSDispatch.h"
+#import "OWSBatchMessageProcessor.h"
+#import "OWSQueues.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -92,9 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
     _primaryStorage = primaryStorage;
     _dbConnection = primaryStorage.newDatabaseConnection;
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithPrimaryStorage:primaryStorage];
-    
-    // Loki: Observe session changes
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleNewSessionAdopted:) name:kNSNotificationName_SessionAdopted object:nil];
 
     OWSSingletonAssert();
 
@@ -258,25 +256,33 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!CurrentAppContext().isMainApp) {
-        OWSFail(@"Not main app.");
+        OWSFail(@"Not the main app.");
         return;
     }
 
-    OWSLogInfo(@"handling decrypted envelope: %@", [self descriptionForEnvelope:envelope]);
+    OWSLogInfo(@"Handling decrypted envelope: %@.", [self descriptionForEnvelope:envelope]);
 
     if (!wasReceivedByUD) {
         if (!envelope.hasSource || envelope.source.length < 1) {
-            OWSFailDebug(@"incoming envelope has invalid source");
+            OWSFailDebug(@"Incoming envelope with invalid source.");
             return;
         }
         if (!envelope.hasSourceDevice || envelope.sourceDevice < 1) {
-            OWSFailDebug(@"incoming envelope has invalid source device");
+            OWSFailDebug(@"Incoming envelope with invalid source device.");
             return;
         }
     }
 
     OWSAssertDebug(![self isEnvelopeSenderBlocked:envelope]);
 
+    // Loki: Ignore any friend requests from before restoration
+    // The envelope type is set during UD decryption.
+    uint64_t restorationTime = [NSNumber numberWithDouble:[OWSPrimaryStorage.sharedManager getRestorationTime]].unsignedLongLongValue;
+    if (envelope.type == SSKProtoEnvelopeTypeFriendRequest && envelope.timestamp < restorationTime * 1000) {
+        [LKLogger print:@"[Loki] Ignoring friend request received before restoration."];
+        return;
+    }
+    
     [self checkForUnknownLinkedDevice:envelope transaction:transaction];
 
     switch (envelope.type) {
@@ -408,7 +414,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (envelope.sourceDevice < 1) {
-        OWSFailDebug(@"Invaid source device.");
+        OWSFailDebug(@"Invalid source device.");
         return;
     }
 
@@ -417,23 +423,24 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      sourceDeviceId:envelope.sourceDevice
                                                                         transaction:transaction];
     if (duplicateEnvelope) {
-        OWSLogInfo(@"Ignoring previously received envelope from %@ with timestamp: %llu",
+        OWSLogInfo(@"Ignoring previously received envelope from: %@ with timestamp: %llu.",
             envelopeAddress(envelope),
             envelope.timestamp);
         return;
     }
     
     // Loki: Handle friend request acceptance if needed
+    // The envelope type is set during UD decryption.
     [self handleFriendRequestAcceptanceIfNeededWithEnvelope:envelope transaction:transaction];
     
     if (envelope.content != nil) {
         NSError *error;
         SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
         if (error || !contentProto) {
-            OWSFailDebug(@"could not parse proto: %@", error);
+            OWSFailDebug(@"Could not parse proto due to error: %@.", error);
             return;
         }
-        OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
+        OWSLogInfo(@"Handling content: <Content: %@>.", [self descriptionForContent:contentProto]);
         
         // Loki: Workaround for duplicate sync transcript issue
         if (contentProto.syncMessage != nil && contentProto.syncMessage.sent != nil) {
@@ -451,7 +458,8 @@ NS_ASSUME_NONNULL_BEGIN
             }
             [self.primaryStorage setPreKeyBundle:bundle forContact:envelope.source transaction:transaction];
             
-            // Loki: If we received a friend request, but we were already friends with this user, then reset the session
+            // Loki: If we received a friend request, but we were already friends with this user, reset the session
+            // The envelope type is set during UD decryption.
             if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
                 TSContactThread *thread = [TSContactThread getThreadWithContactId:envelope.source transaction:transaction];
                 if (thread && thread.isContactFriend) {
@@ -549,13 +557,13 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    // Loki: Don't process session request messages
+    // Loki: Don't process session request messages any further
     if ((dataMessage.flags & SSKProtoDataMessageFlagsSessionRequest) != 0) { return; }
-    // Loki: Don't process session restore messages
+    // Loki: Don't process session restore messages any further
     if ((dataMessage.flags & SSKProtoDataMessageFlagsSessionRestore) != 0) { return; }
     
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
-        NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.source];
+        NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@.", envelope.source];
         if (dataMessage.group) {
             logMessage = [logMessage stringByAppendingFormat:@" in group: %@", dataMessage.group.id];
         }
@@ -565,14 +573,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (dataMessage.hasTimestamp) {
         if (dataMessage.timestamp <= 0) {
-            OWSFailDebug(@"Ignoring message with invalid data message timestamp: %@", envelope.source);
-            // TODO: Add analytics.
+            OWSFailDebug(@"Ignoring data message with invalid timestamp: %@.", envelope.source);
             return;
         }
         // This prevents replay attacks by the service.
         if (dataMessage.timestamp != envelope.timestamp) {
-            OWSFailDebug(@"Ignoring message with non-matching data message timestamp: %@", envelope.source);
-            // TODO: Add analytics.
+            OWSFailDebug(@"Ignoring data message with non-matching timestamp: %@.", envelope.source);
             return;
         }
     }
@@ -598,7 +604,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
             } else {
-                OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.source);
+                OWSLogInfo(@"Ignoring group message for unknown group from: %@.", envelope.source);
                 return;
             }
         }
@@ -881,7 +887,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *_Nullable thread = [self threadForEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     if (!thread) {
-        OWSFailDebug(@"ignoring media message for unknown group.");
+        OWSFailDebug(@"Ignoring media message for unknown group.");
         return;
     }
 
@@ -896,17 +902,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     [message saveWithTransaction:transaction];
 
-    OWSLogDebug(@"incoming attachment message: %@", message.debugDescription);
+    OWSLogDebug(@"Incoming attachment message: %@.", message.debugDescription);
 
     [self.attachmentDownloads downloadAttachmentsForMessage:message
         transaction:transaction
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-            OWSLogDebug(@"successfully fetched attachments: %lu for message: %@",
+            OWSLogDebug(@"Successfully fetched attachments: %lu for message: %@.",
                 (unsigned long)attachmentStreams.count,
                 message);
         }
         failure:^(NSError *error) {
-            OWSLogError(@"failed to fetch attachments for message: %@ with error: %@", message, error);
+            OWSLogError(@"Failed to fetch attachments for message: %@ with error: %@.", message, error);
         }];
 }
 
@@ -1141,7 +1147,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.primaryStorage archiveAllSessionsForContact:hexEncodedPublicKey protocolContext:transaction];
     
     // Loki: Set our session reset state
-    thread.sessionResetState = TSContactThreadSessionResetStateRequestReceived;
+    thread.sessionResetStatus = LKSessionResetStatusRequestReceived;
     [thread saveWithTransaction:transaction];
     
     // Loki: Send an empty message to trigger the session reset code for both parties
@@ -1391,6 +1397,18 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    // The envelope source is set during UD decryption.
+
+    if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source]) {
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [[LKAPI getDestinationsFor:envelope.source inTransaction:transaction].ensureOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^() {
+            dispatch_semaphore_signal(semaphore);
+        }).catchOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(NSError *error) {
+            dispatch_semaphore_signal(semaphore);
+        }) retainUntilComplete];
+        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
+    }
+
     if (groupId.length > 0) {
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
         NSMutableSet *removedMemberIds = [NSMutableSet new];
@@ -1410,7 +1428,7 @@ NS_ASSUME_NONNULL_BEGIN
         // We distinguish between the old group state (if any) and the new group state.
         TSGroupThread *_Nullable oldGroupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
         if (oldGroupThread) {
-            // Loki: Try to figure out removed members
+            // Loki: Determine removed members
             removedMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
             [removedMemberIds minusSet:newMemberIds];
             [removedMemberIds removeObject:hexEncodedPublicKey];
@@ -1540,7 +1558,7 @@ NS_ASSUME_NONNULL_BEGIN
                 
                 // Loki: Don't process friend requests in group chats
                 if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
-                    OWSLogWarn(@"ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
+                    OWSLogWarn(@"Ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu.",
                         hexEncodedPublicKey,
                         groupId,
                         (unsigned long)timestamp);
@@ -1569,14 +1587,14 @@ NS_ASSUME_NONNULL_BEGIN
                 return incomingMessage;
             }
             default: {
-                OWSLogWarn(@"Ignoring unknown group message type: %d", (int)dataMessage.group.type);
+                OWSLogWarn(@"Ignoring unknown group message type: %d.", (int)dataMessage.group.type);
                 return nil;
             }
         }
     } else {
         
-        // Loki: A message from a secondary device should appear as if it came from the primary device; the underlying
-        // friend request logic, however, should still be specific to the secondary device.
+        // Loki: A message from a slave device should appear as if it came from the master device; the underlying
+        // friend request logic, however, should still be specific to the slave device.
         
         // Loki: Get the master hex encoded public key and thread
         NSString *hexEncodedPublicKey = envelope.source;
@@ -1584,7 +1602,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
         TSContactThread *masterThread = [TSContactThread getOrCreateThreadWithContactId:masterHexEncodedPublicKey transaction:transaction];
 
-        OWSLogDebug(@"incoming message from: %@ with timestamp: %lu", hexEncodedPublicKey, (unsigned long)timestamp);
+        OWSLogDebug(@"Incoming message from: %@ with timestamp: %lu.", hexEncodedPublicKey, (unsigned long)timestamp);
         
         [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                   thread:masterThread
@@ -1643,7 +1661,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self handleFriendRequestMessageIfNeededWithEnvelope:envelope data:dataMessage message:incomingMessage thread:thread transaction:transaction];
         
         if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
-            OWSLogWarn(@"ignoring empty incoming message from: %@ with timestamp: %lu",
+            OWSLogWarn(@"Ignoring empty incoming message from: %@ with timestamp: %lu.",
                 hexEncodedPublicKey,
                 (unsigned long)timestamp);
             return nil;
@@ -1681,13 +1699,11 @@ NS_ASSUME_NONNULL_BEGIN
         if (profileKey.length == kAES256_KeyByteLength) {
             [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId avatarURL:url];
         } else {
-            OWSFailDebug(
-                         @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, recipientId);
+            OWSFailDebug(@"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, recipientId);
         }
     }
 }
 
-// Loki: Establish a session if there is no session between the memebers of a group
 - (void)establishSessionsWithMembersIfNeeded:(NSArray *)members forThread:(TSGroupThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
@@ -1737,8 +1753,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (envelope.isGroupChatMessage) {
         return NSLog(@"[Loki] Ignoring friend request in group chat.", @"");
     }
+    // The envelope type is set during UD decryption.
     if (envelope.type != SSKProtoEnvelopeTypeFriendRequest) {
-        return NSLog(@"[Loki] handleFriendRequestMessageIfNeededWithEnvelope:data:message:thread:transaction was called with an envelope that isn't of type SSKProtoEnvelopeTypeFriendRequest.");
+        return NSLog(@"[Loki] Ignoring friend request logic for non friend request type envelope.");
     }
     if ([self canFriendRequestBeAutoAcceptedForThread:thread transaction:transaction]) {
         [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
@@ -1782,6 +1799,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleFriendRequestAcceptanceIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope transaction:(YapDatabaseReadWriteTransaction *)transaction {
     // If we get an envelope that isn't a friend request, then we can infer that we had to use
     // Signal cipher decryption and thus that we have a session with the other person.
+    // The envelope type is set during UD decryption.
     if (envelope.isGroupChatMessage || envelope.type == SSKProtoEnvelopeTypeFriendRequest) return;
     // Currently this uses `envelope.source` but with sync messages we'll need to use the message sender ID
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
@@ -1789,7 +1807,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (thread.friendRequestStatus == LKThreadFriendRequestStatusNone) { return; }
     // Become happy friends and go on great adventures
     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
-    TSOutgoingMessage *existingFriendRequestMessage = [thread.lastInteraction as:TSOutgoingMessage.class];
+    TSOutgoingMessage *existingFriendRequestMessage = [[thread getLastInteractionWithTransaction:transaction] as:TSOutgoingMessage.class];
     if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
         [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
     }
@@ -1874,7 +1892,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
             }
             failure:^(NSError *error) {
-                OWSLogWarn(@"failed to download attachment for message: %lu with error: %@",
+                OWSLogWarn(@"Failed to download attachment for message: %lu with error: %@.",
                     (unsigned long)incomingMessage.timestamp,
                     error);
             }];
@@ -1993,36 +2011,6 @@ NS_ASSUME_NONNULL_BEGIN
             [self.profileManager fetchLocalUsersProfile];
         });
     }
-}
-
-# pragma mark - Loki Session
-
-- (void)handleNewSessionAdopted:(NSNotification *)notification {
-    NSString *hexEncodedPublicKey = notification.userInfo[kNSNotificationKey_ContactPubKey];
-    if (hexEncodedPublicKey.length == 0) { return; }
-    
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSContactThread *thread = [TSContactThread getThreadWithContactId:hexEncodedPublicKey transaction:transaction];
-        if (thread == nil) {
-            NSLog(@"[Loki] A new session was adopted but the thread couldn't be found for: %@.", hexEncodedPublicKey);
-            return;
-        }
-
-        // If the current user initiated the reset then send back an empty message to acknowledge the completion of the session reset
-        if (thread.sessionResetState == TSContactThreadSessionResetStateInitiated) {
-            LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
-            [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
-        }
-        
-        // Show session reset done message
-        [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp
-                                         inThread:thread
-                                      messageType:TSInfoMessageTypeLokiSessionResetDone] saveWithTransaction:transaction];
-        
-        // Clear the session reset state
-        thread.sessionResetState = TSContactThreadSessionResetStateNone;
-        [thread saveWithTransaction:transaction];
-    }];
 }
 
 @end

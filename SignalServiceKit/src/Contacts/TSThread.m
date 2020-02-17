@@ -292,10 +292,15 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 {
     __block TSInteraction *interaction;
     [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        YapDatabaseViewTransaction *interactions = [transaction ext:TSMessageDatabaseViewExtensionName];
-        interaction = [interactions lastObjectInGroup:self.uniqueId];
+        interaction = [self getLastInteractionWithTransaction:transaction];
     }];
     return interaction;
+}
+
+- (TSInteraction *)getLastInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    YapDatabaseViewTransaction *interactions = [transaction ext:TSMessageDatabaseViewExtensionName];
+    return [interactions lastObjectInGroup:self.uniqueId];
 }
 
 /**

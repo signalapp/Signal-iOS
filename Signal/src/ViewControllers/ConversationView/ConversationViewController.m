@@ -88,6 +88,7 @@
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
+#import <SignalMetaDataKit/SignalMetadataKit-Swift.h>
 
 @import Photos;
 
@@ -1227,7 +1228,7 @@ typedef enum : NSUInteger {
             }
         }
         [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageType:TSInfoMessageTypeLokiSessionResetInProgress] save];
-        thread.sessionResetState = TSContactThreadSessionResetStateRequestReceived;
+        thread.sessionResetStatus = LKSessionResetStatusRequestReceived;
         [thread save];
         [thread removeAllSessionRestoreDevicesWithTransaction:nil];
     }
@@ -3919,8 +3920,6 @@ typedef enum : NSUInteger {
 
 - (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageText:(NSString *_Nullable)messageText
 {
-    OWSLogError(@"");
-
     DispatchMainThreadSafe(^{
         __weak ConversationViewController *weakSelf = self;
         if ([self isBlockedConversation]) {

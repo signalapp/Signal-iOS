@@ -186,9 +186,7 @@ void AssertIsOnSendingQueue()
 - (nullable NSError *)checkForPreconditionError
 {
     __block NSError *_Nullable error = [super checkForPreconditionError];
-    if (error) {
-        return error;
-    }
+    if (error) { return error; }
 
     // Sanity check preconditions
     if (self.message.hasAttachments) {
@@ -214,9 +212,8 @@ void AssertIsOnSendingQueue()
 {
     // If the message has been deleted, abort send.
     if (self.message.shouldBeSaved && ![TSOutgoingMessage fetchObjectWithUniqueID:self.message.uniqueId]) {
-        OWSLogInfo(@"aborting message send; message deleted.");
-        NSError *error = OWSErrorWithCodeDescription(
-            OWSErrorCodeMessageDeletedBeforeSent, @"Message was deleted before it could be sent.");
+        OWSLogInfo(@"Aborting message send; message deleted.");
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageDeletedBeforeSent, @"Message was deleted before it could be sent.");
         error.isFatal = YES;
         [self reportError:error];
         return;
@@ -233,16 +230,12 @@ void AssertIsOnSendingQueue()
 
 - (void)didSucceed
 {
-    if (self.message.messageState != TSOutgoingMessageStateSent) {
-//        OWSFailDebug(@"unexpected message status: %@", self.message.statusDescription);
-    }
-
     self.successHandler();
 }
 
 - (void)didFailWithError:(NSError *)error
 {
-    OWSLogError(@"failed with error: %@", error);
+    OWSLogError(@"Message failed to send due to error: %@.", error);
     self.failureHandler(error);
 }
 
@@ -370,10 +363,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         //
         // That's key - we don't want to send any messages in response
         // to an incoming message until processing of that batch of messages
-        // is complete.  For example, we wouldn't want to auto-reply to a
+        // is complete. For example, we wouldn't want to auto-reply to a
         // group info request before that group info request's batch was
-        // finished processing.  Otherwise, we might receive a delivery
-        // notice for a group update we hadn't yet saved to the db.
+        // finished processing. Otherwise, we might receive a delivery
+        // notice for a group update we hadn't yet saved to the database.
         //
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
@@ -634,7 +627,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     successHandlerParam();
                 }
                 failure:^(NSError *error) {
-                    OWSLogError(@"Error sending sync message for message: %@ timestamp: %llu",
+                    OWSLogError(@"Error sending sync message for message: %@ timestamp: %llu.",
                         message.class,
                         message.timestamp);
 
@@ -650,13 +643,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         failureHandlerParam(error);
                     }
                     failure:^(NSError *syncError) {
-                        OWSLogError(@"Error sending sync message for message: %@ timestamp: %llu, %@",
+                        OWSLogError(@"Error sending sync message for message: %@ timestamp: %llu, %@.",
                             message.class,
                             message.timestamp,
                             syncError);
 
-                        // Discard the "sync message" error in favor of the
-                        // original error.
+                        // Discard the sync message error in favor of the original error
                         failureHandlerParam(error);
                     }];
             });
@@ -1046,7 +1038,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.success();
     }
         
-    OWSLogInfo(@"attempting to send message: %@, timestamp: %llu, recipient: %@",
+    OWSLogInfo(@"Attempting to send message: %@, timestamp: %llu, recipient: %@.",
         message.class,
         message.timestamp,
         recipient.uniqueId);
@@ -1062,13 +1054,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // re-enable message sending.
         [TSPreKeyManager
             rotateSignedPreKeyWithSuccess:^{
-                OWSLogInfo(@"New prekeys registered with server.");
+                OWSLogInfo(@"New pre keys registered with server.");
                 NSError *error = OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError();
                 [error setIsRetryable:YES];
                 return messageSend.failure(error);
             }
             failure:^(NSError *error) {
-                OWSLogWarn(@"Failed to update prekeys with the server: %@", error);
+                OWSLogWarn(@"Failed to update pre keys with the server due to error: %@.", error);
                 return messageSend.failure(error);
             }];
     }
@@ -1191,16 +1183,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Loki: TSFriendRequestMessageType represents a Loki friend request
             NSArray *validMessageTypes = @[ @(TSEncryptedWhisperMessageType), @(TSPreKeyWhisperMessageType), @(TSFriendRequestMessageType) ];
             hasValidMessageType = [validMessageTypes containsObject:messageType];
-
-            /* Loki: Original code
-             * ========
-            hasValidMessageType = ([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] || [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
-             * ========
-             */
         }
 
         if (!hasValidMessageType) {
-            OWSFailDebug(@"Invalid message type: %@", messageType);
+            OWSFailDebug(@"Invalid message type: %@.", messageType);
             NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
             [error setIsRetryable:NO];
             return messageSend.failure(error);
@@ -1229,7 +1215,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
     
     void (^failedMessageSend)(NSError *error) = ^(NSError *error) {
-        // Handle the error
         NSUInteger statusCode = 0;
         NSData *_Nullable responseData = nil;
         if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
@@ -1240,9 +1225,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             } else {
                 OWSFailDebug(@"Missing underlying error: %@.", error);
             }
-        } else {
-            // TODO: Re-enable?
-            // OWSFailDebug(@"Unexpected error: %@.", error);
         }
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
@@ -1290,7 +1272,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }];
             [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:messageSend.isUDSend wasSentByWebsocket:false];
         })
-        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
+        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
             failedMessageSend(error);
         }) retainUntilComplete];
     } else {
@@ -1346,7 +1328,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Handle the error
             failedMessageSend(error);
         };
-        // Send the message using the Loki API
+        // Send the message
         [[LKAPI sendSignalMessage:signalMessage onP2PSuccess:onP2PSuccess]
          .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             NSSet<AnyPromise *> *promises = (NSSet<AnyPromise *> *)result;
@@ -1486,7 +1468,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     switch (statusCode) {
         case 0: { // Loki
-            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+            NSError *error;
+            if ([responseError isKindOfClass:LokiAPIError.class] || [responseError isKindOfClass:LokiDotNetAPIError.class] || [responseError isKindOfClass:DiffieHellmanError.class]) {
+                error = responseError;
+            } else {
+                error = OWSErrorMakeFailedToSendOutgoingMessageError();
+            }
             [error setIsRetryable:NO];
             return messageSend.failure(error);
         }
@@ -1717,12 +1704,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSData *_Nullable plainText = [messageSend.message buildPlainTextData:recipient];
     if (!plainText) {
-        OWSRaiseException(InvalidMessageException, @"Failed to build message proto");
+        OWSRaiseException(InvalidMessageException, @"Failed to build message proto.");
     }
-    OWSLogDebug(
-        @"built message: %@ plainTextData.length: %lu", [messageSend.message class], (unsigned long)plainText.length);
+    OWSLogDebug(@"Built message: %@ plainTextData.length: %lu", [messageSend.message class], (unsigned long)plainText.length);
 
-    OWSLogVerbose(@"building device messages for: %@ %@ (isLocalNumber: %d, isUDSend: %d)",
+    OWSLogVerbose(@"Building device messages for: %@ %@ (isLocalNumber: %d, isUDSend: %d).",
         recipient.recipientId,
         recipient.devices,
         messageSend.isLocalNumber,
@@ -1736,7 +1722,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
             
-            // Loki: Both for friend request messages and device link messages we don't require a session
+            // Loki: We don't require a session for friend requests, session requests and device link requests
             BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
             BOOL isSessionRequest = [messageSend.message isKindOfClass:LKSessionRequestMessage.class];
             BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
@@ -1759,14 +1745,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }];
 
             if (encryptionException) {
-                OWSLogInfo(@"Exception during encryption: %@", encryptionException);
+                OWSLogInfo(@"Exception during encryption: %@.", encryptionException);
                 @throw encryptionException;
             }
 
             if (messageDict) {
                 [messagesArray addObject:messageDict];
             } else {
-                OWSRaiseException(InvalidMessageException, @"Failed to encrypt message");
+                OWSRaiseException(InvalidMessageException, @"Failed to encrypt message.");
             }
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
@@ -1938,7 +1924,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *recipientId = recipient.recipientId;
     TSOutgoingMessage *message = messageSend.message;
     
-    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId identityKeyStore:self.identityManager];
+    ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
+    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId privateKey:identityKeyPair.privateKey];
     
     // This will return nil if encryption failed
     NSData *_Nullable serializedMessage = [cipher encryptWithMessage:[plainText paddedMessageBody]];
@@ -1983,16 +1970,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSPrimaryStorage *storage = self.primaryStorage;
     TSOutgoingMessage *message = messageSend.message;
     
-    // Loki: Both for friend request messages and device link messages we use fallback encryption as we don't necessarily have a session yet
+    // Loki: Use fallback encryption for friend requests, session requests and device link requests
     BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
     BOOL isSessionRequest = [messageSend.message isKindOfClass:LKSessionRequestMessage.class];
     BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class] && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest;
 
-    // This may throw an exception.
+    // This may throw an exception
     if (!isFriendRequest && !isSessionRequest && !isDeviceLinkMessage && ![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
-            @"Unexpectedly missing session for recipient: %@, device: %@",
+            @"Unexpectedly missing session for recipient: %@, device: %@.",
             recipientID,
             @(OWSDevicePrimaryDeviceId));
     }
@@ -2025,14 +2012,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       protocolContext:transaction
                                                                       isFriendRequest:isFriendRequest || isDeviceLinkMessage
                                                                                 error:&error];
+
         SCKRaiseIfExceptionWrapperError(error);
         if (!serializedMessage || error) {
-            OWSFailDebug(@"error while UD encrypting message: %@", error);
+            OWSFailDebug(@"Error while UD encrypting message: %@.", error);
             return nil;
         }
         messageType = TSUnidentifiedSenderMessageType;
     } else {
-        // This may throw an exception.
+        // This may throw an exception
         id<CipherMessage> encryptedMessage =
             [cipher throws_encryptMessage:[plainText paddedMessageBody] protocolContext:transaction];
         serializedMessage = encryptedMessage.serialized;
@@ -2167,7 +2155,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
             [attachmentIds addObject:attachment.uniqueId];
         } else {
-            OWSFailDebug(@"unexpected avatarAttachment: %@", attachment);
+            OWSFailDebug(@"Unexpected avatarAttachment: %@.", attachment);
         }
     }
 
@@ -2177,7 +2165,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
             [attachmentIds addObject:attachment.uniqueId];
         } else {
-            OWSFailDebug(@"unexpected attachment: %@", attachment);
+            OWSFailDebug(@"Unexpected attachment: %@.", attachment);
         }
     }
 
@@ -2205,6 +2193,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                  sourceFilename:attachmentInfo.sourceFilename
                                                         caption:attachmentInfo.caption
                                                  albumMessageId:attachmentInfo.albumMessageId];
+            
             if (outgoingMessage.isVoiceMessage) {
                 attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
             }

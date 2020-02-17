@@ -58,7 +58,7 @@ public struct LokiMessage {
                     result.nonce = nonce
                     seal.fulfill(result)
                 } else {
-                    seal.reject(LokiAPI.Error.proofOfWorkCalculationFailed)
+                    seal.reject(LokiAPI.LokiAPIError.proofOfWorkCalculationFailed)
                 }
             }
         }

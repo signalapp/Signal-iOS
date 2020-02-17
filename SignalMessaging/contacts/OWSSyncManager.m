@@ -224,9 +224,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (!self.tsAccountManager.isRegisteredAndReady) {
             return;
+        }        
+        
+        NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
+        BOOL hasLaunchedOnce = [userDefaults boolForKey:@"hasLaunchedOnce"];
+        if (hasLaunchedOnce) { // FIXME: Quick and dirty workaround to not do this on initial launch
+            [self sendConfigurationSyncMessage_AppReady];
         }
-
-        [self sendConfigurationSyncMessage_AppReady];
     }];
 }
 

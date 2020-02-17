@@ -5,15 +5,11 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>CarthageVersion</key>
-		<string>0.33.0</string>
-		<key>DateTime</key>
-		<string>Tue Feb 11 02:41:14 UTC 2020</string>
+		<string>0.34.0</string>
 		<key>OSXVersion</key>
 		<string>10.15.3</string>
 		<key>WebRTCCommit</key>
 		<string>1445d719bf05280270e9f77576f80f973fd847f8 M73</string>
-		<key>XCodeVersion</key>
-		<string>1100.1130</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
