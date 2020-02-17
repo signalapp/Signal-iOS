@@ -15,7 +15,6 @@
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "OWSPrimaryStorage.h"
-#import "SessionCipher+Loki.h"
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
@@ -84,6 +83,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 @interface OWSMessageDecrypter ()
 
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
+@property (nonatomic, readonly) LKSessionReset *sessionReset;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
@@ -101,7 +101,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     }
 
     _primaryStorage = primaryStorage;
-
+    _sessionReset = [[LKSessionReset alloc] initWithStorage:primaryStorage];
     _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
@@ -426,16 +426,22 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             @try {
                 id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
-                SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:self.primaryStorage
-                                                                        preKeyStore:self.primaryStorage
-                                                                  signedPreKeyStore:self.primaryStorage
-                                                                   identityKeyStore:self.identityManager
-                                                                        recipientId:recipientId
-                                                                           deviceId:deviceId];
+                LKSessionCipher *cipher = [[LKSessionCipher alloc]
+                                           initWithSessionReset:self.sessionReset
+                                           sessionStore:self.primaryStorage
+                                           preKeyStore:self.primaryStorage
+                                           signedPreKeyStore:self.primaryStorage
+                                           identityKeyStore:self.primaryStorage
+                                           recipientId:recipientId
+                                           deviceId:deviceId];
 
                 // plaintextData may be nil for some envelope types.
-                NSData *_Nullable plaintextData = [[cipher throws_lokiDecrypt:cipherMessage protocolContext:transaction] removePadding];
-
+                NSError *error = nil;
+                NSData *_Nullable decryptedData = [cipher decrypt:cipherMessage protocolContext:transaction error:&error];
+                // Throw if we got an error
+                SCKRaiseIfExceptionWrapperError(error);
+                NSData *_Nullable plaintextData = decryptedData != nil ? [decryptedData removePadding] : nil;
+    
                 OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                                                     plaintextData:plaintextData
                                                                                            source:envelope.source
@@ -483,11 +489,13 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSError *cipherError;
         SMKSecretSessionCipher *_Nullable cipher =
-            [[SMKSecretSessionCipher alloc] initWithSessionStore:self.primaryStorage
+            [[SMKSecretSessionCipher alloc] initWithSessionReset:self.sessionReset
+                                                    sessionStore:self.primaryStorage
                                                      preKeyStore:self.primaryStorage
                                                signedPreKeyStore:self.primaryStorage
                                                    identityStore:self.identityManager
                                                            error:&cipherError];
+
         if (cipherError || !cipher) {
             OWSFailDebug(@"Could not create secret session cipher: %@.", cipherError);
             cipherError = EnsureDecryptError(cipherError, @"Could not create secret session cipher.");

@@ -36,7 +36,6 @@
 #import "OWSSyncGroupsMessage.h"
 #import "OWSSyncGroupsRequestMessage.h"
 #import "ProfileManagerProtocol.h"
-#import "SessionCipher+Loki.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
@@ -53,11 +52,11 @@
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/NSObject+Casting.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import "OWSDispatch.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSQueues.h"
@@ -96,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithPrimaryStorage:primaryStorage];
     
     // Loki: Observe session changes
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleNewSessionAdopted:) name:kNSNotificationName_SessionAdopted object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleNewSessionAdopted:) name:LKSessionCipher.sessionAdoptedNotification object:nil];
 
     OWSSingletonAssert();
 
@@ -1151,7 +1150,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.primaryStorage archiveAllSessionsForContact:hexEncodedPublicKey protocolContext:transaction];
     
     // Loki: Set our session reset state
-    thread.sessionResetState = TSContactThreadSessionResetStateRequestReceived;
+    thread.sessionResetStatus = LKSessionResetStatusRequestReceived;
     [thread saveWithTransaction:transaction];
     
     // Loki: Send an empty message to trigger the session reset code for both parties
@@ -2023,7 +2022,7 @@ NS_ASSUME_NONNULL_BEGIN
 # pragma mark - Loki Session Handling
 
 - (void)handleNewSessionAdopted:(NSNotification *)notification {
-    NSString *hexEncodedPublicKey = notification.userInfo[kNSNotificationKey_ContactPubKey];
+    NSString *hexEncodedPublicKey = notification.userInfo[LKSessionCipher.contactPubKeyField];
     if (hexEncodedPublicKey.length == 0) { return; }
     
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -2034,7 +2033,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // If the current user initiated the reset then send back an empty message to acknowledge the completion of the session reset
-        if (thread.sessionResetState == TSContactThreadSessionResetStateInitiated) {
+        if (thread.sessionResetStatus == LKSessionResetStatusInitiated) {
             LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
             [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
         }
@@ -2045,7 +2044,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       messageType:TSInfoMessageTypeLokiSessionResetDone] saveWithTransaction:transaction];
         
         // Clear the session reset state
-        thread.sessionResetState = TSContactThreadSessionResetStateNone;
+        thread.sessionResetStatus = LKSessionResetStatusNone;
         [thread saveWithTransaction:transaction];
     }];
 }
