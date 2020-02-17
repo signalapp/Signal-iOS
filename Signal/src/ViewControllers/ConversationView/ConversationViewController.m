@@ -88,6 +88,7 @@
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
+#import <SignalMetaDataKit/SignalMetadataKit-Swift.h>
 
 @import Photos;
 
