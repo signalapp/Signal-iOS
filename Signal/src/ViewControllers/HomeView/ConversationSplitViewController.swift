@@ -6,6 +6,15 @@ import Foundation
 
 @objc
 class ConversationSplitViewController: UISplitViewController {
+
+    // MARK: - Dependencies
+
+    var databaseStorage: SDSDatabaseStorage {
+        return .shared
+    }
+
+    // MARK: -
+
     private let conversationListVC = ConversationListViewController()
     private let detailPlaceholderVC = NoSelectedConversationViewController()
 
@@ -170,8 +179,10 @@ class ConversationSplitViewController: UISplitViewController {
         // can maintain its scroll position when navigating back.
         conversationListVC.lastViewedThread = thread
 
-        let vc = ConversationViewController()
-        vc.configure(for: thread, action: action, focusMessageId: focusMessageId)
+        let threadViewModel = databaseStorage.uiRead {
+            return ThreadViewModel(thread: thread, transaction: $0)
+        }
+        let vc = ConversationViewController(threadViewModel: threadViewModel, action: action, focusMessageId: focusMessageId)
 
         selectedConversationViewController = vc
 
@@ -335,7 +346,7 @@ class ConversationSplitViewController: UISplitViewController {
             )
         ]
 
-        if (StickerManager.shared.isStickerSendEnabled) {
+        if StickerManager.shared.isStickerSendEnabled {
             commands.append(UIKeyCommand(
                 input: "s",
                 modifierFlags: [.command, .shift],

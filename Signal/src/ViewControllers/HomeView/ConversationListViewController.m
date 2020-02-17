@@ -870,10 +870,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
 
-    ConversationViewController *vc = [ConversationViewController new];
-    TSThread *thread = [self threadForIndexPath:indexPath];
-    self.lastViewedThread = thread;
-    [vc configureForThread:thread action:ConversationViewActionNone focusMessageId:nil];
+    ThreadViewModel *threadViewModel = [self threadViewModelForIndexPath:indexPath];
+    self.lastViewedThread = threadViewModel.threadRecord;
+    ConversationViewController *vc =
+        [[ConversationViewController alloc] initWithThreadViewModel:threadViewModel
+                                                             action:ConversationViewActionNone
+                                                     focusMessageId:nil];
     [vc peekSetup];
 
     return vc;

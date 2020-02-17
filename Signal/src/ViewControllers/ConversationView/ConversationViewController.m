@@ -222,34 +222,12 @@ typedef enum : NSUInteger {
 
 @implementation ConversationViewController
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+- (instancetype)initWithThreadViewModel:(ThreadViewModel *)threadViewModel
+                                 action:(ConversationViewAction)action
+                         focusMessageId:(nullable NSString *)focusMessageId
 {
-    OWSFailDebug(@"Do not instantiate this view from coder");
+    self = [super initWithNibName:nil bundle:nil];
 
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (void)commonInit
-{
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
     _contactShareViewHelper.delegate = self;
@@ -261,6 +239,35 @@ typedef enum : NSUInteger {
 
     _inputAccessoryPlaceholder = [InputAccessoryViewPlaceholder new];
     self.inputAccessoryPlaceholder.delegate = self;
+
+    _threadViewModel = threadViewModel;
+    _thread = threadViewModel.threadRecord;
+
+    self.actionOnOpen = action;
+    _cellMediaCache = [NSCache new];
+    // Cache the cell media for ~24 cells.
+    self.cellMediaCache.countLimit = 24;
+    _conversationStyle = [[ConversationStyle alloc] initWithThread:threadViewModel.threadRecord];
+
+    _conversationViewModel = [[ConversationViewModel alloc] initWithThread:threadViewModel.threadRecord
+                                                      focusMessageIdOnOpen:focusMessageId
+                                                                  delegate:self];
+
+    _searchController = [[ConversationSearchController alloc] initWithThread:threadViewModel.threadRecord];
+    _searchController.delegate = self;
+
+    // because the search bar view is hosted in the navigation bar, it's not in the CVC's responder
+    // chain, and thus won't inherit our inputAccessoryView, so we manually set it here.
+    OWSAssertDebug(self.inputAccessoryPlaceholder != nil);
+    _searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder;
+
+    self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
+                                                            target:self
+                                                          selector:@selector(reloadTimerDidFire)
+                                                          userInfo:nil
+                                                           repeats:YES];
+
+    return self;
 }
 
 #pragma mark - Dependencies
@@ -473,43 +480,6 @@ typedef enum : NSUInteger {
 {
     _peek = NO;
     [self hideInputIfNeeded];
-}
-
-- (void)configureForThread:(TSThread *)thread
-                    action:(ConversationViewAction)action
-            focusMessageId:(nullable NSString *)focusMessageId
-{
-    OWSAssertDebug(thread);
-
-    OWSLogInfo(@"configureForThread.");
-
-    _thread = thread;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        self->_threadViewModel = [[ThreadViewModel alloc] initWithThread:thread transaction:transaction];
-    }];
-
-    self.actionOnOpen = action;
-    _cellMediaCache = [NSCache new];
-    // Cache the cell media for ~24 cells.
-    self.cellMediaCache.countLimit = 24;
-    _conversationStyle = [[ConversationStyle alloc] initWithThread:thread];
-
-    _conversationViewModel =
-        [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId delegate:self];
-
-    _searchController = [[ConversationSearchController alloc] initWithThread:thread];
-    _searchController.delegate = self;
-
-    // because the search bar view is hosted in the navigation bar, it's not in the CVC's responder
-    // chain, and thus won't inherit our inputAccessoryView, so we manually set it here.
-    OWSAssertDebug(self.inputAccessoryPlaceholder != nil);
-    _searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder;
-
-    self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
-                                                            target:self
-                                                          selector:@selector(reloadTimerDidFire)
-                                                          userInfo:nil
-                                                           repeats:YES];
 }
 
 - (void)dealloc
