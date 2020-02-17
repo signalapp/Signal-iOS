@@ -104,6 +104,7 @@ public class OnboardingController: NSObject {
 
     // MARK: - Factory Methods
 
+    // FIXME this is a retain cycle
     @objc
     private(set) lazy var initialViewController = OnboardingSplashViewController(onboardingController: self)
 
