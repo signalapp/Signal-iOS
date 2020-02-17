@@ -198,15 +198,18 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         // If we're creating the thread, don't show the message request view
         guard thread.shouldThreadBeVisible else { return false }
 
+        let isGroupThread = thread is TSGroupThread
+        let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserInGroup() == true
+
+        // If this is a group thread and we're not a member, never show the message request.
+        if isGroupThread, !isLocalUserInGroup { return false }
+
         // If the thread is already whitelisted, do nothing. The user has already
         // accepted the request for this thread.
         guard !SSKEnvironment.shared.profileManager.isThread(
             inProfileWhitelist: thread,
             transaction: transaction.asAnyRead
         ) else { return false }
-
-        let isGroupThread = thread is TSGroupThread
-        let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserInGroup() == true
 
         // If this thread is blocked AND we're still in the thread, show the message
         // request view regardless of if we have sent messages or not.
