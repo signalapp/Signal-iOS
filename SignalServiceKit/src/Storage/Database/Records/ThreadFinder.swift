@@ -221,6 +221,10 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         guard !hasSentMessages || FeatureFlags.phoneNumberPrivacy else { return false }
 
         if isGroupThread {
+            // At this point, we know this is an un-whitelisted group thread.
+            // If someone added us to the group, there will be a group update info message
+            // in which case we want to show a pending message request. If the thread
+            // is otherwise empty, we don't want to show the message request.
             if interactionFinder.hasGroupUpdateInfoMessage(transaction: transaction) { return true }
         }
 

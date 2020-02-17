@@ -83,7 +83,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         delegate = self
         transitioningDelegate = self
 
-        let galleryItem: MediaGalleryItem? = databaseStorage.uiread { transaction in
+        let galleryItem: MediaGalleryItem? = databaseStorage.uiRead { transaction in
             self.mediaGallery.buildGalleryItem(attachment: initialMediaAttachment, transaction: transaction)
         }
 
@@ -357,7 +357,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             buildFlexibleSpace()
         ]
 
-        if (self.currentItem.isVideo) {
+        if self.currentItem.isVideo {
             toolbarItems += [
                 isPlayingVideo ? self.videoPauseBarButton : self.videoPlayBarButton,
                 buildFlexibleSpace()
@@ -549,7 +549,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
                 // This can happen when trying to page past the last (or first) view controller
                 // In that case, we don't want to change the captionView.
-                if (previousPage != currentViewController) {
+                if previousPage != currentViewController {
                     captionContainerView.completePagerTransition()
                 }
 

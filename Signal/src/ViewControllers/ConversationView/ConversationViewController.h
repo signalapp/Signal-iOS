@@ -21,9 +21,15 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) ThreadViewModel *threadViewModel;
 
-- (void)configureForThread:(TSThread *)thread
-                    action:(ConversationViewAction)action
-            focusMessageId:(nullable NSString *)focusMessageId;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil
+                         bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+
+- (instancetype)initWithThreadViewModel:(ThreadViewModel *)threadViewModel
+                                 action:(ConversationViewAction)action
+                         focusMessageId:(nullable NSString *)focusMessageId NS_DESIGNATED_INITIALIZER;
 
 - (void)popKeyBoard;
 

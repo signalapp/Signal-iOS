@@ -865,7 +865,7 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSInteraction_on_threadUniqueId_recordType_messagType"
+    INDEX "index_model_TSInteraction_on_threadUniqueId_recordType_messageType"
         ON "model_TSInteraction"("threadUniqueId"
     ,"recordType"
     ,"messageType"

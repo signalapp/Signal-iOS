@@ -359,11 +359,12 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 
 - (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    BOOL hasPendingMessageRequest = [self hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbWrite];
+    OWSReadCircumstance circumstance = hasPendingMessageRequest
+        ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
+        : OWSReadCircumstanceReadOnThisDevice;
+
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        BOOL hasPendingMessageRequest = [self hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbWrite];
-        OWSReadCircumstance circumstance = hasPendingMessageRequest
-            ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
-            : OWSReadCircumstanceReadOnThisDevice;
         [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
                                 thread:self
                           circumstance:circumstance

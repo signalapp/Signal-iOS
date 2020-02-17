@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -574,7 +574,7 @@ class MediaGallery {
     }
 
     func ensureLoadedForMostRecentTileView() -> MediaGalleryItem? {
-        guard let mostRecentItem: MediaGalleryItem = (databaseStorage.uiread { transaction in
+        guard let mostRecentItem: MediaGalleryItem = (databaseStorage.uiRead { transaction in
             guard let attachment = self.mediaGalleryFinder.mostRecentMediaAttachment(transaction: transaction)  else {
                 return nil
             }
@@ -742,7 +742,7 @@ class MediaGallery {
     }
 
     var galleryItemCount: Int {
-        let count: UInt = databaseStorage.uiread { transaction in
+        let count: UInt = databaseStorage.uiRead { transaction in
             return self.mediaGalleryFinder.mediaCount(transaction: transaction)
         }
         return Int(count) - deletedAttachments.count
