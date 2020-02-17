@@ -49,11 +49,11 @@ internal class LokiFileServerProxy : LokiHTTPClient {
         var headers = getCanonicalHeaders(for: request)
         return LokiAPI.getRandomSnode().then { [server = self.server, keyPair = self.keyPair, httpSession = self.httpSession] proxy -> Promise<Any> in
             let url = "\(proxy.address):\(proxy.port)/file_proxy"
-            print("[Loki] Proxying file server request through \(proxy).")
             guard let urlAsString = request.url?.absoluteString, let serverURLEndIndex = urlAsString.range(of: server)?.upperBound,
                 serverURLEndIndex < urlAsString.endIndex else { throw Error.endpointParsingFailed }
             let endpointStartIndex = urlAsString.index(after: serverURLEndIndex)
             let endpoint = String(urlAsString[endpointStartIndex..<urlAsString.endIndex])
+            print("[Loki] Proxying file server request (\(endpoint)) through \(proxy).")
             let parametersAsString: String
             if let tsRequest = request as? TSRequest {
                 headers["Content-Type"] = "application/json"

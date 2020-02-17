@@ -3,15 +3,16 @@
 //
 
 #import "TSThread.h"
-#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const TSContactThreadPrefix;
 
+typedef NS_ENUM(NSInteger, LKSessionResetStatus);
+
 @interface TSContactThread : TSThread
 
-// Loki: The current session reset state for this thread
+// Loki: The current session reset status for this thread
 @property (atomic) LKSessionResetStatus sessionResetStatus;
 @property (atomic, readonly) NSArray<NSString *> *sessionRestoreDevices;
 
