@@ -41,4 +41,30 @@ public class LokiSessionReset: NSObject, SessionResetProtocol {
         guard let thread = TSContactThread.getWithContactId(recipientId, transaction: transaction) else { return .none }
         return thread.sessionResetStatus
     }
+
+    public func onNewSessionAdopted(for recipientId: String, protocolContext: Any?) {
+        guard let transaction = protocolContext as? YapDatabaseReadWriteTransaction else {
+            Logger.warn("[Loki] Cannot handle new session adoption because invalid transaction was passed")
+            return
+        }
+
+        guard recipientId.count > 0 else { return }
+        guard let thread = TSContactThread.getWithContactId(recipientId, transaction: transaction) else {
+            Logger.debug("[Loki] A new session was adopted but the thread couldn't be found for \(recipientId)")
+            return
+        }
+
+        // If the current user initiated the reset then send back an empty message to acknowledge the completion of the session reset
+        if (thread.sessionResetStatus == .initiated) {
+            let emptyMessage = EphemeralMessage(in: thread)
+            SSKEnvironment.shared.messageSender.sendPromise(message: emptyMessage).retainUntilComplete()
+        }
+
+        // Show session reset done message
+        TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeLokiSessionResetDone).save(with: transaction)
+
+        // Clear the session reset status
+        thread.sessionResetStatus = .none
+        thread.save(with: transaction)
+    }
 }

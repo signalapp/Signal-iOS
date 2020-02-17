@@ -93,9 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
     _primaryStorage = primaryStorage;
     _dbConnection = primaryStorage.newDatabaseConnection;
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithPrimaryStorage:primaryStorage];
-    
-    // Loki: Observe session changes
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleNewSessionAdopted:) name:LKSessionCipher.sessionAdoptedNotification object:nil];
 
     OWSSingletonAssert();
 
@@ -2017,36 +2014,6 @@ NS_ASSUME_NONNULL_BEGIN
             [self.profileManager fetchLocalUsersProfile];
         });
     }
-}
-
-# pragma mark - Loki Session Handling
-
-- (void)handleNewSessionAdopted:(NSNotification *)notification {
-    NSString *hexEncodedPublicKey = notification.userInfo[LKSessionCipher.contactPubKeyField];
-    if (hexEncodedPublicKey.length == 0) { return; }
-    
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSContactThread *thread = [TSContactThread getThreadWithContactId:hexEncodedPublicKey transaction:transaction];
-        if (thread == nil) {
-            NSLog(@"[Loki] A new session was adopted but the thread couldn't be found for: %@.", hexEncodedPublicKey);
-            return;
-        }
-
-        // If the current user initiated the reset then send back an empty message to acknowledge the completion of the session reset
-        if (thread.sessionResetStatus == LKSessionResetStatusInitiated) {
-            LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
-            [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
-        }
-        
-        // Show session reset done message
-        [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp
-                                         inThread:thread
-                                      messageType:TSInfoMessageTypeLokiSessionResetDone] saveWithTransaction:transaction];
-        
-        // Clear the session reset state
-        thread.sessionResetStatus = LKSessionResetStatusNone;
-        [thread saveWithTransaction:transaction];
-    }];
 }
 
 @end
