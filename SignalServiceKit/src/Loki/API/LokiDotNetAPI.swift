@@ -3,7 +3,8 @@ import SignalMetadataKit
 
 /// Base class for `LokiFileServerAPI` and `LokiPublicChatAPI`.
 public class LokiDotNetAPI : NSObject {
-
+    public static var getAuthTokenPromises: [String:Promise<String>] = [:]
+    
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()
     internal static let userKeyPair = OWSIdentityManager.shared().identityKeyPair()!
@@ -39,6 +40,23 @@ public class LokiDotNetAPI : NSObject {
                 result = getAuthTokenInternal(in: transaction)
             }
             return result
+        }
+    }
+    
+    internal static func getAuthToken(for server: String, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<String> {
+        if let promise = getAuthTokenPromises[server] { return promise }
+        if let token = getAuthTokenFromDatabase(for: server, in: transaction) {
+            return Promise.value(token)
+        } else {
+            let promise = requestNewAuthToken(for: server).then(on: DispatchQueue.global()) { submitAuthToken($0, for: server) }.map { token -> String in
+                setAuthToken(for: server, to: token, in: transaction)
+                return token
+            }
+            promise.done { _ in
+                getAuthTokenPromises[server] = nil
+            }
+            getAuthTokenPromises[server] = promise
+            return promise
         }
     }
 
@@ -156,18 +174,6 @@ public class LokiDotNetAPI : NSObject {
                     print("[Loki] Couldn't upload attachment due to error: \(error).")
                     seal.reject(error)
                 }
-            }
-        }
-    }
-    
-    // MARK: Internal API
-    internal static func getAuthToken(for server: String, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<String> {
-        if let token = getAuthTokenFromDatabase(for: server, in: transaction) {
-            return Promise.value(token)
-        } else {
-            return requestNewAuthToken(for: server).then(on: DispatchQueue.global()) { submitAuthToken($0, for: server) }.map { token -> String in
-                setAuthToken(for: server, to: token, in: transaction)
-                return token
             }
         }
     }
