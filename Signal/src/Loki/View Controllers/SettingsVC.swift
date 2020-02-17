@@ -288,7 +288,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
                         self?.present(alert, animated: true, completion: nil)
                     }
                 }
-            })
+            }, requiresSync: true)
         }
     }
     

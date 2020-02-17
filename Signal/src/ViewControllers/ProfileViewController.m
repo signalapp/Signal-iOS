@@ -428,7 +428,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                                                @"profile update fails.")];
                                   }];
                               });
-                          }];
+                          } requiresSync:NO];
                   }];
 }
 

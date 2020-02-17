@@ -152,6 +152,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
 //            openGroupSuggestionSheet.modalTransitionStyle = .crossDissolve
 //            present(openGroupSuggestionSheet, animated: true, completion: nil)
 //        }
+        UserDefaults.standard.set(true, forKey: "hasLaunchedOnce")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
