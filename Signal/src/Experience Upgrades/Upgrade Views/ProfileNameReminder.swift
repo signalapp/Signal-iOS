@@ -27,7 +27,7 @@ class ProfileNameReminderMegaphone: MegaphoneView {
             title: NSLocalizedString("PROFILE_NAME_REMINDER_MEGAPHONE_ACTION",
                                      comment: "Action text for profile name reminder megaphone")
         ) { [weak self] in
-            let vc = ProfileViewController.forExperienceUpgrade {
+            let vc = ProfileViewController(mode: .experienceUpgrade) { _ in
                 self?.markAsComplete()
                 fromViewController.navigationController?.popToViewController(fromViewController, animated: true) {
                     fromViewController.navigationController?.setNavigationBarHidden(false, animated: false)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ class OnboardingModeSwitchConfirmationViewController: OnboardingBaseViewControll
         let nextButtonText: String
         let image: UIImage?
 
-        switch onboardingController.defaultOnboardingMode {
+        switch OnboardingController.defaultOnboardingMode {
         case .registering:
             titleText = NSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_REGISTERING",
                                           comment: "header text indicating to the user they're switching from registering to linking flow")

@@ -198,7 +198,19 @@ public class KeyBackupService: NSObject {
 
             return (masterKey, encryptedMasterKey, accessKey)
         }.then { masterKey, encryptedMasterKey, accessKey in
-            backupKeyRequest(accessKey: accessKey, encryptedMasterKey: encryptedMasterKey).map { ($0, masterKey) }
+            firstly {
+                backupKeyRequest(accessKey: accessKey, encryptedMasterKey: encryptedMasterKey)
+            }.tap {
+                switch $0 {
+                case .fulfilled:
+                    break
+                case .rejected(let error):
+                    Logger.error("recording backupKeyRequest errored: \(error)")
+                    databaseStorage.write {
+                        self.keyValueStore.setBool(true, key: hasBackupKeyRequestFailedIdentifier, transaction: $0)
+                    }
+                }
+            }.map { ($0, masterKey) }
         }.done(on: .global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
@@ -476,6 +488,7 @@ public class KeyBackupService: NSObject {
     private static let storageServiceKeyIdentifer = "storageServiceKey"
     private static let pinTypeIdentifier = "pinType"
     private static let encodedVerificationStringIdentifier = "encodedVerificationString"
+    private static let hasBackupKeyRequestFailedIdentifier = "hasBackupKeyRequestFailed"
     private static let cacheQueue = DispatchQueue(label: "org.signal.KeyBackupService")
 
     @objc
@@ -575,6 +588,7 @@ public class KeyBackupService: NSObject {
         keyValueStore.setData(masterKey, key: masterKeyIdentifer, transaction: transaction)
         keyValueStore.setInt(pinType.rawValue, key: pinTypeIdentifier, transaction: transaction)
         keyValueStore.setString(encodedVerificationString, key: encodedVerificationStringIdentifier, transaction: transaction)
+        keyValueStore.setBool(false, key: hasBackupKeyRequestFailedIdentifier, transaction: transaction)
 
         cacheQueue.sync {
             cachedMasterKey = masterKey
@@ -766,6 +780,10 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
         }
+    }
+
+    public static func hasBackupKeyRequestFailed(transaction: SDSAnyReadTransaction) -> Bool {
+        keyValueStore.getBool(hasBackupKeyRequestFailedIdentifier, defaultValue: false, transaction: transaction)
     }
 
     // PRAGMA MARK: - Token

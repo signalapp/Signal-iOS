@@ -458,7 +458,12 @@
 
 - (void)showProfile
 {
-    [ProfileViewController presentForAppSettings:self.navigationController];
+    ProfileViewController *profileVC =
+        [[ProfileViewController alloc] initWithMode:ProfileViewMode_AppSettings
+                                  completionHandler:^(ProfileViewController *completedVC) {
+                                      [completedVC.navigationController popViewControllerAnimated:YES];
+                                  }];
+    [self.navigationController pushViewController:profileVC animated:YES];
 }
 
 - (void)showAdvanced

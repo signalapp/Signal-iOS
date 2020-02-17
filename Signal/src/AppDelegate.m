@@ -736,9 +736,10 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                     return;
                 }
 
-                OWSPinSetupViewController *setupVC = [[OWSPinSetupViewController alloc] initWithCompletionHandler:^{
-                    [frontmostViewController dismissViewControllerAnimated:YES completion:nil];
-                }];
+                OWSPinSetupViewController *setupVC =
+                    [OWSPinSetupViewController creatingWithCompletionHandler:^(OWSPinSetupViewController *vc) {
+                        [frontmostViewController dismissViewControllerAnimated:YES completion:nil];
+                    }];
 
                 [frontmostViewController
                     presentFullScreenViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]

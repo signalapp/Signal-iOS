@@ -231,7 +231,7 @@ public class PinReminderViewController: OWSViewController {
     @objc func forgotPressed() {
         Logger.info("")
 
-        let vc = PinSetupViewController(mode: .recreating) { [weak self] in
+        let vc = PinSetupViewController(mode: .recreating) { [weak self] _ in
             self?.presentingViewController?.dismiss(animated: true, completion: nil)
         }
         present(OWSNavigationController(rootViewController: vc), animated: true, completion: nil)

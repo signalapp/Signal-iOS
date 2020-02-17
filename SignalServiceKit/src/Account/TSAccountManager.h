@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSConstants.h"
@@ -50,6 +50,9 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
  */
 @property (readonly) BOOL isRegistered;
 @property (readonly) BOOL isRegisteredAndReady;
+
+// useful before account state has been cached, otherwise you should prefer `isRegistered`
+- (BOOL)isRegisteredWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(isRegistered(transaction:));
 
 /**
  *  Returns current phone number for this device, which may not yet have been registered.

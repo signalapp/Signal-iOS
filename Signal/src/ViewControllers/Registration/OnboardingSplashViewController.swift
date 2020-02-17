@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -26,7 +26,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
 
         view.addSubview(modeSwitchButton)
         modeSwitchButton.setTemplateImageName(
-            onboardingController.defaultOnboardingMode == .registering ? "link-24" : "link-broken-24",
+            OnboardingController.defaultOnboardingMode == .registering ? "link-24" : "link-broken-24",
             tintColor: .ows_gray25
         )
         modeSwitchButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
