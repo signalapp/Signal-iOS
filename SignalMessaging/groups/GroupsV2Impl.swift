@@ -287,6 +287,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     private func uploadGroupAvatar(avatarData: Data,
                                    groupV2Params: GroupV2Params) -> Promise<String> {
+
+        guard !DebugFlags.groupsV2corruptAvatarUrlPaths else {
+            return Promise.value("some/invalid/url/path")
+        }
+
         let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
             return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
                 return try StorageService.buildGroupAvatarUploadFormRequest(groupV2Params: groupV2Params,
