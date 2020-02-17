@@ -83,7 +83,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 @interface OWSMessageDecrypter ()
 
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic, readonly) LKSessionReset *sessionReset;
+@property (nonatomic, readonly) LKSessionResetImplementation *sessionResetImplementation;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
@@ -101,7 +101,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     }
 
     _primaryStorage = primaryStorage;
-    _sessionReset = [[LKSessionReset alloc] initWithStorage:primaryStorage];
+    _sessionResetImplementation = [[LKSessionResetImplementation alloc] initWithStorage:primaryStorage];
     _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
@@ -427,13 +427,13 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             @try {
                 id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
                 LKSessionCipher *cipher = [[LKSessionCipher alloc]
-                                           initWithSessionReset:self.sessionReset
+                                           initWithSessionResetImplementation:self.sessionResetImplementation
                                            sessionStore:self.primaryStorage
                                            preKeyStore:self.primaryStorage
                                            signedPreKeyStore:self.primaryStorage
                                            identityKeyStore:self.primaryStorage
-                                           recipientId:recipientId
-                                           deviceId:deviceId];
+                                           recipientID:recipientId
+                                           deviceID:deviceId];
 
                 // plaintextData may be nil for some envelope types.
                 NSError *error = nil;
@@ -489,7 +489,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSError *cipherError;
         SMKSecretSessionCipher *_Nullable cipher =
-            [[SMKSecretSessionCipher alloc] initWithSessionReset:self.sessionReset
+            [[SMKSecretSessionCipher alloc] initWithSessionResetImplementation:self.sessionResetImplementation
                                                     sessionStore:self.primaryStorage
                                                      preKeyStore:self.primaryStorage
                                                signedPreKeyStore:self.primaryStorage
