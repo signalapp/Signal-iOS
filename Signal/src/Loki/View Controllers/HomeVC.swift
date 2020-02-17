@@ -49,7 +49,8 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let result = UIButton()
         result.setTitle("+", for: UIControl.State.normal)
         result.titleLabel!.font = .systemFont(ofSize: 35)
-        result.setTitleColor(UIColor(hex: 0x121212), for: UIControl.State.normal)
+        let titleColor = isLightMode ? UIColor(hex: 0xFFFFFF) : UIColor(hex: 0x121212)
+        result.setTitleColor(titleColor, for: UIControl.State.normal)
         result.titleEdgeInsets = UIEdgeInsets(top: 0, left: 1, bottom: 4, right: 0) // Slight adjustment to make the plus exactly centered
         result.backgroundColor = Colors.accent
         let size = Values.newConversationButtonSize
@@ -57,8 +58,8 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         result.layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size, height: size))).cgPath
         result.layer.shadowColor = Colors.newConversationButtonShadow.cgColor
         result.layer.shadowOffset = CGSize(width: 0, height: 0.8)
-        result.layer.shadowOpacity = 1
-        result.layer.shadowRadius = 6
+        result.layer.shadowOpacity = isLightMode ? 0.08 : 1
+        result.layer.shadowRadius = isLightMode ? 2 : 6
         result.layer.masksToBounds = false
         result.set(.width, to: size)
         result.set(.height, to: size)
