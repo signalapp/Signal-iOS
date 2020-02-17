@@ -53,10 +53,16 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
     private func profileWhitelistDidChange(notification: Notification) {
         do {
             try grdbStorage.read { transaction in
-                guard let thread = notification.whitelistedThread(transaction: transaction) else {
+                guard let thread = notification.affectedThread(transaction: transaction) else {
                     return
                 }
-                try self.sendAnyReadyReceipts(threads: [thread], transaction: transaction)
+                let wasLocallyInitiated = notification.wasLocallyInitiated
+
+                if wasLocallyInitiated {
+                    try self.sendAnyReadyReceipts(threads: [thread], transaction: transaction)
+                } else {
+                    try self.removeAnyReadyReceipts(threads: [thread], transaction: transaction)
+                }
             }
         } catch {
             owsFailDebug("error: \(error)")
@@ -93,6 +99,32 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
             do {
                 try self.grdbStorage.write { transaction in
                     try self.enqueue(pendingReceipts: pendingReceipts, transaction: transaction)
+                }
+            } catch {
+                owsFailDebug("error: \(error)")
+            }
+        }
+    }
+
+    private func removeAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
+        let pendingReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
+            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
+                Logger.debug("aborting since there is still a pending message request for thread: \(thread)")
+                return []
+            }
+
+            return try self.finder.pendingReceipts(thread: thread, transaction: transaction)
+        }
+
+        guard !pendingReceipts.isEmpty else {
+            Logger.debug("aborting since pendingReceipts is empty for threads: \(threads)")
+            return
+        }
+
+        DispatchQueue.global().async {
+            do {
+                try self.grdbStorage.write { transaction in
+                    try self.finder.delete(pendingReceipts: pendingReceipts, transaction: transaction)
                 }
             } catch {
                 owsFailDebug("error: \(error)")
@@ -173,7 +205,15 @@ public class PendingReadReceiptFinder {
 // MARK: -
 
 fileprivate extension Notification {
-    func whitelistedThread(transaction: GRDBReadTransaction) -> TSThread? {
+    var wasLocallyInitiated: Bool {
+        guard let wasLocallyInitiatedValue = userInfo?[kNSNotificationKey_WasLocallyInitiated] as? NSNumber else {
+            owsFailDebug("wasLocallyInitiatedValue was unexpectedly nil")
+            return false
+        }
+        return wasLocallyInitiatedValue.boolValue
+    }
+
+    func affectedThread(transaction: GRDBReadTransaction) -> TSThread? {
         if let address = userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress {
             guard let contactThread = TSContactThread.getWithContactAddress(address, transaction: transaction.asAnyRead) else {
                 Logger.debug("No existing contact thread for address: \(address)")

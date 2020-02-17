@@ -424,13 +424,22 @@ const CGFloat kIconViewLength = 24;
     // Show profile status and allow sharing your profile for threads that are not in the whitelist.
     // This goes away when phoneNumberPrivacy is enabled, since profile sharing become mandatory.
     __block BOOL isThreadInProfileWhitelist;
+    __block BOOL hasSentMessages;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         isThreadInProfileWhitelist =
             [self.profileManager isThreadInProfileWhitelist:self.thread transaction:transaction];
+        hasSentMessages = [[[InteractionFinder alloc] initWithThreadUniqueId:self.thread.uniqueId]
+            existsOutgoingMessageWithTransaction:transaction];
     }];
-    if (SSKFeatureFlags.phoneNumberPrivacy || isNoteToSelf) {
+
+    BOOL hideManualProfileSharing = SSKFeatureFlags.phoneNumberPrivacy
+        || (RemoteConfig.messageRequests && isThreadInProfileWhitelist)
+        || (RemoteConfig.messageRequests && !hasSentMessages);
+    BOOL hideProfileShareStatus = SSKFeatureFlags.phoneNumberPrivacy || RemoteConfig.messageRequests;
+
+    if (hideManualProfileSharing || isNoteToSelf) {
         // Do nothing
-    } else if (isThreadInProfileWhitelist) {
+    } else if (isThreadInProfileWhitelist && !hideProfileShareStatus) {
         [mainSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{

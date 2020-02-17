@@ -11,6 +11,7 @@ extern NSNotificationName const kNSNotificationNameProfileKeyDidChange;
 
 extern const NSUInteger kOWSProfileManager_NameDataLength;
 extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
+extern const NSString *kNSNotificationKey_WasLocallyInitiated;
 
 @class OWSAES256Key;
 @class OWSMessageSender;

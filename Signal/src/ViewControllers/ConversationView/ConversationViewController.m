@@ -932,7 +932,7 @@ typedef enum : NSUInteger {
     }
 
     NSString *blockStateMessage = nil;
-    if ([self isBlockedConversation]) {
+    if ([self isBlockedConversation] && !RemoteConfig.messageRequests) {
         if (self.isGroupConversation) {
             blockStateMessage = NSLocalizedString(
                 @"MESSAGES_VIEW_GROUP_BLOCKED", @"Indicates that this group conversation has been blocked.");
@@ -1518,7 +1518,7 @@ typedef enum : NSUInteger {
                                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")]];
     }
 
-    if (self.disappearingMessagesConfiguration.isEnabled) {
+    if (self.disappearingMessagesConfiguration.isEnabled && !self.threadViewModel.hasPendingMessageRequest) {
         DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
             initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
         timerView.delegate = self;
@@ -5313,11 +5313,6 @@ typedef enum : NSUInteger {
         return;
     }
 
-    // If it's already presented, do nothing.
-    if (self.messageRequestView) {
-        return;
-    }
-
     self.messageRequestView = [[MessageRequestView alloc] initWithThread:self.thread];
     self.messageRequestView.delegate = self;
     [self reloadBottomBar];
@@ -5396,6 +5391,14 @@ typedef enum : NSUInteger {
 
     [self.profileManager addThreadToProfileWhitelist:self.thread];
     [self dismissMessageRequestView];
+}
+
+- (void)messageRequestViewDidTapUnblock
+{
+    OWSAssertIsOnMainThread();
+
+    [self.blockingManager removeBlockedThread:self.thread wasLocallyInitiated:YES];
+    [self messageRequestViewDidTapAccept];
 }
 
 - (void)messageRequestViewDidTapLearnMore

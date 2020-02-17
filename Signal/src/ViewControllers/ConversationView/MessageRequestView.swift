@@ -9,6 +9,7 @@ protocol MessageRequestDelegate: class {
     func messageRequestViewDidTapBlock()
     func messageRequestViewDidTapDelete()
     func messageRequestViewDidTapAccept()
+    func messageRequestViewDidTapUnblock()
     func messageRequestViewDidTapLearnMore()
 }
 
@@ -33,14 +34,16 @@ class MessageRequestView: UIStackView {
 
         super.init(frame: .zero)
 
+        let isThreadBlocked = OWSBlockingManager.shared().isThreadBlocked(thread)
         var hasSentMessages = false
         databaseStorage.uiRead { transaction in
             hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
         }
 
         // If phone number privacy feature is not enabled, we expect this
-        //  flow to never be hit when hasSentMEssages would be false.
-        assert(!hasSentMessages || FeatureFlags.phoneNumberPrivacy)
+        // flow to never be hit when hasSentMessages would be false unless
+        // the thread has been blocked.
+        assert(!hasSentMessages || isThreadBlocked || FeatureFlags.phoneNumberPrivacy)
 
         // We want the background to extend to the bottom of the screen
         // behind the safe area, so we add that inset to our bottom inset
@@ -64,8 +67,8 @@ class MessageRequestView: UIStackView {
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
-        addArrangedSubview(preparePrompt(hasSentMessages: hasSentMessages))
-        addArrangedSubview(prepareButtons(hasSentMessages: hasSentMessages))
+        addArrangedSubview(preparePrompt(hasSentMessages: hasSentMessages, isThreadBlocked: isThreadBlocked))
+        addArrangedSubview(prepareButtons(hasSentMessages: hasSentMessages, isThreadBlocked: isThreadBlocked))
     }
 
     required init(coder: NSCoder) {
@@ -76,13 +79,18 @@ class MessageRequestView: UIStackView {
         return .zero
     }
 
-    func preparePrompt(hasSentMessages: Bool) -> UILabel {
+    func preparePrompt(hasSentMessages: Bool, isThreadBlocked: Bool) -> UILabel {
         let promptString: String
         var boldRange: NSRange
 
         if let thread = thread as? TSGroupThread {
             let formatString: String
-            if hasSentMessages {
+            if isThreadBlocked {
+                formatString = NSLocalizedString(
+                    "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT",
+                    comment: "A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}."
+                )
+            } else if hasSentMessages {
                 formatString = NSLocalizedString(
                     "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT",
                     comment: "A prompt notifying that the user must share their profile with this group. Embeds {{group name}}."
@@ -99,7 +107,7 @@ class MessageRequestView: UIStackView {
             let groupName = thread.groupNameOrDefault
 
             // Update the length of the range to reflect the length of the string that will be inserted
-            boldRange.length = (groupName as NSString).length
+            boldRange.length = groupName.utf16.count
 
             promptString = String(format: formatString, groupName)
         } else if let thread = thread as? TSContactThread {
@@ -108,6 +116,11 @@ class MessageRequestView: UIStackView {
                 formatString = NSLocalizedString(
                     "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT",
                     comment: "A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}."
+                )
+            } else if isThreadBlocked {
+                formatString = NSLocalizedString(
+                    "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT",
+                    comment: "A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}."
                 )
             } else {
                 formatString = NSLocalizedString(
@@ -145,12 +158,26 @@ class MessageRequestView: UIStackView {
         return label
     }
 
-    func prepareButtons(hasSentMessages: Bool) -> UIStackView {
+    func prepareButtons(hasSentMessages: Bool, isThreadBlocked: Bool) -> UIStackView {
         let buttonsStack = UIStackView()
         buttonsStack.spacing = 8
         buttonsStack.distribution = .fillEqually
 
-        if hasSentMessages {
+        if isThreadBlocked {
+            let deleteButton = prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
+                                                                      comment: "incoming message request button text which deletes a conversation"),
+                                             titleColor: .ows_accentRed) { [weak self] in
+                                                self?.delegate?.messageRequestViewDidTapDelete()
+            }
+            buttonsStack.addArrangedSubview(deleteButton)
+
+            let unblockButton = prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON",
+                                                                       comment: "A button used to unlock a blocked conversation."),
+                                              titleColor: .ows_signalBlue) { [weak self] in
+                                                self?.delegate?.messageRequestViewDidTapUnblock()
+            }
+            buttonsStack.addArrangedSubview(unblockButton)
+        } else if hasSentMessages {
             let learnMoreButton = prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON",
                                                                             comment: "A button used to learn more about why you must share your profile."),
                                                    titleColor: Theme.secondaryTextAndIconColor) { [weak self] in
@@ -176,14 +203,14 @@ class MessageRequestView: UIStackView {
             buttonsStack.addArrangedSubview(blockButton)
 
             let deleteButton = prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
-                                                                      comment: "A button used to block a user on an incoming message request."),
+                                                                      comment: "incoming message request button text which deletes a conversation"),
                                              titleColor: .ows_accentRed) { [weak self] in
                                                 self?.delegate?.messageRequestViewDidTapDelete()
             }
             buttonsStack.addArrangedSubview(deleteButton)
 
             let acceptButton = prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
-                                                                      comment: "A button used to block a user on an incoming message request."),
+                                                                      comment: "A button used to accept a user on an incoming message request."),
                                              titleColor: .ows_signalBlue) { [weak self] in
                                                 self?.delegate?.messageRequestViewDidTapAccept()
             }
