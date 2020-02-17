@@ -26,7 +26,7 @@ NSString *const TSContactThreadPrefix = @"c";
     self = [super initWithUniqueId:uniqueIdentifier];
     
     // No session reset ongoing
-    _sessionResetState = TSContactThreadSessionResetStateNone;
+    _sessionResetStatus = LKSessionResetStatusNone;
     _sessionRestoreDevices = @[];
 
     return self;

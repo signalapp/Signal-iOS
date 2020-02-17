@@ -1941,7 +1941,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *recipientId = recipient.recipientId;
     TSOutgoingMessage *message = messageSend.message;
     
-    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId identityKeyStore:self.identityManager];
+    ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
+    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId privateKey:identityKeyPair.privateKey];
     
     // This will return nil if encryption failed
     NSData *_Nullable serializedMessage = [cipher encryptWithMessage:[plainText paddedMessageBody]];

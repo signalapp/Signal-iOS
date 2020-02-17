@@ -1227,7 +1227,7 @@ typedef enum : NSUInteger {
             }
         }
         [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageType:TSInfoMessageTypeLokiSessionResetInProgress] save];
-        thread.sessionResetState = TSContactThreadSessionResetStateRequestReceived;
+        thread.sessionResetStatus = LKSessionResetStatusRequestReceived;
         [thread save];
         [thread removeAllSessionRestoreDevicesWithTransaction:nil];
     }
