@@ -5,7 +5,7 @@
 import UIKit
 import PromiseKit
 
-private protocol OnboardingCodeViewTextFieldDelegate {
+private protocol OnboardingCodeViewTextFieldDelegate: AnyObject {
     func textFieldDidDeletePrevious()
 }
 
@@ -18,7 +18,7 @@ private protocol OnboardingCodeViewTextFieldDelegate {
 // digit.
 private class OnboardingCodeViewTextField: UITextField {
 
-    fileprivate var codeDelegate: OnboardingCodeViewTextFieldDelegate?
+    fileprivate weak var codeDelegate: OnboardingCodeViewTextFieldDelegate?
 
     override func deleteBackward() {
         var isDeletePrevious = false
@@ -40,7 +40,7 @@ private class OnboardingCodeViewTextField: UITextField {
 
 // MARK: -
 
-protocol OnboardingCodeViewDelegate {
+protocol OnboardingCodeViewDelegate: AnyObject {
     func codeViewDidChange()
 }
 
@@ -56,7 +56,7 @@ protocol OnboardingCodeViewDelegate {
 // last/next digit.
 private class OnboardingCodeView: UIView {
 
-    var delegate: OnboardingCodeViewDelegate?
+    weak var delegate: OnboardingCodeViewDelegate?
 
     public init() {
         super.init(frame: .zero)
