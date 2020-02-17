@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -422,7 +422,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func uiread<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
+    public func uiRead<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
         var value: T!
         uiRead { (transaction) in
             value = block(transaction)
