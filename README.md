@@ -1,6 +1,6 @@
 # Session iOS
 
-[Download Session on the Appstore](https://getsession.org/iphone)
+[Download Session on the App Store](https://getsession.org/iphone)
 
 ## Summary
 
