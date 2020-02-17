@@ -58,7 +58,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addUserInfoToInteractions
         case recreateExperienceUpgradeWithNewColumns
         case recreateExperienceUpgradeIndex
-        case indexInfoMessageOnType
+        case indexInfoMessageOnType_v2
         case createPendingReadReceipts
 
         // NOTE: Every time we add a migration id, consider
@@ -398,8 +398,11 @@ public class GRDBSchemaMigrator: NSObject {
             try db.create(index: "index_model_ExperienceUpgrade_on_uniqueId", on: "model_ExperienceUpgrade", columns: ["uniqueId"])
         }
 
-        migrator.registerMigration(MigrationId.indexInfoMessageOnType.rawValue) { db in
-            try db.create(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messagType",
+        migrator.registerMigration(MigrationId.indexInfoMessageOnType_v2.rawValue) { db in
+            // cleanup typo in index name that was released to a small number of internal testflight users
+            try db.execute(sql: "DROP INDEX IF EXISTS index_model_TSInteraction_on_threadUniqueId_recordType_messagType")
+
+            try db.create(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messageType",
                           on: "model_TSInteraction",
                           columns: ["threadUniqueId", "recordType", "messageType"])
         }
