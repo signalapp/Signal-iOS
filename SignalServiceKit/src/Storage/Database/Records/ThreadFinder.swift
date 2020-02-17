@@ -221,7 +221,6 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         guard !hasSentMessages || FeatureFlags.phoneNumberPrivacy else { return false }
 
         if isGroupThread {
-            guard isLocalUserInGroup else { return false }
             if interactionFinder.hasGroupUpdateInfoMessage(transaction: transaction) { return true }
         }
 

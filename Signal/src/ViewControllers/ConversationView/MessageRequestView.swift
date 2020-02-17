@@ -165,7 +165,7 @@ class MessageRequestView: UIStackView {
 
         if isThreadBlocked {
             let deleteButton = prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
-                                                                      comment: "A button used to delete a thread."),
+                                                                      comment: "incoming message request button text which deletes a conversation"),
                                              titleColor: .ows_accentRed) { [weak self] in
                                                 self?.delegate?.messageRequestViewDidTapDelete()
             }
@@ -203,7 +203,7 @@ class MessageRequestView: UIStackView {
             buttonsStack.addArrangedSubview(blockButton)
 
             let deleteButton = prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
-                                                                      comment: "A button used to delete a user on an incoming message request."),
+                                                                      comment: "incoming message request button text which deletes a conversation"),
                                              titleColor: .ows_accentRed) { [weak self] in
                                                 self?.delegate?.messageRequestViewDidTapDelete()
             }

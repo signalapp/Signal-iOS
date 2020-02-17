@@ -53,9 +53,11 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
     private func profileWhitelistDidChange(notification: Notification) {
         do {
             try grdbStorage.read { transaction in
-                guard let (thread, wasLocallyInitiated) = notification.whitelistedThread(transaction: transaction) else {
+                guard let thread = notification.affectedThread(transaction: transaction) else {
                     return
                 }
+                let wasLocallyInitiated = notification.wasLocallyInitiated
+
                 if wasLocallyInitiated {
                     try self.sendAnyReadyReceipts(threads: [thread], transaction: transaction)
                 } else {
@@ -203,20 +205,21 @@ public class PendingReadReceiptFinder {
 // MARK: -
 
 fileprivate extension Notification {
-    func whitelistedThread(transaction: GRDBReadTransaction) -> (thread: TSThread, wasLocallyInitiated: Bool)? {
-        let wasLocallyInitiated: Bool
-        if let wasLocallyInitialedValue = userInfo?[kNSNotificationKey_WasLocallyInitiated] as? NSNumber {
-            wasLocallyInitiated = wasLocallyInitialedValue.boolValue
-        } else {
-            wasLocallyInitiated = false
+    var wasLocallyInitiated: Bool {
+        guard let wasLocallyInitiatedValue = userInfo?[kNSNotificationKey_WasLocallyInitiated] as? NSNumber else {
+            owsFailDebug("wasLocallyInitiatedValue was unexpectedly nil")
+            return false
         }
+        return wasLocallyInitiatedValue.boolValue
+    }
 
+    func affectedThread(transaction: GRDBReadTransaction) -> TSThread? {
         if let address = userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress {
             guard let contactThread = TSContactThread.getWithContactAddress(address, transaction: transaction.asAnyRead) else {
                 Logger.debug("No existing contact thread for address: \(address)")
                 return nil
             }
-            return (contactThread, wasLocallyInitiated)
+            return contactThread
         } else {
             assert(userInfo?[kNSNotificationKey_ProfileAddress] == nil)
         }
@@ -226,7 +229,7 @@ fileprivate extension Notification {
                 Logger.debug("No existing group thread for groupId: \(groupId)")
                 return nil
             }
-            return (groupThread, wasLocallyInitiated)
+            return groupThread
         } else {
             assert(userInfo?[kNSNotificationKey_ProfileGroupId] == nil)
         }
