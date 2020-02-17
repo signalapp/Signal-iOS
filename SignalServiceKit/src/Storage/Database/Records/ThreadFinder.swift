@@ -205,19 +205,21 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
             transaction: transaction.asAnyRead
         ) else { return false }
 
+        let isGroupThread = thread is TSGroupThread
+        let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserInGroup() == true
+
+        // If this thread is blocked AND we're still in the thread, show the message
+        // request view regardless of if we have sent messages or not.
+        if OWSBlockingManager.shared().isThreadBlocked(thread) && (!isGroupThread || isLocalUserInGroup) { return true }
+
         let interactionFinder = GRDBInteractionFinderAdapter(threadUniqueId: thread.uniqueId)
 
         let hasSentMessages = interactionFinder.existsOutgoingMessage(transaction: transaction)
         guard !hasSentMessages || FeatureFlags.phoneNumberPrivacy else { return false }
 
-        if let groupThread = thread as? TSGroupThread {
-            guard groupThread.isLocalUserInGroup() else {
-                return false
-            }
-
-            if interactionFinder.hasGroupUpdateInfoMessage(transaction: transaction) {
-                return true
-            }
+        if isGroupThread {
+            guard isLocalUserInGroup else { return false }
+            if interactionFinder.hasGroupUpdateInfoMessage(transaction: transaction) { return true }
         }
 
         // This thread is likely only visible because of system messages like so-and-so
