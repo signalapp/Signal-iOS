@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -483,8 +483,8 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT",
                                                                          comment: "action sheet item shown after a number of failures to receive a verificaiton SMS during registration"),
                                                 style: .default) { _ in
-                                                    Pastelog.submitEmail(logUrl: nil,
-                                                                         subject: "Signal Registration - Verification Code for iOS")
+                                                    Pastelog.submitEmailWithDefaultErrorHandling(subject: "Signal Registration - Verification Code for iOS",
+                                                                                                 logUrl: nil)
             })
         }
 

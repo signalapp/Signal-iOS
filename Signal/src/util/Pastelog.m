@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "Pastelog.h"
@@ -21,8 +21,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^UploadDebugLogsSuccess)(NSURL *url);
-typedef void (^UploadDebugLogsFailure)(NSString *localizedErrorMessage);
+NSErrorDomain PastelogErrorDomain = @"PastelogErrorDomain";
+
+typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
+    PastelogErrorInvalidNetworkResponse = 10001,
+    PastelogErrorEmailFailed = 10002
+};
 
 #pragma mark -
 
@@ -199,8 +203,8 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     if (statusCodeClass != 200) {
         OWSLogError(@"statusCode: %zd, %zd", statusCode, statusCodeClass);
         OWSLogError(@"headers: %@", httpResponse.allHeaderFields);
-        [self failWithError:[NSError errorWithDomain:@"PastelogKit"
-                                                code:10001
+        [self failWithError:[NSError errorWithDomain:PastelogErrorDomain
+                                                code:PastelogErrorInvalidNetworkResponse
                                             userInfo:@{ NSLocalizedDescriptionKey : @"Invalid response code." }]];
     }
 }
@@ -316,16 +320,18 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         ActionSheetController *alert = [[ActionSheetController alloc]
             initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
                   message:NSLocalizedString(@"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")];
-        [alert
-            addAction:[[ActionSheetAction alloc]
-                                    initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
-                                                      @"Label for the 'email debug log' option of the debug log alert.")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_email")
-                                            style:ActionSheetActionStyleDefault
-                                          handler:^(ActionSheetAction *action) {
-                                              [self submitEmailWithLogUrl:url subject:@"Signal - iOS Debug Log"];
-                                              completion();
-                                          }]];
+        [alert addAction:
+                   [[ActionSheetAction alloc]
+                                 initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
+                                                   @"Label for the 'email debug log' option of the debug log alert.")
+                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_email")
+                                         style:ActionSheetActionStyleDefault
+                                       handler:^(ActionSheetAction *action) {
+                                           [self
+                                               submitEmailWithDefaultErrorHandlingWithSubject:@"Signal - iOS Debug Log"
+                                                                                       logUrl:url];
+                                           completion();
+                                       }]];
         [alert addAction:[[ActionSheetAction alloc]
                                        initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
                                                          @"Label for the 'copy link' option of the debug log alert.")
@@ -408,6 +414,11 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                               }];
                           }];
                   }];
+}
+
++ (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam
+{
+    [[self sharedManager] uploadLogsWithSuccess:successParam failure:failureParam];
 }
 
 - (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam {
@@ -500,10 +511,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 + (void)showFailureAlertWithMessage:(NSString *)message
 {
-    ActionSheetController *alert = [[ActionSheetController alloc]
-        initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE",
-                          @"Title of the alert shown for failures while uploading debug logs.")
-              message:message];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:nil message:message];
     [alert addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"OK", @"")
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
                                                         style:ActionSheetActionStyleDefault
@@ -514,7 +522,17 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 #pragma mark Logs submission
 
-+ (void)submitEmailWithLogUrl:(nullable NSURL *)url subject:(NSString *)subject
++ (void)submitEmailWithDefaultErrorHandlingWithSubject:(NSString *)subject logUrl:(nullable NSURL *)logUrl
+{
+    NSError *error;
+    BOOL success = [self submitEmailWithSubject:subject logUrl:logUrl error:&error];
+    if (!success) {
+        OWSLogError(@"Could not open Email app.");
+        [OWSActionSheets showErrorAlertWithMessage:error.localizedDescription];
+    }
+}
+
++ (BOOL)submitEmailWithSubject:(NSString *)subject logUrl:(nullable NSURL *)url error:(NSError **)error
 {
     NSString *emailAddress = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_EMAIL"];
 
@@ -545,12 +563,15 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         [NSString stringWithFormat:@"mailto:%@?subject=%@&body=%@", emailAddress, escapedSubject, escapedBody];
 
     BOOL success = [UIApplication.sharedApplication openURL:[NSURL URLWithString:urlString]];
-    if (!success) {
-        OWSLogError(@"Could not open Email app.");
-        [OWSActionSheets
-            showErrorAlertWithMessage:NSLocalizedString(@"DEBUG_LOG_COULD_NOT_EMAIL",
-                                          @"Error indicating that the app could not launch the Email app.")];
+    if (!success && error != nil) {
+        *error = [NSError errorWithDomain:PastelogErrorDomain
+                                     code:PastelogErrorEmailFailed
+                                 userInfo:@{
+                                     NSLocalizedDescriptionKey : NSLocalizedString(@"DEBUG_LOG_COULD_NOT_EMAIL",
+                                         @"Error indicating that the app could not launch the Email app.")
+                                 }];
     }
+    return success;
 }
 
 - (void)prepareRedirection:(NSURL *)url completion:(SubmitDebugLogsCompletion)completion

@@ -41,6 +41,9 @@ import Foundation
 
     @objc
     static public let mainPhoneNumberLabel = NSLocalizedString("PHONE_NUMBER_TYPE_MAIN", comment: "Label for 'Main' phone numbers.")
+
+    @objc
+    static public let contactSupport = NSLocalizedString("CONTACT_SUPPORT", comment: "Button text to initiate an email to signal support staff")
 }
 
 @objc
