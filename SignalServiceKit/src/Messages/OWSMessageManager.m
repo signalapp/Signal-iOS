@@ -1024,6 +1024,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           messageType:TSInfoMessageTypeGroupUpdate
                                                                         customMessage:updateMessage];
                 [infoMessage saveWithTransaction:transaction];
+                // Loki: if there is a update of group members, we should establish a session with the new members.
+                [self establishSessionsWithMembersIfNeeded:newGroupModel.groupMemberIds forThread:newGroupThread transaction:transaction];
             } else if (transcript.isGroupQuit) {
                 TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:transcript.dataMessage.group.id groupType:closedGroup transaction:transaction];
                 [groupThread leaveGroupWithTransaction:transaction];
@@ -1477,7 +1479,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
-                if (oldGroupThread && ![oldGroupThread.groupModel.groupAdminIds containsObject:hexEncodedPublicKey]) {
+                if (oldGroupThread && ![oldGroupThread isUserAdminForGroup:hexEncodedPublicKey transaction:transaction]) {
                     [LKLogger print:[NSString stringWithFormat:@"[Loki] Received a group update from a non-admin user for %@; ignoring.", [LKGroupUtilities getEncodedGroupID:groupId]]];
                     return nil;
                 }

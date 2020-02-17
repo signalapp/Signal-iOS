@@ -211,6 +211,13 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return [linkedDeviceHexEncodedPublicKeys intersectsSet:[NSSet setWithArray:self.groupModel.groupMemberIds]];
 }
 
+- (BOOL)isUserAdminForGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if (hexEncodedPublicKey == nil) { return NO; }
+    NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:hexEncodedPublicKey in:transaction];
+    return [linkedDeviceHexEncodedPublicKeys intersectsSet:[NSSet setWithArray:self.groupModel.groupAdminIds]];
+}
+
 - (NSString *)name
 {
     // TODO sometimes groupName is set to the empty string. I'm hesitent to change
