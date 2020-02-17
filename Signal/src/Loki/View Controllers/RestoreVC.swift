@@ -30,7 +30,7 @@ final class RestoreVC : UIViewController {
     }()
     
     // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
+    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
     
     // MARK: Lifecycle
     override func viewDidLoad() {

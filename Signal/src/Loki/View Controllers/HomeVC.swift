@@ -20,7 +20,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     private let editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
     
     // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
+    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
     
     // MARK: Components
     private lazy var seedReminderView: SeedReminderView = {

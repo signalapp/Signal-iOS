@@ -6,7 +6,7 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
     var delegate: LinkDeviceVCDelegate?
     
     // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
+    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
     
     // MARK: Components
     private lazy var tabBar: TabBar = {

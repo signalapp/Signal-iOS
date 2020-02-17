@@ -13,7 +13,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
     }()
     
     // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
+    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
     
     // MARK: Components
     private lazy var profilePictureView: ProfilePictureView = {

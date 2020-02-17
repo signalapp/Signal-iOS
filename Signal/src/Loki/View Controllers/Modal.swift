@@ -4,7 +4,7 @@ class Modal : UIViewController {
     private(set) var verticalCenteringConstraint: NSLayoutConstraint!
     
     // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
+    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
     
     // MARK: Components
     lazy var contentView: UIView = {

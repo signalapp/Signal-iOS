@@ -4,7 +4,7 @@ class Sheet : UIViewController {
 
     // MARK: Settings
     let overshoot: CGFloat = 40
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
+    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
 
     // MARK: Components
     lazy var contentView: UIView = {
