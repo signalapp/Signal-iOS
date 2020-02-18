@@ -1112,33 +1112,9 @@ NS_ASSUME_NONNULL_BEGIN
             GroupParser *parser = [[GroupParser alloc] initWithData:data];
             NSArray<TSGroupModel *> *groupModels = [parser parseGroupModels];
             for (TSGroupModel *groupModel in groupModels) {
-                NSMutableSet *admins = [NSMutableSet setWithArray:groupModel.groupAdminIds];
-                if ([admins containsObject:masterHexEncodedPublicKey]) {
-                    [admins addObject:userHexEncodedPublicKey];
-                }
-                TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:groupModel.groupName
-                                                                        memberIds:groupModel.groupMemberIds
-                                                                            image:groupModel.groupImage
-                                                                          groupId:groupModel.groupId
-                                                                        groupType:groupModel.groupType
-                                                                         adminIds:admins.allObjects];
-                NSString *updateGroupInfo = [groupModel getInfoStringAboutUpdateTo:newGroupModel contactsManager:self.contactsManager];
-                TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
+                TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
                 [thread saveWithTransaction:transaction];
-                uint32_t expiresInSeconds = [thread disappearingMessagesDurationWithTransaction:transaction];
-                TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                       groupMetaMessage:TSGroupMetaMessageUpdate
-                                                                       expiresInSeconds:expiresInSeconds];
-                [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
-                OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-                [messageSender sendMessage:message
-                success:^{
-                    OWSLogDebug(@"Successfully sent group update for group sync");
-                    [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
-                }
-                failure:^(NSError *error) {
-                    OWSLogError(@"Failed to send group update for group sync with error: %@", error);
-                }];
+                [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
             }
         }
     } else {
