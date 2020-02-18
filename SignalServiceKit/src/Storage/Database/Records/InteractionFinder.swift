@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -57,12 +57,12 @@ protocol InteractionFinderAdapter {
 public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     let yapAdapter: YAPDBInteractionFinderAdapter
-    let grdbAdapter: GRDBInteractionFinderAdapter
+    let grdbAdapter: GRDBInteractionFinder
 
     @objc
     public init(threadUniqueId: String) {
         self.yapAdapter = YAPDBInteractionFinderAdapter(threadUniqueId: threadUniqueId)
-        self.grdbAdapter = GRDBInteractionFinderAdapter(threadUniqueId: threadUniqueId)
+        self.grdbAdapter = GRDBInteractionFinder(threadUniqueId: threadUniqueId)
     }
 
     // MARK: - static methods
@@ -82,7 +82,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return YAPDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try GRDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: grdbRead)
+            return try GRDBInteractionFinder.fetch(uniqueId: uniqueId, transaction: grdbRead)
         }
     }
 
@@ -92,7 +92,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return YAPDBInteractionFinderAdapter.existsIncomingMessage(timestamp: timestamp, address: address, sourceDeviceId: sourceDeviceId, transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return GRDBInteractionFinderAdapter.existsIncomingMessage(timestamp: timestamp, address: address, sourceDeviceId: sourceDeviceId, transaction: grdbRead)
+            return GRDBInteractionFinder.existsIncomingMessage(timestamp: timestamp, address: address, sourceDeviceId: sourceDeviceId, transaction: grdbRead)
         }
     }
 
@@ -104,7 +104,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
                                                                   filter: filter,
                                                                   transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try GRDBInteractionFinderAdapter.interactions(withTimestamp: timestamp,
+            return try GRDBInteractionFinder.interactions(withTimestamp: timestamp,
                                                                  filter: filter,
                                                                  transaction: grdbRead)
         }
@@ -116,7 +116,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return YAPDBInteractionFinderAdapter.incompleteCallIds(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return GRDBInteractionFinderAdapter.incompleteCallIds(transaction: grdbRead)
+            return GRDBInteractionFinder.incompleteCallIds(transaction: grdbRead)
         }
     }
 
@@ -126,7 +126,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return YAPDBInteractionFinderAdapter.attemptingOutInteractionIds(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return GRDBInteractionFinderAdapter.attemptingOutInteractionIds(transaction: grdbRead)
+            return GRDBInteractionFinder.attemptingOutInteractionIds(transaction: grdbRead)
         }
     }
 
@@ -136,7 +136,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return YAPDBInteractionFinderAdapter.unreadCountInAllThreads(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return GRDBInteractionFinderAdapter.unreadCountInAllThreads(transaction: grdbRead)
+            return GRDBInteractionFinder.unreadCountInAllThreads(transaction: grdbRead)
         }
     }
 
@@ -147,7 +147,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             YAPDBInteractionFinderAdapter.enumerateMessagesWithStartedPerConversationExpiration(transaction: yapRead, block: block)
         case .grdbRead(let grdbRead):
-            GRDBInteractionFinderAdapter.enumerateMessagesWithStartedPerConversationExpiration(transaction: grdbRead, block: block)
+            GRDBInteractionFinder.enumerateMessagesWithStartedPerConversationExpiration(transaction: grdbRead, block: block)
         }
     }
 
@@ -157,7 +157,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return YAPDBInteractionFinderAdapter.interactionIdsWithExpiredPerConversationExpiration(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return GRDBInteractionFinderAdapter.interactionIdsWithExpiredPerConversationExpiration(transaction: grdbRead)
+            return GRDBInteractionFinder.interactionIdsWithExpiredPerConversationExpiration(transaction: grdbRead)
         }
     }
 
@@ -167,7 +167,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             YAPDBInteractionFinderAdapter.enumerateMessagesWhichFailedToStartExpiring(transaction: yapRead, block: block)
         case .grdbRead(let grdbRead):
-            GRDBInteractionFinderAdapter.enumerateMessagesWhichFailedToStartExpiring(transaction: grdbRead, block: block)
+            GRDBInteractionFinder.enumerateMessagesWhichFailedToStartExpiring(transaction: grdbRead, block: block)
         }
     }
 
@@ -635,13 +635,15 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
 // MARK: -
 
-struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
+@objc
+public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
 
     typealias ReadTransaction = GRDBReadTransaction
 
     let threadUniqueId: String
 
-    init(threadUniqueId: String) {
+    @objc
+    public init(threadUniqueId: String) {
         self.threadUniqueId = threadUniqueId
     }
 
@@ -894,7 +896,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(GRDBInteractionFinderAdapter.sqlClauseForUnreadInteractionCounts)
+                AND \(GRDBInteractionFinder.sqlClauseForUnreadInteractionCounts)
             """
             let arguments: StatementArguments = [threadUniqueId]
 
@@ -990,6 +992,41 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
             }
             block(interaction, &stop)
+            if stop.boolValue {
+                return
+            }
+        }
+    }
+
+    @objc
+    func enumerateMessagesWithAttachments(transaction: GRDBReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+
+        let emptyArraySerializedDataString = NSKeyedArchiver.archivedData(withRootObject: Array<String>()).hexadecimalString
+
+        let sql = """
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .attachmentIds) IS NOT NULL
+            AND \(interactionColumn: .attachmentIds) != x'\(emptyArraySerializedDataString)'
+        """
+        let arguments: StatementArguments = [threadUniqueId]
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
+        while let interaction = try cursor.next() {
+            var stop: ObjCBool = false
+
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
+                continue
+            }
+
+            guard !message.attachmentIds.isEmpty else {
+                owsFailDebug("message unexpectedly has no attachments")
+                continue
+            }
+
+            block(message, &stop)
+
             if stop.boolValue {
                 return
             }

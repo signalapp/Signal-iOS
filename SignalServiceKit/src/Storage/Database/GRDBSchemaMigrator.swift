@@ -60,6 +60,7 @@ public class GRDBSchemaMigrator: NSObject {
         case recreateExperienceUpgradeIndex
         case indexInfoMessageOnType_v2
         case createPendingReadReceipts
+        case createInteractionAttachmentIdsIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -418,6 +419,12 @@ public class GRDBSchemaMigrator: NSObject {
             try db.create(index: "index_pending_read_receipts_on_threadId",
                           on: "pending_read_receipts",
                           columns: ["threadId"])
+        }
+
+        migrator.registerMigration(MigrationId.createInteractionAttachmentIdsIndex.rawValue) { db in
+            try db.create(index: "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds",
+                          on: "model_TSInteraction",
+                          columns: ["threadUniqueId", "attachmentIds"])
         }
 
         // MARK: - Schema Migration Insertion Point

@@ -280,7 +280,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (UIColor *)primaryTextColor
 {
-    return (Theme.isDarkThemeEnabled ? Theme.darkThemePrimaryColor : UIColor.ows_gray90Color);
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemePrimaryColor : Theme.lightThemePrimaryColor);
 }
 
 + (UIColor *)primaryIconColor
@@ -398,6 +398,11 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 + (UIColor *)darkThemePrimaryColor
 {
     return UIColor.ows_gray05Color;
+}
+
++ (UIColor *)lightThemePrimaryColor
+{
+    return UIColor.ows_gray90Color;
 }
 
 + (UIColor *)galleryHighlightColor

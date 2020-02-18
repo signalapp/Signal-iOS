@@ -32,8 +32,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSNotificationName const kNSNotificationNameProfileWhitelistDidChange = @"kNSNotificationNameProfileWhitelistDidChange";
-
 NSNotificationName const kNSNotificationNameProfileKeyDidChange = @"kNSNotificationNameProfileKeyDidChange";
 
 // The max bytes for a user's profile name, encoded in UTF8.

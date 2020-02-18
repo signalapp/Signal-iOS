@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -67,6 +67,7 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *darkThemeNavbarBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *darkThemeBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *darkThemePrimaryColor;
+@property (class, readonly, nonatomic) UIColor *lightThemePrimaryColor;
 @property (class, readonly, nonatomic) UIColor *darkThemeSecondaryTextAndIconColor;
 @property (class, readonly, nonatomic) UIBlurEffect *darkThemeBarBlurEffect;
 @property (class, readonly, nonatomic) UIColor *galleryHighlightColor;

@@ -1843,6 +1843,7 @@ typedef enum : NSUInteger {
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self.attachmentDownloads downloadAllAttachmentsForMessage:message
+            bypassPendingMessageRequest:NO
             transaction:transaction
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
@@ -2659,6 +2660,26 @@ typedef enum : NSUInteger {
     [self handleFailedDownloadTapForMessage:message];
 }
 
+- (void)didTapPendingMessageRequestIncomingAttachment:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(viewItem);
+
+    // Start downloads for message.
+    TSMessage *message = (TSMessage *)viewItem.interaction;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self.attachmentDownloads downloadAllAttachmentsForMessage:message
+            bypassPendingMessageRequest:YES
+            transaction:transaction
+            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSLogInfo(@"Successfully downloaded attachment in thread: %@", message.threadWithSneakyTransaction);
+            }
+            failure:^(NSError *error) {
+                OWSLogWarn(@"Failed to download message with error: %@", error);
+            }];
+    }];
+}
+
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message
 {
     OWSAssertIsOnMainThread();
@@ -2683,6 +2704,7 @@ typedef enum : NSUInteger {
 
     [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
         message:message
+        bypassPendingMessageRequest:NO
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;

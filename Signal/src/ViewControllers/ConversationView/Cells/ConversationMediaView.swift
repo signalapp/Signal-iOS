@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -121,9 +121,7 @@ public class ConversationMediaView: UIView {
         AssertIsOnMainThread()
 
         guard let attachmentStream = attachment as? TSAttachmentStream else {
-            tryToConfigureForBlurHash(attachment: attachment)
-            addDownloadProgressIfNecessary()
-            return
+            return configureForUndownloadedImage()
         }
         guard !isFailedDownload else {
             configure(forError: .failed)
@@ -139,6 +137,71 @@ public class ConversationMediaView: UIView {
             owsFailDebug("Attachment has unexpected type.")
             configure(forError: .invalid)
         }
+    }
+
+    private func configureForUndownloadedImage() {
+        tryToConfigureForBlurHash(attachment: attachment)
+
+        guard !isFailedDownload else {
+            return configure(forError: .failed)
+        }
+
+        guard !isPendingMessageRequest else {
+            return configureForMessageRequest()
+        }
+
+        addDownloadProgressIfNecessary()
+    }
+
+    private func configureForMessageRequest() {
+        backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05
+
+        let downloadIconView = UIImageView()
+        downloadIconView.setTemplateImageName("arrow-down-circle-outline-24", tintColor: Theme.primaryTextColor)
+        downloadIconView.autoSetDimension(.height, toSize: 24)
+        downloadIconView.contentMode = .scaleAspectFit
+
+        let downloadLabel = UILabel()
+        downloadLabel.textColor = Theme.primaryTextColor
+        downloadLabel.font = UIFont.ows_dynamicTypeCaption1Clamped.ows_semibold()
+        downloadLabel.textAlignment = .center
+        downloadLabel.numberOfLines = 0
+        downloadLabel.text = NSLocalizedString("CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE",
+                                               comment: "Indicates that the user can tap to download this image.")
+
+        let topSpacer = UIView.vStretchingSpacer()
+        let bottomSpacer = UIView.vStretchingSpacer()
+
+        let stackView = UIStackView(arrangedSubviews: [topSpacer, downloadIconView, downloadLabel, bottomSpacer])
+        stackView.axis = .vertical
+        stackView.spacing = 6
+        addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewMargins()
+
+        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+
+        let primaryColor: UIColor
+
+        if hasBlurHash {
+            let isDarkBlurHash = BlurHash.isDarkBlurHash(attachment.blurHash) == true
+            primaryColor = isDarkBlurHash ? Theme.darkThemePrimaryColor : Theme.lightThemePrimaryColor
+            let shadowColor: UIColor = isDarkBlurHash ? .ows_blackAlpha40 : .ows_whiteAlpha90
+
+            // Add shadows if we have a blur hash since while we know it's
+            // primarily dark or light, we don't know if we'll still overlap
+            // some of the opposing color.
+            for downloadView in [downloadLabel, downloadIconView] {
+                downloadView.layer.shadowColor = shadowColor.cgColor
+                downloadView.layer.shadowOffset = .zero
+                downloadView.layer.shadowOpacity = 1
+                downloadView.layer.shadowRadius = 4
+            }
+        } else {
+            primaryColor = Theme.primaryTextColor
+        }
+
+        downloadLabel.textColor = primaryColor
+        downloadIconView.tintColor = primaryColor
     }
 
     private func addDownloadProgressIfNecessary() {
@@ -407,11 +470,22 @@ public class ConversationMediaView: UIView {
         }
     }
 
+    private var isPendingMessageRequest: Bool {
+        guard let attachmentPointer = attachment as? TSAttachmentPointer else {
+            return false
+        }
+        return attachmentPointer.state == .pendingMessageRequest
+    }
+
     private var isFailedDownload: Bool {
         guard let attachmentPointer = attachment as? TSAttachmentPointer else {
             return false
         }
         return attachmentPointer.state == .failed
+    }
+
+    private var hasBlurHash: Bool {
+        return BlurHash.isValidBlurHash(attachment.blurHash)
     }
 
     private func configure(forError error: MediaError) {

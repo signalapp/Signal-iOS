@@ -215,7 +215,7 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         // request view regardless of if we have sent messages or not.
         if OWSBlockingManager.shared().isThreadBlocked(thread) && (!isGroupThread || isLocalUserInGroup) { return true }
 
-        let interactionFinder = GRDBInteractionFinderAdapter(threadUniqueId: thread.uniqueId)
+        let interactionFinder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
 
         let hasSentMessages = interactionFinder.existsOutgoingMessage(transaction: transaction)
         guard !hasSentMessages || FeatureFlags.phoneNumberPrivacy else { return false }

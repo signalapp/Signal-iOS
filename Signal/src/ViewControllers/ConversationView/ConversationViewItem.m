@@ -98,6 +98,15 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     return attachmentPointer.state == TSAttachmentPointerStateFailed;
 }
 
+- (BOOL)isPendingMessageRequest
+{
+    if (![self.attachment isKindOfClass:[TSAttachmentPointer class]]) {
+        return NO;
+    }
+    TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)self.attachment;
+    return attachmentPointer.state == TSAttachmentPointerStatePendingMessageRequest;
+}
+
 @end
 
 #pragma mark -
@@ -1402,6 +1411,19 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
     for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
         if (mediaAlbumItem.isFailedDownload) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (BOOL)mediaAlbumHasPendingMessageRequestAttachment
+{
+    OWSAssertDebug(self.messageCellType == OWSMessageCellType_MediaMessage);
+    OWSAssertDebug(self.mediaAlbumItems.count > 0);
+
+    for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
+        if (mediaAlbumItem.isPendingMessageRequest) {
             return YES;
         }
     }
