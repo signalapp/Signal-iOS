@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,10 +30,15 @@ public class BlurHash: NSObject {
         guard let blurHash = blurHash else {
             return false
         }
-        guard blurHash.count > 0 && blurHash.count < maxLength else {
+        guard blurHash.count >= 6 && blurHash.count < maxLength else {
             return false
         }
         return blurHash.unicodeScalars.allSatisfy { validCharacterSet.contains($0) }
+    }
+
+    public class func isDarkBlurHash(_ blurHash: String?) -> Bool? {
+        guard isValidBlurHash(blurHash) else { return nil }
+        return blurHash?.isDarkBlurHash
     }
 
     @objc(ensureBlurHashForAttachmentStream:)

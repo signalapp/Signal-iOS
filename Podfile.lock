@@ -242,7 +242,7 @@ DEPENDENCIES:
   - Argon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - AxolotlKit/Tests (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
-  - blurhash (from `https://github.com/signalapp/blurhash`, branch `addPodspec`)
+  - blurhash (from `../blurhash`)
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`)
   - Curve25519Kit/Tests (from `https://github.com/signalapp/Curve25519Kit`)
   - GRDB.swift/SQLCipher
@@ -295,8 +295,7 @@ EXTERNAL SOURCES:
     :branch: master
     :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
-    :branch: addPodspec
-    :git: https://github.com/signalapp/blurhash
+    :path: "../blurhash"
   Curve25519Kit:
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
@@ -338,9 +337,6 @@ CHECKOUT OPTIONS:
   AxolotlKit:
     :commit: 97bc4ea1014c0cfac539e87444e3d0bb98a264ba
     :git: https://github.com/signalapp/SignalProtocolKit.git
-  blurhash:
-    :commit: e2b1540fc24867c83971045542483b91a46eb115
-    :git: https://github.com/signalapp/blurhash
   Curve25519Kit:
     :commit: 4fc1c10e98fff2534b5379a9bb587430fdb8e577
     :git: https://github.com/signalapp/Curve25519Kit
@@ -379,7 +375,7 @@ SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   Argon2: b11fcfa58057e2522356ddc6a817cd875297edfe
   AxolotlKit: ac03e4d79486b62d08282c840da410116227683e
-  blurhash: 150e9ffe986f028a38f7b469b5a279eab45352df
+  blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
   CocoaLumberjack: 78b0c238666f4f58db069738ec176f4519557516
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
@@ -406,6 +402,6 @@ SPEC CHECKSUMS:
   ZKGroup: b5fcf00855c58ffa45861d5427621d8a519f4314
   ZXingObjC: 512b34b9b6920e8ef0461a4159d0814c5e48c28a
 
-PODFILE CHECKSUM: b90f18f05ce46a76d08e4f05afe57222f426d1f2
+PODFILE CHECKSUM: 812b4321c36792c9d5352d603302da5da5052882
 
 COCOAPODS: 1.7.5
