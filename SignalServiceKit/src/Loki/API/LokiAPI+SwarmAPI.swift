@@ -12,8 +12,6 @@ public extension LokiAPI {
     
     // MARK: Caching
     internal static var swarmCache: [String:[LokiAPITarget]] = [:]
-    private static let swarmCacheKey = "swarmCacheKey"
-    private static let swarmCacheCollection = "swarmCacheCollection"
     
     internal static func dropIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
         let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]

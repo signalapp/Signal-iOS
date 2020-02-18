@@ -75,7 +75,7 @@ internal class LokiSnodeProxy : LokiHTTPClient {
             let response = try DiffieHellman.decrypt(cipherText, using: symmetricKey)
             let uncheckedJSON = try? JSONSerialization.jsonObject(with: response, options: .allowFragments) as? JSON
             guard let json = uncheckedJSON, let statusCode = json["status"] as? Int else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
-            let isSuccess = (200..<300).contains(statusCode)
+            let isSuccess = (200...299) ~= statusCode
             var body: Any? = nil
             if let bodyAsString = json["body"] as? String {
                 body = bodyAsString
