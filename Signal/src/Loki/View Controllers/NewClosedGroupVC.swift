@@ -180,15 +180,15 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
             DispatchQueue.main.async {
                 SSKEnvironment.shared.messageSender.send(message, success: {
                     DispatchQueue.main.async {
-                        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
                         self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
                     }
                 }, failure: { error in
                     let message = TSErrorMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, failedMessageType: .groupCreationFailed)
                     message.save()
                     DispatchQueue.main.async {
-                        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
                         self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
                     }
                 })
             }
