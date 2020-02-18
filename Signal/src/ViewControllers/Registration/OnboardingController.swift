@@ -215,7 +215,7 @@ public class OnboardingController: NSObject {
             milestones.append(.setupProfile)
         }
 
-        if ows2FAManager.is2FAEnabled() {
+        if KeyBackupService.hasMasterKey {
             milestones.append(.setupPin)
         }
 
