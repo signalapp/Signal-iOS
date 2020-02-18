@@ -991,6 +991,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         case TSAttachmentPointerStateEnqueued:
         case TSAttachmentPointerStateDownloading:
+        case TSAttachmentPointerStatePendingMessageRequest:
             break;
     }
     switch (self.viewItem.attachmentPointer.pointerType) {

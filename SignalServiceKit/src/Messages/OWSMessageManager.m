@@ -1149,6 +1149,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
         message:nil
+        bypassPendingMessageRequest:YES
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -1218,6 +1219,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogDebug(@"incoming attachment message: %@", message.debugDescription);
 
     [self.attachmentDownloads downloadBodyAttachmentsForMessage:message
+        bypassPendingMessageRequest:NO
         transaction:transaction
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogDebug(@"successfully fetched attachments: %lu for message: %@",
@@ -1815,7 +1817,12 @@ NS_ASSUME_NONNULL_BEGIN
         // * Failures don't interfere with successes.
         [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
             message:incomingMessage
+            bypassPendingMessageRequest:NO
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                if (attachmentStreams.count == 0) {
+                    // This is expected if there is a pending message request.
+                    return;
+                }
                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                     TSAttachmentStream *_Nullable attachmentStream = attachmentStreams.firstObject;
                     OWSAssertDebug(attachmentStream);

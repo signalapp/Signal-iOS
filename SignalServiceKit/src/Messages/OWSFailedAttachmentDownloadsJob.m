@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFailedAttachmentDownloadsJob.h"
@@ -76,17 +76,31 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
                     return;
                 }
 
-                [attachment anyUpdateAttachmentPointerWithTransaction:transaction
-                                                                block:^(TSAttachmentPointer *attachment) {
-                                                                    attachment.state = TSAttachmentPointerStateFailed;
-                                                                }];
-                count++;
+                switch (attachment.state) {
+                    case TSAttachmentPointerStateFailed:
+                        [attachment anyUpdateAttachmentPointerWithTransaction:transaction
+                                                                        block:^(TSAttachmentPointer *attachment) {
+                                                                            attachment.state
+                                                                                = TSAttachmentPointerStateFailed;
+                                                                        }];
+                        count++;
+                        break;
+                    case TSAttachmentPointerStatePendingMessageRequest:
+                        // Do nothing. We don't want to mark this attachment as failed.
+                        // It will be updated when the message request is resolved.
+                        break;
+                    default:
+                        OWSFailDebug(@"Attachment has unexpected state.");
+                        return;
+                }
+
+
             }
                                                  transaction:transaction];
         }];
 
     if (count > 0) {
-        OWSLogDebug(@"Marked %u attachments as unsent", count);
+        OWSLogDebug(@"Marked %u attachments as failed", count);
     }
 }
 

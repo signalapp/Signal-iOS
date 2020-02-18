@@ -1843,6 +1843,7 @@ typedef enum : NSUInteger {
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self.attachmentDownloads downloadAllAttachmentsForMessage:message
+            bypassPendingMessageRequest:NO
             transaction:transaction
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
@@ -2683,6 +2684,7 @@ typedef enum : NSUInteger {
 
     [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
         message:message
+        bypassPendingMessageRequest:NO
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;

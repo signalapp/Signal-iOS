@@ -165,6 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
                 message:outgoingMessage
+                bypassPendingMessageRequest:YES
                 success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                     OWSAssertDebug(attachmentStreams.count == 1);
                     TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -225,6 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self.attachmentDownloads
             downloadAllAttachmentsForMessage:outgoingMessage
+                 bypassPendingMessageRequest:YES
                                  transaction:transaction
                                      success:attachmentHandler
                                      failure:^(NSError *error) {

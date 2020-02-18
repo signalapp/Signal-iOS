@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAttachmentDownloads.h"
@@ -135,11 +135,13 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 }
 
 - (void)downloadBodyAttachmentsForMessage:(TSMessage *)message
+              bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
                               transaction:(SDSAnyReadTransaction *)transaction
                                   success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                                   failure:(void (^)(NSError *error))failure
 {
     [self downloadAttachmentsForMessage:message
+            bypassPendingMessageRequest:bypassPendingMessageRequest
                             attachments:[message bodyAttachmentsWithTransaction:transaction]
                             transaction:transaction
                                 success:success
@@ -147,11 +149,13 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 }
 
 - (void)downloadAllAttachmentsForMessage:(TSMessage *)message
+             bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
                              transaction:(SDSAnyReadTransaction *)transaction
                                  success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                                  failure:(void (^)(NSError *error))failure
 {
     [self downloadAttachmentsForMessage:message
+            bypassPendingMessageRequest:bypassPendingMessageRequest
                             attachments:[message allAttachmentsWithTransaction:transaction]
                             transaction:transaction
                                 success:success
@@ -159,6 +163,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 }
 
 - (void)downloadAttachmentsForMessage:(TSMessage *)message
+          bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
                           attachments:(NSArray<TSAttachment *> *)attachments
                           transaction:(SDSAnyReadTransaction *)transaction
                               success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
@@ -198,12 +203,40 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     [self enqueueJobsForAttachmentStreams:attachmentStreams
                        attachmentPointers:attachmentPointers
                                   message:message
+              bypassPendingMessageRequest:bypassPendingMessageRequest
                                   success:success
                                   failure:failure];
 }
 
 - (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                          message:(nullable TSMessage *)message
+                          success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
+                          failure:(void (^)(NSError *error))failure
+{
+    [self downloadAttachmentPointer:attachmentPointer
+                    nullableMessage:nil
+        bypassPendingMessageRequest:YES
+                            success:success
+                            failure:failure];
+}
+
+- (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
+                          message:(TSMessage *)message
+      bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
+                          success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
+                          failure:(void (^)(NSError *error))failure
+{
+    OWSAssertDebug(message);
+
+    [self downloadAttachmentPointer:attachmentPointer
+                    nullableMessage:message
+        bypassPendingMessageRequest:bypassPendingMessageRequest
+                            success:success
+                            failure:failure];
+}
+
+- (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
+                  nullableMessage:(nullable TSMessage *)message
+      bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                           failure:(void (^)(NSError *error))failure
 {
@@ -222,6 +255,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                            attachmentPointer,
                        ]
                                   message:message
+              bypassPendingMessageRequest:bypassPendingMessageRequest
                                   success:success
                                   failure:failure];
 }
@@ -229,6 +263,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 - (void)enqueueJobsForAttachmentStreams:(NSArray<TSAttachmentStream *> *)attachmentStreamsParam
                      attachmentPointers:(NSArray<TSAttachmentPointer *> *)attachmentPointers
                                 message:(nullable TSMessage *)message
+            bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
                                 success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
                                 failure:(void (^)(NSError *error))failureHandler
 {
@@ -244,7 +279,45 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
         NSMutableArray<TSAttachmentStream *> *attachmentStreams = [attachmentStreamsParam mutableCopy];
         NSMutableArray<AnyPromise *> *promises = [NSMutableArray array];
+
+        __block BOOL hasPendingMessageRequest = NO;
+
+        if (!bypassPendingMessageRequest && ![message isKindOfClass:[TSOutgoingMessage class]]) {
+            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                TSThread *thread = [message threadWithTransaction:transaction];
+                // If the message that created this attachment was the first message in the
+                // thread, the thread may not yet be marked visible. In that case, just check
+                // if the thread is whitelisted. We know we just received a message.
+                if (!thread.shouldThreadBeVisible && RemoteConfig.messageRequests) {
+                    hasPendingMessageRequest = ![self.profileManager isThreadInProfileWhitelist:thread
+                                                                                    transaction:transaction];
+                } else {
+                    hasPendingMessageRequest =
+                        [GRDBThreadFinder hasPendingMessageRequestWithThread:thread
+                                                                 transaction:transaction.unwrapGrdbRead];
+                }
+            }];
+        }
+
         for (TSAttachmentPointer *attachmentPointer in attachmentPointers) {
+            if (attachmentPointer.isVisualMedia && hasPendingMessageRequest && message.messageSticker == nil
+                && !message.isViewOnceMessage) {
+                OWSLogInfo(@"Not queueing visual media download for thread with pending message request");
+
+                [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    [attachmentPointer
+                        anyUpdateAttachmentPointerWithTransaction:transaction
+                                                            block:^(TSAttachmentPointer *pointer) {
+                                                                if (pointer.state == TSAttachmentPointerStateEnqueued) {
+                                                                    pointer.state
+                                                                        = TSAttachmentPointerStatePendingMessageRequest;
+                                                                }
+                                                            }];
+                }];
+
+                continue;
+            }
+
             AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
                 [self enqueueJobForAttachmentId:attachmentPointer.uniqueId
                     message:message
