@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "RegistrationUtils.h"
@@ -97,12 +97,15 @@ NS_ASSUME_NONNULL_BEGIN
                                           [[OnboardingPhoneNumber alloc] initWithE164:phoneNumber
                                                                             userInput:phoneNumber];
                                       [onboardingController updateWithPhoneNumber:onboardingPhoneNumber];
+
+
                                       OnboardingVerificationViewController *viewController =
                                           [[OnboardingVerificationViewController alloc]
                                               initWithOnboardingController:onboardingController];
                                       [viewController hideBackLink];
-                                      OWSNavigationController *navigationController =
-                                          [[OWSNavigationController alloc] initWithRootViewController:viewController];
+                                      OnboardingNavigationController *navigationController =
+                                        [[OnboardingNavigationController alloc] initWithOnboardingController:onboardingController];
+                                      [navigationController setViewControllers:@[viewController] animated:NO];
                                       navigationController.navigationBarHidden = YES;
 
                                       [UIApplication sharedApplication].delegate.window.rootViewController

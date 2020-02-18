@@ -59,11 +59,34 @@ public class OnboardingPhoneNumber: NSObject {
 // MARK: -
 
 @objc
+public class OnboardingNavigationController: OWSNavigationController {
+    let onboardingController: OnboardingController
+
+    @objc
+    public init(onboardingController: OnboardingController) {
+        self.onboardingController = onboardingController
+        super.init(owsNavbar: ())
+        if let nextMilestone = onboardingController.nextMilestone {
+            setViewControllers([onboardingController.nextViewController(milestone: nextMilestone)], animated: false)
+        }
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+@objc
 public class OnboardingController: NSObject {
 
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
+    private static var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
     }
 
@@ -79,38 +102,162 @@ public class OnboardingController: NSObject {
         return AppEnvironment.shared.backup
     }
 
+    private var databaseStorage: SDSDatabaseStorage {
+        return .shared
+    }
+
+    private var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
+    }
+
+    private var ows2FAManager: OWS2FAManager {
+        return .shared()
+    }
+
     // MARK: -
     public enum OnboardingMode {
         case provisioning
         case registering
     }
 
-    public let defaultOnboardingMode: OnboardingMode = UIDevice.current.isIPad ? .provisioning : .registering
-    private var onboardingModeOverride: OnboardingMode?
-
-    public var onboardingMode: OnboardingMode {
-        return onboardingModeOverride ?? defaultOnboardingMode
-    }
+    public static let defaultOnboardingMode: OnboardingMode = UIDevice.current.isIPad ? .provisioning : .registering
+    public var onboardingMode: OnboardingMode
     public var isOnboardingModeOverriden: Bool {
-        return onboardingMode != defaultOnboardingMode
+        return onboardingMode != OnboardingController.defaultOnboardingMode
+    }
+
+    public class func ascertainOnboardingMode() -> OnboardingMode {
+        if tsAccountManager.isRegisteredPrimaryDevice {
+            return .registering
+        } else if tsAccountManager.isRegistered {
+            return .provisioning
+        } else {
+            return defaultOnboardingMode
+        }
+    }
+
+    convenience override init() {
+        let onboardingMode = OnboardingController.ascertainOnboardingMode()
+        self.init(onboardingMode: onboardingMode)
+    }
+
+    init(onboardingMode: OnboardingMode) {
+        self.onboardingMode = onboardingMode
+        super.init()
+        Logger.info("onboardingMode: \(onboardingMode), completedMilestones: \(completedMilestones), nextMilestone: \(nextMilestone as Optional)")
     }
 
     // MARK: -
 
-    @objc
-    public override init() {
-        super.init()
+    enum OnboardingMilestone {
+        case verifiedPhoneNumber
+        case verifiedLinkedDevice
+        case setupProfile
+        case setupPin
     }
 
-    // MARK: - Factory Methods
+    var requiredMilestones: [OnboardingMilestone] {
+        switch onboardingMode {
+        case .provisioning:
+            return [.verifiedLinkedDevice]
+        case .registering:
+            var milestones: [OnboardingMilestone] = [.verifiedPhoneNumber, .setupProfile]
 
-    // FIXME this is a retain cycle
-    @objc
-    private(set) lazy var initialViewController = OnboardingSplashViewController(onboardingController: self)
+            if FeatureFlags.pinsForNewUsers {
+                let hasBackupKeyRequestFailed = databaseStorage.read {
+                    KeyBackupService.hasBackupKeyRequestFailed(transaction: $0)
+                }
+
+                if hasBackupKeyRequestFailed {
+                    Logger.info("skipping setupPin since a previous request failed")
+                } else {
+                    milestones.append(.setupPin)
+                }
+            }
+
+            return milestones
+        }
+    }
 
     @objc
-    var currentViewController: UIViewController? {
-        return initialViewController.navigationController?.topViewController
+    var isComplete: Bool {
+        let hasEverCompletedOnboarding = databaseStorage.read {
+            SSKPreferences.hasEverCompletedOnboarding(transaction: $0)
+        }
+
+        guard !hasEverCompletedOnboarding else {
+            Logger.debug("previously completed onboarding")
+            return true
+        }
+
+        guard nextMilestone != nil else {
+            Logger.debug("no remaining milestones")
+            return true
+        }
+
+        return false
+    }
+
+    var nextMilestone: OnboardingMilestone? {
+        requiredMilestones.first { !completedMilestones.contains($0) }
+    }
+
+    var completedMilestones: [OnboardingMilestone] {
+        var milestones: [OnboardingMilestone] = []
+
+        if tsAccountManager.isRegisteredPrimaryDevice {
+            milestones.append(.verifiedPhoneNumber)
+        } else if tsAccountManager.isRegistered {
+            milestones.append(.verifiedLinkedDevice)
+        }
+
+        if profileManager.hasProfileName {
+            milestones.append(.setupProfile)
+        }
+
+        if KeyBackupService.hasMasterKey {
+            milestones.append(.setupPin)
+        }
+
+        return milestones
+    }
+
+    @objc
+    public func markAsHasEverCompletedOnboarding() {
+        databaseStorage.read {
+            guard !SSKPreferences.hasEverCompletedOnboarding(transaction: $0) else {
+                return
+            }
+            self.databaseStorage.asyncWrite {
+                Logger.info("completed onboarding")
+                SSKPreferences.setHasEverCompletedOnboarding(true, transaction: $0)
+            }
+        }
+    }
+
+    private func showNextMilestone(navigationController: UINavigationController) {
+        guard let nextMilestone = nextMilestone else {
+            SignalApp.shared().showConversationSplitView()
+            markAsHasEverCompletedOnboarding()
+            return
+        }
+
+        let viewController = nextViewController(milestone: nextMilestone)
+
+        // *replace* the existing VC's. There's no going back once you've passed a milestone.
+        navigationController.setViewControllers([viewController], animated: true)
+    }
+
+    fileprivate func nextViewController(milestone: OnboardingMilestone) -> UIViewController {
+        Logger.info("milestone: \(milestone)")
+        switch milestone {
+        case .verifiedPhoneNumber, .verifiedLinkedDevice:
+            return OnboardingSplashViewController(onboardingController: self)
+        case .setupProfile:
+            return buildProfileViewController()
+        case .setupPin:
+            return buildPinSetupViewController()
+        }
     }
 
     // MARK: - Transitions
@@ -119,8 +266,6 @@ public class OnboardingController: NSObject {
         AssertIsOnMainThread()
 
         Logger.info("")
-
-        onboardingModeOverride = nil
 
         let view = OnboardingPermissionsViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(view, animated: true)
@@ -140,20 +285,18 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        if isOnboardingModeOverriden {
-            onboardingModeOverride = nil
+        let wasOverridden = isOnboardingModeOverriden
+        switch onboardingMode {
+        case .provisioning:
+            onboardingMode  = .registering
+        case .registering:
+            onboardingMode = .provisioning
+        }
+
+        if wasOverridden {
+            onboardingMode = OnboardingController.defaultOnboardingMode
             viewController.navigationController?.popToRootViewController(animated: true)
         } else {
-            let newMode: OnboardingMode
-            switch defaultOnboardingMode {
-            case .provisioning:
-                newMode = .registering
-            case .registering:
-                newMode = .provisioning
-            }
-
-            onboardingModeOverride = newMode
-
             let view = OnboardingPermissionsViewController(onboardingController: self)
             viewController.navigationController?.pushViewController(view, animated: true)
         }
@@ -232,8 +375,11 @@ public class OnboardingController: NSObject {
     @objc
     public func verificationDidComplete(fromView view: UIViewController) {
         AssertIsOnMainThread()
-
         Logger.info("")
+        guard let navigationController = view.navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
 
         // At this point, the user has been prompted for contact access
         // and has valid service credentials.
@@ -243,7 +389,7 @@ public class OnboardingController: NSObject {
         contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
         if tsAccountManager.isReregistering {
-            showProfileView(fromView: view)
+            showNextMilestone(navigationController: navigationController)
         } else {
             checkCanImportBackup(fromView: view)
         }
@@ -253,17 +399,30 @@ public class OnboardingController: NSObject {
         showConversationSplitView(view: viewController)
     }
 
-    private func showProfileView(fromView view: UIViewController) {
-        AssertIsOnMainThread()
+    func buildProfileViewController() -> ProfileViewController {
+        return ProfileViewController(mode: .registration) { [weak self] profileVC in
+            guard let self = self else { return }
 
-        Logger.info("")
+            guard let navigationController = profileVC.navigationController else {
+                owsFailDebug("navigationController was unexpectedly nil")
+                return
+            }
 
-        guard let navigationController = view.navigationController else {
-            owsFailDebug("Missing navigationController")
-            return
+            self.showNextMilestone(navigationController: navigationController)
         }
+    }
 
-        ProfileViewController.present(forRegistration: navigationController)
+    func buildPinSetupViewController() -> PinSetupViewController {
+        return PinSetupViewController.creating { [weak self] pinSetupVC, _ in
+            guard let self = self else { return }
+
+            guard let navigationController = pinSetupVC.navigationController else {
+                owsFailDebug("navigationController was unexpectedly nil")
+                return
+            }
+
+            self.showNextMilestone(navigationController: navigationController)
+        }
     }
 
     private func showBackupRestoreView(fromView view: UIViewController) {
@@ -285,15 +444,20 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
+        guard let navigationController = view.navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
+
         backup.checkCanImport({ (canImport) in
             Logger.info("canImport: \(canImport)")
 
-            if (canImport) {
+            if canImport {
                 self.backup.setHasPendingRestoreDecision(true)
 
                 self.showBackupRestoreView(fromView: view)
             } else {
-                self.showProfileView(fromView: view)
+                self.showNextMilestone(navigationController: navigationController)
             }
         }, failure: { (_) in
             self.showBackupCheckFailedAlert(fromView: view)
@@ -305,6 +469,11 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
+        guard let navigationController = view.navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
+
         let alert = ActionSheetController(title: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_TITLE",
                                                                comment: "Title for alert shown when the app failed to check for an existing backup."),
                                       message: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_MESSAGE",
@@ -315,7 +484,7 @@ public class OnboardingController: NSObject {
         })
         alert.addAction(ActionSheetAction(title: NSLocalizedString("CHECK_FOR_BACKUP_DO_NOT_RESTORE", comment: "The label for the 'do not restore backup' button."),
                                       style: .destructive) { (_) in
-                                        self.showProfileView(fromView: view)
+                                        self.showNextMilestone(navigationController: navigationController)
         })
         view.presentActionSheet(alert)
     }
@@ -528,8 +697,15 @@ public class OnboardingController: NSObject {
                 OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                     message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
                 return
+            case 413:
+                OWSActionSheets.showActionSheet(title: nil,
+                                                message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
+                return
             default:
-                break
+                let nsError = networkManagerError.underlyingError as NSError
+                OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
+                                                message: nsError.localizedRecoverySuggestion)
+                return
             }
 
         default:
@@ -539,7 +715,7 @@ public class OnboardingController: NSObject {
         let nsError = error as NSError
         owsFailDebug("unexpected error: \(nsError)")
         OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
-                            message: nsError.localizedRecoverySuggestion)
+                                        message: nsError.localizedRecoverySuggestion)
     }
 
     // MARK: - Verification

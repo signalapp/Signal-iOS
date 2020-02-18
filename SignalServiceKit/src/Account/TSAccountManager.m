@@ -344,6 +344,11 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     return [self getOrLoadAccountStateWithSneakyTransaction].isRegistered;
 }
 
+- (BOOL)isRegisteredWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
+}
+
 - (BOOL)isRegisteredAndReady
 {
     return self.registrationState == OWSRegistrationState_Registered;
@@ -785,6 +790,8 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
+            [SSKPreferences setHasEverCompletedOnboarding:NO transaction:transaction];
+            
             self.phoneNumberAwaitingVerification = nil;
             self.uuidAwaitingVerification = nil;
 

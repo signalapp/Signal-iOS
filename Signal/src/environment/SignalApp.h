@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OnboardingController;
 @class SignalServiceAddress;
 @class TSThread;
 
@@ -44,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)resetAppData;
 
-- (void)showOnboardingView;
+- (void)showOnboardingView:(OnboardingController *)onboardingController;
 - (void)showConversationSplitView;
 - (void)ensureRootViewController:(NSTimeInterval)launchStartedAt;
 - (BOOL)receivedVerificationCode:(NSString *)verificationCode;

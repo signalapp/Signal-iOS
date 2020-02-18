@@ -24,8 +24,13 @@ class IntroducingPinsMegaphone: MegaphoneView {
             : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
 
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
-            let vc = PinSetupViewController {
-                self?.markAsComplete()
+            let vc = PinSetupViewController.creating { _, error in
+                if let error = error {
+                    Logger.error("failed to create pin: \(error)")
+                } else {
+                    // success
+                    self?.markAsComplete()
+                }
                 fromViewController.navigationController?.popToViewController(fromViewController, animated: true) {
                     fromViewController.navigationController?.setNavigationBarHidden(false, animated: false)
                     self?.dismiss(animated: false)
@@ -177,7 +182,7 @@ class IntroducingPinsSplash: SplashViewController {
 
     @objc
     func didTapPrimaryButton(_ sender: UIButton) {
-        let vc = PinSetupViewController { [weak self] in
+        let vc = PinSetupViewController.creating { [weak self] _, _ in
             self?.dismiss(animated: true)
         }
         navigationController?.pushViewController(vc, animated: true)

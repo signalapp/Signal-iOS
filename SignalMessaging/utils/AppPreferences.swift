@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +11,7 @@ public class AppPreferences: NSObject {
 
     public static let store = SDSKeyValueStore(collection: "AppPreferences")
 
-    // MARK: -
+    // MARK: - hasDimissedFirstConversationCue
 
     private static let hasDimissedFirstConversationCueKey = "hasDimissedFirstConversationCue"
 
