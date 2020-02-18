@@ -15,7 +15,7 @@ public final class SignalMessage : NSObject {
     public var ttl: UInt64? { return objc_ttl != 0 ? objc_ttl : nil }
     
     @objc public init(type: SSKProtoEnvelope.SSKProtoEnvelopeType, timestamp: UInt64, senderID: String, senderDeviceID: UInt32,
-                      content: String, recipientID: String, ttl: UInt64, isPing: Bool, isFriendRequest: Bool) {
+        content: String, recipientID: String, ttl: UInt64, isPing: Bool, isFriendRequest: Bool) {
         self.type = type
         self.timestamp = timestamp
         self.senderID = senderID

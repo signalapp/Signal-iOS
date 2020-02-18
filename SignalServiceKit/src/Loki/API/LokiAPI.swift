@@ -2,9 +2,26 @@ import PromiseKit
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
+    /// Only ever modified from the message processing queue (`OWSBatchMessageProcessor.processingQueue`).
     private static var syncMessageTimestamps: [String:Set<UInt64>] = [:]
-    public static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
-    @objc public static var userHexEncodedPublicKeyCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
+    
+    public static var _lastDeviceLinkUpdate: [String:Date] = [:]
+    /// A mapping from hex encoded public key to date updated.
+    public static var lastDeviceLinkUpdate: [String:Date] {
+        get { stateQueue.sync { _lastDeviceLinkUpdate } }
+        set { stateQueue.sync { _lastDeviceLinkUpdate = newValue } }
+    }
+    
+    private static var _userHexEncodedPublicKeyCache: [String:Set<String>] = [:]
+    /// A mapping from thread ID to set of user hex encoded public keys.
+    @objc public static var userHexEncodedPublicKeyCache: [String:Set<String>] {
+        get { stateQueue.sync { _userHexEncodedPublicKeyCache } }
+        set { stateQueue.sync { _userHexEncodedPublicKeyCache = newValue } }
+    }
+    
+    private static let stateQueue = DispatchQueue(label: "stateQueue")
+    
+    /// All service node related errors must be handled on this queue to avoid race conditions maintaining e.g. failure counts.
     public static let errorHandlingQueue = DispatchQueue(label: "errorHandlingQueue")
     
     // MARK: Convenience
@@ -12,12 +29,10 @@ public final class LokiAPI : NSObject {
     internal static let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
     
     // MARK: Settings
-    private static let version = "v1"
+    private static let apiVersion = "v1"
     private static let maxRetryCount: UInt = 8
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
-    private static let receivedMessageHashValuesKey = "receivedMessageHashValuesKey"
-    private static let receivedMessageHashValuesCollection = "receivedMessageHashValuesCollection"
     private static var userIDScanLimit: UInt = 4096
     internal static var powDifficulty: UInt = 4
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
@@ -69,6 +84,7 @@ public final class LokiAPI : NSObject {
     }
     
     public typealias MessageListPromise = Promise<[SSKProtoEnvelope]>
+    
     public typealias RawResponsePromise = Promise<RawResponse>
     
     // MARK: Lifecycle
@@ -77,7 +93,7 @@ public final class LokiAPI : NSObject {
     // MARK: Internal API
     internal static func invoke(_ method: LokiAPITarget.Method, on target: LokiAPITarget, associatedWith hexEncodedPublicKey: String,
         parameters: [String:Any], headers: [String:String]? = nil, timeout: TimeInterval? = nil) -> RawResponsePromise {
-        let url = URL(string: "\(target.address):\(target.port)/storage_rpc/\(version)")!
+        let url = URL(string: "\(target.address):\(target.port)/storage_rpc/\(apiVersion)")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         if let headers = headers { request.allHTTPHeaderFields = headers }
         request.timeoutInterval = timeout ?? defaultTimeout
@@ -310,7 +326,10 @@ public final class LokiAPI : NSObject {
             storage.setLastMessageHash(forServiceNode: target.address, hash: hashValue, expiresAt: expirationDate, transaction: transaction)
         }
     }
-
+    
+    private static let receivedMessageHashValuesKey = "receivedMessageHashValuesKey"
+    private static let receivedMessageHashValuesCollection = "receivedMessageHashValuesCollection"
+    
     private static func getReceivedMessageHashValues() -> Set<String>? {
         var result: Set<String>? = nil
         storage.dbReadConnection.read { transaction in
