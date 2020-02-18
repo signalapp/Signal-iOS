@@ -255,5 +255,5 @@ public class FeatureFlags: NSObject {
     public static let useZKGroups = false
 
     @objc
-    public static let pinsForNewUsers = true
+    public static let pinsForNewUsers = build.includes(.dev)
 }
