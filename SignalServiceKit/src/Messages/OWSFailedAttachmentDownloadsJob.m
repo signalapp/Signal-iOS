@@ -78,19 +78,20 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 
                 switch (attachment.state) {
                     case TSAttachmentPointerStateFailed:
+                        OWSFailDebug(@"Attachment has unexpected state.");
+                        break;
+                    case TSAttachmentPointerStatePendingMessageRequest:
+                        // Do nothing. We don't want to mark this attachment as failed.
+                        // It will be updated when the message request is resolved.
+                        break;
+                    case TSAttachmentPointerStateEnqueued:
+                    case TSAttachmentPointerStateDownloading:
                         [attachment anyUpdateAttachmentPointerWithTransaction:transaction
                                                                         block:^(TSAttachmentPointer *attachment) {
                                                                             attachment.state
                                                                                 = TSAttachmentPointerStateFailed;
                                                                         }];
                         count++;
-                        break;
-                    case TSAttachmentPointerStatePendingMessageRequest:
-                        // Do nothing. We don't want to mark this attachment as failed.
-                        // It will be updated when the message request is resolved.
-                        break;
-                    default:
-                        OWSFailDebug(@"Attachment has unexpected state.");
                         return;
                 }
 
