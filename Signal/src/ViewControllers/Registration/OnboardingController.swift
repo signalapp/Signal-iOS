@@ -528,8 +528,15 @@ public class OnboardingController: NSObject {
                 OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                     message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
                 return
+            case 413:
+                OWSActionSheets.showActionSheet(title: nil,
+                                                message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
+                return
             default:
-                break
+                let nsError = networkManagerError.underlyingError as NSError
+                OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
+                                                message: nsError.localizedRecoverySuggestion)
+                return
             }
 
         default:
@@ -539,7 +546,7 @@ public class OnboardingController: NSObject {
         let nsError = error as NSError
         owsFailDebug("unexpected error: \(nsError)")
         OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
-                            message: nsError.localizedRecoverySuggestion)
+                                        message: nsError.localizedRecoverySuggestion)
     }
 
     // MARK: - Verification

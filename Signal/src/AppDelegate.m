@@ -724,8 +724,10 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             }
 
             // 2FA
-
-            if ([OWS2FAManager sharedManager].hasPending2FASetup) {
+            OnboardingController *onboardingController = [OnboardingController new];
+            if (!onboardingController.isComplete) {
+                OWSLogInfo(@"Letting onboarding take care of any pending 2fa setup.");
+            } else if ([OWS2FAManager sharedManager].hasPending2FASetup) {
                 UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
                 OWSAssertDebug(frontmostViewController);
 
