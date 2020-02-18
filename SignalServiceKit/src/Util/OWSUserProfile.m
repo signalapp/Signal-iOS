@@ -17,6 +17,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSNotificationName const kNSNotificationNameProfileWhitelistDidChange = @"kNSNotificationNameProfileWhitelistDidChange";
 NSNotificationName const kNSNotificationNameLocalProfileDidChange = @"kNSNotificationNameLocalProfileDidChange";
 NSNotificationName const kNSNotificationNameOtherUsersProfileWillChange
     = @"kNSNotificationNameOtherUsersProfileWillChange";

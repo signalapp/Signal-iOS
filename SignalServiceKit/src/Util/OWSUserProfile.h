@@ -13,6 +13,7 @@ typedef void (^OWSUserProfileCompletion)(void);
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 
+extern NSNotificationName const kNSNotificationNameProfileWhitelistDidChange;
 extern NSNotificationName const kNSNotificationNameLocalProfileDidChange;
 extern NSNotificationName const kNSNotificationNameOtherUsersProfileWillChange;
 extern NSNotificationName const kNSNotificationNameOtherUsersProfileDidChange;

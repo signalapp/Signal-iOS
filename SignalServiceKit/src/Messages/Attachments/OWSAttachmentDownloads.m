@@ -12,6 +12,7 @@
 #import "OWSError.h"
 #import "OWSFileSystem.h"
 #import "OWSRequestFactory.h"
+#import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
@@ -105,6 +106,11 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     return OWSSignalService.sharedInstance.CDNSessionManager;
 }
 
+- (id<ProfileManagerProtocol>)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
+}
+
 #pragma mark -
 
 - (instancetype)init
@@ -117,7 +123,52 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     _downloadingJobMap = [NSMutableDictionary new];
     _attachmentDownloadJobQueue = [NSMutableArray new];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(profileWhitelistDidChange:)
+                                                 name:kNSNotificationNameProfileWhitelistDidChange
+                                               object:nil];
+
     return self;
+}
+
+#pragma mark -
+
+- (void)profileWhitelistDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        SignalServiceAddress *_Nullable address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+        NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
+
+        TSThread *_Nullable whitelistedThread;
+
+        if (address.isValid) {
+            if ([self.profileManager isUserInProfileWhitelist:address transaction:transaction]) {
+                whitelistedThread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
+            }
+        } else if (groupId.length > 0) {
+            if ([self.profileManager isGroupIdInProfileWhitelist:groupId transaction:transaction]) {
+                whitelistedThread =
+                    [TSGroupThread anyFetchGroupThreadWithUniqueId:[TSGroupThread threadIdFromGroupId:groupId]
+                                                       transaction:transaction];
+            }
+        }
+
+        // If the thread was newly whitelisted, try and start any
+        // downloads that were pending on a message request.
+        if (whitelistedThread) {
+            [self downloadAllBodyAttachmentsForThread:whitelistedThread
+                transaction:transaction
+                success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                    OWSLogDebug(
+                        @"Successfully downloaded %ld attachments for whitelisted thread.", attachmentStreams.count);
+                }
+                failure:^(NSError *error) {
+                    OWSFailDebug(@"Failed to download attachments for whitelisted thread: %@", error);
+                }];
+        }
+    }];
 }
 
 #pragma mark -
@@ -132,6 +183,67 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         }
         return @(job.progress);
     }
+}
+
+- (void)downloadAllBodyAttachmentsForThread:(TSThread *)thread
+                                transaction:(SDSAnyReadTransaction *)transaction
+                                    success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
+                                    failure:(void (^)(NSError *error))failureHandler
+{
+    NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
+    NSMutableArray<AnyPromise *> *promises = [NSMutableArray array];
+
+    GRDBInteractionFinder *finder = [[GRDBInteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    [finder
+        enumerateMessagesWithAttachmentsWithTransaction:transaction.unwrapGrdbRead
+                                                  error:nil
+                                                  block:^(TSMessage *message, BOOL *stop) {
+                                                      AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(
+                                                          PMKResolver resolve) {
+                                                          [self downloadAttachmentsForMessage:message
+                                                              bypassPendingMessageRequest:NO
+                                                              attachments:[message
+                                                                              allAttachmentsWithTransaction:transaction]
+                                                              transaction:transaction
+                                                              success:^(NSArray<TSAttachmentStream *> *streams) {
+                                                                  @synchronized(attachmentStreams) {
+                                                                      [attachmentStreams addObjectsFromArray:streams];
+                                                                  }
+
+                                                                  resolve(@(1));
+                                                              }
+                                                              failure:^(NSError *error) {
+                                                                  resolve(error);
+                                                              }];
+                                                      }];
+                                                      [promises addObject:promise];
+                                                  }];
+
+    // We use PMKJoin(), not PMKWhen(), because we don't want the
+    // completion promise to execute until _all_ promises
+    // have either succeeded or failed. PMKWhen() executes as
+    // soon as any of its input promises fail.
+    AnyPromise *completionPromise
+        = PMKJoin(promises)
+              .then(^(id value) {
+                  NSArray<TSAttachmentStream *> *attachmentStreamsCopy;
+                  @synchronized(attachmentStreams) {
+                      attachmentStreamsCopy = [attachmentStreams copy];
+                  }
+                  OWSLogInfo(@"Attachment downloads succeeded: %lu.", (unsigned long)attachmentStreamsCopy.count);
+
+                  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                      successHandler(attachmentStreamsCopy);
+                  });
+              })
+              .catch(^(NSError *error) {
+                  OWSLogError(@"Attachment downloads failed.");
+
+                  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                      failureHandler(error);
+                  });
+              });
+    [completionPromise retainUntilComplete];
 }
 
 - (void)downloadBodyAttachmentsForMessage:(TSMessage *)message
