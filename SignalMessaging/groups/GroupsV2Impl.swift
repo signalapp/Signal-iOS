@@ -464,9 +464,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         Logger.info("Making group request: \(String(describing: request.httpMethod)) \(request)")
 
         return Promise { resolver in
-            #if TESTABLE_BUILD
             var blockTask: URLSessionDataTask?
-            #endif
             let task = sessionManager.dataTask(
                 with: request as URLRequest,
                 uploadProgress: nil,
@@ -505,9 +503,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 let serviceResponse = ServiceResponse(task: blockTask, response: response, responseObject: responseObject)
                 return resolver.fulfill(serviceResponse)
             }
-            #if TESTABLE_BUILD
             blockTask = task
-            #endif
             task.resume()
         }
     }
