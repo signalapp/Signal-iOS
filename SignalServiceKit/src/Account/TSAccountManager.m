@@ -225,6 +225,11 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     return SSKEnvironment.shared.sessionStore;
 }
 
+- (id<OWSUDManager>)udManager
+{
+    return SSKEnvironment.shared.udManager;
+}
+
 #pragma mark -
 
 - (void)warmCaches
@@ -786,6 +791,8 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
             [self.keyValueStore removeAllWithTransaction:transaction];
 
             [self.sessionStore resetSessionStore:transaction];
+
+            [self.udManager removeSenderCertificateWithTransaction:transaction];
 
             [self.keyValueStore setObject:localNumber
                                       key:TSAccountManager_ReregisteringPhoneNumberKey

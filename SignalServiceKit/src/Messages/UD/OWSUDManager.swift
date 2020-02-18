@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -99,6 +99,9 @@ public class OWSUDAccess: NSObject {
     @objc
     func ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
                                  failure:@escaping (Error) -> Void)
+
+    @objc
+    func removeSenderCertificate(transaction: SDSAnyWriteTransaction)
 
     // MARK: Unrestricted Access
 
@@ -451,6 +454,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
+    @objc
+    public func removeSenderCertificate(transaction: SDSAnyWriteTransaction) {
+        self.keyValueStore.removeValue(forKey: self.senderCertificateDateKey(), transaction: transaction)
+        self.keyValueStore.removeValue(forKey: self.senderCertificateKey(), transaction: transaction)
+    }
+
     private func senderCertificateKey() -> String {
         return TSConstants.isUsingProductionService ? kUDCurrentSenderCertificateKey_Production : kUDCurrentSenderCertificateKey_Staging
     }
@@ -508,6 +517,21 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func isValidCertificate(_ certificate: SMKSenderCertificate) -> Bool {
+        guard certificate.senderDeviceId == tsAccountManager.storedDeviceId() else {
+            Logger.warn("Sender certificate has incorrect device ID")
+            return false
+        }
+
+        guard certificate.senderAddress.e164 == tsAccountManager.localNumber else {
+            Logger.warn("Sender certificate has incorrect phone number")
+            return false
+        }
+
+        guard certificate.senderAddress.uuid == nil || certificate.senderAddress.uuid == tsAccountManager.localUuid else {
+            Logger.warn("Sender certificate has incorrect UUID")
+            return false
+        }
+
         // Ensure that the certificate will not expire in the next hour.
         // We want a threshold long enough to ensure that any outgoing message
         // sends will complete before the expiration.
