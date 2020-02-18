@@ -39,7 +39,6 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
 @property (nonatomic, readonly) NSTimeInterval repetitionInterval;
 
 - (BOOL)is2FAEnabled;
-- (BOOL)hasPending2FASetup;
 - (BOOL)needsLegacyPinMigration;
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result;
 

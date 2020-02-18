@@ -723,29 +723,8 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                                                     preferences:Environment.shared.preferences];
             }
 
-            // 2FA
             OnboardingController *onboardingController = [OnboardingController new];
-            if (!onboardingController.isComplete) {
-                OWSLogInfo(@"Letting onboarding take care of any pending 2fa setup.");
-            } else if ([OWS2FAManager sharedManager].hasPending2FASetup) {
-                UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
-                OWSAssertDebug(frontmostViewController);
-
-                if ([frontmostViewController isKindOfClass:[OWSPinSetupViewController class]]) {
-                    // We're already presenting this
-                    return;
-                }
-
-                OWSPinSetupViewController *setupVC =
-                    [OWSPinSetupViewController creatingWithCompletionHandler:^(OWSPinSetupViewController *vc) {
-                        [frontmostViewController dismissViewControllerAnimated:YES completion:nil];
-                    }];
-
-                [frontmostViewController
-                    presentFullScreenViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]
-                                           animated:YES
-                                         completion:nil];
-            } else if ([OWS2FAManager sharedManager].isDueForV1Reminder) {
+            if (onboardingController.isComplete && [OWS2FAManager sharedManager].isDueForV1Reminder) {
                 UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
                 OWSAssertDebug(frontmostViewController);
 

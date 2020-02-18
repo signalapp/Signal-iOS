@@ -144,13 +144,6 @@ public class ExperienceUpgradeFinder: NSObject {
             .forEach { markAsComplete(experienceUpgradeId: $0, transaction: transaction) }
     }
 
-    // MARK: - Experience Specific Helpers
-
-    @objc
-    public class func hasPendingPinExperienceUpgrade(transaction: GRDBReadTransaction) -> Bool {
-        return hasIncomplete(experienceUpgradeId: .introducingPins, transaction: transaction)
-    }
-
     // MARK: -
 
     /// Returns an array of all experience upgrades currently being run that have

@@ -323,22 +323,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     return nextReminderDate.timeIntervalSinceNow < 0;
 }
 
-- (BOOL)hasPending2FASetup
-{
-    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
-        return NO;
-    }
-
-    __block BOOL hasPendingPinExperienceUpgrade = NO;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasPendingPinExperienceUpgrade =
-            [ExperienceUpgradeFinder hasPendingPinExperienceUpgradeWithTransaction:transaction.unwrapGrdbRead];
-    }];
-
-    // If we require pins AND we don't have a pin AND we're not going to setup a pin through the upgrade interstitial
-    return RemoteConfig.pinsForEveryone && !self.is2FAEnabled && !hasPendingPinExperienceUpgrade;
-}
-
 - (BOOL)needsLegacyPinMigration
 {
     __block BOOL hasMigratedTruncatedPin = NO;
