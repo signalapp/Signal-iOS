@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewLayout.h"
@@ -185,6 +185,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 - (nullable TSAttachmentStream *)firstValidAlbumAttachment;
 
 - (BOOL)mediaAlbumHasFailedAttachment;
+- (BOOL)mediaAlbumHasPendingMessageRequestAttachment;
 
 @end
 

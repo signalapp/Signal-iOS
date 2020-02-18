@@ -2660,6 +2660,26 @@ typedef enum : NSUInteger {
     [self handleFailedDownloadTapForMessage:message];
 }
 
+- (void)didTapPendingMessageRequestIncomingAttachment:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(viewItem);
+
+    // Start downloads for message.
+    TSMessage *message = (TSMessage *)viewItem.interaction;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self.attachmentDownloads downloadAllAttachmentsForMessage:message
+            bypassPendingMessageRequest:YES
+            transaction:transaction
+            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSLogInfo(@"Successfully downloaded attachment in thread: %@", message.threadWithSneakyTransaction);
+            }
+            failure:^(NSError *error) {
+                OWSLogWarn(@"Failed to download message with error: %@", error);
+            }];
+    }];
+}
+
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message
 {
     OWSAssertIsOnMainThread();

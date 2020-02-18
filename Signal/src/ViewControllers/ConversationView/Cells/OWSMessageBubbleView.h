@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageView.h"
@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem;
 
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem;
+- (void)didTapPendingMessageRequestIncomingAttachment:(id<ConversationViewItem>)viewItem;
 
 - (void)didTapConversationItem:(id<ConversationViewItem>)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply;
 - (void)didTapConversationItem:(id<ConversationViewItem>)viewItem

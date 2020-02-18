@@ -671,6 +671,9 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
 
+/* Indicates that the user can tap to download this image. */
+"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Download";
+
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
 

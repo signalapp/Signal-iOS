@@ -742,6 +742,10 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
         // no - op
     }
 
+    func didTapPendingMessageRequestIncomingAttachment(_ viewItem: ConversationViewItem) {
+        // no - op
+    }
+
     func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {
         // no - op
     }

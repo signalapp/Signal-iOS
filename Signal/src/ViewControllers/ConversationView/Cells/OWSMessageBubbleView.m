@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageBubbleView.h"
@@ -1536,9 +1536,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.delegate);
 
-    if (self.viewItem.attachmentPointer && self.viewItem.attachmentPointer.state == TSAttachmentPointerStateFailed) {
-        [self.delegate didTapFailedIncomingAttachment:self.viewItem];
-        return;
+    if (self.viewItem.attachmentPointer) {
+        switch (self.viewItem.attachmentPointer.state) {
+            case TSAttachmentPointerStateFailed:
+                [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+                return;
+            case TSAttachmentPointerStatePendingMessageRequest:
+                [self.delegate didTapPendingMessageRequestIncomingAttachment:self.viewItem];
+                return;
+            case TSAttachmentPointerStateEnqueued:
+            case TSAttachmentPointerStateDownloading:
+                break;
+        }
     }
 
     switch (self.cellType) {
@@ -1580,22 +1589,30 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
 
-            if ([mediaAlbumCellView isMoreItemsViewWithMediaView:mediaView]
-                && self.viewItem.mediaAlbumHasFailedAttachment) {
+            BOOL isMoreItemsWithMediaView = [mediaAlbumCellView isMoreItemsViewWithMediaView:mediaView];
+
+            if (isMoreItemsWithMediaView && self.viewItem.mediaAlbumHasFailedAttachment) {
                 [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+                return;
+            } else if (isMoreItemsWithMediaView && self.viewItem.mediaAlbumHasPendingMessageRequestAttachment) {
+                [self.delegate didTapPendingMessageRequestIncomingAttachment:self.viewItem];
                 return;
             }
 
             TSAttachment *attachment = mediaView.attachment;
             if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
                 TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
-                if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                    // Treat the tap as a "retry" tap if the user taps on a failed download.
-                    [self.delegate didTapFailedIncomingAttachment:self.viewItem];
-                    return;
-                } else {
-                    OWSLogWarn(@"Media attachment not yet downloaded.");
-                    return;
+                switch (attachmentPointer.state) {
+                    case TSAttachmentPointerStateFailed:
+                        [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+                        return;
+                    case TSAttachmentPointerStatePendingMessageRequest:
+                        [self.delegate didTapPendingMessageRequestIncomingAttachment:self.viewItem];
+                        return;
+                    case TSAttachmentPointerStateEnqueued:
+                    case TSAttachmentPointerStateDownloading:
+                        OWSLogWarn(@"Media attachment not yet downloaded.");
+                        return;
                 }
             }
 
