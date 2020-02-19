@@ -59,7 +59,7 @@ class MessageRequestView: UIStackView {
 
         axis = .vertical
         spacing = 11
-        layoutMargins = UIEdgeInsets(top: 0, leading: 16, bottom: 20 + safeAreaInset, trailing: 16)
+        layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 20 + safeAreaInset, trailing: 16)
         isLayoutMarginsRelativeArrangement = true
 
         let backgroundView = UIView()
