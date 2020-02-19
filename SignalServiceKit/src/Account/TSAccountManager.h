@@ -107,6 +107,10 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 - (UInt32)storedDeviceId;
 
+/// Onboarding state
+- (BOOL)isOnboarded;
+- (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction;
+
 #pragma mark - Register with phone number
 
 - (void)verifyAccountWithRequest:(TSRequest *)request

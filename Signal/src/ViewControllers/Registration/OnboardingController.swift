@@ -144,7 +144,7 @@ public class OnboardingController: NSObject {
     init(onboardingMode: OnboardingMode) {
         self.onboardingMode = onboardingMode
         super.init()
-        Logger.info("onboardingMode: \(onboardingMode), completedMilestones: \(completedMilestones), nextMilestone: \(nextMilestone as Optional)")
+        Logger.info("onboardingMode: \(onboardingMode), requiredMilestones: \(requiredMilestones), completedMilestones: \(completedMilestones), nextMilestone: \(nextMilestone as Optional)")
     }
 
     // MARK: -
@@ -181,11 +181,7 @@ public class OnboardingController: NSObject {
 
     @objc
     var isComplete: Bool {
-        let hasEverCompletedOnboarding = databaseStorage.read {
-            SSKPreferences.hasEverCompletedOnboarding(transaction: $0)
-        }
-
-        guard !hasEverCompletedOnboarding else {
+        guard !tsAccountManager.isOnboarded() else {
             Logger.debug("previously completed onboarding")
             return true
         }
@@ -223,22 +219,18 @@ public class OnboardingController: NSObject {
     }
 
     @objc
-    public func markAsHasEverCompletedOnboarding() {
-        databaseStorage.read {
-            guard !SSKPreferences.hasEverCompletedOnboarding(transaction: $0) else {
-                return
-            }
-            self.databaseStorage.asyncWrite {
-                Logger.info("completed onboarding")
-                SSKPreferences.setHasEverCompletedOnboarding(true, transaction: $0)
-            }
+    public func markAsOnboarded() {
+        guard !tsAccountManager.isOnboarded() else { return }
+        self.databaseStorage.asyncWrite {
+            Logger.info("completed onboarding")
+            self.tsAccountManager.setIsOnboarded(true, transaction: $0)
         }
     }
 
     private func showNextMilestone(navigationController: UINavigationController) {
         guard let nextMilestone = nextMilestone else {
             SignalApp.shared().showConversationSplitView()
-            markAsHasEverCompletedOnboarding()
+            markAsOnboarded()
             return
         }
 
