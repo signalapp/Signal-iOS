@@ -144,7 +144,7 @@ public class OnboardingController: NSObject {
     init(onboardingMode: OnboardingMode) {
         self.onboardingMode = onboardingMode
         super.init()
-        Logger.info("onboardingMode: \(onboardingMode), completedMilestones: \(completedMilestones), nextMilestone: \(nextMilestone as Optional)")
+        Logger.info("onboardingMode: \(onboardingMode), requiredMilestones: \(requiredMilestones), completedMilestones: \(completedMilestones), nextMilestone: \(nextMilestone as Optional)")
     }
 
     // MARK: -
