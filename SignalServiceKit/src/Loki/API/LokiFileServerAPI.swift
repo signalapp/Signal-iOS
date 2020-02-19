@@ -33,7 +33,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
-            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { $0.responseObject }.map(on: DispatchQueue.global()) { rawResponse -> Set<DeviceLink> in
+            return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { rawResponse -> Set<DeviceLink> in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                     throw LokiDotNetAPIError.parsingFailed
@@ -95,7 +95,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return TSNetworkManager.shared().perform(request).map { _ in }.retryingIfNeeded(maxRetryCount: 8).recover { error in
+            return LokiFileServerProxy(for: server).perform(request).map { _ in }.retryingIfNeeded(maxRetryCount: 8).recover { error in
                 print("Couldn't update device links due to error: \(error).")
                 throw error
             }
