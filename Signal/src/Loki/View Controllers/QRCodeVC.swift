@@ -152,7 +152,7 @@ private final class ViewMyQRCodeVC : UIViewController {
     private var bottomConstraint: NSLayoutConstraint!
     
     private lazy var userHexEncodedPublicKey: String = {
-        if let masterHexEncodedPublicKey = UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") {
+        if let masterHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] {
             return masterHexEncodedPublicKey
         } else {
             return getUserHexEncodedPublicKey()
