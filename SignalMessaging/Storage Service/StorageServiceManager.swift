@@ -9,7 +9,9 @@ import PromiseKit
 public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
-    public static let shared = StorageServiceManager()
+    public static var shared: StorageServiceManagerProtocol {
+        return SSKEnvironment.shared.storageServiceManager
+    }
 
     var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
