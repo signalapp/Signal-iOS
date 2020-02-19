@@ -45,10 +45,10 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "האם תרצה לשתף את הפרופיל שלך עם קבוצה זו?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "האם תרצה להוסיף משתמש זה לאנשי הקשר שלך?";
+"ADD_TO_CONTACTS_OFFER" = "האם אתה רוצה להוסיף משתמש זה אל אנשי הקשר שלך?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "האם תרצה לשתף את הפרופיל שלך עם משתמש זה?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "האם אתה רוצה לשתף את הפרופיל שלך עם משתמש זה?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "הבנתי";
@@ -324,7 +324,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ נחסם.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "המשתמש נחסם";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "משתמש נחסם";
 
 /* The title of the 'group blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "קבוצה נחסמה";
@@ -525,7 +525,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי לראות אילו מאנשי הקשר שלך הם משתמשי Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "זה יאפס את היישום ע\"י מחיקת ההודעות שלך וביטול הרישום שלך עם השרת. היישום ייסגר לאחר שתהליך זה יושלם.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "זה יאפס את היישום ע״י מחיקת ההודעות שלך וביטול הרישום שלך עם השרת. היישום ייסגר לאחר שתהליך זה יושלם.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "האם אתה בטוח שאתה רוצה למחוק את החשבון שלך?";
@@ -570,7 +570,7 @@
 "CONTACT_EDIT_NAME_BUTTON" = "ערוך";
 
 /* Label for a contact's email address. */
-"CONTACT_EMAIL" = "דוא\"ל";
+"CONTACT_EMAIL" = "דוא״ל";
 
 /* Label for the 'city' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_CITY" = "עיר";
@@ -615,7 +615,7 @@
 "CONTACT_PHONE" = "טלפון";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "אין דוא\"ל זמין.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "אין דוא״ל זמין.";
 
 /* table cell subtitle when contact card has no known phone number */
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "אין מספר טלפון זמין.";
@@ -635,11 +635,32 @@
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "לא נבחרו שדות איש קשר.";
 
+/* Button text to initiate an email to signal support staff */
+"CONTACT_SUPPORT" = "Contact Support";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+
+/* button text */
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "נסה שוב";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+
+/* Alert title */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "פתח במפות";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "שלח דוא\"ל";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "שלח דוא״ל";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "איש קשר ללא שם";
@@ -649,6 +670,9 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "למחוק שיחה?";
+
+/* Indicates that the user can tap to download this image. */
+"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "הורד";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "אינך יכול לבחור יותר מן %@ שיחות.";
@@ -756,7 +780,7 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "שתף את הפרופיל שלך";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "הוסף לאנשי קשר";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "הוסף אל אנשי קשר";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "שתף את הפרופיל שלך עם משתמש זה";
@@ -825,7 +849,7 @@
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "העתק קישור";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "תמיכת דוא\"ל";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "תמיכת דוא״ל";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "שלח לעצמי";
@@ -833,12 +857,11 @@
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "שתף";
 
-/* Title of the alert shown for failures while uploading debug logs.
-   Title of the debug log alert. */
+/* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "עוד צעד אחד";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "לא היה ניתן לפתוח את יישום הדוא\"ל.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "לא היה ניתן לפתוח את יישום הדוא״ל.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "קישור תמצית זה הועתק ללוח העריכה שלך. אתה עומד להיות מוכוון מחדש אל GitHub רשימת סוגיות.";
@@ -1105,7 +1128,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "צרופה";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "נכשל במשיכת ה-GIF המבוקש. אנא וודא שאתה מחובר.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "נכשל במשיכת ה־GIF המבוקש. אנא וודא שאתה מחובר.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "שגיאה בלתי ידועה התרחשה.";
@@ -1144,7 +1167,7 @@
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ הוסיף אותך אל הקבוצה.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "לא כל המשתמשים צורפו לקבוצה. הקש לנסות מחדש";
+"GROUP_CREATION_FAILED" = "לא כל חברי הקבוצה צורפו אל הקבוצה. הקש כדי לנסות מחדש.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "פרטי קבוצה";
@@ -1261,7 +1284,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "שיחות אלו מאורכבות ויופיעו בתיבה הנכנסת רק אם מתקבלות הודעות חדשות.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "תן לתיבה שלך משהו לכתוב עליו בית. התחל ע\"י שליחת הודעה לחבר.";
+"INBOX_VIEW_EMPTY_INBOX" = "תן לתיבה שלך משהו לכתוב עליו בית. התחל ע״י שליחת הודעה לחבר.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי לראות שמות אנשי קשר ברשימת שיחות Signal שלך.";
@@ -1297,7 +1320,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי להזמין את חבריך להצטרף אל Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "אפשר גישה לאנשי קשר";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "אפשר גישה אל אנשי קשר";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "הזמן חברים אל Signal";
@@ -1366,7 +1389,7 @@
 "LEAVE_GROUP_ACTION" = "עזוב קבוצה";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "קוד QR זה אינו תקף. אנא וודא שאתה סורק את קוד ה-QR המוצג על המכשיר שאתה רוצה לקשר.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "קוד QR זה אינו תקף. אנא וודא שאתה סורק את קוד ה־QR המוצג על המכשיר שאתה רוצה לקשר.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "קישור מכשיר נכשל";
@@ -1512,13 +1535,19 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "הודעה";
 
-/* A button used to block a user on an incoming message request. */
+/* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "קבל";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "חסום";
 
-/* A button used to block a user on an incoming message request. */
+/* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+
+/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+
+/* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "מחק";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
@@ -1538,6 +1567,9 @@
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "שתף פרופיל";
+
+/* A button used to unlock a blocked conversation. */
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "בטל חסימה";
 
 /* Body for message requests megaphone */
 "MESSAGE_REQUESTS_MEGAPHONE_BODY" = "אתה כעת יכול לבחור אם לקבל שיחה חדשה. תראה אפשרויות \"קבל\", \"מחק\" או \"חסום\".";
@@ -1773,14 +1805,8 @@
 /* Button asking if the user would like to enter an numeric PIN */
 "ONBOARDING_2FA_ENTER_NUMERIC" = "הכנס PIN מספרי";
 
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "למספר טלפון זה יש נעילת הרשמה מאופשרת. אנא הכנס את PIN נעילת ההרשמה.";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "PIN נעילת ההרשמה שלך מופרד מקוד הוידוא האוטומטי שנשלח לטלפון שלך במהלך הצעד האחרון.";
-
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "שכחת את ה־PIN שלך?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "PIN שגוי";
@@ -1790,9 +1816,6 @@
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN שגוי. ניסיון 1 נותר.";
-
-/* Title of the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_TITLE" = "נעילת הרשמה";
 
 /* Explanation of the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "כדי להגן על פרטיותך ועל אבטחת חשבונך, נעלנו אותו למשך 7 ימים.\n\nלאחר 7 ימים של אי־פעילות, תוכל לרשום מחדש מספר טלפון זה ללא צורך ב־PIN שלך. כל התוכן ינוקה.";
@@ -2325,11 +2348,14 @@
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "שכחתי את ה־PIN שלי.";
 
-/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "למען פרטיותך ואבטחתך, אין דרך להשיב את ה־PIN שלך. אם אינך זוכר את ה־PIN שלך, תוכל לוודא מחדש עם מסרון לאחר 7 ימים של אי־פעילות. במקרה זה, חשבונך ינוקה וכל התוכן יימחק.";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "שכחת את ה־PIN שלך?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+
+/* Alert body for a forgotten SVR (V2) PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+
+/* Alert body for a forgotten V1 PIN */
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "יש לך %lu ניסינות נותרים. אם יאזלו לך הניסיונות, חשבונך יינעל. לאחר 7 ימים של אי־פעילות, אתה יכול לרשום מחדש ללא ה־PIN שלך. חשובנך ינוקה וכל התוכן יימחק.";
@@ -2349,7 +2375,7 @@
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "נסה שוב";
 
-/* No comment provided by engineer. */
+/* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "ניסית יותר מדי. אנא המתן דקה לפני שתנסה שוב.";
 
 /* No comment provided by engineer. */
@@ -2446,7 +2472,7 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "מספר הביטחון שלך עם %@ השתנה. מומלץ לוודא אותו.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "סרוק את קוד ה-QR במכשיר של איש הקשר שלך.";
+"SCAN_CODE_INSTRUCTIONS" = "סרוק את קוד ה־QR במכשיר של איש הקשר שלך.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "סריקת קוד QR";
@@ -2881,7 +2907,7 @@
 "SETTINGS_VERSION" = "גרסה";
 
 /* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "דוא\"ל";
+"SHARE_ACTION_MAIL" = "דוא״ל";
 
 /* action sheet item to open native messages app */
 "SHARE_ACTION_MESSAGE" = "הודעה";
@@ -3163,7 +3189,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "שמות משתמש יכולים להכיל רק a-z, 0-9 והתו _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "שגיאה התרחשה בעת חיפוש שם המשתמש. אנא נסה שוב מאוחר יותר.";
+"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ הוא לא משתמש Signal. וודא שהכנסת את שם המשתמש השלם.";
@@ -3246,5 +3272,8 @@
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "הִשְׁבַּת הודעות נעלמות.";
 
+/* alert body shown when trying to use features in the app before completing registration-related setup. */
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+    
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "הִגְדַּרְתָּ את זמן ההודעות הנעלמות אל %@.";
