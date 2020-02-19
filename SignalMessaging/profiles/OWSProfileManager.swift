@@ -162,7 +162,7 @@ extension OWSProfileManager {
                 // Other errors cause us to give up immediately.
                 // Note that we only ever retry the latest profile update.
                 if IsNSErrorNetworkFailure(error) {
-                    owsFailDebug("Retrying after error: \(error)")
+                    Logger.warn("Retrying after error: \(error)")
                 } else {
                     owsFailDebug("Error: \(error)")
 
