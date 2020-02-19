@@ -989,16 +989,25 @@ NS_ASSUME_NONNULL_BEGIN
         if (callMessage.offer) {
             [self.callMessageHandler receivedOffer:callMessage.offer
                                         fromCaller:envelope.sourceAddress
+                                      sourceDevice:envelope.sourceDevice
                                    sentAtTimestamp:envelope.timestamp];
         } else if (callMessage.answer) {
-            [self.callMessageHandler receivedAnswer:callMessage.answer fromCaller:envelope.sourceAddress];
+            [self.callMessageHandler receivedAnswer:callMessage.answer
+                                         fromCaller:envelope.sourceAddress
+                                       sourceDevice:envelope.sourceDevice];
         } else if (callMessage.iceUpdate.count > 0) {
-            [self.callMessageHandler receivedIceUpdate:callMessage.iceUpdate fromCaller:envelope.sourceAddress];
+            [self.callMessageHandler receivedIceUpdate:callMessage.iceUpdate
+                                            fromCaller:envelope.sourceAddress
+                                          sourceDevice:envelope.sourceDevice];
         } else if (callMessage.hangup) {
             OWSLogVerbose(@"Received CallMessage with Hangup.");
-            [self.callMessageHandler receivedHangup:callMessage.hangup fromCaller:envelope.sourceAddress];
+            [self.callMessageHandler receivedHangup:callMessage.hangup
+                                         fromCaller:envelope.sourceAddress
+                                       sourceDevice:envelope.sourceDevice];
         } else if (callMessage.busy) {
-            [self.callMessageHandler receivedBusy:callMessage.busy fromCaller:envelope.sourceAddress];
+            [self.callMessageHandler receivedBusy:callMessage.busy
+                                       fromCaller:envelope.sourceAddress
+                                     sourceDevice:envelope.sourceDevice];
         } else {
             OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
         }

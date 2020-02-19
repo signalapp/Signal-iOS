@@ -374,7 +374,7 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Received an incoming call Offer from call initiator.
      */
-    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String, sentAtTimestamp: UInt64) {
+    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sessionDescription callerSessionDescription: String, sentAtTimestamp: UInt64) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
@@ -445,9 +445,6 @@ extension SignalCall: CallManagerCallReference { }
 
         newCall.backgroundTask = backgroundTask
 
-        // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
-        let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
-
         // TODO - once clients have a reliable way of detecting envelope age, we can pass through
         // a timestamp. Until then, we assume envelopes are brand new so as to never fail calls
         // from a mis-aligned clock
@@ -463,12 +460,9 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Called by the call initiator after receiving an Answer from the callee.
      */
-    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sessionDescription: String) {
+    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sessionDescription: String) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
-
-        // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
-        let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
 
         do {
              try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, sdp: sessionDescription)
@@ -483,16 +477,13 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Remote client (could be caller or callee) sent us a connectivity update.
      */
-    public func handleReceivedIceCandidates(thread: TSContactThread, callId: UInt64, candidates: [SSKProtoCallMessageIceUpdate]) {
+    public func handleReceivedIceCandidates(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, candidates: [SSKProtoCallMessageIceUpdate]) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        let iceCandidates = candidates.filter {$0.id == callId}.map { candidate in
+        let iceCandidates = candidates.filter { $0.id == callId }.map { candidate in
             CallManagerIceCandidate(sdp: candidate.sdp, sdpMLineIndex: Int32(candidate.sdpMlineIndex), sdpMid: candidate.sdpMid)
         }
-
-        // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
-        let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
 
         do {
             try callManager.receivedIceCandidates(sourceDevice: sourceDevice, callId: callId, candidates: iceCandidates)
@@ -506,12 +497,9 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * The remote client (caller or callee) ended the call.
      */
-    public func handleReceivedHangup(thread: TSContactThread, callId: UInt64) {
+    public func handleReceivedHangup(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
-
-        // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
-        let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
 
         do {
             try callManager.receivedHangup(sourceDevice: sourceDevice, callId: callId)
@@ -526,12 +514,9 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * The callee was already in another call.
      */
-    public func handleReceivedBusy(thread: TSContactThread, callId: UInt64) {
+    public func handleReceivedBusy(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
-
-        // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
-        let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
 
         do {
             try callManager.receivedBusy(sourceDevice: sourceDevice, callId: callId)
