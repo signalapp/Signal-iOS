@@ -1399,7 +1399,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // The envelope source is set during UD decryption.
 
-    if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source]) {
+    if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source] && dataMessage.publicChatInfo == nil) { // Handled in LokiPublicChatPoller for open group messages
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         [[LKAPI getDestinationsFor:envelope.source inTransaction:transaction].ensureOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^() {
             dispatch_semaphore_signal(semaphore);
