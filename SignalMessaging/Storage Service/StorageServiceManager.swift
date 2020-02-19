@@ -17,8 +17,11 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         return SSKEnvironment.shared.tsAccountManager
     }
 
-    override init() {
+    @objc
+    public override init() {
         super.init()
+
+        SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             NotificationCenter.default.addObserver(

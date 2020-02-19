@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
         StickerManager *stickerManager = [[StickerManager alloc] init];
         SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
         AccountServiceClient *accountServiceClient = [AccountServiceClient new];
-        OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
+        OWSStorageServiceManager *storageServiceManager = [OWSStorageServiceManager new];
         SSKPreferences *sskPreferences = [SSKPreferences new];
         id<GroupsV2> groupsV2 = [GroupsV2Impl new];
         id<GroupV2Updates> groupV2Updates = [[GroupV2UpdatesImpl alloc] init];
