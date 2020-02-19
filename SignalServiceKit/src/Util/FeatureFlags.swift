@@ -291,4 +291,10 @@ public class DebugFlags: NSObject {
     // * Places we make requests using tasks.
     @objc
     public static let logCurlOnSuccess = false
+
+    // Our "group update" info messages should be robust to
+    // various situations that shouldn't occur in production,
+    // bug we want to be able to test them using the debug UI.
+    @objc
+    public static let permissiveGroupUpdateInfoMessages = build.includes(.dev)
 }

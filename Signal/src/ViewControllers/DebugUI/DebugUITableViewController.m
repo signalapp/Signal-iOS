@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUITableViewController.h"
@@ -123,6 +123,9 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems addObject:dataStoreItem];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIBackup new] viewController:viewController thread:thread]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIGroupsV2 new]
+                                        viewController:viewController
+                                                thread:thread]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
@@ -149,6 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIBackup new] viewController:viewController thread:nil]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIGroupsV2 new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:nil]];
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 

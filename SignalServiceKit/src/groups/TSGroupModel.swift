@@ -32,7 +32,7 @@ public class TSGroupModelV2: TSGroupModel {
     @objc
     var membership: GroupMembership = GroupMembership.empty
     @objc
-    var access: GroupAccess = .defaultV2Access
+    var access: GroupAccess = .defaultForV2
     @objc
     var secretParamsData: Data = Data()
     @objc

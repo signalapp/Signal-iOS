@@ -65,13 +65,18 @@ public class GroupAccess: MTLModel {
     }
 
     @objc
-    public static var defaultV2Access: GroupAccess {
-        return GroupAccess(members: .member, attributes: .member)
+    public static var adminOnly: GroupAccess {
+        return GroupAccess(members: .administrator, attributes: .administrator)
     }
 
     @objc
-    public static var forV1: GroupAccess {
+    public static var defaultForV1: GroupAccess {
         return allAccess
+    }
+
+    @objc
+    public static var defaultForV2: GroupAccess {
+        return GroupAccess(members: .member, attributes: .member)
     }
 
     public class func groupV2Access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
