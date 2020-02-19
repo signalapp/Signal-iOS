@@ -276,7 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OnboardingController *onboarding = [OnboardingController new];
     if (onboarding.isComplete) {
-        [onboarding markAsHasEverCompletedOnboarding];
+        [onboarding markAsOnboarded];
 
         if (self.backup.hasPendingRestoreDecision) {
             [self showBackupRestoreView];

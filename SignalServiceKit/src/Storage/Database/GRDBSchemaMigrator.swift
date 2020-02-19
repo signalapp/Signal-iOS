@@ -82,7 +82,7 @@ public class GRDBSchemaMigrator: NSObject {
         // separate migration, and ensure it runs *after* any schema migrations. That is, new schema
         // migrations must be inserted *before* any of these Data Migrations.
         case dataMigration_populateGalleryItems
-        case dataMigration_markOnboardedUsers
+        case dataMigration_markOnboardedUsers_v2
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -436,11 +436,11 @@ public class GRDBSchemaMigrator: NSObject {
             try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_markOnboardedUsers.rawValue) { db in
+        migrator.registerMigration(MigrationId.dataMigration_markOnboardedUsers_v2.rawValue) { db in
             let transaction = GRDBWriteTransaction(database: db).asAnyWrite
             if TSAccountManager.sharedInstance().isRegistered(transaction: transaction) {
                 Logger.info("marking existing user as onboarded")
-                SSKPreferences.setHasEverCompletedOnboarding(true, transaction: transaction)
+                TSAccountManager.sharedInstance().setIsOnboarded(true, transaction: transaction)
             }
         }
     }

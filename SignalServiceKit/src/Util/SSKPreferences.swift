@@ -155,18 +155,4 @@ public class SSKPreferences: NSObject {
         }
         return false
     }
-
-    // MARK: - hasEverCompletedOnboarding
-
-    static let hasEverCompletedOnboardingKey = "hasEverCompletedOnboardingKey"
-
-    @objc
-    public static func hasEverCompletedOnboarding(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(hasEverCompletedOnboardingKey, defaultValue: false, transaction: transaction)
-    }
-
-    @objc
-    public static func setHasEverCompletedOnboarding(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
-        store.setBool(newValue, key: hasEverCompletedOnboardingKey, transaction: transaction)
-    }
 }

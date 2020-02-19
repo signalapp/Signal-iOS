@@ -78,6 +78,14 @@ class UserNotificationPresenterAdaptee: NSObject {
 @available(iOS 10.0, *)
 extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
+    // MARK: - Dependencies
+
+    var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
+    // MARK: -
+
     func registerNotificationSettings() -> Promise<Void> {
         return Promise { resolver in
             notificationCenter.requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
@@ -106,6 +114,11 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
     func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
         AssertIsOnMainThread()
+
+        guard tsAccountManager.isOnboarded() else {
+            Logger.info("suppressing notification since user hasn't yet completed onboarding.")
+            return
+        }
 
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = category.identifier
@@ -240,6 +253,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
     func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
         AssertIsOnMainThread()
+
         guard UIApplication.shared.applicationState == .active else {
             return true
         }

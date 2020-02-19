@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,6 +27,10 @@ import SignalMessaging
         return SSKEnvironment.shared.contactsUpdater
     }
 
+    private var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
     // MARK: -
 
     /**
@@ -48,6 +52,13 @@ import SignalMessaging
     @discardableResult
     @objc
     public func initiateCall(address: SignalServiceAddress, isVideo: Bool) -> Bool {
+        guard tsAccountManager.isOnboarded() else {
+            Logger.warn("aborting due to user not being onboarded.")
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
+                                                                     comment: "alert body shown when trying to use features in the app before completing registration-related setup."))
+            return false
+        }
+
         guard let callUIAdapter = AppEnvironment.shared.callService.callUIAdapter else {
             owsFailDebug("missing callUIAdapter")
             return false
