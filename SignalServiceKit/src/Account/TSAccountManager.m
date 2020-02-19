@@ -281,8 +281,6 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         } else {
             return OWSRegistrationState_Deregistered;
         }
-    } else if (self.isDeregistered) {
-        return OWSRegistrationState_PendingBackupRestore;
     } else {
         return OWSRegistrationState_Registered;
     }
