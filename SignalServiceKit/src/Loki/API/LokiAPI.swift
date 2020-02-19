@@ -129,6 +129,7 @@ public final class LokiAPI : NSObject {
     }
     
     public static func getDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Promise<[Destination]> {
+        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
         let (promise, seal) = Promise<[Destination]>.pending()
         func getDestinations(in transaction: YapDatabaseReadTransaction? = nil) {
             func getDestinationsInternal(in transaction: YapDatabaseReadTransaction) {
@@ -185,7 +186,7 @@ public final class LokiAPI : NSObject {
         }
         func sendLokiMessageUsingSwarmAPI() -> Promise<Set<RawResponsePromise>> {
             notificationCenter.post(name: .calculatingPoW, object: NSNumber(value: signalMessage.timestamp))
-            return lokiMessage.calculatePoW().then(on: DispatchQueue.global()) { lokiMessageWithPoW -> Promise<Set<RawResponsePromise>> in
+            return lokiMessage.calculatePoW().then { lokiMessageWithPoW -> Promise<Set<RawResponsePromise>> in
                 notificationCenter.post(name: .contactingNetwork, object: NSNumber(value: signalMessage.timestamp))
                 return getTargetSnodes(for: destination).map { swarm in
                     return Set(swarm.map { target in
@@ -209,7 +210,7 @@ public final class LokiAPI : NSObject {
             return Promise.value([ target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
                 LokiP2PAPI.markOnline(destination)
                 onP2PSuccess()
-            }.recover(on: DispatchQueue.global()) { error -> Promise<Set<RawResponsePromise>> in
+            }.recover { error -> Promise<Set<RawResponsePromise>> in
                 LokiP2PAPI.markOffline(destination)
                 if lokiMessage.isPing {
                     print("[Loki] Failed to ping \(destination); marking contact as offline.")
@@ -417,7 +418,7 @@ public final class LokiAPI : NSObject {
 private extension Promise {
 
     fileprivate func recoveringNetworkErrorsIfNeeded() -> Promise<T> {
-        return recover(on: DispatchQueue.global()) { error -> Promise<T> in
+        return recover { error -> Promise<T> in
             switch error {
             case NetworkManagerError.taskError(_, let underlyingError): throw underlyingError
             case LokiHTTPClient.HTTPError.networkError(_, _, let underlyingError): throw underlyingError ?? error

@@ -42,7 +42,7 @@ public final class LokiLongPoller : NSObject {
     // MARK: Private API
     private func openConnections() {
         guard !hasStopped else { return }
-        LokiAPI.getSwarm(for: userHexEncodedPublicKey).then(on: DispatchQueue.global()) { [weak self] _ -> Guarantee<[Result<Void>]> in
+        LokiAPI.getSwarm(for: userHexEncodedPublicKey).then { [weak self] _ -> Guarantee<[Result<Void>]> in
             guard let strongSelf = self else { return Guarantee.value([Result<Void>]()) }
             strongSelf.usedSnodes.removeAll()
             let connections: [Promise<Void>] = (0..<strongSelf.connectionCount).map { _ in
@@ -52,7 +52,7 @@ public final class LokiLongPoller : NSObject {
             }
             strongSelf.connections = Set(connections)
             return when(resolved: connections)
-        }.ensure(on: DispatchQueue.global()) { [weak self] in
+        }.ensure { [weak self] in
             guard let strongSelf = self else { return }
             Timer.scheduledTimer(withTimeInterval: strongSelf.retryInterval, repeats: false) { _ in
                 guard let strongSelf = self else { return }

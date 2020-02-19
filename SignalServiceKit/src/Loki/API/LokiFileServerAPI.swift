@@ -26,6 +26,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     /// Gets the device links associated with the given hex encoded public keys from the
     /// server and stores and returns the valid ones.
     public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Set<DeviceLink>> {
+        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
         return getAuthToken(for: server, in: transaction).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
@@ -85,7 +86,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     
     public static func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) -> Promise<Void> {
         print("[Loki] Updating device links.")
-        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
+        return getAuthToken(for: server).then { token -> Promise<Void> in
             let isMaster = deviceLinks.contains { $0.master.hexEncodedPublicKey == userHexEncodedPublicKey }
             let deviceLinksAsJSON = deviceLinks.map { $0.toJSON() }
             let value = !deviceLinksAsJSON.isEmpty ? [ "isPrimary" : isMaster ? 1 : 0, "authorisations" : deviceLinksAsJSON ] : nil
@@ -94,7 +95,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in }.retryingIfNeeded(maxRetryCount: 8).recover(on: DispatchQueue.global()) { error in
+            return TSNetworkManager.shared().perform(request).map { _ in }.retryingIfNeeded(maxRetryCount: 8).recover { error in
                 print("Couldn't update device links due to error: \(error).")
                 throw error
             }
@@ -138,9 +139,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     // MARK: Profile Pictures (Public API)
     public static func setProfilePicture(_ profilePicture: Data) -> Promise<String> {
         return Promise<String>() { seal in
-            guard profilePicture.count < maxFileSize else {
-                return seal.reject(LokiDotNetAPIError.maxFileSizeExceeded)
-            }
+            guard profilePicture.count < maxFileSize else { return seal.reject(LokiDotNetAPIError.maxFileSizeExceeded) }
             getAuthToken(for: server).done { token in
                 let url = "\(server)/users/me/avatar"
                 let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
