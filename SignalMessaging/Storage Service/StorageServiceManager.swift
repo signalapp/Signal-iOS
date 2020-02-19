@@ -9,16 +9,13 @@ import PromiseKit
 public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
-    public static var shared: StorageServiceManagerProtocol {
-        return SSKEnvironment.shared.storageServiceManager
-    }
+    public static let shared = StorageServiceManager()
 
     var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
     }
 
-    @objc
-    public override init() {
+    override init() {
         super.init()
 
         SwiftSingletons.register(self)
