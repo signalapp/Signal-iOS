@@ -75,7 +75,7 @@ public class GroupsV2Test: NSObject {
                 }
         }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
             let groupModel = try self.databaseStorage.read { transaction in
-                return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
+                return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
             }
             guard groupModel.groupV2Revision == 0 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
@@ -145,7 +145,7 @@ public class GroupsV2Test: NSObject {
             }
         }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
             let groupModel = try self.databaseStorage.read { transaction in
-                return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
+                return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
             }
             guard groupModel.groupV2Revision == 1 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
@@ -215,7 +215,7 @@ public class GroupsV2Test: NSObject {
             }
         }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
             let groupModel = try self.databaseStorage.read { transaction in
-                return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
+                return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
             }
             guard groupModel.groupV2Revision == 2 else {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")

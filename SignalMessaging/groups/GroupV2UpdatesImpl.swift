@@ -458,8 +458,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     }
                 }
                 let oldGroupModel = groupThread.groupModel
-                let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupChange.snapshot,
-                                                                     transaction: transaction)
+                let builder = try TSGroupModelBuilder(groupV2Snapshot: groupChange.snapshot)
+                let newGroupModel = try  builder.build(transaction: transaction)
 
                 if changeRevision == oldGroupModel.groupV2Revision {
                     if !oldGroupModel.isEqual(to: newGroupModel) {
@@ -536,8 +536,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
 
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
-            let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot,
-                                                                 transaction: transaction)
+            let builder = try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
+            let newGroupModel = try  builder.build(transaction: transaction)
             let newDisappearingMessageToken = groupV2Snapshot.disappearingMessageToken
             // groupUpdateSourceAddress is nil because we don't know the
             // author(s) of changes reflected in the snapshot.
