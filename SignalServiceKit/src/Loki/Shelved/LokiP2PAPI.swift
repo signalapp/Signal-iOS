@@ -200,7 +200,7 @@ public class LokiP2PAPI : NSObject {
         AssertIsOnMainThread()
         
         guard let message = onlineBroadcastMessage(forThread: thread) else {
-            print("[Loki] P2P address not set.")
+//            print("[Loki] P2P address not set.")
             return
         }
         
@@ -224,7 +224,7 @@ public class LokiP2PAPI : NSObject {
     
     private static func createLokiAddressMessage(for thread: TSThread, isPing: Bool) -> LokiAddressMessage? {
         guard let ourAddress = ourP2PAddress else {
-            print("[Loki] P2P address not set.")
+//            print("[Loki] P2P address not set.")
             return nil
         }
         

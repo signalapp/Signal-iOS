@@ -7,12 +7,11 @@ public extension LokiAPI {
     // MARK: Settings
     private static let minimumSnodeCount = 2
     private static let targetSnodeCount = 3
+    private static let maxRandomSnodePoolSize = 1024
     fileprivate static let failureThreshold = 2
     
     // MARK: Caching
     internal static var swarmCache: [String:[LokiAPITarget]] = [:]
-    private static let swarmCacheKey = "swarmCacheKey"
-    private static let swarmCacheCollection = "swarmCacheCollection"
     
     internal static func dropIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
         let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]
@@ -39,7 +38,7 @@ public extension LokiAPI {
                 "method" : "get_n_service_nodes",
                 "params" : [
                     "active_only" : true,
-                    "limit" : 24,
+                    "limit" : maxRandomSnodePoolSize,
                     "fields" : [
                         "public_ip" : true,
                         "storage_port" : true,
@@ -49,7 +48,7 @@ public extension LokiAPI {
                 ]
             ])
             print("[Loki] Invoking get_n_service_nodes on \(target).")
-            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { intermediate in
+            return TSNetworkManager.shared().perform(request).map(on: DispatchQueue.global()) { intermediate in
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }
                 randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
@@ -59,13 +58,15 @@ public extension LokiAPI {
                     }
                     return LokiAPITarget(address: "https://\(address)", port: UInt16(port), publicKeySet: LokiAPITarget.KeySet(idKey: idKey, encryptionKey: encryptionKey))
                 })
+                // randomElement() uses the system's default random generator, which is cryptographically secure
                 return randomSnodePool.randomElement()!
-            }.recover(on: DispatchQueue.global()) { error -> Promise<LokiAPITarget> in
+            }.recover { error -> Promise<LokiAPITarget> in
                 print("[Loki] Failed to contact seed node at: \(target).")
                 throw error
             }.retryingIfNeeded(maxRetryCount: 16) // The seed nodes have historically been unreliable
         } else {
             return Promise<LokiAPITarget> { seal in
+                // randomElement() uses the system's default random generator, which is cryptographically secure
                 seal.fulfill(randomSnodePool.randomElement()!)
             }
         }
@@ -76,6 +77,7 @@ public extension LokiAPI {
             return Promise<[LokiAPITarget]> { $0.fulfill(cachedSwarm) }
         } else {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
+            // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
             return getRandomSnode().then(on: DispatchQueue.global()) { invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
         }
     }

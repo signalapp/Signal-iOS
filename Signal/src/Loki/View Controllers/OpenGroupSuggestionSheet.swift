@@ -71,7 +71,7 @@ final class OpenGroupSuggestionSheet : Sheet {
     }
 
     override func close() {
-        UserDefaults.standard.set(true, forKey: "hasSeenOpenGroupSuggestionSheet")
+        UserDefaults.standard[.hasSeenOpenGroupSuggestionSheet] = true
         super.close()
     }
 }

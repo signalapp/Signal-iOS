@@ -178,7 +178,7 @@ final class RestoreVC : UIViewController {
             databaseConnection.setObject(keyPair, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
             TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair.hexEncodedPublicKey
             OWSPrimaryStorage.shared().setRestorationTime(Date().timeIntervalSince1970)
-            UserDefaults.standard.set(true, forKey: "hasViewedSeed")
+            UserDefaults.standard[.hasViewedSeed] = true
             mnemonicTextField.resignFirstResponder()
             Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in
                 let displayNameVC = DisplayNameVC()

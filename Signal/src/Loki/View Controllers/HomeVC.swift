@@ -88,8 +88,9 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
         // Set up seed reminder view if needed
-        let hasViewedSeed = UserDefaults.standard.bool(forKey: "hasViewedSeed")
-        let isMasterDevice = (UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") == nil)
+        let userDefaults = UserDefaults.standard
+        let hasViewedSeed = userDefaults[.hasViewedSeed]
+        let isMasterDevice = userDefaults.isMasterDevice
         if !hasViewedSeed && isMasterDevice {
             view.addSubview(seedReminderView)
             seedReminderView.pin(.leading, to: .leading, of: view)
@@ -145,14 +146,14 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isViewVisible = true
-//        let hasSeenOpenGroupSuggestionSheet = UserDefaults.standard.bool(forKey: "hasSeenOpenGroupSuggestionSheet")
+//        let hasSeenOpenGroupSuggestionSheet = UserDefaults.standard[.hasSeenOpenGroupSuggestionSheet]
 //        if !hasSeenOpenGroupSuggestionSheet {
 //            let openGroupSuggestionSheet = OpenGroupSuggestionSheet()
 //            openGroupSuggestionSheet.modalPresentationStyle = .overFullScreen
 //            openGroupSuggestionSheet.modalTransitionStyle = .crossDissolve
 //            present(openGroupSuggestionSheet, animated: true, completion: nil)
 //        }
-        UserDefaults.standard.set(true, forKey: "hasLaunchedOnce")
+        UserDefaults.standard[.hasLaunchedOnce] = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
