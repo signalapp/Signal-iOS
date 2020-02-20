@@ -43,7 +43,7 @@ class ExperienceUpgradeManager: NSObject {
             fromViewController.presentFormSheet(OWSNavigationController(rootViewController: splash), animated: true)
             lastPresented = splash
         } else {
-            owsFailDebug("no megaphone or splash for experience upgrade! \(next.id)")
+            owsFailDebug("no megaphone or splash for experience upgrade! \(next.id as Optional)")
             return false
         }
 
@@ -113,8 +113,8 @@ class ExperienceUpgradeManager: NSObject {
              .pinReminder:
             return true
         case .messageRequests:
-            // Only use a megaphone for message requests if the user has a profile name.
-            return OWSProfileManager.shared().hasProfileName
+            // no need to annoy user with banner for message requests. They are self explanatory.
+            return false
         default:
             return false
         }
@@ -131,7 +131,8 @@ class ExperienceUpgradeManager: NSObject {
         case .pinReminder:
             return PinReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .messageRequests:
-            return MessageRequestsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+            // no need to annoy user with banner for message requests. They are self explanatory.
+            return nil
         default:
             return nil
         }
