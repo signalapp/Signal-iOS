@@ -639,22 +639,22 @@
 "CONTACT_SUPPORT" = "Support kontaktieren";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal konnte deine Supportanfrage nicht abschließen.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Erneut versuchen";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Deine Diagnoseprotokolle helfen uns, dein Problem schneller zu lösen. Das Übermitteln deiner Protokolle ist optional.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Diagnoseprotokoll übermitteln?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Mit Diagnoseprotokoll übermitteln";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Ohne Diagnoseprotokoll übermitteln";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "In Maps öffnen";
@@ -1011,7 +1011,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Nachricht konnte nicht versendet werden, da du den Benutzer blockiert hast.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal konnte keine Verbindung zum Internet herstellen. Bitte erneut versuchen.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal konnte keine Verbindung zum Internet herstellen. Bitte versuche es erneut.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Nachricht konnte nicht versendet werden, da keine gültigen Empfänger vorhanden.";
@@ -1092,7 +1092,7 @@
 "EXPIRATION_WARNING_TODAY" = "Deine Signal-Version wird heute ablaufen. Bitte antippen, um auf die neueste Version zu aktualisieren.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Zu viele Fehler mit diesem Kontakt. Bitte später erneut versuchen.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Zu viele Fehler mit diesem Kontakt. Bitte versuche es später erneut.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Deine Sicherheitsnummer mit %@ hat sich kürzlich geändert. Vielleicht möchtest du vor dem erneuten Senden deinen Kontakt verifizieren.";
@@ -1542,10 +1542,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blockieren";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Möchtest du erlauben, dass %@ dir Nachrichten schreibt? Du wirst keine Nachrichten erhalten, solange du die Unterhaltung nicht freigibst.";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Möchtest du erlauben, dass die Gruppe %@ dir Nachrichten schreibt? Du wirst keine Nachrichten erhalten, solange du die Gruppe nicht freigibst.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Löschen";
@@ -1570,12 +1570,6 @@
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Freigeben";
-
-/* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Du kannst nun wählen, ob du eine neue Unterhaltung zulassen möchtest. Die möglichen Alternativen sind »Akzeptieren«, »Löschen« oder »Blockieren«.";
-
-/* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Neu: Nachrichtenanfragen";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Einführung von Nachrichtenanfragen";
@@ -1806,7 +1800,7 @@
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Numerische PIN eingeben";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Hilfe benötigt?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Falsche PIN";
@@ -2046,7 +2040,7 @@
 "PIN_CREATION_EXPLANATION" = "PINs sichern dein Konto zusätzlich ab und können nicht wiederhergestellt werden. Du benötigst deine PIN, um Signal erneut zu registrieren.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs stimmen nicht überein. Bitte erneut versuchen.";
+"PIN_CREATION_MISMATCH_ERROR" = "PINs stimmen nicht überein. Bitte versuche es erneut.";
 
 /* Label indicating the user must use at least 6 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN muss aus mindestens 6 Ziffern bestehen";
@@ -2097,7 +2091,7 @@
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Wir erinnern dich in einer Woche.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Ungültige PIN. Bitte erneut versuchen.";
+"PIN_REMINDER_MISMATCH_ERROR" = "Ungültige PIN. Bitte versuche es erneut.";
 
 /* The title for the 'pin reminder' dialog. */
 "PIN_REMINDER_TITLE" = "Bitte Signal-PIN eingeben";
@@ -2349,13 +2343,13 @@
 "REGISTER_2FA_FORGOT_PIN" = "Ich habe meine PIN vergessen.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hilfe benötigt?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 6 Zeichen. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Benutzerkontos 7 Tage warten.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer Code von mindestens 4 Ziffern. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Benutzerkontos 7 Tage warten.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du hast %lu verbleibende Versuche. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte werden gelöscht.";
@@ -2487,7 +2481,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentifizierung gescheitert.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Zu viele gescheiterte Authentifizierungsversuche. Bitte später erneut versuchen.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Zu viele gescheiterte Authentifizierungsversuche. Bitte versuche es später erneut.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du musst einen Passcode in deinen iOS-Einstellungen festlegen, um die Bildschirmsperre zu verwenden.";
@@ -2589,7 +2583,7 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "Deine Nachricht konnte nicht versendet werden.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Einladung konnte nicht versendet werden. Bitte später erneut versuchen.";
+"SEND_INVITE_FAILURE" = "Einladung konnte nicht versendet werden. Bitte versuche es später erneut.";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Du hast deinen Freund eingeladen, Signal zu verwenden!";
@@ -3189,7 +3183,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Benutzernamen dürfen nur a-z, 0-9 und »_« enthalten";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "Während der Suche nach dem Benutzernamen ist ein Fehler aufgetreten. Bitte versuche es später erneut.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ ist kein Signal-Benutzer. Vergewissere dich, dass du den vollständigen Benutzernamen eingegeben hast.";
@@ -3273,7 +3267,7 @@
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du hast verschwindende Nachrichten deaktiviert.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
-    
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Du musst du die Einrichtung abschließen, um fortzufahren.";
+
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du hast die Zeit für verschwindende Nachrichten auf %@ festgelegt.";

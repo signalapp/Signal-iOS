@@ -639,22 +639,22 @@
 "CONTACT_SUPPORT" = "Neem contact op met ondersteuning";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal kon je ondersteuningsverzoek niet voltooien.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Opnieuw proberen";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Je foutlog helpt ons om je probleem sneller te ontdekken en op te lossen. Het indienen van een foutlog is optioneel.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Foutlog indienen?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Indienen met foutlog?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Indienen zonder foutlog";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open met Kaarten";
@@ -1542,10 +1542,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokkeren";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je %@ toestaan om jou berichten te sturen? Je zult geen berichten ontvangen totdat je hem of haar hebt gedeblokkeerd.";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Wil je de groep “%@” toestaan om jou berichten te sturen? Je zult geen berichten ontvangen totdat je de groep hebt gedeblokkeerd.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Wissen";
@@ -1570,12 +1570,6 @@
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Deblokkeren";
-
-/* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Je kunt nu kiezen of je een nieuw gesprek wilt aanvaarden of niet. Je zult de opties ‘Aanvaarden’, ‘Verwijderen’ of ‘Blokkeren’ krijgen.";
-
-/* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Nieuw: gespreksverzoeken";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "We introduceren gespreksverzoeken";
@@ -1806,7 +1800,7 @@
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Voer je numerieke pincode in";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Hulp nodig?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Incorrecte pincode";
@@ -2349,13 +2343,13 @@
 "REGISTER_2FA_FORGOT_PIN" = "Ik ben mijn pincode vergeten.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hulp nodig?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Je pincode is een wachtoord welke je zelf hebt aangemaakt bestaande uit 6 of meer cijfers of karakters. Als je je pincode niet hebt onthouden, dan zul je 7 dagen moeten wachten voor je je telefoonnummer opnieuw kunt registreren.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Je pincode is een getal welke je zelf hebt aangemaakt bestaande uit 4 of meer cijfers. Als je je pincode niet hebt onthouden, dan zul je 7 dagen moeten wachten voor je je telefoonnummer opnieuw kunt registreren.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Je hebt nog %lu resterend(e) poging(en). Als je geen pogingen meer over hebt wordt je account vergrendeld. Na ten minste 7 dagen inactiviteit kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt in dat geval gereset en alle inhoud wordt gewist.";
@@ -3189,7 +3183,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Gebruikersnamen mogen alleen uit de karakters a-z, 0-9 en _ bestaan.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "Er is iets fout gegaan bij het opzoeken van de gebruikersnaam. Probeer het later opnieuw.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ is geen Signal-gebruiker. Ga na dat je de complete gebruikersnaam hebt ingevuld.";
@@ -3273,7 +3267,7 @@
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt zelf-wissende berichten uitgeschakeld.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
-    
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Je moet de configuratie voltooien voor je verder kunt gaan.";
+
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor zelf-wissende berichten ingesteld op %@.";

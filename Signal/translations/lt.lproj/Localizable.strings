@@ -645,16 +645,16 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Bandyti dar kartą";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Jūsų derinimo žurnalai padės mums greičiau pašalinti jūsų problemą. Žurnalų pateikimas yra laisvanoriškas.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Pateikti derinimo žurnalą?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Pateikti su derinimo žurnalu";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Pateikti be derinimo žurnalo";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Atverti žemėlapiuose";
@@ -1542,10 +1542,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Užblokuoti";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Ar norite leisti, kad %@ rašytų jums žinutes? Jūs negausite jokių žinučių tol, kol neatblokuosite šio naudotojo.";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Ar norite leisti, kad grupė %@ rašytų jums žinutes? Jūs negausite jokių žinučių tol, kol neatblokuosite šios grupės.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Ištrinti";
@@ -1570,12 +1570,6 @@
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Atblokuoti";
-
-/* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Dabar, galite rinktis ar priimti naują pokalbį. Matysite variantus \"Priimti\", \"Ištrinti\" arba \"Užblokuoti\".";
-
-/* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Nauja: Žinučių užklausos";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Pristatome žinučių užklausas";
@@ -1806,7 +1800,7 @@
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Įvesti skaitinį PIN kodą";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Reikia pagalbos?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Neteisingas PIN";
@@ -2349,7 +2343,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "Aš pamiršau savo PIN.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Reikia pagalbos?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
@@ -3189,7 +3183,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Naudotojo varduose gali būti simboliai a-z, 0-9, ir _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "Ieškant naudotojo vardo, įvyko klaida. Vėliau bandykite dar kartą.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ nėra Signal naudotojas. Įsitikinkite, kad įvedėte pilną naudotojo vardą.";
@@ -3273,7 +3267,7 @@
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Jūs išjungėte išnykstančias žinutes.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
-    
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Prieš tęsdami, privalote užbaigti sąranką.";
+
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Jūs nustatėte išnykstančių žinučių laiką į %@.";

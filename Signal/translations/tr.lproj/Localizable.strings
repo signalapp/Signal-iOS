@@ -639,22 +639,22 @@
 "CONTACT_SUPPORT" = "Destekle İletişime Geçin";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal destek isteğinizi tamamlayamadı.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Yeniden Dene";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Hata ayıklama günlükleriniz sorununuzu çözmemizi hızlandıracaktır. Günlüklerinizi göndermeniz isteğe bağlıdır.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Hata Ayıklama Günlüğü gönderilsin mi?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Hata Ayıklama Günlüğü ile gönder";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Hata Ayıklama Günlüğü olmadan gönder";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Haritalarda Aç";
@@ -1542,10 +1542,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Engelle";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%@ kişisinin size ileti yazabilmesini istiyor musunuz? Engeli kaldırana kadar hiçbir ileti almayacaksınız.";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "%@ grubunun size ileti yazabilmesini istiyor musunuz? Engeli kaldırana kadar hiçbir ileti almayacaksınız.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Sil";
@@ -1571,20 +1571,14 @@
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Engeli kaldır";
 
-/* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
-
-/* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
-
 /* Header for message requests splash screen */
-"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Karşınızda Yazışma İstekleri";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Profil Adı Ekle";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Yeni bir konuşmayı artık Kabul edebilir veya Silebilirsiniz. İsimler, insanlara kimin yazdığını gösterir.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Profil adınız kaydedildi.";
@@ -1806,7 +1800,7 @@
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Sayısal PIN'i Girin";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Yardıma mı ihtiyacınız var?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Yanlış PIN";
@@ -2079,22 +2073,22 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "PIN'i doğrula";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Hatırlamanız için arada sırada PIN'inizi doğrulamanızı isteyeceğiz.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Size birkaç gün içinde hatırlatacağız.";
 
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Signal PIN'inizi doğrulayın";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Size yarın hatırlatacağız.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Size birkaç hafta içinde hatırlatacağız.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Size gelecek hafta hatırlatacağız.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Geçersiz PIN, tekrar deneyin.";
@@ -2349,13 +2343,13 @@
 "REGISTER_2FA_FORGOT_PIN" = "PIN'imi unuttum.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Yardıma mı ihtiyacınız var?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "PIN'iniz sayısal veya alfanumerik olabilen 6+ haneli bir koddur.  Eğer PIN'inizi hatırlayamıyorsanız, hesabınızı tekrar kaydetmek için 7 gün beklemeniz gerekecektir.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "PIN'iniz 4+ haneli sayısal bir koddur. Eğer PIN'inizi hatırlayamıyorsanız, yeniden kaydolmak için 7 gün beklemelisiniz. ";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "%lu deneme hakkınız kaldı. Hakkınız biterse hesabınız kilitlenecektir. 7 gün eylemsizlikten sonra, PIN'iniz olmadan tekrar kaydolabileceksiniz. Hesabınız ve tüm içeriğiniz silinecektir.";
@@ -3189,7 +3183,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Kullanıcı adları yalnızca a-z, 0-9, ve _ içerebilir";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "Kullanıcı adı araştırılırken hata oluştu. Lütfen daha sonra tekrar deneyin.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ bir Signal kullanıcısı değil. Lütfen tam kullanıcı adı girdiğinizden emin olun.";
@@ -3273,7 +3267,7 @@
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Kaybolan iletileri devre dışı bıraktınız.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
-    
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "İlerlemeden önce kurulumu tamamlamalısınız.";
+
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Kaybolan ileti süresini %@ olarak ayarladınız.";

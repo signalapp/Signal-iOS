@@ -1571,12 +1571,6 @@
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "ブロックを解除";
 
-/* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "今後、新しい会話について「受け入れる」、「削除する」および「ブロックする」の選択肢から選べます。";
-
-/* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: メッセージリクエスト";
-
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "メッセージリクエストのご紹介";
 
@@ -3274,6 +3268,6 @@
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
-    
+
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "消えるメッセージのタイマーを%@に設定しました。";

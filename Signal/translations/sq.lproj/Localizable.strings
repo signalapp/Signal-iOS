@@ -636,25 +636,25 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "S’u përzgjodhën fusha kontakti.";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Contact Support";
+"CONTACT_SUPPORT" = "Lidhuni Me Asistencën";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal-i s’qe në gjendje të plotësojë kërkesën tuaj për asistencë.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Riprovoni";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Regjistrat tuaj të diagnostikimit do të na ndihmojnë të gjejmë më shpejt problemin. Parashtrimi i regjistrave tuaj është opsional.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Të parashtrohet Regjistër Diagnostikimi?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Parashtroje me Regjistër Diagnostikimi";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Parashtroje pa Regjistër Diagnostikimi";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Hape në Harta";
@@ -1542,10 +1542,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Bllokoje";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Doni ta lini %@ t’ju dërgojë mesazh? S’do të merrni ndonjë mesazh, para se ta zhbllokoni.";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Doni të lini grupin %@ t’ju dërgojë mesazh? S’do të merrni ndonjë mesazh, para se t’i zhbllokoni.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Fshije";
@@ -1570,12 +1570,6 @@
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Zhbllokoje";
-
-/* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Mund të zgjidhni të pranoni ose jo një bisedë të re. Do të shihni mundësi që ta “Pranoni”, “Fshini”, ose “Bllokoni”.";
-
-/* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "E re: Kërkesa Mesazhi";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Ju prezantojmë Kërkesa Mesazhesh";
@@ -1806,7 +1800,7 @@
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Jepni PIN Numerik";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Ju Duhet Ndihmë?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "PIN i pasaktë";
@@ -2349,13 +2343,13 @@
 "REGISTER_2FA_FORGOT_PIN" = "Harrova PIN-in tim.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Ju Duhet Ndihmë?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "PIN-i juaj është një kod me 6 ose më shumë shifra që krijuat dhe që mund të jetë numerik ose alfanumerik. Nëse s’e mbani mend PIN-in tuaj, do t’ju duhet të prisni 7 ditë që të riregjistroni llogarinë tuaj.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "PIN-i juaj është një kod me 4 ose më shumë shifra që krijuat. Nëse s’e mbani mend PIN-in tuaj, do t’ju duhet të prisni 7 ditë që të riregjistroni llogarinë tuaj.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Keni edhe %lu prova. Nëse ju mbarohen provat, llogaria juaj do të kyçet. Pas 7 ditësh pa veprimtari, mund të riregjistroheni pa PIN-in tuaj. Llogaria juaj do të spastrohet dhe krejt lënda do të fshihet.";
@@ -3189,7 +3183,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Emrat e përdoruesve mund të përmbajnë vetëm a-z, 0-9, dhe _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "Ndodhi një gabim teksa kërkohej për emrin e përdoruesit. Ju lutemi, riprovoni më vonë.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ s’është përdorues i Signal-it. Sigurohuni se keni dhënë emrin e përdoruesit të plotë.";
@@ -3273,7 +3267,7 @@
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Çaktivizuat zhdukje mesazhesh.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
-    
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Përpara se të vazhdohet, duhet të plotësoni ujdisjen.";
+
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Caktuat si kohë tretjeje mesazhesh %@.";

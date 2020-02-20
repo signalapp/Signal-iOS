@@ -1571,12 +1571,6 @@
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "בטל חסימה";
 
-/* Body for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "אתה כעת יכול לבחור אם לקבל שיחה חדשה. תראה אפשרויות \"קבל\", \"מחק\" או \"חסום\".";
-
-/* Title for message requests megaphone */
-"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "חדש: בקשות התכתבות";
-
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "היכרות עם בקשות התכתבות";
 
@@ -3274,6 +3268,6 @@
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
-    
+
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "הִגְדַּרְתָּ את זמן ההודעות הנעלמות אל %@.";
