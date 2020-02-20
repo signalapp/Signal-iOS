@@ -545,7 +545,7 @@ class StorageServiceOperation: OWSOperation {
 
                     // If this is a linked device, give up and request the latest storage
                     // service key from the primary device.
-                    self.databaseStorage.asyncWrite { transaction in
+                    self.databaseStorage.write { transaction in
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
                         KeyBackupService.storeSyncedKey(type: .storageService, data: nil, transaction: transaction)
