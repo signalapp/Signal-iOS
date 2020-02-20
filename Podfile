@@ -7,8 +7,8 @@ use_frameworks!
 # OWS Pods
 ###
 
-# pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
-pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
+pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
+# pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
 pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
 # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
@@ -19,8 +19,8 @@ pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tes
 pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
 # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
-# pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
-pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
+pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
+# pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
 # pod 'blurhash', path: '../blurhash'

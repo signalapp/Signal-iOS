@@ -255,10 +255,10 @@ DEPENDENCIES:
   - PromiseKit (= 6.5.3)
   - PureLayout
   - Reachability
-  - SignalCoreKit (from `../SignalCoreKit`)
-  - SignalCoreKit/Tests (from `../SignalCoreKit`)
-  - SignalMetadataKit (from `../SignalMetadataKit`)
-  - SignalMetadataKit/Tests (from `../SignalMetadataKit`)
+  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
+  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
+  - SignalMetadataKit (from `https://github.com/signalapp/SignalMetadataKit`)
+  - SignalMetadataKit/Tests (from `https://github.com/signalapp/SignalMetadataKit`)
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
@@ -311,9 +311,9 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :path: "../SignalCoreKit"
+    :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :path: "../SignalMetadataKit"
+    :git: https://github.com/signalapp/SignalMetadataKit
   SignalRingRTC:
     :inhibit_wranings: true
     :path: ThirdParty/SignalRingRTC.podspec
@@ -356,6 +356,12 @@ CHECKOUT OPTIONS:
   Mantle:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
+  SignalCoreKit:
+    :commit: 215afc41654f182bececd949e2410b4a819fbbfb
+    :git: https://github.com/signalapp/SignalCoreKit.git
+  SignalMetadataKit:
+    :commit: 1d738023e4cb19d0ea502f5a03a9368a1eaefe9e
+    :git: https://github.com/signalapp/SignalMetadataKit
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: https://github.com/signalapp/Starscream.git
@@ -400,6 +406,6 @@ SPEC CHECKSUMS:
   ZKGroup: b5fcf00855c58ffa45861d5427621d8a519f4314
   ZXingObjC: 512b34b9b6920e8ef0461a4159d0814c5e48c28a
 
-PODFILE CHECKSUM: beed20a3bf3bddf043efb77298856262265bccdf
+PODFILE CHECKSUM: 7bbdec7f6a8b750a8a52635604837d664d48b9cb
 
 COCOAPODS: 1.7.5
