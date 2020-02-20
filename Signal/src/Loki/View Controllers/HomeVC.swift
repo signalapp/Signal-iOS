@@ -1,5 +1,5 @@
 
-final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIViewControllerPreviewingDelegate, SeedReminderViewDelegate {
+final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIViewControllerPreviewingDelegate, SeedReminderViewDelegate {
     private var threadViewModelCache: [String:ThreadViewModel] = [:]
     private var isObservingDatabase = true
     private var isViewVisible = false { didSet { updateIsObservingDatabase() } }
@@ -18,9 +18,6 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     }()
     
     private let editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
-    
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
     
     // MARK: Components
     private lazy var seedReminderView: SeedReminderView = {
@@ -68,6 +65,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         SignalApp.shared().homeViewController = self
         // Set gradient background
         view.backgroundColor = .clear
@@ -263,11 +261,13 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureView)
         let newClosedGroupButton = UIButton(type: .custom)
-        newClosedGroupButton.setImage(#imageLiteral(resourceName: "btnGroup--white"), for: UIControl.State.normal)
+        let newClosedGroupIcon = #imageLiteral(resourceName: "btnGroup--white").asTintedImage(color: Colors.text)!
+        newClosedGroupButton.setImage(newClosedGroupIcon, for: UIControl.State.normal)
         newClosedGroupButton.addTarget(self, action: #selector(createClosedGroup), for: UIControl.Event.touchUpInside)
         newClosedGroupButton.tintColor = Colors.text
         let joinPublicChatButton = UIButton(type: .custom)
-        joinPublicChatButton.setImage(#imageLiteral(resourceName: "Globe"), for: UIControl.State.normal)
+        let joinPublicChatIcon = #imageLiteral(resourceName: "Globe").asTintedImage(color: Colors.text)!
+        joinPublicChatButton.setImage(joinPublicChatIcon, for: UIControl.State.normal)
         joinPublicChatButton.addTarget(self, action: #selector(joinPublicChat), for: UIControl.Event.touchUpInside)
         joinPublicChatButton.tintColor = Colors.text
         let buttonStackView = UIStackView(arrangedSubviews: [ newClosedGroupButton, joinPublicChatButton ])

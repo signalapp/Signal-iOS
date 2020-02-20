@@ -1,5 +1,5 @@
 
-final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingModalDelegate {
+final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate {
     private var fakeChatViewContentOffset: CGPoint!
     
     // MARK: Components
@@ -33,11 +33,9 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         return result
     }()
     
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
-    
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground

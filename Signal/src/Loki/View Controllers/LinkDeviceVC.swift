@@ -1,12 +1,9 @@
 
-final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
     var delegate: LinkDeviceVCDelegate?
-    
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
     
     // MARK: Components
     private lazy var tabBar: TabBar = {
@@ -44,6 +41,7 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
     
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground
@@ -174,6 +172,7 @@ private final class EnterPublicKeyVC : UIViewController {
         // Link button
         let linkButton = Button(style: .prominentOutline, size: .large)
         linkButton.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
+        linkButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         linkButton.addTarget(self, action: #selector(requestDeviceLink), for: UIControl.Event.touchUpInside)
         let linkButtonContainer = UIView()
         linkButtonContainer.addSubview(linkButton)

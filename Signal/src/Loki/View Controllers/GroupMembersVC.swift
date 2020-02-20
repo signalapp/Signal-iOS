@@ -1,6 +1,6 @@
 
 @objc(LKGroupMembersVC)
-final class GroupMembersVC : UIViewController, UITableViewDataSource {
+final class GroupMembersVC : BaseVC, UITableViewDataSource {
     private let thread: TSGroupThread
     
     private lazy var members: [String] = {
@@ -32,6 +32,7 @@ final class GroupMembersVC : UIViewController, UITableViewDataSource {
     override init(nibName: String?, bundle: Bundle?) { fatalError("Using GroupMembersVC.init(nibName:bundle:) isn't allowed. Use GroupMembersVC.init(thread:) instead.") }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground

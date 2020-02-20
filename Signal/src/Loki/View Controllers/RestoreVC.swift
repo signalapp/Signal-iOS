@@ -1,5 +1,5 @@
 
-final class RestoreVC : UIViewController {
+final class RestoreVC : BaseVC {
     private var spacer1HeightConstraint: NSLayoutConstraint!
     private var spacer2HeightConstraint: NSLayoutConstraint!
     private var spacer3HeightConstraint: NSLayoutConstraint!
@@ -29,11 +29,9 @@ final class RestoreVC : UIViewController {
         return result
     }()
     
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
-    
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground

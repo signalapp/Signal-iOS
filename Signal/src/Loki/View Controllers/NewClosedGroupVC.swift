@@ -1,5 +1,5 @@
 
-final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableViewDelegate {
+final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
     private var selectedContacts: Set<String> = []
     
     private lazy var contacts: [String] = {
@@ -44,6 +44,7 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
     
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground
@@ -104,10 +105,10 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
             explanationLabel.lineBreakMode = .byWordWrapping
             explanationLabel.textAlignment = .center
             explanationLabel.text = NSLocalizedString("You don't have any contacts yet", comment: "")
-            let createNewPrivateChatButton = Button(style: .prominentOutline, size: .medium)
+            let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
             createNewPrivateChatButton.setTitle(NSLocalizedString("Start a Session", comment: ""), for: UIControl.State.normal)
             createNewPrivateChatButton.addTarget(self, action: #selector(createPrivateChat), for: UIControl.Event.touchUpInside)
-            createNewPrivateChatButton.set(.width, to: 160)
+            createNewPrivateChatButton.set(.width, to: 180)
             let stackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
             stackView.axis = .vertical
             stackView.spacing = Values.mediumSpacing
