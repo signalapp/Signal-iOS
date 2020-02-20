@@ -13,6 +13,7 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
     let experienceUpgrade: ExperienceUpgrade
     var canDismissWithGesture: Bool { return true }
     var isPresented: Bool { presentingViewController != nil }
+    var isReadyToComplete: Bool { true }
 
     init(experienceUpgrade: ExperienceUpgrade) {
         self.experienceUpgrade = experienceUpgrade
@@ -62,13 +63,25 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
 
     @objc
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.dismiss(animated: flag) {
+            self.didDismiss()
+            completion?()
+        }
+    }
+
+    @objc
+    func didDismiss() {
+        Logger.debug("")
+
+        // Only complete on dismissal if we're ready to do so. This is by
+        // default always true, but can be overriden on an individual basis.
+        guard isReadyToComplete else { return }
+
         markAsComplete()
-        super.dismiss(animated: flag, completion: completion)
     }
 
     @objc
     func didTapDismissButton(sender: UIButton) {
-        Logger.debug("")
         self.dismiss(animated: true)
     }
 
@@ -89,6 +102,6 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
 
 extension SplashViewController: UIAdaptivePresentationControllerDelegate {
     public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        markAsComplete()
+        didDismiss()
     }
 }
