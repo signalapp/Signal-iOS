@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachment.h"
@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
     TSAttachmentPointerStateEnqueued = 0,
     TSAttachmentPointerStateDownloading = 1,
     TSAttachmentPointerStateFailed = 2,
+    TSAttachmentPointerStatePendingMessageRequest = 3,
 };
 
 /**

@@ -136,7 +136,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^() {
                                          UIViewController *reminderVC;
                                          if (RemoteConfig.pinsForEveryone) {
-                                             reminderVC = [OWSPinReminderViewController new];
+                                             reminderVC =
+                                                 [[OWSPinReminderViewController alloc] initWithCompletionHandler:nil];
                                          } else {
                                              reminderVC = [OWS2FAReminderViewController wrappedInNavController];
                                              reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
@@ -150,7 +151,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [items addObject:[OWSTableItem itemWithTitle:@"Reset 2FA Repetition Interval"
                                      actionBlock:^() {
-                                         [OWS2FAManager.sharedManager setDefaultRepetitionInterval];
+                                         [SDSDatabaseStorage.shared
+                                             writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                                 [OWS2FAManager.sharedManager
+                                                     setDefaultRepetitionIntervalWithTransaction:transaction];
+                                             }];
                                      }]];
 
     [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
@@ -238,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [Environment.shared.preferences unsetRecordedAPNSTokens];
 
-    [SignalApp.sharedApp showOnboardingView];
+    [SignalApp.sharedApp showOnboardingView:[OnboardingController new]];
 }
 
 + (void)setManualCensorshipCircumventionEnabled:(BOOL)isEnabled

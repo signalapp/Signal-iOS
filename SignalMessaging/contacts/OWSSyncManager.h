@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSSyncManagerConfigurationSyncDidCompleteNotification;
+extern NSString *const OWSSyncManagerKeysSyncDidCompleteNotification;
 
 @class AnyPromise;
 @class OWSContactsManager;

@@ -379,26 +379,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Profile Whitelist
 
-+ (BOOL)addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:(TSThread *)thread
++ (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:(TSThread *)thread
 {
     OWSAssertDebug(thread);
 
-    if (thread.shouldThreadBeVisible) {
-        return NO;
-    }
-
-    __block BOOL isThreadInProfileWhitelist;
+    __block BOOL hasPendingMessageRequest;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        isThreadInProfileWhitelist =
-            [OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread transaction:transaction];
+        hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
     }];
-    if (isThreadInProfileWhitelist) {
-        return NO;
+
+    // If we're creating this thread or we have a pending message request,
+    // any action we trigger should share our profile.
+    if (!thread.shouldThreadBeVisible || hasPendingMessageRequest) {
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+        return YES;
     }
 
-    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+    return NO;
+}
 
-    return YES;
++ (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequest:(TSThread *)thread
+                                               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(thread);
+
+    BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
+    // If we're creating this thread or we have a pending message request,
+    // any action we trigger should share our profile.
+    if (!thread.shouldThreadBeVisible || hasPendingMessageRequest) {
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread transaction:transaction];
+        return YES;
+    }
+
+    return NO;
 }
 
 #pragma mark - Delete Content
@@ -472,41 +485,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogError(@"more than one matching interaction in thread.");
     }
     return interactions.firstObject;
-}
-
-#pragma mark - Message Request
-
-+ (BOOL)hasPendingMessageRequest:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
-{
-    // If the feature isn't enabled, do nothing.
-    if (!SSKFeatureFlags.messageRequest) {
-        return NO;
-    }
-
-    // If we're creating the thread, don't show the message request view
-    if (!thread.shouldThreadBeVisible) {
-        return NO;
-    }
-
-    // If the thread is already whitelisted, do nothing. The user has already
-    // accepted the request for this thread.
-    if ([self.profileManager isThreadInProfileWhitelist:thread transaction:transaction]) {
-        return NO;
-    }
-
-    BOOL hasSentMessages = [self existsOutgoingMessage:thread transaction:transaction];
-
-    if (hasSentMessages && !SSKFeatureFlags.phoneNumberPrivacy) {
-        return NO;
-    }
-
-    return YES;
-}
-
-+ (BOOL)existsOutgoingMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
-{
-    InteractionFinder *finder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
-    return [finder existsOutgoingMessageWithTransaction:transaction];
 }
 
 @end

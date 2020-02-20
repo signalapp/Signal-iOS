@@ -146,6 +146,10 @@ extension SignalCall: CallManagerCallReference { }
         return AppEnvironment.shared.accountManager
     }
 
+    private var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
     private var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
     }
@@ -379,6 +383,21 @@ extension SignalCall: CallManagerCallReference { }
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
         let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(to: thread.contactAddress)
+
+        guard tsAccountManager.isOnboarded() else {
+            Logger.warn("user is not onboarded, skipping call.")
+            let callRecord = TSCall(callType: .incomingMissed, in: thread)
+            assert(newCall.callRecord == nil)
+            newCall.callRecord = callRecord
+            databaseStorage.write { transaction in
+                callRecord.anyInsert(transaction: transaction)
+            }
+
+            terminate(call: newCall)
+
+            return
+        }
+
         guard untrustedIdentity == nil else {
             Logger.warn("missed a call due to untrusted identity: \(newCall)")
 

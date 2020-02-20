@@ -265,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileWhitelistDidChange:)
-                                                 name:kNSNotificationName_ProfileWhitelistDidChange
+                                                 name:kNSNotificationNameProfileWhitelistDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockListDidChange:)
@@ -1000,7 +1000,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transaction);
     OWSAssertDebug(self.conversationProfileState);
     // message requests deprecates ContactOffers
-    OWSAssertDebug(!SSKFeatureFlags.messageRequest);
+    OWSAssertDebug(!RemoteConfig.messageRequests);
 
     BOOL hasLocalProfile = self.conversationProfileState.hasLocalProfile;
     BOOL isThreadInProfileWhitelist = self.conversationProfileState.isThreadInProfileWhitelist;
@@ -1451,7 +1451,7 @@ NS_ASSUME_NONNULL_BEGIN
                         || viewItem.hasCellHeader);
                 }
                 if (shouldShowSenderName) {
-                    if (SSKFeatureFlags.profileDisplayChanges) {
+                    if (RemoteConfig.messageRequests) {
                         senderName = [[NSAttributedString alloc] initWithString:accessibilityAuthorName];
                     } else {
                         senderName = [self.contactsManager
@@ -1701,7 +1701,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldShowThreadDetails
 {
-    return !self.canLoadOlderItems && SSKFeatureFlags.messageRequest;
+    return !self.canLoadOlderItems && RemoteConfig.messageRequests;
 }
 
 @end

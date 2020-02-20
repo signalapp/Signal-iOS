@@ -116,7 +116,6 @@ typedef enum : NSUInteger {
     LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,
-    MessageActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
     OWSMessageStickerViewDelegate,
     OWSMessageViewOnceViewDelegate,
@@ -136,6 +135,8 @@ typedef enum : NSUInteger {
     ForwardMessageDelegate>
 
 @property (nonatomic) TSThread *thread;
+@property (nonatomic) ThreadViewModel *threadViewModel;
+
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
@@ -221,34 +222,12 @@ typedef enum : NSUInteger {
 
 @implementation ConversationViewController
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+- (instancetype)initWithThreadViewModel:(ThreadViewModel *)threadViewModel
+                                 action:(ConversationViewAction)action
+                         focusMessageId:(nullable NSString *)focusMessageId
 {
-    OWSFailDebug(@"Do not instantiate this view from coder");
+    self = [super initWithNibName:nil bundle:nil];
 
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (void)commonInit
-{
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
     _contactShareViewHelper.delegate = self;
@@ -260,6 +239,37 @@ typedef enum : NSUInteger {
 
     _inputAccessoryPlaceholder = [InputAccessoryViewPlaceholder new];
     self.inputAccessoryPlaceholder.delegate = self;
+
+    _threadViewModel = threadViewModel;
+    _thread = threadViewModel.threadRecord;
+
+    self.actionOnOpen = action;
+    _cellMediaCache = [NSCache new];
+    // Cache the cell media for ~24 cells.
+    self.cellMediaCache.countLimit = 24;
+    _conversationStyle = [[ConversationStyle alloc] initWithThread:threadViewModel.threadRecord];
+
+    _conversationViewModel = [[ConversationViewModel alloc] initWithThread:threadViewModel.threadRecord
+                                                      focusMessageIdOnOpen:focusMessageId
+                                                                  delegate:self];
+
+    _searchController = [[ConversationSearchController alloc] initWithThread:threadViewModel.threadRecord];
+    _searchController.delegate = self;
+
+    // because the search bar view is hosted in the navigation bar, it's not in the CVC's responder
+    // chain, and thus won't inherit our inputAccessoryView, so we manually set it here.
+    OWSAssertDebug(self.inputAccessoryPlaceholder != nil);
+    _searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder;
+
+    self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
+                                                            target:self
+                                                          selector:@selector(reloadTimerDidFire)
+                                                          userInfo:nil
+                                                           repeats:YES];
+
+    [self updateV2GroupIfNecessary];
+
+    return self;
 }
 
 #pragma mark - Dependencies
@@ -392,7 +402,7 @@ typedef enum : NSUInteger {
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileWhitelistDidChange:)
-                                                 name:kNSNotificationName_ProfileWhitelistDidChange
+                                                 name:kNSNotificationNameProfileWhitelistDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(themeDidChange:)
@@ -437,10 +447,12 @@ typedef enum : NSUInteger {
     NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
     if (address.isValid && [self.thread.recipientAddresses containsObject:address]) {
         [self ensureBannerState];
+        [self showMessageRequestDialogIfRequired];
     } else if (groupId.length > 0 && self.thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
             [self ensureBannerState];
+            [self showMessageRequestDialogIfRequired];
         }
     }
 }
@@ -475,41 +487,6 @@ typedef enum : NSUInteger {
 {
     _peek = NO;
     [self hideInputIfNeeded];
-}
-
-- (void)configureForThread:(TSThread *)thread
-                    action:(ConversationViewAction)action
-            focusMessageId:(nullable NSString *)focusMessageId
-{
-    OWSAssertDebug(thread);
-
-    OWSLogInfo(@"configureForThread.");
-
-    _thread = thread;
-    self.actionOnOpen = action;
-    _cellMediaCache = [NSCache new];
-    // Cache the cell media for ~24 cells.
-    self.cellMediaCache.countLimit = 24;
-    _conversationStyle = [[ConversationStyle alloc] initWithThread:thread];
-
-    _conversationViewModel =
-        [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId delegate:self];
-
-    _searchController = [[ConversationSearchController alloc] initWithThread:thread];
-    _searchController.delegate = self;
-
-    // because the search bar view is hosted in the navigation bar, it's not in the CVC's responder
-    // chain, and thus won't inherit our inputAccessoryView, so we manually set it here.
-    OWSAssertDebug(self.inputAccessoryPlaceholder != nil);
-    _searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder;
-
-    self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
-                                                            target:self
-                                                          selector:@selector(reloadTimerDidFire)
-                                                          userInfo:nil
-                                                           repeats:YES];
-
-    [self updateV2GroupIfNecessary];
 }
 
 - (void)updateV2GroupIfNecessary
@@ -764,7 +741,9 @@ typedef enum : NSUInteger {
     // unless it ever becomes possible to load this VC without going via the ConversationListViewController.
     [self.contactsManager requestSystemContactsOnce];
 
-    [self updateDisappearingMessagesConfigurationWithSneakyTransaction];
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
+    }];
 
     [self updateBarButtonItems];
     [self updateNavigationTitle];
@@ -941,7 +920,7 @@ typedef enum : NSUInteger {
     }
 
     NSString *blockStateMessage = nil;
-    if ([self isBlockedConversation]) {
+    if ([self isBlockedConversation] && !RemoteConfig.messageRequests) {
         if (self.isGroupConversation) {
             blockStateMessage = NSLocalizedString(
                 @"MESSAGES_VIEW_GROUP_BLOCKED", @"Indicates that this group conversation has been blocked.");
@@ -1320,7 +1299,7 @@ typedef enum : NSUInteger {
 
         if (thread.isNoteToSelf) {
             name = MessageStrings.noteToSelf;
-        } else if (SSKFeatureFlags.profileDisplayChanges) {
+        } else if (RemoteConfig.messageRequests) {
             name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         } else {
             attributedName =
@@ -1330,8 +1309,7 @@ typedef enum : NSUInteger {
         }
 
         // If the user is in the system contacts, show a badge
-        if (SSKFeatureFlags.profileDisplayChanges &&
-            [self.contactsManager hasSignalAccountForAddress:thread.contactAddress]) {
+        if (RemoteConfig.messageRequests && [self.contactsManager hasSignalAccountForAddress:thread.contactAddress]) {
             icon =
                 [[UIImage imageNamed:@"profile-outline-16"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         }
@@ -1528,7 +1506,7 @@ typedef enum : NSUInteger {
                                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")]];
     }
 
-    if (self.disappearingMessagesConfiguration.isEnabled) {
+    if (self.disappearingMessagesConfiguration.isEnabled && !self.threadViewModel.hasPendingMessageRequest) {
         DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
             initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
         timerView.delegate = self;
@@ -1679,6 +1657,9 @@ typedef enum : NSUInteger {
         return;
     }
 
+    // We initiated a call, so if there was a pending message request we should accept it.
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
+
     [self.outboundCallInitiator initiateCallWithAddress:contactThread.contactAddress isVideo:isVideo];
 }
 
@@ -1688,12 +1669,20 @@ typedef enum : NSUInteger {
         return NO;
     }
 
-    TSContactThread *_Nullable contactThread;
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        contactThread = (TSContactThread *)self.thread;
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        return NO;
     }
 
-    return !(self.isGroupConversation || contactThread.contactAddress.isLocalAddress);
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    if (contactThread.isNoteToSelf) {
+        return NO;
+    }
+
+    if (self.threadViewModel.hasPendingMessageRequest) {
+        return NO;
+    }
+
+    return YES;
 }
 
 #pragma mark - Dynamic Text
@@ -1735,7 +1724,7 @@ typedef enum : NSUInteger {
 {
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThread:self.thread];
+    [settingsVC configureWithThreadViewModel:self.threadViewModel];
     settingsVC.showVerificationOnAppear = showVerification;
 
     [self.navigationController setViewControllers:[self.viewControllersUpToSelf arrayByAddingObject:settingsVC]
@@ -1746,7 +1735,7 @@ typedef enum : NSUInteger {
 {
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThread:self.thread];
+    [settingsVC configureWithThreadViewModel:self.threadViewModel];
 
     MediaTileViewController *allMedia = [[MediaTileViewController alloc] initWithThread:self.thread];
 
@@ -1847,13 +1836,6 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)updateDisappearingMessagesConfigurationWithSneakyTransaction
-{
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
-    }];
-}
-
 - (void)updateDisappearingMessagesConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     self.disappearingMessagesConfiguration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction];
@@ -1879,6 +1861,7 @@ typedef enum : NSUInteger {
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self.attachmentDownloads downloadAllAttachmentsForMessage:message
+            bypassPendingMessageRequest:NO
             transaction:transaction
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
@@ -2087,62 +2070,7 @@ typedef enum : NSUInteger {
     [self.navigationController popToViewController:self animated:YES];
 }
 
-#pragma mark - MessageActionsViewControllerDelegate
-
-- (void)messageActionsViewControllerRequestedDismissal:(MessageActionsViewController *)messageActionsViewController
-                                            withAction:(nullable MessageAction *)action
-{
-    NSString *_Nullable messageActionInteractionId = messageActionsViewController.focusedInteraction.uniqueId;
-    if (messageActionInteractionId == nil) {
-        OWSFailDebug(@"Missing message action interaction.");
-        return;
-    }
-
-    UIView *_Nullable sender;
-    NSNumber *_Nullable interactionIndex
-        = self.conversationViewModel.viewState.interactionIndexMap[messageActionInteractionId];
-    if (interactionIndex) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:interactionIndex.integerValue inSection:0];
-        if ([self.collectionView.indexPathsForVisibleItems containsObject:indexPath]) {
-            UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
-            if ([cell isKindOfClass:[OWSMessageCell class]]) {
-                sender = [(OWSMessageCell *)cell messageView];
-            } else {
-                sender = cell;
-            }
-        }
-    }
-
-    [self dismissMessageActionsAnimated:YES
-                             completion:^{
-                                 if (action) {
-                                     action.block(sender);
-                                 }
-                             }];
-}
-
-- (void)messageActionsViewControllerRequestedDismissal:(MessageActionsViewController *)messageActionsViewController
-                                          withReaction:(NSString *)reaction
-                                            isRemoving:(BOOL)isRemoving
-{
-    [self
-        dismissMessageActionsAnimated:YES
-                           completion:^{
-                               if (![messageActionsViewController.focusedInteraction isKindOfClass:[TSMessage class]]) {
-                                   OWSFailDebug(@"Not sending reaction for unexpected interaction type");
-                                   return;
-                               }
-
-                               TSMessage *message = (TSMessage *)messageActionsViewController.focusedInteraction;
-
-                               [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                   [OWSReactionManager localUserReactedToMessage:message
-                                                                           emoji:reaction
-                                                                      isRemoving:isRemoving
-                                                                     transaction:transaction];
-                               }];
-                           }];
-}
+#pragma mark -
 
 - (void)presentMessageActions:(NSArray<MessageAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {
@@ -2296,6 +2224,26 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewCellDelegate
 
+- (BOOL)conversationCell:(ConversationViewCell *)cell shouldAllowReplyForItem:(nonnull id<ConversationViewItem>)viewItem
+{
+    if (self.threadViewModel.hasPendingMessageRequest) {
+        return NO;
+    }
+
+    if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
+            // Don't allow "delete" or "reply" on "failed" outgoing messages.
+            return NO;
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
+            // Don't allow "delete" or "reply" on "sending" outgoing messages.
+            return NO;
+        }
+    }
+
+    return YES;
+}
+
 - (void)conversationCell:(ConversationViewCell *)cell
              shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem
@@ -2337,12 +2285,15 @@ typedef enum : NSUInteger {
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressSticker:(id<ConversationViewItem>)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell
+        shouldAllowReply:(BOOL)shouldAllowReply
+     didLongpressSticker:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
-
     NSArray<MessageAction *> *messageActions =
-        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem shouldAllowReply:YES delegate:self];
+        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem
+                                                         shouldAllowReply:shouldAllowReply
+                                                                 delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
@@ -2402,6 +2353,11 @@ typedef enum : NSUInteger {
                                                     message:(TSMessage *)viewItem.interaction];
     [self presentViewController:detailSheet animated:YES completion:nil];
     self.reactionsDetailSheet = detailSheet;
+}
+
+- (BOOL)conversationCellHasPendingMessageRequest:(ConversationViewCell *)cell
+{
+    return self.threadViewModel.hasPendingMessageRequest;
 }
 
 - (void)reloadReactionsDetailSheetWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -2722,6 +2678,26 @@ typedef enum : NSUInteger {
     [self handleFailedDownloadTapForMessage:message];
 }
 
+- (void)didTapPendingMessageRequestIncomingAttachment:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(viewItem);
+
+    // Start downloads for message.
+    TSMessage *message = (TSMessage *)viewItem.interaction;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self.attachmentDownloads downloadAllAttachmentsForMessage:message
+            bypassPendingMessageRequest:YES
+            transaction:transaction
+            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSLogInfo(@"Successfully downloaded attachment in thread: %@", message.threadWithSneakyTransaction);
+            }
+            failure:^(NSError *error) {
+                OWSLogWarn(@"Failed to download message with error: %@", error);
+            }];
+    }];
+}
+
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message
 {
     OWSAssertIsOnMainThread();
@@ -2746,6 +2722,7 @@ typedef enum : NSUInteger {
 
     [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
         message:message
+        bypassPendingMessageRequest:NO
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -3287,11 +3264,12 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"Sending contact share.");
 
-    BOOL didAddToProfileWhitelist =
-        [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
-
+    __block BOOL didAddToProfileWhitelist;
     [self.databaseStorage
         asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread
+                                                                                          transaction:transaction];
+
             // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
             // preparation rather than duplicated here and in the SAE
             if (contactShare.avatarImage) {
@@ -3672,11 +3650,6 @@ typedef enum : NSUInteger {
 
 - (void)markVisibleMessagesAsRead
 {
-    // Don't mark messages as read until the message request has been processed
-    if (self.messageRequestView) {
-        return;
-    }
-
     if (self.presentedViewController) {
         return;
     }
@@ -3706,6 +3679,7 @@ typedef enum : NSUInteger {
                                     [OWSReadReceiptManager.sharedManager
                                         markAsReadLocallyBeforeSortId:self.lastVisibleSortId
                                                                thread:self.thread
+                                             hasPendingMessageRequest:self.threadViewModel.hasPendingMessageRequest
                                                            completion:^{
                                                                OWSAssertIsOnMainThread();
                                                                self.isMarkingAsRead = NO;
@@ -3717,9 +3691,13 @@ typedef enum : NSUInteger {
 - (void)conversationSettingsDidUpdateGroupThread:(TSGroupThread *)thread
 {
     OWSAssertIsOnMainThread();
-
     self.thread = thread;
-    [self updateDisappearingMessagesConfigurationWithSneakyTransaction];
+
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        // We updated the group, so if there was a pending message request we should accept it.
+        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:thread transaction:transaction];
+        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
+    }];
 }
 
 - (void)popKeyBoard
@@ -3887,7 +3865,7 @@ typedef enum : NSUInteger {
         }
 
         BOOL didAddToProfileWhitelist =
-            [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
+            [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
 
         __block TSOutgoingMessage *message;
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
@@ -4332,7 +4310,7 @@ typedef enum : NSUInteger {
     }
 
     BOOL didAddToProfileWhitelist =
-        [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
+        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
     __block TSOutgoingMessage *message;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -4937,9 +4915,11 @@ typedef enum : NSUInteger {
         // viewWillAppear will call resetContentAndLayout.
         return;
     }
-
+    [self.thread anyReloadWithTransaction:transaction];
+    self.threadViewModel = [[ThreadViewModel alloc] initWithThread:self.thread transaction:transaction];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
+    [self updateBarButtonItems];
 
     // If the message has been deleted / disappeared, we need to dismiss
     [self dismissMessageActionsIfNecessary];
@@ -4947,7 +4927,6 @@ typedef enum : NSUInteger {
     [self reloadReactionsDetailSheetWithTransaction:transaction];
 
     if (self.isGroupConversation) {
-        [self.thread anyReloadWithTransaction:transaction];
         [self updateNavigationTitle];
     }
     [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
@@ -5021,6 +5000,8 @@ typedef enum : NSUInteger {
         // We can't use the transaction parameter; this completion
         // will be run async.
         [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
+
+        [self showMessageRequestDialogIfRequired];
 
         if (scrollToBottom) {
             [self scrollToBottomAnimated:NO];
@@ -5295,18 +5276,12 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    // If we're already showing the message request view, don't render it again
-    if (self.messageRequestView) {
-        return;
-    }
-
-    __block BOOL hasPendingMessageRequest = NO;
-
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasPendingMessageRequest = [ThreadUtil hasPendingMessageRequest:self.thread transaction:transaction];
-    }];
-
-    if (!hasPendingMessageRequest) {
+    if (!self.threadViewModel.hasPendingMessageRequest) {
+        if (self.messageRequestView) {
+            // We're currently showing the message request view but no longer need to,
+            // probably because this request was accepted on another device. Dismiss it.
+            [self dismissMessageRequestView];
+        }
         return;
     }
 
@@ -5391,6 +5366,14 @@ typedef enum : NSUInteger {
 
     [self.profileManager addThreadToProfileWhitelist:self.thread];
     [self dismissMessageRequestView];
+}
+
+- (void)messageRequestViewDidTapUnblock
+{
+    OWSAssertIsOnMainThread();
+
+    [self.blockingManager removeBlockedThread:self.thread wasLocallyInitiated:YES];
+    [self messageRequestViewDidTapAccept];
 }
 
 - (void)messageRequestViewDidTapLearnMore

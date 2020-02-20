@@ -78,13 +78,13 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Napaka";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Ni mogoče naložiti podatkovne zbirke";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Prosimo, posodobite Signal z zadnjo različico.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Neznana različica podatkovne zbirke.";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Vnesite svoje ime";
@@ -96,7 +96,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Različica %@ je odslej na voljo v trgovini App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Nova različica Signala je na voljo";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Posodobitev";
@@ -129,10 +129,10 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Izvoz priponke ni uspel.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Failed to Save";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Shranjevanje ni uspelo";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Vrsta datoteke: %@";
@@ -150,7 +150,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Priponka";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Prenos ni uspel. Tapnite za ponovni poskus.";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Napaka pri pošiljanju priponke";
@@ -635,6 +635,27 @@
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Izbrano ni bilo nobeno polje s stikom.";
 
+/* Button text to initiate an email to signal support staff */
+"CONTACT_SUPPORT" = "Contact Support";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+
+/* button text */
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Poskusi znova";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+
+/* Alert title */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Odpri na zemljevidu";
 
@@ -649,6 +670,9 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+
+/* Indicates that the user can tap to download this image. */
+"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Prenesi";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
@@ -833,8 +857,7 @@
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Deli";
 
-/* Title of the alert shown for failures while uploading debug logs.
-   Title of the debug log alert. */
+/* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Še en korak";
 
 /* Error indicating that the app could not launch the Email app. */
@@ -1401,9 +1424,6 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Člani skupine";
 
-/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
 
@@ -1515,13 +1535,19 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Sporočilo";
 
-/* A button used to block a user on an incoming message request. */
+/* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Sprejmi";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokiraj";
 
-/* A button used to block a user on an incoming message request. */
+/* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+
+/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+
+/* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Izbriši";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
@@ -1541,6 +1567,27 @@
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Deli profil";
+
+/* A button used to unlock a blocked conversation. */
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Odblokiraj";
+
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Dodajanje imena profila";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Your profile name has been saved.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Dostavljeno";
@@ -1758,14 +1805,8 @@
 /* Button asking if the user would like to enter an numeric PIN */
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
 
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "Telefonska številka ima vklopljen PIN za prijavo v omrežje. Prosimo, vnesite kodo PIN za prijavo.";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
-
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Ste pozabili svoj PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Napačen PIN";
@@ -1775,9 +1816,6 @@
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
-
-/* Title of the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_TITLE" = "PIN za prijavo v omrežje";
 
 /* Explanation of the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
@@ -2005,7 +2043,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
+"PIN_CREATION_EXPLANATION" = "PINs add extra security to your account and can’t be recovered. You’ll need your PIN to register with Signal again.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
@@ -2036,6 +2074,27 @@
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Ste pozabili svoj PIN?";
+
+/* Action text for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Potrdi PIN";
+
+/* Body for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+
+/* Toast indicating that we'll ask you for your PIN again in 3 days. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+
+/* Title for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Potrdite svoj Signal PIN";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+
+/* Toast indicating that we'll ask you for your PIN again in a week. */
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
@@ -2071,7 +2130,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Ustvari PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN je bil ustvarjen.";
+"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Predvajaj multimedijsko datoteko";
@@ -2131,13 +2190,13 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Vaš profil lahko od sedaj vsebuje tudi priimek.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "To bo prikazano, ko boste začeli z novim pogovorom, ali ko boste delili pogovor.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
@@ -2289,11 +2348,14 @@
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Pozabil sem svoj PIN.";
 
-/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Ste pozabili svoj PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+
+/* Alert body for a forgotten SVR (V2) PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+
+/* Alert body for a forgotten V1 PIN */
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
@@ -2313,7 +2375,7 @@
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "Poskusi znova";
 
-/* No comment provided by engineer. */
+/* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Prevečkrat ste poskusili. Počakajte nekaj minut, preden boste lahko poskusili znova.";
 
 /* No comment provided by engineer. */
@@ -3031,7 +3093,7 @@
 "UNKNOWN_CONTACT_NAME" = "Neznana oseba";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
+"UNKNOWN_COUNTRY_NAME" = "Neznana država";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "One of your devices sent a message that can't be processed or displayed here because it uses a new Signal feature.";
@@ -3043,7 +3105,7 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Posodobi Signal zdaj";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Updated to the latest version of Signal. You can now receive this message type on your device.";
@@ -3124,10 +3186,10 @@
 "USERNAME_FIELD" = "Uporabniško ime";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Uporabniško ime lahko vsebuje le znake od a do z, števke od 0 do 9 in _ ";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occured while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
@@ -3136,31 +3198,31 @@
 "USERNAME_NOT_FOUND_TITLE" = "User Not Found";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Enter a username";
+"USERNAME_PLACEHOLDER" = "Vnesite uporabniško ime";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Uporabniško ime se ne more začeti s števko.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "Uporabniško ime";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
+"USERNAME_TOO_SHORT_ERROR" = "Uporabniško ime mora vsebovati vsaj 4 znake.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ is taken.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ je zasedeno.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Username update failed.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Posodobitev uporabniškega imena ni uspela.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Ime naprave ne more biti nevnešeno";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "Ime naprave je predolgo";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Uporabnika %@ste označili kot nepotrjenega.";
@@ -3210,5 +3272,8 @@
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Izklopili ste izginjajoča sporočila.";
 
+/* alert body shown when trying to use features in the app before completing registration-related setup. */
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+    
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Čas za izginjajoča sporočila ste nastavili na %@.";

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalApp.h"
@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SignalApp ()
 
 @property (nonatomic, nullable, weak) ConversationSplitViewController *conversationSplitViewController;
-@property (nonatomic, nullable, weak) OnboardingController *onboardingController;
 @property (nonatomic) BOOL hasInitialRootViewController;
 
 @end
@@ -223,15 +222,12 @@ NS_ASSUME_NONNULL_BEGIN
     appDelegate.window.rootViewController = splitViewController;
 
     self.conversationSplitViewController = splitViewController;
-    self.onboardingController = nil;
 }
 
-- (void)showOnboardingView
+- (void)showOnboardingView:(OnboardingController *)onboardingController
 {
-    OnboardingController *onboardingController = [OnboardingController new];
-    UIViewController *initialViewController = [onboardingController initialViewController];
-    OWSNavigationController *navController =
-        [[OWSNavigationController alloc] initWithRootViewController:initialViewController];
+    OnboardingNavigationController *navController =
+        [[OnboardingNavigationController alloc] initWithOnboardingController:onboardingController];
 
 #if TESTABLE_BUILD
     AccountManager *accountManager = AppEnvironment.shared.accountManager;
@@ -249,7 +245,6 @@ NS_ASSUME_NONNULL_BEGIN
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.window.rootViewController = navController;
 
-    self.onboardingController = onboardingController;
     self.conversationSplitViewController = nil;
 }
 
@@ -262,7 +257,6 @@ NS_ASSUME_NONNULL_BEGIN
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.window.rootViewController = navController;
 
-    self.onboardingController = nil;
     self.conversationSplitViewController = nil;
 }
 
@@ -280,14 +274,17 @@ NS_ASSUME_NONNULL_BEGIN
     NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
     OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
 
-    if ([self.tsAccountManager isRegistered]) {
+    OnboardingController *onboarding = [OnboardingController new];
+    if (onboarding.isComplete) {
+        [onboarding markAsOnboarded];
+
         if (self.backup.hasPendingRestoreDecision) {
             [self showBackupRestoreView];
         } else {
             [self showConversationSplitView];
         }
     } else {
-        [self showOnboardingView];
+        [self showOnboardingView:onboarding];
     }
 
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
@@ -297,17 +294,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)receivedVerificationCode:(NSString *)verificationCode
 {
-    OWSAssertDebug(self.onboardingController);
-
-    UIViewController *currentOnboardingVC = self.onboardingController.currentViewController;
-    if (![currentOnboardingVC isKindOfClass:[OnboardingVerificationViewController class]]) {
-        OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead",
-            NSStringFromClass(currentOnboardingVC.class));
-
+    UIViewController *frontmostVC = CurrentAppContext().frontmostViewController;
+    if (![frontmostVC isKindOfClass:[OnboardingVerificationViewController class]]) {
+        OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead", frontmostVC.class);
         return NO;
     }
 
-    OnboardingVerificationViewController *verificationVC = (OnboardingVerificationViewController *)currentOnboardingVC;
+    OnboardingVerificationViewController *verificationVC = (OnboardingVerificationViewController *)frontmostVC;
     [verificationVC setVerificationCodeAndTryToVerify:verificationCode];
     return YES;
 }

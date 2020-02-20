@@ -24,12 +24,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, ProfileViewMode) {
-    ProfileViewMode_AppSettings = 0,
-    ProfileViewMode_Registration,
-    ProfileViewMode_ExperienceUpgrade,
-};
-
 NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDate";
 
 @interface ProfileViewController () <UITextFieldDelegate, AvatarViewHelperDelegate, OWSNavigationView>
@@ -58,7 +52,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @property (nonatomic) Reachability *reachability;
 
-@property (nonatomic, nullable) void (^experienceUpgradeCompletionHandler)(void);
+@property (nonatomic, readonly) void (^completionHandler)(ProfileViewController *);
 
 @end
 
@@ -83,6 +77,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 #pragma mark -
 
 - (instancetype)initWithMode:(ProfileViewMode)profileViewMode
+           completionHandler:(void (^)(ProfileViewController *))completionHandler
 {
     self = [super init];
 
@@ -90,7 +85,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return self;
     }
 
-    self.profileViewMode = profileViewMode;
+    _profileViewMode = profileViewMode;
+    _completionHandler = completionHandler;
 
     [ProfileViewController.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [ProfileViewController.keyValueStore setDate:[NSDate new]
@@ -483,6 +479,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         case ProfileViewMode_Registration:
             self.navigationItem.hidesBackButton = YES;
             self.navigationItem.rightBarButtonItem = nil;
+
+            // During registration, if you have a name pre-populatd we want
+            // to enable the save button even if you haven't edited anything.
+            if (self.givenNameTextField.text.length > 0) {
+                forceSaveButtonEnabled = YES;
+            }
             break;
         case ProfileViewMode_ExperienceUpgrade:
             self.navigationItem.rightBarButtonItem = nil;
@@ -567,7 +569,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                       // even if they didn't dismiss the reminder directly.
                                       [ProfileViewController.databaseStorage
                                           asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                              [ExperienceUpgradeFinder
+                                              [ExperienceUpgradeManager
                                                   clearProfileNameReminderWithTransaction:transaction.unwrapGrdbWrite];
                                           }];
                                   }];
@@ -604,23 +606,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 - (void)profileCompleted
 {
     OWSLogVerbose(@"");
-
-    // Dismiss this view.
-    switch (self.profileViewMode) {
-        case ProfileViewMode_AppSettings:
-            [self.navigationController popViewControllerAnimated:YES];
-            break;
-        case ProfileViewMode_Registration:
-            [self showPinCreation];
-            break;
-        case ProfileViewMode_ExperienceUpgrade:
-            if (self.experienceUpgradeCompletionHandler) {
-                self.experienceUpgradeCompletionHandler();
-            } else {
-                OWSFailDebug(@"Missing experienceUpgradeCompletionHandler");
-            }
-            break;
-    }
+    self.completionHandler(self);
 }
 
 - (void)showConversationSplitView
@@ -629,24 +615,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     OWSLogVerbose(@"");
 
     [SignalApp.sharedApp showConversationSplitView];
-}
-
-- (void)showPinCreation
-{
-    OWSAssertIsOnMainThread();
-    OWSLogVerbose(@"");
-
-    // If the user already has a pin or censorship circumvention is enabled, just go home
-    if ([OWS2FAManager sharedManager].is2FAEnabled || OWSSignalService.sharedInstance.isCensorshipCircumventionActive) {
-        return [self showConversationSplitView];
-    }
-
-    __weak ProfileViewController *weakSelf = self;
-    OWSPinSetupViewController *vc = [[OWSPinSetupViewController alloc] initWithCompletionHandler:^{
-        [weakSelf showConversationSplitView];
-    }];
-
-    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark - UITextFieldDelegate
@@ -822,31 +790,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }];
 
     return (!lastPresentedDate || fabs([lastPresentedDate timeIntervalSinceNow]) > kProfileNagFrequency);
-}
-
-+ (void)presentForAppSettings:(UINavigationController *)navigationController
-{
-    OWSAssertDebug(navigationController);
-    OWSAssertDebug([navigationController isKindOfClass:[OWSNavigationController class]]);
-
-    ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_AppSettings];
-    [navigationController pushViewController:vc animated:YES];
-}
-
-+ (void)presentForRegistration:(UINavigationController *)navigationController
-{
-    OWSAssertDebug(navigationController);
-    OWSAssertDebug([navigationController isKindOfClass:[OWSNavigationController class]]);
-
-    ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_Registration];
-    [navigationController pushViewController:vc animated:YES];
-}
-
-+ (instancetype)forExperienceUpgradeWithCompletionHandler:(void (^)(void))completionHandler
-{
-    ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_ExperienceUpgrade];
-    vc.experienceUpgradeCompletionHandler = completionHandler;
-    return vc;
 }
 
 #pragma mark - AvatarViewHelperDelegate

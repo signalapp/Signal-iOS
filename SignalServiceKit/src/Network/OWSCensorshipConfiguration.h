@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,8 +23,6 @@ extern NSString *const OWSFrontingHost_GoogleQatar;
 
 + (BOOL)isCensoredPhoneNumber:(NSString *)e164PhoneNumber;
 
-@property (nonatomic, readonly) NSString *signalServiceReflectorHost;
-@property (nonatomic, readonly) NSString *CDNReflectorHost;
 @property (nonatomic, readonly) NSURL *domainFrontBaseURL;
 @property (nonatomic, readonly) AFSecurityPolicy *domainFrontSecurityPolicy;
 

@@ -17,6 +17,10 @@ class MessageRequestsMegaphone: MegaphoneView {
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    override func tappedDismiss() {
+        dismiss { self.markAsComplete() }
+    }
 }
 
 class MessageRequestsSplash: SplashViewController {
@@ -105,7 +109,7 @@ class MessageRequestsSplash: SplashViewController {
 
     @objc
     func didTapPrimaryButton(_ sender: UIButton) {
-        let vc = ProfileViewController.forExperienceUpgrade { [weak self] in
+        let vc = ProfileViewController(mode: .experienceUpgrade) { [weak self] _ in
             self?.dismiss(animated: true)
         }
         navigationController?.pushViewController(vc, animated: true)

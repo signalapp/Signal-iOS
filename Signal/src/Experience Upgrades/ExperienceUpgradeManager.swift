@@ -10,7 +10,7 @@ class ExperienceUpgradeManager: NSObject {
         return .shared
     }
 
-    private static weak var currentlyPresented: UIView?
+    private static weak var lastPresented: ExperienceUpgradeView?
 
     // The first day is day 0, so this gives the user 1 week of megaphone
     // before we display the splash.
@@ -18,9 +18,8 @@ class ExperienceUpgradeManager: NSObject {
 
     @objc
     static func presentNext(fromViewController: UIViewController) -> Bool {
-        // If we already have a experience upgrade
-        // in the view hierarchy, do nothing
-        guard currentlyPresented?.superview == nil else { return true }
+        // If we already have a experience upgrade in the view hierarchy, do nothing
+        guard lastPresented?.isPresented != true else { return true }
 
         guard let next = databaseStorage.read(block: { transaction in
             return ExperienceUpgradeFinder.next(transaction: transaction.unwrapGrdbRead)
@@ -39,12 +38,12 @@ class ExperienceUpgradeManager: NSObject {
         if (hasMegaphone && !hasSplash) || (hasMegaphone && next.daysSinceFirstViewed < splashStartDay) {
             let megaphone = self.megaphone(forExperienceUpgrade: next, fromViewController: fromViewController)
             megaphone?.present(fromViewController: fromViewController)
-            currentlyPresented = megaphone
+            lastPresented = megaphone
         } else if let splash = splash(forExperienceUpgrade: next) {
-            fromViewController.presentFormSheet(splash, animated: true)
-            currentlyPresented = splash.view
+            fromViewController.presentFormSheet(OWSNavigationController(rootViewController: splash), animated: true)
+            lastPresented = splash
         } else {
-            owsFailDebug("no megaphone or splash for experience upgrade! \(next.id)")
+            owsFailDebug("no megaphone or splash for experience upgrade! \(next.id as Optional)")
             return false
         }
 
@@ -57,6 +56,28 @@ class ExperienceUpgradeManager: NSObject {
         return true
     }
 
+    // MARK: - Experience Specific Helpers
+
+    /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
+    static func clearExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
+        ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
+        transaction.addAsyncCompletion(queue: .main) {
+            // If it's currently being presented, dismiss it.
+            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
+            lastPresented?.dismiss(animated: false, completion: nil)
+        }
+    }
+
+    @objc
+    static func clearReactionsExperienceUpgrade(transaction: GRDBWriteTransaction) {
+        clearExperienceUpgrade(.reactions, transaction: transaction)
+    }
+
+    @objc
+    static func clearProfileNameReminder(transaction: GRDBWriteTransaction) {
+        clearExperienceUpgrade(.profileNameReminder, transaction: transaction)
+    }
+
     // MARK: - Splash
 
     private static func hasSplash(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
@@ -64,19 +85,19 @@ class ExperienceUpgradeManager: NSObject {
         case .messageRequests:
             // Only use a splash for message requests if the user doesn't have a profile name.
             return OWSProfileManager.shared().localFullName()?.isEmpty != false
+        case .introducingPins:
+            return RemoteConfig.mandatoryPins
         default:
             return false
         }
     }
 
-    fileprivate static func splash(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> UIViewController? {
+    fileprivate static func splash(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> SplashViewController? {
         switch experienceUpgrade.id {
         case .introducingPins:
-            let vc = IntroducingPinsSplash(experienceUpgrade: experienceUpgrade)
-            return OWSNavigationController(rootViewController: vc)
+            return IntroducingPinsSplash(experienceUpgrade: experienceUpgrade)
         case .messageRequests:
-            let vc = MessageRequestsSplash(experienceUpgrade: experienceUpgrade)
-            return OWSNavigationController(rootViewController: vc)
+            return MessageRequestsSplash(experienceUpgrade: experienceUpgrade)
         default:
             return nil
         }
@@ -88,11 +109,12 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins,
              .reactions,
-             .profileNameReminder:
+             .profileNameReminder,
+             .pinReminder:
             return true
         case .messageRequests:
-            // Only use a megaphone for message requests if the user has a profile name.
-            return OWSProfileManager.shared().localFullName()?.isEmpty == false
+            // No reason to introduce message requests unless the user is missing their profile name
+            return !OWSProfileManager.shared().hasProfileName
         default:
             return false
         }
@@ -106,6 +128,8 @@ class ExperienceUpgradeManager: NSObject {
             return ReactionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .profileNameReminder:
             return ProfileNameReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .pinReminder:
+            return PinReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .messageRequests:
             return MessageRequestsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
@@ -116,8 +140,10 @@ class ExperienceUpgradeManager: NSObject {
 
 // MARK: -
 
-protocol ExperienceUpgradeView {
+protocol ExperienceUpgradeView: class {
     var experienceUpgrade: ExperienceUpgrade { get }
+    var isPresented: Bool { get }
+    func dismiss(animated: Bool, completion: (() -> Void)?)
 }
 
 extension ExperienceUpgradeView {

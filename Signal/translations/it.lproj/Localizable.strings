@@ -635,6 +635,27 @@
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nessun campo del contatto selezionato";
 
+/* Button text to initiate an email to signal support staff */
+"CONTACT_SUPPORT" = "Contatta l'assistenza";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+
+/* button text */
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Prova ancora";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+
+/* Alert title */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Apri nelle mappe";
 
@@ -649,6 +670,9 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Elimina conversazione?";
+
+/* Indicates that the user can tap to download this image. */
+"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Scarica";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Non puoi selezionare più di %@ conversazioni.";
@@ -833,8 +857,7 @@
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Condividi";
 
-/* Title of the alert shown for failures while uploading debug logs.
-   Title of the debug log alert. */
+/* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Un altro passaggio";
 
 /* Error indicating that the app could not launch the Email app. */
@@ -1225,7 +1248,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Inizia qui la tua prima conversazione.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Richiesta Messaggio";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Richiesta di messaggio";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nessun risultato trovato per '%@'";
@@ -1401,9 +1424,6 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Membri del gruppo";
 
-/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Tu)";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Cerca per nome o indirizzo";
 
@@ -1515,13 +1535,19 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Messaggio";
 
-/* A button used to block a user on an incoming message request. */
+/* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Accetta";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blocca";
 
-/* A button used to block a user on an incoming message request. */
+/* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+
+/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+
+/* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Elimina";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
@@ -1541,6 +1567,27 @@
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Condividi profilo";
+
+/* A button used to unlock a blocked conversation. */
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Sblocca";
+
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Ora puoi scegliere se accettare una nuova conversazione. Vedrai le opzioni \"Accetta\", \"Elimina\" e \"Blocca\".";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Nuovo: Richieste di messaggi";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Ti presentiamo le richieste di messaggi";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Aggiungi nome profilo";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Ora puoi scegliere di \"Accetta\"re o \"Elimina\"re una nuova conversazione. I nomi fanno sapere alle persone chi sta inviando loro i messaggi.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Il tuo nome profilo è stato salvato.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Consegnato";
@@ -1758,14 +1805,8 @@
 /* Button asking if the user would like to enter an numeric PIN */
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Inserisci PIN numerico";
 
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "Questo numero di telefono ha il blocco registrazione attivo. Per favore inserisci il PIN di blocco registrazione.";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Il tuo PIN di Blocco Registrazione è separato dal codice di verifica automatico che è stato inviato al tuo telefono durante l'ultimo passo.";
-
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Hai dimenticato il tuo PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "PIN errato";
@@ -1775,9 +1816,6 @@
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN errato. 1 tentativo rimanente.";
-
-/* Title of the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_TITLE" = "Blocco registrazione";
 
 /* Explanation of the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Per proteggere la tua privacy e la sicurezza del tuo account, lo abbiamo bloccato per 7 giorni.\n\nDopo 7 giorni di inattività, sarai in grado di registrare nuovamente questo numero di telefono senza bisogno del tuo PIN. Tutti i contenuti saranno cancellati.";
@@ -2005,7 +2043,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Creazione PIN fallita";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Il PIN aggiunge un ulteriore strato di sicurezza al tuo account. È importante ricordare questo PIN, poiché non può essere recuperato.";
+"PIN_CREATION_EXPLANATION" = "I PIN aggiungono ulteriore sicurezza al tuo account e non possono essere recuperati. Avrai bisogno del tuo PIN per registrarti di nuovo con Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "I PIN non corrispondono. Riprova.";
@@ -2036,6 +2074,27 @@
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Hai dimenticato il tuo PIN?";
+
+/* Action text for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Verifica PIN";
+
+/* Body for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_BODY" = "Occasionalmente ti chiederemo di verificare il tuo PIN in modo che te lo ricordi.";
+
+/* Toast indicating that we'll ask you for your PIN again in 3 days. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Te lo ricorderemo di nuovo tra qualche giorno.";
+
+/* Title for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Verifica il tuo PIN di Signal";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Te lo ricorderemo di nuovo domani.";
+
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Te lo ricorderemo di nuovo tra un paio di settimane.";
+
+/* Toast indicating that we'll ask you for your PIN again in a week. */
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Te lo ricorderemo di nuovo tra una settimana.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "PIN errato, riprova.";
@@ -2071,7 +2130,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Crea un PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN creato.";
+"PINS_MEGAPHONE_TOAST" = "PIN creato. Puoi cambiarlo nelle impostazioni.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Riproduci media";
@@ -2242,7 +2301,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "Tutte · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagito %@ al tuo messaggio";
@@ -2289,11 +2348,14 @@
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ho dimenticato il mio PIN.";
 
-/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Per la tua privacy e sicurezza, non c'è modo di recuperare il tuo PIN. Se non riesci a ricordare il tuo PIN, puoi ripetere la verifica con SMS dopo 7 giorni di inattività. In questo caso, il tuo account sarà cancellato e tutti i contenuti eliminati.";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hai dimenticato il tuo PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+
+/* Alert body for a forgotten SVR (V2) PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+
+/* Alert body for a forgotten V1 PIN */
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Hai %lu tentativi rimanenti. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.";
@@ -2313,7 +2375,7 @@
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "Prova ancora";
 
-/* No comment provided by engineer. */
+/* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Ha effettuato troppi tentativi. Attendi un minuto prima di riprovare.";
 
 /* No comment provided by engineer. */
@@ -3127,7 +3189,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "I nomi utente possono contenere solo a-z, 0-9, e _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Si è verificato un errore durante la ricerca del nome utente. Per favore riprova più tardi.";
+"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ non è un utente Signal. Assicurati di aver inserito il nome utente completo.";
@@ -3210,5 +3272,8 @@
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Hai disabilitato la scomparsa dei messaggi.";
 
+/* alert body shown when trying to use features in the app before completing registration-related setup. */
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+    
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Hai impostato la scomparsa dei messaggi a %@.";

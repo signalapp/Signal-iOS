@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -101,7 +101,7 @@ extension ContactConversationItem: ConversationItem {
     }
 
     var image: UIImage? {
-        return databaseStorage.uiread { transaction in
+        return databaseStorage.uiRead { transaction in
             return self.contactManager.image(for: self.address, transaction: transaction)
         }
     }

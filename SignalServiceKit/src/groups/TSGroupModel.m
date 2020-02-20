@@ -194,6 +194,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![myGroupMembersSet isEqualToSet:otherGroupMembersSet]) {
         return NO;
     }
+
     if (self.groupsVersion != other.groupsVersion) {
         return NO;
     }

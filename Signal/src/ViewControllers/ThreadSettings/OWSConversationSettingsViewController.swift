@@ -5,12 +5,26 @@
 import Foundation
 import PromiseKit
 
-@objc
 public extension OWSConversationSettingsViewController {
 
+    var databaseStorage: SDSDatabaseStorage {
+        return .shared
+    }
+
+    @objc
     func updateDisappearingMessagesConfigurationObjc(_ dmConfiguration: OWSDisappearingMessagesConfiguration,
                                                      thread: TSThread) -> AnyPromise {
-        return AnyPromise(GroupManager.updateDisappearingMessages(thread: thread,
-                                                                  disappearingMessageToken: dmConfiguration.asToken))
+        return AnyPromise(updateDisappearingMessagesConfiguration(dmConfiguration, thread: thread))
+    }
+    
+    func updateDisappearingMessagesConfiguration(_ dmConfiguration: OWSDisappearingMessagesConfiguration,
+                                                 thread: TSThread) -> Promise<Void> {
+        return DispatchQueue.global().async(.promise) {
+            // We're sending a message, so we're accepting any pending message request.
+            ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+        }.then {
+            GroupManager.updateDisappearingMessages(thread: thread,
+                                                    disappearingMessageToken: dmConfiguration.asToken)
+        }
     }
 }

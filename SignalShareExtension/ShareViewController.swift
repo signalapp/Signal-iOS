@@ -332,21 +332,27 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("Presenting content view")
 
-        if !tsAccountManager.isRegistered {
+        guard tsAccountManager.isRegistered else {
             showNotRegisteredView()
-        } else {
-            let localProfileExists = databaseStorage.read { transaction in
-                return self.profileManager.localProfileExists(with: transaction)
-            }
-            if !localProfileExists {
-                // This is a rare edge case, but we want to ensure that the user
-                // has already saved their local profile key in the main app.
-                showNotReadyView()
-            } else {
-                buildAttachmentsAndPresentConversationPicker()
-            }
+            return
         }
 
+        let localProfileExists = databaseStorage.read { transaction in
+            return self.profileManager.localProfileExists(with: transaction)
+        }
+        guard localProfileExists else {
+            // This is a rare edge case, but we want to ensure that the user
+            // has already saved their local profile key in the main app.
+            showNotReadyView()
+            return
+        }
+
+        guard tsAccountManager.isOnboarded() else {
+            showNotReadyView()
+            return
+        }
+
+        buildAttachmentsAndPresentConversationPicker()
         // We don't use the AppUpdateNag in the SAE.
     }
 

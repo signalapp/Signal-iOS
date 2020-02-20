@@ -24,8 +24,13 @@ class IntroducingPinsMegaphone: MegaphoneView {
             : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
 
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
-            let vc = PinSetupViewController {
-                self?.markAsComplete()
+            let vc = PinSetupViewController.creating { _, error in
+                if let error = error {
+                    Logger.error("failed to create pin: \(error)")
+                } else {
+                    // success
+                    self?.markAsComplete()
+                }
                 fromViewController.navigationController?.popToViewController(fromViewController, animated: true) {
                     fromViewController.navigationController?.setNavigationBarHidden(false, animated: false)
                     self?.dismiss(animated: false)
@@ -39,7 +44,22 @@ class IntroducingPinsMegaphone: MegaphoneView {
             fromViewController.navigationController?.pushViewController(vc, animated: true)
         }
 
-        setButtons(primary: primaryButton, secondary: snoozeButton(fromViewController: fromViewController))
+        let secondaryButton = snoozeButton(fromViewController: fromViewController) {
+            guard RemoteConfig.mandatoryPins else { return MegaphoneStrings.weWillRemindYouLater }
+
+            let daysRemaining = ExperienceUpgradeManager.splashStartDay - experienceUpgrade.daysSinceFirstViewed
+            assert(daysRemaining > 0)
+
+            let toastFormat = hasPinAlready
+                ? NSLocalizedString("PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT",
+                                    comment: "Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}}")
+                : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT",
+                                    comment: "Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}}")
+
+            return String(format: toastFormat, daysRemaining)
+        }
+
+        setButtons(primary: primaryButton, secondary: secondaryButton)
     }
 
     required init(coder: NSCoder) {
@@ -162,7 +182,7 @@ class IntroducingPinsSplash: SplashViewController {
 
     @objc
     func didTapPrimaryButton(_ sender: UIButton) {
-        let vc = PinSetupViewController { [weak self] in
+        let vc = PinSetupViewController.creating { [weak self] _, _ in
             self?.dismiss(animated: true)
         }
         navigationController?.pushViewController(vc, animated: true)

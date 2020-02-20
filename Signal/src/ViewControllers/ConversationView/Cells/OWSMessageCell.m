@@ -594,7 +594,9 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 case OWSMessageGestureLocation_Sticker:
                     OWSAssertDebug(self.viewItem.stickerInfo != nil);
-                    [self.delegate conversationCell:self didLongpressSticker:self.viewItem];
+                    [self.delegate conversationCell:self
+                                   shouldAllowReply:shouldAllowReply
+                                didLongpressSticker:self.viewItem];
                     break;
             }
             break;
@@ -689,17 +691,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldAllowReply
 {
-    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
-            // Don't allow "delete" or "reply" on "failed" outgoing messages.
-            return NO;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
-            // Don't allow "delete" or "reply" on "sending" outgoing messages.
-            return NO;
-        }
+    if (self.delegate == nil) {
+        return NO;
     }
-    return YES;
+    return [self.delegate conversationCell:self shouldAllowReplyForItem:self.viewItem];
 }
 
 - (CGFloat)swipeToReplyThreshold

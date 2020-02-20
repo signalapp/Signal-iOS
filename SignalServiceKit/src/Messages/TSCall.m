@@ -167,7 +167,8 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-              sendReadReceipt:(BOOL)sendReadReceipt
+                       thread:(TSThread *)thread
+                 circumstance:(OWSReadCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
 
@@ -184,7 +185,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
                                      call.read = YES;
                                  }];
 
-    // Ignore sendReadReceipt - it doesn't apply to calls.
+    // Ignore `circumstance` - we never send read receipts for calls.
 }
 
 #pragma mark - Methods

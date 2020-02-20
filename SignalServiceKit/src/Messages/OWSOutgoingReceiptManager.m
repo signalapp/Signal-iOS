@@ -163,6 +163,19 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
     });
 }
 
+- (SignalServiceAddress *)addressForIdentifier:(NSString *)identifier
+{
+    // The identifier could be either a UUID or a phone number,
+    // check if it's a valid UUID. If not, assume it's a phone number.
+
+    NSUUID *_Nullable uuid = [[NSUUID alloc] initWithUUIDString:identifier];
+    if (uuid) {
+        return [[SignalServiceAddress alloc] initWithUuid:uuid phoneNumber:nil];
+    } else {
+        return [[SignalServiceAddress alloc] initWithPhoneNumber:identifier];
+    }
+}
+
 - (NSArray<AnyPromise *> *)sendReceiptsForReceiptType:(OWSReceiptType)receiptType {
     SDSKeyValueStore *store = [self storeForReceiptType:receiptType];
 
@@ -182,13 +195,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         // The identifier could be either a UUID or a phone number,
         // check if it's a valid UUID. If not, assume it's a phone number.
 
-        SignalServiceAddress *address;
-        NSUUID *_Nullable uuid = [[NSUUID alloc] initWithUUIDString:identifier];
-        if (uuid) {
-            address = [[SignalServiceAddress alloc] initWithUuid:uuid phoneNumber:nil];
-        } else {
-            address = [[SignalServiceAddress alloc] initWithPhoneNumber:identifier];
-        }
+        SignalServiceAddress *address = [self addressForIdentifier:identifier];
 
         if (!address.isValid) {
             OWSFailDebug(@"Unexpected identifier.");

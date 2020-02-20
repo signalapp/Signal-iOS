@@ -1,13 +1,82 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 extension ConversationViewController {
     @objc
     func ensureIndexPath(of interaction: TSMessage) -> IndexPath? {
-        return databaseStorage.uiread { transaction in
+        return databaseStorage.uiRead { transaction in
             self.conversationViewModel.ensureLoadWindowContainsInteractionId(interaction.uniqueId,
                                                                              transaction: transaction)
+        }
+    }
+}
+
+extension ConversationViewController: MessageActionsViewControllerDelegate {
+    func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withAction action: MessageAction?) {
+
+        let sender: UIView? = {
+            let interaction = messageActionsViewController.focusedInteraction
+            guard let index = conversationViewModel.viewState.interactionIndexMap[interaction.uniqueId] else {
+                return nil
+            }
+
+            let indexPath = IndexPath(item: index.intValue, section: 0)
+
+            guard self.collectionView.indexPathsForVisibleItems.contains(indexPath),
+                let cell = self.collectionView.cellForItem(at: indexPath) else {
+                    return nil
+            }
+
+            switch cell {
+            case let messageCell as OWSMessageCell:
+                return messageCell.messageView
+            default:
+                return cell
+            }
+        }()
+
+        dismissMessageActions(animated: true) {
+            action?.block(sender)
+        }
+    }
+
+    func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withReaction reaction: String, isRemoving: Bool) {
+        dismissMessageActions(animated: true) {
+            guard let message = messageActionsViewController.focusedInteraction as? TSMessage else {
+                owsFailDebug("Not sending reaction for unexpected interaction type")
+                return
+            }
+
+            self.databaseStorage.asyncWrite { transaction in
+                ReactionManager.localUserReacted(to: message,
+                                                 emoji: reaction,
+                                                 isRemoving: isRemoving,
+                                                 transaction: transaction)
+
+                // Mark the reactions experience upgrade complete if the user
+                // sends a reaction, even if they didn't dismiss it directly.
+                ExperienceUpgradeManager.clearReactionsExperienceUpgrade(transaction: transaction.unwrapGrdbWrite)
+            }
+        }
+    }
+
+    func messageActionsViewController(_ messageActionsViewController: MessageActionsViewController,
+                                      shouldShowReactionPickerForInteraction: TSInteraction) -> Bool {
+        guard !self.threadViewModel.hasPendingMessageRequest else { return false }
+
+        switch messageActionsViewController.focusedInteraction {
+        case let outgoingMessage as TSOutgoingMessage:
+            switch outgoingMessage.messageState {
+            case .failed, .sending:
+                return false
+            default:
+                return true
+            }
+        case is TSIncomingMessage:
+            return true
+        default:
+            return false
         }
     }
 }

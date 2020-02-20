@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
 import PromiseKit
 
-private protocol OnboardingCodeViewTextFieldDelegate {
+private protocol OnboardingCodeViewTextFieldDelegate: AnyObject {
     func textFieldDidDeletePrevious()
 }
 
@@ -18,7 +18,7 @@ private protocol OnboardingCodeViewTextFieldDelegate {
 // digit.
 private class OnboardingCodeViewTextField: UITextField {
 
-    fileprivate var codeDelegate: OnboardingCodeViewTextFieldDelegate?
+    fileprivate weak var codeDelegate: OnboardingCodeViewTextFieldDelegate?
 
     override func deleteBackward() {
         var isDeletePrevious = false
@@ -40,7 +40,7 @@ private class OnboardingCodeViewTextField: UITextField {
 
 // MARK: -
 
-protocol OnboardingCodeViewDelegate {
+protocol OnboardingCodeViewDelegate: AnyObject {
     func codeViewDidChange()
 }
 
@@ -56,7 +56,7 @@ protocol OnboardingCodeViewDelegate {
 // last/next digit.
 private class OnboardingCodeView: UIView {
 
-    var delegate: OnboardingCodeViewDelegate?
+    weak var delegate: OnboardingCodeViewDelegate?
 
     public init() {
         super.init(frame: .zero)
@@ -483,8 +483,8 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT",
                                                                          comment: "action sheet item shown after a number of failures to receive a verificaiton SMS during registration"),
                                                 style: .default) { _ in
-                                                    Pastelog.submitEmail(logUrl: nil,
-                                                                         subject: "Signal Registration - Verification Code for iOS")
+                                                    Pastelog.submitEmailWithDefaultErrorHandling(subject: "Signal Registration - Verification Code for iOS",
+                                                                                                 logUrl: nil)
             })
         }
 

@@ -376,7 +376,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                         stackView.alignment = UIStackViewAlignmentCenter;
 
                         [cell.contentView addSubview:stackView];
-                        [stackView ows_autoPinToSuperviewMargins];
+                        [stackView autoPinEdgesToSuperviewMargins];
 
                         UISwitch *cellSwitch = [UISwitch new];
                         [cellSwitch setOn:Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators];
@@ -594,9 +594,10 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     OWSLogInfo(@"");
 
     __weak PrivacySettingsTableViewController *weakSelf = self;
-    OWSPinSetupViewController *vc = [OWSPinSetupViewController changingWithCompletionHandler:^{
-        [weakSelf.navigationController popToViewController:weakSelf animated:YES];
-    }];
+    OWSPinSetupViewController *vc = [OWSPinSetupViewController
+        changingWithCompletionHandler:^(OWSPinSetupViewController *pinSetupVC, NSError *_Nullable error) {
+            [weakSelf.navigationController popToViewController:weakSelf animated:YES];
+        }];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -605,9 +606,10 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     OWSLogInfo(@"");
 
     __weak PrivacySettingsTableViewController *weakSelf = self;
-    OWSPinSetupViewController *vc = [OWSPinSetupViewController creatingWithCompletionHandler:^{
-        [weakSelf.navigationController popToViewController:weakSelf animated:YES];
-    }];
+    OWSPinSetupViewController *vc = [OWSPinSetupViewController
+        creatingWithCompletionHandler:^(OWSPinSetupViewController *pinSetupVC, NSError *_Nullable error) {
+            [weakSelf.navigationController popToViewController:weakSelf animated:YES];
+        }];
     [self.navigationController pushViewController:vc animated:YES];
 }
 

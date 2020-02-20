@@ -236,7 +236,7 @@ class MessageDetailViewController: OWSViewController {
         // Sender?
         if let incomingMessage = message as? TSIncomingMessage {
             let senderName: String
-            if FeatureFlags.profileDisplayChanges {
+            if RemoteConfig.messageRequests {
                 senderName = contactsManager.displayName(for: incomingMessage.authorAddress)
             } else {
                 senderName = contactsManager.legacyDisplayName(for: incomingMessage.authorAddress)
@@ -735,6 +735,10 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
     }
 
     func didTapFailedIncomingAttachment(_ viewItem: ConversationViewItem) {
+        // no - op
+    }
+
+    func didTapPendingMessageRequestIncomingAttachment(_ viewItem: ConversationViewItem) {
         // no - op
     }
 

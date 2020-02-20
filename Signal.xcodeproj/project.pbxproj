@@ -518,6 +518,7 @@
 		4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */; };
 		4C30E224234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E223234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift */; };
 		4C30E226234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E225234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift */; };
+		4C35B08A23F8A9D2003EB937 /* MessageRequestReadReceipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C35B08823F8A9A1003EB937 /* MessageRequestReadReceipts.swift */; };
 		4C38E500230374D700E464B9 /* UIViewController+Permissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C38E4FE230374D700E464B9 /* UIViewController+Permissions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C38E501230374D700E464B9 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C38E4FF230374D700E464B9 /* UIViewController+Permissions.m */; };
 		4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3A2BC62356620E004B3986 /* ProvisioningController.swift */; };
@@ -544,6 +545,7 @@
 		4C68FDAE2385F5A4002576B1 /* DebugUIDataStoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C68FDAD2385F5A4002576B1 /* DebugUIDataStoreViewController.swift */; };
 		4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */; };
 		4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */; };
+		4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */; };
 		4C7537892193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */; };
 		4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */; };
 		4C858A52212DC5E1001B45D3 /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */; };
@@ -620,6 +622,7 @@
 		885AC56723AB42430077705E /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885AC56623AB42430077705E /* NotificationService.swift */; };
 		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
 		886F08A7234958970085C27F /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */; };
+		887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */; };
 		8889006C23DBB39B00F40186 /* reactionsMegaphone.json in Resources */ = {isa = PBXBuildFile; fileRef = 8889006323DBB39A00F40186 /* reactionsMegaphone.json */; };
 		8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006523DBB39B00F40186 /* reactionMegaphone_1.png */; };
 		8889006E23DBB39B00F40186 /* reactionMegaphone_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006623DBB39B00F40186 /* reactionMegaphone_0.png */; };
@@ -1412,6 +1415,7 @@
 		4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarTableViewCell.swift; sourceTree = "<group>"; };
 		4C30E223234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryLinkingPrepViewController.swift; sourceTree = "<group>"; };
 		4C30E225234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryLinkingQRCodeViewController.swift; sourceTree = "<group>"; };
+		4C35B08823F8A9A1003EB937 /* MessageRequestReadReceipts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestReadReceipts.swift; sourceTree = "<group>"; };
 		4C38E4FE230374D700E464B9 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Permissions.h"; sourceTree = "<group>"; };
 		4C38E4FF230374D700E464B9 /* UIViewController+Permissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Permissions.m"; sourceTree = "<group>"; };
 		4C3A2BC62356620E004B3986 /* ProvisioningController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningController.swift; sourceTree = "<group>"; };
@@ -1437,6 +1441,7 @@
 		4C68FDAD2385F5A4002576B1 /* DebugUIDataStoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIDataStoreViewController.swift; sourceTree = "<group>"; };
 		4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAccountDiscovery.swift; sourceTree = "<group>"; };
 		4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalUBSan.supp; sourceTree = "<group>"; };
+		4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportAlert.swift; sourceTree = "<group>"; };
 		4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWS113MultiAttachmentMediaMessages.swift; sourceTree = "<group>"; };
 		4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalBaseTest+Swift.swift"; sourceTree = "<group>"; };
 		4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+OWS.swift"; sourceTree = "<group>"; };
@@ -1530,6 +1535,7 @@
 		8872409323E12DF500824D62 /* NotificationServiceExtension-AppStore.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "NotificationServiceExtension-AppStore.entitlements"; sourceTree = "<group>"; };
 		887D5880236773240048B8FB /* ta */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ta; path = translations/ta.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887D5881236773410048B8FB /* te */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = te; path = translations/te.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinReminderMegaphone.swift; sourceTree = "<group>"; };
 		8889006323DBB39A00F40186 /* reactionsMegaphone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = reactionsMegaphone.json; sourceTree = "<group>"; };
 		8889006523DBB39B00F40186 /* reactionMegaphone_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_1.png; sourceTree = "<group>"; };
 		8889006623DBB39B00F40186 /* reactionMegaphone_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_0.png; sourceTree = "<group>"; };
@@ -2080,6 +2086,7 @@
 				346129401FD1D74B00532771 /* Environment.h */,
 				346129411FD1D74B00532771 /* Environment.m */,
 				349C3636233D198300D52012 /* LaunchJobs.swift */,
+				4C35B08823F8A9A1003EB937 /* MessageRequestReadReceipts.swift */,
 				346129921FD1E30000532771 /* migrations */,
 				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
 				45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */,
@@ -2859,6 +2866,7 @@
 				8811CF832295D8DA00FF6549 /* VolumeButtons.swift */,
 				340CCB6923032762005243B3 /* YDBLegacyMigration.h */,
 				340CCB6823032762005243B3 /* YDBLegacyMigration.m */,
+				4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2980,8 +2988,9 @@
 			isa = PBXGroup;
 			children = (
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
-				88A505FB23DBAE4F0005C012 /* Reactions.swift */,
+				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
 				8889007423DBD0B400F40186 /* ProfileNameReminder.swift */,
+				88A505FB23DBAE4F0005C012 /* Reactions.swift */,
 				8806F21A23E90B0B00692638 /* MessageRequests.swift */,
 			);
 			path = "Upgrade Views";
@@ -4195,6 +4204,7 @@
 				346941A2215D2EE400B5BFAD /* OWSConversationColor.m in Sources */,
 				34AC0A17211B39EA00997B47 /* VideoPlayerView.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
+				4C35B08A23F8A9D2003EB937 /* MessageRequestReadReceipts.swift in Sources */,
 				34BEDB1321C43F6A007B0EAE /* ImageEditorView.swift in Sources */,
 				346B4A79236A138C00B56007 /* OWS116UpdatePrekeys.swift in Sources */,
 				34AC09EE211B39B100997B47 /* EditContactShareNameViewController.swift in Sources */,
@@ -4432,6 +4442,7 @@
 				8806F21B23E90B0B00692638 /* MessageRequests.swift in Sources */,
 				3434AE1E22AEF5A4002EE04E /* CircularProgressView.swift in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
+				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
 				34D1F0871F8678AA0066283D /* ConversationViewItem.m in Sources */,
@@ -4581,6 +4592,7 @@
 				34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */,
 				45D308AD2049A439000189E4 /* PinEntryView.m in Sources */,
 				340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */,
+				4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */,
 				3441FD9F21A3604F00BB9542 /* BackupRestoreViewController.swift in Sources */,
 				4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */,
 				34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */,

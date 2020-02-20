@@ -10,9 +10,10 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case reactions = "010"
     case profileNameReminder = "011"
     case messageRequests = "012"
+    case pinReminder // Never saved, used to periodically prompt the user for their PIN
 
     // Until this flag is true the upgrade won't display to users.
-    var hasLaunched: Bool {
+    func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
         switch self {
         case .introducingPins:
             // The PIN setup flow requires an internet connection
@@ -21,9 +22,11 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .reactions:
             return true
         case .profileNameReminder:
-            return RemoteConfig.profileNameReminder
+            return RemoteConfig.profileNameReminder && !RemoteConfig.messageRequests
         case .messageRequests:
             return FeatureFlags.messageRequest
+        case .pinReminder:
+            return OWS2FAManager.shared().isDueForV2Reminder(transaction: transaction.asAnyRead)
         }
     }
 
@@ -43,9 +46,53 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         return Date().timeIntervalSince1970 > expirationDate
     }
 
-    // If false, this will be marked complete after registration
-    // without ever presenting to the user.
-    var showNewUsers: Bool { false }
+    // If false, this will not be marked complete after registration.
+    var skipForNewUsers: Bool {
+        switch self {
+        case .messageRequests,
+             .introducingPins:
+            return false
+        default:
+            return true
+        }
+    }
+
+    // In addition to being sorted by their order as defined in this enum,
+    // experience upgrades are also sorted by priority. For example, a high
+    // priority upgrade will always show before a low priority experience
+    // upgrade, even if it shows up later in the list.
+    enum Priority: Int {
+        case low
+        case medium
+        case high
+    }
+    var priority: Priority {
+        switch self {
+        case .introducingPins:
+            return .high
+        case .messageRequests:
+            // If the user already has a profile name, this is just a simple
+            // notice of a new feature. If they don't have a profile name,
+            // this is a high priority mandatory flow for them to create one.
+            return SSKEnvironment.shared.profileManager.hasProfileName ? .low : .high
+        case .profileNameReminder,
+             .reactions:
+            return .low
+        case .pinReminder:
+            return .medium
+        }
+    }
+
+    // Some experience flows are dynamic and can be experience multiple
+    // times so they don't need be saved to the database.
+    var shouldSave: Bool {
+        switch self {
+        case .pinReminder:
+            return false
+        default:
+            return true
+        }
+    }
 }
 
 @objc
@@ -81,9 +128,7 @@ public class ExperienceUpgradeFinder: NSObject {
 
     public class func markAsComplete(experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as complete \(experienceUpgradeId)")
-        allActiveExperienceUpgrades(transaction: transaction)
-            .filter { $0.id == experienceUpgradeId }
-            .forEach { markAsComplete(experienceUpgrade: $0, transaction: transaction) }
+        markAsComplete(experienceUpgrade: ExperienceUpgrade(uniqueId: experienceUpgradeId.rawValue), transaction: transaction)
     }
 
     public class func markAsComplete(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
@@ -93,34 +138,25 @@ public class ExperienceUpgradeFinder: NSObject {
 
     @objc
     public class func markAllCompleteForNewUser(transaction: GRDBWriteTransaction) {
-        allActiveExperienceUpgrades(transaction: transaction)
-            .lazy
-            .filter { !$0.id.showNewUsers }
-            .forEach { markAsComplete(experienceUpgrade: $0, transaction: transaction) }
-    }
-
-    // MARK: - Experience Specific Helpers
-
-    @objc
-    public class func hasPendingPinExperienceUpgrade(transaction: GRDBReadTransaction) -> Bool {
-        return hasIncomplete(experienceUpgradeId: .introducingPins, transaction: transaction)
-    }
-
-    @objc
-    class func clearProfileNameReminder(transaction: GRDBWriteTransaction) {
-        ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .profileNameReminder, transaction: transaction)
+        ExperienceUpgradeId.allCases
+            .filter { $0.skipForNewUsers }
+            .forEach { markAsComplete(experienceUpgradeId: $0, transaction: transaction) }
     }
 
     // MARK: -
 
     /// Returns an array of all experience upgrades currently being run that have
-    /// yet to be completed. Sorted by the order of the `ExperienceUpgradeId` enumeration.
+    /// yet to be completed. Sorted by priority from highest to lowest. For equal
+    /// priority upgrades follows the order of the `ExperienceUpgradeId` enumeration
     private class func allActiveExperienceUpgrades(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
         // Only the primary device will ever see experience upgrades.
         // TODO: We may eventually sync these and show them on linked devices.
         guard SSKEnvironment.shared.tsAccountManager.isRegisteredPrimaryDevice else { return [] }
 
-        let activeIds = ExperienceUpgradeId.allCases.filter { $0.hasLaunched && !$0.hasExpired }.map { $0.rawValue }
+        let activeIds = ExperienceUpgradeId
+            .allCases
+            .filter { $0.hasLaunched(transaction: transaction) && !$0.hasExpired }
+            .map { $0.rawValue }
 
         // We don't include `isComplete` in the query as we want to initialize
         // new records for any active ids that haven't had one recorded yet.
@@ -146,11 +182,16 @@ public class ExperienceUpgradeFinder: NSObject {
         }
 
         return experienceUpgrades.sorted { lhs, rhs in
+            guard lhs.id.priority == rhs.id.priority else {
+                return lhs.id.priority.rawValue > rhs.id.priority.rawValue
+            }
+
             guard let lhsIndex = activeIds.firstIndex(of: lhs.uniqueId),
                 let rhsIndex = activeIds.firstIndex(of: rhs.uniqueId) else {
-                owsFailDebug("failed to find index for uniqueIds \(lhs.uniqueId) \(rhs.uniqueId)")
-                return false
+                    owsFailDebug("failed to find index for uniqueIds \(lhs.uniqueId) \(rhs.uniqueId)")
+                    return false
             }
+
             return lhsIndex < rhsIndex
         }
     }
@@ -176,6 +217,8 @@ public extension ExperienceUpgrade {
     var hasViewed: Bool { firstViewedTimestamp > 0 }
 
     func upsertWith(transaction: SDSAnyWriteTransaction, changeBlock: (ExperienceUpgrade) -> Void) {
+        guard id.shouldSave else { return Logger.debug("Skipping save for experience upgrade \(id)") }
+
         let experienceUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
         changeBlock(experienceUpgrade)
         experienceUpgrade.anyUpsert(transaction: transaction)

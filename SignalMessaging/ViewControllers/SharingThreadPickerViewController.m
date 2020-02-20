@@ -251,7 +251,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
      didApproveAttachments:(NSArray<SignalAttachment *> *_Nonnull)attachments
                messageText:(NSString *_Nullable)messageText
 {
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
     [self
         tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
             OWSAssertIsOnMainThread();
@@ -302,7 +302,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     OWSAssertDebug(messageText.length > 0);
 
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
 
@@ -361,7 +361,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     OWSLogInfo(@"");
 
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending

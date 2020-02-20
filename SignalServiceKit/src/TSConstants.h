@@ -33,7 +33,6 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureDeviceProvisioningCodeAPI @"v1/devices/provisioning/code"
 #define textSecureDeviceProvisioningAPIFormat @"v1/provisioning/%@"
 #define textSecureDevicesAPIFormat @"v1/devices/%@"
-#define textSecureSetProfileNameAPIFormat @"v1/profile/name/%@"
 #define textSecureVersionedProfileAPI @"v1/profile/"
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
 #define textSecure2FAAPI @"v1/accounts/pin"

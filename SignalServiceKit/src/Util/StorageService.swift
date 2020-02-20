@@ -9,12 +9,16 @@ import PromiseKit
 public protocol StorageServiceManagerProtocol {
     func recordPendingDeletions(deletedIds: [AccountId])
     func recordPendingDeletions(deletedAddresses: [SignalServiceAddress])
+    func recordPendingDeletions(deletedGroupIds: [Data])
 
     func recordPendingUpdates(updatedIds: [AccountId])
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
+    func recordPendingUpdates(updatedGroupIds: [Data])
 
     func backupPendingChanges()
-    func restoreOrCreateManifestIfNecessary()
+
+    @discardableResult
+    func restoreOrCreateManifestIfNecessary() -> AnyPromise
 }
 
 public struct StorageService {
@@ -22,10 +26,30 @@ public struct StorageService {
         case assertion
         case retryableAssertion
         case decryptionFailed(manifestVersion: UInt64)
+        case networkError(statusCode: Int, underlyingError: Error)
+
+        // MARK: 
 
         public var isRetryable: Bool {
-            guard case .retryableAssertion = self else { return false }
-            return true
+            switch self {
+            case .assertion:
+                return false
+            case .retryableAssertion:
+                return true
+            case .decryptionFailed:
+                return false
+            case .networkError(let statusCode, _):
+                // If this is a server error, retry
+                return statusCode >= 500
+            }
+        }
+
+        public var errorUserInfo: [String: Any] {
+            var userInfo: [String: Any] = [OWSOperationIsRetryableKey: self.isRetryable]
+            if case .networkError(_, let underlyingError) = self {
+                userInfo[NSUnderlyingErrorKey] = underlyingError
+            }
+            return userInfo
         }
     }
 
@@ -60,9 +84,24 @@ public struct StorageService {
             return contact
         }
 
+        public var groupV1Record: StorageServiceProtoGroupV1Record? {
+            guard type == StorageServiceProtoStorageRecordType.groupv1.rawValue else { return nil }
+            guard let groupV1 = record.groupV1 else {
+                owsFailDebug("unexpectedly missing group record")
+                return nil
+            }
+            return groupV1
+        }
+
         public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) throws {
             let storageRecord = StorageServiceProtoStorageRecord.builder(type: UInt32(StorageServiceProtoStorageRecordType.contact.rawValue))
             storageRecord.setContact(contact)
+            self.init(identifier: identifier, record: try storageRecord.build())
+        }
+
+        public init(identifier: StorageIdentifier, groupV1: StorageServiceProtoGroupV1Record) throws {
+            let storageRecord = StorageServiceProtoStorageRecord.builder(type: UInt32(StorageServiceProtoStorageRecordType.groupv1.rawValue))
+            storageRecord.setGroupV1(groupV1)
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 
@@ -84,7 +123,10 @@ public struct StorageService {
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest.parseData(response.data)
                 let manifestData: Data
                 do {
-                    manifestData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedManifestContainer.value)
+                    manifestData = try KeyBackupService.decrypt(
+                        keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                        encryptedData: encryptedManifestContainer.value
+                    )
                 } catch {
                     throw StorageError.decryptionFailed(manifestVersion: encryptedManifestContainer.version)
                 }
@@ -108,14 +150,17 @@ public struct StorageService {
         newItems: [StorageItem],
         deletedIdentifiers: [StorageIdentifier]
     ) -> Promise<StorageServiceProtoManifestRecord?> {
-        Logger.info("")
+        Logger.info("newItems: \(newItems.count), deletedIdentifiers: \(deletedIdentifiers.count)")
 
         return DispatchQueue.global().async(.promise) {
             let builder = StorageServiceProtoWriteOperation.builder()
 
             // Encrypt the manifest
             let manifestData = try manifest.serializedData()
-            let encryptedManifestData = try KeyBackupService.encrypt(keyType: .storageService, data: manifestData)
+            let encryptedManifestData = try KeyBackupService.encrypt(
+                keyType: .storageServiceManifest(version: manifest.version),
+                data: manifestData
+            )
 
             let manifestWrapperBuilder = StorageServiceProtoStorageManifest.builder(
                 version: manifest.version,
@@ -126,7 +171,10 @@ public struct StorageService {
             // Encrypt the new items
             builder.setInsertItem(try newItems.map { item in
                 let itemData = try item.record.serializedData()
-                let encryptedItemData = try KeyBackupService.encrypt(keyType: .storageService, data: itemData)
+                let encryptedItemData = try KeyBackupService.encrypt(
+                    keyType: .storageServiceRecord(identifier: item.identifier),
+                    data: itemData
+                )
                 let itemWrapperBuilder = StorageServiceProtoStorageItem.builder(key: item.identifier.data, value: encryptedItemData)
                 return try itemWrapperBuilder.build()
             })
@@ -136,7 +184,7 @@ public struct StorageService {
 
             return try builder.buildSerializedData()
         }.then(on: .global()) { data in
-            storageRequest(withMethod: "PUT", endpoint: "/v1/storage", body: data)
+            storageRequest(withMethod: "PUT", endpoint: "v1/storage", body: data)
         }.map(on: .global()) { response in
             switch response.status {
             case .success:
@@ -145,8 +193,11 @@ public struct StorageService {
                 return nil
             case .conflict:
                 // Our version was out of date, we should've received a copy of the latest version
-                let encryptedManifestData = try StorageServiceProtoStorageManifest.parseData(response.data).value
-                let manifestData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedManifestData)
+                let encryptedManifestContainer = try StorageServiceProtoStorageManifest.parseData(response.data)
+                let manifestData = try KeyBackupService.decrypt(
+                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                    encryptedData: encryptedManifestContainer.value
+                )
                 return try StorageServiceProtoManifestRecord.parseData(manifestData)
             default:
                 owsFailDebug("unexpected response \(response.status)")
@@ -167,6 +218,7 @@ public struct StorageService {
     /// The response will include only the items that could be found on the service
     public static func fetchItems(for keys: [StorageIdentifier]) -> Promise<[StorageItem]> {
         Logger.info("")
+        guard !keys.isEmpty else { return Promise.value([]) }
 
         return DispatchQueue.global().async(.promise) {
             let builder = StorageServiceProtoReadOperation.builder()
@@ -184,9 +236,13 @@ public struct StorageService {
 
             return try itemsProto.items.map { item in
                 let encryptedItemData = item.value
-                let itemData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedItemData)
+                let itemIdentifier = StorageIdentifier(data: item.key)
+                let itemData = try KeyBackupService.decrypt(
+                    keyType: .storageServiceRecord(identifier: itemIdentifier),
+                    encryptedData: encryptedItemData
+                )
                 let record = try StorageServiceProtoStorageRecord.parseData(itemData)
-                return StorageItem(identifier: StorageIdentifier(data: item.key), record: record)
+                return StorageItem(identifier: itemIdentifier, record: record)
             }
         }
     }
@@ -276,7 +332,7 @@ public struct StorageService {
                             return resolver.reject(StorageError.assertion)
                         }
 
-                        owsFailDebug("response error \(error)")
+                        Logger.error("response error \(error)")
                         return resolver.reject(error)
                     }
 
@@ -290,15 +346,10 @@ public struct StorageService {
                     case 404:
                         status = .notFound
                     default:
-                        owsFailDebug("invalid response \(response.statusCode)")
-                        if response.statusCode >= 500 {
-                            // This is a server error, retry
-                            return resolver.reject(StorageError.retryableAssertion)
-                        } else if let error = error {
-                            return resolver.reject(error)
-                        } else {
-                            return resolver.reject(StorageError.assertion)
+                        guard let error = error else {
+                            return resolver.reject(OWSAssertionError("error was nil for statusCode: \(response.statusCode)"))
                         }
+                        return resolver.reject(StorageError.networkError(statusCode: response.statusCode, underlyingError: error))
                     }
 
                     // We should always receive response data, for some responses it will be empty.

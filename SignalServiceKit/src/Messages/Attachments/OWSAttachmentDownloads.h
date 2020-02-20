@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -33,6 +33,7 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 //
 // success/failure are always called on a worker queue.
 - (void)downloadBodyAttachmentsForMessage:(TSMessage *)message
+              bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
                               transaction:(SDSAnyReadTransaction *)transaction
                                   success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                                   failure:(void (^)(NSError *error))failure;
@@ -43,6 +44,7 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 //
 // success/failure are always called on a worker queue.
 - (void)downloadAllAttachmentsForMessage:(TSMessage *)message
+             bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
                              transaction:(SDSAnyReadTransaction *)transaction
                                  success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                                  failure:(void (^)(NSError *error))failure;
@@ -51,7 +53,15 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 //
 // success/failure are always called on a worker queue.
 - (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                          message:(nullable TSMessage *)message
+                          message:(TSMessage *)message
+      bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
+                          success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
+                          failure:(void (^)(NSError *error))failure;
+
+// This will try to download a single attachment.
+//
+// success/failure are always called on a worker queue.
+- (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                           failure:(void (^)(NSError *error))failure;
 

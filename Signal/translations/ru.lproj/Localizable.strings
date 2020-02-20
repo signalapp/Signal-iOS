@@ -635,6 +635,27 @@
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Ни одно из полей контакта не выбрано.";
 
+/* Button text to initiate an email to signal support staff */
+"CONTACT_SUPPORT" = "Связаться со службой поддержки";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+
+/* button text */
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Попробовать ещё раз";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+
+/* Alert title */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Открыть в Картах";
 
@@ -649,6 +670,9 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Удалить разговор?";
+
+/* Indicates that the user can tap to download this image. */
+"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Скачать";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Вы не можете выбрать больше, чем %@ разговоров.";
@@ -833,8 +857,7 @@
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Поделиться";
 
-/* Title of the alert shown for failures while uploading debug logs.
-   Title of the debug log alert. */
+/* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Ещё один шаг";
 
 /* Error indicating that the app could not launch the Email app. */
@@ -1401,9 +1424,6 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Участники группы";
 
-/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Вы)";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Поиск по названию или адресу";
 
@@ -1441,7 +1461,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "В этом месяце";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Напомнить мне позже";
+"MEGAPHONE_REMIND_LATER" = "Напомнить позже";
 
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "Мы напомним вам позже.";
@@ -1515,13 +1535,19 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Сообщение";
 
-/* A button used to block a user on an incoming message request. */
+/* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Принять";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Заблокировать";
 
-/* A button used to block a user on an incoming message request. */
+/* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+
+/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+
+/* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Удалить";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
@@ -1541,6 +1567,27 @@
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Поделиться профилем";
+
+/* A button used to unlock a blocked conversation. */
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Разблокировать";
+
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Теперь вы можете выбирать, принимать ли новый разговор. Вы увидите варианты «Принять», «Удалить» и «Заблокировать».";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Новое: запросы на общение";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Представляем запросы на общение";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Добавить имя профиля";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Теперь вы можете «Принять» или «Удалить» новый разговор. Имена позволяют людям знать, кто отправляет им сообщения.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Имя вашего профиля было сохранено.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Доставлено";
@@ -1753,19 +1800,13 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Неверный PIN-код. Попыток не осталось.";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Введите алфавитно-цифровой PIN-код";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Введите буквенно-цифровой PIN-код";
 
 /* Button asking if the user would like to enter an numeric PIN */
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Введите цифровой PIN-код";
 
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "Для этого номера телефона включена блокировка регистрации. Пожалуйста, введите PIN-код.";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Ваш PIN-код блокировки регистрации — это не то же самое, что автоматический код подтверждения, который был отправлен вам на предыдущем шаге.";
-
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Забыли свой PIN-код?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Неверный PIN-код";
@@ -1775,9 +1816,6 @@
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Неверный PIN-код. Осталась 1 попытка.";
-
-/* Title of the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_TITLE" = "Блокировка регистрации";
 
 /* Explanation of the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Чтобы защитить вашу конфиденциальность и безопасность вашей учётной записи, мы заблокировали её на 7 дней.\n\nЕсли в течение 7 дней этот номер телефона не будет активен, вы сможете зарегистрировать его заново без ввода PIN-кода. Всё содержимое будет стёрто.";
@@ -1993,7 +2031,7 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Подтвердите свой новый PIN-код.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Создать алфавитно-цифровой PIN-код";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Создать буквенно-цифровой PIN-код";
 
 /* Button asking if the user would like to create an numeric PIN */
 "PIN_CREATION_CREATE_NUMERIC" = "Создать цифровой PIN-код";
@@ -2005,7 +2043,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Не удалось создать PIN-код";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN-код добавляет дополнительный уровень безопасности к вашей учётной записи. Важно запомнить этот PIN, так как он не может быть восстановлен.";
+"PIN_CREATION_EXPLANATION" = "PIN-коды улучшают безопасность вашей учётной записи и не могут быть восстановлены. Вам потребуется ваш PIN-код, чтобы зарегистрироваться в Signal заново.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-коды не совпадают. Попробуйте ещё раз.";
@@ -2036,6 +2074,27 @@
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Забыли свой PIN-код?";
+
+/* Action text for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Подтвердить PIN-код";
+
+/* Body for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_BODY" = "Иногда мы будем просить вас подтвердить ваш PIN-код, чтобы вы его помнили.";
+
+/* Toast indicating that we'll ask you for your PIN again in 3 days. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Мы напомним вам снова через несколько дней.";
+
+/* Title for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Подтвердите свой PIN-код Signal";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Мы напомним вам снова завтра.";
+
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Мы напомним вам снова через пару недель.";
+
+/* Toast indicating that we'll ask you for your PIN again in a week. */
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Мы напомним вам снова через неделю.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Неверный PIN-код, попробуйте ещё раз.";
@@ -2071,7 +2130,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Создайте PIN-код";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN-код создан.";
+"PINS_MEGAPHONE_TOAST" = "PIN-код создан. Вы можете изменить его в настройках.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Воспроизвести медиа";
@@ -2137,13 +2196,13 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Подтвердите имя вашего профиля";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Оно будет показано, когда вы начнёте новый разговор или когда вы поделитесь им.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Оно будет показано, если вы начнёте новый разговор или когда вы поделитесь им.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Добавьте имя профиля";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Ваше имя профиля было сохранено.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Имя вашего профиля было сохранено.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Установить аватар профиля";
@@ -2242,7 +2301,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Видео";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "Все · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Отреагировал(-а) %@ на ваше сообщение";
@@ -2289,11 +2348,14 @@
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Я забыл свой PIN-код.";
 
-/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Для вашей конфиденциальности и безопасности способа восстановить PIN-код не предусмотрено. Если вы не сможете вспомнить свой PIN-код, вы сможете заново зарегистрироваться через SMS, если в течение 7 дней не будет активности. При этом ваша учётная запись будет стёрта, а всё содержимое удалено.";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Забыли свой PIN-код?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+
+/* Alert body for a forgotten SVR (V2) PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+
+/* Alert body for a forgotten V1 PIN */
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "У вас осталось %lu попыток. Если вы исчерпаете попытки, ваша учётная запись будет заблокирована. Если после этого в течение 7 дней в ней не будет активности, вы сможете зарегистрироваться заново без ввода PIN-кода. При этом учётная запись будет стёрта, а всё содержимое удалено.";
@@ -2313,7 +2375,7 @@
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "Попробовать ещё раз";
 
-/* No comment provided by engineer. */
+/* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Вы сделали слишком много попыток. Пожалуйста, подождите минуту, прежде чем пробовать ещё раз.";
 
 /* No comment provided by engineer. */
@@ -3127,7 +3189,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Имена пользователей могут содержать только a-z, 0-9 и _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Произошла ошибка при поиске имени пользователя. Пожалуйста, попробуйте ещё раз позже.";
+"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ — не пользователь Signal. Убедитесь, что вы ввели полное имя пользователя.";
@@ -3210,5 +3272,8 @@
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Вы отключили исчезающие сообщения.";
 
+/* alert body shown when trying to use features in the app before completing registration-related setup. */
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+    
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Вы установили время исчезновения сообщений — %@.";

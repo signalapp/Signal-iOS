@@ -188,15 +188,20 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     return YES;
 }
 
-- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt transaction:(SDSAnyWriteTransaction *)transaction
+- (void)debugonly_markAsReadNowWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    // In various tests and debug UI we often want to make messages as already read.
+    // We want to do this without triggering sending read receipts, so we pretend it was
+    // read on a linked device.
     [self markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
-                sendReadReceipt:sendReadReceipt
+                         thread:[self threadWithTransaction:transaction]
+                   circumstance:OWSReadCircumstanceReadOnLinkedDevice
                     transaction:transaction];
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-              sendReadReceipt:(BOOL)sendReadReceipt
+                       thread:(TSThread *)thread
+                 circumstance:(OWSReadCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -221,14 +226,15 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                                      expirationStartedAt:readTimestamp
                                                              transaction:transaction];
 
+    [OWSReadReceiptManager.sharedManager messageWasRead:self
+                                                 thread:thread
+                                           circumstance:circumstance
+                                            transaction:transaction];
+
     [transaction addAsyncCompletion:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
                                                                  object:self];
     }];
-
-    if (sendReadReceipt) {
-        [OWSReadReceiptManager.sharedManager messageWasReadLocally:self transaction:transaction];
-    }
 }
 
 - (SignalServiceAddress *)authorAddress

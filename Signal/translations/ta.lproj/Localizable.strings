@@ -635,6 +635,27 @@
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "தொடர்பு புலங்கள் எதுவும் தேர்ந்தெடுக்கப்படவில்லை.";
 
+/* Button text to initiate an email to signal support staff */
+"CONTACT_SUPPORT" = "தொடர்பு ஆதரவு";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+
+/* button text */
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "மீண்டும் முயற்சி செய்";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+
+/* Alert title */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "வரைபடத்தில் திறக்கவும்";
 
@@ -649,6 +670,9 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "உரையாடலை அழி?";
+
+/* Indicates that the user can tap to download this image. */
+"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "பதிவிறக்க";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "%@ க்கும் மேற்பட்ட உரையாடல்களை நீங்கள் தேர்ந்தெடுக்க முடியாது.";
@@ -833,8 +857,7 @@
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "பகிர்";
 
-/* Title of the alert shown for failures while uploading debug logs.
-   Title of the debug log alert. */
+/* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "இன்னும் ஒரு படி";
 
 /* Error indicating that the app could not launch the Email app. */
@@ -1401,9 +1424,6 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "குழு உறுப்பினர்கள் ";
 
-/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "பெயர் அல்லது முகவரி மூலம் தேடுங்கள்";
 
@@ -1515,13 +1535,19 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "செய்தி";
 
-/* A button used to block a user on an incoming message request. */
+/* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "ஒப்புக்கொள்";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "தடு ";
 
-/* A button used to block a user on an incoming message request. */
+/* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+
+/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+
+/* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "அழி";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
@@ -1541,6 +1567,27 @@
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "சுயவிவரத்தைப் பகிரவும்";
+
+/* A button used to unlock a blocked conversation. */
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "தடைநீக்கு ";
+
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Your profile name has been saved.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "வழங்கப்பட்டது ";
@@ -1758,14 +1805,8 @@
 /* Button asking if the user would like to enter an numeric PIN */
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
 
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "இந்த தொலைபேசி எண்ணில் பதிவு பூட்டு இயக்கப்பட்டுள்ளது. பதிவு பூட்டு பின்னை உள்ளிடவும்.";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "கடைசி கட்டத்தில் உங்கள் தொலைபேசியில் அனுப்பப்பட்ட தானியங்கு சரிபார்ப்புக் குறியீடும்  உங்கள் பதிவு பூட்டு பின்'னும் வெவ்வேறு .";
-
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "உங்கள் பின்னை மறந்துவிட்டீர்களா?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "தவறான பின்";
@@ -1775,9 +1816,6 @@
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "தவறான பின். 1 முயற்சி மீதமுள்ளது.";
-
-/* Title of the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_TITLE" = "பதிவு பூட்டு";
 
 /* Explanation of the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "உங்கள் தனியுரிமை மற்றும் உங்கள் கணக்கு பாதுகாப்பைப் பாதுகாக்க, நாங்கள் அதை 7 நாட்களுக்கு பூட்டியுள்ளோம்.\n\n7 நாட்கள் செயலற்ற நிலையில், உங்கள் பின் தேவைப்படாமல் இந்த தொலைபேசி எண்ணை மீண்டும் பதிவுசெய்ய முடியும். எல்லா உள்ளடக்கமும் அழிக்கப்படும்.";
@@ -2005,7 +2043,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
+"PIN_CREATION_EXPLANATION" = "PINs add extra security to your account and can’t be recovered. You’ll need your PIN to register with Signal again.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "பின்'கள்  பொருந்தவில்லை. மீண்டும் முயற்சி செய்.";
@@ -2037,6 +2075,27 @@
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "உங்கள் பின்னை மறந்துவிட்டீர்களா?";
 
+/* Action text for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_ACTION" = "பின் சரிபார்க்கவும்";
+
+/* Body for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+
+/* Toast indicating that we'll ask you for your PIN again in 3 days. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+
+/* Title for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_TITLE" = "உங்கள் சிக்னல் பின்னை சரிபார்க்கவும்";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+
+/* Toast indicating that we'll ask you for your PIN again in a week. */
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
+
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "தவறான பின், மீண்டும் முயற்சிக்கவும்.";
 
@@ -2050,7 +2109,7 @@
 "PINS_MEGAPHONE_HAS_PIN_ACTION" = "பின்னைப் புதுப்பிக்கவும்";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "உங்கள் பதிவு பூட்டு இப்போது பின் என அழைக்கப்படுகிறது. புதுப்பிக்க சில வினாடிகள் ஆகும்.";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
@@ -2059,19 +2118,19 @@
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "பின்களை  அறிமுகப்படுத்துகிறது";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "பின் உருவாக்கவும்";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+"PINS_MEGAPHONE_NO_PIN_BODY" = "உங்கள் சிக்னல் கணக்கில் PIN கள் மற்றொரு அடுக்கு பாதுகாப்பைச் சேர்க்கின்றன.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "பின்னை உருவாக்கவும்";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "பின் உருவாக்கப்பட்டது.";
+"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "மீடியா விளையாடு";
@@ -2284,16 +2343,19 @@
 "REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "எதிர்வினைகளை அறிமுகப்படுத்துகிறது";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "எனது பின்னை மறந்துவிட்டேன்.";
 
-/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "உங்கள் தனியுரிமை மற்றும் பாதுகாப்பிற்காக, உங்கள் பின்னை மீட்டெடுக்க வழி இல்லை. உங்கள் பின்னை நினைவில் கொள்ள முடியாவிட்டால், 7 நாட்கள் செயலற்ற நிலையில் எஸ்எம்எஸ் மூலம் மீண்டும் சரிபார்க்கலாம். இந்த வழக்கில், உங்கள் கணக்கு அழிக்கப்பட்டு அனைத்து உள்ளடக்கமும் நீக்கப்படும்.";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "உங்கள் பின்னை மறந்துவிட்டீர்களா?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+
+/* Alert body for a forgotten SVR (V2) PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+
+/* Alert body for a forgotten V1 PIN */
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "உங்களிடம் %lu முயற்சிகள் உள்ளன. முயற்சிகள் முடிந்தால் உங்கள் கணக்கு பூட்டப்படும். செயலற்ற 7 நாட்களுக்குப் பிறகு, உங்கள் பின் இல்லாமல் மீண்டும் பதிவு செய்யலாம். உங்கள் கணக்கு அழிக்கப்பட்டு அனைத்து உள்ளடக்கமும் நீக்கப்படும்.";
@@ -2313,7 +2375,7 @@
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "மீண்டும் முயற்சி செய்";
 
-/* No comment provided by engineer. */
+/* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "நீங்கள் அடிக்கடி முயற்சித்தீர்கள். மீண்டும் முயற்சிக்கும் முன் ஒரு நிமிடம் காத்திருங்கள்.";
 
 /* No comment provided by engineer. */
@@ -2737,7 +2799,7 @@
 "SETTINGS_PINS_ITEM" = "உங்கள் பின்னை மாற்றவும்";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "பின்னை உருவாக்கவும்";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "பின்";
@@ -3127,7 +3189,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "பயனர்பெயர்களில் a-z, 0-9 மற்றும் _ மட்டுமே இருக்கலாம்";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "பயனர்பெயரைப் பார்க்கும்போது பிழை ஏற்பட்டது. பின்னர் மீண்டும் முயற்சிக்கவும்";
+"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ ஒரு Signal பயனர் அல்ல. முழுமையான பயனர்பெயரை உள்ளிட்டுள்ளீர்கள் என்பதை உறுதிப்படுத்தவும்.";
@@ -3210,5 +3272,8 @@
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "காணாமல் போன செய்திகளை முடக்கியுள்ளீர்கள்.";
 
+/* alert body shown when trying to use features in the app before completing registration-related setup. */
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+    
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "காணாமல் போன செய்தி நேரத்தை %@ ஆக அமைத்துள்ளீர்கள்.";

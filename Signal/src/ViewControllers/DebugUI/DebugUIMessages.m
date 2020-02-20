@@ -3819,7 +3819,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                      wasReceivedByUD:NO
                                    isViewOnceMessage:NO];
                 [message anyInsertWithTransaction:transaction];
-                [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
+                [message debugonly_markAsReadNowWithTransaction:transaction];
                 break;
             }
             case 1: {
@@ -3871,7 +3871,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                      wasReceivedByUD:NO
                                    isViewOnceMessage:NO];
                 [message anyInsertWithTransaction:transaction];
-                [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
+                [message debugonly_markAsReadNowWithTransaction:transaction];
                 break;
             }
             case 3: {
@@ -4280,7 +4280,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                 wasReceivedByUD:NO
                                                               isViewOnceMessage:NO];
                 [message anyInsertWithTransaction:transaction];
-                [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
+                [message debugonly_markAsReadNowWithTransaction:transaction];
             }
             {
                 // MJK TODO - this might be the one place we actually use senderTimestamp
@@ -4690,7 +4690,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                          wasReceivedByUD:NO
                        isViewOnceMessage:NO];
     [message anyInsertWithTransaction:transaction];
-    [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
+    [message debugonly_markAsReadNowWithTransaction:transaction];
     return message;
 }
 

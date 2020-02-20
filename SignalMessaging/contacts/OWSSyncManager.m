@@ -32,6 +32,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSSyncManagerConfigurationSyncDidCompleteNotification = @"OWSSyncManagerConfigurationSyncDidCompleteNotification";
+NSString *const OWSSyncManagerKeysSyncDidCompleteNotification = @"OWSSyncManagerKeysSyncDidCompleteNotification";
 
 NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManagerLastMessageKey";
 
@@ -73,7 +74,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileKeyDidChange:)
-                                                 name:kNSNotificationName_ProfileKeyDidChange
+                                                 name:kNSNotificationNameProfileKeyDidChange
                                                object:nil];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{

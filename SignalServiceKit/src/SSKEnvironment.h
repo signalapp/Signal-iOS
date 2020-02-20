@@ -50,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol StorageServiceManagerProtocol;
 @protocol GroupsV2;
 @protocol GroupV2Updates;
+@protocol PendingReadReceiptRecorder;
 
 @interface SSKEnvironment : NSObject
 
@@ -59,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(OWSMessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
+             pendingReadReceiptRecorder:(id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          primaryStorage:(nullable OWSPrimaryStorage *)primaryStorage
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
@@ -113,6 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSLinkPreviewManager *linkPreviewManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueue;
+@property (nonatomic, readonly) id<PendingReadReceiptRecorder> pendingReadReceiptRecorder;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;

@@ -315,7 +315,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-              sendReadReceipt:(BOOL)sendReadReceipt
+                       thread:(TSThread *)thread
+                 circumstance:(OWSReadCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -331,7 +332,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                                             message.read = YES;
                                         }];
 
-    // Ignore sendReadReceipt, it doesn't apply to info messages.
+    // Ignore `circumstance` - we never send read receipts for info messages.
 }
 
 @end

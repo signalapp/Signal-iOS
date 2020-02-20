@@ -58,9 +58,10 @@ public class PinSetupViewController: OWSViewController {
         }
     }
 
-    private let completionHandler: () -> Void
+    // Called once pin setup has finished. Error will be nil upon success
+    private let completionHandler: (PinSetupViewController, Error?) -> Void
 
-    init(mode: Mode, initialMode: Mode? = nil, pinType: KeyBackupService.PinType = .numeric, completionHandler: @escaping () -> Void) {
+    init(mode: Mode, initialMode: Mode? = nil, pinType: KeyBackupService.PinType = .numeric, completionHandler: @escaping (PinSetupViewController, Error?) -> Void) {
         assert(TSAccountManager.sharedInstance().isRegisteredPrimaryDevice)
         self.mode = mode
         self.initialMode = initialMode ?? mode
@@ -74,17 +75,12 @@ public class PinSetupViewController: OWSViewController {
     }
 
     @objc
-    convenience init(completionHandler: @escaping () -> Void) {
-        self.init(mode: .creating, completionHandler: completionHandler)
-    }
-
-    @objc
-    class func creating(completionHandler: @escaping () -> Void) -> PinSetupViewController {
+    class func creating(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
         return .init(mode: .creating, completionHandler: completionHandler)
     }
 
     @objc
-    class func changing(completionHandler: @escaping () -> Void) -> PinSetupViewController {
+    class func changing(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
         return .init(mode: .changing, completionHandler: completionHandler)
     }
 
@@ -430,11 +426,19 @@ public class PinSetupViewController: OWSViewController {
             self.nextButton.alpha = 0.5
         }
 
-        OWS2FAManager.shared().requestEnable2FA(withPin: pin, success: {
+        OWS2FAManager.shared().requestEnable2FA(withPin: pin, mode: .V2, success: {
             AssertIsOnMainThread()
 
             // The completion handler always dismisses this view, so we don't want to animate anything.
-            progressView.loadingComplete(success: true, animated: false, completion: self.completionHandler)
+            progressView.loadingComplete(success: true, animated: false) { [weak self] in
+                guard let self = self else { return }
+                self.completionHandler(self, nil)
+            }
+
+            // Clear the experience upgrade if it was pending.
+            SDSDatabaseStorage.shared.asyncWrite { transaction in
+                ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: transaction.unwrapGrdbWrite)
+            }
         }, failure: { error in
             AssertIsOnMainThread()
 
@@ -461,7 +465,7 @@ public class PinSetupViewController: OWSViewController {
                         message: NSLocalizedString("PIN_CREATION_ERROR_MESSAGE",
                                                    comment: "Error body indicating that the attempt to create a PIN failed.")
                     ) { _ in
-                        self.dismiss(animated: true, completion: nil)
+                        self.completionHandler(self, error)
                     }
                 } else {
                     OWSActionSheets.showErrorAlert(

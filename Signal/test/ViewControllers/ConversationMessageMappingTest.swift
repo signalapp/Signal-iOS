@@ -95,7 +95,7 @@ class ConversationMessageMappingTest: SignalBaseTest {
                 // This write is actually not necessary for the test to succeed, since we're manually
                 // passing in `updatedInteractionIds` rather than observing db changes in this unit test,
                 // "marking as read" here only documents an example of what we mean by "updated".
-                message.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
+                message.debugonly_markAsReadNow(transaction: transaction)
             }
         }
 
@@ -127,7 +127,7 @@ class ConversationMessageMappingTest: SignalBaseTest {
                 // This write is actually not necessary for the test to succeed, since we're manually
                 // passing in `updatedInteractionIds` rather than observing db changes in this unit test,
                 // "marking as read" here only documents an example of what we mean by "updated".
-                message.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
+                message.debugonly_markAsReadNow(transaction: transaction)
             }
             return self.messageFactory.create(transaction: transaction)
         }
@@ -183,7 +183,7 @@ class ConversationMessageMappingTest: SignalBaseTest {
 
             // mark as read so that we initially load the bottom of the conversation
             for message in createdMessages {
-                message.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
+                message.debugonly_markAsReadNow(transaction: transaction)
             }
 
             return createdMessages

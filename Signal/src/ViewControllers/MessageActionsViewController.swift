@@ -27,6 +27,8 @@ public class MessageAction: NSObject {
 protocol MessageActionsViewControllerDelegate: class {
     func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withAction: MessageAction?)
     func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withReaction: String, isRemoving: Bool)
+    func messageActionsViewController(_ messageActionsViewController: MessageActionsViewController,
+                                      shouldShowReactionPickerForInteraction: TSInteraction) -> Bool
 }
 
 @objc
@@ -168,21 +170,10 @@ class MessageActionsViewController: UIViewController {
 
     // MARK: - Reaction handling
 
-    lazy var interactionAllowsReactions: Bool = {
-        switch focusedInteraction {
-        case let outgoingMessage as TSOutgoingMessage:
-            switch outgoingMessage.messageState {
-            case .failed, .sending:
-                return false
-            default:
-                return true
-            }
-        case is TSIncomingMessage:
-            return true
-        default:
-            return false
-        }
-    }()
+    var interactionAllowsReactions: Bool {
+        guard let delegate = delegate else { return false }
+        return delegate.messageActionsViewController(self, shouldShowReactionPickerForInteraction: focusedInteraction)
+    }
 
     private var reactionPicker: MessageReactionPicker?
     private func addReactionPickerIfNecessary() {

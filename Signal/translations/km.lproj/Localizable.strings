@@ -635,6 +635,27 @@
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "គ្មានជ្រើសរើសលេខទំនាក់ទំនង";
 
+/* Button text to initiate an email to signal support staff */
+"CONTACT_SUPPORT" = "Contact Support";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+
+/* button text */
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "ព្យាយាមម្តងទៀត";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+
+/* Alert title */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "បើកក្នុងកម្មវិធី ផែនទី";
 
@@ -649,6 +670,9 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "លុបការសន្ទនា?";
+
+/* Indicates that the user can tap to download this image. */
+"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "ទាញយក";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "អ្នកមិនអាចជ្រើសរើសសារសន្ទនាលើសពី %@ ។";
@@ -833,8 +857,7 @@
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "ចែករំលែក";
 
-/* Title of the alert shown for failures while uploading debug logs.
-   Title of the debug log alert. */
+/* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "មួយជំហានទៀត";
 
 /* Error indicating that the app could not launch the Email app. */
@@ -1138,10 +1161,10 @@
 "GROUP_CREATED" = "ក្រុមបានបង្កើត។";
 
 /* conversation history entry when the local user created a group */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "អ្នកបានបង្កើតក្រុមនេះ។";
 
 /* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ បានបន្ថែមអ្នកចូលក្នុងក្រុមនេះ។";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "មិនមែនសមាជិកទាំងអស់អាចត្រូវបានបន្ថែមទៅក្រុមនោះទេ។ ចុច ដើម្បីព្យាយាមម្តងទៀត។";
@@ -1174,31 +1197,31 @@
 "GROUP_UPDATED" = "បានធ្វើបច្ចុប្បន្នភាពក្រុម។";
 
 /* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
-"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ និង %@ បានចូលរួមក្រុមនេះ។";
 
 /* conversation history entry. Embeds the {{added user's name}} */
-"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ បានចូលរួមក្រុមនេះ។";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "បានលុបរូបតំណាងក្រុម។";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "បានធ្វើបច្ចុប្បន្នភាពរូបតំណាងក្រុម";
 
 /* conversation history entry. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "អ្នកបានធ្វើបច្ចុប្បន្នភាពក្រុម។";
 
 /* conversation history entry. Embeds {{remote user's name}} */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ បានធ្វើបច្ចុប្បន្នភាពក្រុម។";
 
 /* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+"GROUP_UPDATED_NAME_REMOVED" = "បានលុបចោលឈ្មោះ។";
 
 /* conversation history entry. Embeds {{group name}} */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "ឈ្មោះក្រុមឥឡូវនេះគឺ  “%@”។";
 
 /* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
+"GROUP_UPDATED_READDED_YOU" = "បានបន្ថែមអ្នកចូលក្នុងក្រុមម្តងទៀត។";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "អ្នកបានចាកចេញពីក្រុម។";
@@ -1401,9 +1424,6 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "សមាជិកក្រុម";
 
-/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (អ្នក)";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "ស្វែងរកតាមឈ្មោះ ឬ អសយដ្ឋាន";
 
@@ -1441,10 +1461,10 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "ខែនេះ";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "រំលឹកខ្ញុំពេលក្រោយ";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "យើងនឹងរំលឹកអ្នកពេលក្រោយ។";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "ថតចម្លងសារអក្សរ";
@@ -1515,13 +1535,19 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "សារ";
 
-/* A button used to block a user on an incoming message request. */
+/* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "យល់ព្រម";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "រារាំង";
 
-/* A button used to block a user on an incoming message request. */
+/* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+
+/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+
+/* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "លុប";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
@@ -1541,6 +1567,27 @@
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "ចែករំលែកប្រវត្តិរូប";
+
+/* A button used to unlock a blocked conversation. */
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "បើកវិញ";
+
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "You can now choose whether to accept a new conversation. You’ll see options to ”Accept,“ ”Delete,“ or ”Block.“";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "New: Message Requests";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "ពត៌មានផ្ទាល់ខ្លួនរបស់អ្នក ត្រូវបានរក្សាទុក។";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "បានទទួល";
@@ -1753,19 +1800,13 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "លេខ PIN មិនត្រឹមត្រូវ។ ការសាកល្បងហួសកំណត់។";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "បញ្ចូលលេខ PIN អក្សរក្រមលេខ";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "លេខទូរស័ព្ទនេះ បានបើកការចាក់សោរចុះឈ្មោះ។ សូមមេត្តាបញ្ចូលលេខPIN សម្រាប់ចាក់សោរការចុះឈ្មោះ។";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "លេខPIN ចាក់សោរចុះឈ្មោះរបស់អ្នក គឺផ្សេងពីកូដផ្ទៀងផ្ទាត់ស្វ័យប្រវត្តិ ដែលត្រូវបានផ្ញើទៅលេខទូរស័ព្ទរបស់អ្នក ក្នុងដំណាក់កាលចុងក្រោយ។";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "បញ្ចូលលេខកូដ PIN";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "ភ្លេចលេខ PIN របស់អ្នក?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "លេខកូដ PIN មិនត្រឹមត្រូវ";
@@ -1775,9 +1816,6 @@
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "លេខ PIN មិនត្រឹមត្រូវ។ ការព្យាយាមនៅសល់ 1 ដង។";
-
-/* Title of the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_TITLE" = "ចាក់សោរការចុះឈ្មោះ";
 
 /* Explanation of the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "ដើម្បីការពារឯកជនភាព និងសុវត្ថិភាពគណនីរបស់អ្នក យើងបានចាក់សោរវារយៈពេល 7 ថ្ងៃ។\n\nបន្ទាប់ពី 7 ថ្ងៃនៃភាពអសកម្ម អ្នកនឹងអាចចុះឈ្មោះលេខទូរស័ព្ទនេះម្តងទៀត ដោយមិនទាមទារលេខ PIN របស់អ្នកទេ។​ ទិន្នន័យទាំងអស់នឹងត្រូវលុបចោល។";
@@ -1984,7 +2022,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "អាល់បុមគ្មានឈ្មោះ";
 
 /* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN ត្រូវមានយ៉ាងហោចណាស់ 6 តួ";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "ផ្លាស់ប្តូរលេខ PIN របស់អ្នក";
@@ -1993,34 +2031,34 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "ផ្ទៀងផ្ទាត់លេខ PIN ថ្មីរបស់អ្នក។";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "បង្កើតអក្សរក្រមលេខ PIN";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+"PIN_CREATION_CREATE_NUMERIC" = "បង្កើតលេខ PIN";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+"PIN_CREATION_ERROR_MESSAGE" = "លេខ PIN របស់អ្នកមិនបានរក្សាទុក។ យើងនឹងណែនាំអ្នកអោយបង្កើតកូដ PIN នៅពេលក្រោយ។";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+"PIN_CREATION_ERROR_TITLE" = "ការបង្កើត PIN បរាជ័យ";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. It's important to remember this PIN, as it can’t be recovered.";
+"PIN_CREATION_EXPLANATION" = "លេខកូដ PINs បន្ថែមសុវត្ថិភាពទៅគណនីរបស់អ្នក និងមិនអាចស្តារឡើងវិញទេ។ អ្នកត្រូវការលេខកូដ PIN ដើម្បីចុះឈ្មោះជាមួយ Signal ម្តងទៀត។";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "លេខPIN  មិនត្រូវគ្នា។ ព្យាយាមម្តងទៀត។";
 
 /* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
+"PIN_CREATION_NUMERIC_HINT" = "លេខ PIN ត្រូវមានយ៉ាងហោច 6 ខ្ទង់។";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "បញ្ចូលលេខ PIN ម្តងទៀត";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "កំពុងបង្កើត PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "អ្នកអាចជ្រើសរើសលេខកូដ PIN ថ្មី ដោយសារឧបករណ៍នេះបានចុះឈ្មោះហើយ។ បើអ្នកភ្លេចលេខកូដ PIN របស់អ្នក អ្នកអាចត្រូវរង់ចាំ 7 ថ្ងៃ ដើម្បីចុះឈ្មោះម្តងទៀត។";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "បង្កើតលេខ PIN ថ្មី";
@@ -2029,13 +2067,34 @@
 "PIN_CREATION_TITLE" = "បង្កើតលេខ PIN របស់អ្នក";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "លេខ PIN ត្រូវមានយ៉ាងហោច 6 ខ្ទង់។";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "ដើម្បីជួយការចង់ចាំលេខ PIN របស់អ្នក យើងនឹងសួរអ្នក ឲ្យបញ្ចូលវាជាប្រចាំ។យើងនឹងសួរតិចជាងមុនលើកក្រោយ។";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "ភ្លេចលេខ PIN របស់អ្នក?";
+
+/* Action text for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_ACTION" = "ផ្ទៀងផ្ទាត់លេខ PIN";
+
+/* Body for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_BODY" = "យើងនឹងសាកសួរអ្នកម្តងម្កាល ដើម្បីផ្ទៀងផ្ទាត់លេខកូដ PIN ថាអ្នកពិតជាចងចាំវា។";
+
+/* Toast indicating that we'll ask you for your PIN again in 3 days. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "យើងនឹងរំលឹកអ្នកម្តងទៀតប៉ុន្មានថ្ងៃទៀត។";
+
+/* Title for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_TITLE" = "ផ្ទៀងផ្ទាត់លេខPIN Signal";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "យើងនឹងរំលឹកអ្នកម្តងទៀតថ្ងៃស្អែក។";
+
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "យើងនឹងរំលឹកអ្នកម្តងទៀត២សប្តាហ៍ក្រោយ។";
+
+/* Toast indicating that we'll ask you for your PIN again in a week. */
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "យើងនឹងរំលឹកអ្នកម្តងទៀតសប្តាហ៍ក្រោយ។";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "លេខ PIN មិនត្រឹមត្រូវ សូមព្យាយាមម្តងទៀត។";
@@ -2044,34 +2103,34 @@
 "PIN_REMINDER_TITLE" = "បញ្ចូលលេខ Signal PIN របស់អ្នក";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "លេខ PIN ត្រូវមានយ៉ាងហោច 6 ខ្ទង់។";
 
 /* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Update PIN";
+"PINS_MEGAPHONE_HAS_PIN_ACTION" = "បច្ចុប្បន្នភាពកូដ PIN";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "ការចាក់សោរការចុះឈ្មោះរបស់អ្នក ឥឡូវត្រូវបានហៅថា លេខកូដ PIN។ ធ្វើបច្ចុប្បន្នភាពវា ចំណាយពេលប៉ុន្មានវិនាទីប៉ុណ្ណោះ។";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "យើងនឹងរំលឹកអ្នកពេលក្រោយ។ ការធ្វើបច្ចុប្បន្នភាពលេខកូដ PIN នឹងចាំបាច់ក្នុង %ld ថ្ងៃ។";
 
 /* Title for PIN megaphone when user already has a PIN */
 "PINS_MEGAPHONE_HAS_PIN_TITLE" = "ការណែនាំ លេខPINs";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Create PIN";
+"PINS_MEGAPHONE_NO_PIN_ACTION" = "បង្កើតលេខកូដ PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+"PINS_MEGAPHONE_NO_PIN_BODY" = "លេខកូដ PINs បង្កើតស្រទាប់សុវត្ថិភាពបន្ថែមលើគណនី Signal របស់អ្នក។";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "យើងនឹងរំលឹកអ្នកពេលក្រោយ។ ការបង្កើតលេខកូដ PIN នឹងចាំបាច់ក្នុង %ld ថ្ងៃ។";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Create a PIN";
+"PINS_MEGAPHONE_NO_PIN_TITLE" = "បង្កើតលេខកូដ PIN មួយ";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN created.";
+"PINS_MEGAPHONE_TOAST" = "លេខកូដ PIN ត្រូវបានបង្កើត។ អ្នកអាចផ្លាស់ប្តូរក្នុងការកំណត់។";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "ចាក់មេឌា";
@@ -2128,22 +2187,22 @@
 "PROCEED_BUTTON" = "ដំណើរការ";
 
 /* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "ចាប់ផ្តើម";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "ពត៌មានផ្ទាល់ខ្លួនរបស់អ្នកឥឡូវអាចរួមបញ្ចូលត្រកូលស្រេចចិត្ត។";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "បញ្ជាក់ពត៌មានផ្ទាល់ខ្លួនរបស់អ្នក";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "នេះនឹងបង្ហាញនៅពេលអ្នកចាប់ផ្តើមកិច្ចសន្ទនាថ្មី ឬចែករំលែកវា។";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "បន្ថែមពត៌មានផ្ទាល់ខ្លួន";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "ពត៌មានផ្ទាល់ខ្លួនរបស់អ្នក ត្រូវបានរក្សាទុក។";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "កំណត់រូបតំណាង";
@@ -2155,28 +2214,28 @@
 "PROFILE_VIEW_CREATE_USERNAME" = "បង្កើតឈ្មោះអ្នកប្រើប្រាស់";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
-"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "ត្រកូលរបស់អ្នក វែងពេក។";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "ឈ្មោះរបស់អ្នក គឺចាំចាច់។";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "ឈ្មោះរបស់អ្នក វែងពេក។";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(ជម្រើស)";
 
 /* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "ត្រកូល";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(ចាំបាច់)";
 
 /* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "ឈ្មោះ";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
+"PROFILE_VIEW_NO_CONNECTION" = "ពត៌មានផ្ទាល់ខ្លួនអាចធ្វើបច្ចុប្បន្នភាព នៅពេលតភ្ជាប់នឹងអ៊ីនធើណេត។";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "ប្រវត្តិរូបSignalរបស់អ្នកនឹងបង្ហាញទៅបញ្ជីទំនាក់ទំនងរបស់អ្នក នៅពេលចាប់ផ្តើមសន្ទនាថ្មី និងពេលអ្នកចែករំលែកវាជាមួយអ្នកប្រើប្រាស់និងក្រុមផ្សេង។";
@@ -2242,58 +2301,61 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "វីដេអូ";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "ទាំងអស់។ %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅសាររបស់អ្នក";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅអាល់ប៊ុមរបស់អ្នក";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅសំឡេងរបស់អ្នក";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅលេខទំនាក់ទំនងអ្នកចែករំលែក";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅឯកសារអ្នក";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅ GIF អ្នក";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅរូបភាពអ្នក";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅស្ទីកគ័រអ្នក";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅ៖ \"%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅវីដេអូអ្នក";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅមេឌាមើលម្តងរបស់អ្នក";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "ប្រតិកម្ម %@ ទៅសារសំឡេងអ្នក";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "ចុច និងសង្កត់សារណាមួយដើម្បីចែករំលែករហ័សពីអារម្មណ៍របស់អ្នក។";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "ការណែនាំ ប្រតិកម្ម";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ខ្ញុំបានភ្លេចលេខPIN ។";
 
-/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "ដើម្បីឯកជនភាព និងសុវត្ថិភាពរបស់អ្នក មិនមានវិធីស្តារលេខ PIN ឡើងវិញទេ។ បើអ្នកមិនអាចចងចាំលេខ PIN អ្នកអាចផ្ទៀងផ្ទាត់ម្តងទៀតតាមសារ SMS បន្ទាប់ពី 7 ថ្ងៃនៃភាពអសកម្ម។ ក្នុងករណីនេះ គណនីរបស់អ្នក នឹងត្រូវលុបចោលទិន្នន័យទាំងអស់។";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "ភ្លេចលេខ PIN របស់អ្នក?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+
+/* Alert body for a forgotten SVR (V2) PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+
+/* Alert body for a forgotten V1 PIN */
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "អ្នកនៅមានការព្យាយាម %lu ដង។ បើការព្យាយាមអស់ គណនីអ្នកនឹងត្រូវចាក់សោរ។ បន្ទាប់ពី 7 ថ្ងៃនៃភាពអសកម្ម អ្នកអាចចុះឈ្មោះម្តងទៀត ដោយមិនត្រូវការលេខ PIN។ គណនីរបស់អ្នក នឹងត្រូវលុបចោលទិន្នន័យទាំងអស់។";
@@ -2313,7 +2375,7 @@
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "ព្យាយាមម្តងទៀត";
 
-/* No comment provided by engineer. */
+/* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "អ្នកបានព្យាយាមច្រើនដងពេក។ សូមរង់ចាំមួយនាទី មុនពេលព្យាយាមម្តងទៀត។";
 
 /* No comment provided by engineer. */
@@ -2731,13 +2793,13 @@
 "SETTINGS_NOTIFICATIONS" = "ការជូនដំណឹង";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "លេខ PIN បន្ថែមស្រទាប់សុវត្ថិភាព និងបម្រុងទុកគណនីរបស់អ្នក។ អ្នកនឹងអាចត្រូវបានសួរ នៅពេលអ្នកចុះឈ្មោះលេខទូរស័ព្ទរបស់អ្នកជាមួយ Signal។ បើអ្នកភ្លេចលេខ PIN អ្នកនឹងត្រូវចាក់សោរពីគណនីរបស់អ្នករយៈពេល 7 ថ្ងៃ។";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "ផ្លាស់ប្តូរលេខ PIN របស់អ្នក";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "បង្កើតលេខកូដ PIN មួយ";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "លេខ PIN";
@@ -3097,13 +3159,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "ស្វែងយល់បន្ថែមពី លេខ PINs";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock is now called a PIN, and it does more. Update it now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "ការចាក់សោរការចុះឈ្មោះរបស់អ្នក ឥឡូវត្រូវបានហៅថា លេខកូដ PIN និងវាមានមុខងារច្រើន។ ធ្វើបច្ចុប្បន្នភាពវាឥឡូវនេះ។";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "ចាក់សោរការចុះឈ្មោះ = លេខ PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "លេខកូដ PINs បន្ថែមកម្រិតសុវត្ថិភាពទៅគណនីរបស់អ្នក។ បង្កើតលេខកូដ PIN របស់អ្នកឥឡូវនេះ។";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "ការណែនាំ លេខPINs";
@@ -3127,7 +3189,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "ឈ្មោះអ្នកប្រើប្រាស់ អាចមានតែអក្សរ a-z 0-9 និង _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "មានបញ្ហាមួយកើតឡើងនៅពេលស្វែងរកឈ្មោះអ្នកប្រើប្រាស់។ សូមព្យាយាមសាកល្បងម្តងទៀតពេលក្រោយ។";
+"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ មិនមែនជាអ្នកប្រើប្រាស់ Signal ទេ។ សូមប្រាកដថា អ្នកបានបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ពេញលេញ។";
@@ -3210,5 +3272,8 @@
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "អ្នកបានបិទការរលុបសារ។";
 
+/* alert body shown when trying to use features in the app before completing registration-related setup. */
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+    
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "អ្នកកំណត់រយៈពេលរលុបសារ %@។";

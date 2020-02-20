@@ -33,7 +33,7 @@
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Stuur bericht";
+"ACTION_SEND_MESSAGE" = "Bericht verzenden";
 
 /* Label for 'share contact' button. */
 "ACTION_SHARE_CONTACT" = "Deel contactinformatie";
@@ -567,7 +567,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Ongeregistreerd nummer";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Bewerk";
+"CONTACT_EDIT_NAME_BUTTON" = "Wijzigen";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "E-mail";
@@ -635,11 +635,32 @@
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Geen contactvelden geselecteerd.";
 
+/* Button text to initiate an email to signal support staff */
+"CONTACT_SUPPORT" = "Neem contact op met ondersteuning";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+
+/* button text */
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Opnieuw proberen";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+
+/* Alert title */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open met Kaarten";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Verstuur e-mail";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "E-mail verzenden";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Naamloos contactpersoon";
@@ -649,6 +670,9 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Gesprek wissen?";
+
+/* Indicates that the user can tap to download this image. */
+"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Downloaden";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Je kunt niet meer dan %@ gesprekken selecteren.";
@@ -765,13 +789,13 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Deze gebruiker staat niet in je contactenlijst.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Meer berichten laden…";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Meer berichten aan het laden…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tik voor meer";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blokkeer deze persoon";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Deze persoon blokkeren";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Je sessie opnieuw instellen zal je toestaan toekomstige berichten van %@ te ontvangen, maar het zal reeds beschadigde berichten niet herstellen.";
@@ -833,8 +857,7 @@
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Delen";
 
-/* Title of the alert shown for failures while uploading debug logs.
-   Title of the debug log alert. */
+/* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Nog één stap";
 
 /* Error indicating that the app could not launch the Email app. */
@@ -1401,9 +1424,6 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Groepsleden";
 
-/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Jij)";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Zoek op naam of adres";
 
@@ -1515,13 +1535,19 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Bericht";
 
-/* A button used to block a user on an incoming message request. */
+/* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Aanvaarden";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokkeren";
 
-/* A button used to block a user on an incoming message request. */
+/* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+
+/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+
+/* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Wissen";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
@@ -1541,6 +1567,27 @@
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Profiel zichtbaar maken";
+
+/* A button used to unlock a blocked conversation. */
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Deblokkeren";
+
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Je kunt nu kiezen of je een nieuw gesprek wilt aanvaarden of niet. Je zult de opties ‘Aanvaarden’, ‘Verwijderen’ of ‘Blokkeren’ krijgen.";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Nieuw: gespreksverzoeken";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "We introduceren gespreksverzoeken";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Een profielnaam toevoegen";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Je kunt vanaf nu kiezen om een nieuw gesprek te aanvaarden of te verwijderen. Door profielnamen weet men van wie ze een bericht krijgen.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Je profielnaam is opgeslagen.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Afgeleverd";
@@ -1758,14 +1805,8 @@
 /* Button asking if the user would like to enter an numeric PIN */
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Voer je numerieke pincode in";
 
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "Registratievergrendeling is ingeschakeld voor dit telefoonnummer. Voer de pincode voor registratievergrendeling in.";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Je registratievergrendelingspincode is iets anders dan de automatische verificatiecode die in de vorige stap naar je telefoon is gestuurd.";
-
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Pincode vergeten?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Incorrecte pincode";
@@ -1775,9 +1816,6 @@
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrecte pincode. 1 poging resterend.";
-
-/* Title of the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_TITLE" = "Registratievergrendeling";
 
 /* Explanation of the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Om de privacy en beveiliging van je account te beschermen hebben we je account voor 7 dagen vergrendeld.\n\nJe kunt dit telefoonnummer opnieuw registreren na 7 dagen inactiviteit zonder je pincode nodig te hebben. Als je zonder pincode opnieuw registreert word alle inhoud gewist";
@@ -2005,7 +2043,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Pincode aanmaken mislukt";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Pincodes voegen een extra niveau van beveiliging toe aan je Signal account. Het is belangrijk om je pincode te onthouden, want je kunt hem later niet terugzien.";
+"PIN_CREATION_EXPLANATION" = "Pincodes voegen een extra niveau van beveiliging toe aan je account. Je moet je pincode onthouden want je kunt hem niet terugzien. Je hebt je pincode nodig als je je telefoonnummer in de toekomst opnieuw bij Signal wilt registreren.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
@@ -2036,6 +2074,27 @@
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Pincode vergeten?";
+
+/* Action text for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Pincode verifiëren ";
+
+/* Body for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_BODY" = "Signal zal je af te toe vragen om je pincode opnieuw in te voeren, om te controleren of je hem goed onthouden hebt.";
+
+/* Toast indicating that we'll ask you for your PIN again in 3 days. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Signal zal je er binnen een aantal dagen opnieuw aan herinneren dat je je pincode nog moet verifiëren.";
+
+/* Title for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Verifieer je Signal-pincode";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Signal zal je er morgen opnieuw aan herinneren dat je je pincode nog moet verifiëren.";
+
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Signal zal je er binnen een aantal weken opnieuw aan herinneren dat je je pincode nog moet verifiëren.";
+
+/* Toast indicating that we'll ask you for your PIN again in a week. */
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Signal zal je er na een week opnieuw aan herinneren dat je je pincode nog moet verifiëren.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Ongeldige pincode, probeer het opnieuw.";
@@ -2071,7 +2130,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "Een pincode aanmaken";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "Pincode aangemaakt.";
+"PINS_MEGAPHONE_TOAST" = "Pincode aangemaakt. Je kunt deze wijzigen in de instellingen.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Media afspelen";
@@ -2134,7 +2193,7 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Je kunt nu optioneel een achternaam toevoegen aan je profiel.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Bevestig dat dit de profielnaam is welke je wilt gebruiken";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Bevestig dat je profielnaam correct is ingevuld";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Je profielnaam zal worden weergegeven wanneer je een nieuw gesprek begint, of wanneer je expliciet toestemming geeft om je profiel zichtbaar te maken.";
@@ -2197,7 +2256,7 @@
 "PUSH_MANAGER_MARKREAD" = "Markeren als gelezen";
 
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reageer";
+"PUSH_MANAGER_REPLY" = "Reageren";
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Opnieuw registreren voor pushmeldingen geslaagd.";
@@ -2242,7 +2301,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "Alle %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reageerde op je bericht met %@";
@@ -2289,11 +2348,14 @@
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ik ben mijn pincode vergeten.";
 
-/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Uit privacy- en beveiligingsoverweging is er geen manier om je pincode te herstellen. Als je je pincode niet kunt herinneren, dan kun je na ten minste 7 dagen inactiviteit je telefoonnummer opnieuw verifiëren met een sms-bericht. In dat geval word je account gereset en wordt alle inhoud gewist.";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Pincode vergeten?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+
+/* Alert body for a forgotten SVR (V2) PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+
+/* Alert body for a forgotten V1 PIN */
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Je hebt nog %lu resterend(e) poging(en). Als je geen pogingen meer over hebt wordt je account vergrendeld. Na ten minste 7 dagen inactiviteit kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt in dat geval gereset en alle inhoud wordt gewist.";
@@ -2313,7 +2375,7 @@
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "Opnieuw proberen";
 
-/* No comment provided by engineer. */
+/* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Je hebt het te vaak geprobeerd. Wacht een minuut voor je het opnieuw probeert.";
 
 /* No comment provided by engineer. */
@@ -2596,7 +2658,7 @@
 "SETTINGS_APPEARANCE_TITLE" = "Uiterlijk";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (standaard)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (systeemstandaard)";
 
 /* Label for the backup view in app settings. */
 "SETTINGS_BACKUP" = "Back-up";
@@ -3127,7 +3189,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Gebruikersnamen mogen alleen uit de karakters a-z, 0-9 en _ bestaan.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Er is iets fout gegaan bij het opzoeken van de gebruikersnaam. Probeer het later opnieuw alstublieft.";
+"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ is geen Signal-gebruiker. Ga na dat je de complete gebruikersnaam hebt ingevuld.";
@@ -3210,5 +3272,8 @@
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt zelf-wissende berichten uitgeschakeld.";
 
+/* alert body shown when trying to use features in the app before completing registration-related setup. */
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+    
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor zelf-wissende berichten ingesteld op %@.";

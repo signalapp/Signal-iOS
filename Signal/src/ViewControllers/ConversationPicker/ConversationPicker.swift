@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -185,7 +185,7 @@ class ConversationPickerViewController: OWSViewController {
     }
 
     func buildConversationCollection() -> ConversationCollection {
-        return self.databaseStorage.uiread { transaction in
+        return self.databaseStorage.uiRead { transaction in
             var recentItems: [RecentConversationItem] = []
             var contactItems: [ContactConversationItem] = []
             var groupItems: [GroupConversationItem] = []

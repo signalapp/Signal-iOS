@@ -459,6 +459,11 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         owsFailDebug("unexpected invocation")
         return false
     }
+
+    func mediaAlbumHasPendingMessageRequestAttachment() -> Bool {
+        owsFailDebug("unexpected invocation")
+        return false
+    }
 }
 
 private class MockIncomingMessage: TSIncomingMessage {

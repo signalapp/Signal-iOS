@@ -87,10 +87,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This method should be called right _before_ we send a message to a thread,
 // since we want to auto-add any thread to the profile whitelist that was
-// initiated by the local user.
+// initiated by the local user OR if there was a pending message request and
+// the local user took an action like initiating a call or updating the DM timer.
 //
 // Returns YES IFF the thread was just added to the profile whitelist.
-+ (BOOL)addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:(TSThread *)thread;
++ (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:(TSThread *)thread NS_SWIFT_NAME(addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread:));
++ (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequest:(TSThread *)thread
+                                               transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Delete Content
 
@@ -102,11 +105,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                  authorAddress:(SignalServiceAddress *)authorAddress
                                                 threadUniqueId:(NSString *)threadUniqueId
                                                    transaction:(SDSAnyReadTransaction *)transaction;
-
-#pragma mark - Message Request
-
-+ (BOOL)hasPendingMessageRequest:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
-+ (BOOL)existsOutgoingMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

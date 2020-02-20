@@ -491,9 +491,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/devices/capabilities"]
                               method:@"PUT"
-                          parameters:@{
-                              @"capabilities": self.deviceCapabilities
-                          }];
+                          parameters:self.deviceCapabilities];
 }
 
 + (NSDictionary<NSString *, NSNumber *> *)deviceCapabilities
@@ -829,26 +827,26 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 #pragma mark - Profiles
 
-+ (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(nullable NSData *)encryptedPaddedName
++ (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(NSData *)encryptedPaddedName
 {
     const NSUInteger kEncodedNameLength = 108;
 
-    NSUInteger encodedNameLength = kEncodedNameLength;
-
-    NSString *urlString;
-    
     NSString *base64EncodedName = [encryptedPaddedName base64EncodedString];
+    NSString *urlEncodedName;
     // name length must match exactly
-    if (base64EncodedName.length == encodedNameLength) {
-        NSString *_Nullable urlEncodedName = base64EncodedName.encodeURIComponent;
-        urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, urlEncodedName];
+    if (base64EncodedName.length == kEncodedNameLength) {
+        urlEncodedName = base64EncodedName.encodeURIComponent;
     } else {
-        // if name length doesn't match exactly, assume blank name
+        // if name length doesn't match exactly, use a blank name.
+        // Since names are required, the server will reject this with HTTP405,
+        // which is desirable - we want this request to fail rather than upload
+        // a broken name.
         OWSFailDebug(@"Couldn't encode name.");
         OWSAssertDebug(encryptedPaddedName == nil);
-        urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, @""];
+        urlEncodedName = @"";
     }
-    
+    NSString *urlString = [NSString stringWithFormat:@"v1/profile/name/%@", urlEncodedName];
+
     NSURL *url = [NSURL URLWithString:urlString];
     TSRequest *request = [[TSRequest alloc] initWithURL:url];
     request.HTTPMethod = @"PUT";

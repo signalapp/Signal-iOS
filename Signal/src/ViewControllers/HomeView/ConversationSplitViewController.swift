@@ -6,11 +6,21 @@ import Foundation
 
 @objc
 class ConversationSplitViewController: UISplitViewController, ConversationSplit {
+
+    // MARK: - Dependencies
+
+    var databaseStorage: SDSDatabaseStorage {
+        return .shared
+    }
+
+    // MARK: -
+
     private let conversationListVC = ConversationListViewController()
     private let detailPlaceholderVC = NoSelectedConversationViewController()
 
     private lazy var primaryNavController = OWSNavigationController(rootViewController: conversationListVC)
     private lazy var detailNavController = OWSNavigationController()
+    private lazy var lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
 
     @objc private(set) weak var selectedConversationViewController: ConversationViewController?
 
@@ -56,6 +66,13 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         preferredDisplayMode = .allVisible
 
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(orientationDidChange),
+            name: UIDevice.orientationDidChangeNotification,
+            object: UIDevice.current
+        )
+        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: .OWSApplicationDidBecomeActive, object: nil)
 
         applyTheme()
     }
@@ -71,6 +88,17 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     @objc func applyTheme() {
         view.backgroundColor = Theme.secondaryBackgroundColor
         applyNavBarStyle(collapsed: isCollapsed)
+    }
+
+    @objc func orientationDidChange() {
+        AssertIsOnMainThread()
+        guard UIApplication.shared.applicationState == .active else { return }
+        lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
+    }
+
+    @objc func didBecomeActive() {
+        AssertIsOnMainThread()
+        lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
     }
 
     func applyNavBarStyle(collapsed: Bool) {
@@ -122,6 +150,19 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     func presentThread(_ thread: TSThread, action: ConversationViewAction, focusMessageId: String?, animated: Bool) {
         AssertIsOnMainThread()
 
+        // On iOS 13, there is a bug with UISplitViewController that causes the `isCollapsed` state to
+        // get out of sync while the app isn't active and the orientation has changed while backgrounded.
+        // This results in conversations opening up in the wrong pane when you were in portrait and then
+        // try and open the app in landscape. We work around this by dispatching to the next runloop
+        // at which point things have stabilized.
+        if #available(iOS 13, *), UIApplication.shared.applicationState != .active, lastActiveInterfaceOrientation != CurrentAppContext().interfaceOrientation {
+            if #available(iOS 14, *) { owsFailDebug("check if this still happens") }
+            // Reset this to avoid getting stuck in a loop. We're becoming active.
+            lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
+            DispatchQueue.main.async { self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated) }
+            return
+        }
+
         guard selectedThread?.uniqueId != thread.uniqueId else {
             // If this thread is already selected, pop to the thread if
             // anything else has been presented above the view.
@@ -138,8 +179,10 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // can maintain its scroll position when navigating back.
         conversationListVC.lastViewedThread = thread
 
-        let vc = ConversationViewController()
-        vc.configure(for: thread, action: action, focusMessageId: focusMessageId)
+        let threadViewModel = databaseStorage.uiRead {
+            return ThreadViewModel(thread: thread, transaction: $0)
+        }
+        let vc = ConversationViewController(threadViewModel: threadViewModel, action: action, focusMessageId: focusMessageId)
 
         selectedConversationViewController = vc
 

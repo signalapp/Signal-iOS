@@ -198,7 +198,19 @@ public class KeyBackupService: NSObject {
 
             return (masterKey, encryptedMasterKey, accessKey)
         }.then { masterKey, encryptedMasterKey, accessKey in
-            backupKeyRequest(accessKey: accessKey, encryptedMasterKey: encryptedMasterKey).map { ($0, masterKey) }
+            firstly {
+                backupKeyRequest(accessKey: accessKey, encryptedMasterKey: encryptedMasterKey)
+            }.tap {
+                switch $0 {
+                case .fulfilled:
+                    break
+                case .rejected(let error):
+                    Logger.error("recording backupKeyRequest errored: \(error)")
+                    databaseStorage.write {
+                        self.keyValueStore.setBool(true, key: hasBackupKeyRequestFailedIdentifier, transaction: $0)
+                    }
+                }
+            }.map { ($0, masterKey) }
         }.done(on: .global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
@@ -260,21 +272,67 @@ public class KeyBackupService: NSObject {
 
     // PRAGMA MARK: - Master Key Encryption
 
-    public enum DerivedKey: String, CaseIterable {
-        case storageService = "Storage Service Encryption"
-        case registrationLock = "Registration Lock"
+    public enum DerivedKey: Hashable {
+        case registrationLock
+        case storageService
+
+        case storageServiceManifest(version: UInt64)
+        case storageServiceRecord(identifier: StorageService.StorageIdentifier)
+
+        var rawValue: String {
+            switch self {
+            case .registrationLock:
+                return "Registration Lock"
+            case .storageService:
+                return "Storage Service Encryption"
+            case .storageServiceManifest(let version):
+                return "Manifest_\(version)"
+            case .storageServiceRecord(let identifier):
+                return "Item_\(identifier.data.base64EncodedString())"
+            }
+        }
+
+        static var syncableKeys: [DerivedKey] {
+            return [
+                .storageService
+            ]
+        }
+
+        private var dataToDeriveFrom: Data? {
+            switch self {
+            case .storageServiceManifest, .storageServiceRecord:
+                return DerivedKey.storageService.data
+            default:
+                // Most keys derive directly from the master key.
+                // Only a few exceptions derive from another derived key.
+                guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else { return nil }
+                return masterKey
+            }
+        }
 
         public var data: Data? {
             // If we have this derived key stored in the database, use it.
             // This should only happen if we're a linked device and received
             // the derived key via a sync message, since we won't know about
             // the master key.
-            if tsAccountManager.isPrimaryDevice,
+            if (!tsAccountManager.isPrimaryDevice || CurrentAppContext().isRunningTests),
                 let cachedData = cacheQueue.sync(execute: { cachedSyncedDerivedKeys[self] }) {
                 return cachedData
             }
 
-            guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else {
+            // TODO: Derive Storage Service Key – Delete this.
+            // This key is *only* used for storage service backup / restore.
+            // It is sync'd with your linked devices, but is never stored on
+            // our servers. Eventually, we'll switch storage service over to
+            // using a key derived from the KBS master key so that the data
+            // we backup can be restored across re-installs. At that point in
+            // time we will need to delete this line which will in turn trigger
+            // a re-encrypt and re-upload all the records in the storage service.
+            if case .storageService = self, let storageServiceKey = cacheQueue.sync(execute: { cachedStorageServiceKey }) {
+                return storageServiceKey
+            }
+
+            guard let dataToDeriveFrom = dataToDeriveFrom else {
                 return nil
             }
 
@@ -283,7 +341,7 @@ public class KeyBackupService: NSObject {
                 return nil
             }
 
-            return Cryptography.computeSHA256HMAC(data, withHMACKey: masterKey)
+            return Cryptography.computeSHA256HMAC(data, withHMACKey: dataToDeriveFrom)
         }
 
         public var isAvailable: Bool { return data != nil }
@@ -312,7 +370,9 @@ public class KeyBackupService: NSObject {
 
         // TODO: Maybe rename this since it's no longer profile specific
         guard let data = Cryptography.decryptAESGCMProfileData(encryptedData: encryptedData, key: key) else {
-            owsFailDebug("failed to decrypt data")
+            // TODO: Derive Storage Service Key - until we use the restored key for storage service,
+            // this is expected after every reinstall. After that this should propably become an owsFailDebug
+            Logger.info("failed to decrypt data")
             throw KBSError.assertion
         }
 
@@ -425,13 +485,16 @@ public class KeyBackupService: NSObject {
     }
 
     private static let masterKeyIdentifer = "masterKey"
+    private static let storageServiceKeyIdentifer = "storageServiceKey"
     private static let pinTypeIdentifier = "pinType"
     private static let encodedVerificationStringIdentifier = "encodedVerificationString"
+    private static let hasBackupKeyRequestFailedIdentifier = "hasBackupKeyRequestFailed"
     private static let cacheQueue = DispatchQueue(label: "org.signal.KeyBackupService")
 
     @objc
     public static func warmCaches() {
         var masterKey: Data?
+        var storageServiceKey: Data?
         var pinType: PinType?
         var encodedVerificationString: String?
 
@@ -439,18 +502,31 @@ public class KeyBackupService: NSObject {
 
         databaseStorage.read { transaction in
             masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
+            storageServiceKey = keyValueStore.getData(storageServiceKeyIdentifer, transaction: transaction)
             if let rawPinType = keyValueStore.getInt(pinTypeIdentifier, transaction: transaction) {
                 pinType = PinType(rawValue: rawPinType)
             }
             encodedVerificationString = keyValueStore.getString(encodedVerificationStringIdentifier, transaction: transaction)
 
-            for type in DerivedKey.allCases {
+            for type in DerivedKey.syncableKeys {
                 syncedDerivedKeys[type] = keyValueStore.getData(type.rawValue, transaction: transaction)
+            }
+        }
+
+        // TODO: Derive Storage Service Key – Delete this.
+        // For now, if we don't have a storage service key, create one.
+        // Eventually this will be derived from the master key and not
+        // its own independent key.
+        if tsAccountManager.isPrimaryDevice && storageServiceKey == nil {
+            storageServiceKey = Cryptography.generateRandomBytes(32)
+            databaseStorage.write { transaction in
+                keyValueStore.setData(storageServiceKey, key: storageServiceKeyIdentifer, transaction: transaction)
             }
         }
 
         cacheQueue.sync {
             cachedMasterKey = masterKey
+            cachedStorageServiceKey = storageServiceKey
             cachedPinType = pinType
             cachedEncodedVerificationString = encodedVerificationString
             cachedSyncedDerivedKeys = syncedDerivedKeys
@@ -461,7 +537,17 @@ public class KeyBackupService: NSObject {
     /// restored from the server if you know the pin.
     @objc
     public static func clearKeys(transaction: SDSAnyWriteTransaction) {
-        keyValueStore.removeAll(transaction: transaction)
+        // Delete everything but the storageServiceKey, which is persistent.
+        // TODO: Derive Storage Service Key – When we migrate to deriving the storage
+        // service key from the KBS master key, this should be updated to "removeAll"
+        keyValueStore.removeValues(
+            forKeys: [
+                masterKeyIdentifer,
+                pinTypeIdentifier,
+                encodedVerificationStringIdentifier
+            ] + DerivedKey.syncableKeys.map { $0.rawValue },
+            transaction: transaction
+        )
         cacheQueue.sync {
             cachedMasterKey = nil
             cachedPinType = nil
@@ -473,6 +559,10 @@ public class KeyBackupService: NSObject {
     // Should only be interacted with on the serial cache queue
     // Always contains an in memory reference to our current masterKey
     private static var cachedMasterKey: Data?
+    // Should only be interacted with on the serial cache queue
+    // Always contains an in memory reference to our current storageServiceKey
+    // TODO: Derive Storage Service Key – Delete this
+    private static var cachedStorageServiceKey: Data?
     // Always contains an in memory reference to our current PIN's type
     private static var cachedPinType: PinType?
     // Always contains an in memory reference to our encoded PIN verification string
@@ -498,6 +588,7 @@ public class KeyBackupService: NSObject {
         keyValueStore.setData(masterKey, key: masterKeyIdentifer, transaction: transaction)
         keyValueStore.setInt(pinType.rawValue, key: pinTypeIdentifier, transaction: transaction)
         keyValueStore.setString(encodedVerificationString, key: encodedVerificationStringIdentifier, transaction: transaction)
+        keyValueStore.setBool(false, key: hasBackupKeyRequestFailedIdentifier, transaction: transaction)
 
         cacheQueue.sync {
             cachedMasterKey = masterKey
@@ -506,20 +597,22 @@ public class KeyBackupService: NSObject {
         }
 
         // Only continue if we didn't previously have a master key or our master key has changed
-        guard masterKey != previousMasterKey else { return }
+        guard masterKey != previousMasterKey, tsAccountManager.isRegisteredAndReady else { return }
 
         // Trigger a re-creation of the storage manifest, our keys have changed
         storageServiceManager.restoreOrCreateManifestIfNecessary()
 
-        if tsAccountManager.isRegisteredAndReady {
-            // Sync our new keys with linked devices.
-            syncManager.sendKeysSyncMessage()
-        }
+        // Sync our new keys with linked devices.
+        syncManager.sendKeysSyncMessage()
     }
 
     public static func storeSyncedKey(type: DerivedKey, data: Data?, transaction: SDSAnyWriteTransaction) {
-        guard !tsAccountManager.isPrimaryDevice else {
+        guard !tsAccountManager.isPrimaryDevice || CurrentAppContext().isRunningTests else {
             return owsFailDebug("primary device should never store synced keys")
+        }
+
+        guard DerivedKey.syncableKeys.contains(type) else {
+            return owsFailDebug("tried to store a non-syncable key")
         }
 
         keyValueStore.setData(data, key: type.rawValue, transaction: transaction)
@@ -687,6 +780,10 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
         }
+    }
+
+    public static func hasBackupKeyRequestFailed(transaction: SDSAnyReadTransaction) -> Bool {
+        keyValueStore.getBool(hasBackupKeyRequestFailedIdentifier, defaultValue: false, transaction: transaction)
     }
 
     // PRAGMA MARK: - Token

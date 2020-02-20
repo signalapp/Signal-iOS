@@ -462,7 +462,7 @@
 "CAMERA_BUTTON_LABEL" = "Kamera";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ez a felhasználó nem erősíthető meg, amíg nem kezdesz el vele beszélgetni.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ezt a felhasználót nem teheted Ellenőrzötté, amíg nem kezdesz el vele beszélgetni.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Hiba";
@@ -540,7 +540,7 @@
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Többé nem tudsz küldeni vagy fogadni üzeneteket és hívásokat ebben a csoportban.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Tényleg ki akar lépni?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Tényleg ki akarsz lépni?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Új Készülék Társítása";
@@ -635,6 +635,27 @@
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nincs kontakt kiválasztva.";
 
+/* Button text to initiate an email to signal support staff */
+"CONTACT_SUPPORT" = "Contact Support";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+
+/* button text */
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Újrapróbálkozás";
+
+/* Alert body */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+
+/* Alert title */
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+
+/* Button text */
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Megnyitás a Térképek alkalmazásban";
 
@@ -649,6 +670,9 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Beszélgetés törlése?";
+
+/* Indicates that the user can tap to download this image. */
+"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Letöltés";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "A maximálisan kijelölhető beszélgetések száma %@.";
@@ -738,13 +762,13 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Feloldás";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Ez a felhasználó egy ismert kontakt";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Ez a felhasználó ismert kontakt";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Ez a csoport láthatja a profilod.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Ez a felhasználó látja a profilodat";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Ez a felhasználó látja a profilod";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Profil megosztása";
@@ -833,8 +857,7 @@
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Megosztás";
 
-/* Title of the alert shown for failures while uploading debug logs.
-   Title of the debug log alert. */
+/* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Még egy lépés";
 
 /* Error indicating that the app could not launch the Email app. */
@@ -958,7 +981,7 @@
 "ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "A biztonság növelése érdekében engedélyezd a Regisztrációs zár PIN kódot. Erre a kódra akkor lesz szükséged, amikor ezzel a telefonszámmal akarsz Signal-ba (újra)regisztrálni a jövőben.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Regisztrációs zár engedélyezve. Amikor ezzel a telefonszámmal akarsz Signal-ba (újra)regisztrálni a jövőben, meg kell adnod a PIN kódodat.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Regisztrációs zár engedélyezve. Amikor ezzel a telefonszámmal akarsz Signalba (újra)regisztrálni a jövőben, meg kell adnod a PIN kódodat.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Regisztrációs zár";
@@ -985,7 +1008,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Küldés elévült 'prekey' miatt sikertelen.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Tiltott felhasználónak próbáltál volna üzenetet küldeni.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Letiltott felhasználónak próbáltál volna üzenetet küldeni.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "A Signal nem tudott kapcsolódni az internethez. Kérlek, próbáld újra!";
@@ -1401,9 +1424,6 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Csoport tagok";
 
-/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
-"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Te)";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Keresés név, vagy cím alapján";
 
@@ -1515,13 +1535,19 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Üzenetek";
 
-/* A button used to block a user on an incoming message request. */
+/* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Elfogadás";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Letiltás";
 
-/* A button used to block a user on an incoming message request. */
+/* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+
+/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+
+/* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Törlés";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
@@ -1541,6 +1567,27 @@
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Profil megosztása";
+
+/* A button used to unlock a blocked conversation. */
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Tiltás feloldása";
+
+/* Body for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_BODY" = "Dönthetsz, hogy elfogadod -e a felkérést üzenetváltásra. \"Elfogadás\", \"Törlés\" és \"Letiltás\" közül választhasz majd.";
+
+/* Title for message requests megaphone */
+"MESSAGE_REQUESTS_MEGAPHONE_TITLE" = "Felkérés üzenetváltásra";
+
+/* Header for message requests splash screen */
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Újdonság: Felkérés üzenetváltásra";
+
+/* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Profilnév létrehozása";
+
+/* Body text for message requests splash screen */
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Mostantól mikor új üzenetváltásba próbálnak bevonni, választhatsz \"Elfogadás\" és \"Törlés\" közül. A profilnévből láthatod majd, ki próbáld üzenni neked.";
+
+/* Toast indicating that a profile name has been created. */
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Profilneved mentésre került.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Kézbesítve";
@@ -1579,7 +1626,7 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ \"Ellenőrzött\" státusza megszűnt. Koppints a lehetőségekért.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "Ez a felhasználó letiltásra került";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Ezt a felhasználót letiltottad";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ \"Ellenőrzött\" státusza megszűnt. Koppints a lehetőségekért.";
@@ -1588,7 +1635,7 @@
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "A csoport egy tagja a tiltólistádon van";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "Ez a csoport tiltva van";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "Ezt a csoportot letiltottad";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "A csoport %@ tagja a tiltólistádon van";
@@ -1726,10 +1773,10 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Lehetséges, hogy volt bejövő üzeneted, amíg az %@ újraindult.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Műveletek alatt ezeket értjük: \"Olvasottnak jelöl\", \"Válasz\" és \"Visszahívás\".";
+"NOTIFICATIONS_FOOTER_WARNING" = "Művelet lehet \"Olvasottnak jelöl\", \"Válasz\" és \"Visszahívás\".";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Nincs név vagy üzenet";
+"NOTIFICATIONS_NONE" = "Se név, se szöveg";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Hang megnyitott alkalmazásnál";
@@ -1738,7 +1785,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Hangok";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Név, Adat és Művelet";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Név, szöveg és művelet";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Csak név";
@@ -1758,14 +1805,8 @@
 /* Button asking if the user would like to enter an numeric PIN */
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Adj meg szám alapú PIN kódot";
 
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "Ehhez a telefonszámhoz bekapcsolták a regisztrációs zárat. Kérlek add meg a regisztrációs zár PIN kódot!";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "A regisztrációs zár PIN nem ugyanaz, mint az SMS ellenőrző kód, amit az imént kaptál.";
-
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Elfelejtett PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Hibás PIN";
@@ -1775,9 +1816,6 @@
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Hibás PIN. 1 próbálkozás maradt.";
-
-/* Title of the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_TITLE" = "Regisztrációs zár";
 
 /* Explanation of the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Személyes adataid védelme érdekében zároltuk a fiókodat 7 napra.\n\n7 nap inaktivitás után újra tudsz majd regisztrálni ezzel a telefonszámmal, ekkor már a PIN használata nélkül is. Minden tartalom törölve lesz.";
@@ -2005,7 +2043,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN létrehozása sikertelen.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "A PIN kód plusz védelemmel láthatja el a fiókodat. Jól jegyezd meg, mert nem visszaállítható!";
+"PIN_CREATION_EXPLANATION" = "A PIN kód plusz védelemmel láthatja el a fiókodat és nem visszanyerhető. Szükséged lesz rá, mikor legközelebb újra regisztrálsz.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kódok nem egyeznek. Próbáld újra.";
@@ -2036,6 +2074,27 @@
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Elfelejtett PIN?";
+
+/* Action text for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_ACTION" = "PIN hitelesítése";
+
+/* Body for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_BODY" = "Időnként megkérünk PIN kódod begépelésére, hogy biztosan ne felejtsd el.";
+
+/* Toast indicating that we'll ask you for your PIN again in 3 days. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Pár napon belül újra emlékeztetünk.";
+
+/* Title for PIN reminder megaphone */
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Signal PIN kód hitelesítése";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Holnap újra emlékeztetünk.";
+
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Pár héten belül újra emlékeztetünk.";
+
+/* Toast indicating that we'll ask you for your PIN again in a week. */
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Egy héten belül újra emlékeztetünk.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Hibás PIN, próbáld újra.";
@@ -2071,7 +2130,7 @@
 "PINS_MEGAPHONE_NO_PIN_TITLE" = "PIN létrehozása";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN kód létrehozva.";
+"PINS_MEGAPHONE_TOAST" = "PIN kód létrehozva. Megváltoztathatod a Beállításokban.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Média lejátszása";
@@ -2242,7 +2301,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Videó";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "Összes · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reakció az üzenetedre: %@";
@@ -2287,13 +2346,16 @@
 "REACTION_MEGAPHONE_TITLE" = "Bemutakoznak az üzenet kedvelések";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "Elfelejtettem a PIN-em.";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Adatbiztonsági okokból nincs lehetőség a PIN kinyerésére. Ha elfelejtetted, 7 nap inaktivitás után újraellenőrizheted SMS-ben. Ebben az esetben a fiókod és minden adat törlésre kerül.";
+"REGISTER_2FA_FORGOT_PIN" = "Elfelejtettem a PIN kódom.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Elfelejtett PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+
+/* Alert body for a forgotten SVR (V2) PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+
+/* Alert body for a forgotten V1 PIN */
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "%lu próbálkozásod maradt. Ha mindet elrontod, a fiókot zárolásra kerül. 7 inaktív nap után újraregisztrálhatsz - immár PIN kód nélkül. A fiókod mindenestül törlésre kerül.";
@@ -2313,7 +2375,7 @@
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "Újrapróbálkozás";
 
-/* No comment provided by engineer. */
+/* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Túl gyakran próbálkoztál. Kérlek várj egy percet mielőtt újra nekifutnál.";
 
 /* No comment provided by engineer. */
@@ -2332,7 +2394,7 @@
 "REGISTRATION_ERROR" = "Regisztrációs hiba";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "A fiókod nem aktiválható, amíg a neked küldött ellenőrző kódot meg nem adod.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "A fiókod nem aktiválható amíg a neked küldött ellenőrző kódot meg nem adod.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Telefonszám formátum nem támogatott, vedd fel a kapcsolatot a supporttal.";
@@ -2347,7 +2409,7 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Visszaellenőrzés sikertelen";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Az begépelt ellenőrző kód nem egyezik az általunk küldöttel. Kérlek ellenőrizd le újra.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Az begépelt ellenőrző kód nem egyezik az általunk küldöttel. Kérjük ellenőrizd le újra.";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Hibás regisztrációs zár PIN kód";
@@ -2545,7 +2607,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "Szeretnéd meghívni egy barátodat nem-biztonságos SMS-en keresztül?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "A következő telefonszámokat szeretnéd meghívni a Signal használatához:";
+"SEND_SMS_INVITE_TITLE" = "Szeretnél Signal meghívót küldeni az alábbi számok tulajdonosainak?";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Az alkalmazásról";
@@ -2560,7 +2622,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Hely: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Ha engedélyezed, a Signal megpróbálja megkerülni a cenzúrát. Ne engedélyezd ezt a funkciót, ha a tartózkodási helyeden a Signal nincs cenzúrázva.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Ha engedélyezed, a Signal megpróbálja megkerülni az állami blokkolást. Ne engedélyezd ezt a funkciót, ha a tartózkodási helyeden a Signal nincs cenzúrázva.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "A cenzúra megkerülés funkció aktiválva lett a telefonszámod alapján.";
@@ -2665,7 +2727,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Minden hívás a Signal kiszolgálón keresztül haladjon - ezzel elfedhető IP címed a hívott fél számára. A funkció engedélyezése csökkentheti a hívásminőséget.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Beszélgetés előzményeinek törlése";
+"SETTINGS_CLEAR_HISTORY" = "Minden előzmény törlése";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nLicenc típusa: GPLv3";
@@ -2884,7 +2946,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Megosztás: Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Biztonsági azonosító mutatása";
+"SHOW_SAFETY_NUMBER_ACTION" = "Biztonsági azonosító";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Beszélgetés mutatása";
@@ -2983,7 +3045,7 @@
 "TIME_AMOUNT_HOURS" = "%@ óra";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ perc";
@@ -3127,7 +3189,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "A felhasználónevek csak az alábbi karaktereket tartalmazhatják: a-z, 0-9, _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Felhasználónév elérhetősége nem ellenőrizhető, kérlek próbáld meg később.";
+"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ nem Signal felhasználó. Kérlek ellenőrizd a felhasználónevet, majd próbáld újra.";
@@ -3210,5 +3272,8 @@
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Letiltottad az eltűnő üzeneteket.";
 
+/* alert body shown when trying to use features in the app before completing registration-related setup. */
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+    
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Beállítottad az eltűnő üzenetek idejét erre: %@.";

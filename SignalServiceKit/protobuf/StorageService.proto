@@ -42,11 +42,13 @@ message StorageRecord {
   enum Type {
     UNKNOWN = 0;
     CONTACT = 1;
+    GROUPV1 = 2;
   }
 
   // @required
   optional uint32        type    = 1;
   optional ContactRecord contact = 2;
+  optional GroupV1Record groupV1 = 3;
 }
 
 message ContactRecord {
@@ -75,6 +77,13 @@ message ContactRecord {
   optional bool     blocked     = 5;
   optional bool     whitelisted = 6;
   optional string   nickname    = 7;
+}
+
+message GroupV1Record {
+  // @required
+  optional bytes id          = 1;
+  optional bool  blocked     = 2;
+  optional bool  whitelisted = 3;
 }
 
 message ManifestRecord {

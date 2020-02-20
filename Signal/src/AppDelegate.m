@@ -687,39 +687,15 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                                                     preferences:Environment.shared.preferences];
             }
 
-            // 2FA
-
-            if ([OWS2FAManager sharedManager].hasPending2FASetup) {
+            OnboardingController *onboardingController = [OnboardingController new];
+            if (onboardingController.isComplete && [OWS2FAManager sharedManager].isDueForV1Reminder) {
                 UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
                 OWSAssertDebug(frontmostViewController);
 
-                if ([frontmostViewController isKindOfClass:[OWSPinSetupViewController class]]) {
-                    // We're already presenting this
-                    return;
-                }
+                UIViewController *reminderVC = [OWS2FAReminderViewController wrappedInNavController];
+                reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
 
-                OWSPinSetupViewController *setupVC = [[OWSPinSetupViewController alloc] initWithCompletionHandler:^{
-                    [frontmostViewController dismissViewControllerAnimated:YES completion:nil];
-                }];
-
-                [frontmostViewController
-                    presentFullScreenViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]
-                                           animated:YES
-                                         completion:nil];
-            } else if ([OWS2FAManager sharedManager].isDueForReminder) {
-                UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
-                OWSAssertDebug(frontmostViewController);
-
-                UIViewController *reminderVC;
-                if (RemoteConfig.pinsForEveryone) {
-                    reminderVC = [OWSPinReminderViewController new];
-                } else {
-                    reminderVC = [OWS2FAReminderViewController wrappedInNavController];
-                    reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
-                }
-
-                if ([frontmostViewController isKindOfClass:[OWSPinReminderViewController class]] ||
-                    [frontmostViewController isKindOfClass:[OWS2FAReminderViewController class]]) {
+                if ([frontmostViewController isKindOfClass:[OWS2FAReminderViewController class]]) {
                     // We're already presenting this
                     return;
                 }

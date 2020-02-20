@@ -51,6 +51,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         super.init(onboardingController: onboardingController)
     }
 
+    var forgotPinLink: OWSFlatButton!
+
     override public func loadView() {
         view = UIView()
 
@@ -59,21 +61,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleText: String
-        let explanationText: String
-
-        if RemoteConfig.pinsForEveryone {
-            titleText = NSLocalizedString("ONBOARDING_PIN_TITLE", comment: "Title of the 'onboarding PIN' view.")
-            explanationText = NSLocalizedString("ONBOARDING_PIN_EXPLANATION", comment: "Title of the 'onboarding PIN' view.")
-        } else {
-            titleText = NSLocalizedString("ONBOARDING_2FA_TITLE", comment: "Title of the 'onboarding 2FA' view.")
-            let explanationText1 = NSLocalizedString("ONBOARDING_2FA_EXPLANATION_1",
-                                                     comment: "The first explanation in the 'onboarding 2FA' view.")
-            let explanationText2 = NSLocalizedString("ONBOARDING_2FA_EXPLANATION_2",
-                                                     comment: "The first explanation in the 'onboarding 2FA' view.")
-
-            explanationText = explanationText1 + "\n\n" + explanationText2
-        }
+        let titleText = NSLocalizedString("ONBOARDING_PIN_TITLE", comment: "Title of the 'onboarding PIN' view.")
+        let explanationText = NSLocalizedString("ONBOARDING_PIN_EXPLANATION", comment: "Title of the 'onboarding PIN' view.")
 
         let titleLabel = self.titleLabel(text: titleText)
         let explanationLabel = self.explanationLabel(explanationText: explanationText)
@@ -83,6 +72,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTextField.delegate = self
         pinTextField.isSecureTextEntry = true
         pinTextField.textColor = Theme.primaryTextColor
+        pinTextField.textAlignment = .center
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
@@ -93,12 +83,13 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTextField.accessibilityIdentifier = "onboarding.2fa.pinTextField"
 
         validationWarningLabel.textColor = .ows_accentRed
+        validationWarningLabel.textAlignment = .center
         validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "onboarding.2fa.validationWarningLabel"
         validationWarningLabel.numberOfLines = 0
         validationWarningLabel.setCompressionResistanceHigh()
 
-        let forgotPinLink = self.linkButton(title: NSLocalizedString("ONBOARDING_2FA_FORGOT_PIN_LINK",
+        self.forgotPinLink = self.linkButton(title: NSLocalizedString("ONBOARDING_2FA_FORGOT_PIN_LINK",
                                                                      comment: "Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view."),
                                             selector: #selector(forgotPinLinkTapped))
         forgotPinLink.accessibilityIdentifier = "onboarding.2fa." + "forgotPinLink"
@@ -172,13 +163,22 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
     @objc func forgotPinLinkTapped() {
         Logger.info("")
+        let title = NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
+                                      comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'.")
 
-        OWSActionSheets.showActionSheet(
-            title: NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
-                                     comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'."),
-            message: NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE",
-                                       comment: "Alert message explaining what happens if you forget your 'two-factor auth pin'.")
-        )
+        let message: String
+        let emailSubject: String
+        if isUsingKBS {
+            message = NSLocalizedString("REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE",
+                                        comment: "Alert body for a forgotten SVR (V2) PIN")
+            emailSubject = "Signal PIN - iOS (V2 PIN)"
+        } else {
+            message = NSLocalizedString("REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE",
+                                        comment: "Alert body for a forgotten V1 PIN")
+            emailSubject = "Signal PIN - iOS (V1 PIN)"
+        }
+
+        ContactSupportAlert.presentAlert(title: title, message: message, emailSubject: emailSubject, fromViewController: self)
     }
 
     @objc func nextPressed() {
@@ -253,6 +253,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinStrokeNormal.isHidden = attemptState.isInvalid
         pinStrokeError.isHidden = !attemptState.isInvalid
         validationWarningLabel.isHidden = !attemptState.isInvalid
+        forgotPinLink.isHidden = !attemptState.isInvalid
 
         switch attemptState {
         case .exhausted:

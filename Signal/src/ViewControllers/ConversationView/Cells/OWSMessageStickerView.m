@@ -504,11 +504,12 @@ NS_ASSUME_NONNULL_BEGIN
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             [self.attachmentDownloads
                 downloadAllAttachmentsForMessage:message
+                     bypassPendingMessageRequest:NO
                                      transaction:transaction
                                          success:^(NSArray<TSAttachmentStream *> *_Nonnull attachmentStreams) {
                                              // Do nothing.
                                          }
-                                         failure:^(NSError *_Nonnull error){
+                                         failure:^(NSError *_Nonnull error) {
                                              // Do nothing.
                                          }];
         }];

@@ -8,7 +8,6 @@
 #import "ConversationListCell.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
-#import "ProfileViewController.h"
 #import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -217,6 +216,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localProfileDidChange:)
                                                  name:kNSNotificationNameLocalProfileDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(profileWhitelistDidChange:)
+                                                 name:kNSNotificationNameProfileWhitelistDidChange
                                                object:nil];
 }
 
@@ -866,10 +869,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
 
-    ConversationViewController *vc = [ConversationViewController new];
-    TSThread *thread = [self threadForIndexPath:indexPath];
-    self.lastViewedThread = thread;
-    [vc configureForThread:thread action:ConversationViewActionNone focusMessageId:nil];
+    ThreadViewModel *threadViewModel = [self threadViewModelForIndexPath:indexPath];
+    self.lastViewedThread = threadViewModel.threadRecord;
+    ConversationViewController *vc =
+        [[ConversationViewController alloc] initWithThreadViewModel:threadViewModel
+                                                             action:ConversationViewActionNone
+                                                     focusMessageId:nil];
     [vc peekSetup];
 
     return vc;
@@ -1913,6 +1918,31 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         // We don't need to do this if we're not observing db modifications since we'll
         // do it when we resume.
         [self resetMappings];
+    }
+}
+
+#pragma mark Profile Whitelist Changes
+
+- (void)profileWhitelistDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    // If profile whitelist just changed, we need to update the associated
+    // thread to reflect the latest message request state.
+    SignalServiceAddress *_Nullable address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
+
+    __block NSString *_Nullable changedThreadId;
+    if (address.isValid) {
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            changedThreadId = [TSContactThread getThreadWithContactAddress:address transaction:transaction].uniqueId;
+        }];
+    } else if (groupId.length > 0) {
+        changedThreadId = [TSGroupThread threadIdFromGroupId:groupId];
+    }
+
+    if (changedThreadId) {
+        [self anyUIDBDidUpdateWithUpdatedThreadIds:[NSSet setWithObject:changedThreadId]];
     }
 }
 

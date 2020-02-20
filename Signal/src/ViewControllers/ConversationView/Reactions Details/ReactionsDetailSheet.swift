@@ -155,7 +155,7 @@ class ReactionsDetailSheet: UIViewController {
     private var selectedEmoji: String?
 
     func setSelectedEmoji(_ emoji: String?) {
-        SDSDatabaseStorage.shared.uiread { self.setSelectedEmoji(emoji, transaction: $0) }
+        SDSDatabaseStorage.shared.uiRead { self.setSelectedEmoji(emoji, transaction: $0) }
     }
 
     func setSelectedEmoji(_ emoji: String?, transaction: SDSAnyReadTransaction) {

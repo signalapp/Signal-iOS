@@ -1142,6 +1142,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
         message:nil
+        bypassPendingMessageRequest:YES
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -1211,6 +1212,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogDebug(@"incoming attachment message: %@", message.debugDescription);
 
     [self.attachmentDownloads downloadBodyAttachmentsForMessage:message
+        bypassPendingMessageRequest:NO
         transaction:transaction
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogDebug(@"successfully fetched attachments: %lu for message: %@",
@@ -1781,8 +1783,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if (envelope.sourceAddress.isLocalAddress) {
+        BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
+        OWSFailDebug(@"Incoming messages from yourself are not supported.");
         // Don't send a read receipt for messages sent by ourselves.
-        [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
+        [incomingMessage markAsReadAtTimestamp:envelope.timestamp
+                                        thread:thread
+                                  circumstance:hasPendingMessageRequest
+                                      ? OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest
+                                      : OWSReadCircumstanceReadOnLinkedDevice
+                                   transaction:transaction];
     }
 
     // Download the "non-message body" attachments.
@@ -1806,7 +1815,12 @@ NS_ASSUME_NONNULL_BEGIN
         // * Failures don't interfere with successes.
         [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
             message:incomingMessage
+            bypassPendingMessageRequest:NO
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                if (attachmentStreams.count == 0) {
+                    // This is expected if there is a pending message request.
+                    return;
+                }
                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                     TSAttachmentStream *_Nullable attachmentStream = attachmentStreams.firstObject;
                     OWSAssertDebug(attachmentStream);
@@ -1835,6 +1849,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // In case we already have a read receipt for this new message (this happens sometimes).
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
+                                                                           thread:thread
                                                                       transaction:transaction];
 
     // TODO: Is this still necessary?

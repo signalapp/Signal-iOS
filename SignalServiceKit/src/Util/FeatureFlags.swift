@@ -248,6 +248,9 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let notificationServiceExtension = build.includes(.dev)
+
+    @objc
+    public static let pinsForNewUsers = build.includes(.dev)
 }
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for

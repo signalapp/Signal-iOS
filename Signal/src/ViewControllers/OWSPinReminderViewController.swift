@@ -7,7 +7,7 @@ import UIKit
 @objc(OWSPinReminderViewController)
 public class PinReminderViewController: OWSViewController {
 
-    private let recreatePinURL = "signal-pin://recreate"
+    private let completionHandler: (() -> Void)?
 
     private let containerView = UIView()
     private let pinTextField = UITextField()
@@ -36,7 +36,9 @@ public class PinReminderViewController: OWSViewController {
     }
     private var hasGuessedWrong = false
 
-    init() {
+    @objc
+    init(completionHandler: (() -> Void)? = nil) {
+        self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -51,6 +53,15 @@ public class PinReminderViewController: OWSViewController {
         pinTextField.becomeFirstResponder()
     }
 
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // For now, the design only allows for portrait layout on non-iPads
+        if !UIDevice.current.isIPad && CurrentAppContext().interfaceOrientation != .portrait {
+            UIDevice.current.ows_setOrientation(.portrait)
+        }
+    }
+
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         pinTextField.resignFirstResponder()
@@ -58,6 +69,10 @@ public class PinReminderViewController: OWSViewController {
 
     override public var preferredStatusBarStyle: UIStatusBarStyle {
         return Theme.isDarkThemeEnabled ? .lightContent : .default
+    }
+
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.isIPad ? .all : .portrait
     }
 
     override public func loadView() {
@@ -69,6 +84,17 @@ public class PinReminderViewController: OWSViewController {
         view.addSubview(containerView)
         containerView.autoPinWidthToSuperview()
         autoPinView(toBottomOfViewControllerOrKeyboard: containerView, avoidNotch: true)
+
+        // We want the background to extend to the bottom of the screen
+        // behind the safe area, so we add that inset to our bottom inset
+        // instead of pinning this view to the safe area
+        let safeAreaBackdrop = UIView()
+        safeAreaBackdrop.backgroundColor = Theme.backgroundColor
+        view.addSubview(safeAreaBackdrop)
+        safeAreaBackdrop.autoPinEdge(.top, to: .bottom, of: containerView)
+        safeAreaBackdrop.autoPinWidthToSuperview()
+        // We don't know the safe area insets, so just guess a big number that will extend off screen
+        safeAreaBackdrop.autoSetDimension(.height, toSize: 150)
 
         // Title
 
@@ -97,6 +123,7 @@ public class PinReminderViewController: OWSViewController {
         pinTextField.keyboardType = KeyBackupService.currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
+        pinTextField.textAlignment = .center
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
         pinTextField.keyboardAppearance = Theme.keyboardAppearance
@@ -204,7 +231,7 @@ public class PinReminderViewController: OWSViewController {
     @objc func forgotPressed() {
         Logger.info("")
 
-        let vc = PinSetupViewController(mode: .recreating) { [weak self] in
+        let vc = PinSetupViewController(mode: .recreating) { [weak self] _, _ in
             self?.presentingViewController?.dismiss(animated: true, completion: nil)
         }
         present(OWSNavigationController(rootViewController: vc), animated: true, completion: nil)
@@ -212,7 +239,11 @@ public class PinReminderViewController: OWSViewController {
 
     @objc func dismissPressed() {
         Logger.info("")
-        // We'll ask again next time they launch
+
+        // The megaphone will persist and we'll deprecate their reminder interval if they
+        // tried and guessed wrong while the view was visible.
+        if hasGuessedWrong { OWS2FAManager.shared().updateRepetitionInterval(withWasSuccessful: false) }
+
         dismiss(animated: true, completion: nil)
     }
 
@@ -246,27 +277,13 @@ public class PinReminderViewController: OWSViewController {
             }
 
             self.dismissAndUpdateRepetitionInterval()
+            self.completionHandler?()
         }
     }
 
     private func dismissAndUpdateRepetitionInterval() {
         OWS2FAManager.shared().updateRepetitionInterval(withWasSuccessful: !hasGuessedWrong)
-
-        // Migrate to 2FA v2 if they've proved they know their pin
-        if let pinCode = OWS2FAManager.shared().pinCode, RemoteConfig.kbs, OWS2FAManager.shared().mode == .V1 {
-            // enabling 2fa v2 automatically disables v1 on the server
-            OWS2FAManager.shared().enable2FAPromise(with: pinCode)
-                .ensure {
-                    self.dismiss(animated: true)
-                }.catch { error in
-                    // We don't need to bubble this up to the user, since they
-                    // don't know / care that something is changing in this moment.
-                    // We can try and migrate them again during their next reminder.
-                    owsFailDebug("Unexpected error \(error) while migrating to reg lock v2")
-                }.retainUntilComplete()
-        } else {
-            dismiss(animated: true)
-        }
+        dismiss(animated: true)
     }
 
     private func updateValidationWarnings() {
@@ -303,9 +320,11 @@ private class PinReminderPresentationController: UIPresentationController {
 
     override func presentationTransitionWillBegin() {
         guard let containerView = containerView else { return }
-        backdropView.frame = containerView.frame
+
         backdropView.alpha = 0
-        containerView.insertSubview(backdropView, at: 0)
+        containerView.addSubview(backdropView)
+        backdropView.autoPinEdgesToSuperviewEdges()
+        containerView.layoutIfNeeded()
 
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.backdropView.alpha = 1
@@ -318,6 +337,15 @@ private class PinReminderPresentationController: UIPresentationController {
         }, completion: { _ in
             self.backdropView.removeFromSuperview()
         })
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        guard let presentedView = presentedView else { return }
+        coordinator.animate(alongsideTransition: { _ in
+            presentedView.frame = self.frameOfPresentedViewInContainerView
+            presentedView.layoutIfNeeded()
+        }, completion: nil)
     }
 }
 

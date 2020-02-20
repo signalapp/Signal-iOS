@@ -22,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMarkedAsReadNotification";
 NSUInteger const TSRecipientReadReceiptSchemaVersion = 1;
 
+/// TSRecipientReadReceipt aka "early read receipts"
+///
+/// When we send a message to Alice from our linked device, and this device receives the read
+/// receipt from Alice before it receives the synced transcript from our linked device, we persist
+/// this class as a reminder to mark the eventually synced transcript as already read by Alice.
 @interface TSRecipientReadReceipt ()
 
 @property (nonatomic, readonly) NSUInteger recipientReadReceiptSchemaVersion;
@@ -249,6 +254,11 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     return SDSDatabaseStorage.shared;
 }
 
+- (id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
+{
+    return SSKEnvironment.shared.pendingReadReceiptRecorder;
+}
+
 #pragma mark -
 
 // Schedules a processing pass, unless one is already scheduled.
@@ -328,7 +338,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Mark as Read Locally
 
-- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread completion:(void (^)(void))completion
+- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId
+                               thread:(TSThread *)thread
+             hasPendingMessageRequest:(BOOL)hasPendingMessageRequest
+                           completion:(void (^)(void))completion
 {
     OWSAssertDebug(thread);
 
@@ -347,13 +360,67 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             return;
         }
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [self markMessagesAsRead:unreadMessages readTimestamp:readTimestamp wasLocal:YES transaction:transaction];
+            OWSReadCircumstance circumstance = hasPendingMessageRequest
+                ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
+                : OWSReadCircumstanceReadOnThisDevice;
+            [self markMessagesAsRead:unreadMessages
+                              thread:thread
+                       readTimestamp:readTimestamp
+                        circumstance:circumstance
+                         transaction:transaction];
         }];
         dispatch_async(dispatch_get_main_queue(), completion);
     });
 }
 
-- (void)messageWasReadLocally:(TSIncomingMessage *)message transaction:(SDSAnyWriteTransaction *)transaction
+- (void)messageWasRead:(TSIncomingMessage *)message
+                thread:(TSThread *)thread
+          circumstance:(OWSReadCircumstance)circumstance
+           transaction:(SDSAnyWriteTransaction *)transaction;
+{
+    switch (circumstance) {
+        case OWSReadCircumstanceReadOnLinkedDevice:
+            // nothing further to do
+            return;
+        case OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest:
+            if ([self areReadReceiptsEnabled]) {
+                [self.pendingReadReceiptRecorder recordPendingReadReceiptForMessage:message
+                                                                             thread:thread
+                                                                        transaction:transaction.unwrapGrdbWrite];
+            }
+            break;
+        case OWSReadCircumstanceReadOnThisDevice:
+            [self enqueueLinkedDeviceReadReceiptForMessage:message transaction:transaction];
+
+            if (message.authorAddress.isLocalAddress) {
+                OWSFailDebug(@"We don't support incoming messages from self.");
+                return;
+            }
+
+            if ([self areReadReceiptsEnabled]) {
+                OWSLogVerbose(@"Enqueuing read receipt for sender.");
+                [self.outgoingReceiptManager enqueueReadReceiptForAddress:message.authorAddress
+                                                                timestamp:message.timestamp
+                                                              transaction:transaction];
+            }
+            break;
+        case OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest:
+            [self enqueueLinkedDeviceReadReceiptForMessage:message transaction:transaction];
+            if ([self areReadReceiptsEnabled]) {
+                [self.pendingReadReceiptRecorder recordPendingReadReceiptForMessage:message
+                                                                             thread:thread
+                                                                        transaction:transaction.unwrapGrdbWrite];
+            }
+            break;
+    }
+
+    [transaction addAsyncCompletion:^{
+        [self scheduleProcessing];
+    }];
+}
+
+- (void)enqueueLinkedDeviceReadReceiptForMessage:(TSIncomingMessage *)message
+                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
     NSString *threadUniqueId = message.uniqueThreadId;
     OWSAssertDebug(threadUniqueId.length > 0);
@@ -377,22 +444,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
         }
     }
-
-    if (message.authorAddress.isLocalAddress) {
-        OWSLogVerbose(@"Ignoring read receipt for self-sender.");
-        return;
-    }
-
-    if ([self areReadReceiptsEnabled]) {
-        OWSLogVerbose(@"Enqueuing read receipt for sender.");
-        [self.outgoingReceiptManager enqueueReadReceiptForAddress:messageAuthorAddress
-                                                        timestamp:message.timestamp
-                                                      transaction:transaction];
-    }
-
-    [transaction addAsyncCompletion:^{
-        [self scheduleProcessing];
-    }];
 }
 
 #pragma mark - Read Receipts From Recipient
@@ -472,6 +523,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 #pragma mark - Linked Device Read Receipts
 
 - (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
+                                          thread:(TSThread *)thread
                                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(message);
@@ -492,7 +544,15 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         return;
     }
 
-    [message markAsReadAtTimestamp:readReceipt.readTimestamp sendReadReceipt:NO transaction:transaction];
+    BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
+    OWSReadCircumstance circumstance = hasPendingMessageRequest
+        ? OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest
+        : OWSReadCircumstanceReadOnLinkedDevice;
+
+    [message markAsReadAtTimestamp:readReceipt.readTimestamp
+                            thread:thread
+                      circumstance:circumstance
+                       transaction:transaction];
     [readReceipt anyRemoveWithTransaction:transaction];
 }
 
@@ -532,10 +592,18 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
         if (messages.count > 0) {
             for (TSIncomingMessage *message in messages) {
+                TSThread *_Nullable thread = [message threadWithTransaction:transaction];
+                if (thread == nil) {
+                    OWSFailDebug(@"thread was unexpectedly nil");
+                    continue;
+                }
                 NSTimeInterval secondsSinceRead = [NSDate new].timeIntervalSince1970 - readTimestamp / 1000;
                 OWSAssertDebug([message isKindOfClass:[TSIncomingMessage class]]);
                 OWSLogDebug(@"read on linked device %f seconds ago", secondsSinceRead);
-                [self markAsReadOnLinkedDevice:message readTimestamp:readTimestamp transaction:transaction];
+                [self markAsReadOnLinkedDevice:message
+                                        thread:thread
+                                 readTimestamp:readTimestamp
+                                   transaction:transaction];
             }
         } else {
             // Received read receipt for unknown incoming message.
@@ -550,20 +618,27 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 }
 
 - (void)markAsReadOnLinkedDevice:(TSIncomingMessage *)message
+                          thread:(TSThread *)thread
                    readTimestamp:(uint64_t)readTimestamp
                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(message);
+    OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
+    BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
+    OWSReadCircumstance circumstance = hasPendingMessageRequest
+        ? OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest
+        : OWSReadCircumstanceReadOnLinkedDevice;
+
     // Always re-mark the message as read to ensure any earlier read time is applied to disappearing messages.
-    [message markAsReadAtTimestamp:readTimestamp sendReadReceipt:NO transaction:transaction];
+    [message markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
 
     // Also mark any unread messages appearing earlier in the thread as read as well.
     [self markAsReadBeforeSortId:message.sortId
-                          thread:[message threadWithTransaction:transaction]
+                          thread:thread
                    readTimestamp:readTimestamp
-                        wasLocal:NO
+                    circumstance:circumstance
                      transaction:transaction];
 }
 
@@ -572,7 +647,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 - (void)markAsReadBeforeSortId:(uint64_t)sortId
                         thread:(TSThread *)thread
                  readTimestamp:(uint64_t)readTimestamp
-                      wasLocal:(BOOL)wasLocal
+                  circumstance:(OWSReadCircumstance)circumstance
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(sortId > 0);
@@ -585,24 +660,39 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         // Avoid unnecessary writes.
         return;
     }
-    [self markMessagesAsRead:unreadMessages readTimestamp:readTimestamp wasLocal:wasLocal transaction:transaction];
+    [self markMessagesAsRead:unreadMessages
+                      thread:thread
+               readTimestamp:readTimestamp
+                circumstance:circumstance
+                 transaction:transaction];
 }
 
 - (void)markMessagesAsRead:(NSArray<id<OWSReadTracking>> *)unreadMessages
+                    thread:(TSThread *)thread
              readTimestamp:(uint64_t)readTimestamp
-                  wasLocal:(BOOL)wasLocal
+              circumstance:(OWSReadCircumstance)circumstance
                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(unreadMessages.count > 0);
     OWSAssertDebug(transaction);
 
-    if (wasLocal) {
-        OWSLogError(@"Marking %lu messages as read locally.", (unsigned long)unreadMessages.count);
-    } else {
-        OWSLogError(@"Marking %lu messages as read by linked device.", (unsigned long)unreadMessages.count);
+    switch (circumstance) {
+        case OWSReadCircumstanceReadOnLinkedDevice:
+            OWSLogInfo(@"Marking %lu messages as read by linked device.", (unsigned long)unreadMessages.count);
+            break;
+        case OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest:
+            OWSLogInfo(@"Marking %lu messages as read by linked device while pending message request.",
+                (unsigned long)unreadMessages.count);
+        case OWSReadCircumstanceReadOnThisDevice:
+            OWSLogInfo(@"Marking %lu messages as read locally.", (unsigned long)unreadMessages.count);
+            break;
+        case OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest:
+            OWSLogInfo(@"Marking %lu messages as read locally while pending message request.",
+                (unsigned long)unreadMessages.count);
+            break;
     }
     for (id<OWSReadTracking> readItem in unreadMessages) {
-        [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
+        [readItem markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
     }
 }
 

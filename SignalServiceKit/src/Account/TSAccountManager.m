@@ -34,6 +34,7 @@ NSString *const TSAccountManager_RegisteredUUIDKey = @"TSStorageRegisteredUUIDKe
 NSString *const TSAccountManager_IsDeregisteredKey = @"TSAccountManager_IsDeregisteredKey";
 NSString *const TSAccountManager_ReregisteringPhoneNumberKey = @"TSAccountManager_ReregisteringPhoneNumberKey";
 NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegistrationId";
+NSString *const TSAccountManager_IsOnboardedKey = @"TSAccountManager_IsOnboardedKey";
 NSString *const TSAccountManager_HasPendingRestoreDecisionKey = @"TSAccountManager_HasPendingRestoreDecisionKey";
 
 NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountCollection";
@@ -62,6 +63,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
 @property (nonatomic, readonly) BOOL isRegistered;
 @property (nonatomic, readonly) BOOL isDeregistered;
+@property (nonatomic, readonly) BOOL isOnboarded;
 
 @property (nonatomic, readonly, nullable) NSString *serverSignalingKey;
 @property (nonatomic, readonly, nullable) NSString *serverAuthToken;
@@ -101,6 +103,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     _deviceId = [keyValueStore getUInt32:TSAccountManager_DeviceId
                             defaultValue:1 // lazily migrate legacy primary devices
                              transaction:transaction];
+    _isOnboarded = [keyValueStore getBool:TSAccountManager_IsOnboardedKey defaultValue:NO transaction:transaction];
     return self;
 }
 
@@ -225,6 +228,11 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     return SSKEnvironment.shared.sessionStore;
 }
 
+- (id<OWSUDManager>)udManager
+{
+    return SSKEnvironment.shared.udManager;
+}
+
 #pragma mark -
 
 - (void)warmCaches
@@ -276,8 +284,6 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         } else {
             return OWSRegistrationState_Deregistered;
         }
-    } else if (self.isDeregistered) {
-        return OWSRegistrationState_PendingBackupRestore;
     } else {
         return OWSRegistrationState_Registered;
     }
@@ -337,6 +343,11 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 - (BOOL)isRegistered
 {
     return [self getOrLoadAccountStateWithSneakyTransaction].isRegistered;
+}
+
+- (BOOL)isRegisteredWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
 }
 
 - (BOOL)isRegisteredAndReady
@@ -530,6 +541,21 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     }
     return registrationID;
 }
+
+- (BOOL)isOnboarded
+{
+    return [self getOrLoadAccountStateWithSneakyTransaction].isOnboarded;
+}
+
+- (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction
+{
+    @synchronized(self) {
+        [self.keyValueStore setBool:isOnboarded key:TSAccountManager_IsOnboardedKey transaction:transaction];
+        [self loadAccountStateWithTransaction:transaction];
+    }
+}
+
+#pragma mark - Network Requests
 
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
                                         voipToken:(NSString *)voipToken
@@ -787,9 +813,13 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
             [self.sessionStore resetSessionStore:transaction];
 
+            [self.udManager removeSenderCertificatesWithTransaction:transaction];
+
             [self.keyValueStore setObject:localNumber
                                       key:TSAccountManager_ReregisteringPhoneNumberKey
                               transaction:transaction];
+
+            [self.keyValueStore setBool:NO key:TSAccountManager_IsOnboardedKey transaction:transaction];
 
             [self loadAccountStateWithTransaction:transaction];
         }

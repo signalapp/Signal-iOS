@@ -14,6 +14,16 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ProfileManagerProtocol <NSObject>
 
 - (OWSAES256Key *)localProfileKey;
+// localUserProfileExists is true if there is _ANY_ local profile.
+- (BOOL)localProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
+// hasLocalProfile is true if there is a local profile with a name or avatar.
+- (BOOL)hasLocalProfile;
+- (nullable NSString *)localGivenName;
+- (nullable NSString *)localFamilyName;
+- (nullable NSString *)localFullName;
+- (nullable NSString *)localUsername;
+- (nullable UIImage *)localProfileAvatarImage;
+- (nullable NSData *)localProfileAvatarData;
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction;
@@ -34,11 +44,29 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread;
+- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
+              wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                      transaction:(SDSAnyWriteTransaction *)transaction;
+
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses;
+
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
+                   wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                           transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
+- (void)addGroupIdToProfileWhitelist:(NSData *)groupId
+                 wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                         transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId;
+- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
+                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                              transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)fetchAndUpdateLocalUsersProfile;
 
@@ -49,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)warmCaches;
 
 @property (nonatomic, readonly) UserProfileReadCache *userProfileReadCache;
+@property (nonatomic, readonly) BOOL hasProfileName;
 
 @end
 

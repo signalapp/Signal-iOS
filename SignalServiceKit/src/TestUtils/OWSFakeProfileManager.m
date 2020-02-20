@@ -18,6 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSMutableSet<SignalServiceAddress *> *recipientWhitelist;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *threadWhitelist;
 @property (nonatomic, readonly) OWSAES256Key *localProfileKey;
+@property (nonatomic, nullable) NSString *localGivenName;
+@property (nonatomic, nullable) NSString *localFamilyName;
+@property (nonatomic, nullable) NSString *localFullName;
+@property (nonatomic, nullable) NSString *localUsername;
+@property (nonatomic, nullable) NSData *localProfileAvatarData;
 
 @end
 
@@ -103,6 +108,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientWhitelist addObject:address];
 }
 
+- (void)addUserToProfileWhitelist:(nonnull SignalServiceAddress *)address
+              wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                      transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    [self.recipientWhitelist addObject:address];
+}
+
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
 {
     [self.recipientWhitelist addObjectsFromArray:addresses];
@@ -113,12 +125,54 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientWhitelist removeObject:address];
 }
 
+- (void)removeUserFromProfileWhitelist:(nonnull SignalServiceAddress *)address
+                   wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                           transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    [self.recipientWhitelist removeObject:address];
+}
+
+- (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.threadWhitelist containsObject:groupId.hexadecimalString];
+}
+
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId
 {
     [self.threadWhitelist addObject:groupId.hexadecimalString];
 }
 
+- (void)addGroupIdToProfileWhitelist:(nonnull NSData *)groupId
+                 wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                         transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    [self.threadWhitelist addObject:groupId.hexadecimalString];
+}
+
+- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
+{
+    [self.threadWhitelist removeObject:groupId.hexadecimalString];
+}
+
+- (void)removeGroupIdFromProfileWhitelist:(nonnull NSData *)groupId
+                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                              transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    [self.threadWhitelist removeObject:groupId.hexadecimalString];
+}
+
 - (void)addThreadToProfileWhitelist:(TSThread *)thread
+{
+    if (thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        [self addGroupIdToProfileWhitelist:groupThread.groupModel.groupId];
+    } else {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        [self addUserToProfileWhitelist:contactThread.contactAddress];
+    }
+}
+
+- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
@@ -155,6 +209,30 @@ NS_ASSUME_NONNULL_BEGIN
     return capability.boolValue;
 }
 
+- (BOOL)hasLocalProfile
+{
+    return (self.localGivenName.length > 0 || self.localProfileAvatarImage != nil);
+}
+
+- (BOOL)hasProfileName
+{
+    return self.localGivenName.length > 0;
+}
+
+- (nullable UIImage *)localProfileAvatarImage
+{
+    NSData *_Nullable data = self.localProfileAvatarData;
+    if (data == nil) {
+        return nil;
+    }
+
+    return [UIImage imageWithData:data];
+}
+
+- (BOOL)localProfileExistsWithTransaction:(nonnull SDSAnyReadTransaction *)transaction
+{
+    return self.hasLocalProfile;
+}
 
 @end
 

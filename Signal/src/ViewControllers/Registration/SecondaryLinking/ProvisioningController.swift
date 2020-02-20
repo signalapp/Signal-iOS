@@ -49,9 +49,13 @@ public class ProvisioningController: NSObject {
 
     @objc
     public static func presentRelinkingFlow() {
-        let provisioningController = ProvisioningController(onboardingController: OnboardingController())
+        let onboardingController = OnboardingController(onboardingMode: .provisioning)
+        let navController = OnboardingNavigationController(onboardingController: onboardingController)
+
+        let provisioningController = ProvisioningController(onboardingController: onboardingController)
         let vc = SecondaryLinkingQRCodeViewController(provisioningController: provisioningController)
-        let navController = OWSNavigationController(rootViewController: vc)
+        navController.setViewControllers([vc], animated: false)
+
         provisioningController.awaitProvisioning(from: vc)
         navController.isNavigationBarHidden = true
         CurrentAppContext().mainWindow?.rootViewController = navController

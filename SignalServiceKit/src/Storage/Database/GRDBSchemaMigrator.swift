@@ -58,6 +58,9 @@ public class GRDBSchemaMigrator: NSObject {
         case addUserInfoToInteractions
         case recreateExperienceUpgradeWithNewColumns
         case recreateExperienceUpgradeIndex
+        case indexInfoMessageOnType_v2
+        case createPendingReadReceipts
+        case createInteractionAttachmentIdsIndex
         case addIsUuidCapableToUserProfiles
 
         // NOTE: Every time we add a migration id, consider
@@ -80,6 +83,7 @@ public class GRDBSchemaMigrator: NSObject {
         // separate migration, and ensure it runs *after* any schema migrations. That is, new schema
         // migrations must be inserted *before* any of these Data Migrations.
         case dataMigration_populateGalleryItems
+        case dataMigration_markOnboardedUsers_v2
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -397,6 +401,35 @@ public class GRDBSchemaMigrator: NSObject {
             try db.create(index: "index_model_ExperienceUpgrade_on_uniqueId", on: "model_ExperienceUpgrade", columns: ["uniqueId"])
         }
 
+
+        migrator.registerMigration(MigrationId.indexInfoMessageOnType_v2.rawValue) { db in
+            // cleanup typo in index name that was released to a small number of internal testflight users
+            try db.execute(sql: "DROP INDEX IF EXISTS index_model_TSInteraction_on_threadUniqueId_recordType_messagType")
+
+            try db.create(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messageType",
+                          on: "model_TSInteraction",
+                          columns: ["threadUniqueId", "recordType", "messageType"])
+        }
+
+        migrator.registerMigration(MigrationId.createPendingReadReceipts.rawValue) { db in
+            try db.create(table: "pending_read_receipts") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("threadId", .integer).notNull()
+                table.column("messageTimestamp", .integer).notNull()
+                table.column("authorPhoneNumber", .text)
+                table.column("authorUuid", .text)
+            }
+            try db.create(index: "index_pending_read_receipts_on_threadId",
+                          on: "pending_read_receipts",
+                          columns: ["threadId"])
+        }
+
+        migrator.registerMigration(MigrationId.createInteractionAttachmentIdsIndex.rawValue) { db in
+            try db.create(index: "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds",
+                          on: "model_TSInteraction",
+                          columns: ["threadUniqueId", "attachmentIds"])
+        }
+
         migrator.registerMigration(MigrationId.addIsUuidCapableToUserProfiles.rawValue) { db in
             try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
                 table.add(column: "isUuidCapable", .boolean).notNull().defaults(to: false)
@@ -409,6 +442,14 @@ public class GRDBSchemaMigrator: NSObject {
     func registerDataMigrations(migrator: inout DatabaseMigrator) {
         migrator.registerMigration(MigrationId.dataMigration_populateGalleryItems.rawValue) { db in
             try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_markOnboardedUsers_v2.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
+            if TSAccountManager.sharedInstance().isRegistered(transaction: transaction) {
+                Logger.info("marking existing user as onboarded")
+                TSAccountManager.sharedInstance().setIsOnboarded(true, transaction: transaction)
+            }
         }
     }
 }

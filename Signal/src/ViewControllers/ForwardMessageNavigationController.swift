@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -274,6 +274,9 @@ extension ForwardMessageNavigationController {
             .done { (threads: [TSThread]) in
                 for thread in threads {
                     try enqueueBlock(thread)
+
+                    // We're sending a message to this thread, approve any pending message request
+                    ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
                 }
 
                 self.forwardMessageDelegate?.forwardMessageFlowDidComplete(viewItem: self.conversationViewItem,
