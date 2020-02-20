@@ -5,7 +5,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
     private var isEditingDisplayName = false { didSet { handleIsEditingDisplayNameChanged() } }
     
     private lazy var userHexEncodedPublicKey: String = {
-        if let masterHexEncodedPublicKey = UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") {
+        if let masterHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] {
             return masterHexEncodedPublicKey
         } else {
             return getUserHexEncodedPublicKey()
@@ -180,7 +180,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("Notifications", comment: ""), color: Colors.text, action: #selector(showNotificationSettings))
         ]
-        let isMasterDevice = (UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") == nil)
+        let isMasterDevice = UserDefaults.standard.isMasterDevice
         if isMasterDevice {
             result.append(getSeparator())
             result.append(getSettingButton(withTitle: NSLocalizedString("Devices", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)))
@@ -288,7 +288,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
                         self?.present(alert, animated: true, completion: nil)
                     }
                 }
-            })
+            }, requiresSync: true)
         }
     }
     

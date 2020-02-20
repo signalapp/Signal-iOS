@@ -177,7 +177,7 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
                                                                                                                         comment: "Error message shown when a profile update fails."))
                                                                 })
                                                             }
-                                                        })
+                                                        }, requiresSync: false)
         }
     }
 

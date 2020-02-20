@@ -1,8 +1,9 @@
 import PromiseKit
+import SignalMetadataKit
 
 /// Base class for `LokiFileServerAPI` and `LokiPublicChatAPI`.
 public class LokiDotNetAPI : NSObject {
-
+    
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()
     internal static let userKeyPair = OWSIdentityManager.shared().identityKeyPair()!
@@ -38,6 +39,17 @@ public class LokiDotNetAPI : NSObject {
                 result = getAuthTokenInternal(in: transaction)
             }
             return result
+        }
+    }
+    
+    internal static func getAuthToken(for server: String, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<String> {
+        if let token = getAuthTokenFromDatabase(for: server, in: transaction) {
+            return Promise.value(token)
+        } else {
+            return requestNewAuthToken(for: server).then(on: DispatchQueue.global()) { submitAuthToken($0, for: server) }.map { token -> String in
+                setAuthToken(for: server, to: token, in: transaction)
+                return token
+            }
         }
     }
 
@@ -147,26 +159,16 @@ public class LokiDotNetAPI : NSObject {
                 }
             }
             if server == LokiFileServerAPI.server {
-                proceed(with: "loki") // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
+                DispatchQueue.global().async {
+                    proceed(with: "loki") // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
+                }
             } else {
                 getAuthToken(for: server).done(on: DispatchQueue.global()) { token in
                     proceed(with: token)
-                }.catch(on: DispatchQueue.global()) { error in
+                }.catch { error in
                     print("[Loki] Couldn't upload attachment due to error: \(error).")
                     seal.reject(error)
                 }
-            }
-        }
-    }
-    
-    // MARK: Internal API
-    internal static func getAuthToken(for server: String, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<String> {
-        if let token = getAuthTokenFromDatabase(for: server, in: transaction) {
-            return Promise.value(token)
-        } else {
-            return requestNewAuthToken(for: server).then(on: DispatchQueue.global()) { submitAuthToken($0, for: server) }.map { token -> String in
-                setAuthToken(for: server, to: token, in: transaction)
-                return token
             }
         }
     }
@@ -177,7 +179,8 @@ public class LokiDotNetAPI : NSObject {
         let queryParameters = "pubKey=\(userHexEncodedPublicKey)"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map { rawResponse in
+        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { rawResponse in
             guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
                 let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
                 throw LokiDotNetAPIError.parsingFailed
@@ -201,6 +204,7 @@ public class LokiDotNetAPI : NSObject {
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : userHexEncodedPublicKey, "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
+        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
         return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in token }
     }
     

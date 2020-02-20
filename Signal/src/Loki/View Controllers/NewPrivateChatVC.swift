@@ -155,7 +155,7 @@ private final class EnterPublicKeyVC : UIViewController {
     weak var newPrivateChatVC: NewPrivateChatVC!
     
     private lazy var userHexEncodedPublicKey: String = {
-        if let masterHexEncodedPublicKey = UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") {
+        if let masterHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] {
             return masterHexEncodedPublicKey
         } else {
             return getUserHexEncodedPublicKey()

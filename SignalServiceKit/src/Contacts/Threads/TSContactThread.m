@@ -11,6 +11,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +27,7 @@ NSString *const TSContactThreadPrefix = @"c";
     self = [super initWithUniqueId:uniqueIdentifier];
     
     // No session reset ongoing
-    _sessionResetState = TSContactThreadSessionResetStateNone;
+    _sessionResetStatus = LKSessionResetStatusNone;
     _sessionRestoreDevices = @[];
 
     return self;

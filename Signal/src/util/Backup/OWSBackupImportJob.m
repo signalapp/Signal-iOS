@@ -339,7 +339,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             failure:^(NSError *error) {
                 // Ignore errors related to local profile.
                 resolve(@(1));
-            }];
+            }
+            requiresSync:YES];
     }];
 }
 

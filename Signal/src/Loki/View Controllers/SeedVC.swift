@@ -182,7 +182,7 @@ final class SeedVC : UIViewController {
             self.seedReminderView.subtitle = NSLocalizedString("Make sure to store your recovery phrase in a safe place", comment: "")
         }, completion: nil)
         seedReminderView.setProgress(1, animated: true)
-        UserDefaults.standard.set(true, forKey: "hasViewedSeed")
+        UserDefaults.standard[.hasViewedSeed] = true
         NotificationCenter.default.post(name: .seedViewed, object: nil)
     }
     

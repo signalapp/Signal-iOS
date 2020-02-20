@@ -243,7 +243,10 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             // We populate an initial (empty) profile on launch of a new install, but until
             // we have a registered account, syncing will fail (and there could not be any
             // linked device to sync to at this point anyway).
-            if ([self.tsAccountManager isRegistered] && CurrentAppContext().isMainApp) {
+            
+            NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
+            BOOL hasLaunchedOnce = [userDefaults boolForKey:@"hasLaunchedOnce"];
+            if ([self.tsAccountManager isRegistered] && CurrentAppContext().isMainApp && hasLaunchedOnce) {
                 [[self.syncManager syncLocalContact] retainUntilComplete];
             }
 
