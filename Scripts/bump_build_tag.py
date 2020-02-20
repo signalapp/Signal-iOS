@@ -150,9 +150,14 @@ if __name__ == '__main__':
     main_plist_path = os.path.join(project_root_path, 'Signal', 'Signal-Info.plist')
     if not os.path.exists(main_plist_path):
         fail('Could not find main app info .plist')
-    share_ext_plist_path = os.path.join(project_root_path, 'SignalShareExtension', 'Info.plist')
-    if not os.path.exists(share_ext_plist_path):
+
+    sae_plist_path = os.path.join(project_root_path, 'SignalShareExtension', 'Info.plist')
+    if not os.path.exists(sae_plist_path):
         fail('Could not find share extension info .plist')
+
+    nse_plist_path = os.path.join(project_root_path, 'NotificationServiceExtension', 'Info.plist')
+    if not os.path.exists(nse_plist_path):
+        fail('Could not find NSE info .plist')
         
     output = subprocess.check_output(['git', 'status', '--porcelain'])
     if len(output.strip()) > 0:
@@ -165,7 +170,8 @@ if __name__ == '__main__':
     
     # Ensure .plist is in xml format, not binary.
     output = subprocess.check_output(['plutil', '-convert', 'xml1', main_plist_path])
-    output = subprocess.check_output(['plutil', '-convert', 'xml1', share_ext_plist_path])
+    output = subprocess.check_output(['plutil', '-convert', 'xml1', sae_plist_path])
+    output = subprocess.check_output(['plutil', '-convert', 'xml1', nse_plist_path])
     # print 'output', output
     
     # ---------------
@@ -194,7 +200,13 @@ if __name__ == '__main__':
     # Share Extension
     # ---------------
 
-    set_versions(share_ext_plist_path, new_release_version, new_build_version)
+    set_versions(sae_plist_path, new_release_version, new_build_version)
+    
+    # ------------------------------
+    # Notification Service Extension
+    # ------------------------------
+
+    set_versions(nse_plist_path, new_release_version, new_build_version)
     
     # ---------------
     # Git
