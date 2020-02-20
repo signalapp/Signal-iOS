@@ -770,6 +770,8 @@ static NSTimeInterval launchStartedAt;
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
 
+            NSString *userHexEncodedPublicKey = self.tsAccountManager.localNumber;
+
             // Loki: Tell our friends that we are online
             [LKP2PAPI broadcastOnlineStatus];
 
@@ -777,7 +779,22 @@ static NSTimeInterval launchStartedAt;
             [self startLongPollerIfNeeded];
 
             // Loki: Get device links
-            [LKFileServerAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber];
+            [[LKFileServerAPI getDeviceLinksAssociatedWith:userHexEncodedPublicKey] retainUntilComplete];
+
+            // Loki: Update profile picture if needed
+            NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
+            NSDate *now = [NSDate new];
+            NSDate *lastProfilePictureUpload = (NSDate *)[userDefaults objectForKey:@"lastProfilePictureUpload"];
+            if ([now timeIntervalSinceDate:lastProfilePictureUpload] > 14 * 24 * 60 * 60) {
+                OWSProfileManager *profileManager = OWSProfileManager.sharedManager;
+                NSString *displayName = [profileManager profileNameForRecipientId:userHexEncodedPublicKey];
+                UIImage *profilePicture = [profileManager profileAvatarForRecipientId:userHexEncodedPublicKey];
+                [profileManager updateLocalProfileName:displayName avatarImage:profilePicture success:^{
+                    [userDefaults setObject:now forKey:@"lastProfilePictureUpload"];
+                } failure:^(NSError *error) {
+                    // Do nothing
+                } requiresSync:YES];
+            }
             
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");
@@ -1448,7 +1465,7 @@ static NSTimeInterval launchStartedAt;
         [self startLongPollerIfNeeded];
 
         // Loki: Get device links
-        [LKFileServerAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber];
+        [[LKFileServerAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber] retainUntilComplete]; // TODO: Is this even needed?
     }
 }
 
