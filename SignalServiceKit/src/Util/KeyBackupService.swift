@@ -292,6 +292,15 @@ public class KeyBackupService: NSObject {
             }
         }
 
+        var ivLength: UInt {
+            switch self {
+            case .storageService, .storageServiceManifest, .storageServiceRecord:
+                return 16
+            default:
+                return kAESGCM256_DefaultIVLength
+            }
+        }
+
         static var syncableKeys: [DerivedKey] {
             return [
                 .storageService
@@ -353,8 +362,11 @@ public class KeyBackupService: NSObject {
             throw KBSError.assertion
         }
 
-        // TODO: Maybe rename this since it's no longer profile specific
-        guard let encryptedData = Cryptography.encryptAESGCMProfileData(plainTextData: data, key: key) else {
+        guard let encryptedData = Cryptography.encryptAESGCMWithDataAndConcatenateResults(
+            plainTextData: data,
+            initializationVectorLength: keyType.ivLength,
+            key: key
+        ) else {
             owsFailDebug("Failed to encrypt data")
             throw KBSError.assertion
         }
@@ -368,8 +380,11 @@ public class KeyBackupService: NSObject {
             throw KBSError.assertion
         }
 
-        // TODO: Maybe rename this since it's no longer profile specific
-        guard let data = Cryptography.decryptAESGCMProfileData(encryptedData: encryptedData, key: key) else {
+        guard let data = Cryptography.decryptAESGCMConcatenatedData(
+            encryptedData: encryptedData,
+            initializationVectorLength: keyType.ivLength,
+            key: key
+        ) else {
             // TODO: Derive Storage Service Key - until we use the restored key for storage service,
             // this is expected after every reinstall. After that this should propably become an owsFailDebug
             Logger.info("failed to decrypt data")
@@ -640,6 +655,7 @@ public class KeyBackupService: NSObject {
 
             guard let encryptionResult = Cryptography.encryptAESGCM(
                 plainTextData: kbRequestData,
+                initializationVectorLength: kAESGCM256_DefaultIVLength,
                 additionalAuthenticatedData: remoteAttestation.requestId,
                 key: remoteAttestation.keys.clientKey
             ) else {
