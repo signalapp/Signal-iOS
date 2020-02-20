@@ -260,7 +260,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             validationWarningLabel.text = NSLocalizedString("ONBOARDING_2FA_ATTEMPTS_EXHAUSTED",
                                                             comment: "Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view.")
         case .invalid(let remainingAttempts):
-            guard let remaining = remainingAttempts else {
+            guard let remaining = remainingAttempts, remaining <= 5 else {
                 validationWarningLabel.text = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN",
                                                                 comment: "Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view.")
                 break
