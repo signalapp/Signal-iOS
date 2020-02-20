@@ -21,7 +21,8 @@ final class LokiPushNotificationManager : NSObject {
         }
         // Send token to Loki server
         let parameters = [ "token" : hexEncodedToken ]
-        let url = URL(string: "https://live.apns.getsession.org/register")!
+//        let url = URL(string: "https://live.apns.getsession.org/register")!
+        let url = URL(string: "https://dev.apns.getsession.org/register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         TSNetworkManager.shared().makeRequest(request, success: { _, response in
