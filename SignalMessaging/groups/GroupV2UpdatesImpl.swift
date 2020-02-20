@@ -77,7 +77,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
         tryToRefreshV2GroupThreadWithThrottling(groupThread, groupUpdateMode: groupUpdateMode)
-            .retainUntilComplete()
     }
 
     @objc
@@ -85,23 +84,26 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                    upToRevision: UInt32) {
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: upToRevision)
         tryToRefreshV2GroupThreadWithThrottling(groupThread, groupUpdateMode: groupUpdateMode)
-            .retainUntilComplete()
     }
 
     private func tryToRefreshV2GroupThreadWithThrottling(_ groupThread: TSGroupThread,
-                                                         groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
-        let groupModel = groupThread.groupModel
-        guard groupModel.groupsVersion == .V2 else {
-            return Promise.value(())
-        }
-        let groupId = groupModel.groupId
-        guard let groupSecretParamsData = groupModel.groupSecretParamsData,
-            groupSecretParamsData.count > 0 else {
-                return Promise(error: OWSAssertionError("Missing groupSecretParamsData."))
-        }
-        return tryToRefreshV2GroupThreadWithThrottling(groupId: groupId,
-                                                       groupSecretParamsData: groupSecretParamsData,
-                                                       groupUpdateMode: groupUpdateMode)
+                                                         groupUpdateMode: GroupUpdateMode) {
+        firstly { () -> Promise<Void> in
+            let groupModel = groupThread.groupModel
+            guard groupModel.groupsVersion == .V2 else {
+                return Promise.value(())
+            }
+            let groupId = groupModel.groupId
+            guard let groupSecretParamsData = groupModel.groupSecretParamsData,
+                groupSecretParamsData.count > 0 else {
+                    return Promise(error: OWSAssertionError("Missing groupSecretParamsData."))
+            }
+            return tryToRefreshV2GroupThreadWithThrottling(groupId: groupId,
+                                                           groupSecretParamsData: groupSecretParamsData,
+                                                           groupUpdateMode: groupUpdateMode)
+        }.catch(on: .global()) { error in
+            Logger.warn("Group refresh failed: \(error).")
+        }.retainUntilComplete()
     }
 
     public func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
@@ -398,6 +400,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return self.tryToApplyGroupChangesFromService(groupId: groupId,
                                                           groupChanges: groupChanges,
                                                           groupUpdateMode: groupUpdateMode)
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+            GroupsV2Error.timeout
         }
     }
 
@@ -410,11 +414,12 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                         groupChanges: groupChanges,
                                                         upToRevision: upToRevision)
         case .upToCurrentRevisionAfterMessageProcessWithThrottling:
-            return messageProcessing.allMessageFetchingAndProcessingPromise()
-                .then(on: .global()) { _ in
-                    return self.tryToApplyGroupChangesFromServiceNow(groupId: groupId,
-                                                                     groupChanges: groupChanges,
-                                                                     upToRevision: nil)
+            return firstly {
+                return self.messageProcessing.allMessageFetchingAndProcessingPromise()
+            }.then(on: .global()) { _ in
+                return self.tryToApplyGroupChangesFromServiceNow(groupId: groupId,
+                                                                 groupChanges: groupChanges,
+                                                                 upToRevision: nil)
             }
         }
     }
@@ -515,6 +520,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }.then(on: .global()) { groupV2Snapshot in
             return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
                                                                     groupUpdateMode: groupUpdateMode)
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+            GroupsV2Error.timeout
         }
     }
 
@@ -524,9 +531,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         case .upToSpecificRevisionImmediately:
             return tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
         case .upToCurrentRevisionAfterMessageProcessWithThrottling:
-            return messageProcessing.allMessageFetchingAndProcessingPromise()
-                .then(on: .global()) { _ in
-                    return self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
+            return firstly {
+                return self.messageProcessing.allMessageFetchingAndProcessingPromise()
+            }.then(on: .global()) { _ in
+                return self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
             }
         }
     }

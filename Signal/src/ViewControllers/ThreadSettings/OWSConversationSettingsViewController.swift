@@ -7,22 +7,66 @@ import PromiseKit
 
 public extension OWSConversationSettingsViewController {
 
-    var databaseStorage: SDSDatabaseStorage {
-        return .shared
+    // MARK: - Dependencies
+
+    private var messageProcessing: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
     }
+
+    var databaseStorage: SDSDatabaseStorage {
+    return .shared
+    }
+
+    // MARK: -
 
     @objc
     func updateDisappearingMessagesConfigurationObjc(_ dmConfiguration: OWSDisappearingMessagesConfiguration,
-                                                     thread: TSThread) -> AnyPromise {
-        return AnyPromise(updateDisappearingMessagesConfiguration(dmConfiguration, thread: thread))
-    }
+                                                     thread: TSThread) {
 
+        // GroupsV2 TODO: Should we allow cancel here?
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: false) { modalActivityIndicator in
+                                                        firstly {
+                                                            self.updateDisappearingMessagesConfiguration(dmConfiguration,
+                                                                                                         thread: thread)
+                                                        }.done { _ in
+                                                            modalActivityIndicator.dismiss {
+                                                                self.navigationController?.popViewController(animated: true)
+                                                            }
+                                                        }.catch { error in
+                                                            owsFailDebug("Could not update group: \(error)")
+
+                                                            // GroupsV2 TODO: We might want to treat GroupsV2Error.redundantChange
+                                                            // as a success once we've finalized the conflict resolution behavior.
+
+                                                            modalActivityIndicator.dismiss {
+                                                                UpdateGroupViewController.showUpdateErrorUI(error: error)
+                                                            }
+                                                        }.retainUntilComplete()
+        }
+    }
+}
+
+// MARK: -
+
+extension OWSConversationSettingsViewController {
     func updateDisappearingMessagesConfiguration(_ dmConfiguration: OWSDisappearingMessagesConfiguration,
                                                  thread: TSThread) -> Promise<Void> {
-        return DispatchQueue.global().async(.promise) {
+
+        return firstly { () -> Promise<Void> in
+            guard thread.isGroupV2Thread else {
+                return Promise.value(())
+            }
+            // v2 group updates need to block on message processing.
+            return firstly {
+                messageProcessing.allMessageFetchingAndProcessingPromise()
+            }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+                GroupsV2Error.timeout
+            }
+        }.map(on: .global()) {
             // We're sending a message, so we're accepting any pending message request.
             ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
-        }.then {
+        }.then(on: .global()) {
             GroupManager.localUpdateDisappearingMessages(thread: thread,
                                                          disappearingMessageToken: dmConfiguration.asToken)
         }

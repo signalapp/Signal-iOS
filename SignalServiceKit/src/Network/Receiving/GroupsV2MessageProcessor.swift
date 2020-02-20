@@ -596,18 +596,15 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 owsFailDebug("Missing jobInfo properties.")
                 return Promise(error: GroupsV2Error.shouldDiscard)
         }
-        guard let groupV2UpdatesSwift = self.groupV2Updates as? GroupV2UpdatesSwift else {
-            return Promise(error: OWSAssertionError("Missing groupV2UpdatesSwift."))
-        }
 
         // See GroupV2UpdatesImpl.
         // This will try to update the group using incremental "changes" but
         // failover to using a "snapshot".
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
         return firstly {
-            groupV2UpdatesSwift.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
-                                                                        groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                        groupUpdateMode: groupUpdateMode)
+            groupV2Updates.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
+                                                                   groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                   groupUpdateMode: groupUpdateMode)
         }.map(on: .global()) { (_) in
             return UpdateOutcome.successShouldProcess
         }.recover(on: .global()) { error -> Guarantee<UpdateOutcome> in
@@ -621,6 +618,9 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 }
 
                 // GroupsV2 TODO: Consult networkManagerError.statusCode.
+                return Guarantee.value(UpdateOutcome.failureShouldRetry)
+            case GroupsV2Error.timeout:
+                Logger.warn("error: \(type(of: error)) \(error)")
                 return Guarantee.value(UpdateOutcome.failureShouldRetry)
             default:
                 return Guarantee.value(UpdateOutcome.failureShouldDiscard)

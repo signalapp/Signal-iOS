@@ -296,35 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *groupName = self.groupNameTextField.text;
 
-    [ModalActivityIndicatorViewController
-        presentFromViewController:self
-                        canCancel:NO
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [GroupManager localCreateNewGroupObjcWithMembers:members
-                          groupId:nil
-                          name:groupName
-                          avatarImage:self.groupAvatar
-                          newGroupSeed:self.groupSeed
-                          shouldSendMessage:YES
-                          success:^(TSGroupThread *thread) {
-                              [self.presentingViewController
-                                  dismissViewControllerAnimated:YES
-                                                     completion:^{
-                                                         [SignalApp.sharedApp
-                                                             presentConversationForThread:thread
-                                                                                   action:ConversationViewActionCompose
-                                                                                 animated:NO];
-                                                     }];
-                          }
-                          failure:^(NSError *error) {
-                              OWSFailDebug(@"Error: %@", error);
-                              [modalActivityIndicator dismissWithCompletion:^{
-                                  [OWSActionSheets showErrorAlertWithMessage:
-                                                       NSLocalizedString(@"NEW_GROUP_CREATION_FAILED",
-                                                           @"Error indicating that a new group could not be created.")];
-                              }];
-                          }];
-                  }];
+    [self createGroupThreadWithName:groupName avatarImage:self.groupAvatar members:members newGroupSeed:self.groupSeed];
 }
 
 #pragma mark - Group Avatar

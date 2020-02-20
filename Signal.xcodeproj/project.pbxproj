@@ -191,6 +191,7 @@
 		348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */; };
+		34941BC523FF25F2002AEA8D /* NewGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34941BC423FF25F2002AEA8D /* NewGroupViewController.swift */; };
 		3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496744C2076768700080B5F /* OWSMessageBubbleView.m */; };
 		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34969559219B605E00DCFE74 /* ImagePickerController.swift */; };
@@ -1049,6 +1050,7 @@
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationSigningCertificateTest.m; sourceTree = "<group>"; };
+		34941BC423FF25F2002AEA8D /* NewGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupViewController.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3496744B2076768600080B5F /* OWSMessageBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageBubbleView.h; sourceTree = "<group>"; };
 		3496744C2076768700080B5F /* OWSMessageBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageBubbleView.m; sourceTree = "<group>"; };
@@ -2310,10 +2312,11 @@
 				3496744E2076ACCE00080B5F /* LongTextViewController.swift */,
 				4C4F360E2284516F00A8DF48 /* MediaGallery */,
 				4CFF4C0920F55BBA005DA313 /* MessageActionsViewController.swift */,
-				881218EF238CA51600E6F271 /* MessageReactionPicker.swift */,
 				34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */,
+				881218EF238CA51600E6F271 /* MessageReactionPicker.swift */,
 				34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */,
 				34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */,
+				34941BC423FF25F2002AEA8D /* NewGroupViewController.swift */,
 				45D2AC01204885170033C692 /* OWS2FAReminderViewController.swift */,
 				345BC30A2047030600257B7C /* OWS2FASettingsViewController.h */,
 				345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */,
@@ -4508,6 +4511,7 @@
 				45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */,
 				340CCB6A23032762005243B3 /* YDBLegacyMigration.m in Sources */,
 				3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */,
+				34941BC523FF25F2002AEA8D /* NewGroupViewController.swift in Sources */,
 				8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */,
 				340E9AC4236095CD00FA362C /* AttachmentMultisend.swift in Sources */,
 				34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */,

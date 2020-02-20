@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -17,6 +17,15 @@ public extension Promise {
         let timeout: Promise<T> = after(seconds: seconds).map {
             Logger.info("Timed out, returning substitute value.")
             return substituteValue
+        }
+
+        return race(self, timeout)
+    }
+
+    func timeout(seconds: TimeInterval, timeoutErrorBlock: @escaping () -> Error) -> Promise<T> {
+        let timeout: Promise<T> = after(seconds: seconds).map {
+            Logger.info("Timed out, throwing error.")
+            throw timeoutErrorBlock()
         }
 
         return race(self, timeout)

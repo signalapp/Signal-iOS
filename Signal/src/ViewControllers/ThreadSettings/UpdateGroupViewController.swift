@@ -18,6 +18,10 @@ public extension UpdateGroupViewController {
         return SDSDatabaseStorage.shared
     }
 
+    private var messageProcessing: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
+    }
+
     // MARK: -
 
     func canAddOrInviteMember(oldGroupModel: TSGroupModel,
@@ -75,15 +79,76 @@ public extension UpdateGroupViewController {
 
     func updateGroupThread(oldGroupModel: TSGroupModel,
                            newGroupModel: TSGroupModel,
-                           success: @escaping (TSGroupThread) -> Void,
-                           failure: @escaping (Error) -> Void) {
+                           delegate: OWSConversationSettingsViewDelegate) {
 
-        guard let localAddress = tsAccountManager.localAddress else {
-            return failure(OWSAssertionError("Missing localAddress."))
+        // GroupsV2 TODO: Should we allow cancel here?
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: false) { modalActivityIndicator in
+                                                        firstly {
+                                                            self.updateGroupThreadPromise(oldGroupModel: oldGroupModel,
+                                                                                          newGroupModel: newGroupModel)
+                                                        }.done { groupThread in
+                                                            modalActivityIndicator.dismiss {
+                                                                delegate.conversationSettingsDidUpdate(groupThread)
+                                                                delegate.popAllConversationSettingsViews()
+                                                            }
+                                                        }.catch { error in
+                                                            owsFailDebug("Could not update group: \(error)")
+
+                                                            // GroupsV2 TODO: We might want to treat GroupsV2Error.redundantChange
+                                                            // as a success once we've finalized the conflict resolution behavior.
+
+                                                            modalActivityIndicator.dismiss {
+                                                                UpdateGroupViewController.showUpdateErrorUI(error: error)
+                                                            }
+                                                        }.retainUntilComplete()
+        }
+    }
+
+    class func showUpdateErrorUI(error: Error) {
+        AssertIsOnMainThread()
+
+        let showUpdateNetworkErrorUI = {
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("UPDATE_GROUP_FAILED_DUE_TO_NETWORK",
+                                                                     comment: "Error indicating that a group could not be updated due to network connectivity problems."))
         }
 
-        // dmConfiguration: nil means don't change disappearing messages configuration.
-        firstly {
+        if error.isNetworkConnectivityFailure {
+            return showUpdateNetworkErrorUI()
+        }
+
+        switch error {
+        case GroupsV2Error.timeout:
+            return showUpdateNetworkErrorUI()
+        default:
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("UPDATE_GROUP_FAILED",
+                                                                     comment: "Error indicating that a group could not be updated."))
+        }
+    }
+}
+
+// MARK: -
+
+extension UpdateGroupViewController {
+    private func updateGroupThreadPromise(oldGroupModel: TSGroupModel,
+                                          newGroupModel: TSGroupModel) -> Promise<TSGroupThread> {
+
+        guard let localAddress = tsAccountManager.localAddress else {
+            return Promise(error: OWSAssertionError("Missing localAddress."))
+        }
+
+        return firstly { () -> Promise<Void> in
+            guard newGroupModel.groupsVersion == .V2 else {
+                return Promise.value(())
+            }
+            // v2 group updates need to block on message processing.
+            return firstly {
+                messageProcessing.allMessageFetchingAndProcessingPromise()
+            }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+                GroupsV2Error.timeout
+            }
+        }.then(on: .global()) {
+            // dmConfiguration: nil means don't change disappearing messages configuration.
             GroupManager.localUpdateExistingGroup(groupId: newGroupModel.groupId,
                                                   name: newGroupModel.groupName,
                                                   avatarData: newGroupModel.groupAvatarData,
@@ -92,21 +157,6 @@ public extension UpdateGroupViewController {
                                                   groupsVersion: newGroupModel.groupsVersion,
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
-        }.done(on: .global()) { groupThread in
-            success(groupThread)
-        }.catch(on: .global()) { (error) in
-            switch error {
-            case GroupsV2Error.redundantChange:
-                // GroupsV2 TODO: Treat this as a success.
-
-                owsFailDebug("Could not update group: \(error)")
-
-                failure(error)
-            default:
-                owsFailDebug("Could not update group: \(error)")
-
-                failure(error)
-            }
-        }.retainUntilComplete()
+        }
     }
 }
