@@ -156,7 +156,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                 print("[Loki] Couldn't parse profile picture from: \(responseObject).")
                 throw LokiDotNetAPIError.parsingFailed
             }
-            UserDefaults.standard[.lastProfilePictureUpload] = Date().timeIntervalSince1970
+            UserDefaults.standard[.lastProfilePictureUpload] = Date()
             return downloadURL
         }
     }
