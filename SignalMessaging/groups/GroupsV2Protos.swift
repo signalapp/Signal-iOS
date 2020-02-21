@@ -287,10 +287,7 @@ public class GroupsV2Protos {
             do {
                 let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
                 let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
-                let durationSeconds = disappearingMessagesProto.duration
-                if durationSeconds != 0 {
-                    disappearingMessageToken = DisappearingMessageToken(isEnabled: true, durationSeconds: durationSeconds)
-                }
+                disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: disappearingMessagesProto.duration)
             } catch {
                 owsFailDebug("Could not decrypt and parse disappearing messages state: \(error).")
             }

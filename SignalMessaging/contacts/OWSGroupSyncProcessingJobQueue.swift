@@ -201,10 +201,13 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         // who made any changes.
         let groupUpdateSourceAddress: SignalServiceAddress? = nil
         // We only sync v1 groups via group sync messages.
+
+        let disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: groupDetails.expireTimer)
         let result = try GroupManager.remoteUpsertExistingGroupV1(groupId: groupId,
                                                                   name: groupDetails.name,
                                                                   avatarData: groupDetails.avatarData,
                                                                   members: groupDetails.memberAddresses,
+                                                                  disappearingMessageToken: disappearingMessageToken,
                                                                   groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                   transaction: transaction)
 
@@ -248,11 +251,5 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         if groupNeedsUpdate {
             groupThread.anyOverwritingUpdate(transaction: transaction)
         }
-
-        OWSDisappearingMessagesJob.shared().becomeConsistent(withDisappearingDuration: groupDetails.expireTimer,
-                                                             thread: groupThread,
-                                                             createdByRemoteRecipient: nil,
-                                                             createdInExistingGroup: !isNewThread,
-                                                             transaction: transaction)
     }
 }

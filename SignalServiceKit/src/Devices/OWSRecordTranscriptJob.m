@@ -187,12 +187,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:outgoingMessage.expiresInSeconds
-                                                                              thread:transcript.thread
-                                                            createdByRemoteRecipient:nil
-                                                              createdInExistingGroup:NO
-                                                                         transaction:transaction];
-
     if (transcript.isExpirationTimerUpdate) {
         // early return to avoid saving an empty incoming message.
         OWSAssertDebug(transcript.body.length == 0);

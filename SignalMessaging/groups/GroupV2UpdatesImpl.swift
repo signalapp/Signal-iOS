@@ -356,17 +356,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
         }
 
-        if let newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken {
-            // GroupsV2 TODO: Combine with updateExistingGroupThreadInDatabaseAndCreateInfoMessage
-            // to yield a single "group update" info message.
-            GroupManager.updateDisappearingMessagesInDatabaseAndCreateMessages(token: newDisappearingMessageToken,
-                                                                               thread: groupThread,
-                                                                               transaction: transaction)
-        }
-
         let groupUpdateSourceAddress = SignalServiceAddress(uuid: changedGroupModel.changeAuthorUuid)
-        let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
-                                                                                                          newGroupModel: changedGroupModel.newGroupModel,
+        let newGroupModel = changedGroupModel.newGroupModel
+        let newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
+        let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                                                          newDisappearingMessageToken: newDisappearingMessageToken,
                                                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                           transaction: transaction).groupThread
 
@@ -477,8 +471,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
                 let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
 
-                groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
-                                                                                                       newGroupModel: newGroupModel,
+                let newDisappearingMessageToken = groupChange.snapshot.disappearingMessageToken
+                groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                                                       newDisappearingMessageToken: newDisappearingMessageToken,
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                        transaction: transaction).groupThread
 
@@ -516,10 +511,12 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot,
                                                                  transaction: transaction)
+            let newDisappearingMessageToken = groupV2Snapshot.disappearingMessageToken
             // groupUpdateSourceAddress is nil because we don't know the
             // author(s) of changes reflected in the snapshot.
             let groupUpdateSourceAddress: SignalServiceAddress? = nil
             let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                                                       newDisappearingMessageToken: newDisappearingMessageToken,
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                        canInsert: true,
                                                                                                        transaction: transaction)
