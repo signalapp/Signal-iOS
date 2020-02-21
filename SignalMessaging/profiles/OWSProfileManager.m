@@ -1535,19 +1535,16 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
                     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                         [latestUserProfile updateWithAvatarFileName:fileName transaction:transaction completion:nil];
-                    }];
-                }
 
-                // If we're updating the profile that corresponds to our local number,
-                // update the local profile as well.
-                if (userProfile.address.isLocalAddress) {
-                    OWSUserProfile *localUserProfile = self.localUserProfile;
-                    OWSAssertDebug(localUserProfile);
+                        // If we're updating the profile that corresponds to our local number,
+                        // update the local profile as well.
+                        if (userProfile.address.isLocalAddress) {
+                            OWSUserProfile *localUserProfile = self.localUserProfile;
+                            OWSAssertDebug(localUserProfile);
 
-                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                        [localUserProfile updateWithAvatarFileName:fileName transaction:transaction completion:nil];
+                            [localUserProfile updateWithAvatarFileName:fileName transaction:transaction completion:nil];
+                        }
                     }];
-                    [self updateProfileAvatarCache:image filename:fileName];
                 }
 
                 OWSAssertDebug(backgroundTask);
