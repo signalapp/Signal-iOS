@@ -28,7 +28,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 @synthesize mainWindow = _mainWindow;
 @synthesize appLaunchTime = _appLaunchTime;
-@synthesize isWakenByRemoteNotification = _isWakenByRemoteNotification;
+@synthesize wasWokenUpBySilentPushNotification = _wasWokenUpBySilentPushNotification;
 
 - (instancetype)init
 {
@@ -41,7 +41,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     self.reportedApplicationState = UIApplicationStateInactive;
 
     _appLaunchTime = [NSDate new];
-    _isWakenByRemoteNotification = false;
+    _wasWokenUpBySilentPushNotification = false;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)

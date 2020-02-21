@@ -1133,7 +1133,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
     
-    CurrentAppContext().isWakenByRemoteNotification = true;
+    CurrentAppContext().wasWokenUpBySilentPushNotification = true;
 
     [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
     
@@ -1162,11 +1162,11 @@ static NSTimeInterval launchStartedAt;
     
     PMKJoin(promises).then(^(id results) {
         completionHandler(UIBackgroundFetchResultNewData);
-        CurrentAppContext().isWakenByRemoteNotification = false;
+        CurrentAppContext().wasWokenUpBySilentPushNotification = false;
         [LKLogger print:@"[Loki] UIBackgroundFetchResultNewData"];
     }).catch(^(id error) {
         completionHandler(UIBackgroundFetchResultFailed);
-        CurrentAppContext().isWakenByRemoteNotification = false;
+        CurrentAppContext().wasWokenUpBySilentPushNotification = false;
         [LKLogger print:@"[Loki] UIBackgroundFetchResultFailed"];
     });
 }
@@ -1599,13 +1599,15 @@ static NSTimeInterval launchStartedAt;
 {
     [self setUpLongPollerIfNeeded];
     [self.lokiLongPoller startIfNeeded];
+    // FIXME: Let's not mix long polling and public chat polling. Better to separate them out into their own functions.
     [LKPublicChatManager.shared startPollersIfNeeded];
-    [SSKEnvironment.shared.attachmentDownloads startDownloadIfNeeded];
+    [SSKEnvironment.shared.attachmentDownloads continueDownloadIfPossible];
 }
 
 - (void)stopLongPollerIfNeeded
 {
     [self.lokiLongPoller stopIfNeeded];
+    // FIXME: Let's not mix long polling and public chat polling. Better to separate them out into their own functions.
     [LKPublicChatManager.shared stopPollers];
 }
 

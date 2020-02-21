@@ -37,8 +37,9 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (nonatomic, readonly) BOOL isMainApp;
 @property (nonatomic, readonly) BOOL isMainAppAndActive;
-//A flag to determine if the attatchment downloading tasks should run
-@property (nonatomic) BOOL isWakenByRemoteNotification;
+/// Whether the app was woken up by a silent push notification. This is important for
+/// determining whether attachments should be downloaded or not.
+@property (nonatomic) BOOL wasWokenUpBySilentPushNotification;
 
 // Whether the user is using a right-to-left language like Arabic.
 @property (nonatomic, readonly) BOOL isRTL;
