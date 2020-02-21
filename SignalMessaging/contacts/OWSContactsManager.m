@@ -525,7 +525,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         for (Contact *contact in contacts) {
             for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
                 NSString *phoneNumberE164 = phoneNumber.toE164;
-                if (phoneNumberE164.length > 0) {
+                // Don't keep a system contact record for the local user.
+                if (phoneNumberE164.length > 0 && ![phoneNumberE164 isEqualToString:TSAccountManager.localNumber]) {
                     allContactsMap[phoneNumberE164] = contact;
                 }
             }
