@@ -177,7 +177,9 @@ static NSTimeInterval launchStartedAt;
 
     [DDLog flushLog];
 
+    // Loki: Stop pollers
     [self stopLongPollerIfNeeded];
+    [self stopOpenGroupPollersIfNeeded];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -195,8 +197,10 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"applicationWillTerminate.");
 
     [DDLog flushLog];
-    
+
+    // Loki: Stop pollers
     [self stopLongPollerIfNeeded];
+    [self stopOpenGroupPollersIfNeeded];
 
     if (self.lokiP2PServer) { [self.lokiP2PServer stop]; }
 }
@@ -772,8 +776,9 @@ static NSTimeInterval launchStartedAt;
             // Loki: Tell our friends that we are online
             [LKP2PAPI broadcastOnlineStatus];
 
-            // Loki: Start long polling
+            // Loki: Start pollers
             [self startLongPollerIfNeeded];
+            [self startOpenGroupPollersIfNeeded];
 
             // Loki: Get device links
             [[LKFileServerAPI getDeviceLinksAssociatedWith:userHexEncodedPublicKey] retainUntilComplete];
@@ -1464,8 +1469,9 @@ static NSTimeInterval launchStartedAt;
         // Loki: Start friend request expiration job
         [self.lokiFriendRequestExpirationJob startIfNecessary];
         
-        // Loki: Start long polling
+        // Loki: Start pollers
         [self startLongPollerIfNeeded];
+        [self startOpenGroupPollersIfNeeded];
 
         // Loki: Get device links
         [[LKFileServerAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber] retainUntilComplete]; // TODO: Is this even needed?
@@ -1599,26 +1605,11 @@ static NSTimeInterval launchStartedAt;
 {
     [self setUpLongPollerIfNeeded];
     [self.lokiLongPoller startIfNeeded];
-    // FIXME: Let's not mix long polling and public chat polling. Better to separate them out into their own functions.
-    [LKPublicChatManager.shared startPollersIfNeeded];
-    [SSKEnvironment.shared.attachmentDownloads continueDownloadIfPossible];
 }
 
 - (void)stopLongPollerIfNeeded
 {
     [self.lokiLongPoller stopIfNeeded];
-    // FIXME: Let's not mix long polling and public chat polling. Better to separate them out into their own functions.
-    [LKPublicChatManager.shared stopPollers];
-}
-
-- (LKRSSFeed *)lokiNewsFeed
-{
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:@"Loki News" isDeletable:true];
-}
-
-- (LKRSSFeed *)lokiMessengerUpdatesFeed
-{
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:@"Session Updates" isDeletable:false];
 }
 
 - (void)setUpDefaultPublicChatsIfNeeded
@@ -1635,6 +1626,27 @@ static NSTimeInterval launchStartedAt;
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
         }
     }
+}
+
+- (void)startOpenGroupPollersIfNeeded
+{
+    [LKPublicChatManager.shared startPollersIfNeeded];
+    [SSKEnvironment.shared.attachmentDownloads continueDownloadIfPossible];
+}
+
+- (void)stopOpenGroupPollersIfNeeded
+{
+    [LKPublicChatManager.shared stopPollers];
+}
+
+- (LKRSSFeed *)lokiNewsFeed
+{
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:@"Loki News" isDeletable:true];
+}
+
+- (LKRSSFeed *)lokiMessengerUpdatesFeed
+{
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:@"Session Updates" isDeletable:false];
 }
 
 - (void)createRSSFeedsIfNeeded
@@ -1695,6 +1707,7 @@ static NSTimeInterval launchStartedAt;
     [SSKEnvironment.shared.identityManager clearIdentityKey];
     [LKAPI clearRandomSnodePool];
     [self stopLongPollerIfNeeded];
+    [self stopOpenGroupPollersIfNeeded];
     [self.lokiNewsFeedPoller stop];
     [self.lokiMessengerUpdatesFeedPoller stop];
     [LKPublicChatManager.shared stopPollers];

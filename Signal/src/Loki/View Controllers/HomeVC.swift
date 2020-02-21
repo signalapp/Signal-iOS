@@ -135,8 +135,8 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         if OWSIdentityManager.shared().identityKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.setUpDefaultPublicChatsIfNeeded()
+            appDelegate.startOpenGroupPollersIfNeeded()
             appDelegate.createRSSFeedsIfNeeded()
-            LokiPublicChatManager.shared.startPollersIfNeeded()
             appDelegate.startRSSFeedPollersIfNeeded()
         }
         // Do initial update
