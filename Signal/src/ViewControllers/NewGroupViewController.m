@@ -101,6 +101,13 @@ NS_ASSUME_NONNULL_BEGIN
     self.memberRecipients = [NSMutableSet new];
 }
 
+- (void)generateNewSeed
+{
+    _groupSeed = [NewGroupSeed new];
+
+    [self updateAvatarView];
+}
+
 #pragma mark - View Lifecycle
 
 - (void)loadView
