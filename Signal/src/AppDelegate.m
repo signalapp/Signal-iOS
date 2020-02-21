@@ -177,7 +177,9 @@ static NSTimeInterval launchStartedAt;
 
     [DDLog flushLog];
 
+    // Loki: Stop pollers
     [self stopLongPollerIfNeeded];
+    [self stopOpenGroupPollersIfNeeded];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -195,8 +197,10 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"applicationWillTerminate.");
 
     [DDLog flushLog];
-    
+
+    // Loki: Stop pollers
     [self stopLongPollerIfNeeded];
+    [self stopOpenGroupPollersIfNeeded];
 
     if (self.lokiP2PServer) { [self.lokiP2PServer stop]; }
 }
@@ -315,9 +319,6 @@ static NSTimeInterval launchStartedAt;
                                              selector:@selector(registrationLockDidChange:)
                                                  name:NSNotificationName_2FAStateDidChange
                                                object:nil];
-    
-    // Loki - Observe new messages received notifications
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleNewMessagesReceived:) name:NSNotification.newMessagesReceived object:nil];
     
     // Loki - Observe thread deleted notifications
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleThreadDeleted:) name:NSNotification.threadDeleted object:nil];
@@ -770,14 +771,32 @@ static NSTimeInterval launchStartedAt;
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
 
+            NSString *userHexEncodedPublicKey = self.tsAccountManager.localNumber;
+
             // Loki: Tell our friends that we are online
             [LKP2PAPI broadcastOnlineStatus];
 
-            // Loki: Start long polling
+            // Loki: Start pollers
             [self startLongPollerIfNeeded];
+            [self startOpenGroupPollersIfNeeded];
 
             // Loki: Get device links
-            [LKFileServerAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber];
+            [[LKFileServerAPI getDeviceLinksAssociatedWith:userHexEncodedPublicKey] retainUntilComplete];
+
+            // Loki: Update profile picture if needed
+            NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
+            NSDate *now = [NSDate new];
+            NSDate *lastProfilePictureUpload = (NSDate *)[userDefaults objectForKey:@"lastProfilePictureUpload"];
+            if (lastProfilePictureUpload != nil && [now timeIntervalSinceDate:lastProfilePictureUpload] > 14 * 24 * 60 * 60) {
+                OWSProfileManager *profileManager = OWSProfileManager.sharedManager;
+                NSString *displayName = [profileManager profileNameForRecipientId:userHexEncodedPublicKey];
+                UIImage *profilePicture = [profileManager profileAvatarForRecipientId:userHexEncodedPublicKey];
+                [profileManager updateLocalProfileName:displayName avatarImage:profilePicture success:^{
+                    // Do nothing; the user defaults flag is updated in LokiFileServerAPI
+                } failure:^(NSError *error) {
+                    // Do nothing
+                } requiresSync:YES];
+            }
             
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");
@@ -1118,6 +1137,8 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
+    
+    CurrentAppContext().wasWokenUpBySilentPushNotification = true;
 
     [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
     
@@ -1135,7 +1156,7 @@ static NSTimeInterval launchStartedAt;
     [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
     }];
-    for (LKPublicChat *publicChat in publicChats) {
+    for (LKPublicChat *publicChat in publicChats.allValues) {
         if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
         LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
         [poller stop];
@@ -1146,8 +1167,12 @@ static NSTimeInterval launchStartedAt;
     
     PMKJoin(promises).then(^(id results) {
         completionHandler(UIBackgroundFetchResultNewData);
+        CurrentAppContext().wasWokenUpBySilentPushNotification = false;
+        [LKLogger print:@"[Loki] UIBackgroundFetchResultNewData"];
     }).catch(^(id error) {
         completionHandler(UIBackgroundFetchResultFailed);
+        CurrentAppContext().wasWokenUpBySilentPushNotification = false;
+        [LKLogger print:@"[Loki] UIBackgroundFetchResultFailed"];
     });
 }
 
@@ -1444,11 +1469,12 @@ static NSTimeInterval launchStartedAt;
         // Loki: Start friend request expiration job
         [self.lokiFriendRequestExpirationJob startIfNecessary];
         
-        // Loki: Start long polling
+        // Loki: Start pollers
         [self startLongPollerIfNeeded];
+        [self startOpenGroupPollersIfNeeded];
 
         // Loki: Get device links
-        [LKFileServerAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber];
+        [[LKFileServerAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber] retainUntilComplete]; // TODO: Is this even needed?
     }
 }
 
@@ -1586,16 +1612,6 @@ static NSTimeInterval launchStartedAt;
     [self.lokiLongPoller stopIfNeeded];
 }
 
-- (LKRSSFeed *)lokiNewsFeed
-{
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:@"Loki News" isDeletable:true];
-}
-
-- (LKRSSFeed *)lokiMessengerUpdatesFeed
-{
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:@"Session Updates" isDeletable:false];
-}
-
 - (void)setUpDefaultPublicChatsIfNeeded
 {
     for (LKPublicChat *chat in LKPublicChatAPI.defaultChats) {
@@ -1610,6 +1626,27 @@ static NSTimeInterval launchStartedAt;
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
         }
     }
+}
+
+- (void)startOpenGroupPollersIfNeeded
+{
+    [LKPublicChatManager.shared startPollersIfNeeded];
+    [SSKEnvironment.shared.attachmentDownloads continueDownloadIfPossible];
+}
+
+- (void)stopOpenGroupPollersIfNeeded
+{
+    [LKPublicChatManager.shared stopPollers];
+}
+
+- (LKRSSFeed *)lokiNewsFeed
+{
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:@"Loki News" isDeletable:true];
+}
+
+- (LKRSSFeed *)lokiMessengerUpdatesFeed
+{
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:@"Session Updates" isDeletable:false];
 }
 
 - (void)createRSSFeedsIfNeeded
@@ -1670,6 +1707,7 @@ static NSTimeInterval launchStartedAt;
     [SSKEnvironment.shared.identityManager clearIdentityKey];
     [LKAPI clearRandomSnodePool];
     [self stopLongPollerIfNeeded];
+    [self stopOpenGroupPollersIfNeeded];
     [self.lokiNewsFeedPoller stop];
     [self.lokiMessengerUpdatesFeedPoller stop];
     [LKPublicChatManager.shared stopPollers];

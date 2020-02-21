@@ -18,7 +18,7 @@ public final class DeviceLink : NSObject, NSCoding {
         @objc public let signature: Data?
         
         @objc public var displayName: String {
-            if let customDisplayName = UserDefaults.standard.string(forKey: "\(hexEncodedPublicKey)_display_name") {
+            if let customDisplayName = UserDefaults.standard[.slaveDeviceName(hexEncodedPublicKey)] {
                 return customDisplayName
             } else {
                 return NSLocalizedString("Unnamed Device", comment: "")

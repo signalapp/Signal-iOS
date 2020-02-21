@@ -100,7 +100,7 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         mainStackView.pin(to: view)
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
         // Show device unlinked alert if needed
-        if UserDefaults.standard.bool(forKey: "wasUnlinked") {
+        if UserDefaults.standard[.wasUnlinked] {
             let alert = UIAlertController(title: NSLocalizedString("Device Unlinked", comment: ""), message: NSLocalizedString("Your device was unlinked successfully", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
@@ -190,8 +190,7 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
     }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
-        let userDefaults = UserDefaults.standard
-        userDefaults.set(deviceLink.master.hexEncodedPublicKey, forKey: "masterDeviceHexEncodedPublicKey")
+        UserDefaults.standard[.masterHexEncodedPublicKey] = deviceLink.master.hexEncodedPublicKey
         fakeChatViewContentOffset = fakeChatView.contentOffset
         DispatchQueue.main.async {
             self.fakeChatView.contentOffset = self.fakeChatViewContentOffset

@@ -429,12 +429,12 @@ typedef enum : NSUInteger {
                                                  name:NSNotification.calculatingPoW
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleContactingNetworkNotification:)
-                                                 name:NSNotification.contactingNetwork
+                                             selector:@selector(handleRoutingNotification:)
+                                                 name:NSNotification.routing
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleSendingMessageNotification:)
-                                                 name:NSNotification.sendingMessage
+                                             selector:@selector(handleMessageSendingNotification:)
+                                                 name:NSNotification.messageSending
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMessageSentNotification:)
@@ -5419,13 +5419,13 @@ typedef enum : NSUInteger {
     [self setProgressIfNeededTo:0.25f forMessageWithTimestamp:timestamp];
 }
 
-- (void)handleContactingNetworkNotification:(NSNotification *)notification
+- (void)handleRoutingNotification:(NSNotification *)notification
 {
     NSNumber *timestamp = (NSNumber *)notification.object;
     [self setProgressIfNeededTo:0.50f forMessageWithTimestamp:timestamp];
 }
 
-- (void)handleSendingMessageNotification:(NSNotification *)notification
+- (void)handleMessageSendingNotification:(NSNotification *)notification
 {
     NSNumber *timestamp = (NSNumber *)notification.object;
     [self setProgressIfNeededTo:0.75f forMessageWithTimestamp:timestamp];

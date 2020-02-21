@@ -350,21 +350,21 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
         // Attachment with caption.
-        if ([CurrentAppContext() isRTL]) {
-            return [[bodyDescription stringByAppendingString:@": "] stringByAppendingString:attachmentDescription];
-        } else {
+//        if ([CurrentAppContext() isRTL]) {
+//            return [[bodyDescription stringByAppendingString:@": "] stringByAppendingString:attachmentDescription];
+//        } else {
             return [[attachmentDescription stringByAppendingString:@": "] stringByAppendingString:bodyDescription];
-        }
+//        }
     } else if (bodyDescription.length > 0) {
         return bodyDescription;
     } else if (attachmentDescription.length > 0) {
         return attachmentDescription;
     } else if (self.contactShare) {
-        if (CurrentAppContext().isRTL) {
-            return [self.contactShare.name.displayName stringByAppendingString:@" 👤"];
-        } else {
+//        if (CurrentAppContext().isRTL) {
+//            return [self.contactShare.name.displayName stringByAppendingString:@" 👤"];
+//        } else {
             return [@"👤 " stringByAppendingString:self.contactShare.name.displayName];
-        }
+//        }
     } else {
 //        OWSFailDebug(@"message has neither body nor attachment.");
         // TODO: We should do better here.
