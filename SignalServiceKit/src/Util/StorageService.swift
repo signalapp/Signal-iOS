@@ -25,7 +25,8 @@ public struct StorageService {
     public enum StorageError: OperationError {
         case assertion
         case retryableAssertion
-        case decryptionFailed(manifestVersion: UInt64)
+        case manifestDecryptionFailed(version: UInt64)
+        case itemDecryptionFailed(identifier: StorageIdentifier)
         case networkError(statusCode: Int, underlyingError: Error)
 
         // MARK: 
@@ -36,7 +37,9 @@ public struct StorageService {
                 return false
             case .retryableAssertion:
                 return true
-            case .decryptionFailed:
+            case .manifestDecryptionFailed:
+                return false
+            case .itemDecryptionFailed:
                 return false
             case .networkError(let statusCode, _):
                 // If this is a server error, retry
@@ -128,7 +131,7 @@ public struct StorageService {
                         encryptedData: encryptedManifestContainer.value
                     )
                 } catch {
-                    throw StorageError.decryptionFailed(manifestVersion: encryptedManifestContainer.version)
+                    throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
                 }
                 return try StorageServiceProtoManifestRecord.parseData(manifestData)
             case .notFound:
@@ -194,10 +197,15 @@ public struct StorageService {
             case .conflict:
                 // Our version was out of date, we should've received a copy of the latest version
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest.parseData(response.data)
-                let manifestData = try KeyBackupService.decrypt(
-                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                    encryptedData: encryptedManifestContainer.value
-                )
+                let manifestData: Data
+                do {
+                    manifestData = try KeyBackupService.decrypt(
+                        keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                        encryptedData: encryptedManifestContainer.value
+                    )
+                } catch {
+                    throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
+                }
                 return try StorageServiceProtoManifestRecord.parseData(manifestData)
             default:
                 owsFailDebug("unexpected response \(response.status)")
@@ -237,10 +245,15 @@ public struct StorageService {
             return try itemsProto.items.map { item in
                 let encryptedItemData = item.value
                 let itemIdentifier = StorageIdentifier(data: item.key)
-                let itemData = try KeyBackupService.decrypt(
-                    keyType: .storageServiceRecord(identifier: itemIdentifier),
-                    encryptedData: encryptedItemData
-                )
+                let itemData: Data
+                do {
+                    itemData = try KeyBackupService.decrypt(
+                        keyType: .storageServiceRecord(identifier: itemIdentifier),
+                        encryptedData: encryptedItemData
+                    )
+                } catch {
+                    throw StorageError.itemDecryptionFailed(identifier: itemIdentifier)
+                }
                 let record = try StorageServiceProtoStorageRecord.parseData(itemData)
                 return StorageItem(identifier: itemIdentifier, record: record)
             }

@@ -486,6 +486,8 @@ class StorageServiceOperation: OWSOperation {
             deletedIdentifiers: deletedIdentifiers
         ).done(on: .global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
+                Logger.info("Successfully updated to manifest version: \(version)")
+
                 // Successfuly updated, store our changes.
                 self.databaseStorage.write { transaction in
                     StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
@@ -536,12 +538,15 @@ class StorageServiceOperation: OWSOperation {
 
                 // If we succeeded to fetch the manifest but were unable to decrypt it,
                 // it likely means our keys changed.
-                if case .decryptionFailed(let previousManifestVersion) = storageError {
+                if case .manifestDecryptionFailed(let previousManifestVersion) = storageError {
                     // If this is the primary device, throw everything away and re-encrypt
                     // the social graph with the keys we have locally.
                     if TSAccountManager.sharedInstance().isPrimaryDevice {
+                        Logger.info("Manifest decryption failed, recreating manifest.")
                         return self.createNewManifest(version: previousManifestVersion + 1)
                     }
+
+                    Logger.info("Manifest decryption failed, clearing storage service keys.")
 
                     // If this is a linked device, give up and request the latest storage
                     // service key from the primary device.
@@ -561,6 +566,8 @@ class StorageServiceOperation: OWSOperation {
     }
 
     private func createNewManifest(version: UInt64) {
+        Logger.info("Creating a new manifest with manifest version: \(version)")
+
         var allItems: [StorageService.StorageItem] = []
         var accountIdentifierMap: BidirectionalDictionary<AccountId, StorageService.StorageIdentifier> = [:]
         var groupIdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
@@ -649,6 +656,8 @@ class StorageServiceOperation: OWSOperation {
     // MARK: - Conflict Resolution
 
     private func mergeLocalManifest(withRemoteManifest manifest: StorageServiceProtoManifestRecord, backupAfterSuccess: Bool) {
+        Logger.info("Merging with newer remote manifest version: \(manifest.version)")
+
         var accountIdentifierMap: BidirectionalDictionary<AccountId, StorageService.StorageIdentifier> = [:]
         var groupIdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
         var unknownIdentifiersTypeMap: [UInt32: [StorageService.StorageIdentifier]] = [:]
@@ -769,12 +778,34 @@ class StorageServiceOperation: OWSOperation {
                 self.reportSuccess()
             }
         }.catch { error in
-            switch error {
-            case let operationError as OperationError:
-                return self.reportError(operationError)
-            default:
-                self.reportError(withUndefinedRetry: error)
+            if let storageError = error as? StorageService.StorageError {
+
+                // If we succeeded to fetch the records but were unable to decrypt any of them,
+                // it likely means our keys changed.
+                if case .itemDecryptionFailed = storageError {
+                    // If this is the primary device, throw everything away and re-encrypt
+                    // the social graph with the keys we have locally.
+                    if TSAccountManager.sharedInstance().isPrimaryDevice {
+                        Logger.info("Item decryption failed, recreating manifest.")
+                        return self.createNewManifest(version: manifest.version + 1)
+                    }
+
+                    Logger.info("Item decryption failed, clearing storage service keys.")
+
+                    // If this is a linked device, give up and request the latest storage
+                    // service key from the primary device.
+                    self.databaseStorage.write { transaction in
+                        // Clear out the key, it's no longer valid. This will prevent us
+                        // from trying to backup again until the sync response is received.
+                        KeyBackupService.storeSyncedKey(type: .storageService, data: nil, transaction: transaction)
+                        OWSSyncManager.shared().sendKeysSyncRequestMessage(transaction: transaction)
+                    }
+                }
+
+                return self.reportError(storageError)
             }
+
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 
