@@ -416,10 +416,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             NSData *encryptedAvatarData = [self encryptProfileData:avatarData profileKey:newProfileKey];
             OWSAssertDebug(encryptedAvatarData.length > 0);
             
-            [[LKFileServerAPI setProfilePicture:encryptedAvatarData]
-            .thenOn(dispatch_get_main_queue(), ^(NSString *url) {
+            [[LKFileServerAPI uploadProfilePicture:encryptedAvatarData]
+            .thenOn(dispatch_get_main_queue(), ^(NSString *downloadURL) {
                 [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
-                   successBlock(url);
+                   successBlock(downloadURL);
                 }];
             })
             .catchOn(dispatch_get_main_queue(), ^(id result) {

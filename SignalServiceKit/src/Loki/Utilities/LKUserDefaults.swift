@@ -9,7 +9,11 @@ public enum LKUserDefaults {
         /// Whether the device was unlinked as a slave device (used to notify the user on the landing screen).
         case wasUnlinked
     }
-    
+
+    public enum Date : Swift.String {
+        case lastProfilePictureUpload
+    }
+
     public enum Double : Swift.String {
         case lastDeviceTokenUpload = "lastDeviceTokenUploadTime"
     }
@@ -35,6 +39,11 @@ public extension UserDefaults {
     public subscript(bool: LKUserDefaults.Bool) -> Bool {
         get { return self.bool(forKey: bool.rawValue) }
         set { set(newValue, forKey: bool.rawValue) }
+    }
+
+    public subscript(date: LKUserDefaults.Date) -> Date? {
+        get { return self.object(forKey: date.rawValue) as? Date }
+        set { set(newValue, forKey: date.rawValue) }
     }
     
     public subscript(double: LKUserDefaults.Double) -> Double {
