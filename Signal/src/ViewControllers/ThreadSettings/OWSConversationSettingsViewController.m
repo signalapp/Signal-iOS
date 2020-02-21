@@ -1232,10 +1232,10 @@ const CGFloat kIconViewLength = 24;
     }
     OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-    UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    UpdateGroupViewController *updateGroupViewController =
+        [[UpdateGroupViewController alloc] initWithGroupThread:groupThread mode:mode];
     updateGroupViewController.conversationSettingsViewDelegate = self.conversationSettingsViewDelegate;
-    updateGroupViewController.thread = (TSGroupThread *)self.thread;
-    updateGroupViewController.mode = mode;
     [self.navigationController pushViewController:updateGroupViewController animated:YES];
 }
 
