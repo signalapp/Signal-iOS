@@ -187,10 +187,10 @@ public final class LokiAPI : NSObject {
         func sendLokiMessageUsingSwarmAPI() -> Promise<Set<RawResponsePromise>> {
             notificationCenter.post(name: .calculatingPoW, object: NSNumber(value: signalMessage.timestamp))
             return lokiMessage.calculatePoW().then { lokiMessageWithPoW -> Promise<Set<RawResponsePromise>> in
-                notificationCenter.post(name: .contactingNetwork, object: NSNumber(value: signalMessage.timestamp))
+                notificationCenter.post(name: .routing, object: NSNumber(value: signalMessage.timestamp))
                 return getTargetSnodes(for: destination).map { swarm in
                     return Set(swarm.map { target in
-                        notificationCenter.post(name: .sendingMessage, object: NSNumber(value: signalMessage.timestamp))
+                        notificationCenter.post(name: .messageSending, object: NSNumber(value: signalMessage.timestamp))
                         return sendLokiMessage(lokiMessageWithPoW, to: target).map { rawResponse in
                             if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
                                 guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }

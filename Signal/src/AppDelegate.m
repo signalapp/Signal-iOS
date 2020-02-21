@@ -316,9 +316,6 @@ static NSTimeInterval launchStartedAt;
                                                  name:NSNotificationName_2FAStateDidChange
                                                object:nil];
     
-    // Loki - Observe new messages received notifications
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleNewMessagesReceived:) name:NSNotification.newMessagesReceived object:nil];
-    
     // Loki - Observe thread deleted notifications
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleThreadDeleted:) name:NSNotification.threadDeleted object:nil];
 

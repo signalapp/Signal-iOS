@@ -1,7 +1,8 @@
 import PromiseKit
 
 public extension LokiAPI {
-    
+
+    /// Only ever accessed from `LokiAPI.errorHandlingQueue` to avoid race conditions.
     fileprivate static var failureCount: [LokiAPITarget:UInt] = [:]
     
     // MARK: Settings
