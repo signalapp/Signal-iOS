@@ -32,11 +32,7 @@ class GroupsV2ProfileKeyUpdater {
         return OWSProfileManager.shared()
     }
 
-    private var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
-    }
-
-    private var groupsV2Swift: GroupsV2Swift {
+    private var groupsV2: GroupsV2Swift {
         return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
@@ -223,7 +219,7 @@ class GroupsV2ProfileKeyUpdater {
         }.then(on: .global()) { (groupThread: TSGroupThread) throws -> Promise<TSGroupThread> in
             // Get latest group state from service and verify that this update is still necessary.
             return firstly {
-                self.groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: groupThread.groupModel)
+                self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupThread.groupModel)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupThread in
                 guard groupV2Snapshot.groupMembership.isNonPendingMember(localAddress) else {
                     // We're not a full member, no need to update profile key.
@@ -249,7 +245,7 @@ class GroupsV2ProfileKeyUpdater {
                 changeSet.setShouldUpdateLocalProfileKey()
                 return changeSet
             }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
-                return self.groupsV2Swift.updateExistingGroupOnService(changeSet: changeSet)
+                return self.groupsV2.updateExistingGroupOnService(changeSet: changeSet)
             }.asVoid()
         }
     }

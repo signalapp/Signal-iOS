@@ -148,13 +148,13 @@ NS_ASSUME_NONNULL_BEGIN
                     }
                     NSArray<SignalServiceAddress *> *members = @[ localAddress ];
                     NSError *_Nullable groupError;
-                    _thread = [GroupManager upsertExistingGroupV1WithGroupId:_groupId
-                                                                        name:groupContextV1.name
-                                                                  avatarData:nil
-                                                                     members:members
-                                                    groupUpdateSourceAddress:localAddress
-                                                                 transaction:transaction
-                                                                       error:&groupError]
+                    _thread = [GroupManager remoteUpsertExistingGroupV1WithGroupId:_groupId
+                                                                              name:groupContextV1.name
+                                                                        avatarData:nil
+                                                                           members:members
+                                                          groupUpdateSourceAddress:localAddress
+                                                                       transaction:transaction
+                                                                             error:&groupError]
                                   .groupThread;
                     if (groupError != nil || _thread == nil) {
                         OWSFailDebug(@"Could not create group: %@", groupError);
@@ -192,8 +192,9 @@ NS_ASSUME_NONNULL_BEGIN
             _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress transaction:transaction];
         }
 
-        _quotedMessage =
-            [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
+        _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage
+                                                               thread:_thread
+                                                          transaction:transaction];
         _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
 
         NSError *linkPreviewError;

@@ -1049,13 +1049,13 @@ NS_ASSUME_NONNULL_BEGIN
             // Ensures that the thread exists but doesn't update it.
             NSError *_Nullable error;
             UpsertGroupResult *_Nullable result =
-                [GroupManager upsertExistingGroupV1WithGroupId:groupId
-                                                          name:groupContext.name
-                                                    avatarData:oldGroupThread.groupModel.groupAvatarData
-                                                       members:newMembers.allObjects
-                                      groupUpdateSourceAddress:groupUpdateSourceAddress
-                                                   transaction:transaction
-                                                         error:&error];
+                [GroupManager remoteUpsertExistingGroupV1WithGroupId:groupId
+                                                                name:groupContext.name
+                                                          avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                             members:newMembers.allObjects
+                                            groupUpdateSourceAddress:groupUpdateSourceAddress
+                                                         transaction:transaction
+                                                               error:&error];
             if (error != nil || result == nil) {
                 OWSFailDebug(@"Error: %@", error);
                 return;
@@ -1086,13 +1086,13 @@ NS_ASSUME_NONNULL_BEGIN
 
             NSError *_Nullable error;
             UpsertGroupResult *_Nullable result =
-                [GroupManager upsertExistingGroupV1WithGroupId:groupId
-                                                          name:oldGroupThread.groupModel.groupName
-                                                    avatarData:oldGroupThread.groupModel.groupAvatarData
-                                                       members:newMembers.allObjects
-                                      groupUpdateSourceAddress:groupUpdateSourceAddress
-                                                   transaction:transaction
-                                                         error:&error];
+                [GroupManager remoteUpsertExistingGroupV1WithGroupId:groupId
+                                                                name:oldGroupThread.groupModel.groupName
+                                                          avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                             members:newMembers.allObjects
+                                            groupUpdateSourceAddress:groupUpdateSourceAddress
+                                                         transaction:transaction
+                                                               error:&error];
             if (error != nil || result == nil) {
                 OWSFailDebug(@"Error: %@", error);
                 return;

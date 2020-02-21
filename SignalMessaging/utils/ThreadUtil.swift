@@ -14,7 +14,7 @@ public extension ThreadUtil {
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
                                                         firstly { () -> Promise<TSGroupThread> in
-                                                            GroupManager.leaveGroupOrDeclineInvite(groupThread: groupThread)
+                                                            GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread)
                                                         }.done { _ in
                                                             modalActivityIndicator.dismiss {
                                                                 success()
@@ -37,7 +37,7 @@ public extension ThreadUtil {
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
                                                         firstly { () -> Promise<TSGroupThread> in
-                                                            GroupManager.acceptInviteToGroupV2(groupThread: groupThread)
+                                                            GroupManager.localAcceptInviteToGroupV2(groupThread: groupThread)
                                                         }.done { _ in
                                                             modalActivityIndicator.dismiss {
                                                                 success()

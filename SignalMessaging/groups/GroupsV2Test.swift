@@ -18,12 +18,8 @@ public class GroupsV2Test: NSObject {
         return TSAccountManager.sharedInstance()
     }
 
-    private class var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
-    }
-
-    private class var groupsV2Swift: GroupsV2Swift {
-        return self.groupsV2 as! GroupsV2Swift
+    private class var groupsV2: GroupsV2Swift {
+        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
     private class var databaseStorage: SDSDatabaseStorage {
@@ -65,7 +61,7 @@ public class GroupsV2Test: NSObject {
         let localAddressSet = Set([SignalServiceAddress(uuid: localUuid)])
         Logger.verbose("otherAddresses: \(otherAddresses)")
         firstly {
-            GroupManager.createNewGroup(members: members,
+            GroupManager.localCreateNewGroup(members: members,
                                         name: title0,
                                         shouldSendMessage: true)
         }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<(Data, GroupV2Snapshot)> in
@@ -73,12 +69,11 @@ public class GroupsV2Test: NSObject {
                 guard groupModel.groupsVersion == .V2 else {
                     throw OWSAssertionError("Not a V2 group.")
                 }
-            return self.groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+            return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
                     .map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
                         return (groupThread.groupModel.groupId, groupV2Snapshot)
                 }
         }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
-
             let groupModel = try self.databaseStorage.read { transaction in
                 return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
             }
@@ -134,22 +129,21 @@ public class GroupsV2Test: NSObject {
             let groupAccess = groupModel.groupAccess
             // GroupsV2 TODO: Add and remove members, change avatar, etc.
 
-            return GroupManager.updateExistingGroup(groupId: groupId,
-                                                    name: title1,
-                                                    avatarData: nil,
-                                                    groupMembership: groupMembership,
-                                                    groupAccess: groupAccess,
-                                                    groupsVersion: groupModel.groupsVersion,
-                                                    dmConfiguration: dmConfiguration,
-                                                    groupUpdateSourceAddress: localAddress)
+            return GroupManager.localUpdateExistingGroup(groupId: groupId,
+                                                         name: title1,
+                                                         avatarData: nil,
+                                                         groupMembership: groupMembership,
+                                                         groupAccess: groupAccess,
+                                                         groupsVersion: groupModel.groupsVersion,
+                                                         dmConfiguration: dmConfiguration,
+                                                         groupUpdateSourceAddress: localAddress)
                 .then(on: .global()) { (groupThread) -> Promise<GroupV2Snapshot> in
                     // GroupsV2 TODO: This should reflect the new group.
-                    return groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: groupThread.groupModel)
+                    return groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupThread.groupModel)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
                 return (groupId, groupV2Snapshot)
             }
         }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
-
             let groupModel = try self.databaseStorage.read { transaction in
                 return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
             }
@@ -205,22 +199,21 @@ public class GroupsV2Test: NSObject {
             let groupAccess = groupModel.groupAccess
             // GroupsV2 TODO: Add and remove members, change avatar, etc.
 
-            return GroupManager.updateExistingGroup(groupId: groupId,
-                                                    name: title1,
-                                                    avatarData: nil,
-                                                    groupMembership: groupMembership,
-                                                    groupAccess: groupAccess,
-                                                    groupsVersion: groupModel.groupsVersion,
-                                                    dmConfiguration: dmConfiguration,
-                                                    groupUpdateSourceAddress: localAddress)
+            return GroupManager.localUpdateExistingGroup(groupId: groupId,
+                                                         name: title1,
+                                                         avatarData: nil,
+                                                         groupMembership: groupMembership,
+                                                         groupAccess: groupAccess,
+                                                         groupsVersion: groupModel.groupsVersion,
+                                                         dmConfiguration: dmConfiguration,
+                                                         groupUpdateSourceAddress: localAddress)
                 .then(on: .global()) { (_) -> Promise<GroupV2Snapshot> in
                     // GroupsV2 TODO: This should reflect the new group.
-                    return groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+                    return groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> (Data, GroupV2Snapshot) in
                 return (groupId, groupV2Snapshot)
             }
         }.map(on: .global()) { (groupId: Data, groupV2Snapshot: GroupV2Snapshot) throws -> Data in
-
             let groupModel = try self.databaseStorage.read { transaction in
                 return try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
             }

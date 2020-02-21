@@ -233,18 +233,17 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                                   thread:thread];
                                                           }];
                         }],
-        [OWSTableItem
-            itemWithTitle:@"Request Bogus group info"
-              actionBlock:^{
-                  OWSLogInfo(@"Requesting bogus group info for thread: %@", thread);
-                  OWSGroupInfoRequestMessage *groupInfoRequestMessage =
-                      [[OWSGroupInfoRequestMessage alloc] initWithThread:thread
-                                                                 groupId:[TSGroupModel generateRandomV1GroupId]];
-                  [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-                      [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer
-                                                 transaction:transaction];
-                  }];
-              }],
+        [OWSTableItem itemWithTitle:@"Request Bogus group info"
+                        actionBlock:^{
+                            OWSLogInfo(@"Requesting bogus group info for thread: %@", thread);
+                            OWSGroupInfoRequestMessage *groupInfoRequestMessage = [[OWSGroupInfoRequestMessage alloc]
+                                initWithThread:thread
+                                       groupId:[TSGroupModel generateRandomV1GroupId]];
+                            [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+                                [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer
+                                                           transaction:transaction];
+                            }];
+                        }],
         [OWSTableItem itemWithTitle:@"Message with stalled timer"
                         actionBlock:^{
                             [DebugUIMessages createDisappearingMessagesWhichFailedToStartInThread:thread];
@@ -419,8 +418,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [dataSource setSourceFilename:filename];
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                      dataUTI:utiType
+                                                                 imageQuality:TSImageQualityOriginal];
 
     NSString *messageBody = nil;
     if (hasCaption) {
@@ -568,23 +568,22 @@ NS_ASSUME_NONNULL_BEGIN
         label = [label stringByAppendingString:@" 🔤"];
     }
 
-    return [DebugUIMessagesSingleAction
-             actionWithLabel:label
-        staggeredActionBlock:^(NSUInteger index,
-            SDSAnyWriteTransaction *transaction,
-            ActionSuccessBlock success,
-            ActionFailureBlock failure) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                OWSAssertDebug(fakeAssetLoader.filePath.length > 0);
-                [self sendAttachmentWithFilePath:fakeAssetLoader.filePath
-                                          thread:thread
-                                           label:label
-                                      hasCaption:hasCaption
-                                         success:success
-                                         failure:failure];
-            });
-        }
-                prepareBlock:fakeAssetLoader.prepareBlock];
+    return [DebugUIMessagesSingleAction actionWithLabel:label
+                                   staggeredActionBlock:^(NSUInteger index,
+                                       SDSAnyWriteTransaction *transaction,
+                                       ActionSuccessBlock success,
+                                       ActionFailureBlock failure) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                           OWSAssertDebug(fakeAssetLoader.filePath.length > 0);
+                                           [self sendAttachmentWithFilePath:fakeAssetLoader.filePath
+                                                                     thread:thread
+                                                                      label:label
+                                                                 hasCaption:hasCaption
+                                                                    success:success
+                                                                    failure:failure];
+                                       });
+                                   }
+                                           prepareBlock:fakeAssetLoader.prepareBlock];
 }
 
 + (DebugUIMessagesAction *)sendAllMediaAction:(TSThread *)thread
@@ -856,18 +855,17 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              isDelivered:NO
                                                                                   isRead:NO]];
 
-    return
-        [DebugUIMessagesSingleAction actionWithLabel:label
-                              unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
-                                  OWSAssertDebug(fakeAssetLoader.filePath.length > 0);
-                                  [self createFakeOutgoingMedia:index
-                                                   messageState:messageState
-                                                     hasCaption:hasCaption
-                                                fakeAssetLoader:fakeAssetLoader
-                                                         thread:thread
-                                                    transaction:transaction];
-                              }
-                                        prepareBlock:fakeAssetLoader.prepareBlock];
+    return [DebugUIMessagesSingleAction actionWithLabel:label
+                                 unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
+                                     OWSAssertDebug(fakeAssetLoader.filePath.length > 0);
+                                     [self createFakeOutgoingMedia:index
+                                                      messageState:messageState
+                                                        hasCaption:hasCaption
+                                                   fakeAssetLoader:fakeAssetLoader
+                                                            thread:thread
+                                                       transaction:transaction];
+                                 }
+                                           prepareBlock:fakeAssetLoader.prepareBlock];
 }
 
 + (void)createFakeOutgoingMedia:(NSUInteger)index
@@ -1168,18 +1166,17 @@ NS_ASSUME_NONNULL_BEGIN
         label = [label stringByAppendingString:@" 👍"];
     }
 
-    return
-        [DebugUIMessagesSingleAction actionWithLabel:label
-                              unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
-                                  OWSAssertDebug(fakeAssetLoader.filePath.length > 0);
-                                  [self createFakeIncomingMedia:index
-                                         isAttachmentDownloaded:isAttachmentDownloaded
-                                                     hasCaption:hasCaption
-                                                fakeAssetLoader:fakeAssetLoader
-                                                         thread:thread
-                                                    transaction:transaction];
-                              }
-                                        prepareBlock:fakeAssetLoader.prepareBlock];
+    return [DebugUIMessagesSingleAction actionWithLabel:label
+                                 unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
+                                     OWSAssertDebug(fakeAssetLoader.filePath.length > 0);
+                                     [self createFakeIncomingMedia:index
+                                            isAttachmentDownloaded:isAttachmentDownloaded
+                                                        hasCaption:hasCaption
+                                                   fakeAssetLoader:fakeAssetLoader
+                                                            thread:thread
+                                                       transaction:transaction];
+                                 }
+                                           prepareBlock:fakeAssetLoader.prepareBlock];
 }
 
 + (TSIncomingMessage *)createFakeIncomingMedia:(NSUInteger)index
@@ -1509,8 +1506,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingMp4Action:thread isAttachmentDownloaded:YES hasCaption:YES],
     ]];
     if (includeLabels) {
-        [actions
-            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Compact Landscape Png ⚠️"]];
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Incoming Compact Landscape Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
         [self fakeIncomingCompactLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
@@ -1519,8 +1516,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingCompactLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
     ]];
     if (includeLabels) {
-        [actions
-            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Compact Portrait Png ⚠️"]];
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Incoming Compact Portrait Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
         [self fakeIncomingCompactPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
@@ -1529,8 +1526,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingCompactPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
     ]];
     if (includeLabels) {
-        [actions
-            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Wide Landscape Png ⚠️"]];
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Incoming Wide Landscape Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
         [self fakeIncomingWideLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
@@ -1539,8 +1536,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingWideLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
     ]];
     if (includeLabels) {
-        [actions
-            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Tall Portrait Png ⚠️"]];
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Incoming Tall Portrait Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
         [self fakeIncomingTallPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
@@ -1563,8 +1560,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingTinyPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
     ]];
     if (includeLabels) {
-        [actions
-            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Reserved Color Png ⚠️"]];
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Incoming Reserved Color Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
         [self fakeIncomingPngAction:thread
@@ -1721,18 +1718,17 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(thread);
 
-    return [DebugUIMessagesSingleAction
-               actionWithLabel:@"Fake Short Incoming Text Message"
-        unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
-            NSString *messageBody =
-                [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
-            [self createFakeIncomingMessage:thread
-                                messageBody:messageBody
-                            fakeAssetLoader:nil
-                     isAttachmentDownloaded:NO
-                              quotedMessage:nil
-                                transaction:transaction];
-        }];
+    return [DebugUIMessagesSingleAction actionWithLabel:@"Fake Short Incoming Text Message"
+                                 unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
+                                     NSString *messageBody = [[@(index).stringValue stringByAppendingString:@" "]
+                                         stringByAppendingString:[self randomText]];
+                                     [self createFakeIncomingMessage:thread
+                                                         messageBody:messageBody
+                                                     fakeAssetLoader:nil
+                                              isAttachmentDownloaded:NO
+                                                       quotedMessage:nil
+                                                         transaction:transaction];
+                                 }];
 }
 
 + (SignalAttachment *)signalAttachmentForFilePath:(NSString *)filePath
@@ -1747,8 +1743,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            error:&error];
     OWSAssertDebug(dataSource != nil);
     [dataSource setSourceFilename:filename];
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                      dataUTI:utiType
+                                                                 imageQuality:TSImageQualityOriginal];
     if (arc4random_uniform(100) > 50) {
         attachment.captionText = [self randomCaptionText];
     }
@@ -1946,19 +1943,19 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Fake Quoted Replies
 
 + (DebugUIMessagesAction *)
-              fakeQuotedReplyAction:(TSThread *)thread
-                 quotedMessageLabel:(NSString *)quotedMessageLabel
-            isQuotedMessageIncoming:(BOOL)isQuotedMessageIncoming
-                  // Optional. At least one of quotedMessageBody and quotedMessageAssetLoader should be non-nil.
-                  quotedMessageBody:(nullable NSString *)quotedMessageBody
+       fakeQuotedReplyAction:(TSThread *)thread
+          quotedMessageLabel:(NSString *)quotedMessageLabel
+     isQuotedMessageIncoming:(BOOL)isQuotedMessageIncoming
            // Optional. At least one of quotedMessageBody and quotedMessageAssetLoader should be non-nil.
-           quotedMessageAssetLoader:(nullable DebugUIMessagesAssetLoader *)quotedMessageAssetLoader
-                         replyLabel:(NSString *)replyLabel
-                    isReplyIncoming:(BOOL)isReplyIncoming
-                   replyMessageBody:(nullable NSString *)replyMessageBody
-                   replyAssetLoader:(nullable DebugUIMessagesAssetLoader *)replyAssetLoader
-                  // Only applies if !isReplyIncoming.
-                  replyMessageState:(TSOutgoingMessageState)replyMessageState
+           quotedMessageBody:(nullable NSString *)quotedMessageBody
+    // Optional. At least one of quotedMessageBody and quotedMessageAssetLoader should be non-nil.
+    quotedMessageAssetLoader:(nullable DebugUIMessagesAssetLoader *)quotedMessageAssetLoader
+                  replyLabel:(NSString *)replyLabel
+             isReplyIncoming:(BOOL)isReplyIncoming
+            replyMessageBody:(nullable NSString *)replyMessageBody
+            replyAssetLoader:(nullable DebugUIMessagesAssetLoader *)replyAssetLoader
+           // Only applies if !isReplyIncoming.
+           replyMessageState:(TSOutgoingMessageState)replyMessageState
 {
     OWSAssertDebug(thread);
 
@@ -2039,8 +2036,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           thread:thread
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
-                quotedMessage = [
-                    [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
+                quotedMessage = [[OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem
+                                                                                        transaction:transaction]
                     buildQuotedMessageForSending];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
@@ -2061,8 +2058,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           thread:thread
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
-                quotedMessage = [
-                    [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
+                quotedMessage = [[OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem
+                                                                                        transaction:transaction]
                     buildQuotedMessageForSending];
             }
             OWSAssertDebug(quotedMessage);
@@ -2710,9 +2707,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(thread);
 
-    return
-        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Quoted Reply"
-                                                 subactions:[self allFakeQuotedReplyActions:thread includeLabels:YES]];
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Quoted Reply"
+                                                    subactions:[self allFakeQuotedReplyActions:thread
+                                                                                 includeLabels:YES]];
 }
 
 + (void)selectQuotedReplyAction:(TSThread *)thread
@@ -2727,9 +2724,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(thread);
 
-    return [DebugUIMessagesGroupAction
-        randomGroupActionWithLabel:@"Random Quoted Reply"
-                        subactions:[self allFakeQuotedReplyActions:thread includeLabels:NO]];
+    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Random Quoted Reply"
+                                                       subactions:[self allFakeQuotedReplyActions:thread
+                                                                                    includeLabels:NO]];
 }
 
 #pragma mark - Exemplary
@@ -2797,8 +2794,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming"]];
-    [actions
-        addObject:[self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSent text:@"Outgoing"]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateSent
+                                                      text:@"Outgoing"]];
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming 1"]];
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming 2"]];
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming 3"]];
@@ -2855,12 +2853,12 @@ NS_ASSUME_NONNULL_BEGIN
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
                                               messageState:TSOutgoingMessageStateSent
                                                       text:[@"Outgoing" stringByAppendingString:longText]]];
-    [actions
-        addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming 1" stringByAppendingString:longText]]];
-    [actions
-        addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming 2" stringByAppendingString:longText]]];
-    [actions
-        addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming 3" stringByAppendingString:longText]]];
+    [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                      text:[@"Incoming 1" stringByAppendingString:longText]]];
+    [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                      text:[@"Incoming 2" stringByAppendingString:longText]]];
+    [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                      text:[@"Incoming 3" stringByAppendingString:longText]]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
                                               messageState:TSOutgoingMessageStateFailed
                                                       text:[@"Outgoing Unsent 1" stringByAppendingString:longText]]];
@@ -2955,16 +2953,20 @@ NS_ASSUME_NONNULL_BEGIN
                                                           text:@"⚠️ Back-Dated ⚠️"]];
     }
 
-    [actions
-        addObject:[self fakeBackDatedMessageAction:thread label:@"One Minute Ago" dateOffset:-(int64_t)kMinuteInMs]];
+    [actions addObject:[self fakeBackDatedMessageAction:thread
+                                                  label:@"One Minute Ago"
+                                             dateOffset:-(int64_t)kMinuteInMs]];
     [actions addObject:[self fakeBackDatedMessageAction:thread label:@"One Hour Ago" dateOffset:-(int64_t)kHourInMs]];
     [actions addObject:[self fakeBackDatedMessageAction:thread label:@"One Day Ago" dateOffset:-(int64_t)kDayInMs]];
-    [actions
-        addObject:[self fakeBackDatedMessageAction:thread label:@"Two Days Ago" dateOffset:-(int64_t)kDayInMs * 2]];
-    [actions
-        addObject:[self fakeBackDatedMessageAction:thread label:@"Ten Days Ago" dateOffset:-(int64_t)kDayInMs * 10]];
-    [actions
-        addObject:[self fakeBackDatedMessageAction:thread label:@"400 Days Ago" dateOffset:-(int64_t)kDayInMs * 400]];
+    [actions addObject:[self fakeBackDatedMessageAction:thread
+                                                  label:@"Two Days Ago"
+                                             dateOffset:-(int64_t)kDayInMs * 2]];
+    [actions addObject:[self fakeBackDatedMessageAction:thread
+                                                  label:@"Ten Days Ago"
+                                             dateOffset:-(int64_t)kDayInMs * 10]];
+    [actions addObject:[self fakeBackDatedMessageAction:thread
+                                                  label:@"400 Days Ago"
+                                             dateOffset:-(int64_t)kDayInMs * 400]];
 
     return actions;
 }
@@ -2995,11 +2997,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSAssertDebug(thread);
 
-    return [DebugUIMessagesSingleAction
-               actionWithLabel:[NSString stringWithFormat:@"Fake Contact Share (%@)", label]
-        unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
-            OWSContact *contact = contactBlock(transaction);
-            TSOutgoingMessage *message = [self createFakeOutgoingMessage:thread
+    return [DebugUIMessagesSingleAction actionWithLabel:[NSString stringWithFormat:@"Fake Contact Share (%@)", label]
+                                 unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
+                                     OWSContact *contact = contactBlock(transaction);
+                                     TSOutgoingMessage *message =
+                                         [self createFakeOutgoingMessage:thread
                                                              messageBody:nil
                                                          fakeAssetLoader:nil
                                                             messageState:TSOutgoingMessageStateSent
@@ -3010,8 +3012,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                              linkPreview:nil
                                                           messageSticker:nil
                                                              transaction:transaction];
-            [message anyInsertWithTransaction:transaction];
-        }];
+                                     [message anyInsertWithTransaction:transaction];
+                                 }];
 }
 
 + (NSArray<DebugUIMessagesAction *> *)allFakeContactShareActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
@@ -3172,9 +3174,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSAssertDebug(thread);
 
-    return
-        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Contact Shares"
-                                                 subactions:[self allFakeContactShareActions:thread includeLabels:YES]];
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Contact Shares"
+                                                    subactions:[self allFakeContactShareActions:thread
+                                                                                  includeLabels:YES]];
 }
 
 
@@ -3354,8 +3356,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 + (void)sendAllContacts:(TSThread *)thread
 {
     NSArray<DebugUIMessagesAction *> *subactions = [self allSendContactShareActions:thread includeLabels:NO];
-    DebugUIMessagesAction *action =
-        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Send All Contact Shares" subactions:subactions];
+    DebugUIMessagesAction *action = [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Send All Contact Shares"
+                                                                             subactions:subactions];
     [action prepareAndPerformNTimes:subactions.count];
 }
 
@@ -3405,10 +3407,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
-    _Nullable id<DataSource> dataSource =
-        [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti imageQuality:TSImageQualityOriginal];
+    _Nullable id<DataSource> dataSource = [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length]
+                                                                      utiType:uti];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                      dataUTI:uti
+                                                                 imageQuality:TSImageQualityOriginal];
 
     if (arc4random_uniform(100) > 50) {
         // give 1/2 our attachments captions, and add a hint that it's a caption since we
@@ -3694,15 +3697,16 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
          @"one that comes after it."),
         @"War against a foreign country only happens when the moneyed classes think they are going to profit from it.",
         @"People have only as much liberty as they have the intelligence to want and the courage to take.",
-        (@"You cannot buy the revolution. You cannot make the revolution. You can only be the revolution. It is in your "
-        @"spirit, or it is nowhere."),
+        (@"You cannot buy the revolution. You cannot make the revolution. You can only be the revolution. It is in "
+         @"your "
+         @"spirit, or it is nowhere."),
         (@"That is what I have always understood to be the essence of anarchism: the conviction that the burden of "
-        @"proof has to be placed on authority, and that it should be dismantled if that burden cannot be met."),
+         @"proof has to be placed on authority, and that it should be dismantled if that burden cannot be met."),
         (@"Ask for work. If they don't give you work, ask for bread. If they do not give you work or bread, then take "
-        @"bread."),
+         @"bread."),
         @"Every society has the criminals it deserves.",
         (@"Anarchism is founded on the observation that since few men are wise enough to rule themselves, even fewer "
-        @"are wise enough to rule others."),
+         @"are wise enough to rule others."),
         @"If you would know who controls you see who you may not criticise.",
         @"At one time in the world there were woods that no one owned."
     ];
@@ -3878,8 +3882,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 ConversationFactory *conversationFactory = [ConversationFactory new];
                 // We want to produce a variety of album sizes, but favoring smaller albums
                 conversationFactory.attachmentCount = MAX(0,
-                                                          MIN(SignalAttachment.maxAttachmentsAllowed,
-                                                          ((NSInteger)((double)UINT32_MAX/(double)arc4random()) - 1)));
+                    MIN(SignalAttachment.maxAttachmentsAllowed,
+                        ((NSInteger)((double)UINT32_MAX / (double)arc4random()) - 1)));
                 conversationFactory.threadCreator = ^(SDSAnyWriteTransaction *_transaction){
                     return thread;
                 };
@@ -3992,14 +3996,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (void)performRandomActions:(NSUInteger)counter thread:(TSThread *)thread
 {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(),
-                   ^{
-                       [self performRandomActionInThread:thread counter:counter];
-                       if (counter > 0) {
-                           [self performRandomActions:counter - 1 thread:thread];
-                       }
-                   });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self performRandomActionInThread:thread counter:counter];
+        if (counter > 0) {
+            [self performRandomActions:counter - 1 thread:thread];
+        }
+    });
 }
 
 + (void)performRandomActionInThread:(TSThread *)thread counter:(NSUInteger)counter
@@ -4075,8 +4077,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         OWSFailDebug(@"error: %@", error);
     }
     for (NSString *interactionId in interactionIds) {
-        TSInteraction *_Nullable interaction =
-            [TSInteraction anyFetchWithUniqueId:interactionId transaction:transaction];
+        TSInteraction *_Nullable interaction = [TSInteraction anyFetchWithUniqueId:interactionId
+                                                                       transaction:transaction];
         if (interaction == nil) {
             OWSFailDebug(@"Couldn't load interaction.");
             continue;
@@ -4112,8 +4114,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         NSString *interactionId = interactionIds[idx];
         [interactionIds removeObjectAtIndex:idx];
 
-        TSInteraction *_Nullable interaction =
-            [TSInteraction anyFetchWithUniqueId:interactionId transaction:transaction];
+        TSInteraction *_Nullable interaction = [TSInteraction anyFetchWithUniqueId:interactionId
+                                                                       transaction:transaction];
         if (interaction == nil) {
             OWSFailDebug(@"Couldn't load interaction.");
             continue;
@@ -4373,7 +4375,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         member,
         TSAccountManager.localAddress,
     ];
-    [GroupManager createNewGroupObjcWithMembers:members
+    [GroupManager localCreateNewGroupObjcWithMembers:members
         groupId:nil
         name:groupName
         avatarData:nil
@@ -4424,27 +4426,26 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         @"This is some normal text",
     ];
 
-    [self
-        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            for (NSString *string in strings) {
-                OWSLogInfo(@"sending zalgo");
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        for (NSString *string in strings) {
+            OWSLogInfo(@"sending zalgo");
 
-                [self createFakeIncomingMessage:thread
-                                    messageBody:string
-                                fakeAssetLoader:nil
-                         isAttachmentDownloaded:NO
-                                  quotedMessage:nil
-                                    transaction:transaction];
+            [self createFakeIncomingMessage:thread
+                                messageBody:string
+                            fakeAssetLoader:nil
+                     isAttachmentDownloaded:NO
+                              quotedMessage:nil
+                                transaction:transaction];
 
 
-                SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
-                [self createRandomGroupWithName:string
-                                         member:member
-                                        success:^(TSGroupThread *thread) {
-                                            // Do nothing.
-                                        }];
-            }
-        }];
+            SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
+            [self createRandomGroupWithName:string
+                                     member:member
+                                    success:^(TSGroupThread *thread) {
+                                        // Do nothing.
+                                    }];
+        }
+    }];
 }
 
 + (void)testDirectionalFilenamesInThread:(TSThread *)thread
@@ -4466,8 +4467,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         _Nullable id<DataSource> dataSource =
             [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:kDataLength] utiType:utiType];
         [dataSource setSourceFilename:filename];
-        SignalAttachment *attachment =
-            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
+        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                          dataUTI:utiType
+                                                                     imageQuality:TSImageQualityOriginal];
 
         OWSAssertDebug(attachment);
         if ([attachment hasError]) {
@@ -4704,10 +4706,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     if (isAttachmentDownloaded) {
         NSError *error;
-        id<DataSource>dataSource =
-            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath
-                        shouldDeleteOnDeallocation:NO
-                                             error:&error];
+        id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath
+                                                shouldDeleteOnDeallocation:NO
+                                                                     error:&error];
         OWSAssertDebug(error == nil);
         NSString *filename = dataSource.sourceFilename;
         // To support "fake missing" attachments, we sometimes lie about the
@@ -4786,10 +4787,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             = fakeAssetLoaders[arc4random_uniform((uint32_t)fakeAssetLoaders.count)];
         OWSAssertDebug([NSFileManager.defaultManager fileExistsAtPath:fakeAssetLoader.filePath]);
         NSError *error;
-        id<DataSource>dataSource =
-            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath
-                        shouldDeleteOnDeallocation:NO
-                                             error:&error];
+        id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath
+                                                shouldDeleteOnDeallocation:NO
+                                                                     error:&error];
         OWSAssertDebug(error == nil);
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource

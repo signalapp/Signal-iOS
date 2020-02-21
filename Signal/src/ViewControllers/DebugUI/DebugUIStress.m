@@ -60,9 +60,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty message"
                                      actionBlock:^{
-                                         [DebugUIStress sendStressMessage:thread block:^(SignalRecipient *recipient) {
-                                             return [NSData new];
-                                         }];
+                                         [DebugUIStress sendStressMessage:thread
+                                                                    block:^(SignalRecipient *recipient) {
+                                                                        return [NSData new];
+                                                                    }];
                                      }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Send random noise message"
                                      actionBlock:^{
@@ -147,88 +148,82 @@ NS_ASSUME_NONNULL_BEGIN
                                                                             serializedDataIgnoringErrors];
                                                                     }];
                                      }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Send whitespace text data message"
-                                     actionBlock:^{
-                                         [DebugUIStress
-                                             sendStressMessage:thread
-                                                         block:^(SignalRecipient *recipient) {
-                                                             SSKProtoContentBuilder *contentBuilder =
-                                                                 [SSKProtoContent builder];
-                                                             SSKProtoDataMessageBuilder *dataBuilder =
-                                                                 [SSKProtoDataMessage builder];
-                                                             dataBuilder.body = @" ";
-                                                             [DebugUIStress ensureGroupOfDataBuilder:dataBuilder
-                                                                                              thread:thread];
-                                                             contentBuilder.dataMessage =
-                                                                 [dataBuilder buildIgnoringErrors];
-                                                             return [[contentBuilder buildIgnoringErrors]
-                                                                 serializedDataIgnoringErrors];
-                                                         }];
-                                     }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Send whitespace text data message"
+                           actionBlock:^{
+                               [DebugUIStress
+                                   sendStressMessage:thread
+                                               block:^(SignalRecipient *recipient) {
+                                                   SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
+                                                   SSKProtoDataMessageBuilder *dataBuilder =
+                                                       [SSKProtoDataMessage builder];
+                                                   dataBuilder.body = @" ";
+                                                   [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
+                                                   contentBuilder.dataMessage = [dataBuilder buildIgnoringErrors];
+                                                   return [[contentBuilder buildIgnoringErrors]
+                                                       serializedDataIgnoringErrors];
+                                               }];
+                           }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Send bad attachment data message"
+                           actionBlock:^{
+                               [DebugUIStress
+                                   sendStressMessage:thread
+                                               block:^(SignalRecipient *recipient) {
+                                                   SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
+                                                   SSKProtoDataMessageBuilder *dataBuilder =
+                                                       [SSKProtoDataMessage builder];
+                                                   SSKProtoAttachmentPointerBuilder *attachmentPointer =
+                                                       [SSKProtoAttachmentPointer
+                                                           builderWithId:arc4random_uniform(32) + 1];
+                                                   [attachmentPointer setContentType:@"1"];
+                                                   [attachmentPointer setSize:arc4random_uniform(32) + 1];
+                                                   [attachmentPointer setDigest:[Cryptography generateRandomBytes:1]];
+                                                   [attachmentPointer setFileName:@" "];
+                                                   [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
+                                                   contentBuilder.dataMessage = [dataBuilder buildIgnoringErrors];
+                                                   return [[contentBuilder buildIgnoringErrors]
+                                                       serializedDataIgnoringErrors];
+                                               }];
+                           }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Send normal text data message"
+                           actionBlock:^{
+                               [DebugUIStress
+                                   sendStressMessage:thread
+                                               block:^(SignalRecipient *recipient) {
+                                                   SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
+                                                   SSKProtoDataMessageBuilder *dataBuilder =
+                                                       [SSKProtoDataMessage builder];
+                                                   dataBuilder.body = @"alice";
+                                                   [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
+                                                   contentBuilder.dataMessage = [dataBuilder buildIgnoringErrors];
+                                                   return [[contentBuilder buildIgnoringErrors]
+                                                       serializedDataIgnoringErrors];
+                                               }];
+                           }]];
     [items
         addObject:[OWSTableItem
-                      itemWithTitle:@"Send bad attachment data message"
+                      itemWithTitle:@"Send N text messages with same timestamp"
                         actionBlock:^{
-                            [DebugUIStress
-                                sendStressMessage:thread
-                                            block:^(SignalRecipient *recipient) {
-                                                SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
-                                                SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
-                                                SSKProtoAttachmentPointerBuilder *attachmentPointer =
-                                                    [SSKProtoAttachmentPointer
-                                                        builderWithId:arc4random_uniform(32) + 1];
-                                                [attachmentPointer setContentType:@"1"];
-                                                [attachmentPointer setSize:arc4random_uniform(32) + 1];
-                                                [attachmentPointer setDigest:[Cryptography generateRandomBytes:1]];
-                                                [attachmentPointer setFileName:@" "];
-                                                [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
-                                                contentBuilder.dataMessage = [dataBuilder buildIgnoringErrors];
-                                                return
-                                                    [[contentBuilder buildIgnoringErrors] serializedDataIgnoringErrors];
-                                            }];
+                            uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
+                            for (int i = 0; i < 3; i++) {
+                                [DebugUIStress
+                                    sendStressMessage:thread
+                                            timestamp:timestamp
+                                                block:^(SignalRecipient *recipient) {
+                                                    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
+                                                    SSKProtoDataMessageBuilder *dataBuilder =
+                                                        [SSKProtoDataMessage builder];
+                                                    dataBuilder.body = [NSString
+                                                        stringWithFormat:@"%@ %d", [NSUUID UUID].UUIDString, i];
+                                                    [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
+                                                    contentBuilder.dataMessage = [dataBuilder buildIgnoringErrors];
+                                                    return [[contentBuilder buildIgnoringErrors]
+                                                        serializedDataIgnoringErrors];
+                                                }];
+                            }
                         }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Send normal text data message"
-                                     actionBlock:^{
-                                         [DebugUIStress
-                                             sendStressMessage:thread
-                                                         block:^(SignalRecipient *recipient) {
-                                                             SSKProtoContentBuilder *contentBuilder =
-                                                                 [SSKProtoContent builder];
-                                                             SSKProtoDataMessageBuilder *dataBuilder =
-                                                                 [SSKProtoDataMessage builder];
-                                                             dataBuilder.body = @"alice";
-                                                             [DebugUIStress ensureGroupOfDataBuilder:dataBuilder
-                                                                                              thread:thread];
-                                                             contentBuilder.dataMessage =
-                                                                 [dataBuilder buildIgnoringErrors];
-                                                             return [[contentBuilder buildIgnoringErrors]
-                                                                 serializedDataIgnoringErrors];
-                                                         }];
-                                     }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Send N text messages with same timestamp"
-                                     actionBlock:^{
-                                         uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
-                                         for (int i = 0; i < 3; i++) {
-                                             [DebugUIStress
-                                                 sendStressMessage:thread
-                                                         timestamp:timestamp
-                                                             block:^(SignalRecipient *recipient) {
-                                                                 SSKProtoContentBuilder *contentBuilder =
-                                                                     [SSKProtoContent builder];
-                                                                 SSKProtoDataMessageBuilder *dataBuilder =
-                                                                     [SSKProtoDataMessage builder];
-                                                                 dataBuilder.body = [NSString stringWithFormat:@"%@ %d",
-                                                                                              [NSUUID UUID].UUIDString,
-                                                                                              i];
-                                                                 [DebugUIStress ensureGroupOfDataBuilder:dataBuilder
-                                                                                                  thread:thread];
-                                                                 contentBuilder.dataMessage =
-                                                                     [dataBuilder buildIgnoringErrors];
-                                                                 return [[contentBuilder buildIgnoringErrors]
-                                                                     serializedDataIgnoringErrors];
-                                                             }];
-                                         }
-                                     }]];
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Send text message with current timestamp"
                            actionBlock:^{
@@ -496,8 +491,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(thread);
     OWSAssertDebug(block);
 
-    OWSDynamicOutgoingMessage *message =
-        [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block thread:thread];
+    OWSDynamicOutgoingMessage *message = [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block
+                                                                                                thread:thread];
 
     [self sendStressMessage:message];
 }
@@ -507,8 +502,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(thread);
     OWSAssertDebug(block);
 
-    OWSDynamicOutgoingMessage *message =
-        [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block timestamp:timestamp thread:thread];
+    OWSDynamicOutgoingMessage *message = [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block
+                                                                                             timestamp:timestamp
+                                                                                                thread:thread];
 
     [self sendStressMessage:message];
 }
@@ -518,7 +514,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)hallucinateTwinGroup:(TSGroupThread *)groupThread
 {
     NSString *groupName = [groupThread.groupModel.groupName stringByAppendingString:@" Copy"];
-    [GroupManager createNewGroupObjcWithMembers:groupThread.groupModel.groupMembers
+    [GroupManager localCreateNewGroupObjcWithMembers:groupThread.groupModel.groupMembers
         groupId:nil
         name:groupName
         avatarData:groupThread.groupModel.groupAvatarData
@@ -552,7 +548,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    [GroupManager createNewGroupObjcWithMembers:recipientAddresses
+    [GroupManager localCreateNewGroupObjcWithMembers:recipientAddresses
         groupId:nil
         name:NSUUID.UUID.UUIDString
         avatarData:nil
