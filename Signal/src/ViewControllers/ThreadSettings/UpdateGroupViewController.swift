@@ -113,17 +113,12 @@ public extension UpdateGroupViewController {
                                                                      comment: "Error indicating that a group could not be updated due to network connectivity problems."))
         }
 
-        if error.isNetworkConnectivityFailure {
+        if error.isNetworkFailureOrTimeout {
             return showUpdateNetworkErrorUI()
         }
 
-        switch error {
-        case GroupsV2Error.timeout:
-            return showUpdateNetworkErrorUI()
-        default:
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("UPDATE_GROUP_FAILED",
-                                                                     comment: "Error indicating that a group could not be updated."))
-        }
+        OWSActionSheets.showActionSheet(title: NSLocalizedString("UPDATE_GROUP_FAILED",
+                                                                 comment: "Error indicating that a group could not be updated."))
     }
 }
 

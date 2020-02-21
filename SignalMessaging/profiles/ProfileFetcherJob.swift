@@ -264,7 +264,7 @@ public class ProfileFetcherJob: NSObject {
         }.done(on: DispatchQueue.global()) { fetchedProfile in
             resolver.fulfill(fetchedProfile)
         }.catch(on: DispatchQueue.global()) { error in
-            if case .taskError(let task, _)? = error as? NetworkManagerError, task.statusCode() == 404 {
+            if StatusCodeForError(error)?.intValue == 404 {
                 resolver.reject(ProfileFetchError.missing)
                 return
             }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -67,7 +67,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
                 return
             }
             let nsError = error as NSError
-            if nsError.hasFatalResponseCode() {
+            if nsError.hasFatalAFStatusCode() {
                 StickerManager.markStickerPackAsMissing(stickerPackInfo: self.stickerPackInfo)
             }
             return self.reportError(withUndefinedRetry: error)

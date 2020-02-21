@@ -145,7 +145,7 @@ open class CDNDownloadOperation: OWSOperation {
                                                     if let error = error {
                                                         Logger.warn("Download failed: \(error)")
                                                         let errorCopy = error as NSError
-                                                        errorCopy.isRetryable = !errorCopy.hasFatalResponseCode()
+                                                        errorCopy.isRetryable = !errorCopy.hasFatalAFStatusCode()
                                                         return resolver.reject(errorCopy)
                                                     }
                                                     guard completionUrl == tempFileURL else {

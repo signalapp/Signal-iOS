@@ -5,6 +5,7 @@
 import Foundation
 import SignalServiceKit
 import SignalMessaging
+import PromiseKit
 
 #if DEBUG
 
@@ -37,6 +38,12 @@ class DebugUIGroupsV2: DebugUIPage {
             sectionItems.append(OWSTableItem(title: "Make group update info messages.") { [weak self] in
                 self?.insertGroupUpdateInfoMessages(groupThread: groupThread)
             })
+
+            if groupThread.isGroupV2Thread {
+                sectionItems.append(OWSTableItem(title: "Kick other group members.") { [weak self] in
+                    self?.kickOtherGroupMembers(groupThread: groupThread)
+                })
+            }
         }
 
         return OWSTableSection(title: "Groups v2", items: sectionItems)
@@ -483,6 +490,38 @@ class DebugUIGroupsV2: DebugUIPage {
                                                           transaction: transaction)
             }
         }
+    }
+
+    private func kickOtherGroupMembers(groupThread: TSGroupThread) {
+
+        guard let localAddress = tsAccountManager.localAddress else {
+            return owsFailDebug("Missing localAddress.")
+        }
+
+        let oldGroupModel = groupThread.groupModel
+
+        let oldGroupMembership = oldGroupModel.groupMembership
+        var groupMembershipBuilder = oldGroupMembership.asBuilder
+        for address in oldGroupMembership.allUsers {
+            if address != localAddress {
+                groupMembershipBuilder.remove(address)
+            }
+        }
+        let newGroupMembership = groupMembershipBuilder.build()
+        firstly { () -> Promise<TSGroupThread> in
+            var groupModelBuilder = oldGroupModel.asBuilder
+            groupModelBuilder.groupMembership = newGroupMembership
+            let newGroupModel = try databaseStorage.read { transaction in
+                try groupModelBuilder.buildAsV2(transaction: transaction)
+            }
+            return GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
+                                                         dmConfiguration: nil,
+                                                         groupUpdateSourceAddress: localAddress)
+        }.done { (_) -> Void in
+            Logger.info("Success.")
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }.retainUntilComplete()
     }
 }
 

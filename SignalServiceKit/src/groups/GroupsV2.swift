@@ -16,6 +16,7 @@ public enum GroupsV2Error: Error {
     case shouldDiscard
     case groupNotInDatabase
     case timeout
+    case localUserNotInGroup
 }
 
 @objc
@@ -126,13 +127,16 @@ public enum GroupUpdateMode {
     // * Group update _should_ block on message processing.
     // * Group update _should_ be throttled.
     case upToCurrentRevisionAfterMessageProcessWithThrottling
+    // * Group update should continue until current revision.
+    // * Group update _should not_ block on message processing.
+    // * Group update _should not_ be throttled.
+    case upToCurrentRevisionImmediately
 }
 
 // MARK: -
 
 @objc
 public protocol GroupV2Updates: AnyObject {
-
     func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread)
 
     func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
@@ -142,6 +146,9 @@ public protocol GroupV2Updates: AnyObject {
 // MARK: -
 
 public protocol GroupV2UpdatesSwift: GroupV2Updates {
+    func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
+                                                           groupSecretParamsData: Data) -> Promise<Void>
+
     func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
                                                  groupSecretParamsData: Data,
                                                  groupUpdateMode: GroupUpdateMode) -> Promise<Void>
@@ -421,6 +428,11 @@ public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift {
     @objc
     public func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
                                                                    upToRevision: UInt32) {
+        owsFail("Not implemented.")
+    }
+
+    public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
+                                                                  groupSecretParamsData: Data) -> Promise<Void> {
         owsFail("Not implemented.")
     }
 

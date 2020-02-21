@@ -1103,6 +1103,43 @@ public class GroupManager: NSObject {
         }
     }
 
+    // MARK: - Removed from Group or Invite Revoked
+
+    public static func handleWasRemovedFromGroupOrInviteRevoked(groupId: Data,
+                                                                transaction: SDSAnyWriteTransaction) {
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("Missing localAddress.")
+            return
+        }
+        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            // Local user may have just deleted the thread via the UI.
+            owsFailDebug("Missing group in database.")
+            return
+        }
+        // Remove local user from group.
+        // We do _not_ bump the revision number since.
+        var groupMembershipBuilder = groupThread.groupModel.groupMembership.asBuilder
+        groupMembershipBuilder.remove(localAddress)
+        var groupModelBuilder = groupThread.groupModel.asBuilder
+        do {
+            groupModelBuilder.groupMembership = groupMembershipBuilder.build()
+            let newGroupModel = try groupModelBuilder.build(transaction: transaction)
+
+            // groupUpdateSourceAddress is nil because we don't (and can't) know who
+            // removed us or revoked our invite.
+            //
+            // newDisappearingMessageToken is nil because we don't want to change
+            // DM state.
+            _ = try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                            newDisappearingMessageToken: nil,
+                                                                            groupUpdateSourceAddress: nil,
+                                                                            skipInfoMessage: false,
+                                                                            transaction: transaction)
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
     // MARK: - Messages
 
     @objc
@@ -1555,5 +1592,28 @@ public class GroupManager: NSObject {
             // and we want to set them up to succeed.
             return self.groupsV2.reuploadLocalProfilePromise()
         }
+    }
+
+    // MARK: - Network Errors
+
+    static func isNetworkFailureOrTimeout(_ error: Error) -> Bool {
+        if IsNetworkConnectivityFailure(error) {
+            return true
+        }
+
+        switch error {
+        case GroupsV2Error.timeout:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+// MARK: -
+
+public extension Error {
+    var isNetworkFailureOrTimeout: Bool {
+        return GroupManager.isNetworkFailureOrTimeout(self)
     }
 }

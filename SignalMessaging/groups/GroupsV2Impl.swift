@@ -148,7 +148,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
         }
 
-        return performServiceRequest(requestBuilder: requestBuilder).asVoid()
+        return performServiceRequest(requestBuilder: requestBuilder,
+                                     groupId: nil,
+                                     shouldRemoveOn403: false).asVoid()
     }
 
     // MARK: - Update Group
@@ -182,7 +184,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // done immediately and in a consistent way.
     public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> {
         let groupId = changeSet.groupId
-
         let groupSecretParamsData = changeSet.groupSecretParamsData
         let groupV2Params: GroupV2Params
         do {
@@ -191,13 +192,23 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise(error: error)
         }
 
+        var isFirstAttempt = true
         let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
-            return self.databaseStorage.read(.promise) { transaction in
-                guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                    throw OWSAssertionError("Thread does not exist.")
+            return firstly { () -> Promise<Void> in
+                if isFirstAttempt {
+                    isFirstAttempt = false
+                    return Promise.value(())
                 }
-                let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
-                return (groupThread, dmConfiguration.asToken)
+                return self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
+                                                                                             groupSecretParamsData: groupSecretParamsData)
+            }.map(on: DispatchQueue.global()) { _ throws -> (thread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) in
+                return try self.databaseStorage.read { transaction in
+                    guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                        throw OWSAssertionError("Thread does not exist.")
+                    }
+                    let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
+                    return (groupThread, dmConfiguration.asToken)
+                }
             }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> in
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model.")
@@ -213,7 +224,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         return firstly {
-            return self.performServiceRequest(requestBuilder: requestBuilder)
+            return self.performServiceRequest(requestBuilder: requestBuilder,
+                                              groupId: groupId,
+                                              shouldRemoveOn403: true)
         }.then(on: DispatchQueue.global()) { (response: ServiceResponse) -> Promise<UpdatedV2Group> in
 
             guard let changeActionsProtoData = response.responseObject as? Data else {
@@ -345,8 +358,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
         }
 
-        return firstly {
-            return self.performServiceRequest(requestBuilder: requestBuilder)
+        return firstly { () -> Promise<ServiceResponse> in
+            let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
+            return self.performServiceRequest(requestBuilder: requestBuilder,
+                                              groupId: groupId,
+                                              shouldRemoveOn403: true)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoAvatarUploadAttributes in
 
             guard let protoData = response.responseObject as? Data else {
@@ -403,7 +419,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         return firstly { () -> Promise<ServiceResponse> in
-            return self.performServiceRequest(requestBuilder: requestBuilder)
+            let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
+            return self.performServiceRequest(requestBuilder: requestBuilder,
+                                              groupId: groupId,
+                                              shouldRemoveOn403: true)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoGroup in
             guard let groupProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -428,6 +447,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     public func fetchGroupChangeActions(groupSecretParamsData: Data,
                                         firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
+
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
@@ -473,7 +493,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         return firstly { () -> Promise<ServiceResponse> in
-            return self.performServiceRequest(requestBuilder: requestBuilder)
+            return self.performServiceRequest(requestBuilder: requestBuilder,
+                                              groupId: nil,
+                                              shouldRemoveOn403: false)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoGroupChanges in
             guard let groupChangesProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -659,6 +681,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     private typealias RequestBuilder = (AuthCredential, AFHTTPSessionManager) -> Promise<NSURLRequest>
 
     private func performServiceRequest(requestBuilder: @escaping RequestBuilder,
+                                       groupId: Data?,
+                                       shouldRemoveOn403: Bool,
                                        remainingRetries: UInt = 3) -> Promise<ServiceResponse> {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
@@ -676,34 +700,60 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }.done(on: DispatchQueue.global()) { (response: ServiceResponse) in
                 resolver.fulfill(response)
             }.catch(on: DispatchQueue.global()) { (error: Error) in
-                var isRetryable = false
-                switch error {
-                case let networkManagerError as NetworkManagerError:
-                    if networkManagerError.isNetworkConnectivityError {
-                        isRetryable = true
-                    } else if networkManagerError.statusCode == 401 {
-                        // Retry auth errors by retrieving new temporal credentials.
-                        self.clearTemporalCredentials()
-                        isRetryable = true
-                    } else if networkManagerError.statusCode == 409 {
-                        // Retry conflicts.  When updating group state, we
-                        // can often resolve conflicts using the change set.
-                        isRetryable = true
+
+                let retryIfPossible = {
+                    if remainingRetries > 0 {
+                        firstly {
+                            self.performServiceRequest(requestBuilder: requestBuilder,
+                                                       groupId: groupId,
+                                                       shouldRemoveOn403: shouldRemoveOn403,
+                                                       remainingRetries: remainingRetries - 1)
+                        }.done(on: DispatchQueue.global()) { (response: ServiceResponse) in
+                            resolver.fulfill(response)
+                        }.catch(on: DispatchQueue.global()) { (error: Error) in
+                            resolver.reject(error)
+                        }.retainUntilComplete()
+                    } else {
+                        resolver.reject(error)
                     }
-                default:
-                    Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
                 }
 
-                if isRetryable && remainingRetries > 0 {
-                    firstly {
-                        self.performServiceRequest(requestBuilder: requestBuilder,
-                                                   remainingRetries: remainingRetries - 1)
-                    }.done(on: DispatchQueue.global()) { (response: ServiceResponse) in
-                        resolver.fulfill(response)
-                    }.catch(on: DispatchQueue.global()) { (error: Error) in
+                // Fall through to retry if retry-able,
+                // otherwise reject immediately.
+                if let statusCode = StatusCodeForError(error)?.intValue {
+                    switch statusCode {
+                    case 401:
+                        // Retry auth errors after retrieving new temporal credentials.
+                        self.clearTemporalCredentials()
+                        retryIfPossible()
+                    case 403:
+                        // 403 indicates that we are no longer in the group for
+                        // many (but not all) group v2 service requests.
+                        if shouldRemoveOn403 {
+                            // We should only receive 403 when groupId is not nil.
+                            if let groupId = groupId {
+                                self.databaseStorage.write { transaction in
+                                    GroupManager.handleWasRemovedFromGroupOrInviteRevoked(groupId: groupId, transaction: transaction)
+                                }
+                            } else {
+                                owsFailDebug("Missing groupId.")
+                            }
+                        }
+
+                        resolver.reject(GroupsV2Error.localUserNotInGroup)
+                    case 409:
+                        // Group update conflict, retry. When updating group state,
+                        // we can often resolve conflicts using the change set.
+                        retryIfPossible()
+                    default:
+                        // Unexpected status code.
                         resolver.reject(error)
-                    }.retainUntilComplete()
+                    }
+                } else if error.isNetworkFailureOrTimeout {
+                    // Retry on network failure.
+                    retryIfPossible()
                 } else {
+                    // Unexpected error.
                     resolver.reject(error)
                 }
             }.retainUntilComplete()
@@ -728,39 +778,52 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     return resolver.reject(OWSAssertionError("Missing blockTask."))
                 }
 
-                guard let response = response as? HTTPURLResponse else {
-                    Logger.info("Request failed: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
-
-                    guard let error = error else {
-                        return resolver.reject(OWSAssertionError("Unexpected response type."))
+                if let error = error {
+                    if error.isNetworkFailureOrTimeout {
+                        Logger.warn("Request error: \(error)")
+                        return resolver.reject(error)
                     }
 
-                    owsFailDebug("Response error: \(error)")
+                    if let statusCode = StatusCodeForError(error)?.intValue {
+                        if [401, 403, 409].contains(statusCode) {
+                            // These status codes will be handled by performServiceRequest.
+                            Logger.warn("Request error: \(error)")
+                            #if TESTABLE_BUILD
+                            TSNetworkManager.logCurl(for: blockTask)
+                            #endif
+                            return resolver.reject(error)
+                        }
+                    }
+
+                    Logger.warn("Request failed: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
+                    owsFailDebug("Request error: \(error)")
                     #if TESTABLE_BUILD
                     TSNetworkManager.logCurl(for: blockTask)
                     #endif
                     return resolver.reject(error)
                 }
 
-                switch response.statusCode {
-                case 200:
-                    Logger.info("Request succeeded: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
-                case 401:
-                    Logger.warn("Request not authorized.")
+                guard let response = response as? HTTPURLResponse else {
+                    Logger.warn("Request failed: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
+                    owsFailDebug("Request missing response.")
                     #if TESTABLE_BUILD
                     TSNetworkManager.logCurl(for: blockTask)
                     #endif
-                    return resolver.reject(GroupsV2Error.unauthorized)
+                    return resolver.reject(OWSAssertionError("Unexpected response type."))
+                }
+
+                switch response.statusCode {
+                case 200:
+                    Logger.info("Request succeeded: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
+                    // NOTE: responseObject may be nil; not all group v2 responses have bodies.
+                    let serviceResponse = ServiceResponse(task: blockTask, response: response, responseObject: responseObject)
+                    resolver.fulfill(serviceResponse)
                 default:
                     #if TESTABLE_BUILD
                     TSNetworkManager.logCurl(for: blockTask)
                     #endif
-                    return resolver.reject(OWSAssertionError("Invalid response: \(response.statusCode)"))
+                    resolver.reject(OWSAssertionError("Invalid response: \(response.statusCode)"))
                 }
-
-                // NOTE: responseObject may be nil; not all group v2 responses have bodies.
-                let serviceResponse = ServiceResponse(task: blockTask, response: response, responseObject: responseObject)
-                return resolver.fulfill(serviceResponse)
             }
             blockTask = task
             task.resume()

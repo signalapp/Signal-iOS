@@ -678,30 +678,23 @@ public class OnboardingController: NSObject {
     }
 
     private func requestingVerificationDidFail(viewController: UIViewController, error: Error) {
-        switch error {
-        case AccountServiceClientError.captchaRequired:
-            onboardingDidRequireCaptcha(viewController: viewController)
-            return
-
-        case let networkManagerError as NetworkManagerError:
-            switch networkManagerError.statusCode {
+        if let statusCode = StatusCodeForError(error)?.intValue {
+            switch statusCode {
             case 400:
                 OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
-                                    message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
+                                                message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
                 return
             case 413:
                 OWSActionSheets.showActionSheet(title: nil,
                                                 message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
                 return
             default:
-                let nsError = networkManagerError.underlyingError as NSError
-                OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
-                                                message: nsError.localizedRecoverySuggestion)
-                return
+                break
             }
+        }
 
-        default:
-            break
+        if case AccountServiceClientError.captchaRequired = error {
+            return onboardingDidRequireCaptcha(viewController: viewController)
         }
 
         let nsError = error as NSError

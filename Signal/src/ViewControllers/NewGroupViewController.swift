@@ -52,16 +52,11 @@ public extension NewGroupViewController {
                                                                      comment: "Error indicating that a new group could not be created due to network connectivity problems."))
         }
 
-        if error.isNetworkConnectivityFailure {
+        if error.isNetworkFailureOrTimeout {
             return showUpdateNetworkErrorUI()
         }
 
-        switch error {
-        case GroupsV2Error.timeout:
-            return showUpdateNetworkErrorUI()
-        default:
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("NEW_GROUP_CREATION_FAILED",
-                                                                     comment: "Error indicating that a new group could not be created."))
-        }
+        OWSActionSheets.showActionSheet(title: NSLocalizedString("NEW_GROUP_CREATION_FAILED",
+                                                                 comment: "Error indicating that a new group could not be created."))
     }
 }

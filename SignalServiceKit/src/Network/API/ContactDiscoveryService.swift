@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -50,27 +50,21 @@ public struct ContactDiscoveryService {
                                             iv: try params.requiredBase64EncodedData(key: "iv"),
                                             mac: try params.requiredBase64EncodedData(key: "mac"))
             }.recover { error -> Promise<IntersectionResponse> in
-                switch error {
-                case NetworkManagerError.taskError(let task, _):
-                    guard let response = task.response as? HTTPURLResponse else {
-                        throw ServiceError.invalidResponse("unexpected response: \(String(describing: task.response))")
-                    }
+                guard !IsNetworkConnectivityFailure(error) else {
+                    Logger.warn("Network error: \(error)")
+                    throw error
+                }
 
-                    if response.statusCode == 429 {
+                if let statusCode = StatusCodeForError(error)?.intValue {
+                    if statusCode == 429 {
                         // TODO add Retry-After for rate limiting
-                        throw ServiceError.tooManyRequests(httpCode: response.statusCode)
-                    }
-
-                    if response.statusCode / 100 == 4 {
-                        throw ServiceError.error4xx(httpCode: response.statusCode)
-                    }
-
-                    if response.statusCode / 100 == 5 {
+                        throw ServiceError.tooManyRequests(httpCode: statusCode)
+                    } else if statusCode / 100 == 4 {
+                        throw ServiceError.error4xx(httpCode: statusCode)
+                    } else if statusCode / 100 == 5 {
                         // TODO add Retry-After for rate limiting
-                        throw ServiceError.error5xx(httpCode: response.statusCode)
+                        throw ServiceError.error5xx(httpCode: statusCode)
                     }
-                default:
-                    break
                 }
 
                 owsFailDebug("unexpected error: \(error)")
