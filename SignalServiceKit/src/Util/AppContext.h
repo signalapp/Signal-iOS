@@ -37,6 +37,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (nonatomic, readonly) BOOL isMainApp;
 @property (nonatomic, readonly) BOOL isMainAppAndActive;
+//A flag to determine if the attatchment downloading tasks should run
+@property (nonatomic) BOOL isWakenByRemoteNotification;
 
 // Whether the user is using a right-to-left language like Arabic.
 @property (nonatomic, readonly) BOOL isRTL;

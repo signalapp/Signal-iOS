@@ -1132,6 +1132,8 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
+    
+    CurrentAppContext().isWakenByRemoteNotification = true;
 
     [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
     
@@ -1149,7 +1151,7 @@ static NSTimeInterval launchStartedAt;
     [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
     }];
-    for (LKPublicChat *publicChat in publicChats) {
+    for (LKPublicChat *publicChat in publicChats.allValues) {
         if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
         LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
         [poller stop];
@@ -1160,8 +1162,12 @@ static NSTimeInterval launchStartedAt;
     
     PMKJoin(promises).then(^(id results) {
         completionHandler(UIBackgroundFetchResultNewData);
+        CurrentAppContext().isWakenByRemoteNotification = false;
+        [LKLogger print:@"[Loki] UIBackgroundFetchResultNewData"];
     }).catch(^(id error) {
         completionHandler(UIBackgroundFetchResultFailed);
+        CurrentAppContext().isWakenByRemoteNotification = false;
+        [LKLogger print:@"[Loki] UIBackgroundFetchResultFailed"];
     });
 }
 
@@ -1593,11 +1599,14 @@ static NSTimeInterval launchStartedAt;
 {
     [self setUpLongPollerIfNeeded];
     [self.lokiLongPoller startIfNeeded];
+    [LKPublicChatManager.shared startPollersIfNeeded];
+    [SSKEnvironment.shared.attachmentDownloads startDownloadIfNeeded];
 }
 
 - (void)stopLongPollerIfNeeded
 {
     [self.lokiLongPoller stopIfNeeded];
+    [LKPublicChatManager.shared stopPollers];
 }
 
 - (LKRSSFeed *)lokiNewsFeed

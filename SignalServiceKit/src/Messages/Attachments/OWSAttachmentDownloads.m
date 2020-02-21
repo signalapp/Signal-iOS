@@ -264,6 +264,8 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
 - (void)startDownloadIfPossible
 {
+    if (CurrentAppContext().isWakenByRemoteNotification) { return; }
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OWSAttachmentDownloadJob *_Nullable job;
 
@@ -338,6 +340,16 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 [self startDownloadIfPossible];
             }];
     });
+}
+
+#pragma mark -
+
+- (void)startDownloadIfNeeded
+{
+    if (self.attachmentDownloadJobQueue.count > 0) {
+        [LKLogger print:@"[Loki] start uncompleted attachment download tasks"];
+        [self startDownloadIfPossible];
+    }
 }
 
 #pragma mark -

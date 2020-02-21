@@ -43,6 +43,8 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                           failure:(void (^)(NSError *error))failure;
 
+- (void)startDownloadIfNeeded;
+
 @end
 
 NS_ASSUME_NONNULL_END
