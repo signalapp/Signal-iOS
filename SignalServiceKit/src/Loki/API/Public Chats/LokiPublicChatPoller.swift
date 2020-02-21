@@ -55,7 +55,6 @@ public final class LokiPublicChatPoller : NSObject {
         let publicChat = self.publicChat
         let userHexEncodedPublicKey = self.userHexEncodedPublicKey
         return LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global()) { messages in
-            print("[Loki] Poll for new open group messages, message count \(messages.count)")
             let uniqueHexEncodedPublicKeys = Set(messages.map { $0.hexEncodedPublicKey })
             func proceed() {
                 let storage = OWSPrimaryStorage.shared()
