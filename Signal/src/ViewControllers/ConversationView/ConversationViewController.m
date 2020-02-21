@@ -349,6 +349,11 @@ typedef enum : NSUInteger {
     return AppEnvironment.shared.notificationPresenter;
 }
 
+- (id<SyncManagerProtocol>)syncManager
+{
+    return SSKEnvironment.shared.syncManager;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -5352,13 +5357,24 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self.blockingManager addBlockedThread:self.thread wasLocallyInitiated:YES];
-    [self messageRequestViewDidTapDelete];
+    [self.syncManager sendMessageRequestResponseSyncMessageWithThread:self.thread
+                                                         responseType:OWSSyncMessageRequestResponseType_Block];
+
+    [self deleteThread];
 }
 
 - (void)messageRequestViewDidTapDelete
 {
     OWSAssertIsOnMainThread();
 
+    [self.syncManager sendMessageRequestResponseSyncMessageWithThread:self.thread
+                                                         responseType:OWSSyncMessageRequestResponseType_Delete];
+
+    [self deleteThread];
+}
+
+- (void)deleteThread
+{
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if ([self.thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)self.thread;
@@ -5382,6 +5398,8 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self.profileManager addThreadToProfileWhitelist:self.thread];
+    [self.syncManager sendMessageRequestResponseSyncMessageWithThread:self.thread
+                                                         responseType:OWSSyncMessageRequestResponseType_Accept];
     [self dismissMessageRequestView];
 }
 
