@@ -67,6 +67,8 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @property (nonatomic, readonly) BOOL isViewVisible;
 @property (nonatomic, readonly) BOOL isPresentingMessageActions;
 
+- (void)dismissMessageRequestView;
+
 @end
 
 NS_ASSUME_NONNULL_END

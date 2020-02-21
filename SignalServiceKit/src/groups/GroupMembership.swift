@@ -250,12 +250,23 @@ public class GroupMembership: MTLModel {
     //
     // This method is intended tests the inclusive case: pending
     // or non-pending, any role.
+    @objc
     public func isMemberOrPendingMemberOfAnyRole(_ address: SignalServiceAddress) -> Bool {
         return contains(address)
     }
 
+    @objc
     public func isNonPendingMember(_ address: SignalServiceAddress) -> Bool {
         return nonPendingMembers.contains(address)
+    }
+
+    @objc
+    public func isPendingOrNonPendingMember(_ address: SignalServiceAddress) -> Bool {
+        return allUsers.contains(address)
+    }
+
+    public func addedByUuid(forPendingMember address: SignalServiceAddress) -> UUID? {
+        return memberStateMap[address]?.addedByUuid
     }
 
     // GroupsV2 TODO: We may remove this method.

@@ -129,7 +129,6 @@ typedef enum : NSUInteger {
     ConversationCollectionViewDelegate,
     ConversationInputToolbarDelegate,
     ConversationViewModelDelegate,
-    MessageRequestDelegate,
     LocationPickerDelegate,
     InputAccessoryViewPlaceholderDelegate,
     ForwardMessageDelegate>
@@ -486,7 +485,7 @@ typedef enum : NSUInteger {
 - (void)popped
 {
     _peek = NO;
-    [self hideInputIfNeeded];
+    [self updateInputVisibility];
 }
 
 - (void)updateV2GroupIfNecessary
@@ -539,7 +538,7 @@ typedef enum : NSUInteger {
     return !groupThread.isLocalUserInGroup;
 }
 
-- (void)hideInputIfNeeded
+- (void)updateInputVisibility
 {
     if (_peek) {
         self.inputToolbar.hidden = YES;
@@ -733,7 +732,7 @@ typedef enum : NSUInteger {
 
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
-    [self hideInputIfNeeded];
+    [self updateInputVisibility];
 
     self.isViewVisible = YES;
 
@@ -5285,6 +5284,13 @@ typedef enum : NSUInteger {
         return;
     }
 
+    // If we're already showing the message request view, don't render it again.
+    //
+    // TODO:
+    if (self.messageRequestView) {
+        return;
+    }
+
     self.messageRequestView = [[MessageRequestView alloc] initWithThread:self.thread];
     self.messageRequestView.delegate = self;
     [self reloadBottomBar];
@@ -5308,6 +5314,7 @@ typedef enum : NSUInteger {
     self.messageRequestView = nil;
 
     [self reloadBottomBar];
+    [self updateInputVisibility];
 
     // Add the view on top of the new bottom bar (if there is one),
     // and then slide it off screen to reveal the new input view.
@@ -5325,65 +5332,6 @@ typedef enum : NSUInteger {
         completion:^(BOOL finished) {
             [dismissingView removeFromSuperview];
         }];
-}
-
-- (void)messageRequestViewDidTapBlock
-{
-    OWSAssertIsOnMainThread();
-
-    [self.blockingManager addBlockedThread:self.thread wasLocallyInitiated:YES];
-    [self messageRequestViewDidTapDelete];
-}
-
-- (void)messageRequestViewDidTapDelete
-{
-    OWSAssertIsOnMainThread();
-
-    void (^completion)(void) = ^{
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [self.thread softDeleteThreadWithTransaction:transaction];
-        }];
-        [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
-    };
-
-    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-
-        // Leave the group if we're a member.
-        if (groupThread.isLocalUserInGroup) {
-            [ThreadUtil leaveGroupThreadAsync:groupThread fromViewController:self success:completion];
-            return;
-        }
-    }
-
-    // If we don't need to leave the group, finish up immediately.
-    completion();
-}
-
-- (void)messageRequestViewDidTapAccept
-{
-    OWSAssertIsOnMainThread();
-
-    [self.profileManager addThreadToProfileWhitelist:self.thread];
-    [self dismissMessageRequestView];
-}
-
-- (void)messageRequestViewDidTapUnblock
-{
-    OWSAssertIsOnMainThread();
-
-    [self.blockingManager removeBlockedThread:self.thread wasLocallyInitiated:YES];
-    [self messageRequestViewDidTapAccept];
-}
-
-- (void)messageRequestViewDidTapLearnMore
-{
-    OWSAssertIsOnMainThread();
-
-    // TODO Message Request: Use right support url. Right now this just links to the profiles FAQ
-    SFSafariViewController *safariVC = [[SFSafariViewController alloc]
-        initWithURL:[NSURL URLWithString:@"https://support.signal.org/hc/en-us/articles/360007459591"]];
-    [self presentViewController:safariVC animated:YES completion:nil];
 }
 
 #pragma mark - LocationPickerDelegate

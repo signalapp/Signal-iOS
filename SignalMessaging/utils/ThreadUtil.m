@@ -231,39 +231,6 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-+ (void)leaveGroupThreadAsync:(TSGroupThread *)groupThread
-           fromViewController:(UIViewController *)fromViewController
-                      success:(void (^)(void))success
-{
-    [ModalActivityIndicatorViewController
-        presentFromViewController:fromViewController
-                        canCancel:NO
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [[GroupManager leaveGroupOrDeclineInviteObjcWithGroupThread:groupThread]
-                              .then(^{
-                                  OWSAssertIsOnMainThread();
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      OWSAssertIsOnMainThread();
-
-                                      success();
-                                  }];
-                              })
-                              .catch(^(NSError *error) {
-                                  OWSAssertIsOnMainThread();
-
-                                  OWSFailDebug(@"Leave group failed: %@", error);
-
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      OWSAssertIsOnMainThread();
-
-                                      [OWSActionSheets showActionSheetWithTitle:
-                                                           NSLocalizedString(@"LEAVE_GROUP_FAILED",
-                                                               @"Error indicating that a group could not be left.")];
-                                  }];
-                              }) retainUntilComplete];
-                  }];
-}
-
 // MARK: Non-Durable Sending
 
 // We might want to generate a link preview here.
