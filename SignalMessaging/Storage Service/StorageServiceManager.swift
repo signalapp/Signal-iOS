@@ -732,6 +732,9 @@ class StorageServiceOperation: OWSOperation {
                             accountIdentifierMap[accountId] = item.identifier
 
                         case .resolved(let accountId):
+                            // We're all resolved, so if we had a pending change for this contact clear it out.
+                            pendingAccountChanges[accountId] = nil
+
                             // update the mapping
                             accountIdentifierMap[accountId] = item.identifier
                         }
@@ -750,6 +753,9 @@ class StorageServiceOperation: OWSOperation {
                             groupIdentifierMap[groupId] = item.identifier
 
                         case .resolved(let groupId):
+                            // We're all resolved, so if we had a pending change for this group clear it out.
+                            pendingGroupChanges[groupId] = nil
+
                             // update the mapping
                             groupIdentifierMap[groupId] = item.identifier
                         }
