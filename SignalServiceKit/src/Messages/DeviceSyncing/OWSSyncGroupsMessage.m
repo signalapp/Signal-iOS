@@ -15,11 +15,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSSyncGroupsMessage ()
+
+@property (nonatomic, readonly) TSGroupThread *groupThread;
+
+@end
+
 @implementation OWSSyncGroupsMessage
 
-- (instancetype)init
+- (instancetype)initWithGroupThread:(TSGroupThread *)thread
 {
-    return [super init];
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+    
+    _groupThread = thread;
+    
+    return self;
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
@@ -75,21 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSOutputStream *dataOutputStream = [NSOutputStream outputStreamToMemory];
     [dataOutputStream open];
     OWSGroupsOutputStream *groupsOutputStream = [[OWSGroupsOutputStream alloc] initWithOutputStream:dataOutputStream];
-
-    [TSGroupThread
-        enumerateCollectionObjectsWithTransaction:transaction
-                                       usingBlock:^(id obj, BOOL *stop) {
-                                           if (![obj isKindOfClass:[TSGroupThread class]] || ((TSGroupThread *)obj).groupModel.groupType != closedGroup) {
-                                               if (![obj isKindOfClass:[TSContactThread class]]) {
-                                                   OWSLogWarn(
-                                                       @"Ignoring non group thread in thread collection: %@", obj);
-                                               }
-                                               return;
-                                           }
-                                           TSGroupThread *groupThread = (TSGroupThread *)obj;
-                                           [groupsOutputStream writeGroup:groupThread transaction:transaction];
-                                       }];
-
+    [groupsOutputStream writeGroup:self.groupThread transaction:transaction];
     [dataOutputStream close];
 
     if (groupsOutputStream.hasError) {

@@ -108,20 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendGroupSyncMessage
 {
-    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-    __block DataSource *dataSource;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        dataSource = [DataSourceValue
-            dataSourceWithSyncMessageData:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
-    }];
-
-    [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
-                                     dataSource:dataSource
-                                    contentType:OWSMimeTypeApplicationOctetStream
-                                 sourceFilename:nil
-                                        caption:nil
-                                 albumMessageId:nil
-                          isTemporaryAttachment:YES];
+    [[self.syncManager syncAllGroups] retainUntilComplete];
 }
 
 + (void)sendBlockListSyncMessage

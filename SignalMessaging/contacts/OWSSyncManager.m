@@ -23,6 +23,7 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -281,13 +282,21 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 - (AnyPromise *)syncAllContacts
 {
     NSMutableArray<SignalAccount *> *friends = @[].mutableCopy;
+    NSMutableArray<AnyPromise *> *promises = @[].mutableCopy;
     [TSContactThread enumerateCollectionObjectsUsingBlock:^(TSContactThread *thread, BOOL *stop) {
         NSString *hexEncodedPublicKey = thread.contactIdentifier;
         if (hexEncodedPublicKey != nil && thread.isContactFriend && thread.shouldThreadBeVisible && !thread.isForceHidden) {
             [friends addObject:[[SignalAccount alloc] initWithRecipientId:hexEncodedPublicKey]];
         }
+        if (friends.count >= 2) {
+            [promises addObject:[self syncContactsForSignalAccounts:friends]];
+            [friends removeAllObjects];
+        }
     }];
-    return [self syncContactsForSignalAccounts:friends];
+    if (friends.count > 0) {
+        [promises addObject:[self syncContactsForSignalAccounts:friends]];
+    }
+    return PMKJoin(promises);
 }
 
 - (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
@@ -310,7 +319,18 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncAllGroups
 {
-    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
+    NSMutableArray<AnyPromise *> *promises = @[].mutableCopy;
+    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(TSGroupThread *thread, BOOL *stop) {
+        if (thread.groupModel && thread.shouldThreadBeVisible && !thread.isForceHidden) {
+            [promises addObject:[self syncGroupForThread:thread]];
+        }
+    }];
+    return PMKJoin(promises);
+}
+
+- (AnyPromise *)syncGroupForThread:(TSGroupThread *)thread
+{
+    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithGroupThread:thread];
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         [self.messageSender sendMessage:syncGroupsMessage
             success:^{
