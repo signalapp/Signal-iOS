@@ -28,6 +28,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         return TSAccountManager.sharedInstance()
     }
 
+    private var profileManager: OWSProfileManager {
+        return OWSProfileManager.shared()
+    }
+
     // MARK: -
 
     @objc
@@ -416,6 +420,12 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func tryToApplyGroupChangesFromServiceNow(groupId: Data,
                                                       groupChanges: [GroupV2Change],
                                                       upToRevision: UInt32?) -> Promise<TSGroupThread> {
+
+        let localProfileKey = profileManager.localProfileKey()
+        guard let localUuid = tsAccountManager.localUuid else {
+            return Promise(error: OWSAssertionError("Missing localUuid."))
+        }
+
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             guard let oldGroupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing group thread.")
@@ -434,6 +444,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 owsFailDebug("No group changes.")
             }
 
+            var shouldUpdateProfileKeyInGroup = false
             for groupChange in groupChanges {
                 let changeRevision = groupChange.snapshot.revision
                 if let upToRevision = upToRevision {
@@ -477,7 +488,18 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                        transaction: transaction).groupThread
 
+                // If the group state includes a stale profile key for the
+                // local user, schedule an update to fix that.
+                if let profileKey = groupChange.snapshot.profileKeys[localUuid],
+                    profileKey != localProfileKey.keyData {
+                    shouldUpdateProfileKeyInGroup = true
+                }
             }
+
+            if shouldUpdateProfileKeyInGroup {
+                self.groupsV2.updateLocalProfileKeyInGroup(groupId: groupId, transaction: transaction)
+            }
+
             return groupThread
         }
     }
@@ -508,6 +530,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     }
 
     private func tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: GroupV2Snapshot) -> Promise<TSGroupThread> {
+        let localProfileKey = profileManager.localProfileKey()
+        guard let localUuid = tsAccountManager.localUuid else {
+            return Promise(error: OWSAssertionError("Missing localUuid."))
+        }
+
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             let newGroupModel = try GroupManager.buildGroupModel(groupV2Snapshot: groupV2Snapshot,
                                                                  transaction: transaction)
@@ -522,6 +549,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                                                        transaction: transaction)
 
             GroupManager.storeProfileKeysFromGroupProtos(groupV2Snapshot.profileKeys)
+
+            // If the group state includes a stale profile key for the
+            // local user, schedule an update to fix that.
+            if let profileKey = groupV2Snapshot.profileKeys[localUuid],
+            profileKey != localProfileKey.keyData {
+                self.groupsV2.updateLocalProfileKeyInGroup(groupId: newGroupModel.groupId, transaction: transaction)
+            }
 
             return result.groupThread
         }

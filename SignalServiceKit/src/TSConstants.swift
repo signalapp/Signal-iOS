@@ -98,7 +98,7 @@ public class TSConstants: NSObject {
         case production, staging
     }
 
-    private static let serialQueue = DispatchQueue(label: "SystemContactsFetcherQueue")
+    private static let serialQueue = DispatchQueue(label: "TSConstants")
     private static var _forceEnvironment: Environment?
     private static var forceEnvironment: Environment? {
         get {

@@ -36,6 +36,10 @@ class GroupsV2ProfileKeyUpdater {
         return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
+    private var messageProcessing: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
+    }
+
     // MARK: -
 
     var reachability: Reachability?
@@ -80,26 +84,42 @@ class GroupsV2ProfileKeyUpdater {
         return groupId.hexadecimalString
     }
 
+    @objc
+    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
+        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            owsFailDebug("Missing groupThread.")
+            return
+        }
+        self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread,
+                                                   transaction: transaction)
+    }
+
     public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
+        TSGroupThread.anyEnumerate(transaction: transaction) { (thread, _) in
+            guard let groupThread = thread as? TSGroupThread else {
+                return
+            }
+            self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread,
+                                                       transaction: transaction)
+        }
+    }
+
+    private func tryToScheduleGroupForProfileKeyUpdate(groupThread: TSGroupThread,
+                                                       transaction: SDSAnyWriteTransaction) {
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("missing local address")
             return
         }
 
-        TSGroupThread.anyEnumerate(transaction: transaction) { (thread, _) in
-            guard let groupThread = thread as? TSGroupThread else {
+        let groupMembership = groupThread.groupModel.groupMembership
+        // We only need to update v2 groups of which we are a full member.
+        guard groupThread.isGroupV2Thread,
+            groupMembership.isNonPendingMember(localAddress) else {
                 return
-            }
-            let groupMembership = groupThread.groupModel.groupMembership
-            // We only need to update v2 groups of which we are a full member.
-            guard groupThread.isGroupV2Thread,
-                groupMembership.isNonPendingMember(localAddress) else {
-                    return
-            }
-            let groupId = groupThread.groupModel.groupId
-            let key = self.key(for: groupId)
-            self.keyValueStore.setData(groupId, key: key, transaction: transaction)
         }
+        let groupId = groupThread.groupModel.groupId
+        let key = self.key(for: groupId)
+        self.keyValueStore.setData(groupId, key: key, transaction: transaction)
     }
 
     @objc
@@ -107,7 +127,7 @@ class GroupsV2ProfileKeyUpdater {
         tryToUpdateNext()
     }
 
-    private let serialQueue = DispatchQueue(label: "SystemContactsFetcherQueue", qos: .background)
+    private let serialQueue = DispatchQueue(label: "GroupsV2ProfileKeyUpdater", qos: .background)
 
     // This property should only be accessed on serialQueue.
     private var isUpdating = false
@@ -211,11 +231,15 @@ class GroupsV2ProfileKeyUpdater {
             return Promise(error: GroupsV2Error.shouldDiscard)
         }
 
-        return databaseStorage.read(.promise) { transaction in
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                throw GroupsV2Error.shouldDiscard
+        return firstly {
+            self.messageProcessing.allMessageFetchingAndProcessingPromise()
+        }.map(on: .global()) { () throws -> TSGroupThread in
+            return try self.databaseStorage.read { transaction in
+                guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                    throw GroupsV2Error.shouldDiscard
+                }
+                return groupThread
             }
-            return groupThread
         }.then(on: .global()) { (groupThread: TSGroupThread) throws -> Promise<TSGroupThread> in
             // Get latest group state from service and verify that this update is still necessary.
             return firstly {

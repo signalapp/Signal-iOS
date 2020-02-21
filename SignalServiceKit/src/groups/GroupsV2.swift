@@ -42,6 +42,8 @@ public protocol GroupsV2: AnyObject {
     func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction)
 
     func processProfileKeyUpdates()
+
+    func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction)
 }
 
 // MARK: -
@@ -278,6 +280,10 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
     }
 
     public func processProfileKeyUpdates() {
+        owsFail("Not implemented.")
+    }
+
+    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 }
