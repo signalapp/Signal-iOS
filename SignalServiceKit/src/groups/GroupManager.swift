@@ -893,8 +893,8 @@ public class GroupManager: NSObject {
 
     // MARK: - Disappearing Messages
 
-    public static func updateDisappearingMessages(thread: TSThread,
-                                                  disappearingMessageToken: DisappearingMessageToken) -> Promise<Void> {
+    public static func localUpdateDisappearingMessages(thread: TSThread,
+                                                       disappearingMessageToken: DisappearingMessageToken) -> Promise<Void> {
 
         let simpleUpdate = {
             return databaseStorage.write(.promise) { transaction in
@@ -959,7 +959,7 @@ public class GroupManager: NSObject {
 
     // MARK: - Accept Invites
 
-    public static func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+    public static func localAcceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
 
         return firstly {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
@@ -970,16 +970,16 @@ public class GroupManager: NSObject {
 
     // MARK: - Leave Group / Decline Invite
 
-    public static func leaveGroupOrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+    public static func localLeaveGroupOrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
         switch groupThread.groupModel.groupsVersion {
         case .V1:
-            return leaveGroupV1(groupId: groupThread.groupModel.groupId)
+            return localLeaveGroupV1(groupId: groupThread.groupModel.groupId)
         case .V2:
-            return leaveGroupV2OrDeclineInvite(groupThread: groupThread)
+            return localLeaveGroupV2OrDeclineInvite(groupThread: groupThread)
         }
     }
 
-    private static func leaveGroupV1(groupId: Data) -> Promise<TSGroupThread> {
+    private static func localLeaveGroupV1(groupId: Data) -> Promise<TSGroupThread> {
         guard let localAddress = self.tsAccountManager.localAddress else {
             return Promise(error: OWSAssertionError("Missing localAddress."))
         }
@@ -1025,7 +1025,7 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func leaveGroupV2OrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+    private static func localLeaveGroupV2OrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
         return firstly {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
