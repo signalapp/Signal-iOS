@@ -463,15 +463,15 @@ class StorageServiceOperation: OWSOperation {
 
         let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: version)
 
+        let allKeys = accountIdentifierMap.map { $1.data } +
+            groupIdentifierMap.map { $1.data } +
+            unknownIdentifiers.map { $0.data }
+
         // We must persist any unknown identifiers, as they are potentially associated with
         // valid records that this version of the app doesn't yet understand how to parse.
         // Otherwise, this will cause ping-ponging with newer apps when they try and backup
         // new types of records, and then we subsequently delete them.
-        manifestBuilder.setKeys(
-            accountIdentifierMap.map { $1.data } +
-            groupIdentifierMap.map { $1.data } +
-            unknownIdentifiers.map { $0.data }
-        )
+        manifestBuilder.setKeys(allKeys)
 
         let manifest: StorageServiceProtoManifestRecord
         do {
@@ -479,6 +479,8 @@ class StorageServiceOperation: OWSOperation {
         } catch {
             return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
+
+        Logger.info("Backing up pending changes with manifest version: \(version). \(updatedItems.count) new items. \(deletedIdentifiers.count) deleted items. Total keys: \(allKeys.count)")
 
         StorageService.updateManifest(
             manifest,
@@ -566,8 +568,6 @@ class StorageServiceOperation: OWSOperation {
     }
 
     private func createNewManifest(version: UInt64) {
-        Logger.info("Creating a new manifest with manifest version: \(version)")
-
         var allItems: [StorageService.StorageItem] = []
         var accountIdentifierMap: BidirectionalDictionary<AccountId, StorageService.StorageIdentifier> = [:]
         var groupIdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
@@ -624,6 +624,8 @@ class StorageServiceOperation: OWSOperation {
             return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
 
+        Logger.info("Creating a new manifest with manifest version: \(version). Total keys: \(allItems.count)")
+
         StorageService.updateManifest(
             manifest,
             newItems: allItems,
@@ -656,8 +658,6 @@ class StorageServiceOperation: OWSOperation {
     // MARK: - Conflict Resolution
 
     private func mergeLocalManifest(withRemoteManifest manifest: StorageServiceProtoManifestRecord, backupAfterSuccess: Bool) {
-        Logger.info("Merging with newer remote manifest version: \(manifest.version)")
-
         var accountIdentifierMap: BidirectionalDictionary<AccountId, StorageService.StorageIdentifier> = [:]
         var groupIdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
         var unknownIdentifiersTypeMap: [UInt32: [StorageService.StorageIdentifier]] = [:]
@@ -692,6 +692,8 @@ class StorageServiceOperation: OWSOperation {
             return reportError(OWSAssertionError("exceeded max consectuive conflicts, creating a new manifest"))
         }
 
+        let localKeysCount = accountIdentifierMap.count + groupIdentifierMap.count + unknownIdentifiersTypeMap.flatMap { $0.value }.count
+
         // Calculate new or updated items by looking up the ids
         // of any items we don't know about locally. Since a new
         // id is always generated after a change, this should always
@@ -712,6 +714,8 @@ class StorageServiceOperation: OWSOperation {
                 .subtracting(groupIdentifierMap.backwardKeys)
                 .subtracting(unknownIdentifiersTypeMap.flatMap { $0.value })
         )
+
+        Logger.info("Merging with newer remote manifest version: \(manifest.version). \(newOrUpdatedItems.count) new or updated items. Remote key count: \(allManifestItems.count). Local key count: \(localKeysCount).")
 
         // Fetch all the items in the new manifest and resolve any conflicts appropriately.
         StorageService.fetchItems(for: newOrUpdatedItems).done(on: .global()) { items in
@@ -770,6 +774,8 @@ class StorageServiceOperation: OWSOperation {
                     }
 
                 }
+
+                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingAccountChanges.count + pendingGroupChanges.count) pending updates remaining.")
 
                 StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
                 StorageServiceOperation.setAccountChangeMap(pendingAccountChanges, transaction: transaction)
