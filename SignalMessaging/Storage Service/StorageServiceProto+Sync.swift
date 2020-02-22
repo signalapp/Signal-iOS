@@ -66,7 +66,7 @@ extension StorageServiceProtoContactRecord {
         let identityBuilder = StorageServiceProtoContactRecordIdentity.builder()
 
         if let identityKey = identityManager.identityKey(for: address, transaction: transaction) {
-            identityBuilder.setKey(identityKey)
+            identityBuilder.setKey(identityKey.prependKeyType())
         }
 
         let verificationState = identityManager.verificationState(for: address, transaction: transaction)
@@ -155,8 +155,10 @@ extension StorageServiceProtoContactRecord {
         guard !address.isLocalAddress else { return mergeState }
 
         // If our local identity differs from the service, use the service's value.
-        if let identityKey = identity?.key, let identityState = identity?.state?.verificationState,
+        if let identityKeyWithType = identity?.key, let identityState = identity?.state?.verificationState,
+            let identityKey = try? identityKeyWithType.removeKeyType(),
             localIdentityKey != identityKey || localIdentityState != identityState {
+
             identityManager.setVerificationState(
                 identityState,
                 identityKey: identityKey,
@@ -317,5 +319,15 @@ extension StorageServiceProtoGroupV1Record {
         }
 
         return mergeState
+    }
+}
+
+extension Data {
+    func prependKeyType() -> Data {
+        return (self as NSData).prependKeyType() as Data
+    }
+
+    func removeKeyType() throws -> Data {
+        return try (self as NSData).removeKeyType() as Data
     }
 }
