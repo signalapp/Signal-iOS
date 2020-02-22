@@ -296,6 +296,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     // * Updating the profile updated this instance.
     // * Updating the profile updated the "latest" instance.
     __block BOOL didChange = NO;
+    __block BOOL onlyAvatarChanged = NO;
 
     OWSUserProfile *_Nullable latestInstance =
         [OWSUserProfile anyFetchWithUniqueId:self.uniqueId transaction:transaction];
@@ -308,13 +309,21 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                    // self might be the latest instance, so take a "before" snapshot
                                    // before any changes have been made.
                                    NSDictionary *beforeSnapshot = [profile.dictionaryValue copy];
+                                   NSDictionary *beforeSnapshotWithoutAvatar =
+                                       [beforeSnapshot mtl_dictionaryByRemovingValuesForKeys:avatarKeys];
 
                                    changeBlock(profile);
 
                                    NSDictionary *afterSnapshot = [profile.dictionaryValue copy];
+                                   NSDictionary *afterSnapshotWithoutAvatar =
+                                       [afterSnapshot mtl_dictionaryByRemovingValuesForKeys:avatarKeys];
 
                                    if (![beforeSnapshot isEqual:afterSnapshot]) {
                                        didChange = YES;
+                                   }
+
+                                   if (didChange && [beforeSnapshotWithoutAvatar isEqual:afterSnapshotWithoutAvatar]) {
+                                       onlyAvatarChanged = YES;
                                    }
                                }];
     } else {
@@ -334,8 +343,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     BOOL isLocalUserProfile = [self.address.phoneNumber isEqualToString:kLocalProfileUniqueId];
 
-    // Profile changes, record updates with storage service
-    if (self.tsAccountManager.isRegisteredAndReady && wasLocallyInitiated) {
+    // Profile changes, record updates with storage service. We don't store avatar information on the service.
+    if (self.tsAccountManager.isRegisteredAndReady && wasLocallyInitiated && !onlyAvatarChanged) {
         [self.storageServiceManager
             recordPendingUpdatesWithUpdatedAddresses:@[ isLocalUserProfile ? self.tsAccountManager.localAddress
                                                                            : self.address ]];
