@@ -7,8 +7,8 @@ final class ConversationTitleView : UIView {
     // MARK: Types
     private enum Status : Int {
         case calculatingPoW = 1
-        case contactingNetwork = 2
-        case sendingMessage = 3
+        case routing = 2
+        case messageSending = 3
         case messageSent = 4
         case messageFailed = 5
     }
@@ -40,8 +40,8 @@ final class ConversationTitleView : UIView {
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleProfileChangedNotification(_:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleCalculatingPoWNotification(_:)), name: .calculatingPoW, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleContactingNetworkNotification(_:)), name: .contactingNetwork, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleSendingMessageNotification(_:)), name: .sendingMessage, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleRoutingNotification(_:)), name: .routing, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleMessageSendingNotification(_:)), name: .messageSending, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleMessageSentNotification(_:)), name: .messageSent, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleMessageFailedNotification(_:)), name: .messageFailed, object: nil)
     }
@@ -99,14 +99,14 @@ final class ConversationTitleView : UIView {
         setStatusIfNeeded(to: .calculatingPoW, forMessageWithTimestamp: timestamp)
     }
     
-    @objc private func handleContactingNetworkNotification(_ notification: Notification) {
+    @objc private func handleRoutingNotification(_ notification: Notification) {
         guard let timestamp = notification.object as? NSNumber else { return }
-        setStatusIfNeeded(to: .contactingNetwork, forMessageWithTimestamp: timestamp)
+        setStatusIfNeeded(to: .routing, forMessageWithTimestamp: timestamp)
     }
     
-    @objc private func handleSendingMessageNotification(_ notification: Notification) {
+    @objc private func handleMessageSendingNotification(_ notification: Notification) {
         guard let timestamp = notification.object as? NSNumber else { return }
-        setStatusIfNeeded(to: .sendingMessage, forMessageWithTimestamp: timestamp)
+        setStatusIfNeeded(to: .messageSending, forMessageWithTimestamp: timestamp)
     }
     
     @objc private func handleMessageSentNotification(_ notification: Notification) {
@@ -147,8 +147,8 @@ final class ConversationTitleView : UIView {
             self.subtitleLabel.isHidden = false
             switch self.currentStatus {
             case .calculatingPoW: self.subtitleLabel.text = NSLocalizedString("Encrypting message", comment: "")
-            case .contactingNetwork: self.subtitleLabel.text = NSLocalizedString("Tracing a path", comment: "")
-            case .sendingMessage: self.subtitleLabel.text = NSLocalizedString("Sending message", comment: "")
+            case .routing: self.subtitleLabel.text = NSLocalizedString("Tracing a path", comment: "")
+            case .messageSending: self.subtitleLabel.text = NSLocalizedString("Sending message", comment: "")
             case .messageSent: self.subtitleLabel.text = NSLocalizedString("Message sent securely", comment: "")
             case .messageFailed: self.subtitleLabel.text = NSLocalizedString("Message failed to send", comment: "")
             case nil:

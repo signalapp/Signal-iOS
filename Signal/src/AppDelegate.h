@@ -11,6 +11,8 @@ extern NSString *const AppDelegateStoryboardMain;
 - (void)startLongPollerIfNeeded;
 - (void)stopLongPollerIfNeeded;
 - (void)setUpDefaultPublicChatsIfNeeded;
+- (void)startOpenGroupPollersIfNeeded;
+- (void)stopOpenGroupPollersIfNeeded;
 - (void)createRSSFeedsIfNeeded;
 - (void)startRSSFeedPollersIfNeeded;
 

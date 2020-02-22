@@ -137,40 +137,33 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     }
     
     // MARK: Profile Pictures (Public API)
-    public static func setProfilePicture(_ profilePicture: Data) -> Promise<String> {
-        return Promise<String>() { seal in
-            guard profilePicture.count < maxFileSize else { return seal.reject(LokiDotNetAPIError.maxFileSizeExceeded) }
-            getAuthToken(for: server).done { token in
-                let url = "\(server)/users/me/avatar"
-                let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
-                var error: NSError?
-                var request = AFHTTPRequestSerializer().multipartFormRequest(withMethod: "POST", urlString: url, parameters: parameters, constructingBodyWith: { formData in
-                    formData.appendPart(withFileData: profilePicture, name: "avatar", fileName: UUID().uuidString, mimeType: "application/binary")
-                }, error: &error)
-                request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                if let error = error {
-                    print("[Loki] Couldn't upload profile picture due to error: \(error).")
-                    throw error
-                }
-                let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done { responseObject in
-                    guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let profilePicture = data["avatar_image"] as? JSON, let downloadURL = profilePicture["url"] as? String else {
-                        print("[Loki] Couldn't parse profile picture from: \(responseObject).")
-                        return seal.reject(LokiDotNetAPIError.parsingFailed)
-                    }
-                    return seal.fulfill(downloadURL)
-                }.catch { error in
-                    seal.reject(error)
-                }
-            }.catch { error in
-                print("[Loki] Couldn't upload profile picture due to error: \(error).")
-                seal.reject(error)
+    public static func uploadProfilePicture(_ profilePicture: Data) -> Promise<String> {
+        guard profilePicture.count < maxFileSize else { return Promise(error: LokiDotNetAPIError.maxFileSizeExceeded) }
+        let url = "\(server)/files"
+        let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
+        var error: NSError?
+        var request = AFHTTPRequestSerializer().multipartFormRequest(withMethod: "POST", urlString: url, parameters: parameters, constructingBodyWith: { formData in
+            formData.appendPart(withFileData: profilePicture, name: "content", fileName: UUID().uuidString, mimeType: "application/binary")
+        }, error: &error)
+        // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
+        request.addValue("Bearer loki", forHTTPHeaderField: "Authorization")
+        if let error = error {
+            print("[Loki] Couldn't upload profile picture due to error: \(error).")
+            return Promise(error: error)
+        }
+        return LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).map { responseObject in
+            guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let downloadURL = data["url"] as? String else {
+                print("[Loki] Couldn't parse profile picture from: \(responseObject).")
+                throw LokiDotNetAPIError.parsingFailed
             }
+            UserDefaults.standard[.lastProfilePictureUpload] = Date()
+            return downloadURL
         }
     }
     
     // MARK: Profile Pictures (Public Obj-C API)
-    @objc(setProfilePicture:)
-    public static func objc_setProfilePicture(_ profilePicture: Data) -> AnyPromise {
-        return AnyPromise.from(setProfilePicture(profilePicture))
+    @objc(uploadProfilePicture:)
+    public static func objc_uploadProfilePicture(_ profilePicture: Data) -> AnyPromise {
+        return AnyPromise.from(uploadProfilePicture(profilePicture))
     }
 }
