@@ -29,11 +29,13 @@ NS_ASSUME_NONNULL_BEGIN
                                   transaction:(SDSAnyReadTransaction *)transaction;
 - (void)setProfileKeyData:(NSData *)profileKeyData
                forAddress:(SignalServiceAddress *)address
+      wasLocallyInitiated:(BOOL)wasLocallyInitiated
               transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)setProfileGivenName:(nullable NSString *)firstName
                  familyName:(nullable NSString *)lastName
                  forAddress:(SignalServiceAddress *)address
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;

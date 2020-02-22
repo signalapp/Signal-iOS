@@ -604,6 +604,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 oldAvatarData = [self profileAvatarDataForAddress:localAddress transaction:transaction];
 
                 [self.localUserProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
+                                        wasLocallyInitiated:YES
                                                 transaction:transaction
                                                  completion:^{
                                                      // The value doesn't matter, we just need any non-NSError value.
@@ -747,12 +748,17 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 {
     OWSUserProfile *userProfile = self.localUserProfile;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey] transaction:transaction completion:nil];
+        [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey]
+                     wasLocallyInitiated:YES
+                             transaction:transaction
+                              completion:nil];
     }];
     [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 }
 
-- (void)setLocalProfileKey:(OWSAES256Key *)key transaction:(SDSAnyWriteTransaction *)transaction
+- (void)setLocalProfileKey:(OWSAES256Key *)key
+       wasLocallyInitiated:(BOOL)wasLocallyInitiated
+               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSUserProfile *localUserProfile;
     
@@ -771,7 +777,10 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         localUserProfile = _localUserProfile;
     }
 
-    [localUserProfile updateWithProfileKey:key transaction:transaction completion:nil];
+    [localUserProfile updateWithProfileKey:key
+                       wasLocallyInitiated:wasLocallyInitiated
+                               transaction:transaction
+                                completion:nil];
 }
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
@@ -1273,6 +1282,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
 - (void)setProfileKeyData:(NSData *)profileKeyData
                forAddress:(SignalServiceAddress *)address
+      wasLocallyInitiated:(BOOL)wasLocallyInitiated
               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAES256Key *_Nullable profileKey = [OWSAES256Key keyWithData:profileKeyData];
@@ -1285,7 +1295,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     // update it accordingly. This should generally only happen if we're restoring
     // our profile data from the storage service.
     if (address.isLocalAddress) {
-        [self setLocalProfileKey:profileKey transaction:transaction];
+        [self setLocalProfileKey:profileKey wasLocallyInitiated:wasLocallyInitiated transaction:transaction];
     }
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
@@ -1302,6 +1312,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     [userProfile
         clearWithProfileKey:profileKey
+        wasLocallyInitiated:wasLocallyInitiated
                 transaction:transaction
                  completion:^{
                      dispatch_async(dispatch_get_main_queue(), ^{
@@ -1314,16 +1325,22 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 - (void)setProfileGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
                  forAddress:(SignalServiceAddress *)address
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
-    [userProfile updateWithGivenName:givenName familyName:familyName transaction:transaction completion:nil];
+    [userProfile updateWithGivenName:givenName
+                          familyName:familyName
+                 wasLocallyInitiated:wasLocallyInitiated
+                         transaction:transaction
+                          completion:nil];
 
     if (address.isLocalAddress) {
         [self.localUserProfile updateWithGivenName:givenName
                                         familyName:familyName
+                               wasLocallyInitiated:wasLocallyInitiated
                                        transaction:transaction
                                         completion:nil];
     }
@@ -1598,6 +1615,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
             // make sure we're using the latest key.
             if (address.isLocalAddress) {
                 [userProfile updateWithProfileKey:self.localUserProfile.profileKey
+                              wasLocallyInitiated:YES
                                       transaction:transaction
                                        completion:nil];
             }

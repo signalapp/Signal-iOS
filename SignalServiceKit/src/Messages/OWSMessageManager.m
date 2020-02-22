@@ -548,7 +548,10 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *profileKey = [dataMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
         if (profileKey.length == kAES256_KeyByteLength) {
-            [self.profileManager setProfileKeyData:profileKey forAddress:address transaction:transaction];
+            [self.profileManager setProfileKeyData:profileKey
+                                        forAddress:address
+                               wasLocallyInitiated:YES
+                                       transaction:transaction];
         } else {
             OWSFailDebug(
                 @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, address);
@@ -865,7 +868,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
-        [self.profileManager setProfileKeyData:profileKey forAddress:address transaction:transaction];
+        [self.profileManager setProfileKeyData:profileKey
+                                    forAddress:address
+                           wasLocallyInitiated:YES
+                                   transaction:transaction];
     }
 
     // By dispatching async, we introduce the possibility that these messages might be lost
@@ -1526,7 +1532,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-    [profileManager setProfileKeyData:profileKey forAddress:address transaction:transaction];
+    [profileManager setProfileKeyData:profileKey forAddress:address wasLocallyInitiated:YES transaction:transaction];
 }
 
 - (void)handleReceivedTextMessageWithEnvelope:(SSKProtoEnvelope *)envelope
