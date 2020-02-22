@@ -385,10 +385,11 @@ message SyncMessage {
 
   message MessageRequestResponse {
     enum Type {
-      UNKNOWN = 0;
-      ACCEPT  = 1;
-      DELETE  = 2;
-      BLOCK   = 3;
+      UNKNOWN          = 0;
+      ACCEPT           = 1;
+      DELETE           = 2;
+      BLOCK            = 3;
+      BLOCK_AND_DELETE = 4;
     }
 
     optional string threadE164 = 1;

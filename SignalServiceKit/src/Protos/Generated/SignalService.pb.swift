@@ -2359,6 +2359,7 @@ struct SignalServiceProtos_SyncMessage {
       case accept // = 1
       case delete // = 2
       case block // = 3
+      case blockAndDelete // = 4
 
       init() {
         self = .unknown
@@ -2370,6 +2371,7 @@ struct SignalServiceProtos_SyncMessage {
         case 1: self = .accept
         case 2: self = .delete
         case 3: self = .block
+        case 4: self = .blockAndDelete
         default: return nil
         }
       }
@@ -2380,6 +2382,7 @@ struct SignalServiceProtos_SyncMessage {
         case .accept: return 1
         case .delete: return 2
         case .block: return 3
+        case .blockAndDelete: return 4
         }
       }
 
@@ -5571,7 +5574,8 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: Swift
     0: .same(proto: "UNKNOWN"),
     1: .same(proto: "ACCEPT"),
     2: .same(proto: "DELETE"),
-    3: .same(proto: "BLOCK")
+    3: .same(proto: "BLOCK"),
+    4: .same(proto: "BLOCK_AND_DELETE")
   ]
 }
 
