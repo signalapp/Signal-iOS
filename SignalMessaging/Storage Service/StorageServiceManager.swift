@@ -635,10 +635,15 @@ class StorageServiceOperation: OWSOperation {
 
         Logger.info("Creating a new manifest with manifest version: \(version). Total keys: \(allItems.count)")
 
+        // We want to do this only when absolutely necessarry as it's an expensive
+        // query on the server. When we set this flag, the server will query an
+        // purge and orphan records.
+        let shouldDeletePreviousRecords = version > 1
+
         StorageService.updateManifest(
             manifest,
             newItems: allItems,
-            deleteAllExistingRecords: true
+            deleteAllExistingRecords: shouldDeletePreviousRecords
         ).done(on: .global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
                 // Successfuly updated, store our changes.
