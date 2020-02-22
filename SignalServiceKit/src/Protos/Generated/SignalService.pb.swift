@@ -1774,6 +1774,15 @@ struct SignalServiceProtos_SyncMessage {
   /// Clears the value of `keys`. Subsequent reads from it will return its default value.
   mutating func clearKeys() {_uniqueStorage()._keys = nil}
 
+  var messageRequestResponse: SignalServiceProtos_SyncMessage.MessageRequestResponse {
+    get {return _storage._messageRequestResponse ?? SignalServiceProtos_SyncMessage.MessageRequestResponse()}
+    set {_uniqueStorage()._messageRequestResponse = newValue}
+  }
+  /// Returns true if `messageRequestResponse` has been explicitly set.
+  var hasMessageRequestResponse: Bool {return _storage._messageRequestResponse != nil}
+  /// Clears the value of `messageRequestResponse`. Subsequent reads from it will return its default value.
+  mutating func clearMessageRequestResponse() {_uniqueStorage()._messageRequestResponse = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Sent {
@@ -2299,6 +2308,89 @@ struct SignalServiceProtos_SyncMessage {
     init() {}
 
     fileprivate var _storageService: Data?
+  }
+
+  struct MessageRequestResponse {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var threadE164: String {
+      get {return _threadE164 ?? String()}
+      set {_threadE164 = newValue}
+    }
+    /// Returns true if `threadE164` has been explicitly set.
+    var hasThreadE164: Bool {return self._threadE164 != nil}
+    /// Clears the value of `threadE164`. Subsequent reads from it will return its default value.
+    mutating func clearThreadE164() {self._threadE164 = nil}
+
+    var threadUuid: String {
+      get {return _threadUuid ?? String()}
+      set {_threadUuid = newValue}
+    }
+    /// Returns true if `threadUuid` has been explicitly set.
+    var hasThreadUuid: Bool {return self._threadUuid != nil}
+    /// Clears the value of `threadUuid`. Subsequent reads from it will return its default value.
+    mutating func clearThreadUuid() {self._threadUuid = nil}
+
+    var groupID: Data {
+      get {return _groupID ?? SwiftProtobuf.Internal.emptyData}
+      set {_groupID = newValue}
+    }
+    /// Returns true if `groupID` has been explicitly set.
+    var hasGroupID: Bool {return self._groupID != nil}
+    /// Clears the value of `groupID`. Subsequent reads from it will return its default value.
+    mutating func clearGroupID() {self._groupID = nil}
+
+    var type: SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum {
+      get {return _type ?? .unknown}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case unknown // = 0
+      case accept // = 1
+      case delete // = 2
+      case block // = 3
+
+      init() {
+        self = .unknown
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .unknown
+        case 1: self = .accept
+        case 2: self = .delete
+        case 3: self = .block
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .unknown: return 0
+        case .accept: return 1
+        case .delete: return 2
+        case .block: return 3
+        }
+      }
+
+    }
+
+    init() {}
+
+    fileprivate var _threadE164: String?
+    fileprivate var _threadUuid: String?
+    fileprivate var _groupID: Data?
+    fileprivate var _type: SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum?
   }
 
   init() {}
@@ -4667,7 +4759,8 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     10: .same(proto: "stickerPackOperation"),
     11: .same(proto: "viewOnceOpen"),
     12: .same(proto: "fetchLatest"),
-    13: .same(proto: "keys")
+    13: .same(proto: "keys"),
+    14: .same(proto: "messageRequestResponse")
   ]
 
   fileprivate class _StorageClass {
@@ -4684,6 +4777,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _viewOnceOpen: SignalServiceProtos_SyncMessage.ViewOnceOpen?
     var _fetchLatest: SignalServiceProtos_SyncMessage.FetchLatest?
     var _keys: SignalServiceProtos_SyncMessage.Keys?
+    var _messageRequestResponse: SignalServiceProtos_SyncMessage.MessageRequestResponse?
 
     static let defaultInstance = _StorageClass()
 
@@ -4703,6 +4797,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _viewOnceOpen = source._viewOnceOpen
       _fetchLatest = source._fetchLatest
       _keys = source._keys
+      _messageRequestResponse = source._messageRequestResponse
     }
   }
 
@@ -4731,6 +4826,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 11: try decoder.decodeSingularMessageField(value: &_storage._viewOnceOpen)
         case 12: try decoder.decodeSingularMessageField(value: &_storage._fetchLatest)
         case 13: try decoder.decodeSingularMessageField(value: &_storage._keys)
+        case 14: try decoder.decodeSingularMessageField(value: &_storage._messageRequestResponse)
         default: break
         }
       }
@@ -4778,6 +4874,9 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if let v = _storage._keys {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
       }
+      if let v = _storage._messageRequestResponse {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4800,6 +4899,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._viewOnceOpen != rhs_storage._viewOnceOpen {return false}
         if _storage._fetchLatest != rhs_storage._fetchLatest {return false}
         if _storage._keys != rhs_storage._keys {return false}
+        if _storage._messageRequestResponse != rhs_storage._messageRequestResponse {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -5417,6 +5517,62 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".MessageRequestResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "threadE164"),
+    2: .same(proto: "threadUuid"),
+    3: .same(proto: "groupId"),
+    4: .same(proto: "type")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._threadE164)
+      case 2: try decoder.decodeSingularStringField(value: &self._threadUuid)
+      case 3: try decoder.decodeSingularBytesField(value: &self._groupID)
+      case 4: try decoder.decodeSingularEnumField(value: &self._type)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._threadE164 {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    if let v = self._threadUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    if let v = self._groupID {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    }
+    if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.MessageRequestResponse, rhs: SignalServiceProtos_SyncMessage.MessageRequestResponse) -> Bool {
+    if lhs._threadE164 != rhs._threadE164 {return false}
+    if lhs._threadUuid != rhs._threadUuid {return false}
+    if lhs._groupID != rhs._groupID {return false}
+    if lhs._type != rhs._type {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "UNKNOWN"),
+    1: .same(proto: "ACCEPT"),
+    2: .same(proto: "DELETE"),
+    3: .same(proto: "BLOCK")
+  ]
 }
 
 extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

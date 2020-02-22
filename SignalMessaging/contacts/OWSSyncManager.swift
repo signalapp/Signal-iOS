@@ -7,6 +7,9 @@ import PromiseKit
 
 extension OWSSyncManager: SyncManagerProtocolSwift {
 
+    var profileManager: OWSProfileManager { .shared() }
+    var blockingManager: OWSBlockingManager { .shared() }
+
     // MARK: - Sync Requests
 
     @objc
@@ -84,6 +87,70 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
     @objc
     public func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction) {
         sendSyncRequestMessage(.keys, transaction: transaction)
+    }
+
+    @objc
+    public func processIncomingMessageRequestResponseSyncMessage(
+        _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        let thread: TSThread
+        if let groupId = syncMessage.groupID {
+            guard let groupThread = TSGroupThread.anyFetchGroupThread(
+                uniqueId: TSGroupThread.threadId(fromGroupId: groupId),
+                transaction: transaction
+            ) else {
+                return owsFailDebug("message request response for missing group thread")
+            }
+            thread = groupThread
+        } else if let threadAddress = syncMessage.threadAddress {
+            guard let contactThread = TSContactThread.getWithContactAddress(threadAddress, transaction: transaction) else {
+                return owsFailDebug("message request response for missing thread")
+            }
+            thread = contactThread
+        } else {
+            return owsFailDebug("message request response missing group or contact thread information")
+        }
+
+        guard let type = syncMessage.type else { return owsFailDebug("messasge request response missing type") }
+
+        func deleteThread() {
+            // Quit the group if we're a member
+            if let groupThread = thread as? TSGroupThread, groupThread.isLocalUserInGroup() {
+                ThreadUtil.leave(groupThread, transaction: transaction)
+            }
+
+            thread.softDelete(with: transaction)
+        }
+
+        switch type {
+        case .accept:
+            blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
+            profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
+        case .delete:
+            deleteThread()
+        case .block:
+            deleteThread()
+            blockingManager.addBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
+        case .unknown:
+            owsFailDebug("unexpected message request response type")
+        }
+    }
+
+    @objc
+    public func sendMessageRequestResponseSyncMessage(thread: TSThread, responseType: OWSSyncMessageRequestResponseType) {
+        Logger.info("")
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            return owsFailDebug("Unexpectedly tried to send sync message before registration.")
+        }
+
+        databaseStorage.asyncWrite { [weak self] transaction in
+            guard let self = self else { return }
+
+            let syncMessageRequestResponse = OWSSyncMessageRequestResponseMessage(thread: thread, responseType: responseType)
+            self.messageSenderJobQueue.add(message: syncMessageRequestResponse.asPreparer, transaction: transaction)
+        }
     }
 }
 
