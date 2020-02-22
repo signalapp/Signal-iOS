@@ -28,6 +28,7 @@ public struct StorageService {
         case manifestDecryptionFailed(version: UInt64)
         case itemDecryptionFailed(identifier: StorageIdentifier)
         case networkError(statusCode: Int, underlyingError: Error)
+        case accountMissing
 
         // MARK: 
 
@@ -44,6 +45,8 @@ public struct StorageService {
             case .networkError(let statusCode, _):
                 // If this is a server error, retry
                 return statusCode >= 500
+            case .accountMissing:
+                return false
             }
         }
 

@@ -389,8 +389,19 @@ class StorageServiceOperation: OWSOperation {
 
                         return storageItem
                     } catch {
-                        owsFailDebug("Unexpectedly failed to process changes for account \(error)")
-                        // If for some reason we failed, we'll just skip it and try this account again next backup.
+                        // If the accountId we're trying to backup is no longer associated with
+                        // any known address, we no longer need to care about it. It's possible
+                        // that account was unregistered / the SignalRecipient no longer exists.
+                        if case StorageService.StorageError.accountMissing = error {
+                            Logger.info("Clearing data for missing accountId \(accountId).")
+
+                            accountIdentifierMap[accountId] = nil
+                            pendingAccountChanges[accountId] = nil
+                        } else {
+                            // If for some reason we failed, we'll just skip it and try this account again next backup.
+                            owsFailDebug("Unexpectedly failed to process changes for account \(error)")
+                        }
+
                         return nil
                     }
             }
