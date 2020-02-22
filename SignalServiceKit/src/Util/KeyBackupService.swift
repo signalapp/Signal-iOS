@@ -517,7 +517,6 @@ public class KeyBackupService: NSObject {
 
         databaseStorage.read { transaction in
             masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
-            storageServiceKey = keyValueStore.getData(storageServiceKeyIdentifer, transaction: transaction)
             if let rawPinType = keyValueStore.getInt(pinTypeIdentifier, transaction: transaction) {
                 pinType = PinType(rawValue: rawPinType)
             }
@@ -526,13 +525,17 @@ public class KeyBackupService: NSObject {
             for type in DerivedKey.syncableKeys {
                 syncedDerivedKeys[type] = keyValueStore.getData(type.rawValue, transaction: transaction)
             }
+
+            if tsAccountManager.isRegisteredPrimaryDevice {
+                storageServiceKey = keyValueStore.getData(storageServiceKeyIdentifer, transaction: transaction)
+            }
         }
 
         // TODO: Derive Storage Service Key – Delete this.
         // For now, if we don't have a storage service key, create one.
         // Eventually this will be derived from the master key and not
         // its own independent key.
-        if tsAccountManager.isPrimaryDevice && storageServiceKey == nil {
+        if tsAccountManager.isRegisteredPrimaryDevice && storageServiceKey == nil {
             storageServiceKey = Cryptography.generateRandomBytes(32)
             databaseStorage.write { transaction in
                 keyValueStore.setData(storageServiceKey, key: storageServiceKeyIdentifer, transaction: transaction)
@@ -634,7 +637,7 @@ public class KeyBackupService: NSObject {
         cacheQueue.sync { cachedSyncedDerivedKeys[type] = data }
 
         // Trigger a re-fetch of the storage manifest, our keys have changed
-        if type == .storageService {
+        if type == .storageService, data != nil {
             storageServiceManager.restoreOrCreateManifestIfNecessary()
         }
     }
