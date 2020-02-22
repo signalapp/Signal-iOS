@@ -800,7 +800,21 @@ class StorageServiceOperation: OWSOperation {
 
                 }
 
-                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingAccountChanges.count + pendingGroupChanges.count) pending updates remaining.")
+                // Mark any orphaned records as pending update so we re-add them to the manifest.
+
+                var orphanedGroupCount = 0
+                Set(groupIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let groupId = groupIdentifierMap[identifier] { pendingGroupChanges[groupId] = .updated }
+                    orphanedGroupCount += 1
+                }
+
+                var orphanedAccountCount = 0
+                Set(accountIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let accountId = accountIdentifierMap[identifier] { pendingAccountChanges[accountId] = .updated }
+                    orphanedAccountCount += 1
+                }
+
+                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingAccountChanges.count + pendingGroupChanges.count) pending updates remaining including \(orphanedAccountCount) orphaned accounts and \(orphanedGroupCount) orphaned groups.")
 
                 StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
                 StorageServiceOperation.setAccountChangeMap(pendingAccountChanges, transaction: transaction)
