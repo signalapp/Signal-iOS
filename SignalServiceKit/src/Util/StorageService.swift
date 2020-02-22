@@ -19,6 +19,8 @@ public protocol StorageServiceManagerProtocol {
 
     @discardableResult
     func restoreOrCreateManifestIfNecessary() -> AnyPromise
+
+    func resetLocalData(transaction: SDSAnyWriteTransaction)
 }
 
 public struct StorageService {

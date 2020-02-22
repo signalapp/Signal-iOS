@@ -109,6 +109,12 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         return AnyPromise(operation.promise)
     }
 
+    @objc
+    public func resetLocalData(transaction: SDSAnyWriteTransaction) {
+        Logger.info("Reseting local storage service data.")
+        StorageServiceOperation.keyValueStore.removeAll(transaction: transaction)
+    }
+
     // MARK: - Backup Scheduling
 
     private static var backupDebounceInterval: TimeInterval = 0.2
