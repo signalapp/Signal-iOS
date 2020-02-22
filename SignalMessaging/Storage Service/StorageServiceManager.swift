@@ -627,7 +627,7 @@ class StorageServiceOperation: OWSOperation {
         StorageService.updateManifest(
             manifest,
             newItems: allItems,
-            deletedIdentifiers: []
+            deleteAllExistingRecords: true
         ).done(on: .global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
                 // Successfuly updated, store our changes.
