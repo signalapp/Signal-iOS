@@ -109,6 +109,12 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         return AnyPromise(operation.promise)
     }
 
+    @objc
+    public func resetLocalData(transaction: SDSAnyWriteTransaction) {
+        Logger.info("Reseting local storage service data.")
+        StorageServiceOperation.keyValueStore.removeAll(transaction: transaction)
+    }
+
     // MARK: - Backup Scheduling
 
     private static var backupDebounceInterval: TimeInterval = 0.2
@@ -389,8 +395,19 @@ class StorageServiceOperation: OWSOperation {
 
                         return storageItem
                     } catch {
-                        owsFailDebug("Unexpectedly failed to process changes for account \(error)")
-                        // If for some reason we failed, we'll just skip it and try this account again next backup.
+                        // If the accountId we're trying to backup is no longer associated with
+                        // any known address, we no longer need to care about it. It's possible
+                        // that account was unregistered / the SignalRecipient no longer exists.
+                        if case StorageService.StorageError.accountMissing = error {
+                            Logger.info("Clearing data for missing accountId \(accountId).")
+
+                            accountIdentifierMap[accountId] = nil
+                            pendingAccountChanges[accountId] = nil
+                        } else {
+                            // If for some reason we failed, we'll just skip it and try this account again next backup.
+                            owsFailDebug("Unexpectedly failed to process changes for account \(error)")
+                        }
+
                         return nil
                     }
             }
@@ -789,7 +806,21 @@ class StorageServiceOperation: OWSOperation {
 
                 }
 
-                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingAccountChanges.count + pendingGroupChanges.count) pending updates remaining.")
+                // Mark any orphaned records as pending update so we re-add them to the manifest.
+
+                var orphanedGroupCount = 0
+                Set(groupIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let groupId = groupIdentifierMap[identifier] { pendingGroupChanges[groupId] = .updated }
+                    orphanedGroupCount += 1
+                }
+
+                var orphanedAccountCount = 0
+                Set(accountIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let accountId = accountIdentifierMap[identifier] { pendingAccountChanges[accountId] = .updated }
+                    orphanedAccountCount += 1
+                }
+
+                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingAccountChanges.count + pendingGroupChanges.count) pending updates remaining including \(orphanedAccountCount) orphaned accounts and \(orphanedGroupCount) orphaned groups.")
 
                 StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
                 StorageServiceOperation.setAccountChangeMap(pendingAccountChanges, transaction: transaction)

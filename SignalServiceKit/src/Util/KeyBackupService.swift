@@ -624,6 +624,28 @@ public class KeyBackupService: NSObject {
         syncManager.sendKeysSyncMessage()
     }
 
+    // TODO: Derive Storage Service Key – Delete this
+    public static func rotateStorageServiceKey(transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+
+        guard tsAccountManager.isRegisteredPrimaryDevice else {
+            // Linked devices should never have a dedicated storageServiceKey, but we were
+            // incorrectly creating them briefly.
+            keyValueStore.setData(nil, key: storageServiceKeyIdentifer, transaction: transaction)
+            cacheQueue.sync { cachedStorageServiceKey = nil }
+            return
+        }
+
+        let newStorageServiceKey = Cryptography.generateRandomBytes(32)
+        cacheQueue.sync { cachedStorageServiceKey = newStorageServiceKey }
+        keyValueStore.setData(newStorageServiceKey, key: storageServiceKeyIdentifer, transaction: transaction)
+
+        guard tsAccountManager.isRegisteredAndReady && AppReadiness.isAppReady() else { return }
+
+        storageServiceManager.restoreOrCreateManifestIfNecessary()
+        syncManager.sendKeysSyncMessage()
+    }
+
     public static func storeSyncedKey(type: DerivedKey, data: Data?, transaction: SDSAnyWriteTransaction) {
         guard !tsAccountManager.isPrimaryDevice || CurrentAppContext().isRunningTests else {
             return owsFailDebug("primary device should never store synced keys")

@@ -83,6 +83,7 @@ public class GRDBSchemaMigrator: NSObject {
         // migrations must be inserted *before* any of these Data Migrations.
         case dataMigration_populateGalleryItems
         case dataMigration_markOnboardedUsers_v2
+        case dataMigration_rotateStorageServiceKeyAndResetLocalData
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -442,6 +443,12 @@ public class GRDBSchemaMigrator: NSObject {
                 Logger.info("marking existing user as onboarded")
                 TSAccountManager.sharedInstance().setIsOnboarded(true, transaction: transaction)
             }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_rotateStorageServiceKeyAndResetLocalData.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
+            SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction)
+            KeyBackupService.rotateStorageServiceKey(transaction: transaction)
         }
     }
 }

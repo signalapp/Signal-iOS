@@ -41,7 +41,7 @@ extension StorageServiceProtoContactRecord {
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoContactRecord {
         guard let address = OWSAccountIdFinder().address(forAccountId: accountId, transaction: transaction) else {
-            throw StorageService.StorageError.assertion
+            throw StorageService.StorageError.accountMissing
         }
 
         let builder = StorageServiceProtoContactRecord.builder()
