@@ -326,6 +326,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         if let profileKey = contactDetails.profileKey {
             self.profileManager.setProfileKeyData(profileKey,
                                                   for: contactDetails.address,
+                                                  wasLocallyInitiated: false,
                                                   transaction: transaction)
         }
 

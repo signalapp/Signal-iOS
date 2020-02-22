@@ -151,9 +151,10 @@ public struct StorageService {
     public static func updateManifest(
         _ manifest: StorageServiceProtoManifestRecord,
         newItems: [StorageItem],
-        deletedIdentifiers: [StorageIdentifier]
+        deletedIdentifiers: [StorageIdentifier] = [],
+        deleteAllExistingRecords: Bool = false
     ) -> Promise<StorageServiceProtoManifestRecord?> {
-        Logger.info("newItems: \(newItems.count), deletedIdentifiers: \(deletedIdentifiers.count)")
+        Logger.info("newItems: \(newItems.count), deletedIdentifiers: \(deletedIdentifiers.count), deleteAllExistingRecords: \(deleteAllExistingRecords)")
 
         return DispatchQueue.global().async(.promise) {
             let builder = StorageServiceProtoWriteOperation.builder()
@@ -184,6 +185,8 @@ public struct StorageService {
 
             // Flag the deleted keys
             builder.setDeleteKey(deletedIdentifiers.map { $0.data })
+
+            builder.setDeleteAll(deleteAllExistingRecords)
 
             return try builder.buildSerializedData()
         }.then(on: .global()) { data in

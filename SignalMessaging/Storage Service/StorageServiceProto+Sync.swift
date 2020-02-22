@@ -66,7 +66,7 @@ extension StorageServiceProtoContactRecord {
         let identityBuilder = StorageServiceProtoContactRecordIdentity.builder()
 
         if let identityKey = identityManager.identityKey(for: address, transaction: transaction) {
-            identityBuilder.setKey(identityKey)
+            identityBuilder.setKey(identityKey.prependKeyType())
         }
 
         let verificationState = identityManager.verificationState(for: address, transaction: transaction)
@@ -135,12 +135,23 @@ extension StorageServiceProtoContactRecord {
 
         // If our local profile key record differs from what's on the service, use the service's value.
         if let profileKey = profile?.key, localProfileKey?.keyData != profileKey {
-            profileManager.setProfileKeyData(profileKey, for: address, transaction: transaction)
+            profileManager.setProfileKeyData(
+                profileKey,
+                for: address,
+                wasLocallyInitiated: false,
+                transaction: transaction
+            )
 
             // We'll immediately schedule a fetch of the new profile, but restore the name
             // if it exists so we we can start displaying it immediately.
             if let givenName = profile?.givenName {
-                profileManager.setProfileGivenName(givenName, familyName: profile?.familyName, for: address, transaction: transaction)
+                profileManager.setProfileGivenName(
+                    givenName,
+                    familyName: profile?.familyName,
+                    for: address,
+                    wasLocallyInitiated: false,
+                    transaction: transaction
+                )
             }
 
         // If we have a local profile key for this user but the service doesn't mark it as needing update.
@@ -155,8 +166,10 @@ extension StorageServiceProtoContactRecord {
         guard !address.isLocalAddress else { return mergeState }
 
         // If our local identity differs from the service, use the service's value.
-        if let identityKey = identity?.key, let identityState = identity?.state?.verificationState,
+        if let identityKeyWithType = identity?.key, let identityState = identity?.state?.verificationState,
+            let identityKey = try? identityKeyWithType.removeKeyType(),
             localIdentityKey != identityKey || localIdentityState != identityState {
+
             identityManager.setVerificationState(
                 identityState,
                 identityKey: identityKey,
@@ -317,5 +330,15 @@ extension StorageServiceProtoGroupV1Record {
         }
 
         return mergeState
+    }
+}
+
+extension Data {
+    func prependKeyType() -> Data {
+        return (self as NSData).prependKeyType() as Data
+    }
+
+    func removeKeyType() throws -> Data {
+        return try (self as NSData).removeKeyType() as Data
     }
 }
