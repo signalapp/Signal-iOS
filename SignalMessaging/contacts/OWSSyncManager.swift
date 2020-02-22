@@ -130,6 +130,8 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
         case .delete:
             deleteThread()
         case .block:
+            blockingManager.addBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
+        case .blockAndDelete:
             deleteThread()
             blockingManager.addBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
         case .unknown:

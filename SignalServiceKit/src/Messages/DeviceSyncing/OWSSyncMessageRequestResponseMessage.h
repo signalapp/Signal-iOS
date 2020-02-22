@@ -8,7 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_CLOSED_ENUM(NSUInteger, OWSSyncMessageRequestResponseType) { OWSSyncMessageRequestResponseType_Accept,
     OWSSyncMessageRequestResponseType_Delete,
-    OWSSyncMessageRequestResponseType_Block };
+    OWSSyncMessageRequestResponseType_Block,
+    OWSSyncMessageRequestResponseType_BlockAndDelete };
 
 @interface OWSSyncMessageRequestResponseMessage : OWSOutgoingSyncMessage
 

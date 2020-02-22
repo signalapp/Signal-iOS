@@ -5358,36 +5358,50 @@ typedef enum : NSUInteger {
 
     NSString *actionSheetTitle;
     NSString *actionSheetMessage;
-    NSString *actionSheetAction;
     if (self.thread.isGroupThread) {
         actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_GROUP_TITLE",
             @"Action sheet title to confirm blocking a group via a message request.");
         actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
             @"Action sheet message to confirm blocking a group via a message request.");
-        actionSheetAction = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_GROUP_ACTION",
-            @"Action sheet action to confirm blocking a group via a message request.");
     } else {
         actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE",
             @"Action sheet title to confirm blocking a conversation via a message request.");
         actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
             @"Action sheet message to confirm blocking a conversation via a message request.");
-        actionSheetAction = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_CONVERSATION_ACTION",
-            @"Action sheet action to confirm blocking a conversation via a message request.");
     }
 
-    [OWSActionSheets
-        showConfirmationAlertWithTitle:actionSheetTitle
-                               message:actionSheetMessage
-                          proceedTitle:actionSheetAction
-                         proceedAction:^(ActionSheetAction *action) {
-                             [self.blockingManager addBlockedThread:self.thread wasLocallyInitiated:YES];
-                             [self.syncManager
-                                 sendMessageRequestResponseSyncMessageWithThread:self.thread
-                                                                    responseType:
-                                                                        OWSSyncMessageRequestResponseType_Block];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:actionSheetTitle
+                                                                              message:actionSheetMessage];
 
-                             [self deleteThread];
-                         }];
+    ActionSheetAction *blockAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_ACTION",
+                          @"Action sheet action to confirm blocking a thread via a message request.")
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *action) {
+                  [self.blockingManager addBlockedThread:self.thread wasLocallyInitiated:YES];
+                  [self.syncManager
+                      sendMessageRequestResponseSyncMessageWithThread:self.thread
+                                                         responseType:OWSSyncMessageRequestResponseType_Block];
+              }];
+    [actionSheet addAction:blockAction];
+
+    ActionSheetAction *blockAndDeleteAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
+                          @"Action sheet action to confirm blocking and deleting a thread via a message request.")
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *action) {
+                  [self.blockingManager addBlockedThread:self.thread wasLocallyInitiated:YES];
+                  [self.syncManager
+                      sendMessageRequestResponseSyncMessageWithThread:self.thread
+                                                         responseType:OWSSyncMessageRequestResponseType_BlockAndDelete];
+
+                  [self deleteThread];
+              }];
+    [actionSheet addAction:blockAndDeleteAction];
+
+    [actionSheet addAction:OWSActionSheets.cancelAction];
+
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)messageRequestViewDidTapDelete
@@ -5461,12 +5475,17 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     NSString *threadName;
+    NSString *message;
     if (self.thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         threadName = groupThread.groupNameOrDefault;
+        message = NSLocalizedString(
+            @"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE", @"An explanation of what unblocking a group means.");
     } else {
         TSContactThread *contactThread = (TSContactThread *)self.thread;
         threadName = [self.contactsManager displayNameForAddress:contactThread.contactAddress];
+        message = NSLocalizedString(
+            @"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE", @"An explanation of what unblocking a contact means.");
     }
 
     [OWSActionSheets
@@ -5475,7 +5494,7 @@ typedef enum : NSUInteger {
                                                                 @"A format for the 'unblock conversation' action sheet "
                                                                 @"title. Embeds the {{conversation title}}."),
                                            threadName]
-                               message:nil
+                               message:message
                           proceedTitle:NSLocalizedString(
                                            @"BLOCK_LIST_UNBLOCK_BUTTON", @"Button label for the 'unblock' button")
                          proceedAction:^(ActionSheetAction *action) {
