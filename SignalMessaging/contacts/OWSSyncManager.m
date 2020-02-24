@@ -288,15 +288,21 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         if (hexEncodedPublicKey != nil && thread.isContactFriend && thread.shouldThreadBeVisible && !thread.isForceHidden) {
             [friends addObject:[[SignalAccount alloc] initWithRecipientId:hexEncodedPublicKey]];
         }
-        if (friends.count >= 2) {
-            [promises addObject:[self syncContactsForSignalAccounts:friends]];
-            [friends removeAllObjects];
-        }
     }];
-    if (friends.count > 0) {
-        [promises addObject:[self syncContactsForSignalAccounts:friends]];
+    NSMutableArray<SignalAccount *> *signalAccounts = @[].mutableCopy;
+    for (SignalAccount *contact in friends) {
+        [signalAccounts addObject:contact];
+        if (signalAccounts.count >= 2) {
+            [promises addObject:[self syncContactsForSignalAccounts:signalAccounts]];
+            [signalAccounts removeAllObjects];
+        }
     }
-    return PMKJoin(promises);
+    if (signalAccounts.count > 0) {
+        [promises addObject:[self syncContactsForSignalAccounts:signalAccounts]];
+    }
+    AnyPromise *promise = PMKJoin(promises);
+    [promise retainUntilComplete];
+    return promise;
 }
 
 - (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
@@ -319,13 +325,19 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncAllGroups
 {
+    NSMutableArray<TSGroupThread *> *groupThreads = @[].mutableCopy;
     NSMutableArray<AnyPromise *> *promises = @[].mutableCopy;
     [TSGroupThread enumerateCollectionObjectsUsingBlock:^(TSGroupThread *thread, BOOL *stop) {
-        if (thread.groupModel && thread.shouldThreadBeVisible && !thread.isForceHidden) {
-            [promises addObject:[self syncGroupForThread:thread]];
+        if (thread.groupModel.groupType == closedGroup && thread.shouldThreadBeVisible && !thread.isForceHidden) {
+            [groupThreads addObject:thread];
         }
     }];
-    return PMKJoin(promises);
+    for (TSGroupThread *groupThread in groupThreads) {
+        [promises addObject:[self syncGroupForThread:groupThread]];
+    }
+    AnyPromise *promise = PMKJoin(promises);
+    [promise retainUntilComplete];
+    return promise;
 }
 
 - (AnyPromise *)syncGroupForThread:(TSGroupThread *)thread
