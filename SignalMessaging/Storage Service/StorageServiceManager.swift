@@ -18,6 +18,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     override init() {
         super.init()
 
+        SwiftSingletons.register(self)
+
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             NotificationCenter.default.addObserver(
                 self,
