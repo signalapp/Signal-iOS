@@ -225,7 +225,7 @@ public class GroupManager: NSObject {
                 return Promise.value(groupMembership)
             }
             return firstly { () -> Promise<Void> in
-                self.groupsV2.tryToEnsureUuidsViaProfileFetch(for: Array(groupMembership.allUsers))
+                self.groupsV2.tryToEnsureUuidsForGroupMembers(for: Array(groupMembership.allUsers))
             }.then(on: .global()) { () -> Promise<Void> in
                 self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allUsers))
             }.map(on: .global()) { (_) -> GroupMembership in
@@ -713,7 +713,7 @@ public class GroupManager: NSObject {
                                                    groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
         return firstly { () -> Promise<Void> in
-            self.groupsV2.tryToEnsureUuidsViaProfileFetch(for: Array(groupMembership.allUsers))
+            self.groupsV2.tryToEnsureUuidsForGroupMembers(for: Array(groupMembership.allUsers))
         }.then(on: .global()) { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () -> Promise<String?> in

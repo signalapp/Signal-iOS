@@ -879,7 +879,12 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - UUIDs
 
-    public func tryToEnsureUuidsViaProfileFetch(for addresses: [SignalServiceAddress]) -> Promise<Void> {
+    public func tryToEnsureUuidsForGroupMembers(for addresses: [SignalServiceAddress]) -> Promise<Void> {
+        guard FeatureFlags.useOnlyModernContactDiscovery else {
+            // Can't fill in UUIDs using legacy contact intersections.
+            return Promise.value(())
+        }
+
         let phoneNumbersWithoutUuids = addresses.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
         guard phoneNumbersWithoutUuids.count > 0 else {
             return Promise.value(())
