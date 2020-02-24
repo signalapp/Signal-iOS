@@ -147,14 +147,9 @@ extension UpdateGroupViewController {
             }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
                 GroupsV2Error.timeout
             }
-        }.then(on: .global()) {
+        }.then(on: .global()) { _ in
             // dmConfiguration: nil means don't change disappearing messages configuration.
-            GroupManager.localUpdateExistingGroup(groupId: newGroupModel.groupId,
-                                                  name: newGroupModel.groupName,
-                                                  avatarData: newGroupModel.groupAvatarData,
-                                                  groupMembership: newGroupModel.groupMembership,
-                                                  groupAccess: newGroupModel.groupAccess,
-                                                  groupsVersion: newGroupModel.groupsVersion,
+            GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }

@@ -69,14 +69,11 @@ public class GroupsV2Protos {
 
     public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
 
-    public class func buildNewGroupProto(groupModel: TSGroupModel,
+    public class func buildNewGroupProto(groupModel: TSGroupModelV2,
                                          groupV2Params: GroupV2Params,
                                          profileKeyCredentialMap: ProfileKeyCredentialMap,
                                          localUuid: UUID) throws -> GroupsProtoGroup {
 
-        guard let groupModel = groupModel as? TSGroupModelV2 else {
-            throw OWSAssertionError("Invalid groupModel.")
-        }
         // Collect credential for self.
         guard let localProfileKeyCredential = profileKeyCredentialMap[localUuid] else {
             throw OWSAssertionError("Missing localProfileKeyCredential.")
@@ -90,16 +87,16 @@ public class GroupsV2Protos {
         // GroupsV2 TODO: Will production implementation of encryptString() pad?
         groupBuilder.setTitle(try groupV2Params.encryptString(groupModel.groupName?.stripped ?? " "))
 
-        let hasAvatarUrl = groupModel.groupAvatarUrlPath != nil
+        let hasAvatarUrl = groupModel.avatarUrlPath != nil
         let hasAvatarData = groupModel.groupAvatarData != nil
         guard hasAvatarData == hasAvatarUrl else {
             throw OWSAssertionError("hasAvatarData: (\(hasAvatarData)) != hasAvatarUrl: (\(hasAvatarUrl))")
         }
-        if let avatarUrl = groupModel.groupAvatarUrlPath {
+        if let avatarUrl = groupModel.avatarUrlPath {
             groupBuilder.setAvatar(avatarUrl)
         }
 
-        groupBuilder.setAccessControl(try buildAccessProto(groupAccess: groupModel.groupAccess))
+        groupBuilder.setAccessControl(try buildAccessProto(groupAccess: groupModel.access))
 
         // * You will be member 0 and the only admin.
         // * Other members will be non-admin members.
@@ -152,20 +149,18 @@ public class GroupsV2Protos {
         return try builder.build()
     }
 
-    public class func masterKeyData(forGroupModel groupModel: TSGroupModel) throws -> Data {
-        guard let groupSecretParamsData = groupModel.groupSecretParamsData else {
-            throw OWSAssertionError("Missing groupSecretParamsData.")
-        }
+    public class func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data {
+        let groupSecretParamsData = groupModel.secretParamsData
         let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
         return try groupSecretParams.getMasterKey().serialize().asData
     }
 
-    public class func buildGroupContextV2Proto(groupModel: TSGroupModel,
+    public class func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                                changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
 
         let builder = SSKProtoGroupContextV2.builder()
         builder.setMasterKey(try masterKeyData(forGroupModel: groupModel))
-        builder.setRevision(groupModel.groupV2Revision)
+        builder.setRevision(groupModel.revision)
 
         if let changeActionsProtoData = changeActionsProtoData {
             assert(changeActionsProtoData.count > 0)

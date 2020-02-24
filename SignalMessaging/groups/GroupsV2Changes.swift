@@ -7,15 +7,15 @@ import SignalServiceKit
 import ZKGroup
 
 public struct ChangedGroupModel {
-    public let oldGroupModel: TSGroupModel
-    public let newGroupModel: TSGroupModel
+    public let oldGroupModel: TSGroupModelV2
+    public let newGroupModel: TSGroupModelV2
     // newDisappearingMessageToken is only set of DM state changed.
     public let newDisappearingMessageToken: DisappearingMessageToken?
     public let changeAuthorUuid: UUID
     public let profileKeys: [UUID: Data]
 
-    public init(oldGroupModel: TSGroupModel,
-                newGroupModel: TSGroupModel,
+    public init(oldGroupModel: TSGroupModelV2,
+                newGroupModel: TSGroupModelV2,
                 newDisappearingMessageToken: DisappearingMessageToken?,
                 changeAuthorUuid: UUID,
                 profileKeys: [UUID: Data]) {
@@ -51,15 +51,10 @@ public class GroupsV2Changes {
                                         changeActionsProto: GroupsProtoGroupChangeActions,
                                         downloadedAvatars: GroupV2DownloadedAvatars,
                                         transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
-        let oldGroupModel = groupThread.groupModel
-        let groupsVersion = oldGroupModel.groupsVersion
-        guard groupsVersion == .V2 else {
-            throw OWSAssertionError("Invalid groupsVersion: \(groupsVersion).")
+        guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            throw OWSAssertionError("Invalid group model.")
         }
-        guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
-            throw OWSAssertionError("Missing groupSecretParamsData.")
-        }
-        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        let groupV2Params = try oldGroupModel.groupV2Params()
         // Many change actions have author info, e.g. addedByUserID. But we can
         // safely assume that all actions in the "change actions" have the same author.
         guard let changeAuthorUuidData = changeActionsProto.sourceUuid else {
@@ -71,21 +66,18 @@ public class GroupsV2Changes {
             throw OWSAssertionError("Missing revision.")
         }
         let newRevision = changeActionsProto.version
-        guard newRevision == oldGroupModel.groupV2Revision + 1 else {
-            throw OWSAssertionError("Unexpected revision: \(newRevision) != \(oldGroupModel.groupV2Revision + 1).")
+        guard newRevision == oldGroupModel.revision + 1 else {
+            throw OWSAssertionError("Unexpected revision: \(newRevision) != \(oldGroupModel.revision + 1).")
         }
 
         var newGroupName: String? = oldGroupModel.groupName
         var newAvatarData: Data? = oldGroupModel.groupAvatarData
-        var newAvatarUrlPath: String?
-        if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
-            newAvatarUrlPath = oldGroupModelV2.groupAvatarUrlPath
-        }
+        var newAvatarUrlPath = oldGroupModel.avatarUrlPath
 
         let oldGroupMembership = oldGroupModel.groupMembership
         var groupMembershipBuilder = oldGroupMembership.asBuilder
 
-        let oldGroupAccess = oldGroupModel.groupAccess
+        let oldGroupAccess = oldGroupModel.access
         var newMembersAccess = oldGroupAccess.members
         var newAttributesAccess = oldGroupAccess.attributes
 
@@ -300,10 +292,9 @@ public class GroupsV2Changes {
         builder.avatarData = newAvatarData
         builder.groupMembership = newGroupMembership
         builder.groupAccess = newGroupAccess
-        builder.groupsVersion = groupsVersion
         builder.groupV2Revision = newRevision
-        builder.groupSecretParamsData = groupSecretParamsData
-        let newGroupModel = try builder.build(transaction: transaction)
+        builder.avatarUrlPath = newAvatarUrlPath
+        let newGroupModel = try builder.buildAsV2(transaction: transaction)
 
         return ChangedGroupModel(oldGroupModel: oldGroupModel,
                                  newGroupModel: newGroupModel,

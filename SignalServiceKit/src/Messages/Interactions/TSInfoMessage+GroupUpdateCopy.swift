@@ -313,9 +313,16 @@ extension GroupUpdateCopy {
     }
 
     mutating func addAccessUpdates(oldGroupModel: TSGroupModel) {
+        guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
+            return
+        }
+        guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid group model.")
+            return
+        }
 
-        let oldAccess = oldGroupModel.groupAccess
-        let newAccess = newGroupModel.groupAccess
+        let oldAccess = oldGroupModel.access
+        let newAccess = newGroupModel.access
 
         if oldAccess.members != newAccess.members {
             let accessName = description(for: newAccess.members)
@@ -1090,7 +1097,7 @@ extension GroupUpdateCopy {
     }
 
     mutating func addGroupWasInserted() {
-        guard newGroupModel.groupsVersion == .V2 else {
+        guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
             // Group was just upserted.
             switch updater {
             case .localUser:
@@ -1108,7 +1115,7 @@ extension GroupUpdateCopy {
             return
         }
 
-        let wasGroupJustCreated = newGroupModel.groupV2Revision == 0
+        let wasGroupJustCreated = newGroupModel.revision == 0
         if wasGroupJustCreated {
             // Group was just created.
             switch updater {

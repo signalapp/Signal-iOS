@@ -37,7 +37,10 @@ public extension ThreadUtil {
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
                                                         firstly { () -> Promise<TSGroupThread> in
-                                                            GroupManager.localAcceptInviteToGroupV2(groupThread: groupThread)
+                                                            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                                                                throw OWSAssertionError("Invalid group model.")
+                                                            }
+                                                            return GroupManager.localAcceptInviteToGroupV2(groupModel: groupModel)
                                                         }.done { _ in
                                                             modalActivityIndicator.dismiss {
                                                                 success()

@@ -40,11 +40,6 @@ typedef NS_CLOSED_ENUM(
 @property (nonatomic, readonly) GroupsVersion groupsVersion;
 @property (nonatomic, readonly) GroupMembership *groupMembership;
 
-// These properties only apply if groupsVersion == GroupsVersionV2.
-@property (nonatomic, readonly) GroupAccess *groupAccess;
-@property (nonatomic, readonly) uint32_t groupV2Revision;
-@property (nonatomic, readonly, nullable) NSData *groupSecretParamsData;
-
 + (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image;
 
 - (instancetype)init NS_UNAVAILABLE;

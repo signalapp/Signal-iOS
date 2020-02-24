@@ -32,13 +32,13 @@ public class TSGroupModelV2: TSGroupModel {
     @objc
     var membership: GroupMembership = GroupMembership.empty
     @objc
-    var access: GroupAccess = .defaultForV2
+    public var access: GroupAccess = .defaultForV2
     @objc
-    var secretParamsData: Data = Data()
+    public var secretParamsData: Data = Data()
     @objc
-    var revision: UInt32 = 0
+    public var revision: UInt32 = 0
     @objc
-    var avatarUrlPath: String?
+    public var avatarUrlPath: String?
 
     @objc
     public required init(groupId: Data,
@@ -88,31 +88,10 @@ public class TSGroupModelV2: TSGroupModel {
     }
 
     @objc
-    public override var groupAccess: GroupAccess {
-        return access
-    }
-
-    @objc
     public override var groupMembers: [SignalServiceAddress] {
         return Array(groupMembership.nonPendingMembers)
     }
 
-    @objc
-    public override var groupV2Revision: UInt32 {
-        return revision
-    }
-
-    @objc
-    public override var groupSecretParamsData: Data? {
-        return secretParamsData
-    }
-
-    @objc
-    public var groupAvatarUrlPath: String? {
-        return avatarUrlPath
-    }
-
-    @objc
     public override func isEqual(to model: TSGroupModel) -> Bool {
         guard super.isEqual(to: model) else {
             return false
@@ -144,10 +123,10 @@ public class TSGroupModelV2: TSGroupModel {
         result += "groupId: \(groupId.hexadecimalString),\n"
         result += "groupsVersion: \(groupsVersion),\n"
         result += "groupName: \(String(describing: groupName)),\n"
-        result += "groupAvatarData: \(String(describing: groupAvatarData?.hexadecimalString.prefix(256))),\n"
+        result += "groupAvatarData: \(String(describing: groupAvatarData?.hexadecimalString.prefix(32))),\n"
         result += "membership: \(groupMembership.debugDescription),\n"
-        result += "groupAccess: \(groupAccess.debugDescription),\n"
-        result += "groupSecretParamsData: \(secretParamsData.hexadecimalString),\n"
+        result += "access: \(access.debugDescription),\n"
+        result += "secretParamsData: \(secretParamsData.hexadecimalString.prefix(32)),\n"
         result += "revision: \(revision),\n"
         result += "avatarUrlPath: \(String(describing: avatarUrlPath)),\n"
         result += "]"

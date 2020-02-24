@@ -90,15 +90,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     }
 
     @objc
-    public required init(for groupModel: TSGroupModel) throws {
-        guard groupModel.groupsVersion == .V2 else {
-            throw OWSAssertionError("Invalid groupsVersion.")
-        }
+    public required init(for groupModel: TSGroupModelV2) throws {
         self.groupId = groupModel.groupId
-        guard let groupSecretParamsData = groupModel.groupSecretParamsData else {
-            throw OWSAssertionError("Missing groupSecretParamsData.")
-        }
-        self.groupSecretParamsData = groupSecretParamsData
+        self.groupSecretParamsData = groupModel.secretParamsData
     }
 
     // MARK: - Original Intent
@@ -106,17 +100,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     // Calculate the intended changes of the local user
     // by diffing two group models.
     @objc
-    public func buildChangeSet(oldGroupModel: TSGroupModel,
-                               newGroupModel: TSGroupModel,
+    public func buildChangeSet(oldGroupModel: TSGroupModelV2,
+                               newGroupModel: TSGroupModelV2,
                                oldDMConfiguration: OWSDisappearingMessagesConfiguration,
                                newDMConfiguration: OWSDisappearingMessagesConfiguration,
                                transaction: SDSAnyReadTransaction) throws {
-        guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
-            throw OWSAssertionError("Invalid oldGroupModel.")
-        }
-        guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
-            throw OWSAssertionError("Invalid newGroupModel.")
-        }
         guard groupId == oldGroupModel.groupId else {
             throw OWSAssertionError("Mismatched groupId.")
         }
@@ -132,14 +120,14 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         if oldGroupModel.groupAvatarData != newGroupModel.groupAvatarData {
-            let hasAvatarUrlPath = newGroupModel.groupAvatarUrlPath != nil
+            let hasAvatarUrlPath = newGroupModel.avatarUrlPath != nil
             let hasAvatarData = newGroupModel.groupAvatarData != nil
             guard hasAvatarUrlPath == hasAvatarData else {
                 throw OWSAssertionError("hasAvatarUrlPath: \(hasAvatarData) != hasAvatarData.")
             }
 
             setAvatar(avatarData: newGroupModel.groupAvatarData,
-                      avatarUrlPath: newGroupModel.groupAvatarUrlPath)
+                      avatarUrlPath: newGroupModel.avatarUrlPath)
         }
 
         let oldGroupMembership = oldGroupModel.groupMembership
@@ -174,7 +162,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         // GroupsV2 TODO: Calculate membersToInvite.
         // Don't include already-invited members.
-        // Persist list of invited members on TSGroupModel.
+        // Persist list of invited members on TSGroupModelV2.
 
         let oldMemberUuids = Set(oldGroupMembership.nonPendingMembers.compactMap { $0.uuid })
         let newMemberUuids = Set(newGroupMembership.nonPendingMembers.compactMap { $0.uuid })
@@ -189,8 +177,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             changeRoleForMember(uuid, role: role)
         }
 
-        let oldAccess = oldGroupModel.groupAccess
-        let newAccess = newGroupModel.groupAccess
+        let oldAccess = oldGroupModel.access
+        let newAccess = newGroupModel.access
         if oldAccess.members != newAccess.members {
             self.accessForMembers = newAccess.members
         }
@@ -286,7 +274,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     // Given the "current" group state, build a change proto that
     // reflects the elements of the "original intent" that are still
     // necessary to perform.
-    public func buildGroupChangeProto(currentGroupModel: TSGroupModel,
+    public func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
                                       currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> {
         guard groupId == currentGroupModel.groupId else {
             return Promise(error: OWSAssertionError("Mismatched groupId."))
@@ -345,13 +333,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     //
     // Essentially, our strategy is to "apply any changes that still make sense".  If no
     // changes do, we throw GroupsV2Error.redundantChange.
-    private func buildGroupChangeProto(currentGroupModel: TSGroupModel,
+    private func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
                                        currentDisappearingMessageToken: DisappearingMessageToken,
                                        profileKeyCredentialMap: ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions {
-        guard let currentGroupModel = currentGroupModel as? TSGroupModelV2 else {
-            throw OWSAssertionError("Invalid currentGroupModel.")
-        }
-        let groupV2Params = try GroupV2Params(groupModel: currentGroupModel)
+        let groupV2Params = try currentGroupModel.groupV2Params()
 
         let actionsBuilder = GroupsProtoGroupChangeActions.builder()
         guard let localUuid = tsAccountManager.localUuid else {
@@ -359,7 +344,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
         let localAddress = SignalServiceAddress(uuid: localUuid)
 
-        let oldVersion = currentGroupModel.groupV2Revision
+        let oldVersion = currentGroupModel.revision
         let newVersion = oldVersion + 1
         Logger.verbose("Version: \(oldVersion) -> \(newVersion)")
         actionsBuilder.setVersion(newVersion)
@@ -376,7 +361,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         if shouldUpdateAvatar,
-            newAvatarUrlPath != currentGroupModel.groupAvatarUrlPath {
+            newAvatarUrlPath != currentGroupModel.avatarUrlPath {
             let actionBuilder = GroupsProtoGroupChangeActionsModifyAvatarAction.builder()
             if let avatarUrlPath = newAvatarUrlPath {
                 actionBuilder.setAvatar(avatarUrlPath)
@@ -467,7 +452,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             didChange = true
         }
 
-        let currentAccess = currentGroupModel.groupAccess
+        let currentAccess = currentGroupModel.access
         if let access = self.accessForMembers {
             if currentAccess.members != access {
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.builder()

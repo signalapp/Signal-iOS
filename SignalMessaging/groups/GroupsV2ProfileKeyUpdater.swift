@@ -240,8 +240,11 @@ class GroupsV2ProfileKeyUpdater {
             }
         }.then(on: .global()) { (groupThread: TSGroupThread) throws -> Promise<TSGroupThread> in
             // Get latest group state from service and verify that this update is still necessary.
-            return firstly {
-                self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupThread.groupModel)
+            return firstly { () throws -> Promise<GroupV2Snapshot> in
+                guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                    throw OWSAssertionError("Invalid group model.")
+                }
+                return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupThread in
                 guard groupV2Snapshot.groupMembership.isNonPendingMember(localAddress) else {
                     // We're not a full member, no need to update profile key.
@@ -258,10 +261,12 @@ class GroupsV2ProfileKeyUpdater {
                 return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
             }.map(on: .global()) { () throws -> GroupsV2ChangeSet in
                 let groupId = groupThread.groupModel.groupId
-                guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
-                    owsFailDebug("Missing groupSecretParamsData.")
+
+                guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                    owsFailDebug("Invalid group model.")
                     throw GroupsV2Error.shouldDiscard
                 }
+                let groupSecretParamsData = groupModel.secretParamsData
                 let changeSet = GroupsV2ChangeSetImpl(groupId: groupId,
                                                       groupSecretParamsData: groupSecretParamsData)
                 changeSet.setShouldUpdateLocalProfileKey()

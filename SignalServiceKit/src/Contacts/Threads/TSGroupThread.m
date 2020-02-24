@@ -178,12 +178,23 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     BOOL didAvatarChange = ![NSObject isNullableObject:groupModel.groupAvatarData
                                                equalTo:self.groupModel.groupAvatarData];
 
-    [self anyUpdateGroupThreadWithTransaction:transaction
-                                        block:^(TSGroupThread *thread) {
-                                            OWSAssertDebug(
-                                                thread.groupModel.groupV2Revision <= groupModel.groupV2Revision);
-                                            thread.groupModel = [groupModel copy];
-                                        }];
+    [self
+        anyUpdateGroupThreadWithTransaction:transaction
+                                      block:^(TSGroupThread *thread) {
+                                          if ([thread.groupModel isKindOfClass:TSGroupModelV2.class] ||
+                                              [groupModel isKindOfClass:TSGroupModelV2.class]) {
+                                              if (![thread.groupModel isKindOfClass:TSGroupModelV2.class]
+                                                  || ![groupModel isKindOfClass:TSGroupModelV2.class]) {
+                                                  OWSFailDebug(@"Invalid group model.");
+                                              } else {
+                                                  TSGroupModelV2 *oldGroupModelV2 = (TSGroupModelV2 *)thread.groupModel;
+                                                  TSGroupModelV2 *newGroupModelV2 = (TSGroupModelV2 *)groupModel;
+                                                  OWSAssertDebug(oldGroupModelV2.revision <= newGroupModelV2.revision);
+                                              }
+                                          }
+
+                                          thread.groupModel = [groupModel copy];
+                                      }];
 
     if (didAvatarChange) {
         [transaction addAsyncCompletion:^{

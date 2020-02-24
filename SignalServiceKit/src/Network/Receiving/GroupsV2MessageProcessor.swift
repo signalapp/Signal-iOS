@@ -333,8 +333,12 @@ class IncomingGroupsV2MessageQueue: NSObject {
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             return false
         }
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid group model.")
+            return false
+        }
         let messageRevision = groupContext.revision
-        let modelRevision = groupThread.groupModel.groupV2Revision
+        let modelRevision = groupModel.revision
         if messageRevision <= modelRevision {
             return true
         }
@@ -541,9 +545,8 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 // service.
                 return resolver.fulfill(.failureShouldFailoverToService)
             }
-            let oldGroupModel = groupThread.groupModel
-            guard oldGroupModel.groupsVersion == .V2 else {
-                owsFailDebug("Invalid groupsVersion.")
+            guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                owsFailDebug("Invalid group model.")
                 return resolver.fulfill(.failureShouldDiscard)
             }
             guard groupContext.hasRevision else {
@@ -551,13 +554,13 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 return resolver.fulfill(.failureShouldDiscard)
             }
             let contextRevision = groupContext.revision
-            guard contextRevision > oldGroupModel.groupV2Revision else {
+            guard contextRevision > oldGroupModel.revision else {
                 // Group is already updated.
                 // No need to apply embedded change from the group context; it is obsolete.
                 // This can happen due to races.
                 return resolver.fulfill(.successShouldProcess)
             }
-            guard contextRevision == oldGroupModel.groupV2Revision + 1 else {
+            guard contextRevision == oldGroupModel.revision + 1 else {
                 // We can only apply embedded changes if we're behind exactly
                 // one revision.
                 return resolver.fulfill(.failureShouldFailoverToService)
@@ -576,23 +579,22 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 return try self.groupsV2.parseAndVerifyChangeActionsProto(changeActionsProtoData,
                                                                           ignoreSignature: false)
             }.then(on: .global()) { (changeActionsProto: GroupsProtoGroupChangeActions) throws -> Promise<TSGroupThread> in
-                guard let groupSecretParamsData = oldGroupModel.groupSecretParamsData else {
-                    throw OWSAssertionError("Missing groupSecretParamsData.")
-                }
                 // We need to verify the signatures because these protos came from
                 // another client, not the service.
                 return try self.groupsV2.updateGroupWithChangeActions(groupId: oldGroupModel.groupId,
                                                                       changeActionsProto: changeActionsProto,
                                                                       ignoreSignature: false,
-                                                                      groupSecretParamsData: groupSecretParamsData)
+                                                                      groupSecretParamsData: oldGroupModel.secretParamsData)
             }.map(on: .global()) { (updatedGroupThread: TSGroupThread) throws -> Void in
-                let updatedGroupModel = updatedGroupThread.groupModel
-
-                guard updatedGroupModel.groupV2Revision >= contextRevision else {
+                guard let updatedGroupModel = updatedGroupThread.groupModel as? TSGroupModelV2 else {
+                    owsFailDebug("Invalid group model.")
+                    return resolver.fulfill(.failureShouldFailoverToService)
+                }
+                guard updatedGroupModel.revision >= contextRevision else {
                     owsFailDebug("Invalid revision.")
                     return resolver.fulfill(.failureShouldFailoverToService)
                 }
-                guard updatedGroupModel.groupV2Revision == contextRevision else {
+                guard updatedGroupModel.revision == contextRevision else {
                     // We expect the embedded changes to update us to the target
                     // revision.  If we update past that, assert but proceed in production.
                     owsFailDebug("Unexpected revision.")

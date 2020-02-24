@@ -190,7 +190,12 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
                 uint32_t revision = groupContextV2.revision;
-                if (revision > groupThread.groupModel.groupV2Revision) {
+                if (![groupThread.groupModel isKindOfClass:TSGroupModelV2.class]) {
+                    OWSFailDebug(@"Invalid group model.");
+                    return nil;
+                }
+                TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
+                if (revision > groupModel.revision) {
                     OWSFailDebug(@"Unexpected revision.");
                     return nil;
                 }

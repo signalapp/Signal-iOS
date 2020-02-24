@@ -108,17 +108,17 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - Create Group
 
     @objc
-    public func createNewGroupOnServiceObjc(groupModel: TSGroupModel) -> AnyPromise {
+    public func createNewGroupOnServiceObjc(groupModel: TSGroupModelV2) -> AnyPromise {
         return AnyPromise(createNewGroupOnService(groupModel: groupModel))
     }
 
-    public func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void> {
+    public func createNewGroupOnService(groupModel: TSGroupModelV2) -> Promise<Void> {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise<Void>(error: OWSAssertionError("Missing localUuid."))
         }
         let groupV2Params: GroupV2Params
         do {
-            groupV2Params = try GroupV2Params(groupModel: groupModel)
+            groupV2Params = try groupModel.groupV2Params()
         } catch {
             return Promise<Void>(error: error)
         }
@@ -198,8 +198,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 }
                 let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
                 return (groupThread, dmConfiguration.asToken)
-            }.then(on: DispatchQueue.global()) { (thread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> in
-                return changeSet.buildGroupChangeProto(currentGroupModel: thread.groupModel,
+            }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> in
+                guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                    throw OWSAssertionError("Invalid group model.")
+                }
+                return changeSet.buildGroupChangeProto(currentGroupModel: groupModel,
                                                        currentDisappearingMessageToken: disappearingMessageToken)
             }.map(on: DispatchQueue.global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> NSURLRequest in
                 return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
@@ -360,22 +363,12 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Fetch Current Group State
 
-    public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot> {
-        guard groupModel.groupsVersion == .V2 else {
-            return Promise(error: OWSAssertionError("Invalid groupsVersion."))
-        }
-        guard let groupSecretParamsData = groupModel.groupSecretParamsData else {
-            return Promise(error: OWSAssertionError("Missing groupSecretParamsData."))
-        }
-
+    public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) -> Promise<GroupV2Snapshot> {
         // Collect the avatar state to avoid an unnecessary download in the
         // case where we've just created this group but not yet inserted it
         // into the database.
-        var justUploadedAvatars: GroupV2DownloadedAvatars?
-        if let groupModel = groupModel as? TSGroupModelV2 {
-            justUploadedAvatars = GroupV2DownloadedAvatars.from(groupModel: groupModel)
-        }
-        return self.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData,
+        let justUploadedAvatars = GroupV2DownloadedAvatars.from(groupModel: groupModel)
+        return self.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupModel.secretParamsData,
                                                 justUploadedAvatars: justUploadedAvatars)
     }
 
@@ -466,10 +459,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                         // This probably isn't an error and will be handled upstream.
                         throw GroupsV2Error.groupNotInDatabase
                     }
-                    guard groupThread.groupModel.groupsVersion == .V2 else {
-                        throw OWSAssertionError("Invalid groupsVersion.")
+                    guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                        throw OWSAssertionError("Invalid group model.")
                     }
-                    return groupThread.groupModel.groupV2Revision
+                    return groupModel.revision
                 }
 
                 return try StorageService.buildFetchGroupChangeActionsRequest(groupV2Params: groupV2Params,
@@ -597,14 +590,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Accept Invites
 
-    public func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+    public func acceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
-            let groupId = groupThread.groupModel.groupId
-            guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
-                throw OWSAssertionError("Missing groupSecretParamsData.")
-            }
-            let changeSet = GroupsV2ChangeSetImpl(groupId: groupId,
-                                                  groupSecretParamsData: groupSecretParamsData)
+            let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,
+                                                  groupSecretParamsData: groupModel.secretParamsData)
             changeSet.setShouldAcceptInvite()
             return changeSet
         }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
@@ -614,14 +603,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Leave Group / Decline Invite
 
-    public func leaveGroupV2OrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+    public func leaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
-            let groupId = groupThread.groupModel.groupId
-            guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
-                throw OWSAssertionError("Missing groupSecretParamsData.")
-            }
-            let changeSet = GroupsV2ChangeSetImpl(groupId: groupId,
-                                                  groupSecretParamsData: groupSecretParamsData)
+            let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,
+                                                  groupSecretParamsData: groupModel.secretParamsData)
             changeSet.setShouldLeaveGroupDeclineInvite()
             return changeSet
         }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
@@ -650,15 +635,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Disappearing Messages
 
-    public func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
+    public func updateDisappearingMessageStateOnService(groupModel: TSGroupModelV2,
                                                         disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
-            let groupId = groupThread.groupModel.groupId
-            guard let groupSecretParamsData = groupThread.groupModel.groupSecretParamsData else {
-                throw OWSAssertionError("Missing groupSecretParamsData.")
-            }
-            let changeSet = GroupsV2ChangeSetImpl(groupId: groupId,
-                                                  groupSecretParamsData: groupSecretParamsData)
+            let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,
+                                                  groupSecretParamsData: groupModel.secretParamsData)
             changeSet.setNewDisappearingMessageToken(disappearingMessageToken)
             return changeSet
         }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
@@ -1050,8 +1031,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Change Set
 
-    public func buildChangeSet(oldGroupModel: TSGroupModel,
-                               newGroupModel: TSGroupModel,
+    public func buildChangeSet(oldGroupModel: TSGroupModelV2,
+                               newGroupModel: TSGroupModelV2,
                                oldDMConfiguration: OWSDisappearingMessagesConfiguration,
                                newDMConfiguration: OWSDisappearingMessagesConfiguration,
                                transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet {
@@ -1066,11 +1047,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Protos
 
-    public func masterKeyData(forGroupModel groupModel: TSGroupModel) throws -> Data {
+    public func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data {
         return try GroupsV2Protos.masterKeyData(forGroupModel: groupModel)
     }
 
-    public func buildGroupContextV2Proto(groupModel: TSGroupModel,
+    public func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                          changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
         return try GroupsV2Protos.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: changeActionsProtoData)
     }
@@ -1135,7 +1116,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     }
 
     public func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool {
-        return masterKeyData.count == GroupMasterKey.SIZE
+        // GroupsV2 TODO: Use constant from zkgroup once the
+        // production version of the library is available.
+        // return masterKeyData.count == GroupMasterKey.SIZE
+        return masterKeyData.count == 32
     }
 
     // MARK: - Utils

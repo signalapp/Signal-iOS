@@ -1266,8 +1266,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     OWSAssertDebug(groupThread);
     OWSAssertDebug(transaction);
 
-    TSGroupModel *groupModel = groupThread.groupModel;
-    OWSAssertDebug(groupModel.groupsVersion == GroupsVersionV2);
+    if (![groupThread.groupModel isKindOfClass:[TSGroupModelV2 class]]) {
+        OWSFailDebug(@"Invalid group model.");
+        return OutgoingGroupProtoResult_Error;
+    }
+    TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
 
     NSError *error;
     SSKProtoGroupContextV2 *_Nullable groupContextV2 =

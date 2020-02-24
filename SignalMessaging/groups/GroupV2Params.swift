@@ -12,13 +12,6 @@ public struct GroupV2Params {
     let groupPublicParams: GroupPublicParams
     let groupPublicParamsData: Data
 
-    public init(groupModel: TSGroupModel) throws {
-        guard let groupSecretParamsData = groupModel.groupSecretParamsData else {
-            throw OWSAssertionError("Missing groupSecretParamsData.")
-        }
-        try self.init(groupSecretParamsData: groupSecretParamsData)
-    }
-
     public init(groupSecretParamsData: Data) throws {
         self.groupSecretParamsData = groupSecretParamsData
         let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
@@ -26,6 +19,14 @@ public struct GroupV2Params {
         let groupPublicParams = try groupSecretParams.getPublicParams()
         self.groupPublicParams = groupPublicParams
         self.groupPublicParamsData = groupPublicParams.serialize().asData
+    }
+}
+
+// MARK: -
+
+public extension TSGroupModelV2 {
+    func groupV2Params() throws -> GroupV2Params {
+        return try GroupV2Params(groupSecretParamsData: secretParamsData)
     }
 }
 
