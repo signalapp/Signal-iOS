@@ -2,6 +2,7 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
+@class AnyPromise;
 @class OWSAES256Key;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
@@ -71,6 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
                               transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)fetchAndUpdateLocalUsersProfile;
+
+- (AnyPromise *)fetchLocalUsersProfilePromise;
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)address;
 

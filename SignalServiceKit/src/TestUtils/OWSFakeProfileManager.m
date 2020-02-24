@@ -190,6 +190,12 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
+- (AnyPromise *)fetchLocalUsersProfilePromise
+{
+    // Do nothing.
+    return [AnyPromise promiseWithValue:nil];
+}
+
 - (void)updateProfileForAddress:(nonnull SignalServiceAddress *)address
 {
     // Do nothing.
