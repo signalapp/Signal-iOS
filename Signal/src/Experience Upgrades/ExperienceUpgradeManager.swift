@@ -35,25 +35,29 @@ class ExperienceUpgradeManager: NSObject {
         // we will display the splash. If there is only a megaphone we will
         // render it for as long as the upgrade is active.
 
+        let didPresentView: Bool
         if (hasMegaphone && !hasSplash) || (hasMegaphone && next.daysSinceFirstViewed < splashStartDay) {
             let megaphone = self.megaphone(forExperienceUpgrade: next, fromViewController: fromViewController)
             megaphone?.present(fromViewController: fromViewController)
             lastPresented = megaphone
-        } else if let splash = splash(forExperienceUpgrade: next) {
+            didPresentView = true
+        } else if hasSplash, let splash = splash(forExperienceUpgrade: next) {
             fromViewController.presentFormSheet(OWSNavigationController(rootViewController: splash), animated: true)
             lastPresented = splash
+            didPresentView = true
         } else {
-            owsFailDebug("no megaphone or splash for experience upgrade! \(next.id as Optional)")
-            return false
+            Logger.info("no megaphone or splash needed for experience upgrade: \(next.id as Optional)")
+            didPresentView = false
         }
 
-        // Track that we've successfully presented this experience upgrade once.
+        // Track that we've successfully presented this experience upgrade once, or that it was not
+        // needed to be presented.
         // If it was already marked as viewed, this will do nothing.
         databaseStorage.write { transaction in
             ExperienceUpgradeFinder.markAsViewed(experienceUpgrade: next, transaction: transaction.unwrapGrdbWrite)
         }
 
-        return true
+        return didPresentView
     }
 
     // MARK: - Experience Specific Helpers
