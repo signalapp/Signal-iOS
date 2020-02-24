@@ -27,7 +27,7 @@ public final class Colors : NSObject {
     @objc public static var unimportantButtonBackground = UIColor(hex: 0x323232)
     @objc public static var buttonBackground = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x1B1B1B)
     @objc public static var settingButtonSelected = isLightMode ? UIColor(hex: 0xDFDFDF) : UIColor(hex: 0x0C0C0C)
-    @objc public static var modalBackground = UIColor(hex: 0x101011)
+    @objc public static var modalBackground = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x101011)
     @objc public static var modalBorder = UIColor(hex: 0x212121)
     @objc public static var fakeChatBubbleBackground = isLightMode ? UIColor(hex: 0xFAFAFA) : UIColor(hex: 0x3F4146)
     @objc public static var fakeChatBubbleText = UIColor(hex: 0x000000)

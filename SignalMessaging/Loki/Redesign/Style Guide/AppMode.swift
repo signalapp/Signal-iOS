@@ -8,3 +8,7 @@ public enum AppMode {
 public var isLightMode: Bool {
     return AppMode.current == .light
 }
+
+public var isDarkMode: Bool {
+    return AppMode.current == .dark
+}
