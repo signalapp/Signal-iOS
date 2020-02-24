@@ -1020,8 +1020,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           messageType:TSInfoMessageTypeGroupUpdate
                                                                         customMessage:updateMessage];
                 [infoMessage saveWithTransaction:transaction];
-                // Loki: if there is a update of group members, we should establish a session with the new members.
-                [self establishSessionsWithMembersIfNeeded:newGroupModel.groupMemberIds forThread:newGroupThread transaction:transaction];
             } else if (transcript.isGroupQuit) {
                 TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:transcript.dataMessage.group.id groupType:closedGroup transaction:transaction];
                 [groupThread leaveGroupWithTransaction:transaction];
@@ -1112,9 +1110,17 @@ NS_ASSUME_NONNULL_BEGIN
             GroupParser *parser = [[GroupParser alloc] initWithData:data];
             NSArray<TSGroupModel *> *groupModels = [parser parseGroupModels];
             for (TSGroupModel *groupModel in groupModels) {
-                TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-                [thread saveWithTransaction:transaction];
-                [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
+                TSGroupThread *thread = [TSGroupThread threadWithGroupId:groupModel.groupId transaction:transaction];
+                if (thread == nil) {
+                    thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                    [thread saveWithTransaction:transaction];
+                    [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
+                    TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp
+                                                                                 inThread:thread
+                                                                              messageType:TSInfoMessageTypeGroupUpdate
+                                                                            customMessage:@"You have joined the group."];
+                    [infoMessage saveWithTransaction:transaction];
+                }
             }
         }
     } else {

@@ -289,11 +289,12 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             [friends addObject:[[SignalAccount alloc] initWithRecipientId:hexEncodedPublicKey]];
         }
     }];
+    [friends addObject:[[SignalAccount alloc] initWithRecipientId:self.tsAccountManager.localNumber]];
     NSMutableArray<SignalAccount *> *signalAccounts = @[].mutableCopy;
     for (SignalAccount *contact in friends) {
         [signalAccounts addObject:contact];
-        if (signalAccounts.count >= 2) {
-            [promises addObject:[self syncContactsForSignalAccounts:signalAccounts]];
+        if (signalAccounts.count >= 3) {
+            [promises addObject:[self syncContactsForSignalAccounts:[signalAccounts copy]]];
             [signalAccounts removeAllObjects];
         }
     }
@@ -327,7 +328,15 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 {
     NSMutableArray<TSGroupThread *> *groupThreads = @[].mutableCopy;
     NSMutableArray<AnyPromise *> *promises = @[].mutableCopy;
-    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(TSGroupThread *thread, BOOL *stop) {
+    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
+        if (![obj isKindOfClass:[TSGroupThread class]]) {
+            if (![obj isKindOfClass:[TSContactThread class]]) {
+                OWSLogWarn(@"Ignoring non group thread in thread collection: %@", obj);
+                
+            }
+            return;
+        }
+        TSGroupThread *thread = (TSGroupThread *)obj;
         if (thread.groupModel.groupType == closedGroup && thread.shouldThreadBeVisible && !thread.isForceHidden) {
             [groupThreads addObject:thread];
         }
