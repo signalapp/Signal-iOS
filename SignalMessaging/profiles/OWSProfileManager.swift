@@ -289,7 +289,7 @@ extension OWSProfileManager {
 
         attempt.userProfile.updateWith(givenName: attempt.update.profileGivenName,
                                    familyName: attempt.update.profileFamilyName,
-                                   avatarUrlPath: nil,
+                                   avatarUrlPath: attempt.avatarUrlPath,
                                    avatarFileName: attempt.avatarFilename,
                                    transaction: transaction,
                                    completion: nil)

@@ -522,6 +522,9 @@ public class StorageServiceProtoWriteOperation: NSObject {
         }
         builder.setInsertItem(insertItem)
         builder.setDeleteKey(deleteKey)
+        if hasDeleteAll {
+            builder.setDeleteAll(deleteAll)
+        }
         return builder
     }
 
@@ -569,6 +572,11 @@ public class StorageServiceProtoWriteOperation: NSObject {
         }
 
         @objc
+        public func setDeleteAll(_ valueParam: Bool) {
+            proto.deleteAll = valueParam
+        }
+
+        @objc
         public func build() throws -> StorageServiceProtoWriteOperation {
             return try StorageServiceProtoWriteOperation.parseProto(proto)
         }
@@ -590,6 +598,15 @@ public class StorageServiceProtoWriteOperation: NSObject {
     @objc
     public var deleteKey: [Data] {
         return proto.deleteKey
+    }
+
+    @objc
+    public var deleteAll: Bool {
+        return proto.deleteAll
+    }
+    @objc
+    public var hasDeleteAll: Bool {
+        return proto.hasDeleteAll
     }
 
     private init(proto: StorageServiceProtos_WriteOperation,

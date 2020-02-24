@@ -247,20 +247,24 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         navigationController.pushViewController(vc, animated: true)
     }
 
+    var hasEverGuessedWrongPIN = false
     private func updateValidationWarnings() {
         AssertIsOnMainThread()
 
+        if attemptState.isInvalid {
+            hasEverGuessedWrongPIN = true
+        }
         pinStrokeNormal.isHidden = attemptState.isInvalid
         pinStrokeError.isHidden = !attemptState.isInvalid
         validationWarningLabel.isHidden = !attemptState.isInvalid
-        forgotPinLink.isHidden = !attemptState.isInvalid
+        forgotPinLink.isHidden = !hasEverGuessedWrongPIN
 
         switch attemptState {
         case .exhausted:
             validationWarningLabel.text = NSLocalizedString("ONBOARDING_2FA_ATTEMPTS_EXHAUSTED",
                                                             comment: "Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view.")
         case .invalid(let remainingAttempts):
-            guard let remaining = remainingAttempts else {
+            guard let remaining = remainingAttempts, remaining <= 5 else {
                 validationWarningLabel.text = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN",
                                                                 comment: "Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view.")
                 break

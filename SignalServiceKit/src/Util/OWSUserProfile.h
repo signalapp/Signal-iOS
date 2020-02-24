@@ -95,15 +95,18 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:isUui
                       completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey
+         wasLocallyInitiated:(BOOL)wasLocallyInitiated
                  transaction:(SDSAnyWriteTransaction *)transaction
                   completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion;
 

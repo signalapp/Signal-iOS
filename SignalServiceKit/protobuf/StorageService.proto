@@ -36,6 +36,7 @@ message WriteOperation {
   optional StorageManifest manifest   = 1;
   repeated StorageItem     insertItem = 2;
   repeated bytes           deleteKey  = 3;
+  optional bool            deleteAll  = 4;
 }
 
 message StorageRecord {
