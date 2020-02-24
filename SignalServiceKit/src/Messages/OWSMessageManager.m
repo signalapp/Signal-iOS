@@ -1056,6 +1056,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        groupSecretParamsData:nil
                                            shouldSendMessage:false
                                     groupUpdateSourceAddress:groupUpdateSourceAddress
+                               createInfoMessageForNewGroups:YES
                                                  transaction:transaction
                                                        error:&error];
             if (error != nil || result == nil) {

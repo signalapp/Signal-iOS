@@ -501,7 +501,7 @@ public class GroupManager: NSObject {
     //
     // "Existing" groups have already been created, we just need to make sure they're in the database.
 
-    @objc(upsertExistingGroupWithMembers:administrators:name:avatarData:groupId:groupsVersion:groupSecretParamsData:shouldSendMessage:groupUpdateSourceAddress:transaction:error:)
+    @objc(upsertExistingGroupWithMembers:administrators:name:avatarData:groupId:groupsVersion:groupSecretParamsData:shouldSendMessage:groupUpdateSourceAddress:createInfoMessageForNewGroups:transaction:error:)
     public static func upsertExistingGroup(members: [SignalServiceAddress],
                                            administrators: [SignalServiceAddress],
                                            name: String? = nil,
@@ -511,6 +511,7 @@ public class GroupManager: NSObject {
                                            groupSecretParamsData: Data? = nil,
                                            shouldSendMessage: Bool,
                                            groupUpdateSourceAddress: SignalServiceAddress?,
+                                           createInfoMessageForNewGroups: Bool = true,
                                            transaction: SDSAnyWriteTransaction) throws -> EnsureGroupResult {
 
         // GroupsV2 TODO: Audit all callers too see if they should include local uuid.
@@ -542,16 +543,18 @@ public class GroupManager: NSObject {
             let thread = TSGroupThread(groupModelPrivate: groupModel)
             thread.anyInsert(transaction: transaction)
 
-            var userInfo: [InfoMessageUserInfoKey: Any] = [
-                .newGroupModel: groupModel
-            ]
-            if let groupUpdateSourceAddress = groupUpdateSourceAddress {
-                userInfo[.groupUpdateSourceAddress] = groupUpdateSourceAddress
+            if createInfoMessageForNewGroups {
+                var userInfo: [InfoMessageUserInfoKey: Any] = [
+                    .newGroupModel: groupModel
+                ]
+                if let groupUpdateSourceAddress = groupUpdateSourceAddress {
+                    userInfo[.groupUpdateSourceAddress] = groupUpdateSourceAddress
+                }
+                let infoMessage = TSInfoMessage(thread: thread,
+                                                messageType: .typeGroupUpdate,
+                                                infoMessageUserInfo: userInfo)
+                infoMessage.anyInsert(transaction: transaction)
             }
-            let infoMessage = TSInfoMessage(thread: thread,
-                                            messageType: .typeGroupUpdate,
-                                            infoMessageUserInfo: userInfo)
-            infoMessage.anyInsert(transaction: transaction)
 
             return EnsureGroupResult(action: .inserted, thread: thread)
         }
