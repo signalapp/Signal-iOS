@@ -5356,20 +5356,23 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    NSString *actionSheetTitle;
+    NSString *actionSheetTitleFormat;
     NSString *actionSheetMessage;
     if (self.thread.isGroupThread) {
-        actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_GROUP_TITLE",
-            @"Action sheet title to confirm blocking a group via a message request.");
+        actionSheetTitleFormat = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT",
+            @"Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}");
         actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
             @"Action sheet message to confirm blocking a group via a message request.");
     } else {
-        actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE",
-            @"Action sheet title to confirm blocking a conversation via a message request.");
+        actionSheetTitleFormat = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT",
+            @"Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone "
+            @"number}}");
         actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
             @"Action sheet message to confirm blocking a conversation via a message request.");
     }
 
+    NSString *threadName = [self.contactsManager displayNameForThreadWithSneakyTransaction:self.thread];
+    NSString *actionSheetTitle = [NSString stringWithFormat:actionSheetTitleFormat, threadName];
     ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:actionSheetTitle
                                                                               message:actionSheetMessage];
 
@@ -5411,14 +5414,21 @@ typedef enum : NSUInteger {
     NSString *actionSheetTitle;
     NSString *actionSheetMessage;
     NSString *actionSheetAction;
-    if (self.thread.isGroupThread) {
-        actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_GROUP_TITLE",
+
+    BOOL isMemberOfGroup = NO;
+    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        isMemberOfGroup = groupThread.isLocalUserInGroup;
+    }
+
+    if (isMemberOfGroup) {
+        actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE",
             @"Action sheet title to confirm deleting a group via a message request.");
-        actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_GROUP_MESSAGE",
+        actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE",
             @"Action sheet message to confirm deleting a group via a message request.");
-        actionSheetAction = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_GROUP_ACTION",
+        actionSheetAction = NSLocalizedString(@"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION",
             @"Action sheet action to confirm deleting a group via a message request.");
-    } else {
+    } else { // either 1:1 thread, or a group of which I'm not a member
         actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE",
             @"Action sheet title to confirm deleting a conversation via a message request.");
         actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE",
