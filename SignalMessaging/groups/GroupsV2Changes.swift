@@ -51,7 +51,6 @@ public class GroupsV2Changes {
                                         changeActionsProto: GroupsProtoGroupChangeActions,
                                         transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
         let oldGroupModel = groupThread.groupModel
-        let groupId = oldGroupModel.groupId
         let groupsVersion = oldGroupModel.groupsVersion
         guard groupsVersion == .V2 else {
             throw OWSAssertionError("Invalid groupsVersion: \(groupsVersion).")
@@ -261,7 +260,6 @@ public class GroupsV2Changes {
             if let disappearingMessagesTimerEncrypted = action.timer {
                 let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
                 let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
-                let durationSeconds = disappearingMessagesProto.duration
                 newDisappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: disappearingMessagesProto.duration)
             }
         }
@@ -283,17 +281,18 @@ public class GroupsV2Changes {
         let newGroupMembership = groupMembershipBuilder.build()
         let newGroupAccess = GroupAccess(members: newMembersAccess, attributes: newAttributesAccess)
         // GroupsV2 TODO: Avatar.
-        let avatarData: Data? = oldGroupModel.groupAvatarData
+        let newAvatarData: Data? = oldGroupModel.groupAvatarData
 
-        let newGroupModel = try GroupManager.buildGroupModel(groupId: groupId,
-                                                             name: newGroupName,
-                                                             avatarData: avatarData,
-                                                             groupMembership: newGroupMembership,
-                                                             groupAccess: newGroupAccess,
-                                                             groupsVersion: groupsVersion,
-                                                             groupV2Revision: newRevision,
-                                                             groupSecretParamsData: groupSecretParamsData,
-                                                             transaction: transaction)
+        var builder = oldGroupModel.asBuilder
+        builder.name = newGroupName
+        builder.avatarData = newAvatarData
+        builder.groupMembership = newGroupMembership
+        builder.groupAccess = newGroupAccess
+        builder.groupsVersion = groupsVersion
+        builder.groupV2Revision = newRevision
+        builder.groupSecretParamsData = groupSecretParamsData
+        let newGroupModel = try builder.build(transaction: transaction)
+
         return ChangedGroupModel(oldGroupModel: oldGroupModel,
                                  newGroupModel: newGroupModel,
                                  newDisappearingMessageToken: newDisappearingMessageToken,

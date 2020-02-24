@@ -19,10 +19,10 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVer
 typedef NS_CLOSED_ENUM(
     NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal = 0, TSGroupMemberRole_Administrator = 1 };
 
-// NOTE: This class is tightly coupled to GroupManager.
+// NOTE: This class is tightly coupled to TSGroupModelBuilder.
 //       If you modify this class - especially if you
 //       add any new properties - make sure to update
-//       GroupManager.buildGroupModel().
+//       TSGroupModelBuilder.
 @interface TSGroupModel : MTLModel
 
 // groupMembers includes administrators and normal members.

@@ -35,12 +35,11 @@ public extension UpdateGroupViewController {
                             newAvatarData: Data?,
                             v1Members: Set<SignalServiceAddress>) -> TSGroupModel {
         do {
-            let groupId = oldGroupModel.groupId
             return try databaseStorage.read { transaction in
-                let groupMembership: GroupMembership
+                let newGroupMembership: GroupMembership
                 switch oldGroupModel.groupsVersion {
                 case .V1:
-                    groupMembership = GroupMembership(v1Members: v1Members)
+                    newGroupMembership = GroupMembership(v1Members: v1Members)
                 case .V2:
                     // GroupsV2 TODO: This is a temporary implementation until we
                     // rewrite groups v2 to be aware of roles, access, kicking
@@ -59,19 +58,14 @@ public extension UpdateGroupViewController {
                     }
                     // GroupsV2 TODO: Remove members, change roles, etc. when
                     // UI supports pending members, kicking members, etc..
-                    groupMembership = groupMembershipBuilder.build()
+                    newGroupMembership = groupMembershipBuilder.build()
                 }
-                let groupsVersion = oldGroupModel.groupsVersion
-                return try GroupManager.buildGroupModel(groupId: groupId,
-                                                        name: newTitle,
-                                                        avatarData: newAvatarData,
-                                                        groupMembership: groupMembership,
-                                                        groupAccess: oldGroupModel.groupAccess,
-                                                        groupsVersion: groupsVersion,
-                                                        groupV2Revision: oldGroupModel.groupV2Revision,
-                                                        groupSecretParamsData: oldGroupModel.groupSecretParamsData,
-                                                        newGroupSeed: nil,
-                                                        transaction: transaction)
+
+                var builder = oldGroupModel.asBuilder
+                builder.name = newTitle
+                builder.avatarData = newAvatarData
+                builder.groupMembership = newGroupMembership
+                return try builder.build(transaction: transaction)
             }
         } catch {
             owsFailDebug("Error: \(error)")

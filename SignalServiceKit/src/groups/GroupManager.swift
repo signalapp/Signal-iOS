@@ -102,148 +102,23 @@ public class GroupManager: NSObject {
 
     // MARK: - Group Models
 
-    public static func buildGroupModel(groupId groupIdParam: Data?,
-                                       name nameParam: String?,
-                                       avatarData: Data?,
-                                       groupMembership: GroupMembership,
-                                       groupAccess: GroupAccess,
-                                       groupsVersion groupsVersionParam: GroupsVersion? = nil,
-                                       groupV2Revision: UInt32,
-                                       groupSecretParamsData groupSecretParamsDataParam: Data? = nil,
-                                       newGroupSeed newGroupSeedParam: NewGroupSeed? = nil,
-                                       transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
-
-        let newGroupSeed: NewGroupSeed
-        if let newGroupSeedParam = newGroupSeedParam {
-            newGroupSeed = newGroupSeedParam
-        } else {
-            newGroupSeed = NewGroupSeed()
-        }
-
-        let allUsers = groupMembership.allUsers
-        for recipientAddress in allUsers {
-            guard recipientAddress.isValid else {
-                throw OWSAssertionError("Invalid address.")
-            }
-        }
-        var name: String?
-        if let strippedName = nameParam?.stripped,
-            strippedName.count > 0 {
-            name = strippedName
-        }
-
-        let groupsVersion: GroupsVersion
-        if let groupsVersionParam = groupsVersionParam {
-            groupsVersion = groupsVersionParam
-        } else {
-            groupsVersion = self.groupsVersion(for: allUsers,
-                                               transaction: transaction)
-        }
-
-        let groupId: Data
-        if let groupIdParam = groupIdParam {
-            groupId = groupIdParam
-        } else {
-            switch groupsVersion {
-            case .V1:
-                groupId = newGroupSeed.groupIdV1
-            case .V2:
-                guard let groupIdV2 = newGroupSeed.groupIdV2 else {
-                    throw OWSAssertionError("Missing groupIdV2.")
-                }
-                groupId = groupIdV2
-            }
-        }
-        guard isValidGroupId(groupId, groupsVersion: groupsVersion) else {
-            throw OWSAssertionError("Invalid groupId.")
-        }
-
-        switch groupsVersion {
-        case .V1:
-            return TSGroupModel(groupId: groupId,
-                                name: name,
-                                avatarData: avatarData,
-                                members: Array(groupMembership.nonPendingMembers))
-        case .V2:
-            let groupSecretParamsData: Data
-            if let groupSecretParamsDataParam = groupSecretParamsDataParam {
-                groupSecretParamsData = groupSecretParamsDataParam
-            } else {
-                guard let groupSecretParamsDataParam = newGroupSeed.groupSecretParamsData else {
-                    throw OWSAssertionError("Missing groupSecretParamsData.")
-                }
-                groupSecretParamsData = groupSecretParamsDataParam
-            }
-
-            return TSGroupModelV2(groupId: groupId,
-                                  name: name,
-                                  avatarData: avatarData,
-                                  groupMembership: groupMembership,
-                                  groupAccess: groupAccess,
-                                  revision: groupV2Revision,
-                                  secretParamsData: groupSecretParamsData)
-        }
-    }
-
-    // Convert a group state proto received from the service
-    // into a group model.
-    public static func buildGroupModel(groupV2Snapshot: GroupV2Snapshot,
-                                       transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
-        let groupSecretParamsData = groupV2Snapshot.groupSecretParamsData
-        let groupId = try groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
-        let name: String = groupV2Snapshot.title
-        let groupMembership = groupV2Snapshot.groupMembership
-        let groupAccess = groupV2Snapshot.groupAccess
-        // GroupsV2 TODO: Avatar.
-        let avatarData: Data? = nil
-        let groupsVersion = GroupsVersion.V2
-        let revision = groupV2Snapshot.revision
-
-        return try buildGroupModel(groupId: groupId,
-                                   name: name,
-                                   avatarData: avatarData,
-                                   groupMembership: groupMembership,
-                                   groupAccess: groupAccess,
-                                   groupsVersion: groupsVersion,
-                                   groupV2Revision: revision,
-                                   groupSecretParamsData: groupSecretParamsData,
-                                   transaction: transaction)
-    }
-
     // This should only be used for certain legacy edge cases.
     @objc
     public static func fakeGroupModel(groupId: Data?,
                                       transaction: SDSAnyReadTransaction) -> TSGroupModel? {
         do {
-            let groupMembership = GroupMembership.empty
-            let groupAccess = GroupAccess.allAccess
-            return try buildGroupModel(groupId: groupId,
-                                       name: nil,
-                                       avatarData: nil,
-                                       groupMembership: groupMembership,
-                                       groupAccess: groupAccess,
-                                       groupsVersion: .V1,
-                                       groupV2Revision: 0,
-                                       groupSecretParamsData: nil,
-                                       transaction: transaction)
+            var builder = TSGroupModelBuilder()
+            builder.groupId = groupId
+            builder.groupsVersion = .V1
+            return try builder.build(transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
         }
     }
 
-    private static func groupsVersion(for members: Set<SignalServiceAddress>,
-                                      transaction: SDSAnyReadTransaction) -> GroupsVersion {
-
-        guard RemoteConfig.groupsV2CreateGroups else {
-            return .V1
-        }
-        let canUseV2 = self.canUseV2(for: members, transaction: transaction)
-        return canUseV2 ? defaultGroupsVersion : .V1
-    }
-
-    private static func canUseV2(for members: Set<SignalServiceAddress>,
-                                 transaction: SDSAnyReadTransaction) -> Bool {
+    public static func canUseV2(for members: Set<SignalServiceAddress>,
+                                transaction: SDSAnyReadTransaction) -> Bool {
 
         for recipientAddress in members {
             guard doesUserSupportGroupsV2(address: recipientAddress, transaction: transaction) else {
@@ -363,14 +238,14 @@ public class GroupManager: NSObject {
                     throw OWSAssertionError("Missing localAddress.")
                 }
 
-                return try self.buildGroupModel(groupId: groupId,
-                                                name: name,
-                                                avatarData: avatarData,
-                                                groupMembership: groupMembership,
-                                                groupAccess: groupAccess,
-                                                groupV2Revision: 0,
-                                                newGroupSeed: newGroupSeed,
-                                                transaction: transaction)
+                var builder = TSGroupModelBuilder()
+                builder.groupId = groupId
+                builder.name = name
+                builder.avatarData = avatarData
+                builder.groupMembership = groupMembership
+                builder.groupAccess = groupAccess
+                builder.newGroupSeed = newGroupSeed
+                return try builder.build(transaction: transaction)
             }
             return groupModel
         }.then(on: .global()) { (proposedGroupModel: TSGroupModel) -> Promise<TSGroupModel> in
@@ -384,7 +259,7 @@ public class GroupManager: NSObject {
                 self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModel)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) -> TSGroupModel in
                 let createdGroupModel = try self.databaseStorage.read { transaction in
-                    return try self.buildGroupModel(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
+                    return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
                 }
                 if proposedGroupModel != createdGroupModel {
                     Logger.verbose("proposedGroupModel: \(proposedGroupModel.debugDescription)")
@@ -592,14 +467,15 @@ public class GroupManager: NSObject {
         // GroupsV2 TODO: Let tests specify access levels.
         let groupAccess = GroupAccess.allAccess
         // Use buildGroupModel() to fill in defaults, like it was a new group.
-        let groupModel = try buildGroupModel(groupId: groupId,
-                                             name: name,
-                                             avatarData: avatarData,
-                                             groupMembership: groupMembership,
-                                             groupAccess: groupAccess,
-                                             groupsVersion: groupsVersion,
-                                             groupV2Revision: 0,
-                                             transaction: transaction)
+
+        var builder = TSGroupModelBuilder()
+        builder.groupId = groupId
+        builder.name = name
+        builder.avatarData = avatarData
+        builder.groupMembership = groupMembership
+        builder.groupAccess = groupAccess
+        builder.groupsVersion = groupsVersion
+        let groupModel = try builder.build(transaction: transaction)
 
         // Just create it in the database, don't create it on the service.
         //
@@ -654,15 +530,16 @@ public class GroupManager: NSObject {
                                                  groupUpdateSourceAddress: SignalServiceAddress?,
                                                  transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
-        let groupModel = try buildGroupModel(groupId: groupId,
-                                             name: name,
-                                             avatarData: avatarData,
-                                             groupMembership: groupMembership,
-                                             groupAccess: groupAccess,
-                                             groupsVersion: groupsVersion,
-                                             groupV2Revision: groupV2Revision,
-                                             groupSecretParamsData: groupSecretParamsData,
-                                             transaction: transaction)
+        var builder = TSGroupModelBuilder()
+        builder.groupId = groupId
+        builder.name = name
+        builder.avatarData = avatarData
+        builder.groupMembership = groupMembership
+        builder.groupAccess = groupAccess
+        builder.groupsVersion = groupsVersion
+        builder.groupV2Revision = groupV2Revision
+        builder.groupSecretParamsData = groupSecretParamsData
+        let groupModel = try builder.build(transaction: transaction)
 
         return try remoteUpsertExistingGroup(groupModel: groupModel,
                                              disappearingMessageToken: disappearingMessageToken,
@@ -898,15 +775,16 @@ public class GroupManager: NSObject {
         //                since we'll probably be updating the TSGroupThread's
         //                group models with one derived from the service.
         let newRevision = oldGroupModel.groupV2Revision + 1
-        let newGroupModel = try buildGroupModel(groupId: oldGroupModel.groupId,
-                                                name: name,
-                                                avatarData: avatarData,
-                                                groupMembership: groupMembership,
-                                                groupAccess: groupAccess,
-                                                groupsVersion: oldGroupModel.groupsVersion,
-                                                groupV2Revision: newRevision,
-                                                groupSecretParamsData: oldGroupModel.groupSecretParamsData,
-                                                transaction: transaction)
+        var builder = TSGroupModelBuilder()
+        builder.groupId = oldGroupModel.groupId
+        builder.name = name
+        builder.avatarData = avatarData
+        builder.groupMembership = groupMembership
+        builder.groupAccess = groupAccess
+        builder.groupsVersion = oldGroupModel.groupsVersion
+        builder.groupV2Revision = newRevision
+        builder.groupSecretParamsData = oldGroupModel.groupSecretParamsData
+        let newGroupModel = try builder.build(transaction: transaction)
         if oldGroupModel.isEqual(to: newGroupModel) {
             // Skip redundant update.
             throw GroupsV2Error.redundantChange
@@ -1028,8 +906,8 @@ public class GroupManager: NSObject {
     }
 
     private static func sendDisappearingMessagesConfigurationMessage(updateResult: UpdateDMConfigurationResult,
-                                                                       thread: TSThread,
-                                                                       transaction: SDSAnyWriteTransaction) {
+                                                                     thread: TSThread,
+                                                                     transaction: SDSAnyWriteTransaction) {
         guard updateResult.action == .updated else {
             // The update was redundant, don't send an update message.
             return
@@ -1090,17 +968,11 @@ public class GroupManager: NSObject {
             var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
             groupMembershipBuilder.remove(localAddress)
             let newGroupMembership = groupMembershipBuilder.build()
-            let groupAccess = oldGroupModel.groupAccess
-            let newGroupModel = try self.buildGroupModel(groupId: groupId,
-                                                         name: oldGroupModel.groupName,
-                                                         avatarData: oldGroupModel.groupAvatarData,
-                                                         groupMembership: newGroupMembership,
-                                                         groupAccess: groupAccess,
-                                                         groupsVersion: oldGroupModel.groupsVersion,
-                                                         groupV2Revision: oldGroupModel.groupV2Revision,
-                                                         groupSecretParamsData: nil,
-                                                         newGroupSeed: nil,
-                                                         transaction: transaction)
+
+            var builder = oldGroupModel.asBuilder
+            builder.groupMembership = newGroupMembership
+            let newGroupModel = try builder.build(transaction: transaction)
+
             let groupUpdateSourceAddress = localAddress
             let result = try self.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                           newDisappearingMessageToken: nil,

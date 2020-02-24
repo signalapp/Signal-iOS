@@ -21,10 +21,10 @@ public extension TSGroupModel {
 
 // Like TSGroupModel, TSGroupModelV2 is intended to be immutable.
 //
-// NOTE: This class is tightly coupled to GroupManager.
+// NOTE: This class is tightly coupled to TSGroupModelBuilder.
 //       If you modify this class - especially if you
 //       add any new properties - make sure to update
-//       GroupManager.buildGroupModel().
+//       TSGroupModelBuilder.
 @objc
 public class TSGroupModelV2: TSGroupModel {
 
