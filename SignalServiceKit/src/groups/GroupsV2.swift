@@ -54,6 +54,8 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
 
+    func tryToEnsureUuidsViaProfileFetch(for addresses: [SignalServiceAddress]) -> Promise<Void>
+
     func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot>
 
     func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
@@ -294,6 +296,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
     }
 
     public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void> {
+        owsFail("Not implemented.")
+    }
+
+    public func tryToEnsureUuidsViaProfileFetch(for addresses: [SignalServiceAddress]) -> Promise<Void> {
         owsFail("Not implemented.")
     }
 

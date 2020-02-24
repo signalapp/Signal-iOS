@@ -225,6 +225,8 @@ public class GroupManager: NSObject {
                 return Promise.value(groupMembership)
             }
             return firstly {
+                self.groupsV2.tryToEnsureUuidsViaProfileFetch(for: Array(groupMembership.allUsers))
+            }.map(on: .global()) { (_) -> Void in
                 self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allUsers))
             }.map(on: .global()) { (_) -> GroupMembership in
                 return groupMembership

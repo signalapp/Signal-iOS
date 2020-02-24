@@ -41,6 +41,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
     }
 
+    private var contactsUpdater: ContactsUpdater {
+        return SSKEnvironment.shared.contactsUpdater
+    }
+
     // MARK: -
 
     public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
@@ -871,6 +875,20 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                            fetchType: .versioned))
         }
         return when(fulfilled: promises).asVoid()
+    }
+
+    // MARK: - UUIDs
+
+    public func tryToEnsureUuidsViaProfileFetch(for addresses: [SignalServiceAddress]) -> Promise<Void> {
+        let phoneNumbersWithoutUuids = addresses.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
+        guard phoneNumbersWithoutUuids.count > 0 else {
+            return Promise.value(())
+        }
+
+        return firstly {
+            contactsUpdater.lookupIdentifiersPromise(phoneNumbers:
+                phoneNumbersWithoutUuids)
+        }.asVoid()
     }
 
     // MARK: - Auth Credentials
