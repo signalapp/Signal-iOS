@@ -215,6 +215,14 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
             transaction: transaction.asAnyRead
         ) else { return false }
 
+        if let messageRequestInteractionIdEpoch = SSKPreferences.messageRequestInteractionIdEpoch(transaction: transaction) {
+            guard thread.lastInteractionRowId > messageRequestInteractionIdEpoch else {
+                return false
+            }
+        } else {
+            owsFailDebug("messageRequestInteractionIdEpoch was unexpectedly nil though RemoteConfig.messageRequests was true")
+        }
+
         let interactionFinder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
 
         let hasSentMessages = interactionFinder.existsOutgoingMessage(transaction: transaction)
