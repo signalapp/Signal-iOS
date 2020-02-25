@@ -133,7 +133,7 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
             }
             recordPendingUpdates(updatedGroupV2MasterKeys: [ groupMasterKey ])
         } else {
-            recordPendingDeletions(deletedGroupV1Ids: [ groupModel.groupId ])
+            recordPendingUpdates(updatedGroupV1Ids: [ groupModel.groupId ])
         }
     }
 
@@ -209,6 +209,14 @@ class StorageServiceOperation: OWSOperation {
 
     public static var keyValueStore: SDSKeyValueStore {
         return SDSKeyValueStore(collection: "kOWSStorageServiceOperation_IdentifierMap")
+    }
+
+    private var groupsV2: GroupsV2 {
+        return SSKEnvironment.shared.groupsV2
+    }
+
+    private var groupV2Updates: GroupV2UpdatesSwift {
+        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
     }
 
     // MARK: -
@@ -627,10 +635,10 @@ class StorageServiceOperation: OWSOperation {
 
         let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: version)
 
-        let allKeys = accountIdentifierMap.map { $1.data } +
+        let allKeys = (accountIdentifierMap.map { $1.data } +
             groupV1IdentifierMap.map { $1.data } +
             groupV2IdentifierMap.map { $1.data } +
-            unknownIdentifiers.map { $0.data }
+            unknownIdentifiers.map { $0.data })
 
         // We must persist any unknown identifiers, as they are potentially associated with
         // valid records that this version of the app doesn't yet understand how to parse.
@@ -980,6 +988,18 @@ class StorageServiceOperation: OWSOperation {
                             // update the mapping
                             groupV2IdentifierMap[groupMasterKey] = item.identifier
 
+                            self.refreshGroupV2FromServiceIfNecessary(groupMasterKey: groupMasterKey,
+                                                                      transaction: transaction)
+
+                        case .needsRefreshFromService(let groupMasterKey):
+                            // We're all resolved, so if we had a pending change for this group clear it out.
+                            pendingGroupV2Changes[groupMasterKey] = nil
+
+                            // update the mapping
+                            groupV2IdentifierMap[groupMasterKey] = item.identifier
+
+                            self.refreshGroupV2FromServiceIfNecessary(groupMasterKey: groupMasterKey,
+                                                                      transaction: transaction)
                         case .resolved(let groupMasterKey):
                             // We're all resolved, so if we had a pending change for this group clear it out.
                             pendingGroupV2Changes[groupMasterKey] = nil
@@ -1067,6 +1087,37 @@ class StorageServiceOperation: OWSOperation {
             }
 
             self.reportError(withUndefinedRetry: error)
+        }.retainUntilComplete()
+    }
+
+    private func refreshGroupV2FromServiceIfNecessary(groupMasterKey: Data,
+                                                      transaction: SDSAnyReadTransaction) {
+
+        let groupContextInfo: GroupV2ContextInfo
+        do {
+            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupMasterKey)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return
+        }
+
+        let isGroupInDatabase = TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: transaction) != nil
+        guard !isGroupInDatabase else {
+            return
+        }
+
+        // This will try to update the group using incremental "changes" but
+        // failover to using a "snapshot".
+        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
+        firstly {
+            self.groupV2Updates.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
+                                                                        groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                        groupUpdateMode: groupUpdateMode)
+        }.done { _ in
+            Logger.verbose("Update succeeded.")
+        }.catch { error in
+            // GroupsV2 TODO: Don't assert on network failures.
+            owsFailDebug("Error: \(error)")
         }.retainUntilComplete()
     }
 
@@ -1160,6 +1211,7 @@ class StorageServiceOperation: OWSOperation {
         case updated = 1
         case deleted = 2
     }
+
     private static func accountChangeMap(transaction: SDSAnyReadTransaction) -> [AccountId: ChangeState] {
         let accountIdToIdentifierData = keyValueStore.getObject(accountChangeMapKey, transaction: transaction) as? [AccountId: Int] ?? [:]
         return accountIdToIdentifierData.compactMapValues { ChangeState(rawValue: $0) }
@@ -1181,6 +1233,7 @@ class StorageServiceOperation: OWSOperation {
     private static func setGroupV2MasterKeyChangeMap(_ map: [Data: ChangeState], transaction: SDSAnyWriteTransaction) {
         keyValueStore.setObject(map.mapValues { $0.rawValue }, key: groupV2MasterKeyChangeMapKey, transaction: transaction)
     }
+
     private static func groupV2MasterKeyChangeMap(transaction: SDSAnyReadTransaction) -> [Data: ChangeState] {
         let accountIdToIdentifierData = keyValueStore.getObject(groupV2MasterKeyChangeMapKey, transaction: transaction) as? [Data: Int] ?? [:]
         return accountIdToIdentifierData.compactMapValues { ChangeState(rawValue: $0) }

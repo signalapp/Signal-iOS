@@ -386,6 +386,7 @@ extension StorageServiceProtoGroupV2Record {
     enum MergeState {
         case resolved(Data)
         case needsUpdate(Data)
+        case needsRefreshFromService(Data)
         case invalid
     }
 
@@ -414,6 +415,11 @@ extension StorageServiceProtoGroupV2Record {
         let groupId = groupContextInfo.groupId
 
         var mergeState: MergeState = .resolved(masterKey)
+
+        let isGroupInDatabase = TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil
+        if !isGroupInDatabase {
+            mergeState = .needsRefreshFromService(masterKey)
+        }
 
         // Gather some local contact state to do comparisons against.
         let localIsBlocked = blockingManager.isGroupIdBlocked(groupId)
