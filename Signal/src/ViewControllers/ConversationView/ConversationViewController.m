@@ -355,6 +355,11 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.groupV2Updates;
 }
 
+- (id<SyncManagerProtocol>)syncManager
+{
+    return SSKEnvironment.shared.syncManager;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
