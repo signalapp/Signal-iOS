@@ -5443,7 +5443,7 @@ typedef enum : NSUInteger {
 - (void)deleteThread
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        if ([thread isKindOfClass:[TSGroupThread class]]) {
+        if ([self.thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)self.thread;
 
             // Quit the group if we're a member
