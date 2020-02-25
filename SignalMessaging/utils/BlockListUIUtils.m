@@ -240,12 +240,6 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     // block the group regardless of the ability to deliver the "leave group" message.
     [blockingManager addBlockedGroup:groupThread.groupModel wasLocallyInitiated:YES];
 
-    // blockingManager.addBlocked* creates several sneaky transactions, so we can't pass one
-    // via params and instead have to create our own.
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [ThreadUtil leaveGroupThread:groupThread transaction:transaction];
-    }];
-
     NSString *alertTitle
         = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE", @"The title of the 'group blocked' alert.");
     NSString *alertBodyFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",

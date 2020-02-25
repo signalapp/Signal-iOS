@@ -249,31 +249,6 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-+ (void)leaveGroupThread:(TSGroupThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
-
-    if (!thread.isLocalUserInGroup) {
-        OWSFailDebug(@"unexpectedly trying to leave group for which we're not a member.");
-        return;
-    }
-
-    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                           groupMetaMessage:TSGroupMetaMessageQuit
-                                                           expiresInSeconds:0];
-    [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-
-    // Only show the group quit message if there are other messages still in the group
-    if ([thread numberOfInteractionsWithTransaction:transaction] > 0) {
-        TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                                                     inThread:thread
-                                                                  messageType:TSInfoMessageTypeGroupQuit];
-        [infoMessage anyInsertWithTransaction:transaction];
-    }
-
-    [thread leaveGroupWithTransaction:transaction];
-}
-
 // MARK: Non-Durable Sending
 
 // We might want to generate a link preview here.

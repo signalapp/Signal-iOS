@@ -422,7 +422,16 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
             // Ignore redundant changes.
             return;
         }
+
         self.blockedGroupMap[groupId] = groupModel;
+    }
+
+    // Open a sneaky transaction and quit the group if we're a member
+    if ([groupModel.groupMembers containsObject:TSAccountManager.localAddress]) {
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            TSGroupThread *groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+            [groupThread leaveGroupAndSendQuitMessageWithTransaction:transaction];
+        }];
     }
 
     [self handleUpdateWithSneakyTransactionAndSendSyncMessage:wasLocallyInitiated];
@@ -453,6 +462,12 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         }
 
         TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+
+        // Quit the group if we're a member
+        if (groupThread.isLocalUserInGroup) {
+            [groupThread leaveGroupAndSendQuitMessageWithTransaction:transaction];
+        }
+
         if (groupThread != nil) {
             self.blockedGroupMap[groupId] = groupThread.groupModel;
         } else {

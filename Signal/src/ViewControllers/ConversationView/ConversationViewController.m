@@ -5448,7 +5448,7 @@ typedef enum : NSUInteger {
 
             // Quit the group if we're a member
             if (groupThread.isLocalUserInGroup) {
-                [ThreadUtil leaveGroupThread:groupThread transaction:transaction];
+                [groupThread leaveGroupAndSendQuitMessageWithTransaction:transaction];
             }
         }
 

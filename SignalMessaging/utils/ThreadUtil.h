@@ -48,7 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                       error:(NSError **)error;
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
-+ (void)leaveGroupThread:(TSGroupThread *)thread transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (TSOutgoingMessage *)enqueueMessageWithInstalledSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
 + (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerInfo *)stickerInfo

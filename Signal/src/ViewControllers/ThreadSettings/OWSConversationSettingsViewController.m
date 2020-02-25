@@ -1298,7 +1298,7 @@ const CGFloat kIconViewLength = 24;
 {
     TSGroupThread *gThread = (TSGroupThread *)self.thread;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [ThreadUtil leaveGroupThread:gThread transaction:transaction];
+        [gThread leaveGroupAndSendQuitMessageWithTransaction:transaction];
     }];
 
     [self.navigationController popViewControllerAnimated:YES];

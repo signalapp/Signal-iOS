@@ -117,7 +117,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
         func deleteThread() {
             // Quit the group if we're a member
             if let groupThread = thread as? TSGroupThread, groupThread.isLocalUserInGroup() {
-                ThreadUtil.leave(groupThread, transaction: transaction)
+                groupThread.leaveGroupAndSendQuitMessage(with: transaction)
             }
 
             thread.softDelete(with: transaction)
