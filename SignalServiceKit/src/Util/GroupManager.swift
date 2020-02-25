@@ -349,6 +349,8 @@ public class GroupManager: NSObject {
             }
             return self.createNewGroupOnServiceIfNecessary(groupModel: groupModel)
         }.then(on: .global()) { (groupModel: TSGroupModel) -> Promise<TSGroupThread> in
+            // We're creating this thread, we added ourselves
+            groupModel.addedByAddress = self.tsAccountManager.localAddress
             let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
                 let thread = TSGroupThread(groupModelPrivate: groupModel)
                 thread.anyInsert(transaction: transaction)
@@ -539,6 +541,12 @@ public class GroupManager: NSObject {
                                                         transaction: transaction)
             return EnsureGroupResult(action: .updated, thread: updatedThread)
         } else {
+            // This thread didn't previously exist, so if we're a member we
+            // have to assume we were just added.
+            if let localAddress = tsAccountManager.localAddress, groupModel.groupMembers.contains(localAddress) {
+                groupModel.addedByAddress = groupUpdateSourceAddress
+            }
+
             // GroupsV2 TODO: Can we use upsertGroupThread(...) here and above?
             let thread = TSGroupThread(groupModelPrivate: groupModel)
             thread.anyInsert(transaction: transaction)
@@ -596,6 +604,12 @@ public class GroupManager: NSObject {
         if oldGroupModel.isEqual(to: newGroupModel) {
             // Skip redundant update.
             return thread
+        }
+
+        // If we weren't previously a member and are now a member, assume whoever
+        // triggered this update added us to the group.
+        if !oldGroupModel.groupMembers.contains(localAddress), newGroupModel.groupMembers.contains(localAddress) {
+            newGroupModel.addedByAddress = groupUpdateSourceAddress
         }
 
         var userInfo: [InfoMessageUserInfoKey: Any] = [

@@ -203,7 +203,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
                                                 [thread.groupModel.groupMembers mutableCopy];
                                             [newGroupMembers removeObject:localAddress];
                                             [thread.groupModel updateGroupMembers:newGroupMembers];
-                                            
+                                            thread.groupModel.addedByAddress = nil;
                                         }];
 }
 

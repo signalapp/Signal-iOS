@@ -27,6 +27,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal
 @property (nonatomic, readonly) NSArray<SignalServiceAddress *> *nonLocalGroupMembers;
 @property (nonatomic, readonly, nullable) NSString *groupName;
 @property (nonatomic, readonly) NSData *groupId;
+@property (nonatomic, nullable) SignalServiceAddress *addedByAddress;
 
 #if TARGET_OS_IOS
 @property (nonatomic, readonly, nullable) UIImage *groupAvatarImage;
