@@ -118,6 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  groupSecretParamsData:nil
                                                      shouldSendMessage:NO
                                               groupUpdateSourceAddress:localAddress
+                                         createInfoMessageForNewGroups:YES
                                                            transaction:transaction
                                                                  error:&groupError]
                               .thread;
