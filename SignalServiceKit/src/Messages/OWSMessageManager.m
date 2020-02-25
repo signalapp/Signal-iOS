@@ -982,6 +982,16 @@ NS_ASSUME_NONNULL_BEGIN
                                    transaction:transaction];
     }
 
+    BOOL fromLegacyDevice = false;
+    if ([callMessage hasFeatureLevel]) {
+        if (callMessage.unwrappedFeatureLevel == SSKProtoCallMessageFeatureLevelUnspecified) {
+            fromLegacyDevice = true;
+        }
+    } else {
+        // The featureLevel is not defined so assume the default, unspecified (hence legacy).
+        fromLegacyDevice = true;
+    }
+
     // By dispatching async, we introduce the possibility that these messages might be lost
     // if the app exits before this block is executed.  This is fine, since the call by
     // definition will end if the app exits.
@@ -990,15 +1000,22 @@ NS_ASSUME_NONNULL_BEGIN
             [self.callMessageHandler receivedOffer:callMessage.offer
                                         fromCaller:envelope.sourceAddress
                                       sourceDevice:envelope.sourceDevice
-                                   sentAtTimestamp:envelope.timestamp];
+                                   sentAtTimestamp:envelope.timestamp
+                                  fromLegacyDevice:fromLegacyDevice];
         } else if (callMessage.answer) {
             [self.callMessageHandler receivedAnswer:callMessage.answer
                                          fromCaller:envelope.sourceAddress
-                                       sourceDevice:envelope.sourceDevice];
+                                       sourceDevice:envelope.sourceDevice
+                                   fromLegacyDevice:fromLegacyDevice];
         } else if (callMessage.iceUpdate.count > 0) {
             [self.callMessageHandler receivedIceUpdate:callMessage.iceUpdate
                                             fromCaller:envelope.sourceAddress
                                           sourceDevice:envelope.sourceDevice];
+        } else if (callMessage.legacyHangup) {
+            OWSLogVerbose(@"Received CallMessage with Legacy Hangup.");
+            [self.callMessageHandler receivedHangup:callMessage.legacyHangup
+                                         fromCaller:envelope.sourceAddress
+                                       sourceDevice:envelope.sourceDevice];
         } else if (callMessage.hangup) {
             OWSLogVerbose(@"Received CallMessage with Hangup.");
             [self.callMessageHandler receivedHangup:callMessage.hangup

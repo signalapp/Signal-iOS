@@ -640,6 +640,7 @@ typedef void (^SystemMessageActionBlock)(void);
         case RPRecentCallTypeIncomingMissed:
         case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
         case RPRecentCallTypeIncomingDeclined:
+        case RPRecentCallTypeIncomingAnsweredElsewhere:
             if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
                 return nil;
             }

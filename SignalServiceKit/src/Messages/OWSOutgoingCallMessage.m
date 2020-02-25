@@ -70,6 +70,18 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (instancetype)initWithThread:(TSThread *)thread legacyHangupMessage:(SSKProtoCallMessageHangup *)legacyHangupMessage
+{
+    self = [self initWithThread:thread];
+    if (!self) {
+        return self;
+    }
+
+    _legacyHangupMessage = legacyHangupMessage;
+
+    return self;
+}
+
 - (instancetype)initWithThread:(TSThread *)thread hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
 {
     self = [self initWithThread:thread];
@@ -144,6 +156,10 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setIceUpdate:self.iceUpdateMessages];
     }
 
+    if (self.legacyHangupMessage) {
+        [builder setLegacyHangup:self.legacyHangupMessage];
+    }
+    
     if (self.hangupMessage) {
         [builder setHangup:self.hangupMessage];
     }
@@ -156,6 +172,9 @@ NS_ASSUME_NONNULL_BEGIN
                                       address:address
                            callMessageBuilder:builder
                                   transaction:transaction];
+
+    // All Call messages must indicate multi-ring capability.
+    [builder setFeatureLevel:SSKProtoCallMessageFeatureLevelMultiring];
 
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];
@@ -184,6 +203,8 @@ NS_ASSUME_NONNULL_BEGIN
         payload = @"answerMessage";
     } else if (self.iceUpdateMessages.count > 0) {
         payload = [NSString stringWithFormat:@"iceUpdateMessages: %lu", (unsigned long)self.iceUpdateMessages.count];
+    } else if (self.legacyHangupMessage) {
+        payload = @"legacyHangupMessage";
     } else if (self.hangupMessage) {
         payload = @"hangupMessage";
     } else if (self.busyMessage) {

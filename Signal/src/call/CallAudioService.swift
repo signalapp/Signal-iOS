@@ -216,6 +216,9 @@ protocol CallAudioServiceDelegate: class {
         case .localHangup: handleLocalHangup(call: call)
         case .remoteHangup: handleRemoteHangup(call: call)
         case .remoteBusy: handleBusy(call: call)
+        case .answeredElsewhere: handleAnsweredElsewhere(call: call)
+        case .declinedElsewhere: handleAnsweredElsewhere(call: call)
+        case .busyElsewhere: handleAnsweredElsewhere(call: call)
         }
     }
 
@@ -299,6 +302,14 @@ protocol CallAudioServiceDelegate: class {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
             self.handleCallEnded(call: call)
         }
+    }
+
+    private func handleAnsweredElsewhere(call: SignalCall) {
+        AssertIsOnMainThread()
+        Logger.debug("")
+
+        play(sound: .callEnded)
+        handleCallEnded(call: call)
     }
 
     private func handleCallEnded(call: SignalCall) {

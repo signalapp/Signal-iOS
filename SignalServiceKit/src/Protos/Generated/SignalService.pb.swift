@@ -357,14 +357,16 @@ struct SignalServiceProtos_CallMessage {
 
   var iceUpdate: [SignalServiceProtos_CallMessage.IceUpdate] = []
 
-  var hangup: SignalServiceProtos_CallMessage.Hangup {
-    get {return _hangup ?? SignalServiceProtos_CallMessage.Hangup()}
-    set {_hangup = newValue}
+  /// This legacy hangup attribute will be retired
+  /// once all clients support multi-ring
+  var legacyHangup: SignalServiceProtos_CallMessage.Hangup {
+    get {return _legacyHangup ?? SignalServiceProtos_CallMessage.Hangup()}
+    set {_legacyHangup = newValue}
   }
-  /// Returns true if `hangup` has been explicitly set.
-  var hasHangup: Bool {return self._hangup != nil}
-  /// Clears the value of `hangup`. Subsequent reads from it will return its default value.
-  mutating func clearHangup() {self._hangup = nil}
+  /// Returns true if `legacyHangup` has been explicitly set.
+  var hasLegacyHangup: Bool {return self._legacyHangup != nil}
+  /// Clears the value of `legacyHangup`. Subsequent reads from it will return its default value.
+  mutating func clearLegacyHangup() {self._legacyHangup = nil}
 
   var busy: SignalServiceProtos_CallMessage.Busy {
     get {return _busy ?? SignalServiceProtos_CallMessage.Busy()}
@@ -386,7 +388,51 @@ struct SignalServiceProtos_CallMessage {
   /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
   mutating func clearProfileKey() {self._profileKey = nil}
 
+  var hangup: SignalServiceProtos_CallMessage.Hangup {
+    get {return _hangup ?? SignalServiceProtos_CallMessage.Hangup()}
+    set {_hangup = newValue}
+  }
+  /// Returns true if `hangup` has been explicitly set.
+  var hasHangup: Bool {return self._hangup != nil}
+  /// Clears the value of `hangup`. Subsequent reads from it will return its default value.
+  mutating func clearHangup() {self._hangup = nil}
+
+  var featureLevel: SignalServiceProtos_CallMessage.FeatureLevel {
+    get {return _featureLevel ?? .unspecified}
+    set {_featureLevel = newValue}
+  }
+  /// Returns true if `featureLevel` has been explicitly set.
+  var hasFeatureLevel: Bool {return self._featureLevel != nil}
+  /// Clears the value of `featureLevel`. Subsequent reads from it will return its default value.
+  mutating func clearFeatureLevel() {self._featureLevel = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum FeatureLevel: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case unspecified // = 0
+    case multiring // = 1
+
+    init() {
+      self = .unspecified
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .unspecified
+      case 1: self = .multiring
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .unspecified: return 0
+      case .multiring: return 1
+      }
+    }
+
+  }
 
   struct Offer {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -415,12 +461,48 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `sessionDescription`. Subsequent reads from it will return its default value.
     mutating func clearSessionDescription() {self._sessionDescription = nil}
 
+    var type: SignalServiceProtos_CallMessage.Offer.TypeEnum {
+      get {return _type ?? .audioCall}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case audioCall // = 0
+      case videoCall // = 1
+
+      init() {
+        self = .audioCall
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .audioCall
+        case 1: self = .videoCall
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .audioCall: return 0
+        case .videoCall: return 1
+        }
+      }
+
+    }
 
     init() {}
 
     fileprivate var _id: UInt64?
     fileprivate var _sessionDescription: String?
+    fileprivate var _type: SignalServiceProtos_CallMessage.Offer.TypeEnum?
   }
 
   struct Answer {
@@ -550,21 +632,91 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
+    var type: SignalServiceProtos_CallMessage.Hangup.TypeEnum {
+      get {return _type ?? .normal}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
+    var deviceID: UInt32 {
+      get {return _deviceID ?? 0}
+      set {_deviceID = newValue}
+    }
+    /// Returns true if `deviceID` has been explicitly set.
+    var hasDeviceID: Bool {return self._deviceID != nil}
+    /// Clears the value of `deviceID`. Subsequent reads from it will return its default value.
+    mutating func clearDeviceID() {self._deviceID = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case normal // = 0
+      case accepted // = 1
+      case declined // = 2
+      case busy // = 3
+
+      init() {
+        self = .normal
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .normal
+        case 1: self = .accepted
+        case 2: self = .declined
+        case 3: self = .busy
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .normal: return 0
+        case .accepted: return 1
+        case .declined: return 2
+        case .busy: return 3
+        }
+      }
+
+    }
 
     init() {}
 
     fileprivate var _id: UInt64?
+    fileprivate var _type: SignalServiceProtos_CallMessage.Hangup.TypeEnum?
+    fileprivate var _deviceID: UInt32?
   }
 
   init() {}
 
   fileprivate var _offer: SignalServiceProtos_CallMessage.Offer?
   fileprivate var _answer: SignalServiceProtos_CallMessage.Answer?
-  fileprivate var _hangup: SignalServiceProtos_CallMessage.Hangup?
+  fileprivate var _legacyHangup: SignalServiceProtos_CallMessage.Hangup?
   fileprivate var _busy: SignalServiceProtos_CallMessage.Busy?
   fileprivate var _profileKey: Data?
+  fileprivate var _hangup: SignalServiceProtos_CallMessage.Hangup?
+  fileprivate var _featureLevel: SignalServiceProtos_CallMessage.FeatureLevel?
 }
+
+#if swift(>=4.2)
+
+extension SignalServiceProtos_CallMessage.FeatureLevel: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_CallMessage.Offer.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 struct SignalServiceProtos_DataMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -3471,9 +3623,11 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     1: .same(proto: "offer"),
     2: .same(proto: "answer"),
     3: .same(proto: "iceUpdate"),
-    4: .same(proto: "hangup"),
+    4: .same(proto: "legacyHangup"),
     5: .same(proto: "busy"),
-    6: .same(proto: "profileKey")
+    6: .same(proto: "profileKey"),
+    7: .same(proto: "hangup"),
+    8: .same(proto: "featureLevel")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3482,9 +3636,11 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
       case 1: try decoder.decodeSingularMessageField(value: &self._offer)
       case 2: try decoder.decodeSingularMessageField(value: &self._answer)
       case 3: try decoder.decodeRepeatedMessageField(value: &self.iceUpdate)
-      case 4: try decoder.decodeSingularMessageField(value: &self._hangup)
+      case 4: try decoder.decodeSingularMessageField(value: &self._legacyHangup)
       case 5: try decoder.decodeSingularMessageField(value: &self._busy)
       case 6: try decoder.decodeSingularBytesField(value: &self._profileKey)
+      case 7: try decoder.decodeSingularMessageField(value: &self._hangup)
+      case 8: try decoder.decodeSingularEnumField(value: &self._featureLevel)
       default: break
       }
     }
@@ -3500,7 +3656,7 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     if !self.iceUpdate.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.iceUpdate, fieldNumber: 3)
     }
-    if let v = self._hangup {
+    if let v = self._legacyHangup {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     }
     if let v = self._busy {
@@ -3509,6 +3665,12 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     if let v = self._profileKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
     }
+    if let v = self._hangup {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    }
+    if let v = self._featureLevel {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 8)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3516,19 +3678,29 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     if lhs._offer != rhs._offer {return false}
     if lhs._answer != rhs._answer {return false}
     if lhs.iceUpdate != rhs.iceUpdate {return false}
-    if lhs._hangup != rhs._hangup {return false}
+    if lhs._legacyHangup != rhs._legacyHangup {return false}
     if lhs._busy != rhs._busy {return false}
     if lhs._profileKey != rhs._profileKey {return false}
+    if lhs._hangup != rhs._hangup {return false}
+    if lhs._featureLevel != rhs._featureLevel {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_CallMessage.FeatureLevel: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "UNSPECIFIED"),
+    1: .same(proto: "MULTIRING")
+  ]
 }
 
 extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Offer"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "sessionDescription")
+    2: .same(proto: "sessionDescription"),
+    3: .same(proto: "type")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3536,6 +3708,7 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
       case 2: try decoder.decodeSingularStringField(value: &self._sessionDescription)
+      case 3: try decoder.decodeSingularEnumField(value: &self._type)
       default: break
       }
     }
@@ -3548,15 +3721,26 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
     if let v = self._sessionDescription {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
+    if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Offer, rhs: SignalServiceProtos_CallMessage.Offer) -> Bool {
     if lhs._id != rhs._id {return false}
     if lhs._sessionDescription != rhs._sessionDescription {return false}
+    if lhs._type != rhs._type {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_CallMessage.Offer.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "AUDIO_CALL"),
+    1: .same(proto: "VIDEO_CALL")
+  ]
 }
 
 extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -3673,13 +3857,17 @@ extension SignalServiceProtos_CallMessage.Busy: SwiftProtobuf.Message, SwiftProt
 extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Hangup"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id")
+    1: .same(proto: "id"),
+    2: .same(proto: "type"),
+    3: .same(proto: "deviceId")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
+      case 2: try decoder.decodeSingularEnumField(value: &self._type)
+      case 3: try decoder.decodeSingularUInt32Field(value: &self._deviceID)
       default: break
       }
     }
@@ -3689,14 +3877,31 @@ extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftPr
     if let v = self._id {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
     }
+    if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
+    }
+    if let v = self._deviceID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Hangup, rhs: SignalServiceProtos_CallMessage.Hangup) -> Bool {
     if lhs._id != rhs._id {return false}
+    if lhs._type != rhs._type {return false}
+    if lhs._deviceID != rhs._deviceID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "NORMAL"),
+    1: .same(proto: "ACCEPTED"),
+    2: .same(proto: "DECLINED"),
+    3: .same(proto: "BUSY")
+  ]
 }
 
 extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

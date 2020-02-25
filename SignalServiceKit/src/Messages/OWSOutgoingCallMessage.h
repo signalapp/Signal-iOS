@@ -24,12 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread answerMessage:(SSKProtoCallMessageAnswer *)answerMessage;
 - (instancetype)initWithThread:(TSThread *)thread
              iceUpdateMessages:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdateMessage;
+- (instancetype)initWithThread:(TSThread *)thread legacyHangupMessage:(SSKProtoCallMessageHangup *)legacyHangupMessage;
 - (instancetype)initWithThread:(TSThread *)thread hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage;
 - (instancetype)initWithThread:(TSThread *)thread busyMessage:(SSKProtoCallMessageBusy *)busyMessage;
 
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageOffer *offerMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageAnswer *answerMessage;
 @property (nullable, nonatomic, readonly) NSArray<SSKProtoCallMessageIceUpdate *> *iceUpdateMessages;
+@property (nullable, nonatomic, readonly) SSKProtoCallMessageHangup *legacyHangupMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageHangup *hangupMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageBusy *busyMessage;
 

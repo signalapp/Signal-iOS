@@ -82,7 +82,7 @@ import SignalMessaging
 
     @objc
     public func setup() {
-        if FeatureFlags.multiRing {
+        if FeatureFlags.answerCallsOnSecondaryDevice {
             callService.createCallUIAdapter()
         } else {
             AppReadiness.runNowOrWhenAppWillBecomeReady {

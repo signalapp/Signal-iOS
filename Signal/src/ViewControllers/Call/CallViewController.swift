@@ -670,6 +670,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             }
 
             return NSLocalizedString("END_CALL_UNCATEGORIZED_FAILURE", comment: "Call setup status label")
+        case .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
+            return NSLocalizedString("IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE", comment: "Call screen label when call was canceled on this device because the call recipient answered on another linked device.")
         }
     }
 

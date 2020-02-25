@@ -24,6 +24,7 @@ protocol CallUIAdaptee {
     func localHangupCall(_ call: SignalCall)
     func remoteDidHangupCall(_ call: SignalCall)
     func remoteBusy(_ call: SignalCall)
+    func didAnswerElsewhere(call: SignalCall)
     func failCall(_ call: SignalCall, error: CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
@@ -246,6 +247,10 @@ extension CallUIAdaptee {
         AssertIsOnMainThread()
 
         adaptee.remoteBusy(call)
+    }
+
+    internal func didAnswerElsewhere(call: SignalCall) {
+        adaptee.didAnswerElsewhere(call: call)
     }
 
     internal func localHangupCall(localId: UUID) {

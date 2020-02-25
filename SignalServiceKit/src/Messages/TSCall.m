@@ -28,6 +28,8 @@ NSString *NSStringFromCallType(RPRecentCallType callType)
             return @"RPRecentCallTypeIncomingDeclined";
         case RPRecentCallTypeOutgoingMissed:
             return @"RPRecentCallTypeOutgoingMissed";
+        case RPRecentCallTypeIncomingAnsweredElsewhere:
+            return @"RPRecentCallTypeIncomingAnsweredElsewhere";
     }
 }
 
@@ -135,7 +137,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     // We don't actually use the `transaction` but other sibling classes do.
     switch (_callType) {
         case RPRecentCallTypeIncoming:
-            return NSLocalizedString(@"INCOMING_CALL", @"info message text in conversation view");
+            return NSLocalizedString(@"INCOMING_CALL_ANSWERED", @"info message text in conversation view");
         case RPRecentCallTypeOutgoing:
             return NSLocalizedString(@"OUTGOING_CALL", @"info message text in conversation view");
         case RPRecentCallTypeIncomingMissed:
@@ -152,6 +154,9 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeOutgoingMissed:
             return NSLocalizedString(@"OUTGOING_MISSED_CALL",
                 @"info message recorded in conversation history when local user tries and fails to call another user.");
+        case RPRecentCallTypeIncomingAnsweredElsewhere:
+            return NSLocalizedString(@"INCOMING_CALL_ANSWERED_ELSEWHERE",
+                                     @"info message recorded in conversation history when a call was answered from a linked device");
     }
 }
 
