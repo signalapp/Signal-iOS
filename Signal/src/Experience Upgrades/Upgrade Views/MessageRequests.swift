@@ -5,24 +5,6 @@
 import Foundation
 import Lottie
 
-class MessageRequestsMegaphone: MegaphoneView {
-    init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
-        super.init(experienceUpgrade: experienceUpgrade)
-
-        titleText = NSLocalizedString("MESSAGE_REQUESTS_MEGAPHONE_TITLE", comment: "Title for message requests megaphone")
-        bodyText = NSLocalizedString("MESSAGE_REQUESTS_MEGAPHONE_BODY", comment: "Body for message requests megaphone")
-        imageName = "message-request-megaphone"
-    }
-
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func tappedDismiss() {
-        dismiss { self.markAsComplete() }
-    }
-}
-
 class MessageRequestsSplash: SplashViewController {
 
     let animationView = AnimationView(name: "messageRequestsSplash")

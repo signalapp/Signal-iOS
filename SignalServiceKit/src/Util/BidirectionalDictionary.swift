@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
 public final class AnyBidirectionalDictionary: NSObject, NSCoding {
-    fileprivate let forwardDictionary: Dictionary<AnyHashable, AnyHashable>
-    fileprivate let backwardDictionary: Dictionary<AnyHashable, AnyHashable>
+    fileprivate let forwardDictionary: [AnyHashable: AnyHashable]
+    fileprivate let backwardDictionary: [AnyHashable: AnyHashable]
 
     public init<ElementOne: Hashable, ElementTwo: Hashable>(_ bidirectionalDictionary: BidirectionalDictionary<ElementOne, ElementTwo>) {
         forwardDictionary = .init(uniqueKeysWithValues: bidirectionalDictionary.forwardDictionary.map {
@@ -69,10 +69,11 @@ public struct BidirectionalDictionary<ElementOne: Hashable, ElementTwo: Hashable
             return forwardDictionary[key]
         }
         set {
+            if let previousValue = forwardDictionary[key] {
+                backwardDictionary[previousValue] = nil
+            }
+
             guard let newValue = newValue else {
-                if let previousValue = forwardDictionary[key] {
-                    backwardDictionary[previousValue] = nil
-                }
                 forwardDictionary[key] = nil
                 return
             }
@@ -87,10 +88,11 @@ public struct BidirectionalDictionary<ElementOne: Hashable, ElementTwo: Hashable
             return backwardDictionary[key]
         }
         set {
+            if let previousValue = backwardDictionary[key] {
+                forwardDictionary[previousValue] = nil
+            }
+
             guard let newValue = newValue else {
-                if let previousValue = backwardDictionary[key] {
-                    forwardDictionary[previousValue] = nil
-                }
                 backwardDictionary[key] = nil
                 return
             }

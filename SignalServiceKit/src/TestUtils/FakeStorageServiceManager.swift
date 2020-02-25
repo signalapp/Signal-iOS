@@ -17,4 +17,6 @@ class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     func backupPendingChanges() {}
     func restoreOrCreateManifestIfNecessary() -> AnyPromise { AnyPromise(Promise.value(())) }
+
+    func resetLocalData(transaction: SDSAnyWriteTransaction) {}
 }

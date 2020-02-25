@@ -66,8 +66,14 @@ extern NSNotificationName const OWSBlockingManagerBlockedSyncDidComplete;
 - (nullable TSGroupModel *)cachedGroupDetailsWithGroupId:(NSData *)groupId;
 
 - (void)addBlockedThread:(TSThread *)thread wasLocallyInitiated:(BOOL)wasLocallyInitiated;
+- (void)addBlockedThread:(TSThread *)thread
+     wasLocallyInitiated:(BOOL)wasLocallyInitiated
+             transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)removeBlockedThread:(TSThread *)thread wasLocallyInitiated:(BOOL)wasLocallyInitiated;
+- (void)removeBlockedThread:(TSThread *)thread
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isThreadBlocked:(TSThread *)thread;
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -779,32 +779,32 @@ public class SSKProtoContent: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Content) throws -> SSKProtoContent {
-        var dataMessage: SSKProtoDataMessage? = nil
+        var dataMessage: SSKProtoDataMessage?
         if proto.hasDataMessage {
             dataMessage = try SSKProtoDataMessage.parseProto(proto.dataMessage)
         }
 
-        var syncMessage: SSKProtoSyncMessage? = nil
+        var syncMessage: SSKProtoSyncMessage?
         if proto.hasSyncMessage {
             syncMessage = try SSKProtoSyncMessage.parseProto(proto.syncMessage)
         }
 
-        var callMessage: SSKProtoCallMessage? = nil
+        var callMessage: SSKProtoCallMessage?
         if proto.hasCallMessage {
             callMessage = try SSKProtoCallMessage.parseProto(proto.callMessage)
         }
 
-        var nullMessage: SSKProtoNullMessage? = nil
+        var nullMessage: SSKProtoNullMessage?
         if proto.hasNullMessage {
             nullMessage = try SSKProtoNullMessage.parseProto(proto.nullMessage)
         }
 
-        var receiptMessage: SSKProtoReceiptMessage? = nil
+        var receiptMessage: SSKProtoReceiptMessage?
         if proto.hasReceiptMessage {
             receiptMessage = try SSKProtoReceiptMessage.parseProto(proto.receiptMessage)
         }
 
-        var typingMessage: SSKProtoTypingMessage? = nil
+        var typingMessage: SSKProtoTypingMessage?
         if proto.hasTypingMessage {
             typingMessage = try SSKProtoTypingMessage.parseProto(proto.typingMessage)
         }
@@ -1687,12 +1687,12 @@ public class SSKProtoCallMessage: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_CallMessage) throws -> SSKProtoCallMessage {
-        var offer: SSKProtoCallMessageOffer? = nil
+        var offer: SSKProtoCallMessageOffer?
         if proto.hasOffer {
             offer = try SSKProtoCallMessageOffer.parseProto(proto.offer)
         }
 
-        var answer: SSKProtoCallMessageAnswer? = nil
+        var answer: SSKProtoCallMessageAnswer?
         if proto.hasAnswer {
             answer = try SSKProtoCallMessageAnswer.parseProto(proto.answer)
         }
@@ -1700,12 +1700,12 @@ public class SSKProtoCallMessage: NSObject {
         var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
         iceUpdate = try proto.iceUpdate.map { try SSKProtoCallMessageIceUpdate.parseProto($0) }
 
-        var hangup: SSKProtoCallMessageHangup? = nil
+        var hangup: SSKProtoCallMessageHangup?
         if proto.hasHangup {
             hangup = try SSKProtoCallMessageHangup.parseProto(proto.hangup)
         }
 
-        var busy: SSKProtoCallMessageBusy? = nil
+        var busy: SSKProtoCallMessageBusy?
         if proto.hasBusy {
             busy = try SSKProtoCallMessageBusy.parseProto(proto.busy)
         }
@@ -1910,7 +1910,7 @@ public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment) throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-        var thumbnail: SSKProtoAttachmentPointer? = nil
+        var thumbnail: SSKProtoAttachmentPointer?
         if proto.hasThumbnail {
             thumbnail = try SSKProtoAttachmentPointer.parseProto(proto.thumbnail)
         }
@@ -3284,7 +3284,7 @@ public class SSKProtoDataMessageContactAvatar: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact.Avatar) throws -> SSKProtoDataMessageContactAvatar {
-        var avatar: SSKProtoAttachmentPointer? = nil
+        var avatar: SSKProtoAttachmentPointer?
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -3496,7 +3496,7 @@ public class SSKProtoDataMessageContact: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact) throws -> SSKProtoDataMessageContact {
-        var name: SSKProtoDataMessageContactName? = nil
+        var name: SSKProtoDataMessageContactName?
         if proto.hasName {
             name = try SSKProtoDataMessageContactName.parseProto(proto.name)
         }
@@ -3510,7 +3510,7 @@ public class SSKProtoDataMessageContact: NSObject {
         var address: [SSKProtoDataMessageContactPostalAddress] = []
         address = try proto.address.map { try SSKProtoDataMessageContactPostalAddress.parseProto($0) }
 
-        var avatar: SSKProtoDataMessageContactAvatar? = nil
+        var avatar: SSKProtoDataMessageContactAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoDataMessageContactAvatar.parseProto(proto.avatar)
         }
@@ -3681,7 +3681,7 @@ public class SSKProtoDataMessagePreview: NSObject {
         }
         let url = proto.url
 
-        var image: SSKProtoAttachmentPointer? = nil
+        var image: SSKProtoAttachmentPointer?
         if proto.hasImage {
             image = try SSKProtoAttachmentPointer.parseProto(proto.image)
         }
@@ -4552,17 +4552,17 @@ public class SSKProtoDataMessage: NSObject {
         var attachments: [SSKProtoAttachmentPointer] = []
         attachments = try proto.attachments.map { try SSKProtoAttachmentPointer.parseProto($0) }
 
-        var group: SSKProtoGroupContext? = nil
+        var group: SSKProtoGroupContext?
         if proto.hasGroup {
             group = try SSKProtoGroupContext.parseProto(proto.group)
         }
 
-        var groupV2: SSKProtoGroupContextV2? = nil
+        var groupV2: SSKProtoGroupContextV2?
         if proto.hasGroupV2 {
             groupV2 = try SSKProtoGroupContextV2.parseProto(proto.groupV2)
         }
 
-        var quote: SSKProtoDataMessageQuote? = nil
+        var quote: SSKProtoDataMessageQuote?
         if proto.hasQuote {
             quote = try SSKProtoDataMessageQuote.parseProto(proto.quote)
         }
@@ -4573,12 +4573,12 @@ public class SSKProtoDataMessage: NSObject {
         var preview: [SSKProtoDataMessagePreview] = []
         preview = try proto.preview.map { try SSKProtoDataMessagePreview.parseProto($0) }
 
-        var sticker: SSKProtoDataMessageSticker? = nil
+        var sticker: SSKProtoDataMessageSticker?
         if proto.hasSticker {
             sticker = try SSKProtoDataMessageSticker.parseProto(proto.sticker)
         }
 
-        var reaction: SSKProtoDataMessageReaction? = nil
+        var reaction: SSKProtoDataMessageReaction?
         if proto.hasReaction {
             reaction = try SSKProtoDataMessageReaction.parseProto(proto.reaction)
         }
@@ -5635,7 +5635,7 @@ public class SSKProtoSyncMessageSent: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Sent) throws -> SSKProtoSyncMessageSent {
-        var message: SSKProtoDataMessage? = nil
+        var message: SSKProtoDataMessage?
         if proto.hasMessage {
             message = try SSKProtoDataMessage.parseProto(proto.message)
         }
@@ -5886,7 +5886,7 @@ public class SSKProtoSyncMessageGroups: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Groups) throws -> SSKProtoSyncMessageGroups {
-        var blob: SSKProtoAttachmentPointer? = nil
+        var blob: SSKProtoAttachmentPointer?
         if proto.hasBlob {
             blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
         }
@@ -7256,6 +7256,279 @@ extension SSKProtoSyncMessageKeys.SSKProtoSyncMessageKeysBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageMessageRequestResponseType
+
+@objc
+public enum SSKProtoSyncMessageMessageRequestResponseType: Int32 {
+    case unknown = 0
+    case accept = 1
+    case delete = 2
+    case block = 3
+    case blockAndDelete = 4
+}
+
+private func SSKProtoSyncMessageMessageRequestResponseTypeWrap(_ value: SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum) -> SSKProtoSyncMessageMessageRequestResponseType {
+    switch value {
+    case .unknown: return .unknown
+    case .accept: return .accept
+    case .delete: return .delete
+    case .block: return .block
+    case .blockAndDelete: return .blockAndDelete
+    }
+}
+
+private func SSKProtoSyncMessageMessageRequestResponseTypeUnwrap(_ value: SSKProtoSyncMessageMessageRequestResponseType) -> SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum {
+    switch value {
+    case .unknown: return .unknown
+    case .accept: return .accept
+    case .delete: return .delete
+    case .block: return .block
+    case .blockAndDelete: return .blockAndDelete
+    }
+}
+
+// MARK: - SSKProtoSyncMessageMessageRequestResponse
+
+@objc
+public class SSKProtoSyncMessageMessageRequestResponse: NSObject {
+
+    // MARK: - SSKProtoSyncMessageMessageRequestResponseBuilder
+
+    @objc
+    public class func builder() -> SSKProtoSyncMessageMessageRequestResponseBuilder {
+        return SSKProtoSyncMessageMessageRequestResponseBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageMessageRequestResponseBuilder {
+        let builder = SSKProtoSyncMessageMessageRequestResponseBuilder()
+        if let _value = threadE164 {
+            builder.setThreadE164(_value)
+        }
+        if let _value = threadUuid {
+            builder.setThreadUuid(_value)
+        }
+        if let _value = groupID {
+            builder.setGroupID(_value)
+        }
+        if let _value = type {
+            builder.setType(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoSyncMessageMessageRequestResponseBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.MessageRequestResponse()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setThreadE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.threadE164 = valueParam
+        }
+
+        public func setThreadE164(_ valueParam: String) {
+            proto.threadE164 = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setThreadUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.threadUuid = valueParam
+        }
+
+        public func setThreadUuid(_ valueParam: String) {
+            proto.threadUuid = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setGroupID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.groupID = valueParam
+        }
+
+        public func setGroupID(_ valueParam: Data) {
+            proto.groupID = valueParam
+        }
+
+        @objc
+        public func setType(_ valueParam: SSKProtoSyncMessageMessageRequestResponseType) {
+            proto.type = SSKProtoSyncMessageMessageRequestResponseTypeUnwrap(valueParam)
+        }
+
+        @objc
+        public func build() throws -> SSKProtoSyncMessageMessageRequestResponse {
+            return try SSKProtoSyncMessageMessageRequestResponse.parseProto(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageMessageRequestResponse.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.MessageRequestResponse
+
+    @objc
+    public var threadE164: String? {
+        guard hasThreadE164 else {
+            return nil
+        }
+        return proto.threadE164
+    }
+    @objc
+    public var hasThreadE164: Bool {
+        return proto.hasThreadE164
+    }
+
+    @objc
+    public var threadUuid: String? {
+        guard hasThreadUuid else {
+            return nil
+        }
+        return proto.threadUuid
+    }
+    @objc
+    public var hasThreadUuid: Bool {
+        return proto.hasThreadUuid
+    }
+
+    @objc
+    public var groupID: Data? {
+        guard hasGroupID else {
+            return nil
+        }
+        return proto.groupID
+    }
+    @objc
+    public var hasGroupID: Bool {
+        return proto.hasGroupID
+    }
+
+    public var type: SSKProtoSyncMessageMessageRequestResponseType? {
+        guard hasType else {
+            return nil
+        }
+        return SSKProtoSyncMessageMessageRequestResponseTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedType: SSKProtoSyncMessageMessageRequestResponseType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: MessageRequestResponse.type.")
+        }
+        return SSKProtoSyncMessageMessageRequestResponseTypeWrap(proto.type)
+    }
+    @objc
+    public var hasType: Bool {
+        return proto.hasType
+    }
+
+    @objc
+    public var hasValidThread: Bool {
+        return threadAddress != nil
+    }
+    @objc
+    public var threadAddress: SignalServiceAddress? {
+        guard hasThreadE164 || hasThreadUuid else { return nil }
+
+        let uuidString: String? = {
+            guard hasThreadUuid else { return nil }
+
+            guard let threadUuid = threadUuid else {
+                owsFailDebug("threadUuid was unexpectedly nil")
+                return nil
+            }
+
+            return threadUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasThreadE164 else {
+                // Shouldn’t happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let threadE164 = threadE164 else {
+                owsFailDebug("threadE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard !threadE164.isEmpty else {
+                owsFailDebug("threadE164 was unexpectedly empty")
+                return nil
+            }
+
+            return threadE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.MessageRequestResponse) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageMessageRequestResponse {
+        let proto = try SignalServiceProtos_SyncMessage.MessageRequestResponse(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.MessageRequestResponse) throws -> SSKProtoSyncMessageMessageRequestResponse {
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageMessageRequestResponse -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageMessageRequestResponse -
+
+        let result = SSKProtoSyncMessageMessageRequestResponse(proto: proto)
+        return result
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessageMessageRequestResponse {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageMessageRequestResponse.SSKProtoSyncMessageMessageRequestResponseBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageMessageRequestResponse? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc
@@ -7306,6 +7579,9 @@ public class SSKProtoSyncMessage: NSObject {
         }
         if let _value = keys {
             builder.setKeys(_value)
+        }
+        if let _value = messageRequestResponse {
+            builder.setMessageRequestResponse(_value)
         }
         return builder
     }
@@ -7464,6 +7740,17 @@ public class SSKProtoSyncMessage: NSObject {
         }
 
         @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMessageRequestResponse(_ valueParam: SSKProtoSyncMessageMessageRequestResponse?) {
+            guard let valueParam = valueParam else { return }
+            proto.messageRequestResponse = valueParam.proto
+        }
+
+        public func setMessageRequestResponse(_ valueParam: SSKProtoSyncMessageMessageRequestResponse) {
+            proto.messageRequestResponse = valueParam.proto
+        }
+
+        @objc
         public func build() throws -> SSKProtoSyncMessage {
             return try SSKProtoSyncMessage.parseProto(proto)
         }
@@ -7513,6 +7800,9 @@ public class SSKProtoSyncMessage: NSObject {
     public let keys: SSKProtoSyncMessageKeys?
 
     @objc
+    public let messageRequestResponse: SSKProtoSyncMessageMessageRequestResponse?
+
+    @objc
     public var padding: Data? {
         guard hasPadding else {
             return nil
@@ -7536,7 +7826,8 @@ public class SSKProtoSyncMessage: NSObject {
                  stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation],
                  viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?,
                  fetchLatest: SSKProtoSyncMessageFetchLatest?,
-                 keys: SSKProtoSyncMessageKeys?) {
+                 keys: SSKProtoSyncMessageKeys?,
+                 messageRequestResponse: SSKProtoSyncMessageMessageRequestResponse?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -7550,6 +7841,7 @@ public class SSKProtoSyncMessage: NSObject {
         self.viewOnceOpen = viewOnceOpen
         self.fetchLatest = fetchLatest
         self.keys = keys
+        self.messageRequestResponse = messageRequestResponse
     }
 
     @objc
@@ -7564,22 +7856,22 @@ public class SSKProtoSyncMessage: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage) throws -> SSKProtoSyncMessage {
-        var sent: SSKProtoSyncMessageSent? = nil
+        var sent: SSKProtoSyncMessageSent?
         if proto.hasSent {
             sent = try SSKProtoSyncMessageSent.parseProto(proto.sent)
         }
 
-        var contacts: SSKProtoSyncMessageContacts? = nil
+        var contacts: SSKProtoSyncMessageContacts?
         if proto.hasContacts {
             contacts = try SSKProtoSyncMessageContacts.parseProto(proto.contacts)
         }
 
-        var groups: SSKProtoSyncMessageGroups? = nil
+        var groups: SSKProtoSyncMessageGroups?
         if proto.hasGroups {
             groups = try SSKProtoSyncMessageGroups.parseProto(proto.groups)
         }
 
-        var request: SSKProtoSyncMessageRequest? = nil
+        var request: SSKProtoSyncMessageRequest?
         if proto.hasRequest {
             request = try SSKProtoSyncMessageRequest.parseProto(proto.request)
         }
@@ -7587,17 +7879,17 @@ public class SSKProtoSyncMessage: NSObject {
         var read: [SSKProtoSyncMessageRead] = []
         read = try proto.read.map { try SSKProtoSyncMessageRead.parseProto($0) }
 
-        var blocked: SSKProtoSyncMessageBlocked? = nil
+        var blocked: SSKProtoSyncMessageBlocked?
         if proto.hasBlocked {
             blocked = try SSKProtoSyncMessageBlocked.parseProto(proto.blocked)
         }
 
-        var verified: SSKProtoVerified? = nil
+        var verified: SSKProtoVerified?
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
 
-        var configuration: SSKProtoSyncMessageConfiguration? = nil
+        var configuration: SSKProtoSyncMessageConfiguration?
         if proto.hasConfiguration {
             configuration = try SSKProtoSyncMessageConfiguration.parseProto(proto.configuration)
         }
@@ -7605,19 +7897,24 @@ public class SSKProtoSyncMessage: NSObject {
         var stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation] = []
         stickerPackOperation = try proto.stickerPackOperation.map { try SSKProtoSyncMessageStickerPackOperation.parseProto($0) }
 
-        var viewOnceOpen: SSKProtoSyncMessageViewOnceOpen? = nil
+        var viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?
         if proto.hasViewOnceOpen {
             viewOnceOpen = try SSKProtoSyncMessageViewOnceOpen.parseProto(proto.viewOnceOpen)
         }
 
-        var fetchLatest: SSKProtoSyncMessageFetchLatest? = nil
+        var fetchLatest: SSKProtoSyncMessageFetchLatest?
         if proto.hasFetchLatest {
             fetchLatest = try SSKProtoSyncMessageFetchLatest.parseProto(proto.fetchLatest)
         }
 
-        var keys: SSKProtoSyncMessageKeys? = nil
+        var keys: SSKProtoSyncMessageKeys?
         if proto.hasKeys {
             keys = try SSKProtoSyncMessageKeys.parseProto(proto.keys)
+        }
+
+        var messageRequestResponse: SSKProtoSyncMessageMessageRequestResponse?
+        if proto.hasMessageRequestResponse {
+            messageRequestResponse = try SSKProtoSyncMessageMessageRequestResponse.parseProto(proto.messageRequestResponse)
         }
 
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
@@ -7636,7 +7933,8 @@ public class SSKProtoSyncMessage: NSObject {
                                          stickerPackOperation: stickerPackOperation,
                                          viewOnceOpen: viewOnceOpen,
                                          fetchLatest: fetchLatest,
-                                         keys: keys)
+                                         keys: keys,
+                                         messageRequestResponse: messageRequestResponse)
         return result
     }
 
@@ -8408,7 +8706,7 @@ public class SSKProtoGroupContext: NSObject {
         }
         let id = proto.id
 
-        var avatar: SSKProtoAttachmentPointer? = nil
+        var avatar: SSKProtoAttachmentPointer?
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -9031,12 +9329,12 @@ public class SSKProtoContactDetails: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_ContactDetails) throws -> SSKProtoContactDetails {
-        var avatar: SSKProtoContactDetailsAvatar? = nil
+        var avatar: SSKProtoContactDetailsAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
         }
 
-        var verified: SSKProtoVerified? = nil
+        var verified: SSKProtoVerified?
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
@@ -9622,7 +9920,7 @@ public class SSKProtoGroupDetails: NSObject {
         }
         let id = proto.id
 
-        var avatar: SSKProtoGroupDetailsAvatar? = nil
+        var avatar: SSKProtoGroupDetailsAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
         }
@@ -9947,7 +10245,7 @@ public class SSKProtoPack: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Pack) throws -> SSKProtoPack {
-        var cover: SSKProtoPackSticker? = nil
+        var cover: SSKProtoPackSticker?
         if proto.hasCover {
             cover = try SSKProtoPackSticker.parseProto(proto.cover)
         }

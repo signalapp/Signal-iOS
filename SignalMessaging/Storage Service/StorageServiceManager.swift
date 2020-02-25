@@ -109,6 +109,12 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         return AnyPromise(operation.promise)
     }
 
+    @objc
+    public func resetLocalData(transaction: SDSAnyWriteTransaction) {
+        Logger.info("Reseting local storage service data.")
+        StorageServiceOperation.keyValueStore.removeAll(transaction: transaction)
+    }
+
     // MARK: - Backup Scheduling
 
     private static var backupDebounceInterval: TimeInterval = 0.2
@@ -214,6 +220,15 @@ class StorageServiceOperation: OWSOperation {
     // Called every retry, this is where the bulk of the operation's work should go.
     override public func run() {
         Logger.info("\(mode)")
+
+        // Don't do anything unless storage service is enabled on the server.
+        // This is a kill switch in case something goes wrong.
+        // TODO: Derive Storage Service Key – When we start using the master
+        // key to derive the storage service key we cannot rely on this since
+        // we will need to do storage service operations during registration.
+        guard RemoteConfig.storageService else {
+            return reportSuccess()
+        }
 
         // We don't have backup keys, do nothing. We'll try a
         // fresh restore once the keys are set.
@@ -380,8 +395,19 @@ class StorageServiceOperation: OWSOperation {
 
                         return storageItem
                     } catch {
-                        owsFailDebug("Unexpectedly failed to process changes for account \(error)")
-                        // If for some reason we failed, we'll just skip it and try this account again next backup.
+                        // If the accountId we're trying to backup is no longer associated with
+                        // any known address, we no longer need to care about it. It's possible
+                        // that account was unregistered / the SignalRecipient no longer exists.
+                        if case StorageService.StorageError.accountMissing = error {
+                            Logger.info("Clearing data for missing accountId \(accountId).")
+
+                            accountIdentifierMap[accountId] = nil
+                            pendingAccountChanges[accountId] = nil
+                        } else {
+                            // If for some reason we failed, we'll just skip it and try this account again next backup.
+                            owsFailDebug("Unexpectedly failed to process changes for account \(error)")
+                        }
+
                         return nil
                     }
             }
@@ -463,15 +489,15 @@ class StorageServiceOperation: OWSOperation {
 
         let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: version)
 
+        let allKeys = accountIdentifierMap.map { $1.data } +
+            groupIdentifierMap.map { $1.data } +
+            unknownIdentifiers.map { $0.data }
+
         // We must persist any unknown identifiers, as they are potentially associated with
         // valid records that this version of the app doesn't yet understand how to parse.
         // Otherwise, this will cause ping-ponging with newer apps when they try and backup
         // new types of records, and then we subsequently delete them.
-        manifestBuilder.setKeys(
-            accountIdentifierMap.map { $1.data } +
-            groupIdentifierMap.map { $1.data } +
-            unknownIdentifiers.map { $0.data }
-        )
+        manifestBuilder.setKeys(allKeys)
 
         let manifest: StorageServiceProtoManifestRecord
         do {
@@ -480,12 +506,16 @@ class StorageServiceOperation: OWSOperation {
             return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
 
+        Logger.info("Backing up pending changes with manifest version: \(version). \(updatedItems.count) new items. \(deletedIdentifiers.count) deleted items. Total keys: \(allKeys.count)")
+
         StorageService.updateManifest(
             manifest,
             newItems: updatedItems,
             deletedIdentifiers: deletedIdentifiers
         ).done(on: .global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
+                Logger.info("Successfully updated to manifest version: \(version)")
+
                 // Successfuly updated, store our changes.
                 self.databaseStorage.write { transaction in
                     StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
@@ -536,16 +566,19 @@ class StorageServiceOperation: OWSOperation {
 
                 // If we succeeded to fetch the manifest but were unable to decrypt it,
                 // it likely means our keys changed.
-                if case .decryptionFailed(let previousManifestVersion) = storageError {
+                if case .manifestDecryptionFailed(let previousManifestVersion) = storageError {
                     // If this is the primary device, throw everything away and re-encrypt
                     // the social graph with the keys we have locally.
                     if TSAccountManager.sharedInstance().isPrimaryDevice {
+                        Logger.info("Manifest decryption failed, recreating manifest.")
                         return self.createNewManifest(version: previousManifestVersion + 1)
                     }
 
+                    Logger.info("Manifest decryption failed, clearing storage service keys.")
+
                     // If this is a linked device, give up and request the latest storage
                     // service key from the primary device.
-                    self.databaseStorage.asyncWrite { transaction in
+                    self.databaseStorage.write { transaction in
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
                         KeyBackupService.storeSyncedKey(type: .storageService, data: nil, transaction: transaction)
@@ -617,10 +650,17 @@ class StorageServiceOperation: OWSOperation {
             return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
 
+        Logger.info("Creating a new manifest with manifest version: \(version). Total keys: \(allItems.count)")
+
+        // We want to do this only when absolutely necessarry as it's an expensive
+        // query on the server. When we set this flag, the server will query an
+        // purge and orphan records.
+        let shouldDeletePreviousRecords = version > 1
+
         StorageService.updateManifest(
             manifest,
             newItems: allItems,
-            deletedIdentifiers: []
+            deleteAllExistingRecords: shouldDeletePreviousRecords
         ).done(on: .global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
                 // Successfuly updated, store our changes.
@@ -683,6 +723,8 @@ class StorageServiceOperation: OWSOperation {
             return reportError(OWSAssertionError("exceeded max consectuive conflicts, creating a new manifest"))
         }
 
+        let localKeysCount = accountIdentifierMap.count + groupIdentifierMap.count + unknownIdentifiersTypeMap.flatMap { $0.value }.count
+
         // Calculate new or updated items by looking up the ids
         // of any items we don't know about locally. Since a new
         // id is always generated after a change, this should always
@@ -704,6 +746,8 @@ class StorageServiceOperation: OWSOperation {
                 .subtracting(unknownIdentifiersTypeMap.flatMap { $0.value })
         )
 
+        Logger.info("Merging with newer remote manifest version: \(manifest.version). \(newOrUpdatedItems.count) new or updated items. Remote key count: \(allManifestItems.count). Local key count: \(localKeysCount).")
+
         // Fetch all the items in the new manifest and resolve any conflicts appropriately.
         StorageService.fetchItems(for: newOrUpdatedItems).done(on: .global()) { items in
             self.databaseStorage.write { transaction in
@@ -723,6 +767,9 @@ class StorageServiceOperation: OWSOperation {
                             accountIdentifierMap[accountId] = item.identifier
 
                         case .resolved(let accountId):
+                            // We're all resolved, so if we had a pending change for this contact clear it out.
+                            pendingAccountChanges[accountId] = nil
+
                             // update the mapping
                             accountIdentifierMap[accountId] = item.identifier
                         }
@@ -741,6 +788,9 @@ class StorageServiceOperation: OWSOperation {
                             groupIdentifierMap[groupId] = item.identifier
 
                         case .resolved(let groupId):
+                            // We're all resolved, so if we had a pending change for this group clear it out.
+                            pendingGroupChanges[groupId] = nil
+
                             // update the mapping
                             groupIdentifierMap[groupId] = item.identifier
                         }
@@ -756,6 +806,22 @@ class StorageServiceOperation: OWSOperation {
 
                 }
 
+                // Mark any orphaned records as pending update so we re-add them to the manifest.
+
+                var orphanedGroupCount = 0
+                Set(groupIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let groupId = groupIdentifierMap[identifier] { pendingGroupChanges[groupId] = .updated }
+                    orphanedGroupCount += 1
+                }
+
+                var orphanedAccountCount = 0
+                Set(accountIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let accountId = accountIdentifierMap[identifier] { pendingAccountChanges[accountId] = .updated }
+                    orphanedAccountCount += 1
+                }
+
+                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingAccountChanges.count + pendingGroupChanges.count) pending updates remaining including \(orphanedAccountCount) orphaned accounts and \(orphanedGroupCount) orphaned groups.")
+
                 StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
                 StorageServiceOperation.setAccountChangeMap(pendingAccountChanges, transaction: transaction)
                 StorageServiceOperation.setGroupIdChangeMap(pendingGroupChanges, transaction: transaction)
@@ -769,12 +835,34 @@ class StorageServiceOperation: OWSOperation {
                 self.reportSuccess()
             }
         }.catch { error in
-            switch error {
-            case let operationError as OperationError:
-                return self.reportError(operationError)
-            default:
-                self.reportError(withUndefinedRetry: error)
+            if let storageError = error as? StorageService.StorageError {
+
+                // If we succeeded to fetch the records but were unable to decrypt any of them,
+                // it likely means our keys changed.
+                if case .itemDecryptionFailed = storageError {
+                    // If this is the primary device, throw everything away and re-encrypt
+                    // the social graph with the keys we have locally.
+                    if TSAccountManager.sharedInstance().isPrimaryDevice {
+                        Logger.info("Item decryption failed, recreating manifest.")
+                        return self.createNewManifest(version: manifest.version + 1)
+                    }
+
+                    Logger.info("Item decryption failed, clearing storage service keys.")
+
+                    // If this is a linked device, give up and request the latest storage
+                    // service key from the primary device.
+                    self.databaseStorage.write { transaction in
+                        // Clear out the key, it's no longer valid. This will prevent us
+                        // from trying to backup again until the sync response is received.
+                        KeyBackupService.storeSyncedKey(type: .storageService, data: nil, transaction: transaction)
+                        OWSSyncManager.shared().sendKeysSyncRequestMessage(transaction: transaction)
+                    }
+                }
+
+                return self.reportError(storageError)
             }
+
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 

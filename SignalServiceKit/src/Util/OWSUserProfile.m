@@ -149,7 +149,10 @@ NSUInteger const kUserProfileSchemaVersion = 1;
         userProfile = [[OWSUserProfile alloc] initWithAddress:address];
 
         if ([address.phoneNumber isEqualToString:kLocalProfileUniqueId]) {
-            [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey] transaction:transaction completion:nil];
+            [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
+                          wasLocallyInitiated:YES
+                                  transaction:transaction
+                                   completion:nil];
         }
     }
 
@@ -283,9 +286,10 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // * We kick off multi-device synchronization.
 // * We fire "did change" notifications.
 - (void)applyChanges:(void (^)(id))changeBlock
-        functionName:(const char *)functionName
-         transaction:(SDSAnyWriteTransaction *)transaction
-          completion:(nullable OWSUserProfileCompletion)completion
+           functionName:(const char *)functionName
+    wasLocallyInitiated:(BOOL)wasLocallyInitiated
+            transaction:(SDSAnyWriteTransaction *)transaction
+             completion:(nullable OWSUserProfileCompletion)completion
 {
     OWSAssertDebug(transaction);
 
@@ -295,24 +299,36 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     // * Updating the profile updated this instance.
     // * Updating the profile updated the "latest" instance.
     __block BOOL didChange = NO;
+    __block BOOL onlyAvatarChanged = NO;
 
     OWSUserProfile *_Nullable latestInstance =
         [OWSUserProfile anyFetchWithUniqueId:self.uniqueId transaction:transaction];
     if (latestInstance != nil) {
-        [self anyUpdateWithTransaction:transaction
-                                 block:^(OWSUserProfile *profile) {
-                                     // self might be the latest instance, so take a "before" snapshot
-                                     // before any changes have been made.
-                                     NSDictionary *beforeSnapshot = [profile.dictionaryValue copy];
+        [self
+            anyUpdateWithTransaction:transaction
+                               block:^(OWSUserProfile *profile) {
+                                   NSArray *avatarKeys = @[ @"avatarFileName", @"avatarUrlPath" ];
 
-                                     changeBlock(profile);
+                                   // self might be the latest instance, so take a "before" snapshot
+                                   // before any changes have been made.
+                                   NSDictionary *beforeSnapshot = [profile.dictionaryValue copy];
+                                   NSDictionary *beforeSnapshotWithoutAvatar =
+                                       [beforeSnapshot mtl_dictionaryByRemovingValuesForKeys:avatarKeys];
 
-                                     NSDictionary *afterSnapshot = [profile.dictionaryValue copy];
+                                   changeBlock(profile);
 
-                                     if (![beforeSnapshot isEqual:afterSnapshot]) {
-                                         didChange = YES;
-                                     }
-                                 }];
+                                   NSDictionary *afterSnapshot = [profile.dictionaryValue copy];
+                                   NSDictionary *afterSnapshotWithoutAvatar =
+                                       [afterSnapshot mtl_dictionaryByRemovingValuesForKeys:avatarKeys];
+
+                                   if (![beforeSnapshot isEqual:afterSnapshot]) {
+                                       didChange = YES;
+                                   }
+
+                                   if (didChange && [beforeSnapshotWithoutAvatar isEqual:afterSnapshotWithoutAvatar]) {
+                                       onlyAvatarChanged = YES;
+                                   }
+                               }];
     } else {
         changeBlock(self);
         [self anyInsertWithTransaction:transaction];
@@ -330,8 +346,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     BOOL isLocalUserProfile = [self.address.phoneNumber isEqualToString:kLocalProfileUniqueId];
 
-    // Profile changes, record updates with storage service
-    if (self.tsAccountManager.isRegisteredAndReady) {
+    // Profile changes, record updates with storage service. We don't store avatar information on the service.
+    if (self.tsAccountManager.isRegisteredAndReady && wasLocallyInitiated && !onlyAvatarChanged) {
         [self.storageServiceManager
             recordPendingUpdatesWithUpdatedAddresses:@[ isLocalUserProfile ? self.tsAccountManager.localAddress
                                                                            : self.address ]];
@@ -378,17 +394,18 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                  completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setGivenName:givenName];
-            [userProfile setFamilyName:familyName];
-            // Always setAvatarUrlPath: before you setAvatarFileName: since
-            // setAvatarUrlPath: may clear the avatar filename.
-            [userProfile setAvatarUrlPath:avatarUrlPath];
-            [userProfile setAvatarFileName:avatarFileName];
-        }
-        functionName:__PRETTY_FUNCTION__
-         transaction:transaction
-          completion:completion];
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   [userProfile setGivenName:givenName];
+                   [userProfile setFamilyName:familyName];
+                   // Always setAvatarUrlPath: before you setAvatarFileName: since
+                   // setAvatarUrlPath: may clear the avatar filename.
+                   [userProfile setAvatarUrlPath:avatarUrlPath];
+                   [userProfile setAvatarFileName:avatarFileName];
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:YES
+                transaction:transaction
+                 completion:completion];
 }
 
 - (void)updateWithGivenName:(nullable NSString *)givenName
@@ -400,16 +417,17 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                  completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setGivenName:givenName];
-            [userProfile setFamilyName:familyName];
-            [userProfile setUsername:username];
-            [userProfile setIsUuidCapable:isUuidCapable];
-            [userProfile setAvatarUrlPath:avatarUrlPath];
-        }
-        functionName:__PRETTY_FUNCTION__
-         transaction:transaction
-          completion:completion];
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   [userProfile setGivenName:givenName];
+                   [userProfile setFamilyName:familyName];
+                   [userProfile setUsername:username];
+                   [userProfile setIsUuidCapable:isUuidCapable];
+                   [userProfile setAvatarUrlPath:avatarUrlPath];
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:YES
+                transaction:transaction
+                 completion:completion];
 }
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
@@ -417,61 +435,68 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                       completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setAvatarFileName:avatarFileName];
-        }
-        functionName:__PRETTY_FUNCTION__
-         transaction:transaction
-          completion:completion];
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   [userProfile setAvatarFileName:avatarFileName];
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:YES
+                transaction:transaction
+                 completion:completion];
 }
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setProfileKey:profileKey];
-            [userProfile setGivenName:nil];
-            [userProfile setFamilyName:nil];
-            // Always setAvatarUrlPath: before you setAvatarFileName: since
-            // setAvatarUrlPath: may clear the avatar filename.
-            [userProfile setAvatarUrlPath:nil];
-            [userProfile setAvatarFileName:nil];
-        }
-        functionName:__PRETTY_FUNCTION__
-         transaction:transaction
-          completion:completion];
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   [userProfile setProfileKey:profileKey];
+                   [userProfile setGivenName:nil];
+                   [userProfile setFamilyName:nil];
+                   // Always setAvatarUrlPath: before you setAvatarFileName: since
+                   // setAvatarUrlPath: may clear the avatar filename.
+                   [userProfile setAvatarUrlPath:nil];
+                   [userProfile setAvatarFileName:nil];
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:wasLocallyInitiated
+                transaction:transaction
+                 completion:completion];
 }
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey
+         wasLocallyInitiated:(BOOL)wasLocallyInitiated
                  transaction:(SDSAnyWriteTransaction *)transaction
                   completion:(nullable OWSUserProfileCompletion)completion
 {
     OWSAssertDebug(profileKey);
 
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setProfileKey:profileKey];
-        }
-        functionName:__PRETTY_FUNCTION__
-         transaction:transaction
-          completion:completion];
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   [userProfile setProfileKey:profileKey];
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:wasLocallyInitiated
+                transaction:transaction
+                 completion:completion];
 }
 
 - (void)updateWithGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setGivenName:givenName];
-            [userProfile setFamilyName:familyName];
-        }
-        functionName:__PRETTY_FUNCTION__
-         transaction:transaction
-          completion:completion];
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   [userProfile setGivenName:givenName];
+                   [userProfile setFamilyName:familyName];
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:wasLocallyInitiated
+                transaction:transaction
+                 completion:completion];
 }
 
 - (void)updateWithUsername:(nullable NSString *)username
@@ -481,13 +506,14 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     OWSAssertDebug(username == nil || username.length > 0);
 
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            userProfile.username = username;
-            userProfile.isUuidCapable = isUuidCapable;
-        }
-        functionName:__PRETTY_FUNCTION__
-         transaction:transaction
-          completion:nil];
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   userProfile.username = username;
+                   userProfile.isUuidCapable = isUuidCapable;
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:YES
+                transaction:transaction
+                 completion:nil];
 }
 
 // This should only be used in verbose, developer-only logs.

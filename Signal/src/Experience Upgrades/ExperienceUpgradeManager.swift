@@ -113,8 +113,8 @@ class ExperienceUpgradeManager: NSObject {
              .pinReminder:
             return true
         case .messageRequests:
-            // No reason to introduce message requests unless the user is missing their profile name
-            return !OWSProfileManager.shared().hasProfileName
+            // no need to annoy user with banner for message requests. They are self explanatory.
+            return false
         default:
             return false
         }
@@ -131,7 +131,8 @@ class ExperienceUpgradeManager: NSObject {
         case .pinReminder:
             return PinReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .messageRequests:
-            return MessageRequestsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+            // no need to annoy user with banner for message requests. They are self explanatory.
+            return nil
         default:
             return nil
         }

@@ -136,6 +136,15 @@ struct StorageServiceProtos_WriteOperation {
     set {_uniqueStorage()._deleteKey = newValue}
   }
 
+  var deleteAll: Bool {
+    get {return _storage._deleteAll ?? false}
+    set {_uniqueStorage()._deleteAll = newValue}
+  }
+  /// Returns true if `deleteAll` has been explicitly set.
+  var hasDeleteAll: Bool {return _storage._deleteAll != nil}
+  /// Clears the value of `deleteAll`. Subsequent reads from it will return its default value.
+  mutating func clearDeleteAll() {_uniqueStorage()._deleteAll = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -609,13 +618,15 @@ extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProto
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "manifest"),
     2: .same(proto: "insertItem"),
-    3: .same(proto: "deleteKey")
+    3: .same(proto: "deleteKey"),
+    4: .same(proto: "deleteAll")
   ]
 
   fileprivate class _StorageClass {
     var _manifest: StorageServiceProtos_StorageManifest?
     var _insertItem: [StorageServiceProtos_StorageItem] = []
     var _deleteKey: [Data] = []
+    var _deleteAll: Bool?
 
     static let defaultInstance = _StorageClass()
 
@@ -625,6 +636,7 @@ extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProto
       _manifest = source._manifest
       _insertItem = source._insertItem
       _deleteKey = source._deleteKey
+      _deleteAll = source._deleteAll
     }
   }
 
@@ -643,6 +655,7 @@ extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProto
         case 1: try decoder.decodeSingularMessageField(value: &_storage._manifest)
         case 2: try decoder.decodeRepeatedMessageField(value: &_storage._insertItem)
         case 3: try decoder.decodeRepeatedBytesField(value: &_storage._deleteKey)
+        case 4: try decoder.decodeSingularBoolField(value: &_storage._deleteAll)
         default: break
         }
       }
@@ -660,6 +673,9 @@ extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProto
       if !_storage._deleteKey.isEmpty {
         try visitor.visitRepeatedBytesField(value: _storage._deleteKey, fieldNumber: 3)
       }
+      if let v = _storage._deleteAll {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 4)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -672,6 +688,7 @@ extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProto
         if _storage._manifest != rhs_storage._manifest {return false}
         if _storage._insertItem != rhs_storage._insertItem {return false}
         if _storage._deleteKey != rhs_storage._deleteKey {return false}
+        if _storage._deleteAll != rhs_storage._deleteAll {return false}
         return true
       }
       if !storagesAreEqual {return false}

@@ -356,6 +356,11 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.groupV2Updates;
 }
 
+- (id<SyncManagerProtocol>)syncManager
+{
+    return SSKEnvironment.shared.syncManager;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -5331,14 +5336,92 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self.blockingManager addBlockedThread:self.thread wasLocallyInitiated:YES];
-    [self messageRequestViewDidTapDelete];
+    NSString *actionSheetTitle;
+    NSString *actionSheetMessage;
+    if (self.thread.isGroupThread) {
+        actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_GROUP_TITLE",
+            @"Action sheet title to confirm blocking a group via a message request.");
+        actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
+            @"Action sheet message to confirm blocking a group via a message request.");
+    } else {
+        actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE",
+            @"Action sheet title to confirm blocking a conversation via a message request.");
+        actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
+            @"Action sheet message to confirm blocking a conversation via a message request.");
+    }
+
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:actionSheetTitle
+                                                                              message:actionSheetMessage];
+
+    ActionSheetAction *blockAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_ACTION",
+                          @"Action sheet action to confirm blocking a thread via a message request.")
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *action) {
+                  [self.blockingManager addBlockedThread:self.thread wasLocallyInitiated:YES];
+                  [self.syncManager
+                      sendMessageRequestResponseSyncMessageWithThread:self.thread
+                                                         responseType:OWSSyncMessageRequestResponseType_Block];
+              }];
+    [actionSheet addAction:blockAction];
+
+    ActionSheetAction *blockAndDeleteAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
+                          @"Action sheet action to confirm blocking and deleting a thread via a message request.")
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *action) {
+                  [self.blockingManager addBlockedThread:self.thread wasLocallyInitiated:YES];
+                  [self.syncManager
+                      sendMessageRequestResponseSyncMessageWithThread:self.thread
+                                                         responseType:OWSSyncMessageRequestResponseType_BlockAndDelete];
+
+                  [self deleteThread];
+              }];
+    [actionSheet addAction:blockAndDeleteAction];
+
+    [actionSheet addAction:OWSActionSheets.cancelAction];
+
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)messageRequestViewDidTapDelete
 {
     OWSAssertIsOnMainThread();
 
+    NSString *actionSheetTitle;
+    NSString *actionSheetMessage;
+    NSString *actionSheetAction;
+    if (self.thread.isGroupThread) {
+        actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_GROUP_TITLE",
+            @"Action sheet title to confirm deleting a group via a message request.");
+        actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_GROUP_MESSAGE",
+            @"Action sheet message to confirm deleting a group via a message request.");
+        actionSheetAction = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_GROUP_ACTION",
+            @"Action sheet action to confirm deleting a group via a message request.");
+    } else {
+        actionSheetTitle = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE",
+            @"Action sheet title to confirm deleting a conversation via a message request.");
+        actionSheetMessage = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE",
+            @"Action sheet message to confirm deleting a conversation via a message request.");
+        actionSheetAction = NSLocalizedString(@"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION",
+            @"Action sheet action to confirm deleting a conversation via a message request.");
+    }
+
+    [OWSActionSheets
+        showConfirmationAlertWithTitle:actionSheetTitle
+                               message:actionSheetMessage
+                          proceedTitle:actionSheetAction
+                         proceedAction:^(ActionSheetAction *action) {
+                             [self.syncManager
+                                 sendMessageRequestResponseSyncMessageWithThread:self.thread
+                                                                    responseType:
+                                                                        OWSSyncMessageRequestResponseType_Delete];
+                             [self deleteThread];
+                         }];
+}
+
+- (void)deleteThread
+{
     void (^completion)(void) = ^{
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [self.thread softDeleteThreadWithTransaction:transaction];
@@ -5365,6 +5448,8 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self.profileManager addThreadToProfileWhitelist:self.thread];
+    [self.syncManager sendMessageRequestResponseSyncMessageWithThread:self.thread
+                                                         responseType:OWSSyncMessageRequestResponseType_Accept];
     [self dismissMessageRequestView];
 }
 
@@ -5372,8 +5457,33 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self.blockingManager removeBlockedThread:self.thread wasLocallyInitiated:YES];
-    [self messageRequestViewDidTapAccept];
+    NSString *threadName;
+    NSString *message;
+    if (self.thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        threadName = groupThread.groupNameOrDefault;
+        message = NSLocalizedString(
+            @"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE", @"An explanation of what unblocking a group means.");
+    } else {
+        TSContactThread *contactThread = (TSContactThread *)self.thread;
+        threadName = [self.contactsManager displayNameForAddress:contactThread.contactAddress];
+        message = NSLocalizedString(
+            @"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE", @"An explanation of what unblocking a contact means.");
+    }
+
+    [OWSActionSheets
+        showConfirmationAlertWithTitle:[NSString
+                                           stringWithFormat:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
+                                                                @"A format for the 'unblock conversation' action sheet "
+                                                                @"title. Embeds the {{conversation title}}."),
+                                           threadName]
+                               message:message
+                          proceedTitle:NSLocalizedString(
+                                           @"BLOCK_LIST_UNBLOCK_BUTTON", @"Button label for the 'unblock' button")
+                         proceedAction:^(ActionSheetAction *action) {
+                             [self.blockingManager removeBlockedThread:self.thread wasLocallyInitiated:YES];
+                             [self messageRequestViewDidTapAccept];
+                         }];
 }
 
 - (void)messageRequestViewDidTapLearnMore

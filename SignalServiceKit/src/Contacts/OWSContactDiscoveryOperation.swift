@@ -357,6 +357,7 @@ class CDSBatchOperation: OWSOperation {
         let plaintext = Data.join([addressPlainTextData, noncePlainTextData])
 
         guard let encryptionResult = Cryptography.encryptAESGCM(plainTextData: plaintext,
+                                                                initializationVectorLength: kAESGCM256_DefaultIVLength,
                                                                 additionalAuthenticatedData: remoteAttestation.requestId,
                                                                 key: remoteAttestation.keys.clientKey) else {
 

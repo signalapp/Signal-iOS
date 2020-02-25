@@ -55,6 +55,9 @@ public class RemoteConfig: NSObject {
         return isEnabled(.groupsV2CreateGroups)
     }
 
+    @objc
+    public static var storageService: Bool { isEnabled(.storageService) }
+
     private static func isEnabled(_ flag: Flags.Supported, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
             return defaultValue
@@ -84,6 +87,7 @@ private struct Flags {
         case mandatoryPins
         case messageRequests
         case groupsV2CreateGroups
+        case storageService
     }
 }
 
