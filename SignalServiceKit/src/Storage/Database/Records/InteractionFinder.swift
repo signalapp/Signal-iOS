@@ -1001,7 +1001,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     @objc
     func enumerateMessagesWithAttachments(transaction: GRDBReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
 
-        let emptyArraySerializedDataString = NSKeyedArchiver.archivedData(withRootObject: Array<String>()).hexadecimalString
+        let emptyArraySerializedDataString = NSKeyedArchiver.archivedData(withRootObject: [String]()).hexadecimalString
 
         let sql = """
             SELECT *
@@ -1163,6 +1163,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         """
         let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
         return try! UInt.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? 0
+    }
+
+    public static func maxRowId(transaction: GRDBReadTransaction) -> Int {
+        try! Int.fetchOne(transaction.database, sql: "SELECT MAX(id) FROM model_TSInteraction") ?? 0
     }
 
     // MARK: - Unseen & Unread

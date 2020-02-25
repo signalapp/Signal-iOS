@@ -113,6 +113,10 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         return SDSDatabaseStorage.shared
     }
 
+    private var grdbStorage: GRDBDatabaseStorageAdapter {
+        return SDSDatabaseStorage.shared.grdbStorage
+    }
+
     private var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
     }
@@ -173,8 +177,41 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         }) {
             Logger.info("loaded stored config: \(storedConfig)")
             self.cachedConfig = RemoteConfig(storedConfig)
+            do {
+                try ensureMessageRequestInteractionIdEpochState()
+            } catch {
+                owsFailDebug("error: \(error)")
+            }
         } else {
             Logger.info("no stored remote config")
+        }
+    }
+
+    func ensureMessageRequestInteractionIdEpochState() throws {
+        guard cachedConfig != nil else {
+            owsFailDebug("cachedConfig was unexpectedly nil")
+            return
+        }
+
+        let hasEpoch = try grdbStorage.read { SSKPreferences.messageRequestInteractionIdEpoch(transaction: $0) } != nil
+
+        if RemoteConfig.messageRequests {
+            guard hasEpoch else {
+                try grdbStorage.write { transaction in
+                    let maxId = GRDBInteractionFinder.maxRowId(transaction: transaction)
+                    SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction)
+                }
+                return
+            }
+        } else {
+            guard !hasEpoch else {
+                // Possible the flag was toggled on and then back off. We want to clear the recorded
+                // epoch so it can be reset the *next* time the flag is toggled back on.
+                try grdbStorage.write {
+                    SSKPreferences.setMessageRequestInteractionIdEpoch(nil, transaction: $0)
+                }
+                return
+            }
         }
     }
 
