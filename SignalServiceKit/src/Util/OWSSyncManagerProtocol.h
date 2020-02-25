@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (AnyPromise *)syncAllGroups __attribute__((warn_unused_result));
 
+- (AnyPromise *)syncAllOpenGroups __attribute__((warn_unused_result));
+
 @end
 
 NS_ASSUME_NONNULL_END
