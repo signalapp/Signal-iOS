@@ -248,7 +248,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
 
         // Identity key was created, schedule a social graph backup
-        [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ accountId ]];
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ accountId ]];
 
         return NO;
     }
@@ -285,7 +285,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
 
         // Identity key was changed, schedule a social graph backup
-        [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ accountId ]];
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ accountId ]];
 
         return YES;
     }
@@ -356,7 +356,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
 
     // Verification state has changed, schedule a social graph backup
-    [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ accountId ]];
+    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ accountId ]];
 
     [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
 }

@@ -1028,6 +1028,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Protos
 
+    public func masterKeyData(forGroupModel groupModel: TSGroupModel) throws -> Data {
+        return try GroupsV2Protos.masterKeyData(forGroupModel: groupModel)
+    }
+
     public func buildGroupContextV2Proto(groupModel: TSGroupModel,
                                          changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
         return try GroupsV2Protos.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: changeActionsProtoData)

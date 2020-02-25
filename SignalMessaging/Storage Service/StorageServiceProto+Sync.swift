@@ -276,6 +276,7 @@ extension StorageServiceProtoGroupV1Record {
         return try builder.build()
     }
 
+    // Embeds the group id.
     enum MergeState {
         case resolved(Data)
         case needsUpdate(Data)
@@ -381,7 +382,7 @@ extension StorageServiceProtoGroupV2Record {
         return try builder.build()
     }
 
-    // GroupsV2 TODO: Should the param be the master key or the group id?
+    // Embeds the master key.
     enum MergeState {
         case resolved(Data)
         case needsUpdate(Data)
@@ -412,7 +413,7 @@ extension StorageServiceProtoGroupV2Record {
         }
         let groupId = groupContextInfo.groupId
 
-        var mergeState: MergeState = .resolved(groupId)
+        var mergeState: MergeState = .resolved(masterKey)
 
         // Gather some local contact state to do comparisons against.
         let localIsBlocked = blockingManager.isGroupIdBlocked(groupId)
@@ -428,8 +429,7 @@ extension StorageServiceProtoGroupV2Record {
 
             // If the service is missing a blocked state, mark it as needing update.
         } else if !hasBlocked {
-            // GroupsV2 TODO: Is this necessary?
-            mergeState = .needsUpdate(groupId)
+            mergeState = .needsUpdate(masterKey)
         }
 
         // If our local whitelisted state differs from the service state, use the service's value.
@@ -442,8 +442,7 @@ extension StorageServiceProtoGroupV2Record {
 
             // If the service is missing a whitelisted state, mark it as needing update.
         } else if !hasWhitelisted {
-            // GroupsV2 TODO: Is this necessary?
-            mergeState = .needsUpdate(groupId)
+            mergeState = .needsUpdate(masterKey)
         }
 
         return mergeState
