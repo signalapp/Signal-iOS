@@ -311,7 +311,7 @@ extension StorageServiceProtoGroupV1Record {
                 blockingManager.removeBlockedGroupId(id, wasLocallyInitiated: false, transaction: transaction)
             }
 
-        // If the service is missing a blocked state, mark it as needing update.
+            // If the service is missing a blocked state, mark it as needing update.
         } else if !hasBlocked {
             mergeState = .needsUpdate(id)
         }
@@ -324,7 +324,7 @@ extension StorageServiceProtoGroupV1Record {
                 profileManager.removeGroupId(fromProfileWhitelist: id, wasLocallyInitiated: false, transaction: transaction)
             }
 
-        // If the service is missing a whitelisted state, mark it as needing update.
+            // If the service is missing a whitelisted state, mark it as needing update.
         } else if !hasWhitelisted {
             mergeState = .needsUpdate(id)
         }
@@ -332,6 +332,125 @@ extension StorageServiceProtoGroupV1Record {
         return mergeState
     }
 }
+
+// MARK: - Group V2 Record
+
+extension StorageServiceProtoGroupV2Record {
+
+    // MARK: - Dependencies
+
+    static var profileManager: OWSProfileManager {
+        return .shared()
+    }
+
+    var profileManager: OWSProfileManager {
+        return .shared()
+    }
+
+    static var blockingManager: OWSBlockingManager {
+        return .shared()
+    }
+
+    var blockingManager: OWSBlockingManager {
+        return .shared()
+    }
+
+    static var groupsV2: GroupsV2 {
+        return SSKEnvironment.shared.groupsV2
+    }
+
+    var groupsV2: GroupsV2 {
+        return SSKEnvironment.shared.groupsV2
+    }
+
+    // MARK: -
+
+    static func build(
+        for masterKeyData: Data,
+        transaction: SDSAnyReadTransaction
+    ) throws -> StorageServiceProtoGroupV2Record {
+
+        let groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
+        let groupId = groupContextInfo.groupId
+
+        let builder = StorageServiceProtoGroupV2Record.builder(masterKey: masterKeyData)
+
+        builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
+        builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
+
+        return try builder.build()
+    }
+
+    // GroupsV2 TODO: Should the param be the master key or the group id?
+    enum MergeState {
+        case resolved(Data)
+        case needsUpdate(Data)
+        case invalid
+    }
+
+    func mergeWithLocalGroup(transaction: SDSAnyWriteTransaction) -> MergeState {
+        // Our general merge philosophy is that the latest value on the service
+        // is always right. There are some edge cases where this could cause
+        // user changes to get blown away, such as if you're changing values
+        // simultaneously on two devices or if you force quit the application,
+        // your battery dies, etc. before it has had a chance to sync.
+        //
+        // In general, to try and mitigate these issues, we try and very proactively
+        // push any changes up to the storage service as contact information
+        // should not be changing very frequently.
+        //
+        // Should this prove unreliable, we may need to start maintaining time stamps
+        // representing the remote and local last update time for every value we sync.
+        // For now, we'd like to avoid that as it adds its own set of problems.
+
+        let groupContextInfo: GroupV2ContextInfo
+        do {
+            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+        } catch {
+            owsFailDebug("Invalid master key.")
+            return .invalid
+        }
+        let groupId = groupContextInfo.groupId
+
+        var mergeState: MergeState = .resolved(groupId)
+
+        // Gather some local contact state to do comparisons against.
+        let localIsBlocked = blockingManager.isGroupIdBlocked(groupId)
+        let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction)
+
+        // If our local blocked state differs from the service state, use the service's value.
+        if hasBlocked, blocked != localIsBlocked {
+            if blocked {
+                blockingManager.addBlockedGroupId(groupId, wasLocallyInitiated: false, transaction: transaction)
+            } else {
+                blockingManager.removeBlockedGroupId(groupId, wasLocallyInitiated: false, transaction: transaction)
+            }
+
+            // If the service is missing a blocked state, mark it as needing update.
+        } else if !hasBlocked {
+            // GroupsV2 TODO: Is this necessary?
+            mergeState = .needsUpdate(groupId)
+        }
+
+        // If our local whitelisted state differs from the service state, use the service's value.
+        if hasWhitelisted, whitelisted != localIsWhitelisted {
+            if whitelisted {
+                profileManager.addGroupId(toProfileWhitelist: groupId, wasLocallyInitiated: false, transaction: transaction)
+            } else {
+                profileManager.removeGroupId(fromProfileWhitelist: groupId, wasLocallyInitiated: false, transaction: transaction)
+            }
+
+            // If the service is missing a whitelisted state, mark it as needing update.
+        } else if !hasWhitelisted {
+            // GroupsV2 TODO: Is this necessary?
+            mergeState = .needsUpdate(groupId)
+        }
+
+        return mergeState
+    }
+}
+
+// MARK: -
 
 extension Data {
     func prependKeyType() -> Data {

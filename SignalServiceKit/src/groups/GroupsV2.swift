@@ -188,11 +188,11 @@ public struct GroupV2Change {
 @objc
 public class GroupV2ContextInfo: NSObject {
     @objc
-    let masterKeyData: Data
+    public let masterKeyData: Data
     @objc
-    let groupSecretParamsData: Data
+    public let groupSecretParamsData: Data
     @objc
-    let groupId: Data
+    public let groupId: Data
 
     public init(masterKeyData: Data, groupSecretParamsData: Data, groupId: Data) {
         self.masterKeyData = masterKeyData
