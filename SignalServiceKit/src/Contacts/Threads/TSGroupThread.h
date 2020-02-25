@@ -58,7 +58,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 + (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)leaveGroupAndSendQuitMessageWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Avatar
 

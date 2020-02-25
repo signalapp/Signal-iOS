@@ -65,6 +65,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 // --- CODE GENERATION MARKER
 
+- (MessageSenderJobQueue *)messageSenderJobQueue
+{
+    return SSKEnvironment.shared.messageSenderJobQueue;
+}
+
 - (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel
 {
     OWSAssertDebug(groupModel);
@@ -169,8 +174,26 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
-- (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)leaveGroupAndSendQuitMessageWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    if (!self.isLocalUserInGroup) {
+        OWSFailDebug(@"unexpectedly trying to leave group for which we're not a member.");
+        return;
+    }
+
+    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:self
+                                                           groupMetaMessage:TSGroupMetaMessageQuit
+                                                           expiresInSeconds:0];
+    [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+
+    // Only show the group quit message if there are other messages still in the group
+    if ([self numberOfInteractionsWithTransaction:transaction] > 0) {
+        TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+                                                                     inThread:self
+                                                                  messageType:TSInfoMessageTypeGroupQuit];
+        [infoMessage anyInsertWithTransaction:transaction];
+    }
+
     SignalServiceAddress *_Nullable localAddress = [TSAccountManager localAddressWithTransaction:transaction];
     OWSAssertDebug(localAddress);
 
