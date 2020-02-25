@@ -1127,10 +1127,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (wasSentByMasterDevice && syncMessage.openGroups.count > 0) {
             OWSLogInfo(@"[Loki] Received open group sync message.");
             for (SSKProtoSyncMessageOpenGroups* openGroup in syncMessage.openGroups) {
-                [LKPublicChatManager.shared addChatWithServer:openGroup.url channel:openGroup.channel]
-                .then(^{
-                    
-                });
+                [LKPublicChatManager.shared addChatWithServer:openGroup.url channel:openGroup.channel];
             }
         }
     } else {
