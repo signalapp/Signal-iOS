@@ -16,6 +16,7 @@ class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol {
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
     func recordPendingUpdates(updatedGroupV1Ids: [Data]) {}
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}
+    func recordPendingUpdates(groupModel: TSGroupModel) {}
 
     func backupPendingChanges() {}
     func restoreOrCreateManifestIfNecessary() -> AnyPromise { AnyPromise(Promise.value(())) }

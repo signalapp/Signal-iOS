@@ -465,7 +465,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         }
 
         if (wasLocallyInitiated) {
-            [self recordPendingUpdatesForStorageServiceWithGroupModel:groupThread.groupModel];
+            [self.storageServiceManager recordPendingUpdatesWithGroupModel:groupThread.groupModel];
         }
     }
 
@@ -491,35 +491,11 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         [self.blockedGroupMap removeObjectForKey:groupId];
 
         if (wasLocallyInitiated && groupModel != nil) {
-            [self recordPendingUpdatesForStorageServiceWithGroupModel:groupModel];
+            [self.storageServiceManager recordPendingUpdatesWithGroupModel:groupModel];
         }
     }
 
     [self handleUpdateWithSneakyTransactionAndSendSyncMessage:wasLocallyInitiated];
-}
-
-- (void)recordPendingUpdatesForStorageServiceWithGroupModel:(TSGroupModel *)groupModel
-{
-    switch (groupModel.groupsVersion) {
-        case GroupsVersionV1:
-            [self.storageServiceManager recordPendingUpdatesWithUpdatedGroupV1Ids:@[ groupModel.groupId ]];
-            break;
-        case GroupsVersionV2: {
-            if (![groupModel isKindOfClass:TSGroupModelV2.class]) {
-                OWSFailDebug(@"Invalid group model.");
-                return;
-            }
-            TSGroupModelV2 *groupModelV2 = (TSGroupModelV2 *)groupModel;
-            NSError *_Nullable error;
-            NSData *_Nullable groupMasterKey = [self.groupsV2 masterKeyDataForGroupModel:groupModelV2 error:&error];
-            if (error != nil || groupMasterKey == nil) {
-                OWSFailDebug(@"Missing master key: %@.", error);
-                return;
-            }
-            [self.storageServiceManager recordPendingUpdatesWithUpdatedGroupV2MasterKeys:@[ groupMasterKey ]];
-            break;
-        }
-    }
 }
 
 - (void)removeBlockedGroupId:(NSData *)groupId

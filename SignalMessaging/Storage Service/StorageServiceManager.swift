@@ -122,6 +122,22 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     @objc
+    public func recordPendingUpdates(groupModel: TSGroupModel) {
+        if let groupModelV2 = groupModel as? TSGroupModelV2 {
+            let groupMasterKey: Data
+            do {
+                groupMasterKey = try groupsV2.masterKeyData(forGroupModel: groupModelV2)
+            } catch {
+                owsFailDebug("Missing master key: \(error)")
+                return
+            }
+            recordPendingUpdates(updatedGroupV2MasterKeys: [ groupMasterKey ])
+        } else {
+            recordPendingDeletions(deletedGroupV1Ids: [ groupModel.groupId ])
+        }
+    }
+
+    @objc
     public func backupPendingChanges() {
         let operation = StorageServiceOperation(mode: .backup)
         StorageServiceOperation.operationQueue.addOperation(operation)

@@ -71,6 +71,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return SSKEnvironment.shared.groupsV2;
 }
 
+- (id<StorageServiceManagerProtocol>)storageServiceManager
+{
+    return SSKEnvironment.shared.storageServiceManager;
+}
+
 #pragma mark -
 
 @synthesize localUserProfile = _localUserProfile;
@@ -1013,7 +1018,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     [transaction addSyncCompletion:^{
         // Mark the removed whitelisted addresses for update
         if (wasLocallyInitiated) {
-            [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects];
+            [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects];
         }
 
         for (SignalServiceAddress *address in addressesToRemove) {
@@ -1050,7 +1055,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     [transaction addSyncCompletion:^{
         // Mark the new whitelisted addresses for update
         if (wasLocallyInitiated) {
-            [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects];
+            [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects];
         }
 
         for (SignalServiceAddress *address in addressesToAdd) {
@@ -1165,7 +1170,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     [transaction addSyncCompletion:^{
         // Mark the group for update
         if (wasLocallyInitiated) {
-            [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+            [self recordPendingUpdatesForStorageServiceWithGroupId:groupId];
         }
 
         [[NSNotificationCenter defaultCenter]
@@ -1191,7 +1196,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     [transaction addSyncCompletion:^{
         // Mark the group for update
         if (wasLocallyInitiated) {
-            [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+            [self recordPendingUpdatesForStorageServiceWithGroupId:groupId];
         }
 
         [[NSNotificationCenter defaultCenter]
@@ -1201,6 +1206,21 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                  kNSNotificationKey_ProfileGroupId : groupId,
                                  kNSNotificationKey_WasLocallyInitiated : @(wasLocallyInitiated),
                              }];
+    }];
+}
+
+- (void)recordPendingUpdatesForStorageServiceWithGroupId:(NSData *)groupId
+{
+    OWSAssertDebug(groupId.length > 0);
+
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+        if (groupThread == nil) {
+            OWSFailDebug(@"Missing groupThread.");
+            return;
+        }
+
+        [self.storageServiceManager recordPendingUpdatesWithGroupModel:groupThread.groupModel];
     }];
 }
 
