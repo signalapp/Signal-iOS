@@ -45,6 +45,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return SSKEnvironment.shared.contactsUpdater
     }
 
+    private var reachabilityManager: SSKReachabilityManager {
+        return SSKEnvironment.shared.reachabilityManager
+    }
+
     // MARK: -
 
     public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
@@ -59,12 +63,46 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             guard self.tsAccountManager.isRegisteredAndReady else {
                 return
             }
+
             firstly {
                 GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
             }.catch { error in
                 Logger.warn("Local profile update failed with error: \(error)")
             }.retainUntilComplete()
+
+            GroupsV2Impl.enqueueRestoreGroupPass()
         }
+
+        observeNotifications()
+    }
+
+    // MARK: - Notifications
+
+    private func observeNotifications() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(reachabilityChanged),
+                                               name: SSKReachability.owsReachabilityDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: .OWSApplicationDidBecomeActive,
+                                               object: nil)
+    }
+
+    @objc
+    func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            GroupsV2Impl.enqueueRestoreGroupPass()
+        }
+    }
+
+    @objc
+    func reachabilityChanged() {
+        AssertIsOnMainThread()
+
+        GroupsV2Impl.enqueueRestoreGroupPass()
     }
 
     // MARK: - Create Group
@@ -1050,6 +1088,17 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise(error: OWSAssertionError("Versioned profiles are not enabled."))
         }
         return self.profileManager.reuploadLocalProfilePromise()
+    }
+
+    // MARK: - Restore Groups
+
+    public func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
+                                             transaction: SDSAnyReadTransaction) -> Bool {
+        return GroupsV2Impl.isGroupKnownToStorageService(groupModel: groupModel, transaction: transaction)
+    }
+
+    public func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction) {
+        GroupsV2Impl.enqueueGroupRestore(masterKeyData: masterKeyData, transaction: transaction)
     }
 
     // MARK: - Groups Secrets

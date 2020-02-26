@@ -988,8 +988,8 @@ class StorageServiceOperation: OWSOperation {
                             // update the mapping
                             groupV2IdentifierMap[groupMasterKey] = item.identifier
 
-                            self.refreshGroupV2FromServiceIfNecessary(groupMasterKey: groupMasterKey,
-                                                                      transaction: transaction)
+                            self.groupsV2.restoreGroupFromStorageServiceIfNecessary(masterKeyData: groupMasterKey,
+                                                                                    transaction: transaction)
 
                         case .needsRefreshFromService(let groupMasterKey):
                             // We're all resolved, so if we had a pending change for this group clear it out.
@@ -998,8 +998,8 @@ class StorageServiceOperation: OWSOperation {
                             // update the mapping
                             groupV2IdentifierMap[groupMasterKey] = item.identifier
 
-                            self.refreshGroupV2FromServiceIfNecessary(groupMasterKey: groupMasterKey,
-                                                                      transaction: transaction)
+                            self.groupsV2.restoreGroupFromStorageServiceIfNecessary(masterKeyData: groupMasterKey,
+                                                                                    transaction: transaction)
                         case .resolved(let groupMasterKey):
                             // We're all resolved, so if we had a pending change for this group clear it out.
                             pendingGroupV2Changes[groupMasterKey] = nil
@@ -1087,37 +1087,6 @@ class StorageServiceOperation: OWSOperation {
             }
 
             self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
-    }
-
-    private func refreshGroupV2FromServiceIfNecessary(groupMasterKey: Data,
-                                                      transaction: SDSAnyReadTransaction) {
-
-        let groupContextInfo: GroupV2ContextInfo
-        do {
-            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupMasterKey)
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return
-        }
-
-        let isGroupInDatabase = TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: transaction) != nil
-        guard !isGroupInDatabase else {
-            return
-        }
-
-        // This will try to update the group using incremental "changes" but
-        // failover to using a "snapshot".
-        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
-        firstly {
-            self.groupV2Updates.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
-                                                                        groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                        groupUpdateMode: groupUpdateMode)
-        }.done { _ in
-            Logger.verbose("Update succeeded.")
-        }.catch { error in
-            // GroupsV2 TODO: Don't assert on network failures.
-            owsFailDebug("Error: \(error)")
         }.retainUntilComplete()
     }
 

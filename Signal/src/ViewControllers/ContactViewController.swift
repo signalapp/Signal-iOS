@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
 import SignalMessaging
-import Reachability
 import ContactsUI
 import MessageUI
 
@@ -32,8 +31,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     private let contactsManager: OWSContactsManager
-
-    private var reachability: Reachability?
 
     private let contactShare: ContactShareViewModel
 
@@ -65,9 +62,8 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             strongSelf.updateMode()
         }
 
-        reachability = Reachability.forInternetConnection()
-
-        NotificationCenter.default.addObserver(forName: .reachabilityChanged, object: nil, queue: nil) { [weak self] _ in
+        NotificationCenter.default.addObserver(forName: SSKReachability.owsReachabilityDidChange,
+                                               object: nil, queue: nil) { [weak self] _ in
             guard let strongSelf = self else { return }
             strongSelf.updateMode()
         }
@@ -362,8 +358,8 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 //        }
 
         if let organizationName = contactShare.name.organizationName?.ows_stripped() {
-            if (contactShare.name.hasAnyNamePart() &&
-                organizationName.count > 0) {
+            if contactShare.name.hasAnyNamePart() &&
+                organizationName.count > 0 {
                 rows.append(ContactFieldView.contactFieldView(forOrganizationName: organizationName,
                                                               layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin)))
             }

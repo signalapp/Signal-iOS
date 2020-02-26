@@ -64,6 +64,10 @@ public class GroupManager: NSObject {
         return SSKEnvironment.shared.profileManager
     }
 
+    private class var storageServiceManager: StorageServiceManagerProtocol {
+        return SSKEnvironment.shared.storageServiceManager
+    }
+
     // MARK: -
 
     // Never instantiate this class.
@@ -1265,6 +1269,9 @@ public class GroupManager: NSObject {
                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                      transaction: transaction)
 
+        notifyStorageServiceOfInsertedGroup(groupModel: groupModel,
+                                            transaction: transaction)
+
         return groupThread
     }
 
@@ -1379,7 +1386,26 @@ public class GroupManager: NSObject {
         return UpsertGroupResult(action: .updated, groupThread: groupThread)
     }
 
-    // MARK: - Group Update Info Messages
+    // MARK: - Storage Service
+
+    private static func notifyStorageServiceOfInsertedGroup(groupModel: TSGroupModel,
+                                                            transaction: SDSAnyReadTransaction) {
+        guard let groupModel = groupModel as? TSGroupModelV2 else {
+            // We only need to notify the storage service about v2 groups.
+            return
+        }
+        guard !groupsV2.isGroupKnownToStorageService(groupModel: groupModel,
+                                                     transaction: transaction) else {
+                                                        // To avoid redundant storage service writes,
+                                                        // don't bother notifying the storage service
+                                                        // about v2 groups it already knows about.
+                                                        return
+        }
+
+        storageServiceManager.recordPendingUpdates(groupModel: groupModel)
+    }
+
+    // MARK: - "Group Update" Info Messages
 
     // NOTE: This should only be called by GroupManager and by DebugUI.
     public static func insertGroupUpdateInfoMessage(groupThread: TSGroupThread,

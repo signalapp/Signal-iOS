@@ -10,7 +10,6 @@
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSYapDatabaseObject.h"
-#import <Reachability/Reachability.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,8 +20,6 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 };
 
 @interface OWSOutgoingReceiptManager ()
-
-@property (nonatomic) Reachability *reachability;
 
 // This property should only be accessed on the serialQueue.
 @property (nonatomic) BOOL isProcessing;
@@ -69,13 +66,11 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         return self;
     }
 
-    self.reachability = [Reachability reachabilityForInternetConnection];
-
     OWSSingletonAssert();
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged)
-                                                 name:kReachabilityChangedNotification
+                                                 name:SSKReachability.owsReachabilityDidChange
                                                object:nil];
 
     // Start processing.
@@ -98,6 +93,11 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
     OWSAssertDebug(SSKEnvironment.shared.messageSender);
 
     return SSKEnvironment.shared.messageSender;
+}
+
+- (id<SSKReachabilityManager>)reachabilityManager
+{
+    return SSKEnvironment.shared.reachabilityManager;
 }
 
 #pragma mark -
@@ -126,7 +126,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
         self.isProcessing = YES;
 
-        if (!self.reachability.isReachable) {
+        if (!self.reachabilityManager.isReachable) {
             // No network availability; abort.
             self.isProcessing = NO;
             return;

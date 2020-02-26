@@ -1188,8 +1188,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     [Environment.shared.audioSession setup];
 
-    [SSKEnvironment.shared.reachabilityManager setup];
-
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [self.databaseStorage
             asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {

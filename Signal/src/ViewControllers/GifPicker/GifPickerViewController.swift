@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
-import Reachability
 import SignalMessaging
 import PromiseKit
 
@@ -112,8 +111,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     var hasSelectedCell: Bool = false
     var imageInfos = [GiphyImageInfo]()
 
-    var reachability: Reachability?
-
     private let kCellReuseIdentifier = "kCellReuseIdentifier"
 
     var progressiveSearchTimer: Timer?
@@ -190,10 +187,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         createViews()
 
-        reachability = Reachability.forInternetConnection()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),
-                                               name: .reachabilityChanged,
+                                               name: SSKReachability.owsReachabilityDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),

@@ -246,7 +246,7 @@ public extension JobQueue {
                 return
             }
             if self.requiresInternet {
-                NotificationCenter.default.addObserver(forName: .reachabilityChanged,
+                NotificationCenter.default.addObserver(forName: SSKReachability.owsReachabilityDidChange,
                                                        object: self.reachabilityManager.observationContext,
                                                        queue: nil) { _ in
 

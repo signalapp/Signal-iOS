@@ -49,7 +49,6 @@ class IncomingGroupsV2MessageQueue: NSObject {
     // MARK: -
 
     private let finder = GRDBGroupsV2MessageJobFinder()
-    private let reachability = Reachability.forInternetConnection()
     // This property should only be accessed on serialQueue.
     private var isDrainingQueue = false
     private var isAppInBackground = AtomicBool(false)
@@ -86,7 +85,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),
-                                               name: .reachabilityChanged,
+                                               name: SSKReachability.owsReachabilityDidChange,
                                                object: nil)
     }
 
@@ -602,9 +601,9 @@ class IncomingGroupsV2MessageQueue: NSObject {
         // failover to using a "snapshot".
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
         return firstly {
-            groupV2Updates.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
-                                                                   groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                   groupUpdateMode: groupUpdateMode)
+            self.groupV2Updates.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
+                                                                        groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                        groupUpdateMode: groupUpdateMode)
         }.map(on: .global()) { (_) in
             return UpdateOutcome.successShouldProcess
         }.recover(on: .global()) { error -> Guarantee<UpdateOutcome> in

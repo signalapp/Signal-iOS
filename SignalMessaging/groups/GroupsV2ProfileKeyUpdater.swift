@@ -5,7 +5,6 @@
 import Foundation
 import PromiseKit
 import SignalServiceKit
-import Reachability
 
 // Whenever we rotate our profile key, we need to update all
 // v2 groups of which we are a non-pending member.
@@ -40,16 +39,16 @@ class GroupsV2ProfileKeyUpdater {
         return SSKEnvironment.shared.messageProcessing
     }
 
+    private var reachabilityManager: SSKReachabilityManager {
+        return SSKEnvironment.shared.reachabilityManager
+    }
+
     // MARK: -
 
-    var reachability: Reachability?
-
     public required init() {
-        reachability = Reachability.forInternetConnection()
-
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),
-                                               name: .reachabilityChanged,
+                                               name: SSKReachability.owsReachabilityDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -136,9 +135,8 @@ class GroupsV2ProfileKeyUpdater {
         guard CurrentAppContext().isMainAppAndActive else {
             return
         }
-        guard let reachability = self.reachability,
-            reachability.isReachable() else {
-                return
+        guard reachabilityManager.isReachable else {
+            return
         }
 
         serialQueue.async {

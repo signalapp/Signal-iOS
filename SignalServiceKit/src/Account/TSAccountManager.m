@@ -16,7 +16,6 @@
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
 #import <PromiseKit/AnyPromise.h>
-#import <Reachability/Reachability.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -149,8 +148,6 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 // when notified of a cross-process write.
 @property (nonatomic, nullable) TSAccountState *cachedAccountState;
 
-@property (nonatomic) Reachability *reachability;
-
 @end
 
 #pragma mark -
@@ -168,7 +165,6 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     }
 
     _keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:TSAccountManager_UserAccountCollection];
-    self.reachability = [Reachability reachabilityForInternetConnection];
 
     OWSSingletonAssert();
 
@@ -185,7 +181,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged)
-                                                 name:kReachabilityChangedNotification
+                                                 name:SSKReachability.owsReachabilityDidChange
                                                object:nil];
 
     return self;

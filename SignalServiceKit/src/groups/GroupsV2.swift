@@ -47,6 +47,11 @@ public protocol GroupsV2: AnyObject {
     func processProfileKeyUpdates()
 
     func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction)
+
+    func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
+                                      transaction: SDSAnyReadTransaction) -> Bool
+
+    func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction)
 }
 
 // MARK: -
@@ -386,6 +391,15 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
 
     public func uploadGroupAvatar(avatarData: Data,
                                   groupSecretParamsData: Data) -> Promise<String> {
+        owsFail("Not implemented.")
+    }
+
+    public func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
+                                             transaction: SDSAnyReadTransaction) -> Bool {
+        owsFail("Not implemented.")
+    }
+
+    public func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 }

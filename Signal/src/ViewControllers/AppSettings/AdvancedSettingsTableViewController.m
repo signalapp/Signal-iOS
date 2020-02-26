@@ -10,30 +10,29 @@
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import <PromiseKit/AnyPromise.h>
-#import <Reachability/Reachability.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface AdvancedSettingsTableViewController ()
+@implementation AdvancedSettingsTableViewController
 
-@property (nonatomic) Reachability *reachability;
+#pragma mark - Dependencies
 
-@end
+- (id<SSKReachabilityManager>)reachabilityManager
+{
+    return SSKEnvironment.shared.reachabilityManager;
+}
 
 #pragma mark -
-
-@implementation AdvancedSettingsTableViewController
 
 - (void)loadView
 {
     [super loadView];
 
     self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
-
-    self.reachability = [Reachability reachabilityForInternetConnection];
 
     [self observeNotifications];
 
@@ -48,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged)
-                                                 name:kReachabilityChangedNotification
+                                                 name:SSKReachability.owsReachabilityDidChange
                                                object:nil];
 }
 
@@ -163,7 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
             = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED",
                 @"Table footer for the 'censorship circumvention' section shown when the app is connected to the "
                 @"Signal service.");
-    } else if (!self.reachability.isReachable) {
+    } else if (!self.reachabilityManager.isReachable) {
         censorshipSection.footerTitle
             = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION",
                 @"Table footer for the 'censorship circumvention' section shown when the app is not connected to the "
@@ -188,7 +187,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSwitchBlock isCensorshipCircumventionOnBlock = ^{
         return OWSSignalService.sharedInstance.isCensorshipCircumventionActive;
     };
-    Reachability *reachability = self.reachability;
+    // Close over reachabilityManager to avoid leaking a reference to self.
+    id<SSKReachabilityManager> reachabilityManager = self.reachabilityManager;
     OWSTableSwitchBlock isManualCensorshipCircumventionOnEnabledBlock = ^{
         OWSSignalService *service = OWSSignalService.sharedInstance;
         if (service.isCensorshipCircumventionActive) {
@@ -198,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (TSSocketManager.shared.socketState == OWSWebSocketStateOpen) {
             return NO;
         } else {
-            return reachability.isReachable;
+            return reachabilityManager.isReachable;
         }
     };
 
