@@ -1254,7 +1254,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Rozpocznij tutaj swoją pierwszą rozmowę.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ dodał(a) Cię do grupy";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Prośba o kontakt";
@@ -1551,7 +1551,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Zablokuj i usuń";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Zablokowane osoby nie będą mogły do Ciebie dzwonić ani wysyłać Ci wiadomości.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Zablokować %@?";
@@ -1560,13 +1560,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Opuścisz tę grupę i nie będziesz już otrzymywać z niej wiadomości ani aktualizacji.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Zablokować i opuścić %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Usuń";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Ta konwersacja zostanie usunięta ze wszystkich Twoich urządzeń.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Usunąć konwersację?";
@@ -1575,10 +1575,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Usuń i opuść";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Opuścisz tę grupę i zostanie ona usunięta ze wszystkich Twoich urządzeń.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Usunąć i opuścić grupę? ";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Akceptuj";

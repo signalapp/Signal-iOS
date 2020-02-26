@@ -537,7 +537,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Tem certeza de que deseja excluir sua conta?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Isso irá resetar o aplicativo excluindo todas as suas mensagens salvas nesse celular. Você poderá vincular seu telefone novamente a essa conta do Signal, mas isso não restaurará as mensagens excluídas. O aplicativo será fechado após a conclusão desse processo.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Tem certeza que deseja deletar todos os dados?";

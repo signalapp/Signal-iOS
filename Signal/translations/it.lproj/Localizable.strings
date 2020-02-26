@@ -294,7 +294,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Blocca";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blocca e lascia il gruppo \"%@\"?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Bloccare e abbandonare il gruppo \"%@\"?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Bloccare %@?";
@@ -546,7 +546,7 @@
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Non sarei più in grado di inviare o ricevere messaggi in questo gruppo.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Vuoi davvero lasciare?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Vuoi davvero abbandonare?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Associa nuovo dispositivo";
@@ -1254,7 +1254,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Inizia qui la tua prima conversazione.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ ti ha aggiunto al gruppo";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Richiesta di messaggio";
@@ -1551,7 +1551,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blocca ed elimina";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Gli utenti bloccati non potranno chiamarti o inviarti messaggi.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Bloccare %@?";
@@ -1560,13 +1560,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Abbandonerai questo gruppo e non riceverai più messaggi o aggiornamenti.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Bloccare e abbandonare %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Elimina";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Questa conversazione verrà eliminata da tutti i tuoi dispositivi.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Elimina conversazione?";
@@ -1575,10 +1575,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Elimina e abbandona";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Abbandonerai questo gruppo e verrà eliminato da tutti i tuoi dispositivi.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Eliminare e abbandonare il gruppo?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Accetta";
@@ -3186,7 +3186,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Il tuoi device non supporta questa feature antani.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Non puoi rimuovere membri del gruppo. Devono lasciare loro il gruppo, oppure devi creare un nuovo gruppo senza questo membro.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Non puoi rimuovere membri del gruppo. Devono abbandonare loro il gruppo o devi creare un nuovo gruppo senza questo membro.";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Non consentito";

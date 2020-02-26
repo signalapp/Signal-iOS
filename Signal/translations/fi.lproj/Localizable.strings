@@ -627,7 +627,7 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Ei puhelinnumeroa";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Valitsy yhteystieto";
+"CONTACT_PICKER_TITLE" = "Valitse yhteystieto";
 
 /* Title for the 'Approve contact share' view. */
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Jaa yhteystieto";
@@ -1254,7 +1254,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Aloita ensimmäinen keskustelu.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ lisäsi sinut ryhmään";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Viestipyyntö";
@@ -1551,7 +1551,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Estä ja poista";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Estetyt henkilöt eivät pysty soittamaan sinulle tai lähettämään sinulle viestejä.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Estä %@?";
@@ -1560,13 +1560,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Lähdet tästä ryhmästä etkä enää vastaanota viestejä tai päivityksiä.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Estä ja lähde ryhmästä %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Poista";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Tämä keskustelu poistetaan kaikilta laitteiltasi.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Poistetaanko keskustelu?";
@@ -1575,10 +1575,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Poista ja lähde";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Lähdet tästä ryhmästä ja se poistetaan kaikilta laitteiltasi.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Poista ja lähde ryhmästä?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Hyväksy";
