@@ -1455,7 +1455,9 @@ public class GroupManager: NSObject {
     }
 
     public static func ensureLocalProfileHasCommitmentIfNecessary() -> Promise<Void> {
-
+        guard tsAccountManager.isOnboarded() else {
+            return Promise.value(())
+        }
         guard let localAddress = self.tsAccountManager.localAddress else {
             return Promise(error: OWSAssertionError("Missing localAddress."))
         }
