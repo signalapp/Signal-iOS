@@ -272,4 +272,15 @@ public class DebugFlags: NSObject {
 
     @objc
     public static let logSQLQueries = build.includes(.dev)
+
+    // If set, v2 groups will be created and updated with invalid avatars
+    // so that we can test clients' robustness to this case.
+    @objc
+    public static let groupsV2corruptAvatarUrlPaths = false
+
+    // If set, v2 groups will be created and updated with
+    // corrupt avatars, group names, and/or dm state
+    // so that we can test clients' robustness to this case.
+    @objc
+    public static let groupsV2corruptBlobEncryption = false
 }

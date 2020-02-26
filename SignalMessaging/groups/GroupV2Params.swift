@@ -48,6 +48,9 @@ public extension GroupV2Params {
     }
 
     func encryptBlob(_ plaintext: Data) throws -> Data {
+        guard !DebugFlags.groupsV2corruptBlobEncryption else {
+            return Randomness.generateRandomBytes(Int32(plaintext.count))
+        }
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
         return try clientZkGroupCipher.encryptBlob(plaintext: [UInt8](plaintext)).asData
     }
