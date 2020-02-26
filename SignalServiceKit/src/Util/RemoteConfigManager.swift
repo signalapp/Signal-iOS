@@ -51,7 +51,7 @@ public class RemoteConfig: NSObject {
     @objc
     public static var groupsV2CreateGroups: Bool {
         guard FeatureFlags.groupsV2CreateGroups else { return false }
-        if FeatureFlags.groupsV2IgnoreServerFlags { return true }
+        if DebugFlags.groupsV2IgnoreServerFlags { return true }
         return isEnabled(.groupsV2CreateGroups)
     }
 
