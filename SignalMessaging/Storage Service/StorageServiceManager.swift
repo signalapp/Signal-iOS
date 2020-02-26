@@ -21,12 +21,20 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         return SSKEnvironment.shared.groupsV2
     }
 
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     // MARK: -
 
     override init() {
         super.init()
 
         SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.cleanUpUnknownIdentifiers()
+        }
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             NotificationCenter.default.addObserver(
@@ -155,6 +163,31 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     public func resetLocalData(transaction: SDSAnyWriteTransaction) {
         Logger.info("Reseting local storage service data.")
         StorageServiceOperation.keyValueStore.removeAll(transaction: transaction)
+    }
+
+    private func cleanUpUnknownIdentifiers() {
+        databaseStorage.write { transaction in
+            // We may have learned of new record types; if so we should
+            // cull them from the unknownIdentifiersTypeMap on launch.
+            let knownTypes: [UInt32] = [
+                UInt32(StorageServiceProtoStorageRecordType.contact.rawValue),
+                UInt32(StorageServiceProtoStorageRecordType.groupv1.rawValue),
+                UInt32(StorageServiceProtoStorageRecordType.groupv2.rawValue)
+            ]
+
+            var unknownIdentifiersTypeMap = StorageServiceOperation.unknownIdentifiersTypeMap(transaction: transaction)
+            var didChange = false
+            for knownType in knownTypes {
+                if unknownIdentifiersTypeMap[knownType] != nil {
+                    unknownIdentifiersTypeMap.removeValue(forKey: knownType)
+                    didChange = true
+                }
+            }
+
+            if didChange {
+                StorageServiceOperation.setUnknownIdentifiersTypeMap(unknownIdentifiersTypeMap, transaction: transaction)
+            }
+        }
     }
 
     // MARK: - Backup Scheduling
@@ -1162,12 +1195,12 @@ class StorageServiceOperation: OWSOperation {
         return unknownIdentifiersTypeMap(transaction: transaction).flatMap { $0.value }
     }
 
-    private static func unknownIdentifiersTypeMap(transaction: SDSAnyReadTransaction) -> [UInt32: [StorageService.StorageIdentifier]] {
+    fileprivate static func unknownIdentifiersTypeMap(transaction: SDSAnyReadTransaction) -> [UInt32: [StorageService.StorageIdentifier]] {
         guard let unknownIdentifiers = keyValueStore.getObject(unknownIdentifierTypeMapKey, transaction: transaction) as? [UInt32: [Data]] else { return [:] }
         return unknownIdentifiers.mapValues { $0.map { .init(data: $0) } }
     }
 
-    private static func setUnknownIdentifiersTypeMap( _ dictionary: [UInt32: [StorageService.StorageIdentifier]], transaction: SDSAnyWriteTransaction) {
+    fileprivate static func setUnknownIdentifiersTypeMap( _ dictionary: [UInt32: [StorageService.StorageIdentifier]], transaction: SDSAnyWriteTransaction) {
         keyValueStore.setObject(
             dictionary.mapValues { $0.map { $0.data }},
             key: unknownIdentifierTypeMapKey,
