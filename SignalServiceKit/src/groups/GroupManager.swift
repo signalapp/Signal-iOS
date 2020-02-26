@@ -71,6 +71,9 @@ public class GroupManager: NSObject {
 
     // MARK: -
 
+    // GroupsV2 TODO: Finalize this value with the designers.
+    public static let KGroupUpdateTimeoutDuration: TimeInterval = 30
+
     private static func groupIdLength(for groupsVersion: GroupsVersion) -> Int32 {
         switch groupsVersion {
         case .V1:
@@ -319,6 +322,8 @@ public class GroupManager: NSObject {
             } else {
                 return Promise.value(thread)
             }
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+            GroupsV2Error.timeout
         }
     }
 
@@ -752,6 +757,8 @@ public class GroupManager: NSObject {
             }
         }.then(on: .global()) { (_: UpdateInfo, changeSet: GroupsV2ChangeSet) throws -> Promise<TSGroupThread> in
             return self.groupsV2.updateExistingGroupOnService(changeSet: changeSet)
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+            GroupsV2Error.timeout
         }
         // GroupsV2 TODO: Handle redundant change error.
     }
@@ -959,6 +966,8 @@ public class GroupManager: NSObject {
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             return groupsV2.updateDisappearingMessageStateOnService(groupThread: groupThread,
                                                                     disappearingMessageToken: disappearingMessageToken)
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+            GroupsV2Error.timeout
         }.asVoid()
     }
 
@@ -1043,6 +1052,8 @@ public class GroupManager: NSObject {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             return self.groupsV2.acceptInviteToGroupV2(groupThread: groupThread)
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+            GroupsV2Error.timeout
         }
     }
 
@@ -1102,6 +1113,8 @@ public class GroupManager: NSObject {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             return self.groupsV2.leaveGroupV2OrDeclineInvite(groupThread: groupThread)
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+            GroupsV2Error.timeout
         }
     }
 

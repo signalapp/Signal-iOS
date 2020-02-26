@@ -16,6 +16,15 @@ public extension TSGroupMemberRole {
             return nil
         }
     }
+
+    var asProtoRole: GroupsProtoMemberRole {
+        switch self {
+        case .normal:
+            return .`default`
+        case .administrator:
+            return .administrator
+        }
+    }
 }
 
 // MARK: -

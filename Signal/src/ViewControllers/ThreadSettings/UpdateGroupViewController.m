@@ -295,38 +295,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-    __weak UpdateGroupViewController *weakSelf = self;
-    [ModalActivityIndicatorViewController
-        presentFromViewController:self
-                        canCancel:NO
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [self updateGroupThreadWithOldGroupModel:self.oldGroupModel
-                          newGroupModel:newGroupModel
-                          success:^(TSGroupThread *groupThread) {
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      OWSAssertIsOnMainThread();
-
-                                      [weakSelf.conversationSettingsViewDelegate
-                                          conversationSettingsDidUpdateGroupThread:groupThread];
-                                      [weakSelf.conversationSettingsViewDelegate
-                                          popAllConversationSettingsViewsWithCompletion:nil];
-                                  }];
-                              });
-                          }
-                          failure:^(NSError *error) {
-                              OWSFailDebug(@"Error: %@", error);
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      OWSAssertIsOnMainThread();
-
-                                      [OWSActionSheets showActionSheetWithTitle:
-                                                           NSLocalizedString(@"UPDATE_GROUP_FAILED",
-                                                               @"Error indicating that a group could not be updated.")];
-                                  }];
-                              });
-                          }];
-                  }];
+    id<OWSConversationSettingsViewDelegate> _Nullable delegate = self.conversationSettingsViewDelegate;
+    if (delegate == nil) {
+        OWSFailDebug(@"Missing delegate.");
+        return;
+    }
+    [self updateGroupThreadWithOldGroupModel:self.oldGroupModel newGroupModel:newGroupModel delegate:delegate];
 }
 
 #pragma mark - Group Avatar

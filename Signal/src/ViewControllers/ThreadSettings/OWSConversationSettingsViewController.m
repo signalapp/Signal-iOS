@@ -1168,32 +1168,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)updateDisappearingMessagesConfigurationAndDismiss
 {
-    [ModalActivityIndicatorViewController
-        presentFromViewController:self
-                        canCancel:NO
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [[self updateDisappearingMessagesConfigurationObjc:self.disappearingMessagesConfiguration
-                                                                  thread:self.thread]
-                              .then(^{
-                                  OWSAssertIsOnMainThread();
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      OWSAssertIsOnMainThread();
-
-                                      [self.navigationController popViewControllerAnimated:YES];
-                                  }];
-                              })
-                              .catch(^(NSError *error) {
-                                  OWSAssertIsOnMainThread();
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      OWSAssertIsOnMainThread();
-
-                                      OWSAssertDebug(self.thread.isGroupV2Thread);
-                                      [OWSActionSheets showActionSheetWithTitle:
-                                                           NSLocalizedString(@"UPDATE_GROUP_FAILED",
-                                                               @"Error indicating that a group could not be updated.")];
-                                  }];
-                              }) retainUntilComplete];
-                  }];
+    [self updateDisappearingMessagesConfigurationObjc:self.disappearingMessagesConfiguration thread:self.thread];
 }
 
 #pragma mark - Actions

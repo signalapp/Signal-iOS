@@ -190,11 +190,9 @@ public enum PushRegistrationError: Error {
 
         UIApplication.shared.registerForRemoteNotifications()
 
-        let kTimeout: TimeInterval = 10
-        let timeout: Promise<Data> = after(seconds: kTimeout).map { throw PushRegistrationError.timeout }
-        let promiseWithTimeout: Promise<Data> = race(promise, timeout)
-
-        return promiseWithTimeout.recover { error -> Promise<Data> in
+        return promise.timeout(seconds: 10) {
+            PushRegistrationError.timeout
+        }.recover { error -> Promise<Data> in
             switch error {
             case PushRegistrationError.timeout:
                 if self.isSusceptibleToFailedPushRegistration {

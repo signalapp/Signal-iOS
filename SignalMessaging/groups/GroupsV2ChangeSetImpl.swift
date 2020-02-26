@@ -64,10 +64,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     public var newAvatarUrlPath: String?
     private var shouldUpdateAvatar = false
 
-    private var membersToAdd = [UUID: GroupsProtoMemberRole]()
+    private var membersToAdd = [UUID: TSGroupMemberRole]()
     private var membersToRemove = [UUID]()
-    private var membersToChangeRole = [UUID: GroupsProtoMemberRole]()
-    private var pendingMembersToAdd = [UUID: GroupsProtoMemberRole]()
+    private var membersToChangeRole = [UUID: TSGroupMemberRole]()
+    private var pendingMembersToAdd = [UUID: TSGroupMemberRole]()
     private var pendingMembersToRemove = [UUID]()
 
     // These access properties should only be set if the value is changing.
@@ -151,7 +151,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         for uuid in newUserUuids.subtracting(oldUserUuids) {
             let isAdministrator = newGroupMembership.isAdministrator(SignalServiceAddress(uuid: uuid))
             let isPending = newGroupMembership.isPending(SignalServiceAddress(uuid: uuid))
-            let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
+            let role: TSGroupMemberRole = isAdministrator ? .administrator : .normal
             if isPending {
                 addPendingMember(uuid, role: role)
             } else {
@@ -185,7 +185,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             guard oldIsAdministrator != newIsAdministrator else {
                 continue
             }
-            let role: GroupsProtoMemberRole = newIsAdministrator ? .administrator : .`default`
+            let role: TSGroupMemberRole = newIsAdministrator ? .administrator : .normal
             changeRoleForMember(uuid, role: role)
         }
 
@@ -225,7 +225,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
     @objc
     public func addNormalMember(_ uuid: UUID) {
-        addMember(uuid, role: .default)
+        addMember(uuid, role: .normal)
     }
 
     @objc
@@ -233,7 +233,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         addMember(uuid, role: .administrator)
     }
 
-    public func addMember(_ uuid: UUID, role: GroupsProtoMemberRole) {
+    public func addMember(_ uuid: UUID, role: TSGroupMemberRole) {
         assert(membersToAdd[uuid] == nil)
         membersToAdd[uuid] = role
     }
@@ -244,12 +244,12 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         membersToRemove.append(uuid)
     }
 
-    public func changeRoleForMember(_ uuid: UUID, role: GroupsProtoMemberRole) {
+    public func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole) {
         assert(membersToChangeRole[uuid] == nil)
         membersToChangeRole[uuid] = role
     }
 
-    public func addPendingMember(_ uuid: UUID, role: GroupsProtoMemberRole) {
+    public func addPendingMember(_ uuid: UUID, role: TSGroupMemberRole) {
         assert(pendingMembersToAdd[uuid] == nil)
         pendingMembersToAdd[uuid] = role
     }
@@ -400,7 +400,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
             let actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
             actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: profileKeyCredential,
-                                                                       role: role,
+                                                                       role: role.asProtoRole,
                                                                        groupV2Params: groupV2Params))
             actionsBuilder.addAddMembers(try actionBuilder.build())
             didChange = true
@@ -415,7 +415,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
             let actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
             actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(uuid: uuid,
-                                                                              role: role,
+                                                                              role: role.asProtoRole,
                                                                               localUuid: localUuid,
                                                                               groupV2Params: groupV2Params))
             actionsBuilder.addAddPendingMembers(try actionBuilder.build())
@@ -448,15 +448,21 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         for (uuid, role) in self.membersToChangeRole {
             guard currentGroupMembership.contains(uuid) else {
-                // Another user has already added this member.
+                // User is no longer a member.
                 //
-                // GroupsV2 TODO: What if they added them with a different (lower) role?
+                // GroupsV2 TODO: How to handle this scenario?
+                continue
+            }
+            guard currentGroupMembership.role(for: SignalServiceAddress(uuid: uuid)) != role else {
+                // Another user has already modifed the role of this member.
+                //
+                // GroupsV2 TODO: How to handle this scenario?
                 continue
             }
             let actionBuilder = GroupsProtoGroupChangeActionsModifyMemberRoleAction.builder()
             let userId = try groupV2Params.userId(forUuid: uuid)
             actionBuilder.setUserID(userId)
-            actionBuilder.setRole(role)
+            actionBuilder.setRole(role.asProtoRole)
             actionsBuilder.addModifyMemberRoles(try actionBuilder.build())
             didChange = true
         }

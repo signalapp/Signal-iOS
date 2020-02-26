@@ -15,6 +15,7 @@ public enum GroupsV2Error: Error {
     case shouldRetry
     case shouldDiscard
     case groupNotInDatabase
+    case timeout
 }
 
 @objc
