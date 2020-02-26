@@ -76,14 +76,6 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
                                                selector: #selector(reachabilityChanged),
                                                name: .reachabilityChanged,
                                                object: self.observationContext)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didEnterBackground),
-                                               name: .OWSApplicationDidEnterBackground,
-                                               object: nil)
 
         startNotifier()
     }
@@ -92,10 +84,6 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
     func reachabilityChanged() {
         AssertIsOnMainThread()
 
-        guard !CurrentAppContext().isInBackground() else {
-            owsFailDebug("App is unexpectedly in the background.")
-            return
-        }
         guard AppReadiness.isAppReady() else {
             owsFailDebug("App is unexpectedly not ready.")
             return
@@ -106,27 +94,9 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
         NotificationCenter.default.post(name: SSKReachability.owsReachabilityDidChange, object: self.observationContext)
     }
 
-    @objc
-    func didBecomeActive() {
-        AssertIsOnMainThread()
-
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
-            self.startNotifier()
-        }
-    }
-
-    @objc
-    func didEnterBackground() {
-        AssertIsOnMainThread()
-
-        stopNotifier()
-    }
-
     private func startNotifier() {
-        guard !CurrentAppContext().isInBackground() else {
-            return
-        }
         guard AppReadiness.isAppReady() else {
+            owsFailDebug("App is unexpectedly not ready.")
             return
         }
         guard reachability.startNotifier() else {
@@ -134,9 +104,5 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
             return
         }
         Logger.debug("started notifier")
-    }
-
-    private func stopNotifier() {
-        reachability.stopNotifier()
     }
 }

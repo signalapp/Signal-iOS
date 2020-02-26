@@ -203,9 +203,8 @@ extension StorageServiceProtoContactRecord {
             } else {
                 profileManager.removeUser(fromProfileWhitelist: address, wasLocallyInitiated: false, transaction: transaction)
             }
-
-        // If the service is missing a whitelisted state, mark it as needing update.
         } else if !hasWhitelisted {
+            // If the service is missing a whitelisted state, mark it as needing update.
             mergeState = .needsUpdate(recipient.accountId)
         }
 
@@ -324,9 +323,8 @@ extension StorageServiceProtoGroupV1Record {
             } else {
                 profileManager.removeGroupId(fromProfileWhitelist: id, wasLocallyInitiated: false, transaction: transaction)
             }
-
-            // If the service is missing a whitelisted state, mark it as needing update.
         } else if !hasWhitelisted {
+            // If the service is missing a whitelisted state, mark it as needing update.
             mergeState = .needsUpdate(id)
         }
 
@@ -445,9 +443,8 @@ extension StorageServiceProtoGroupV2Record {
             } else {
                 profileManager.removeGroupId(fromProfileWhitelist: groupId, wasLocallyInitiated: false, transaction: transaction)
             }
-
-            // If the service is missing a whitelisted state, mark it as needing update.
         } else if !hasWhitelisted {
+            // If the service is missing a whitelisted state, mark it as needing update.
             mergeState = .needsUpdate(masterKey)
         }
 
