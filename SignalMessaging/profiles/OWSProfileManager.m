@@ -1551,7 +1551,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                     [self updateProfileAvatarCache:image filename:fileName];
 
                     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                        [latestUserProfile updateWithAvatarFileName:fileName transaction:transaction completion:nil];
+                        [latestUserProfile updateWithAvatarFileName:fileName transaction:transaction];
 
                         // If we're updating the profile that corresponds to our local number,
                         // update the local profile as well.
@@ -1559,7 +1559,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                             OWSUserProfile *localUserProfile = self.localUserProfile;
                             OWSAssertDebug(localUserProfile);
 
-                            [localUserProfile updateWithAvatarFileName:fileName transaction:transaction completion:nil];
+                            [localUserProfile updateWithAvatarFileName:fileName transaction:transaction];
                         }
                     }];
                 }
@@ -1640,6 +1640,14 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                  transaction:transaction
                                   completion:nil];
 
+            if (userProfile.avatarFileName.length > 0) {
+                NSString *path = [OWSUserProfile profileAvatarFilepathWithFilename:userProfile.avatarFileName];
+                if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
+                    OWSLogError(@"downloaded file is missing for profile: %@", userProfile.address);
+                    [userProfile updateWithAvatarFileName:nil transaction:transaction];
+                }
+            }
+
             // If we're updating the profile that corresponds to our local number,
             // update the local profile as well.
             if (address.isLocalAddress) {
@@ -1649,6 +1657,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                         avatarUrlPath:avatarUrlPath
                                           transaction:transaction
                                            completion:nil];
+
+                if (![NSObject isNullableObject:userProfile.avatarFileName equalTo:localUserProfile.avatarFileName]) {
+                    OWSLogError(@"Converging out-of-sync local profile avatar.");
+                    [localUserProfile updateWithAvatarFileName:userProfile.avatarFileName transaction:transaction];
+                }
             }
         }];
 
