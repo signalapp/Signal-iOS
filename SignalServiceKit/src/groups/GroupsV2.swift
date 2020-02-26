@@ -82,6 +82,7 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func updateGroupWithChangeActions(groupId: Data,
                                       changeActionsProto: GroupsProtoGroupChangeActions,
+                                      ignoreSignature: Bool,
                                       groupSecretParamsData: Data) throws -> Promise<TSGroupThread>
 
      func uploadGroupAvatar(avatarData: Data, groupSecretParamsData: Data) -> Promise<String>
@@ -365,6 +366,7 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
 
     public func updateGroupWithChangeActions(groupId: Data,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
+                                             ignoreSignature: Bool,
                                              groupSecretParamsData: Data) throws -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }

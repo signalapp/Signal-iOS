@@ -330,9 +330,9 @@ public class GroupsV2Protos {
     // MARK: -
 
     // We do not treat an empty response with no changes as an error.
-    public class func parse(groupChangesProto: GroupsProtoGroupChanges,
-                            downloadedAvatars: GroupV2DownloadedAvatars,
-                            groupV2Params: GroupV2Params) throws -> [GroupV2Change] {
+    public class func parseChangesFromService(groupChangesProto: GroupsProtoGroupChanges,
+                                              downloadedAvatars: GroupV2DownloadedAvatars,
+                                              groupV2Params: GroupV2Params) throws -> [GroupV2Change] {
         var result = [GroupV2Change]()
         for changeStateProto in groupChangesProto.groupChanges {
             guard let snapshotProto = changeStateProto.groupState else {
@@ -344,6 +344,7 @@ public class GroupsV2Protos {
             guard let changeProto = changeStateProto.groupChange else {
                 throw OWSAssertionError("Missing groupChange proto.")
             }
+            // We can ignoreSignature because these protos came from the service.
             let changeActionsProto: GroupsProtoGroupChangeActions = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: true)
             result.append(GroupV2Change(snapshot: snapshot, changeActionsProto: changeActionsProto))
         }
@@ -355,6 +356,7 @@ public class GroupsV2Protos {
     public class func collectAvatarUrlPaths(groupProto: GroupsProtoGroup? = nil,
                                             groupChangesProto: GroupsProtoGroupChanges? = nil,
                                             changeActionsProto: GroupsProtoGroupChangeActions? = nil,
+                                            ignoreSignature: Bool,
                                             groupV2Params: GroupV2Params) -> Promise<[String]> {
         return DispatchQueue.global().async(.promise) { () throws -> [String] in
             var avatarUrlPaths = [String]()
@@ -363,7 +365,8 @@ public class GroupsV2Protos {
             }
             if let groupChangesProto = groupChangesProto {
                 avatarUrlPaths += try self.collectAvatarUrlPaths(groupChangesProto: groupChangesProto,
-                                                             groupV2Params: groupV2Params)
+                                                                 ignoreSignature: ignoreSignature,
+                                                                 groupV2Params: groupV2Params)
             }
             if let changeActionsProto = changeActionsProto {
                 avatarUrlPaths += self.collectAvatarUrlPaths(changeActionsProto: changeActionsProto)
@@ -373,7 +376,7 @@ public class GroupsV2Protos {
         }
     }
 
-    private class func collectAvatarUrlPaths(groupChangesProto: GroupsProtoGroupChanges,
+    private class func collectAvatarUrlPaths(groupChangesProto: GroupsProtoGroupChanges, ignoreSignature: Bool,
                                              groupV2Params: GroupV2Params) throws -> [String] {
         var avatarUrlPaths = [String]()
         for changeStateProto in groupChangesProto.groupChanges {
@@ -385,7 +388,8 @@ public class GroupsV2Protos {
             guard let changeProto = changeStateProto.groupChange else {
                 throw OWSAssertionError("Missing groupChange proto.")
             }
-            let changeActionsProto = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: true)
+            // We can ignoreSignature because these protos came from the service.
+            let changeActionsProto = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: ignoreSignature)
             avatarUrlPaths += self.collectAvatarUrlPaths(changeActionsProto: changeActionsProto)
         }
         return avatarUrlPaths

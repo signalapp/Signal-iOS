@@ -547,7 +547,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
             }
 
             DispatchQueue.global().async(.promise) {
-                // We need to verify the signature because this proto came from
+                // We need to verify the signatures because these protos came from
                 // another client, not the service.
                 return try self.groupsV2.parseAndVerifyChangeActionsProto(changeActionsProtoData,
                                                                           ignoreSignature: false)
@@ -555,8 +555,11 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 guard let groupSecretParamsData = oldGroupModel.groupSecretParamsData else {
                     throw OWSAssertionError("Missing groupSecretParamsData.")
                 }
+                // We need to verify the signatures because these protos came from
+                // another client, not the service.
                 return try self.groupsV2.updateGroupWithChangeActions(groupId: oldGroupModel.groupId,
                                                                       changeActionsProto: changeActionsProto,
+                                                                      ignoreSignature: false,
                                                                       groupSecretParamsData: groupSecretParamsData)
             }.map(on: .global()) { (updatedGroupThread: TSGroupThread) throws -> Void in
                 let updatedGroupModel = updatedGroupThread.groupModel

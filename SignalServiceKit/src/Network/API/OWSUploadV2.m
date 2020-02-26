@@ -193,7 +193,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                         return resolve(@(1));
                     }
 
-                    // TODO: Should we use a non-empty urlPath?
                     [[strongSelf parseFormAndUpload:formResponseObject progressBlock:progressBlock]
                             .thenInBackground(^{
                                 return resolve(@(1));

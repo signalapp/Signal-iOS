@@ -186,9 +186,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             // we should use exactly the same group model that was used to construct
             // the update request - which should reflect pre-update service state.
             return firstly {
+                // We can ignoreSignature because these protos came from the service.
                 return self.updateGroupWithChangeActions(groupId: groupId,
                                                          changeActionsProto: changeActionsProto,
                                                          justUploadedAvatars: downloadedAvatars,
+                                                         ignoreSignature: true,
                                                          groupV2Params: groupV2Params)
             }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> UpdatedV2Group in
                 return UpdatedV2Group(groupThread: groupThread, changeActionsProtoData: changeActionsProtoData)
@@ -231,31 +233,37 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     public func updateGroupWithChangeActions(groupId: Data,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
+                                             ignoreSignature: Bool,
                                              groupSecretParamsData: Data) throws -> Promise<TSGroupThread> {
         let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
         return updateGroupWithChangeActions(groupId: groupId,
                                             changeActionsProto: changeActionsProto,
                                             justUploadedAvatars: nil,
+                                            ignoreSignature: ignoreSignature,
                                             groupV2Params: groupV2Params)
     }
 
     public func updateGroupWithChangeActions(groupId: Data,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
+                                             ignoreSignature: Bool,
                                              groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
         return updateGroupWithChangeActions(groupId: groupId,
                                             changeActionsProto: changeActionsProto,
                                             justUploadedAvatars: nil,
+                                            ignoreSignature: ignoreSignature,
                                             groupV2Params: groupV2Params)
     }
 
     private func updateGroupWithChangeActions(groupId: Data,
-                                             changeActionsProto: GroupsProtoGroupChangeActions,
-                                             justUploadedAvatars: GroupV2DownloadedAvatars?,
-                                             groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
+                                              changeActionsProto: GroupsProtoGroupChangeActions,
+                                              justUploadedAvatars: GroupV2DownloadedAvatars?,
+                                              ignoreSignature: Bool,
+                                              groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
 
         return firstly {
             self.fetchAllAvatarData(changeActionsProto: changeActionsProto,
                                     justUploadedAvatars: justUploadedAvatars,
+                                    ignoreSignature: ignoreSignature,
                                     groupV2Params: groupV2Params)
         }.map(on: DispatchQueue.global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> TSGroupThread in
             return try self.databaseStorage.write { transaction in
@@ -326,7 +334,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     public func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot> {
         return fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData,
-                                                 justUploadedAvatars: nil)
+                                           justUploadedAvatars: nil)
     }
 
     private func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data,
@@ -363,7 +371,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return try GroupsProtoGroup.parseData(groupProtoData)
         }.then(on: DispatchQueue.global()) { (groupProto: GroupsProtoGroup) -> Promise<(GroupsProtoGroup, GroupV2DownloadedAvatars)> in
             return firstly {
-                self.fetchAllAvatarData(groupProto: groupProto, justUploadedAvatars: justUploadedAvatars, groupV2Params: groupV2Params)
+                // We can ignoreSignature; these protos came from the service.
+                self.fetchAllAvatarData(groupProto: groupProto,
+                                        justUploadedAvatars: justUploadedAvatars,
+                                        ignoreSignature: true,
+                                        groupV2Params: groupV2Params)
             }.map(on: DispatchQueue.global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> (GroupsProtoGroup, GroupV2DownloadedAvatars) in
                 return (groupProto, downloadedAvatars)
             }
@@ -429,11 +441,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return try GroupsProtoGroupChanges.parseData(groupChangesProtoData)
         }.then(on: DispatchQueue.global()) { (groupChangesProto: GroupsProtoGroupChanges) -> Promise<[GroupV2Change]> in
             return firstly {
-                self.fetchAllAvatarData(groupChangesProto: groupChangesProto, groupV2Params: groupV2Params)
+                // We can ignoreSignature; these protos came from the service.
+                self.fetchAllAvatarData(groupChangesProto: groupChangesProto,
+                                        ignoreSignature: true,
+                                        groupV2Params: groupV2Params)
             }.map(on: DispatchQueue.global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> [GroupV2Change] in
-                try GroupsV2Protos.parse(groupChangesProto: groupChangesProto,
-                                         downloadedAvatars: downloadedAvatars,
-                                         groupV2Params: groupV2Params)
+                try GroupsV2Protos.parseChangesFromService(groupChangesProto: groupChangesProto,
+                                                           downloadedAvatars: downloadedAvatars,
+                                                           groupV2Params: groupV2Params)
             }
         }
     }
@@ -450,6 +465,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                     groupChangesProto: GroupsProtoGroupChanges? = nil,
                                     changeActionsProto: GroupsProtoGroupChangeActions? = nil,
                                     justUploadedAvatars: GroupV2DownloadedAvatars? = nil,
+                                    ignoreSignature: Bool,
                                     groupV2Params: GroupV2Params) -> Promise<GroupV2DownloadedAvatars> {
 
         var downloadedAvatars = GroupV2DownloadedAvatars()
@@ -470,18 +486,18 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
             }) else {
                 // Thread doesn't exist in database yet.
-                return ()
+                return
             }
             guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 throw OWSAssertionError("Invalid groupModel.")
             }
             // Try to add avatar from group model, if any.
             downloadedAvatars.merge(GroupV2DownloadedAvatars.from(groupModel: groupModel))
-            return ()
         }.then(on: DispatchQueue.global()) { () -> Promise<[String]> in
             GroupsV2Protos.collectAvatarUrlPaths(groupProto: groupProto,
                                                  groupChangesProto: groupChangesProto,
                                                  changeActionsProto: changeActionsProto,
+                                                 ignoreSignature: ignoreSignature,
                                                  groupV2Params: groupV2Params)
         }.then(on: DispatchQueue.global()) { (protoAvatarUrlPaths: [String]) -> Promise<GroupV2DownloadedAvatars> in
 

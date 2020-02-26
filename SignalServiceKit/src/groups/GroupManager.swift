@@ -541,42 +541,13 @@ public class GroupManager: NSObject {
         }
 
         let groupMembership = GroupMembership(v1Members: Set(members))
-        let groupAccess = GroupAccess.forV1
-        return try remoteUpsertExistingGroup(groupId: groupId,
-                                             name: name,
-                                             avatarData: avatarData,
-                                             groupMembership: groupMembership,
-                                             groupAccess: groupAccess,
-                                             groupsVersion: .V1,
-                                             groupV2Revision: 0,
-                                             groupSecretParamsData: nil,
-                                             disappearingMessageToken: disappearingMessageToken,
-                                             groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                             transaction: transaction)
-    }
-
-    // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
-    public static func remoteUpsertExistingGroup(groupId: Data,
-                                                 name: String? = nil,
-                                                 avatarData: Data? = nil,
-                                                 groupMembership: GroupMembership,
-                                                 groupAccess: GroupAccess,
-                                                 groupsVersion: GroupsVersion,
-                                                 groupV2Revision: UInt32,
-                                                 groupSecretParamsData: Data? = nil,
-                                                 disappearingMessageToken: DisappearingMessageToken?,
-                                                 groupUpdateSourceAddress: SignalServiceAddress?,
-                                                 transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         var builder = TSGroupModelBuilder()
         builder.groupId = groupId
         builder.name = name
         builder.avatarData = avatarData
         builder.groupMembership = groupMembership
-        builder.groupAccess = groupAccess
-        builder.groupsVersion = groupsVersion
-        builder.groupV2Revision = groupV2Revision
-        builder.groupSecretParamsData = groupSecretParamsData
+        builder.groupsVersion = .V1
         let groupModel = try builder.build(transaction: transaction)
 
         return try remoteUpsertExistingGroup(groupModel: groupModel,
