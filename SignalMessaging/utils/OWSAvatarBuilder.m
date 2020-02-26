@@ -16,6 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 const NSUInteger kStandardAvatarSize = 48;
+const NSUInteger kMediumAvatarSize = 56;
 const NSUInteger kLargeAvatarSize = 68;
 
 typedef void (^OWSAvatarDrawBlock)(CGContextRef context);

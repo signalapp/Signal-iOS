@@ -10,8 +10,8 @@ public class MessageStatusView: UIView {
     private let imageView: UIImageView
     private let lastBaselineView: UIView
 
-    // MessageStatusView is aligned 1pt below it's baseline.
-    private let kBaselineOverhang: CGFloat = 1
+    // MessageStatusView is aligned 3pt below it's baseline.
+    private let kBaselineOverhang: CGFloat = 3
 
     @objc
     public var image: UIImage? {

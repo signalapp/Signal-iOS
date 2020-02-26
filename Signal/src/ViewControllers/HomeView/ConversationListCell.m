@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.snippetLabel = [UILabel new];
     self.snippetLabel.font = [self snippetFont];
-    self.snippetLabel.numberOfLines = 1;
+    self.snippetLabel.numberOfLines = 2;
     self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
     ]];
 
     bottomRowView.axis = UILayoutConstraintAxisHorizontal;
-    bottomRowView.alignment = UIStackViewAlignmentLastBaseline;
+    bottomRowView.alignment = UIStackViewAlignmentTop;
     bottomRowView.spacing = 6.f;
 
     UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
@@ -145,13 +145,14 @@ NS_ASSUME_NONNULL_BEGIN
         bottomRowView,
     ]];
     vStackView.axis = UILayoutConstraintAxisVertical;
+    vStackView.spacing = 2.f;
 
     [self.contentView addSubview:vStackView];
     [vStackView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
-    [vStackView autoVCenterInSuperview];
+    [vStackView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.avatarView withOffset:0 relation: NSLayoutRelationLessThanOrEqual];
     // Ensure that the cell's contents never overflow the cell bounds.
-    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:8 relation:NSLayoutRelationGreaterThanOrEqual];
-    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:8 relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:9 relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:9 relation:NSLayoutRelationGreaterThanOrEqual];
     [vStackView autoPinTrailingToSuperviewMargin];
 
     vStackView.userInteractionEnabled = NO;
@@ -446,7 +447,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)avatarSize
 {
-    return kStandardAvatarSize;
+    return kMediumAvatarSize;
 }
 
 - (NSUInteger)avatarHSpacing
