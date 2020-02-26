@@ -40,6 +40,9 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
 
     public let title: String
 
+    public let avatarUrlPath: String?
+    public let avatarData: Data?
+
     private let members: [Member]
     private let pendingMembers: [PendingMember]
 
@@ -58,6 +61,8 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 groupProto: GroupsProtoGroup,
                 revision: UInt32,
                 title: String,
+                avatarUrlPath: String?,
+                avatarData: Data?,
                 members: [Member],
                 pendingMembers: [PendingMember],
                 accessControlForAttributes: GroupsProtoAccessControlAccessRequired,
@@ -69,6 +74,8 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         self.groupProto = groupProto
         self.revision = revision
         self.title = title
+        self.avatarUrlPath = avatarUrlPath
+        self.avatarData = avatarData
         self.members = members
         self.pendingMembers = pendingMembers
         self.accessControlForAttributes = accessControlForAttributes

@@ -169,46 +169,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
-#pragma mark - Avatar
-
-- (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
-{
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
-    }];
-}
-
-- (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
-                             transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(attachmentStream);
-    OWSAssertDebug(transaction);
-
-    [self anyUpdateGroupThreadWithTransaction:transaction
-                                        block:^(TSGroupThread *thread) {
-                                            NSData *_Nullable attachmentData =
-                                                [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
-                                            if (attachmentData.length < 1) {
-                                                return;
-                                            }
-                                            if (thread.groupModel.groupAvatarData.length > 0 &&
-                                                [thread.groupModel.groupAvatarData isEqualToData:attachmentData]) {
-                                                // Avatar did not change.
-                                                return;
-                                            }
-                                            UIImage *_Nullable avatarImage = [attachmentStream thumbnailImageSmallSync];
-                                            [thread.groupModel setGroupAvatarDataWithImage:avatarImage];
-                                        }];
-
-    [transaction addAsyncCompletion:^{
-        [self fireAvatarChangedNotification];
-    }];
-
-    // Avatars are stored directly in the database, so there's no need
-    // to keep the attachment around after assigning the image.
-    [attachmentStream anyRemoveWithTransaction:transaction];
-}
-
 - (void)updateWithGroupModel:(TSGroupModel *)groupModel transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(groupModel);

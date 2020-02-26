@@ -45,9 +45,6 @@ typedef NS_CLOSED_ENUM(
 @property (nonatomic, readonly) uint32_t groupV2Revision;
 @property (nonatomic, readonly, nullable) NSData *groupSecretParamsData;
 
-// GroupsV2 TODO: This should be done via GroupManager.
-- (void)setGroupAvatarDataWithImage:(nullable UIImage *)image;
-
 + (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image;
 
 - (instancetype)init NS_UNAVAILABLE;

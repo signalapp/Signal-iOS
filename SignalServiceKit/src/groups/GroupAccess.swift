@@ -74,11 +74,6 @@ public class GroupAccess: MTLModel {
         return allAccess
     }
 
-    @objc
-    public static var defaultForV2: GroupAccess {
-        return GroupAccess(members: .member, attributes: .member)
-    }
-
     public class func groupV2Access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
         switch value {
         case .any:

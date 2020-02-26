@@ -58,13 +58,6 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 + (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
-#pragma mark - Avatar
-
-// GroupsV2 TODO: Remove.
-- (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
-- (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
-                             transaction:(SDSAnyWriteTransaction *)transaction;
-
 #pragma mark - Update With...
 
 // This method should only be called by GroupManager.

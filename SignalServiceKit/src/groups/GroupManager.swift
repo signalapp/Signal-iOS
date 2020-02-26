@@ -168,6 +168,7 @@ public class GroupManager: NSObject {
     //
     // "New" groups are being created for the first time; they might need to be created on the service.
 
+    // NOTE: groupId param should only be set for tests.
     public static func localCreateNewGroup(members: [SignalServiceAddress],
                                            groupId: Data? = nil,
                                            name: String? = nil,
@@ -187,6 +188,7 @@ public class GroupManager: NSObject {
         }
     }
 
+    // NOTE: groupId param should only be set for tests.
     public static func localCreateNewGroup(members membersParam: [SignalServiceAddress],
                                            groupId: Data? = nil,
                                            name: String? = nil,
@@ -213,7 +215,8 @@ public class GroupManager: NSObject {
             builder.addNonPendingMember(localAddress, role: .administrator)
             return builder.build()
         }.then(on: .global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
-            // Try to obtain profile key credentials for all group members
+            // If we might create a v2 group,
+            // try to obtain profile key credentials for all group members
             // including ourself, unless we already have them on hand.
             guard RemoteConfig.groupsV2CreateGroups else {
                 return Promise.value(groupMembership)
@@ -238,6 +241,14 @@ public class GroupManager: NSObject {
                     throw OWSAssertionError("Missing localAddress.")
                 }
 
+                // Build the "initial" group model.
+                // This will finalize the immutable aspects of the group, e.g.:
+                //
+                // * Is it v1 or v2?
+                // * If it is v2, what is the group secret.
+                //
+                // This might not be the "final" model - the
+                // avatar url path might be filled in below.
                 var builder = TSGroupModelBuilder()
                 builder.groupId = groupId
                 builder.name = name
@@ -248,6 +259,27 @@ public class GroupManager: NSObject {
                 return try builder.build(transaction: transaction)
             }
             return groupModel
+        }.then(on: DispatchQueue.global()) { (proposedGroupModel: TSGroupModel) -> Promise<TSGroupModel> in
+            guard let proposedGroupModelV2 = proposedGroupModel as? TSGroupModelV2 else {
+                // We don't need to upload avatars for v1 groups.
+                return Promise.value(proposedGroupModel)
+            }
+            guard let avatarData = avatarData else {
+                // No avatar to upload.
+                return Promise.value(proposedGroupModel)
+            }
+            // Upload avatar.
+            return firstly {
+                self.groupsV2.uploadGroupAvatar(avatarData: avatarData,
+                                                groupSecretParamsData: proposedGroupModelV2.secretParamsData)
+            }.map(on: DispatchQueue.global()) { (avatarUrlPath: String) -> TSGroupModel in
+                // Fill in the avatarUrl on the group model.
+                return try self.databaseStorage.read { transaction in
+                    var builder = proposedGroupModel.asBuilder
+                    builder.avatarUrlPath = avatarUrlPath
+                    return try builder.build(transaction: transaction)
+                }
+            }
         }.then(on: .global()) { (proposedGroupModel: TSGroupModel) -> Promise<TSGroupModel> in
             guard proposedGroupModel.groupsVersion == .V2 else {
                 // v1 groups don't need to be created on the service.
@@ -279,9 +311,10 @@ public class GroupManager: NSObject {
             self.profileManager.addThread(toProfileWhitelist: thread)
 
             if shouldSendMessage {
-                return sendDurableNewGroupMessage(forThread: thread)
-                    .map(on: .global()) { _ in
-                        return thread
+                return firstly {
+                    sendDurableNewGroupMessage(forThread: thread)
+                }.map(on: .global()) { _ in
+                    return thread
                 }
             } else {
                 return Promise.value(thread)
@@ -465,6 +498,7 @@ public class GroupManager: NSObject {
         // GroupsV2 TODO: Elaborate tests to include admins, pending members, etc.
         let groupMembership = GroupMembership(v1Members: Set(members))
         // GroupsV2 TODO: Let tests specify access levels.
+        // GroupsV2 TODO: Fill in avatarUrlPath when we test v2 groups.
         let groupAccess = GroupAccess.allAccess
         // Use buildGroupModel() to fill in defaults, like it was a new group.
 
@@ -502,43 +536,18 @@ public class GroupManager: NSObject {
                                                    groupUpdateSourceAddress: SignalServiceAddress?,
                                                    transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
-        let groupMembership = GroupMembership(v1Members: Set(members))
-        let groupAccess = GroupAccess.forV1
-        return try remoteUpsertExistingGroup(groupId: groupId,
-                                             name: name,
-                                             avatarData: avatarData,
-                                             groupMembership: groupMembership,
-                                             groupAccess: groupAccess,
-                                             groupsVersion: .V1,
-                                             groupV2Revision: 0,
-                                             groupSecretParamsData: nil,
-                                             disappearingMessageToken: disappearingMessageToken,
-                                             groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                             transaction: transaction)
-    }
+        guard isValidGroupId(groupId, groupsVersion: .V1) else {
+            throw OWSAssertionError("Invalid group id.")
+        }
 
-    // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
-    public static func remoteUpsertExistingGroup(groupId: Data,
-                                                 name: String? = nil,
-                                                 avatarData: Data? = nil,
-                                                 groupMembership: GroupMembership,
-                                                 groupAccess: GroupAccess,
-                                                 groupsVersion: GroupsVersion,
-                                                 groupV2Revision: UInt32,
-                                                 groupSecretParamsData: Data? = nil,
-                                                 disappearingMessageToken: DisappearingMessageToken?,
-                                                 groupUpdateSourceAddress: SignalServiceAddress?,
-                                                 transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
+        let groupMembership = GroupMembership(v1Members: Set(members))
 
         var builder = TSGroupModelBuilder()
         builder.groupId = groupId
         builder.name = name
         builder.avatarData = avatarData
         builder.groupMembership = groupMembership
-        builder.groupAccess = groupAccess
-        builder.groupsVersion = groupsVersion
-        builder.groupV2Revision = groupV2Revision
-        builder.groupSecretParamsData = groupSecretParamsData
+        builder.groupsVersion = .V1
         let groupModel = try builder.build(transaction: transaction)
 
         return try remoteUpsertExistingGroup(groupModel: groupModel,
@@ -576,13 +585,13 @@ public class GroupManager: NSObject {
 
         let updateInfo: UpdateInfo
         do {
-            updateInfo = try self.updateInfo(groupId: groupId,
-                                             name: name,
-                                             avatarData: avatarData,
-                                             groupMembership: groupMembership,
-                                             groupAccess: GroupAccess.forV1,
-                                             newDMConfiguration: nil,
-                                             transaction: transaction)
+            updateInfo = try self.updateInfoV1(groupId: groupId,
+                                               name: name,
+                                               avatarData: avatarData,
+                                               groupMembership: groupMembership,
+                                               dmConfiguration: nil,
+                                               transaction: transaction)
+
         } catch GroupsV2Error.redundantChange {
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing groupThread.")
@@ -623,7 +632,6 @@ public class GroupManager: NSObject {
                                               name: name,
                                               avatarData: avatarData,
                                               groupMembership: groupMembership,
-                                              groupAccess: groupAccess,
                                               dmConfiguration: dmConfiguration,
                                               groupUpdateSourceAddress: groupUpdateSourceAddress)
         case .V2:
@@ -643,18 +651,16 @@ public class GroupManager: NSObject {
                                                    name: String? = nil,
                                                    avatarData: Data? = nil,
                                                    groupMembership: GroupMembership,
-                                                   groupAccess: GroupAccess,
                                                    dmConfiguration: OWSDisappearingMessagesConfiguration?,
                                                    groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
         return self.databaseStorage.write(.promise) { (transaction) throws -> UpsertGroupResult in
-            let updateInfo = try self.updateInfo(groupId: groupId,
-                                                 name: name,
-                                                 avatarData: avatarData,
-                                                 groupMembership: groupMembership,
-                                                 groupAccess: groupAccess,
-                                                 newDMConfiguration: dmConfiguration,
-                                                 transaction: transaction)
+            let updateInfo = try self.updateInfoV1(groupId: groupId,
+                                                   name: name,
+                                                   avatarData: avatarData,
+                                                   groupMembership: groupMembership,
+                                                   dmConfiguration: dmConfiguration,
+                                                   transaction: transaction)
             let newGroupModel = updateInfo.newGroupModel
             let upsertGroupResult = try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                                           newDisappearingMessageToken: dmConfiguration?.asToken,
@@ -701,40 +707,69 @@ public class GroupManager: NSObject {
 
         return firstly {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.map(on: .global()) { () throws -> (UpdateInfo, GroupsV2ChangeSet) in
+        }.then(on: DispatchQueue.global()) { () -> Promise<String?> in
+            guard let avatarData = avatarData else {
+                // No avatar to upload.
+                return Promise.value(nil)
+            }
+            let groupModel = try self.databaseStorage.read { (transaction: SDSAnyReadTransaction) throws -> TSGroupModelV2 in
+                guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                    throw OWSAssertionError("Thread does not exist.")
+                }
+                guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
+                    throw OWSAssertionError("Invalid groupModel")
+                }
+                return groupModel
+            }
+            if groupModel.groupAvatarData == avatarData && groupModel.groupAvatarUrlPath != nil {
+                // Skip redundant upload; the avatar hasn't changed.
+                return Promise.value(groupModel.groupAvatarUrlPath)
+            }
+            return firstly {
+                // Upload avatar.
+                return self.groupsV2.uploadGroupAvatar(avatarData: avatarData,
+                                                       groupSecretParamsData: groupModel.secretParamsData)
+            }.map(on: .global()) { (avatarUrlPath: String) throws -> String? in
+                // Convert Promise<String> to Promise<String?>
+                return avatarUrlPath
+            }
+        }.map(on: .global()) { (avatarUrlPath: String?) throws -> (UpdateInfo, GroupsV2ChangeSet) in
             return try databaseStorage.read { transaction in
-                let updateInfo = try self.updateInfo(groupId: groupId,
-                                                     name: name,
-                                                     avatarData: avatarData,
-                                                     groupMembership: groupMembership,
-                                                     groupAccess: groupAccess,
-                                                     newDMConfiguration: dmConfiguration,
-                                                     transaction: transaction)
-                let changeSet = try groupsV2.buildChangeSet(oldGroupModel: updateInfo.oldGroupModel,
-                                                            newGroupModel: updateInfo.newGroupModel,
-                                                            oldDMConfiguration: updateInfo.oldDMConfiguration,
-                                                            newDMConfiguration: updateInfo.newDMConfiguration,
-                                                            transaction: transaction)
+                let updateInfo = try self.updateInfoV2(groupId: groupId,
+                                                       name: name,
+                                                       avatarData: avatarData,
+                                                       avatarUrlPath: avatarUrlPath,
+                                                       groupMembership: groupMembership,
+                                                       groupAccess: groupAccess,
+                                                       newDMConfiguration: dmConfiguration,
+                                                       transaction: transaction)
+                let changeSet = try self.groupsV2.buildChangeSet(oldGroupModel: updateInfo.oldGroupModel,
+                                                                 newGroupModel: updateInfo.newGroupModel,
+                                                                 oldDMConfiguration: updateInfo.oldDMConfiguration,
+                                                                 newDMConfiguration: updateInfo.newDMConfiguration,
+                                                                 transaction: transaction)
                 return (updateInfo, changeSet)
             }
         }.then(on: .global()) { (_: UpdateInfo, changeSet: GroupsV2ChangeSet) throws -> Promise<TSGroupThread> in
-            return groupsV2.updateExistingGroupOnService(changeSet: changeSet)
+            return self.groupsV2.updateExistingGroupOnService(changeSet: changeSet)
         }
         // GroupsV2 TODO: Handle redundant change error.
     }
 
     // If dmConfiguration is nil, don't change the disappearing messages configuration.
-    private static func updateInfo(groupId: Data,
-                                   name: String? = nil,
-                                   avatarData: Data? = nil,
-                                   groupMembership proposedGroupMembership: GroupMembership,
-                                   groupAccess: GroupAccess,
-                                   newDMConfiguration dmConfiguration: OWSDisappearingMessagesConfiguration?,
-                                   transaction: SDSAnyReadTransaction) throws -> UpdateInfo {
+    private static func updateInfoV1(groupId: Data,
+                                     name: String? = nil,
+                                     avatarData: Data? = nil,
+                                     groupMembership proposedGroupMembership: GroupMembership,
+                                     dmConfiguration: OWSDisappearingMessagesConfiguration?,
+                                     transaction: SDSAnyReadTransaction) throws -> UpdateInfo {
         guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             throw OWSAssertionError("Thread does not exist.")
         }
         let oldGroupModel = thread.groupModel
+        guard oldGroupModel.groupsVersion == .V1 else {
+            throw OWSAssertionError("Invalid groupsVersion.")
+        }
         guard let localAddress = tsAccountManager.localAddress else {
             throw OWSAssertionError("Missing localAddress.")
         }
@@ -742,49 +777,19 @@ public class GroupManager: NSObject {
         let oldDMConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: thread, transaction: transaction)
         let newDMConfiguration = dmConfiguration ?? oldDMConfiguration
 
-        let groupMembership: GroupMembership
-        if oldGroupModel.groupsVersion == .V1 {
-            // Always ensure we're a member of any v1 group we're updating.
-            var builder = proposedGroupMembership.asBuilder
-            builder.remove(localAddress)
-            builder.addNonPendingMember(localAddress, role: .normal)
-            groupMembership = builder.build()
-        } else {
-            for address in proposedGroupMembership.allUsers {
-                guard address.uuid != nil else {
-                    throw OWSAssertionError("Group v2 member missing uuid.")
-                }
-            }
-            // Before we update a v2 group, we need to separate out the
-            // pending and non-pending members.
-            groupMembership = self.separatePendingMembers(in: proposedGroupMembership,
-                                                          oldGroupModel: oldGroupModel,
-                                                          transaction: transaction)
+        // Always ensure we're a member of any v1 group we're updating.
+        var builder = proposedGroupMembership.asBuilder
+        builder.remove(localAddress)
+        builder.addNonPendingMember(localAddress, role: .normal)
+        let groupMembership = builder.build()
 
-            guard groupMembership.nonPendingMembers.contains(localAddress) else {
-                throw OWSAssertionError("Missing localAddress.")
-            }
+        var groupModelBuilder = oldGroupModel.asBuilder
+        groupModelBuilder.name = name
+        groupModelBuilder.avatarData = avatarData
+        groupModelBuilder.groupMembership = groupMembership
+        groupModelBuilder.name = name
+        let newGroupModel = try groupModelBuilder.build(transaction: transaction)
 
-            // Don't try to modify a v2 group if we're not a member.
-            guard groupMembership.nonPendingMembers.contains(localAddress) else {
-                throw OWSAssertionError("Missing localAddress.")
-            }
-        }
-
-        // GroupsV2 TODO: Eventually we won't need to increment the revision here,
-        //                since we'll probably be updating the TSGroupThread's
-        //                group models with one derived from the service.
-        let newRevision = oldGroupModel.groupV2Revision + 1
-        var builder = TSGroupModelBuilder()
-        builder.groupId = oldGroupModel.groupId
-        builder.name = name
-        builder.avatarData = avatarData
-        builder.groupMembership = groupMembership
-        builder.groupAccess = groupAccess
-        builder.groupsVersion = oldGroupModel.groupsVersion
-        builder.groupV2Revision = newRevision
-        builder.groupSecretParamsData = oldGroupModel.groupSecretParamsData
-        let newGroupModel = try builder.build(transaction: transaction)
         if oldGroupModel.isEqual(to: newGroupModel) {
             // Skip redundant update.
             throw GroupsV2Error.redundantChange
@@ -795,6 +800,115 @@ public class GroupManager: NSObject {
                           newGroupModel: newGroupModel,
                           oldDMConfiguration: oldDMConfiguration,
                           newDMConfiguration: newDMConfiguration)
+    }
+
+    // If dmConfiguration is nil, don't change the disappearing messages configuration.
+    private static func updateInfoV2(groupId: Data,
+                                     name: String? = nil,
+                                     avatarData: Data? = nil,
+                                     avatarUrlPath: String?,
+                                     groupMembership proposedGroupMembership: GroupMembership,
+                                     groupAccess: GroupAccess,
+                                     newDMConfiguration dmConfiguration: OWSDisappearingMessagesConfiguration?,
+                                     transaction: SDSAnyReadTransaction) throws -> UpdateInfo {
+
+        guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            throw OWSAssertionError("Thread does not exist.")
+        }
+        guard let oldGroupModel = thread.groupModel as? TSGroupModelV2 else {
+            throw OWSAssertionError("Invalid groupModel.")
+        }
+        guard let localAddress = tsAccountManager.localAddress else {
+            throw OWSAssertionError("Missing localAddress.")
+        }
+
+        let oldDMConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: thread, transaction: transaction)
+        let newDMConfiguration = dmConfiguration ?? oldDMConfiguration
+
+        for address in proposedGroupMembership.allUsers {
+            guard address.uuid != nil else {
+                throw OWSAssertionError("Group v2 member missing uuid.")
+            }
+        }
+        // Before we update a v2 group, we need to separate out the
+        // pending and non-pending members.
+        let groupMembership = self.separatePendingMembers(in: proposedGroupMembership,
+                                                          oldGroupModel: oldGroupModel,
+                                                          transaction: transaction)
+
+        guard groupMembership.nonPendingMembers.contains(localAddress) else {
+            throw OWSAssertionError("Missing localAddress.")
+        }
+
+        // Don't try to modify a v2 group if we're not a member.
+        guard groupMembership.nonPendingMembers.contains(localAddress) else {
+            throw OWSAssertionError("Missing localAddress.")
+        }
+
+        let hasAvatarUrlPath = avatarUrlPath != nil
+        let hasAvatarData = avatarData != nil
+        guard hasAvatarUrlPath == hasAvatarData else {
+            throw OWSAssertionError("hasAvatarUrlPath: \(hasAvatarData) != hasAvatarData.")
+        }
+
+        // GroupsV2 TODO: Eventually we won't need to increment the revision here,
+        //                since we'll probably be updating the TSGroupThread's
+        //                group models with one derived from the service.
+        let newRevision = oldGroupModel.groupV2Revision + 1
+
+        var builder = TSGroupModelBuilder()
+        builder.groupId = oldGroupModel.groupId
+        builder.name = name
+        builder.avatarData = avatarData
+        builder.groupMembership = groupMembership
+        builder.groupAccess = groupAccess
+        builder.groupsVersion = oldGroupModel.groupsVersion
+        builder.groupV2Revision = newRevision
+        builder.groupSecretParamsData = oldGroupModel.groupSecretParamsData
+        builder.avatarUrlPath = avatarUrlPath
+        let newGroupModel = try builder.build(transaction: transaction)
+
+        if oldGroupModel.isEqual(to: newGroupModel) {
+            // Skip redundant update.
+            throw GroupsV2Error.redundantChange
+        }
+
+        return UpdateInfo(groupId: groupId,
+                          oldGroupModel: oldGroupModel,
+                          newGroupModel: newGroupModel,
+                          oldDMConfiguration: oldDMConfiguration,
+                          newDMConfiguration: newDMConfiguration)
+    }
+
+    @objc
+    public static func remoteUpdateToExistingGroupV1(groupId: Data,
+                                                     name: String? = nil,
+                                                     avatarData: Data? = nil,
+                                                     groupMembership: GroupMembership,
+                                                     groupUpdateSourceAddress: SignalServiceAddress?,
+                                                     transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
+
+        let updateInfo: UpdateInfo
+        do {
+            updateInfo = try self.updateInfoV1(groupId: groupId,
+                                               name: name,
+                                               avatarData: avatarData,
+                                               groupMembership: groupMembership,
+                                               dmConfiguration: nil,
+                                               transaction: transaction)
+        } catch GroupsV2Error.redundantChange {
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                throw OWSAssertionError("Missing groupThread.")
+            }
+            return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
+        }
+        let newGroupModel = updateInfo.newGroupModel
+        // newDisappearingMessageToken is nil, don't update the disappearing messages configuration.
+        return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                                     newDisappearingMessageToken: nil,
+                                                                                     groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                     canInsert: false,
+                                                                                     transaction: transaction)
     }
 
     // MARK: - Disappearing Messages
@@ -1008,21 +1122,29 @@ public class GroupManager: NSObject {
         return databaseStorage.read(.promise) { transaction in
             let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
             let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
-            messageBuilder.groupMetaMessage = .update
             messageBuilder.expiresInSeconds = expiresInSeconds
-            if FeatureFlags.groupsV2embedProtosInGroupUpdates {
-                messageBuilder.changeActionsProtoData = changeActionsProtoData
+            // V2 group update messages mostly ignore groupMetaMessage,
+            // but we set it to get the right behavior in shouldBeSaved.
+            // i.e. we need to flag this message as a group update that
+            // is "durable but transient" - it should not be saved.
+            messageBuilder.groupMetaMessage = .update
+            if thread.isGroupV2Thread {
+                if FeatureFlags.groupsV2embedProtosInGroupUpdates {
+                    messageBuilder.changeActionsProtoData = changeActionsProtoData
+                }
+                self.addAdditionalRecipients(to: messageBuilder,
+                                             groupThread: thread,
+                                             transaction: transaction)
             }
-            self.addAdditionalRecipients(to: messageBuilder,
-                                         groupThread: thread,
-                                         transaction: transaction)
             return messageBuilder.build()
         }.then(on: .global()) { (message: TSOutgoingMessage) throws -> Promise<Void> in
             let groupModel = thread.groupModel
-            if let avatarData = groupModel.groupAvatarData,
+            // V1 group updates need to include the group avatar (if any)
+            // as an attachment.
+            if thread.isGroupV1Thread,
+                let avatarData = groupModel.groupAvatarData,
                 avatarData.count > 0 {
                 if let dataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: "png") {
-
                     // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
                     // which causes this code to be called. Once we're more aggressive about durable sending retry,
                     // we could get rid of this "retryable tappable error message".
@@ -1047,23 +1169,32 @@ public class GroupManager: NSObject {
     }
 
     private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
-        assert(thread.groupModel.groupAvatarData == nil)
-
         guard !FeatureFlags.groupsV2dontSendUpdates else {
             return Promise.value(())
         }
 
-        return databaseStorage.write(.promise) { transaction in
-            let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
-            let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
-            messageBuilder.groupMetaMessage = .new
-            messageBuilder.expiresInSeconds = expiresInSeconds
-            self.addAdditionalRecipients(to: messageBuilder,
-                                         groupThread: thread,
-                                         transaction: transaction)
-            let message = messageBuilder.build()
-            self.messageSenderJobQueue.add(message: message.asPreparer,
-                                           transaction: transaction)
+        return firstly {
+            databaseStorage.write(.promise) { transaction in
+                let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
+                let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
+                messageBuilder.groupMetaMessage = .new
+                messageBuilder.expiresInSeconds = expiresInSeconds
+                self.addAdditionalRecipients(to: messageBuilder,
+                                             groupThread: thread,
+                                             transaction: transaction)
+                let message = messageBuilder.build()
+                self.messageSenderJobQueue.add(message: message.asPreparer,
+                                               transaction: transaction)
+            }
+        }.then(on: .global()) { _ -> Promise<Void> in
+            // The "new group" update message for v1 groups doesn't support avatars.
+            // So, if a new v1 group has an avatar, we need to send a group update
+            // message.
+            guard thread.groupModel.groupsVersion == .V1,
+                thread.groupModel.groupAvatarData != nil else {
+                    return Promise.value(())
+            }
+            return self.sendGroupUpdateMessage(thread: thread)
         }
     }
 

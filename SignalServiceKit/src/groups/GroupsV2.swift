@@ -79,6 +79,13 @@ public protocol GroupsV2Swift: GroupsV2 {
                                                  disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
+
+    func updateGroupWithChangeActions(groupId: Data,
+                                      changeActionsProto: GroupsProtoGroupChangeActions,
+                                      ignoreSignature: Bool,
+                                      groupSecretParamsData: Data) throws -> Promise<TSGroupThread>
+
+     func uploadGroupAvatar(avatarData: Data, groupSecretParamsData: Data) -> Promise<String>
 }
 
 // MARK: -
@@ -86,6 +93,9 @@ public protocol GroupsV2Swift: GroupsV2 {
 public protocol GroupsV2ChangeSet: AnyObject {
     var groupId: Data { get }
     var groupSecretParamsData: Data { get }
+
+    var newAvatarData: Data? { get }
+    var newAvatarUrlPath: String? { get }
 
     func buildGroupChangeProto(currentGroupModel: TSGroupModel,
                                currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
@@ -115,10 +125,6 @@ public protocol GroupV2Updates: AnyObject {
 
     func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
                                                             upToRevision: UInt32)
-
-    func updateGroupWithChangeActions(groupId: Data,
-                                      changeActionsProto: GroupsProtoGroupChangeActions,
-                                      transaction: SDSAnyWriteTransaction) throws -> TSGroupThread
 }
 
 // MARK: -
@@ -127,6 +133,11 @@ public protocol GroupV2UpdatesSwift: GroupV2Updates {
     func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
                                                  groupSecretParamsData: Data,
                                                  groupUpdateMode: GroupUpdateMode) -> Promise<Void>
+
+    func updateGroupWithChangeActions(groupId: Data,
+                                      changeActionsProto: GroupsProtoGroupChangeActions,
+                                      downloadedAvatars: GroupV2DownloadedAvatars,
+                                      transaction: SDSAnyWriteTransaction) throws -> TSGroupThread
 }
 
 // MARK: -
@@ -141,7 +152,8 @@ public protocol GroupV2Snapshot {
 
     var title: String { get }
 
-    // GroupsV2 TODO: Avatar.
+    var avatarUrlPath: String? { get }
+    var avatarData: Data? { get }
 
     var groupMembership: GroupMembership { get }
 
@@ -188,7 +200,72 @@ public class GroupV2ContextInfo: NSObject {
 
 // MARK: -
 
-public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
+public struct GroupV2DownloadedAvatars {
+    // A map of avatar url-to-avatar data.
+    private var avatarMap = [String: Data]()
+
+    public init() {}
+
+    public mutating func set(avatarData: Data, avatarUrlPath: String) {
+        avatarMap[avatarUrlPath] = avatarData
+    }
+
+    public mutating func merge(_ other: GroupV2DownloadedAvatars) {
+        for (avatarUrlPath, avatarData) in other.avatarMap {
+            avatarMap[avatarUrlPath] = avatarData
+        }
+    }
+
+    public func hasAvatarData(for avatarUrlPath: String) -> Bool {
+        return avatarMap[avatarUrlPath] != nil
+    }
+
+    public func avatarData(for avatarUrlPath: String) throws -> Data {
+        guard let avatarData = avatarMap[avatarUrlPath] else {
+            throw OWSAssertionError("Missing avatarData.")
+        }
+        return avatarData
+    }
+
+    public var avatarUrlPaths: [String] {
+        return Array(avatarMap.keys)
+    }
+
+    public static var empty: GroupV2DownloadedAvatars {
+        return GroupV2DownloadedAvatars()
+    }
+
+    public static func from(groupModel: TSGroupModelV2) -> GroupV2DownloadedAvatars {
+        return from(avatarData: groupModel.groupAvatarData, avatarUrlPath: groupModel.groupAvatarUrlPath)
+    }
+
+    public static func from(changeSet: GroupsV2ChangeSet) -> GroupV2DownloadedAvatars {
+        return from(avatarData: changeSet.newAvatarData, avatarUrlPath: changeSet.newAvatarUrlPath)
+    }
+
+    private static func from(avatarData: Data?, avatarUrlPath: String?) -> GroupV2DownloadedAvatars {
+        let hasAvatarData = avatarData != nil
+        let hasAvatarUrlPath = avatarUrlPath != nil
+        guard hasAvatarData == hasAvatarUrlPath else {
+            // Fail but continue in production; we can recover from this scenario.
+            owsFailDebug("hasAvatarData: \(hasAvatarData) != hasAvatarUrlPath: \(hasAvatarUrlPath)")
+            return .empty
+        }
+        guard let avatarData = avatarData,
+            let avatarUrlPath = avatarUrlPath else {
+                // No avatar.
+                return .empty
+        }
+        // Avatar found, add it to the result set.
+        var downloadedAvatars = GroupV2DownloadedAvatars()
+        downloadedAvatars.set(avatarData: avatarData, avatarUrlPath: avatarUrlPath)
+        return downloadedAvatars
+    }
+}
+
+// MARK: -
+
+public class MockGroupsV2: NSObject, GroupsV2Swift {
 
     public func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void> {
         owsFail("Not implemented.")
@@ -286,6 +363,18 @@ public class MockGroupsV2: NSObject, GroupsV2, GroupsV2Swift {
     public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
+
+    public func updateGroupWithChangeActions(groupId: Data,
+                                             changeActionsProto: GroupsProtoGroupChangeActions,
+                                             ignoreSignature: Bool,
+                                             groupSecretParamsData: Data) throws -> Promise<TSGroupThread> {
+        owsFail("Not implemented.")
+    }
+
+    public func uploadGroupAvatar(avatarData: Data,
+                                  groupSecretParamsData: Data) -> Promise<String> {
+        owsFail("Not implemented.")
+    }
 }
 
 // MARK: -
@@ -310,6 +399,7 @@ public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift {
 
     public func updateGroupWithChangeActions(groupId: Data,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
+                                             downloadedAvatars: GroupV2DownloadedAvatars,
                                              transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
         owsFail("Not implemented.")
     }

@@ -36,7 +36,7 @@ public class GroupsV2Protos {
         let builder = GroupsProtoMember.builder()
         builder.setRole(role)
         let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
-                                                     groupV2Params: groupV2Params)
+                                                         groupV2Params: groupV2Params)
         builder.setPresentation(presentationData)
 
         return try builder.build()
@@ -73,6 +73,10 @@ public class GroupsV2Protos {
                                          groupV2Params: GroupV2Params,
                                          profileKeyCredentialMap: ProfileKeyCredentialMap,
                                          localUuid: UUID) throws -> GroupsProtoGroup {
+
+        guard let groupModel = groupModel as? TSGroupModelV2 else {
+            throw OWSAssertionError("Invalid groupModel.")
+        }
         // Collect credential for self.
         guard let localProfileKeyCredential = profileKeyCredentialMap[localUuid] else {
             throw OWSAssertionError("Missing localProfileKeyCredential.")
@@ -83,8 +87,17 @@ public class GroupsV2Protos {
         // GroupsV2 TODO: Constant-ize, revisit.
         groupBuilder.setVersion(0)
         groupBuilder.setPublicKey(groupV2Params.groupPublicParamsData)
-        groupBuilder.setTitle(try groupV2Params.encryptString(groupModel.groupName ?? ""))
-        // GroupsV2 TODO: Avatar
+        // GroupsV2 TODO: Will production implementation of encryptString() pad?
+        groupBuilder.setTitle(try groupV2Params.encryptString(groupModel.groupName?.stripped ?? " "))
+
+        let hasAvatarUrl = groupModel.groupAvatarUrlPath != nil
+        let hasAvatarData = groupModel.groupAvatarData != nil
+        guard hasAvatarData == hasAvatarUrl else {
+            throw OWSAssertionError("hasAvatarData: (\(hasAvatarData)) != hasAvatarUrl: (\(hasAvatarUrl))")
+        }
+        if let avatarUrl = groupModel.groupAvatarUrlPath {
+            groupBuilder.setAvatar(avatarUrl)
+        }
 
         groupBuilder.setAccessControl(try buildAccessProto(groupAccess: groupModel.groupAccess))
 
@@ -192,22 +205,28 @@ public class GroupsV2Protos {
 
     // GroupsV2 TODO: How can we make this parsing less brittle?
     public class func parse(groupProto: GroupsProtoGroup,
+                            downloadedAvatars: GroupV2DownloadedAvatars,
                             groupV2Params: GroupV2Params) throws -> GroupV2Snapshot {
+
+        var title = ""
+        if let titleData = groupProto.title {
+            do {
+                title = try groupV2Params.decryptString(titleData)
+            } catch {
+                owsFailDebug("Could not decrypt title: \(error).")
+            }
+        }
+
+        var avatarUrlPath: String?
+        var avatarData: Data?
+        if let avatar = groupProto.avatar, !avatar.isEmpty {
+            avatarUrlPath = avatar
+            avatarData = try downloadedAvatars.avatarData(for: avatar)
+        }
 
         // This client can learn of profile keys from parsing group state protos.
         // After parsing, we should fill in profileKeys in the profile manager.
         var profileKeys = [UUID: Data]()
-
-        // GroupsV2 TODO: Is GroupsProtoAccessControl required?
-        guard let accessControl = groupProto.accessControl else {
-            throw OWSAssertionError("Missing accessControl.")
-        }
-        guard let accessControlForAttributes = accessControl.attributes else {
-            throw OWSAssertionError("Missing accessControl.members.")
-        }
-        guard let accessControlForMembers = accessControl.members else {
-            throw OWSAssertionError("Missing accessControl.members.")
-        }
 
         var members = [GroupV2SnapshotImpl.Member]()
         for memberProto in groupProto.members {
@@ -268,17 +287,16 @@ public class GroupsV2Protos {
             pendingMembers.append(pendingMember)
         }
 
-        var title = ""
-        if let titleData = groupProto.title {
-            do {
-                title = try groupV2Params.decryptString(titleData)
-            } catch {
-                owsFailDebug("Could not decrypt title: \(error).")
-            }
+        // GroupsV2 TODO: Is GroupsProtoAccessControl required?
+        guard let accessControl = groupProto.accessControl else {
+            throw OWSAssertionError("Missing accessControl.")
         }
-
-        // GroupsV2 TODO: Avatar
-        //        public var avatar: String? {
+        guard let accessControlForAttributes = accessControl.attributes else {
+            throw OWSAssertionError("Missing accessControl.members.")
+        }
+        guard let accessControlForMembers = accessControl.members else {
+            throw OWSAssertionError("Missing accessControl.members.")
+        }
 
         var disappearingMessageToken = DisappearingMessageToken.disabledToken
         if let disappearingMessagesTimerEncrypted = groupProto.disappearingMessagesTimer {
@@ -299,6 +317,8 @@ public class GroupsV2Protos {
                                    groupProto: groupProto,
                                    revision: revision,
                                    title: title,
+                                   avatarUrlPath: avatarUrlPath,
+                                   avatarData: avatarData,
                                    members: members,
                                    pendingMembers: pendingMembers,
                                    accessControlForAttributes: accessControlForAttributes,
@@ -310,21 +330,85 @@ public class GroupsV2Protos {
     // MARK: -
 
     // We do not treat an empty response with no changes as an error.
-    public class func parse(groupChangesProto: GroupsProtoGroupChanges,
-                            groupV2Params: GroupV2Params) throws -> [GroupV2Change] {
+    public class func parseChangesFromService(groupChangesProto: GroupsProtoGroupChanges,
+                                              downloadedAvatars: GroupV2DownloadedAvatars,
+                                              groupV2Params: GroupV2Params) throws -> [GroupV2Change] {
         var result = [GroupV2Change]()
         for changeStateProto in groupChangesProto.groupChanges {
             guard let snapshotProto = changeStateProto.groupState else {
                 throw OWSAssertionError("Missing groupState proto.")
             }
             let snapshot = try parse(groupProto: snapshotProto,
+                                     downloadedAvatars: downloadedAvatars,
                                      groupV2Params: groupV2Params)
             guard let changeProto = changeStateProto.groupChange else {
                 throw OWSAssertionError("Missing groupChange proto.")
             }
+            // We can ignoreSignature because these protos came from the service.
             let changeActionsProto: GroupsProtoGroupChangeActions = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: true)
             result.append(GroupV2Change(snapshot: snapshot, changeActionsProto: changeActionsProto))
         }
         return result
+    }
+
+    // MARK: -
+
+    public class func collectAvatarUrlPaths(groupProto: GroupsProtoGroup? = nil,
+                                            groupChangesProto: GroupsProtoGroupChanges? = nil,
+                                            changeActionsProto: GroupsProtoGroupChangeActions? = nil,
+                                            ignoreSignature: Bool,
+                                            groupV2Params: GroupV2Params) -> Promise<[String]> {
+        return DispatchQueue.global().async(.promise) { () throws -> [String] in
+            var avatarUrlPaths = [String]()
+            if let groupProto = groupProto {
+                avatarUrlPaths += self.collectAvatarUrlPaths(groupProto: groupProto)
+            }
+            if let groupChangesProto = groupChangesProto {
+                avatarUrlPaths += try self.collectAvatarUrlPaths(groupChangesProto: groupChangesProto,
+                                                                 ignoreSignature: ignoreSignature,
+                                                                 groupV2Params: groupV2Params)
+            }
+            if let changeActionsProto = changeActionsProto {
+                avatarUrlPaths += self.collectAvatarUrlPaths(changeActionsProto: changeActionsProto)
+            }
+            // Discard empty avatar urls.
+            return avatarUrlPaths.filter { $0.count > 0 }
+        }
+    }
+
+    private class func collectAvatarUrlPaths(groupChangesProto: GroupsProtoGroupChanges, ignoreSignature: Bool,
+                                             groupV2Params: GroupV2Params) throws -> [String] {
+        var avatarUrlPaths = [String]()
+        for changeStateProto in groupChangesProto.groupChanges {
+            guard let groupState = changeStateProto.groupState else {
+                throw OWSAssertionError("Missing groupState proto.")
+            }
+            avatarUrlPaths += collectAvatarUrlPaths(groupProto: groupState)
+
+            guard let changeProto = changeStateProto.groupChange else {
+                throw OWSAssertionError("Missing groupChange proto.")
+            }
+            // We can ignoreSignature because these protos came from the service.
+            let changeActionsProto = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: ignoreSignature)
+            avatarUrlPaths += self.collectAvatarUrlPaths(changeActionsProto: changeActionsProto)
+        }
+        return avatarUrlPaths
+    }
+
+    private class func collectAvatarUrlPaths(changeActionsProto: GroupsProtoGroupChangeActions) -> [String] {
+        guard let modifyAvatarAction = changeActionsProto.modifyAvatar else {
+            return []
+        }
+        guard let avatarUrlPath = modifyAvatarAction.avatar else {
+            return []
+        }
+        return [avatarUrlPath]
+    }
+
+    private class func collectAvatarUrlPaths(groupProto: GroupsProtoGroup) -> [String] {
+        guard let avatarUrlPath = groupProto.avatar else {
+            return []
+        }
+        return [avatarUrlPath]
     }
 }

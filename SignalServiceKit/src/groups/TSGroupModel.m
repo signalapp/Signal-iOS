@@ -148,11 +148,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return data;
 }
 
-- (void)setGroupAvatarDataWithImage:(nullable UIImage *)image
-{
-    self.groupAvatarData = [TSGroupModel dataForGroupAvatar:image];
-}
-
 - (nullable UIImage *)groupAvatarImage
 {
     return [UIImage imageWithData:self.groupAvatarData];

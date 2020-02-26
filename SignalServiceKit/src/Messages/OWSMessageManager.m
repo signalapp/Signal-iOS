@@ -1108,8 +1108,10 @@ NS_ASSUME_NONNULL_BEGIN
             }
             if (groupContext.avatar != nil) {
                 OWSLogVerbose(@"Data message had group avatar attachment");
+                TSGroupThread *newGroupThread = result.groupThread;
                 [self handleReceivedGroupAvatarUpdateWithEnvelope:envelope
                                                       dataMessage:dataMessage
+                                                      groupThread:newGroupThread
                                                       transaction:transaction];
             }
 
@@ -1146,6 +1148,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleReceivedGroupAvatarUpdateWithEnvelope:(SSKProtoEnvelope *)envelope
                                         dataMessage:(SSKProtoDataMessage *)dataMessage
+                                        groupThread:(TSGroupThread *)groupThread
                                         transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1160,14 +1163,20 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
-
-    // GroupsV2 TODO: Handle groups v2.
-    TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:dataMessage.group.id
-                                                               transaction:transaction];
-    if (!groupThread) {
-        OWSFailDebug(@"Missing group for group avatar update");
+    if (groupThread.groupModel.groupsVersion != GroupsVersionV1) {
+        OWSFail(@"Invalid groupsVersion.");
         return;
     }
+
+    SignalServiceAddress *groupUpdateSourceAddress;
+    if (!envelope.sourceAddress.isValid) {
+        OWSFailDebug(@"Invalid envelope.sourceAddress");
+        return;
+    } else {
+        groupUpdateSourceAddress = envelope.sourceAddress;
+    }
+
+    NSData *groupId = groupThread.groupModel.groupId;
 
     TSAttachmentPointer *_Nullable avatarPointer =
         [TSAttachmentPointer attachmentPointerFromProto:dataMessage.group.avatar albumMessage:nil];
@@ -1185,9 +1194,32 @@ NS_ASSUME_NONNULL_BEGIN
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
+            NSData *_Nullable avatarData = attachmentStream.validStillImageData;
+            if (avatarData == nil) {
+                OWSFailDebug(@"Missing avatarData.");
+                return;
+            }
 
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                [groupThread updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
+                TSGroupThread *_Nullable oldGroupThread = [TSGroupThread fetchWithGroupId:groupId
+                                                                              transaction:transaction];
+                if (oldGroupThread == nil) {
+                    OWSFailDebug(@"Missing oldGroupThread.");
+                    return;
+                }
+                NSError *_Nullable error;
+                UpsertGroupResult *_Nullable result =
+                    [GroupManager remoteUpdateToExistingGroupV1WithGroupId:groupId
+                                                                      name:oldGroupThread.groupModel.groupName
+                                                                avatarData:avatarData
+                                                           groupMembership:oldGroupThread.groupModel.groupMembership
+                                                  groupUpdateSourceAddress:groupUpdateSourceAddress
+                                                               transaction:transaction
+                                                                     error:&error];
+                if (error != nil || result == nil) {
+                    OWSFailDebug(@"Error: %@", error);
+                    return;
+                }
 
                 // Eagerly clean up the attachment.
                 [attachmentStream anyRemoveWithTransaction:transaction];

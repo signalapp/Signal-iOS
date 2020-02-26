@@ -30,12 +30,12 @@ class IncomingGroupsV2MessageQueue: NSObject {
         return SDSDatabaseStorage.shared
     }
 
-    private var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
+    private var groupsV2: GroupsV2Swift {
+        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
-    private var groupV2Updates: GroupV2Updates {
-        return SSKEnvironment.shared.groupV2Updates
+    private var groupV2Updates: GroupV2UpdatesSwift {
+        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
     }
 
     private var blockingManager: OWSBlockingManager {
@@ -463,13 +463,14 @@ class IncomingGroupsV2MessageQueue: NSObject {
     }
 
     private func updateGroupPromise(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
-
         // First, we try to update the group locally using changes embedded in
         // the group context (if any).
-        return databaseStorage.write(.promise) { (transaction) -> UpdateOutcome in
-            return self.tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: jobInfo,
-                                                            transaction: transaction)
-        }.then(on: DispatchQueue.global()) { (embeddedUpdateOutcome) -> Promise<UpdateOutcome> in
+        firstly {
+            return self.tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: jobInfo)
+        }.recover(on: .global()) { _ in
+            owsFailDebug("tryToUpdateUsingEmbeddedGroupUpdate should never fail.")
+            return Guarantee.value(UpdateOutcome.failureShouldFailoverToService)
+        }.then(on: DispatchQueue.global()) { (embeddedUpdateOutcome: UpdateOutcome) -> Promise<UpdateOutcome> in
             if embeddedUpdateOutcome == .failureShouldFailoverToService {
                 return self.tryToUpdateUsingService(jobInfo: jobInfo)
             } else {
@@ -494,83 +495,99 @@ class IncomingGroupsV2MessageQueue: NSObject {
     // * Return .failureShouldDiscard if this message should be discarded.
     //
     // This method should never return .failureShouldRetry.
-    private func tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: IncomingGroupsV2MessageJobInfo,
-                                                     transaction: SDSAnyWriteTransaction) -> UpdateOutcome {
-        guard let groupContextInfo = jobInfo.groupContextInfo,
-            let groupContext = jobInfo.groupContext else {
-                owsFailDebug("Missing jobInfo properties.")
-                return .failureShouldDiscard
-        }
-        let groupId = groupContextInfo.groupId
-        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-            // We might be learning of a group for the first time
-            // in which case we should fetch current group state from the
-            // service.
-            return .failureShouldFailoverToService
-        }
-        let oldGroupModel = groupThread.groupModel
-        guard oldGroupModel.groupsVersion == .V2 else {
-            owsFailDebug("Invalid groupsVersion.")
-            return .failureShouldDiscard
-        }
-        guard groupContext.hasRevision else {
-            owsFailDebug("Missing revision.")
-            return .failureShouldDiscard
-        }
-        let contextRevision = groupContext.revision
-        guard contextRevision > oldGroupModel.groupV2Revision else {
-            // Group is already updated.
-            // No need to apply embedded change from the group context; it is obsolete.
-            // This can happen due to races.
-            return .successShouldProcess
-        }
-        guard contextRevision == oldGroupModel.groupV2Revision + 1 else {
-            // We can only apply embedded changes if we're behind exactly
-            // one revision.
-            return .failureShouldFailoverToService
-        }
-        guard FeatureFlags.groupsV2processProtosInGroupUpdates else {
-            return .failureShouldFailoverToService
-        }
-        guard let changeActionsProtoData = groupContext.groupChange else {
-            // No embedded group change.
-            return .failureShouldFailoverToService
-        }
-        let changeActionsProto: GroupsProtoGroupChangeActions
-        do {
-            // We need to verify the signature because this proto came from
-            // another client, not the service.
-            changeActionsProto = try groupsV2.parseAndVerifyChangeActionsProto(changeActionsProtoData,
-                                                                               ignoreSignature: false)
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return .failureShouldFailoverToService
-        }
+    private func tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
+        let (promise, resolver) = Promise<UpdateOutcome>.pending()
+        DispatchQueue.global().async {
+            guard let groupContextInfo = jobInfo.groupContextInfo,
+                let groupContext = jobInfo.groupContext else {
+                    owsFailDebug("Missing jobInfo properties.")
+                    return resolver.fulfill(.failureShouldDiscard)
+            }
+            let groupId = groupContextInfo.groupId
+            guard GroupManager.isValidGroupId(groupId, groupsVersion: .V2) else {
+                owsFailDebug("Invalid groupId.")
+                return resolver.fulfill(.failureShouldDiscard)
+            }
+            let thread = self.databaseStorage.read { transaction in
+                return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+            }
+            guard let groupThread = thread else {
+                // We might be learning of a group for the first time
+                // in which case we should fetch current group state from the
+                // service.
+                return resolver.fulfill(.failureShouldFailoverToService)
+            }
+            let oldGroupModel = groupThread.groupModel
+            guard oldGroupModel.groupsVersion == .V2 else {
+                owsFailDebug("Invalid groupsVersion.")
+                return resolver.fulfill(.failureShouldDiscard)
+            }
+            guard groupContext.hasRevision else {
+                owsFailDebug("Missing revision.")
+                return resolver.fulfill(.failureShouldDiscard)
+            }
+            let contextRevision = groupContext.revision
+            guard contextRevision > oldGroupModel.groupV2Revision else {
+                // Group is already updated.
+                // No need to apply embedded change from the group context; it is obsolete.
+                // This can happen due to races.
+                return resolver.fulfill(.successShouldProcess)
+            }
+            guard contextRevision == oldGroupModel.groupV2Revision + 1 else {
+                // We can only apply embedded changes if we're behind exactly
+                // one revision.
+                return resolver.fulfill(.failureShouldFailoverToService)
+            }
+            guard FeatureFlags.groupsV2processProtosInGroupUpdates else {
+                return resolver.fulfill(.failureShouldFailoverToService)
+            }
+            guard let changeActionsProtoData = groupContext.groupChange else {
+                // No embedded group change.
+                return resolver.fulfill(.failureShouldFailoverToService)
+            }
 
-        let updatedGroupThread: TSGroupThread
-        do {
-            updatedGroupThread = try groupV2Updates.updateGroupWithChangeActions(groupId: groupId,
-                                                                                 changeActionsProto: changeActionsProto,
-                                                                                 transaction: transaction)
-        } catch {
-            owsFailDebug("Error: \(error)")
-            // GroupsV2 TODO: Make sure this is still correct behavior.
-            return .failureShouldFailoverToService
-        }
-        let updatedGroupModel = updatedGroupThread.groupModel
+            DispatchQueue.global().async(.promise) {
+                // We need to verify the signatures because these protos came from
+                // another client, not the service.
+                return try self.groupsV2.parseAndVerifyChangeActionsProto(changeActionsProtoData,
+                                                                          ignoreSignature: false)
+            }.then(on: .global()) { (changeActionsProto: GroupsProtoGroupChangeActions) throws -> Promise<TSGroupThread> in
+                guard let groupSecretParamsData = oldGroupModel.groupSecretParamsData else {
+                    throw OWSAssertionError("Missing groupSecretParamsData.")
+                }
+                // We need to verify the signatures because these protos came from
+                // another client, not the service.
+                return try self.groupsV2.updateGroupWithChangeActions(groupId: oldGroupModel.groupId,
+                                                                      changeActionsProto: changeActionsProto,
+                                                                      ignoreSignature: false,
+                                                                      groupSecretParamsData: groupSecretParamsData)
+            }.map(on: .global()) { (updatedGroupThread: TSGroupThread) throws -> Void in
+                let updatedGroupModel = updatedGroupThread.groupModel
 
-        guard updatedGroupModel.groupV2Revision >= contextRevision else {
-            owsFailDebug("Invalid revision.")
-            return .failureShouldFailoverToService
+                guard updatedGroupModel.groupV2Revision >= contextRevision else {
+                    owsFailDebug("Invalid revision.")
+                    return resolver.fulfill(.failureShouldFailoverToService)
+                }
+                guard updatedGroupModel.groupV2Revision == contextRevision else {
+                    // We expect the embedded changes to update us to the target
+                    // revision.  If we update past that, assert but proceed in production.
+                    owsFailDebug("Unexpected revision.")
+                    return resolver.fulfill(.successShouldProcess)
+                }
+                Logger.info("Successfully applied embedded change proto from group context.")
+                return resolver.fulfill(.successShouldProcess)
+            }.catch(on: .global()) { error in
+                if error.isNetworkConnectivityFailure {
+                    Logger.warn("Error: \(error)")
+                    return resolver.fulfill(.failureShouldRetry)
+                } else {
+                    owsFailDebug("Error: \(error)")
+                    // GroupsV2 TODO: Make sure this is still correct behavior.
+                    return resolver.fulfill(.failureShouldFailoverToService)
+                }
+            }.retainUntilComplete()
         }
-        guard updatedGroupModel.groupV2Revision == contextRevision else {
-            // We expect the embedded changes to update us to the target
-            // revision.  If we update past that, assert but proceed in production.
-            owsFailDebug("Unexpected revision.")
-            return .successShouldProcess
-        }
-        Logger.info("Successfully applied embedded change proto from group context.")
-        return .successShouldProcess
+        return promise
     }
 
     private func tryToUpdateUsingService(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {

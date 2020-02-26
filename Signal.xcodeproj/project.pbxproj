@@ -173,6 +173,7 @@
 		3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
 		347024A0238C85850078D72C /* VersionedProfiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfiles.swift */; };
 		347137FC22A1BCE800F43A63 /* OWSMessageViewOnceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 347137FB22A1BCE800F43A63 /* OWSMessageViewOnceView.m */; };
+		347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */; };
 		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
@@ -1027,6 +1028,7 @@
 		3470249F238C85850078D72C /* VersionedProfiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfiles.swift; sourceTree = "<group>"; };
 		347137FA22A1BCE800F43A63 /* OWSMessageViewOnceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageViewOnceView.h; sourceTree = "<group>"; };
 		347137FB22A1BCE800F43A63 /* OWSMessageViewOnceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageViewOnceView.m; sourceTree = "<group>"; };
+		347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2AvatarDownloadOperation.swift; sourceTree = "<group>"; };
 		34784592237C4813000D1CAA /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/hi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		34784593237C4819000D1CAA /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/Localizable.strings; sourceTree = "<group>"; };
 		347850561FD86544007B8332 /* SAEFailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFailedViewController.swift; sourceTree = "<group>"; };
@@ -2345,6 +2347,7 @@
 		34BB3C5723C6644B001651FC /* groups */ = {
 			isa = PBXGroup;
 			children = (
+				347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */,
 				34F0566923DA209300265283 /* GroupsV2Changes.swift */,
 				34BB3C5923C6644B001651FC /* GroupsV2ChangeSetImpl.swift */,
 				34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */,
@@ -4371,6 +4374,7 @@
 				451F8A441FD7156B005CB9DA /* BlockListUIUtils.m in Sources */,
 				34AC0A1E211B39EA00997B47 /* ThreadViewHelper.m in Sources */,
 				34BBC85A220C7ADA00857249 /* ImageEditorTextItem.swift in Sources */,
+				347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */,
 				34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */,
 				344DC9AF226E483D004E7322 /* ManageStickersViewController.swift in Sources */,
 				349EA07C2162AEA800F7B17F /* OWS111UDAttributesMigration.swift in Sources */,

@@ -86,3 +86,11 @@ public extension TSNetworkManager {
         }
     }
 }
+
+// MARK: -
+
+public extension Error {
+    var isNetworkConnectivityFailure: Bool {
+        return IsNetworkConnectivityFailure(self)
+    }
+}

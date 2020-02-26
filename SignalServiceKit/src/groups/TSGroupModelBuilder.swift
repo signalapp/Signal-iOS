@@ -23,6 +23,7 @@ public struct TSGroupModelBuilder {
     public var groupV2Revision: UInt32 = 0
     public var groupSecretParamsData: Data?
     public var newGroupSeed: NewGroupSeed?
+    public var avatarUrlPath: String?
 
     public init() {}
 
@@ -31,13 +32,13 @@ public struct TSGroupModelBuilder {
     public init(groupV2Snapshot: GroupV2Snapshot) throws {
         self.groupId = try groupsV2.groupId(forGroupSecretParamsData: groupV2Snapshot.groupSecretParamsData)
         self.name = groupV2Snapshot.title
-        // GroupsV2 TODO: Avatar.
-        // self.avatarData = groupV2Snapshot.avatarData
+        self.avatarData = groupV2Snapshot.avatarData
         self.groupMembership = groupV2Snapshot.groupMembership
         self.groupAccess = groupV2Snapshot.groupAccess
         self.groupsVersion = GroupsVersion.V2
         self.groupV2Revision = groupV2Snapshot.revision
         self.groupSecretParamsData = groupV2Snapshot.groupSecretParamsData
+        self.avatarUrlPath = groupV2Snapshot.avatarUrlPath
     }
 
     public func build(transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
@@ -76,6 +77,8 @@ public struct TSGroupModelBuilder {
         case .V2:
             let groupAccess = buildGroupAccess(groupsVersion: groupsVersion)
             let groupSecretParamsData = try buildGroupSecretParamsData(newGroupSeed: newGroupSeed)
+            // Don't set avatarUrlPath unless we have avatarData.
+            let avatarUrlPath = avatarData != nil ? self.avatarUrlPath : nil
 
             return TSGroupModelV2(groupId: groupId,
                                   name: name,
@@ -83,7 +86,8 @@ public struct TSGroupModelBuilder {
                                   groupMembership: groupMembership,
                                   groupAccess: groupAccess,
                                   revision: groupV2Revision,
-                                  secretParamsData: groupSecretParamsData)
+                                  secretParamsData: groupSecretParamsData,
+                                  avatarUrlPath: avatarUrlPath)
         }
     }
 
