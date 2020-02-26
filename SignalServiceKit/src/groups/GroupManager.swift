@@ -311,11 +311,10 @@ public class GroupManager: NSObject {
             self.profileManager.addThread(toProfileWhitelist: thread)
 
             if shouldSendMessage {
-                assert(thread.groupModel.groupAvatarData == nil)
-
-                return sendDurableNewGroupMessage(forThread: thread)
-                    .map(on: .global()) { _ in
-                        return thread
+                return firstly {
+                    sendDurableNewGroupMessage(forThread: thread)
+                }.map(on: .global()) { _ in
+                    return thread
                 }
             } else {
                 return Promise.value(thread)
