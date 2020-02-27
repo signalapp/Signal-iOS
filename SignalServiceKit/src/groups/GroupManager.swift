@@ -224,7 +224,9 @@ public class GroupManager: NSObject {
             guard RemoteConfig.groupsV2CreateGroups else {
                 return Promise.value(groupMembership)
             }
-            return firstly {
+            return firstly { () -> Promise<Void> in
+                self.groupsV2.tryToEnsureUuidsForGroupMembers(for: Array(groupMembership.allUsers))
+            }.then(on: .global()) { () -> Promise<Void> in
                 self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allUsers))
             }.map(on: .global()) { (_) -> GroupMembership in
                 return groupMembership
@@ -710,7 +712,9 @@ public class GroupManager: NSObject {
                                                    dmConfiguration: OWSDisappearingMessagesConfiguration?,
                                                    groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
-        return firstly {
+        return firstly { () -> Promise<Void> in
+            self.groupsV2.tryToEnsureUuidsForGroupMembers(for: Array(groupMembership.allUsers))
+        }.then(on: .global()) { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () -> Promise<String?> in
             guard let avatarData = avatarData else {

@@ -4,7 +4,6 @@
 
 #import "TSContactThread.h"
 #import "ContactsManagerProtocol.h"
-#import "ContactsUpdater.h"
 #import "NotificationsProtocol.h"
 #import "OWSIdentityManager.h"
 #import "SSKEnvironment.h"
