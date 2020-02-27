@@ -196,8 +196,9 @@ class IncomingGroupsV2MessageQueue: NSObject {
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
 
         let completion: BatchCompletionBlock = { (processedJobs, transaction, shouldWaitBeforeRetrying) in
-            // NOTE: completionTransaction is the same transaction as outerTransaction
-            //       in the "sync" case but a different transaction in the "async" case.
+            // NOTE: This transaction is the same transaction as the transaction
+            //       passed to processJobs() in the "sync" case but is a different
+            //       transaction in the "async" case.
             let uniqueIds = processedJobs.map { $0.uniqueId }
             self.finder.removeJobs(withUniqueIds: uniqueIds,
                                    transaction: transaction.unwrapGrdbWrite)
@@ -239,6 +240,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 }
             }
         }
+
         databaseStorage.write { transaction in
             self.processJobs(jobs: batchJobs, transaction: transaction, completion: completion)
         }
@@ -464,10 +466,8 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 throw GroupsV2Error.shouldDiscard
             }
         }.recover(on: .global()) { error in
-            let shouldRetry = self.isRetryableError(error)
-
             self.databaseStorage.write { transaction in
-                if shouldRetry {
+                if self.isRetryableError(error) {
                     Logger.warn("Error: \(error)")
                     // Retry
                     // _Do not_ include the job in the processed jobs.
@@ -614,18 +614,6 @@ class IncomingGroupsV2MessageQueue: NSObject {
         return promise
     }
 
-    private func isRetryableError(_ error: Error) -> Bool {
-        if IsNetworkConnectivityFailure(error) {
-            return true
-        }
-        switch error {
-            case GroupsV2Error.timeout, GroupsV2Error.shouldRetry:
-                return true
-            default:
-                return false
-        }
-    }
-
     private func tryToUpdateUsingService(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
         guard let groupContextInfo = jobInfo.groupContextInfo,
             let groupContext = jobInfo.groupContext else {
@@ -651,6 +639,18 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 owsFailDebug("error: \(type(of: error)) \(error)")
                 return Guarantee.value(UpdateOutcome.failureShouldDiscard)
             }
+        }
+    }
+
+    private func isRetryableError(_ error: Error) -> Bool {
+        if IsNetworkConnectivityFailure(error) {
+            return true
+        }
+        switch error {
+        case GroupsV2Error.timeout, GroupsV2Error.shouldRetry:
+            return true
+        default:
+            return false
         }
     }
 
