@@ -464,17 +464,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 throw GroupsV2Error.shouldDiscard
             }
         }.recover(on: .global()) { error in
-            let shouldRetry: Bool = {
-                if error.isNetworkConnectivityFailure {
-                    return true
-                }
-                switch error {
-                case GroupsV2Error.shouldRetry:
-                    return true
-                default:
-                    return false
-                }
-            }()
+            let shouldRetry = self.isRetryableError(error)
 
             self.databaseStorage.write { transaction in
                 if shouldRetry {
@@ -611,7 +601,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 Logger.info("Successfully applied embedded change proto from group context.")
                 return resolver.fulfill(.successShouldProcess)
             }.catch(on: .global()) { error in
-                if error.isNetworkConnectivityFailure {
+                if self.isRetryableError(error) {
                     Logger.warn("Error: \(error)")
                     return resolver.fulfill(.failureShouldRetry)
                 } else {
@@ -622,6 +612,18 @@ class IncomingGroupsV2MessageQueue: NSObject {
             }.retainUntilComplete()
         }
         return promise
+    }
+
+    private func isRetryableError(_ error: Error) -> Bool {
+        if IsNetworkConnectivityFailure(error) {
+            return true
+        }
+        switch error {
+            case GroupsV2Error.timeout, GroupsV2Error.shouldRetry:
+                return true
+            default:
+                return false
+        }
     }
 
     private func tryToUpdateUsingService(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
@@ -642,17 +644,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
         }.map(on: .global()) { (_) in
             return UpdateOutcome.successShouldProcess
         }.recover(on: .global()) { error -> Guarantee<UpdateOutcome> in
-
-            if IsNetworkConnectivityFailure(error) {
+            if self.isRetryableError(error) {
                 Logger.warn("error: \(type(of: error)) \(error)")
                 return Guarantee.value(UpdateOutcome.failureShouldRetry)
-            }
-
-            switch error {
-            case GroupsV2Error.timeout:
-                Logger.warn("error: \(type(of: error)) \(error)")
-                return Guarantee.value(UpdateOutcome.failureShouldRetry)
-            default:
+            } else {
                 owsFailDebug("error: \(type(of: error)) \(error)")
                 return Guarantee.value(UpdateOutcome.failureShouldDiscard)
             }
