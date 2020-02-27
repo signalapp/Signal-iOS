@@ -618,6 +618,7 @@
 		8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8837F74023DA0B0F00772A32 /* MegaphoneView.swift */; };
 		88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88535063240829950011D318 /* DateHeaderInteraction.swift */; };
 		8853506824084E470011D318 /* OWSDateHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8853506724084E470011D318 /* OWSDateHeaderCell.swift */; };
+		8853506A240852F90011D318 /* OWSMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88535069240852F90011D318 /* OWSMessageCell.swift */; };
 		8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */; };
 		8855DF89238F2E690066D96F /* EmojiCountsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */; };
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
@@ -1525,6 +1526,7 @@
 		8837F74023DA0B0F00772A32 /* MegaphoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MegaphoneView.swift; sourceTree = "<group>"; };
 		88535063240829950011D318 /* DateHeaderInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHeaderInteraction.swift; sourceTree = "<group>"; };
 		8853506724084E470011D318 /* OWSDateHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDateHeaderCell.swift; sourceTree = "<group>"; };
+		88535069240852F90011D318 /* OWSMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMessageCell.swift; sourceTree = "<group>"; };
 		8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiReactorsTableView.swift; sourceTree = "<group>"; };
 		8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCountsCollectionView.swift; sourceTree = "<group>"; };
 		88594E592335B08000390B19 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
@@ -2480,6 +2482,7 @@
 				3496744C2076768700080B5F /* OWSMessageBubbleView.m */,
 				34D1F0A11F867BFC0066283D /* OWSMessageCell.h */,
 				34D1F0A21F867BFC0066283D /* OWSMessageCell.m */,
+				88535069240852F90011D318 /* OWSMessageCell.swift */,
 				34D920E520E179C100D51158 /* OWSMessageFooterView.h */,
 				34D920E620E179C200D51158 /* OWSMessageFooterView.m */,
 				347137FA22A1BCE800F43A63 /* OWSMessageViewOnceView.h */,
@@ -4553,6 +4556,7 @@
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				347137FC22A1BCE800F43A63 /* OWSMessageViewOnceView.m in Sources */,
 				45D2AC02204885170033C692 /* OWS2FAReminderViewController.swift in Sources */,
+				8853506A240852F90011D318 /* OWSMessageCell.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,

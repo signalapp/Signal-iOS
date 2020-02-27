@@ -629,9 +629,17 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
             OWSFailDebug(@"Unknown interaction type.");
             return nil;
         case OWSInteractionType_IncomingMessage:
+            return [collectionView
+                dequeueReusableCellWithReuseIdentifier:[OWSMessageCell
+                                                           cellReuseIdentifierForMessageCellType:self.messageCellType
+                                                                               isOutgoingMessage:NO]
+                                          forIndexPath:indexPath];
         case OWSInteractionType_OutgoingMessage:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
+            return [collectionView
+                dequeueReusableCellWithReuseIdentifier:[OWSMessageCell
+                                                           cellReuseIdentifierForMessageCellType:self.messageCellType
+                                                                               isOutgoingMessage:YES]
+                                          forIndexPath:indexPath];
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:
         case OWSInteractionType_Call:
