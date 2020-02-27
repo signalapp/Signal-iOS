@@ -68,6 +68,12 @@ public extension GroupsV2Impl {
 
     static func enqueueGroupRestore(masterKeyData: Data,
                                     transaction: SDSAnyWriteTransaction) {
+
+        guard groupsV2.isValidGroupV2MasterKey(masterKeyData) else {
+            owsFailDebug("Invalid master key.")
+            return
+        }
+
         let key = restoreGroupKey(forMasterKeyData: masterKeyData)
 
         if !groupsFromStorageService_All.hasValue(forKey: key, transaction: transaction) {
@@ -84,7 +90,7 @@ public extension GroupsV2Impl {
         }
 
         // Mark as needing restore.
-        groupsFromStorageService_EnqueuedForRestore.setBool(true, key: key, transaction: transaction)
+        groupsFromStorageService_EnqueuedForRestore.setData(masterKeyData, key: key, transaction: transaction)
 
         transaction.addAsyncCompletion {
             self.enqueueRestoreGroupPass()
@@ -116,12 +122,29 @@ public extension GroupsV2Impl {
         GroupsV2Impl.restoreGroupsOperationQueue.addOperation(operation)
     }
 
-    private enum RestoreGroupOutcome {
+    fileprivate enum RestoreGroupOutcome: CustomStringConvertible {
         case success
         case unretryableFailure
         case retryableFailure
         case emptyQueue
         case cantProcess
+        
+        // MARK: - CustomStringConvertible
+        
+        public var description: String {
+            switch self {
+            case .success:
+                return "success"
+            case .unretryableFailure:
+                return "unretryableFailure"
+            case .retryableFailure:
+                return "retryableFailure"
+            case .emptyQueue:
+                return "emptyQueue"
+            case .cantProcess:
+                return "cantProcess"
+            }
+        }
     }
 
     // Every invocation of this method should remove (up to) one group from the queue.
