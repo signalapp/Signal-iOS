@@ -1128,6 +1128,8 @@ class StorageServiceOperation: OWSOperation {
 
             StorageServiceOperation.setUnknownIdentifiersTypeMap(newUnknownIdentifiersTypeMap, transaction: transaction)
         }
+
+        return self.reportSuccess()
     }
 
     // MARK: - Accessors
