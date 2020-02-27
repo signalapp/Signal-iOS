@@ -106,6 +106,15 @@ public class ProfileFetcherJob: NSObject {
 
     private var backgroundTask: OWSBackgroundTask?
 
+    @objc
+    public class func fetchAndUpdateProfilePromiseObjc(address: SignalServiceAddress,
+                                                       mainAppOnly: Bool,
+                                                       ignoreThrottling: Bool) -> AnyPromise {
+        return AnyPromise(fetchAndUpdateProfilePromise(address: address,
+                                                       mainAppOnly: mainAppOnly,
+                                                       ignoreThrottling: ignoreThrottling))
+    }
+
     public class func fetchAndUpdateProfilePromise(address: SignalServiceAddress,
                                                    mainAppOnly: Bool = true,
                                                    ignoreThrottling: Bool = false,

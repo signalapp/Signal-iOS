@@ -1491,6 +1491,12 @@ public class GroupManager: NSObject {
             guard !hasLocalCredential else {
                 return Promise.value(())
             }
+            guard tsAccountManager.isRegisteredPrimaryDevice else {
+                // On secondary devices, just re-fetch the local
+                // profile.
+                return self.profileManager.fetchLocalUsersProfilePromise().asVoid()
+            }
+
             // We (and other clients) need a profile key credential for
             // all group members to use groups v2.  Other clients can't
             // request our profile key credential from the service until

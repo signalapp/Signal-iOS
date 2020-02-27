@@ -430,6 +430,17 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     [ProfileFetcherJob fetchAndUpdateProfileWithAddress:address ignoreThrottling:YES];
 }
 
+- (AnyPromise *)fetchLocalUsersProfilePromise
+{
+    SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+    if (!localAddress.isValid) {
+        return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"Missing local address.")];
+    }
+    return [ProfileFetcherJob fetchAndUpdateProfilePromiseObjcWithAddress:localAddress
+                                                              mainAppOnly:NO
+                                                         ignoreThrottling:YES];
+}
+
 - (void)fetchAndUpdateProfileForUsername:(NSString *)username
                                  success:(void (^)(SignalServiceAddress *))success
                                 notFound:(void (^)(void))notFound
