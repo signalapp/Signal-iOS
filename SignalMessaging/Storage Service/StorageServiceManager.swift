@@ -166,28 +166,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     private func cleanUpUnknownIdentifiers() {
-        databaseStorage.write { transaction in
-            // We may have learned of new record types; if so we should
-            // cull them from the unknownIdentifiersTypeMap on launch.
-            let knownTypes: [UInt32] = [
-                UInt32(StorageServiceProtoStorageRecordType.contact.rawValue),
-                UInt32(StorageServiceProtoStorageRecordType.groupv1.rawValue),
-                UInt32(StorageServiceProtoStorageRecordType.groupv2.rawValue)
-            ]
-
-            var unknownIdentifiersTypeMap = StorageServiceOperation.unknownIdentifiersTypeMap(transaction: transaction)
-            var didChange = false
-            for knownType in knownTypes {
-                if unknownIdentifiersTypeMap[knownType] != nil {
-                    unknownIdentifiersTypeMap.removeValue(forKey: knownType)
-                    didChange = true
-                }
-            }
-
-            if didChange {
-                StorageServiceOperation.setUnknownIdentifiersTypeMap(unknownIdentifiersTypeMap, transaction: transaction)
-            }
-        }
+        let operation = StorageServiceOperation(mode: .cleanUpUnknownIdentifiers)
+        StorageServiceOperation.operationQueue.addOperation(operation)
     }
 
     // MARK: - Backup Scheduling
@@ -275,6 +255,7 @@ class StorageServiceOperation: OWSOperation {
     fileprivate enum Mode {
         case backup
         case restoreOrCreate
+        case cleanUpUnknownIdentifiers
     }
     private let mode: Mode
 
@@ -324,6 +305,8 @@ class StorageServiceOperation: OWSOperation {
             backupPendingChanges()
         case .restoreOrCreate:
             restoreOrCreateManifestIfNecessary()
+        case .cleanUpUnknownIdentifiers:
+            cleanUpUnknownIdentifiers()
         }
     }
 
@@ -1121,6 +1104,30 @@ class StorageServiceOperation: OWSOperation {
 
             self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
+    }
+
+    // MARK: - Clean Up Unknown Identifiers
+
+    private func cleanUpUnknownIdentifiers() {
+        databaseStorage.write { transaction in
+            // We may have learned of new record types; if so we should
+            // cull them from the unknownIdentifiersTypeMap on launch.
+            let knownTypes: [UInt32] = [
+                UInt32(StorageServiceProtoStorageRecordType.contact.rawValue),
+                UInt32(StorageServiceProtoStorageRecordType.groupv1.rawValue),
+                UInt32(StorageServiceProtoStorageRecordType.groupv2.rawValue)
+            ]
+
+            let oldUnknownIdentifiersTypeMap = StorageServiceOperation.unknownIdentifiersTypeMap(transaction: transaction)
+            var newUnknownIdentifiersTypeMap = oldUnknownIdentifiersTypeMap
+            knownTypes.forEach { newUnknownIdentifiersTypeMap[$0] = nil }
+            guard oldUnknownIdentifiersTypeMap.count != newUnknownIdentifiersTypeMap.count else {
+                // No change to record.
+                return
+            }
+
+            StorageServiceOperation.setUnknownIdentifiersTypeMap(newUnknownIdentifiersTypeMap, transaction: transaction)
+        }
     }
 
     // MARK: - Accessors

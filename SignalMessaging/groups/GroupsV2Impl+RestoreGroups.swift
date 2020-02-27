@@ -42,6 +42,11 @@ public extension GroupsV2Impl {
     // Values are master keys.
     private static let groupsFromStorageService_EnqueuedForRestore = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_EnqueuedForRestore")
 
+    // A list of the groups we failed to restore.
+    //
+    // Values are irrelevant (bools).
+    private static let groupsFromStorageService_Failed = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_Failed")
+
     private static let restoreGroupsOperationQueue: OperationQueue = {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
@@ -69,6 +74,10 @@ public extension GroupsV2Impl {
             groupsFromStorageService_All.setBool(true, key: key, transaction: transaction)
         }
 
+        guard !groupsFromStorageService_Failed.hasValue(forKey: key, transaction: transaction) else {
+            // Past restore attempts failed in an unrecoverable way.
+            return
+        }
         guard !groupsFromStorageService_EnqueuedForRestore.hasValue(forKey: key, transaction: transaction) else {
             // Already enqueued for restore.
             return
@@ -135,13 +144,14 @@ public extension GroupsV2Impl {
                 // from the store so that we stop retrying until the
                 // next time that storage service prods us to try.
                 let markAsFailed = {
-                    databaseStorage.write { _ in
-                        self.groupsFromStorageService_EnqueuedForRestore.removeValue(forKey: key)
+                    databaseStorage.write { transaction in
+                        self.groupsFromStorageService_EnqueuedForRestore.removeValue(forKey: key, transaction: transaction)
+                        self.groupsFromStorageService_Failed.setBool(true, key: key, transaction: transaction)
                     }
                 }
                 let markAsComplete = {
-                    databaseStorage.write { _ in
-                        self.groupsFromStorageService_EnqueuedForRestore.removeValue(forKey: key)
+                    databaseStorage.write { transaction in
+                        self.groupsFromStorageService_EnqueuedForRestore.removeValue(forKey: key, transaction: transaction)
                     }
                 }
 
