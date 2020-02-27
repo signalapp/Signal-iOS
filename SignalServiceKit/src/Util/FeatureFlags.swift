@@ -177,7 +177,7 @@ public class FeatureFlags: NSObject {
     @objc
     public static let multiRing: Bool = false
 
-    private static let groupsV2 = build.includes(.dev) && !isUsingProductionService
+    fileprivate static let groupsV2 = build.includes(.dev) && !isUsingProductionService
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.
@@ -186,13 +186,6 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let groupsV2IncomingMessages = groupsV2
-
-    @objc
-    public static let groupsV2IgnoreCapability = false
-
-    // We can use this to test recovery from "missed updates".
-    @objc
-    public static let groupsV2dontSendUpdates = false
 
     // The other clients don't consider this MVP, but we already implemented it.
     // It enables an optimization where other clients can usually update without
@@ -206,18 +199,7 @@ public class FeatureFlags: NSObject {
     public static let groupsV2processProtosInGroupUpdates = false
 
     @objc
-    public static let groupsV2showV2Indicator = groupsV2 && build.includes(.internalPreview)
-
-    @objc
     public static let groupsV2SetCapability = groupsV2
-
-    // This flag auto-enables the groupv2 flags in RemoteConfig.
-    @objc
-    public static let groupsV2IgnoreServerFlags = groupsV2
-
-    // If set, this will invite instead of adding other users.
-    @objc
-    public static let groupsV2forceInvites = false
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
@@ -273,6 +255,16 @@ public class DebugFlags: NSObject {
     @objc
     public static let logSQLQueries = build.includes(.dev)
 
+    @objc
+    public static let groupsV2IgnoreCapability = false
+
+    // We can use this to test recovery from "missed updates".
+    @objc
+    public static let groupsV2dontSendUpdates = false
+
+    @objc
+    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.internalPreview)
+
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
     @objc
@@ -283,4 +275,20 @@ public class DebugFlags: NSObject {
     // so that we can test clients' robustness to this case.
     @objc
     public static let groupsV2corruptBlobEncryption = false
+
+    // This flag auto-enables the groupv2 flags in RemoteConfig.
+    @objc
+    public static let groupsV2IgnoreServerFlags = FeatureFlags.groupsV2
+
+    // If set, this will invite instead of adding other users.
+    @objc
+    public static let groupsV2forceInvites = false
+
+    // Currently this flag is only honored by TSNetworkManager,
+    // but we could eventually honor in other places as well:
+    //
+    // * The socket manager.
+    // * Places we make requests using tasks.
+    @objc
+    public static let logCurlOnSuccess = false
 }

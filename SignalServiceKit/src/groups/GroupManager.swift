@@ -400,7 +400,7 @@ public class GroupManager: NSObject {
             // If groupsV2forceInvites is set, we invite other members
             // instead of adding them.
             if address != localAddress &&
-                FeatureFlags.groupsV2forceInvites {
+                DebugFlags.groupsV2forceInvites {
                 builder.addPendingMember(address, role: role, addedByUuid: localUuid)
             } else if isPending {
                 builder.addPendingMember(address, role: role, addedByUuid: localUuid)
@@ -1128,7 +1128,7 @@ public class GroupManager: NSObject {
     public static func sendGroupUpdateMessage(thread: TSGroupThread,
                                               changeActionsProtoData: Data? = nil) -> Promise<Void> {
 
-        guard !FeatureFlags.groupsV2dontSendUpdates else {
+        guard !DebugFlags.groupsV2dontSendUpdates else {
             return Promise.value(())
         }
 
@@ -1182,7 +1182,7 @@ public class GroupManager: NSObject {
     }
 
     private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
-        guard !FeatureFlags.groupsV2dontSendUpdates else {
+        guard !DebugFlags.groupsV2dontSendUpdates else {
             return Promise.value(())
         }
 
@@ -1411,7 +1411,7 @@ public class GroupManager: NSObject {
     @objc
     public static func doesUserHaveGroupsV2Capability(address: SignalServiceAddress,
                                                       transaction: SDSAnyReadTransaction) -> Bool {
-        if FeatureFlags.groupsV2IgnoreCapability {
+        if DebugFlags.groupsV2IgnoreCapability {
             return true
         }
 

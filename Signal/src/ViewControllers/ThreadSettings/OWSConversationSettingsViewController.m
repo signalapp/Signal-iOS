@@ -216,7 +216,7 @@ const CGFloat kIconViewLength = 24;
     }
 
     // This will only appear in internal, qa & dev builds.
-    if (SSKFeatureFlags.groupsV2showV2Indicator) {
+    if (SSKDebugFlags.groupsV2showV2Indicator) {
         NSString *indicator = self.thread.isGroupV2Thread ? @"v2" : @"v1";
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:LocalizationNotNeeded(indicator)
                                                                                   style:UIBarButtonItemStylePlain

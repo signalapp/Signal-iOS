@@ -332,6 +332,12 @@ dispatch_queue_t NetworkManagerQueue()
     OWSSessionManager *sessionManager = [sessionManagerPool get];
 
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
+#if TESTABLE_BUILD
+        if (SSKDebugFlags.logCurlOnSuccess) {
+            [TSNetworkManager logCurlForTask:task];
+        }
+#endif
+
         dispatch_async(NetworkManagerQueue(), ^{
             [sessionManagerPool returnToPool:sessionManager];
         });
@@ -443,7 +449,7 @@ dispatch_queue_t NetworkManagerQueue()
 
     NSInteger statusCode = [task statusCode];
 
-#ifdef DEBUG
+#if TESTABLE_BUILD
     [TSNetworkManager logCurlForTask:task];
 #endif
 
