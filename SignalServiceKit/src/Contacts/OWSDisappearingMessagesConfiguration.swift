@@ -11,6 +11,7 @@ public class DisappearingMessageToken: MTLModel {
     @objc
     public var durationSeconds: UInt32 = 0
 
+    @objc
     public init(isEnabled: Bool, durationSeconds: UInt32) {
         // Consider disabled if duration is zero.
         self.isEnabled = isEnabled && durationSeconds > 0

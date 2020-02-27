@@ -24,7 +24,7 @@ public extension NewGroupViewController {
                                                                                              newGroupSeed: newGroupSeed,
                                                                                              shouldSendMessage: true)
                                                         }.done { groupThread in
-                                                            modalActivityIndicator.dismiss {
+                                                            self.presentingViewController?.dismiss(animated: true) {
                                                                 SignalApp.shared().presentConversation(for: groupThread,
                                                                                                        action: .compose,
                                                                                                        animated: false)
@@ -33,6 +33,11 @@ public extension NewGroupViewController {
                                                             owsFailDebug("Could not create group: \(error)")
 
                                                             modalActivityIndicator.dismiss {
+                                                                // Partial success could create the group on the service.
+                                                                // This would cause retries to fail with 409.  Therefore
+                                                                // we must rotate the seed after every failure.
+                                                                self.generateNewSeed()
+
                                                                 NewGroupViewController.showCreateErrorUI(error: error)
                                                             }
                                                         }.retainUntilComplete()

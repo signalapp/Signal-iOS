@@ -282,7 +282,6 @@
 		34BBC858220C7ADA00857249 /* ImageEditorContents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC853220C7ADA00857249 /* ImageEditorContents.swift */; };
 		34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC854220C7ADA00857249 /* ImageEditorStrokeItem.swift */; };
 		34BBC85A220C7ADA00857249 /* ImageEditorTextItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC855220C7ADA00857249 /* ImageEditorTextItem.swift */; };
-		34BBC85B220C7ADA00857249 /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC856220C7ADA00857249 /* OrderedDictionary.swift */; };
 		34BBC85D220D19D600857249 /* ImageEditorPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85C220D19D600857249 /* ImageEditorPanGestureRecognizer.swift */; };
 		34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85F220E883200857249 /* ImageEditorModelTest.swift */; };
 		34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC860220E883200857249 /* ImageEditorTest.swift */; };
@@ -1154,7 +1153,6 @@
 		34BBC853220C7ADA00857249 /* ImageEditorContents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorContents.swift; sourceTree = "<group>"; };
 		34BBC854220C7ADA00857249 /* ImageEditorStrokeItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorStrokeItem.swift; sourceTree = "<group>"; };
 		34BBC855220C7ADA00857249 /* ImageEditorTextItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTextItem.swift; sourceTree = "<group>"; };
-		34BBC856220C7ADA00857249 /* OrderedDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
 		34BBC85C220D19D600857249 /* ImageEditorPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorPanGestureRecognizer.swift; sourceTree = "<group>"; };
 		34BBC85F220E883200857249 /* ImageEditorModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorModelTest.swift; sourceTree = "<group>"; };
 		34BBC860220E883200857249 /* ImageEditorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTest.swift; sourceTree = "<group>"; };
@@ -2402,7 +2400,6 @@
 				34BBC84A220B2CB200857249 /* ImageEditorTextViewController.swift */,
 				340872C022394CAA00CB25B0 /* ImageEditorTransform.swift */,
 				34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */,
-				34BBC856220C7ADA00857249 /* OrderedDictionary.swift */,
 				34080F03222858DC0087E99F /* OWSViewController+ImageEditor.swift */,
 				346B4A762369BFC600B56007 /* PermissiveGestureRecognizer.swift */,
 			);
@@ -4272,7 +4269,6 @@
 				346129AB1FD1F0EE00532771 /* OWSFormat.m in Sources */,
 				34AC0A12211B39EA00997B47 /* ContactTableViewCell.m in Sources */,
 				451F8A461FD715BA005CB9DA /* OWSGroupAvatarBuilder.m in Sources */,
-				34BBC85B220C7ADA00857249 /* OrderedDictionary.swift in Sources */,
 				34C2EEB42270D1CE00BCA1D0 /* StickerView.swift in Sources */,
 				346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,

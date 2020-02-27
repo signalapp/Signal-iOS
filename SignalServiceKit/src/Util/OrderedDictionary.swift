@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -101,5 +101,40 @@ public class OrderedDictionary<KeyType: Hashable, ValueType> {
             values.append(value)
         }
         return values
+    }
+}
+
+// MARK: -
+
+extension OrderedDictionary: Sequence {
+    public typealias Iterator = AnyIterator<(KeyType, ValueType)>
+
+    struct OrderedDictionaryIterator {
+        private let keys: [KeyType]
+        private let map: [KeyType: ValueType]
+        private var index: Int = 0
+
+        fileprivate init(keys: [KeyType], map: [KeyType: ValueType]) {
+            self.keys = keys
+            self.map = map
+        }
+
+        mutating func next() -> (KeyType, ValueType)? {
+            guard index < keys.count else {
+                return nil
+            }
+            let key = keys[index]
+            index += 1
+            guard let value = map[key] else {
+                owsFailDebug("Missing value for key.")
+                return nil
+            }
+            return (key, value)
+        }
+    }
+
+    public func makeIterator() -> Iterator {
+        var iterator = OrderedDictionaryIterator(keys: orderedKeys, map: keyValueMap)
+        return AnyIterator { iterator.next() }
     }
 }

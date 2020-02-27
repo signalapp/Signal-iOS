@@ -5,6 +5,7 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -134,43 +135,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    if (self.createdInExistingGroup) {
-        OWSAssertDebug(self.configurationIsEnabled && self.configurationDurationSeconds > 0);
-        NSString *infoFormat = NSLocalizedString(@"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT",
-            @"Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} "
-            @"before messages disappear, see the *_TIME_AMOUNT strings for context.");
-
-        NSString *durationString = [NSString formatDurationSeconds:self.configurationDurationSeconds useShortFormat:NO];
-        return [NSString stringWithFormat:infoFormat, durationString];
-    } else if (self.createdByRemoteName) {
-        if (self.configurationIsEnabled && self.configurationDurationSeconds > 0) {
-            NSString *infoFormat = NSLocalizedString(@"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
-                @"Info Message when {{other user}} updates message expiration to {{time amount}}, see the "
-                @"*_TIME_AMOUNT "
-                @"strings for context.");
-
-            NSString *durationString =
-                [NSString formatDurationSeconds:self.configurationDurationSeconds useShortFormat:NO];
-            return [NSString stringWithFormat:infoFormat, self.createdByRemoteName, durationString];
-        } else {
-            NSString *infoFormat = NSLocalizedString(@"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",
-                @"Info Message when {{other user}} disables or doesn't support disappearing messages");
-            return [NSString stringWithFormat:infoFormat, self.createdByRemoteName];
-        }
-    } else {
-        // Changed by localNumber on this device or via synced transcript
-        if (self.configurationIsEnabled && self.configurationDurationSeconds > 0) {
-            NSString *infoFormat = NSLocalizedString(@"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
-                @"Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context.");
-
-            NSString *durationString =
-                [NSString formatDurationSeconds:self.configurationDurationSeconds useShortFormat:NO];
-            return [NSString stringWithFormat:infoFormat, durationString];
-        } else {
-            return NSLocalizedString(@"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",
-                @"Info Message when you disable disappearing messages");
-        }
-    }
+    DisappearingMessageToken *newToken =
+        [[DisappearingMessageToken alloc] initWithIsEnabled:self.configurationIsEnabled
+                                            durationSeconds:self.configurationDurationSeconds];
+    return [TSInfoMessage legacyDisappearingMessageUpdateDescriptionWithToken:newToken
+                                                      wasAddedToExistingGroup:self.createdInExistingGroup
+                                                                  updaterName:self.createdByRemoteName];
 }
 
 @end
