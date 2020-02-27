@@ -334,10 +334,9 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var isQuotedReply: Bool = false
     var hasQuotedAttachment: Bool = false
     var hasQuotedText: Bool = false
-    var hasCellHeader: Bool = false
     var hasPerConversationExpiration: Bool = false
     var isViewOnceMessage: Bool = false
-    var shouldShowDate: Bool = false
+    var canShowDate: Bool = false
     var shouldShowSenderAvatar: Bool = false
     var senderName: NSAttributedString?
     var senderUsername: String?

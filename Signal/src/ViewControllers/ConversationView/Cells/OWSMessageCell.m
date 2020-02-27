@@ -5,7 +5,6 @@
 #import "OWSMessageCell.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSMessageBubbleView.h"
-#import "OWSMessageHeaderView.h"
 #import "OWSMessageStickerView.h"
 #import "OWSMessageViewOnceView.h"
 #import "Signal-Swift.h"
@@ -18,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 // The non-nullable properties are so frequently used that it's easier
 // to always keep one around.
 
-@property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) OWSMessageStickerView *messageStickerView;
 @property (nonatomic) OWSMessageViewOnceView *messageViewOnceView;
@@ -69,8 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.messageBubbleView = [OWSMessageBubbleView new];
     self.messageStickerView = [OWSMessageStickerView new];
     self.messageViewOnceView = [OWSMessageViewOnceView new];
-
-    self.headerView = [OWSMessageHeaderView new];
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
@@ -187,24 +183,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addSubview:messageView];
     [messageView addGestureRecognizer:self.messageViewTapGestureRecognizer];
 
-    if (self.viewItem.hasCellHeader) {
-        CGFloat headerHeight =
-            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
-                .height;
-        [self.headerView loadForDisplayWithViewItem:self.viewItem conversationStyle:self.conversationStyle];
-        [self.contentView addSubview:self.headerView];
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.headerView autoSetDimension:ALDimensionHeight toSize:headerHeight],
-            [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeLeading],
-            [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
-            [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-            [messageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerView],
-        ]];
-    } else {
         [self.viewConstraints addObjectsFromArray:@[
             [messageView autoPinEdgeToSuperviewEdge:ALEdgeTop],
         ]];
-    }
 
     if (self.isIncoming) {
         [self.viewConstraints addObjectsFromArray:@[
@@ -447,12 +428,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(cellSize.width > 0 && cellSize.height > 0);
 
-    if (self.viewItem.hasCellHeader) {
-        cellSize.height +=
-            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
-                .height;
-    }
-
     if (self.viewItem.reactionState.hasReactions) {
         cellSize.height += ReactionCountsView.height - ReactionCountsView.inset;
     }
@@ -484,8 +459,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageViewOnceView prepareForReuse];
     [self.messageViewOnceView unloadContent];
     [self.messageViewOnceView removeFromSuperview];
-
-    [self.headerView removeFromSuperview];
 
     self.avatarView.image = nil;
     [self.avatarView removeFromSuperview];
@@ -526,10 +499,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if ([self isGestureInCellHeader:sender]) {
-        return;
-    }
-
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
@@ -564,11 +533,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.delegate);
 
     switch (sender.state) {
-        case UIGestureRecognizerStateBegan:
-            if ([self isGestureInCellHeader:sender]) {
-                return;
-            }
-
+        case UIGestureRecognizerStateBegan: {
             BOOL shouldAllowReply = [self shouldAllowReply];
             CGPoint locationInMessageBubble = [sender locationInView:self.messageView];
             switch ([self.messageView gestureLocationForLocation:locationInMessageBubble]) {
@@ -600,6 +565,7 @@ NS_ASSUME_NONNULL_BEGIN
                     break;
             }
             break;
+        }
         case UIGestureRecognizerStateEnded:
             [self.delegate conversationCell:self didEndLongpress:self.viewItem];
             break;
@@ -620,19 +586,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self handleSwipeToReplyGesture:sender];
-}
-
-- (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
-{
-    OWSAssertDebug(self.viewItem);
-
-    if (!self.viewItem.hasCellHeader) {
-        return NO;
-    }
-
-    CGPoint location = [sender locationInView:self];
-    CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
-    return location.y <= headerBottom.y;
 }
 
 - (BOOL)isGestureInAvatar:(UIGestureRecognizer *)sender

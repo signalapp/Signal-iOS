@@ -676,6 +676,8 @@ typedef enum : NSUInteger {
             forCellWithReuseIdentifier:[OWSThreadDetailsCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSUnreadIndicatorCell class]
             forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
+    [self.collectionView registerClass:[OWSDateHeaderCell class]
+            forCellWithReuseIdentifier:[OWSDateHeaderCell cellReuseIdentifier]];
     [self.collectionView registerClass:LoadMoreMessagesView.class
             forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                    withReuseIdentifier:LoadMoreMessagesView.reuseIdentifier];
