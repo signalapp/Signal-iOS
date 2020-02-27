@@ -1253,6 +1253,9 @@
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
 
+/* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
 
@@ -1548,34 +1551,34 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked contacts can’t call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
 
-/* Action sheet title to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE" = "Block and delete conversation?";
+/* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Bloquear a %@?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
 
-/* Action sheet title to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE" = "Block, delete, and leave group?";
+/* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Eliminar";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted on all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Borrar conversa?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Delete Conversation?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_ACTION" = "Delete and Leave";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_MESSAGE" = "You will leave this group and it will be deleted on all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_TITLE" = "Delete and leave group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Aceptar";

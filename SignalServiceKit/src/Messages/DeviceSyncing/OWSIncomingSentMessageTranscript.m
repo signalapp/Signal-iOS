@@ -153,6 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   avatarData:nil
                                                                      members:members
                                                     groupUpdateSourceAddress:localAddress
+                                                           infoMessagePolicy:InfoMessagePolicyAlways
                                                                  transaction:transaction
                                                                        error:&groupError]
                                   .groupThread;

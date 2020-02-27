@@ -65,6 +65,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 // --- CODE GENERATION MARKER
 
+- (MessageSenderJobQueue *)messageSenderJobQueue
+{
+    return SSKEnvironment.shared.messageSenderJobQueue;
+}
+
 - (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel
 {
     OWSAssertDebug(groupModel);

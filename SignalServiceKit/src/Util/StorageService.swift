@@ -119,13 +119,27 @@ public struct StorageService {
         }
     }
 
-    /// Fetch the latest manifest from the storage service
+    public enum FetchLatestManifestResponse {
+        case latestManifest(StorageServiceProtoManifestRecord)
+        case noNewerManifest
+        case noExistingManifest
+    }
+
+    /// Fetch the latest manifest from the storage service.
+    /// If the greater than version is provided, only returns a manifest
+    /// if a newer one exists on the service, otherwise indicates
+    /// that there is no new content.
     ///
     /// Returns nil if a manifest has never been stored.
-    public static func fetchManifest() -> Promise<StorageServiceProtoManifestRecord?> {
+    public static func fetchLatestManifest(greaterThanVersion: UInt64? = nil) -> Promise<FetchLatestManifestResponse> {
         Logger.info("")
 
-        return storageRequest(withMethod: "GET", endpoint: "v1/storage/manifest").map(on: .global()) { response in
+        var endpoint = "v1/storage/manifest"
+        if let greaterThanVersion = greaterThanVersion {
+            endpoint += "/version/\(greaterThanVersion)"
+        }
+
+        return storageRequest(withMethod: "GET", endpoint: endpoint).map(on: .global()) { response in
             switch response.status {
             case .success:
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest.parseData(response.data)
@@ -138,9 +152,11 @@ public struct StorageService {
                 } catch {
                     throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
                 }
-                return try StorageServiceProtoManifestRecord.parseData(manifestData)
+                return .latestManifest(try StorageServiceProtoManifestRecord.parseData(manifestData))
             case .notFound:
-                return nil
+                return .noExistingManifest
+            case .noContent:
+                return .noNewerManifest
             default:
                 owsFailDebug("unexpected response \(response.status)")
                 throw StorageError.retryableAssertion
@@ -285,6 +301,7 @@ public struct StorageService {
             case success
             case conflict
             case notFound
+            case noContent
         }
         let status: Status
         let data: Data
@@ -362,6 +379,8 @@ public struct StorageService {
                     switch response.statusCode {
                     case 200:
                         status = .success
+                    case 204:
+                        status = .noContent
                     case 409:
                         status = .conflict
                     case 404:
@@ -414,39 +433,53 @@ public extension StorageService {
         var ourManifestVersion: UInt64 = 0
 
         // Fetch Existing
-        fetchManifest().map { manifest in
-            let previousVersion = manifest?.version ?? ourManifestVersion
-            ourManifestVersion = previousVersion + 1
+        fetchLatestManifest().map { response in
+            let previousVersion: UInt64
+            var existingKeys: [Data]?
+            switch response {
+            case .latestManifest(let latestManifest):
+                previousVersion = latestManifest.version
+                existingKeys = latestManifest.keys
+            case .noNewerManifest, .noExistingManifest:
+                previousVersion = ourManifestVersion
+            }
 
             // set keys
             let newManifestBuilder = StorageServiceProtoManifestRecord.builder(version: ourManifestVersion)
             newManifestBuilder.setKeys(recordsInManifest.map { $0.identifier.data })
 
-            return (try! newManifestBuilder.build(), manifest?.keys.map { StorageIdentifier(data: $0) } ?? [])
+            return (try! newManifestBuilder.build(), existingKeys?.map { StorageIdentifier(data: $0) } ?? [])
 
         // Update or create initial manifest with test data
-        }.then { manifest, deletedKeys in
-            updateManifest(manifest, newItems: recordsInManifest, deletedIdentifiers: deletedKeys)
-        }.map { manifest in
-            guard manifest == nil else {
+        }.then { latestManifest, deletedKeys in
+            updateManifest(latestManifest, newItems: recordsInManifest, deletedIdentifiers: deletedKeys)
+        }.map { latestManifest in
+            guard latestManifest == nil else {
                 owsFailDebug("Manifest conflicted unexpectedly, should be nil")
                 throw StorageError.assertion
             }
 
         // Fetch the manifest we just created
-        }.then { fetchManifest() }.map { manifest in
-            guard let manifest = manifest else {
+        }.then { fetchLatestManifest() }.map { response in
+            guard case .latestManifest(let latestManifest) = response else {
                 owsFailDebug("manifest should exist, we just created it")
                 throw StorageError.assertion
             }
 
-            guard Set(manifest.keys) == Set(identifiersInManfest.map { $0.data }) else {
+            guard Set(latestManifest.keys) == Set(identifiersInManfest.map { $0.data }) else {
                 owsFailDebug("manifest should only contain our test keys")
                 throw StorageError.assertion
             }
 
-            guard manifest.version == ourManifestVersion else {
+            guard latestManifest.version == ourManifestVersion else {
                 owsFailDebug("manifest version should be the version we set")
+                throw StorageError.assertion
+            }
+
+        // Fetch the manifest we just created specifying the local version
+        }.then { fetchLatestManifest(greaterThanVersion: ourManifestVersion) }.map { response in
+            guard case .noNewerManifest = response else {
+                owsFailDebug("no new manifest should exist, we just created it")
                 throw StorageError.assertion
             }
 
@@ -500,27 +533,27 @@ public extension StorageService {
             ourManifestVersion += 1
             let newManifestBuilder = StorageServiceProtoManifestRecord.builder(version: ourManifestVersion)
             return try! newManifestBuilder.build()
-        }.then { manifest in
-            updateManifest(manifest, newItems: [], deletedIdentifiers: identifiersInManfest)
-        }.map { manifest in
-            guard manifest == nil else {
+        }.then { latestManifest in
+            updateManifest(latestManifest, newItems: [], deletedIdentifiers: identifiersInManfest)
+        }.map { latestManifest in
+            guard latestManifest == nil else {
                 owsFailDebug("Manifest conflicted unexpectedly, should be nil")
                 throw StorageError.assertion
             }
 
         // Fetch the manifest we just stored
-        }.then { fetchManifest() }.map { manifest in
-            guard let manifest = manifest else {
+        }.then { fetchLatestManifest() }.map { latestManifest in
+            guard case .latestManifest(let latestManifest) = latestManifest else {
                 owsFailDebug("manifest should exist, we just created it")
                 throw StorageError.assertion
             }
 
-            guard manifest.keys.isEmpty else {
+            guard latestManifest.keys.isEmpty else {
                 owsFailDebug("manifest should have no keys")
                 throw StorageError.assertion
             }
 
-            guard manifest.version == ourManifestVersion else {
+            guard latestManifest.version == ourManifestVersion else {
                 owsFailDebug("manifest version should be the version we set")
                 throw StorageError.assertion
             }
@@ -539,18 +572,18 @@ public extension StorageService {
             return (try! oldManifestBuilder.build(), try! StorageItem(identifier: identifier, contact: try! recordBuilder.build()))
         }.then { oldManifest, item in
             updateManifest(oldManifest, newItems: [item], deletedIdentifiers: [])
-        }.done { manifest in
-            guard let manifest = manifest else {
+        }.done { latestManifest in
+            guard let latestManifest = latestManifest else {
                 owsFailDebug("manifest should exist, because there was a conflict")
                 throw StorageError.assertion
             }
 
-            guard manifest.keys.isEmpty else {
+            guard latestManifest.keys.isEmpty else {
                 owsFailDebug("manifest should still have no keys")
                 throw StorageError.assertion
             }
 
-            guard manifest.version == ourManifestVersion else {
+            guard latestManifest.version == ourManifestVersion else {
                 owsFailDebug("manifest version should be the version we set")
                 throw StorageError.assertion
             }

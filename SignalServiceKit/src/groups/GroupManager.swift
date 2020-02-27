@@ -608,12 +608,13 @@ public class GroupManager: NSObject {
     //
     // "Existing" groups have already been created, we just need to make sure they're in the database.
 
-    @objc(upsertExistingGroupV1WithGroupId:name:avatarData:members:groupUpdateSourceAddress:transaction:error:)
+    @objc(upsertExistingGroupV1WithGroupId:name:avatarData:members:groupUpdateSourceAddress:infoMessagePolicy:transaction:error:)
     public static func upsertExistingGroupV1(groupId: Data,
                                              name: String? = nil,
                                              avatarData: Data? = nil,
                                              members: [SignalServiceAddress],
                                              groupUpdateSourceAddress: SignalServiceAddress?,
+                                             infoMessagePolicy: InfoMessagePolicy = .always,
                                              transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         let groupMembership = GroupMembership(v1Members: Set(members))
@@ -627,6 +628,7 @@ public class GroupManager: NSObject {
                                        groupV2Revision: 0,
                                        groupSecretParamsData: nil,
                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                       infoMessagePolicy: infoMessagePolicy,
                                        transaction: transaction)
     }
 
@@ -639,6 +641,7 @@ public class GroupManager: NSObject {
                                            groupV2Revision: UInt32,
                                            groupSecretParamsData: Data? = nil,
                                            groupUpdateSourceAddress: SignalServiceAddress?,
+                                           infoMessagePolicy: InfoMessagePolicy = .always,
                                            transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         let groupModel = try buildGroupModel(groupId: groupId,
@@ -653,16 +656,19 @@ public class GroupManager: NSObject {
 
         return try upsertExistingGroup(groupModel: groupModel,
                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                       infoMessagePolicy: infoMessagePolicy,
                                        transaction: transaction)
     }
 
     public static func upsertExistingGroup(groupModel: TSGroupModel,
                                            groupUpdateSourceAddress: SignalServiceAddress?,
+                                           infoMessagePolicy: InfoMessagePolicy = .always,
                                            transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: groupModel,
                                                                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                      canInsert: true,
+                                                                                     infoMessagePolicy: infoMessagePolicy,
                                                                                      transaction: transaction)
     }
 
@@ -938,11 +944,6 @@ public class GroupManager: NSObject {
 
     // MARK: - Leave Group / Decline Invite
 
-    @objc
-    public static func leaveGroupOrDeclineInviteObjc(groupThread: TSGroupThread) -> AnyPromise {
-        return AnyPromise(leaveGroupOrDeclineInvite(groupThread: groupThread))
-    }
-
     public static func leaveGroupOrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
         switch groupThread.groupModel.groupsVersion {
         case .V1:
@@ -971,13 +972,13 @@ public class GroupManager: NSObject {
             let message = messageBuilder.build()
             self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
 
-            let threadMessageCount = groupThread.numberOfInteractions(with: transaction)
-            let skipInfoMessage = threadMessageCount == 0
+            let hasMessages = groupThread.numberOfInteractions(with: transaction) > 0
+            let infoMessagePolicy: InfoMessagePolicy = hasMessages ? .always : .never
 
             var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
             groupMembershipBuilder.remove(localAddress)
             let newGroupMembership = groupMembershipBuilder.build()
-            let groupAccess = try oldGroupModel.groupAccess
+            let groupAccess = oldGroupModel.groupAccess
             let newGroupModel = try self.buildGroupModel(groupId: groupId,
                                                          name: oldGroupModel.groupName,
                                                          avatarData: oldGroupModel.groupAvatarData,
@@ -992,7 +993,7 @@ public class GroupManager: NSObject {
             let result = try self.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: groupThread,
                                                                                           newGroupModel: newGroupModel,
                                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                          skipInfoMessage: skipInfoMessage,
+                                                                                          infoMessagePolicy: infoMessagePolicy,
                                                                                           transaction: transaction)
             return result.groupThread
         }
@@ -1003,6 +1004,29 @@ public class GroupManager: NSObject {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             return self.groupsV2Swift.leaveGroupV2OrDeclineInvite(groupThread: groupThread)
+        }
+    }
+
+    @objc
+    public static func leaveGroupThreadAsyncWithoutUI(groupThread: TSGroupThread,
+                                                      transaction: SDSAnyWriteTransaction,
+                                                      success: (() -> Void)?) {
+
+        guard groupThread.isLocalUserInGroup() else {
+            owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
+            return
+        }
+
+        sendGroupQuitMessage(inThread: groupThread, transaction: transaction)
+
+        transaction.addAsyncCompletion {
+            firstly {
+                self.leaveGroupOrDeclineInvite(groupThread: groupThread).asVoid()
+            }.done { _ in
+                success?()
+            }.catch { error in
+                owsFailDebug("Leave group failed: \(error)")
+            }.retainUntilComplete()
         }
     }
 
@@ -1113,19 +1137,46 @@ public class GroupManager: NSObject {
         }
     }
 
+    public static func sendGroupQuitMessage(inThread groupThread: TSGroupThread,
+                                            transaction: SDSAnyWriteTransaction) {
+
+        guard groupThread.groupModel.groupsVersion == .V1 else {
+            return
+        }
+
+        let message = TSOutgoingMessage(in: groupThread,
+                                        groupMetaMessage: .quit,
+                                        expiresInSeconds: 0)
+        messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+    }
+
     // MARK: - Group Database
+
+    @objc
+    public enum InfoMessagePolicy: UInt {
+        case always
+        case insertsOnly
+        case updatesOnly
+        case never
+    }
 
     public static func insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: TSGroupModel,
                                                                        groupUpdateSourceAddress: SignalServiceAddress?,
+                                                                       infoMessagePolicy: InfoMessagePolicy = .always,
                                                                        transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let groupThread = TSGroupThread(groupModelPrivate: groupModel)
         groupThread.anyInsert(transaction: transaction)
 
-        insertGroupUpdateInfoMessage(groupThread: groupThread,
-                                     oldGroupModel: nil,
-                                     newGroupModel: groupModel,
-                                     groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                     transaction: transaction)
+        switch infoMessagePolicy {
+        case .always, .insertsOnly:
+            insertGroupUpdateInfoMessage(groupThread: groupThread,
+                                         oldGroupModel: nil,
+                                         newGroupModel: groupModel,
+                                         groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                         transaction: transaction)
+        default:
+            break
+        }
 
         // GroupsV2 TODO: This is temporary until we build the "accept invites" UI.
         transaction.addAsyncCompletion {
@@ -1138,6 +1189,7 @@ public class GroupManager: NSObject {
     public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: TSGroupModel,
                                                                                     groupUpdateSourceAddress: SignalServiceAddress?,
                                                                                     canInsert: Bool,
+                                                                                    infoMessagePolicy: InfoMessagePolicy = .always,
                                                                                     transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         let groupId = newGroupModel.groupId
@@ -1147,6 +1199,7 @@ public class GroupManager: NSObject {
             }
             let thread = GroupManager.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: newGroupModel,
                                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                      infoMessagePolicy: infoMessagePolicy,
                                                                                       transaction: transaction)
             return UpsertGroupResult(action: .inserted, groupThread: thread)
         }
@@ -1154,13 +1207,14 @@ public class GroupManager: NSObject {
         return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: oldThread,
                                                                            newGroupModel: newGroupModel,
                                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                           infoMessagePolicy: infoMessagePolicy,
                                                                            transaction: transaction)
     }
 
     public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(groupThread: TSGroupThread,
                                                                                newGroupModel: TSGroupModel,
                                                                                groupUpdateSourceAddress: SignalServiceAddress?,
-                                                                               skipInfoMessage: Bool = false,
+                                                                               infoMessagePolicy: InfoMessagePolicy = .always,
                                                                                transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         let oldGroupModel = groupThread.groupModel
@@ -1187,12 +1241,15 @@ public class GroupManager: NSObject {
 
         groupThread.update(with: newGroupModel, transaction: transaction)
 
-        if !skipInfoMessage {
+        switch infoMessagePolicy {
+        case .always, .updatesOnly:
             insertGroupUpdateInfoMessage(groupThread: groupThread,
                                          oldGroupModel: oldGroupModel,
                                          newGroupModel: newGroupModel,
                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
                                          transaction: transaction)
+        default:
+            break
         }
 
         // GroupsV2 TODO: This is temporary until we build the "accept invites" UI.

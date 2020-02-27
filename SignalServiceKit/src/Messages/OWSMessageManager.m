@@ -1060,6 +1060,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     avatarData:oldGroupThread.groupModel.groupAvatarData
                                                        members:newMembers.allObjects
                                       groupUpdateSourceAddress:groupUpdateSourceAddress
+                                             infoMessagePolicy:InfoMessagePolicyAlways
                                                    transaction:transaction
                                                          error:&error];
             if (error != nil || result == nil) {
@@ -1097,6 +1098,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     avatarData:oldGroupThread.groupModel.groupAvatarData
                                                        members:newMembers.allObjects
                                       groupUpdateSourceAddress:groupUpdateSourceAddress
+                                             infoMessagePolicy:InfoMessagePolicyAlways
                                                    transaction:transaction
                                                          error:&error];
             if (error != nil || result == nil) {

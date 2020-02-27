@@ -309,13 +309,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "رفع مسدودی";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "شما قادر خواهید بود به یکدیگر پیام دهید و با آنها تماس بگیرید.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "اعضای موجود می‌توانند شما را دوباره به گروه اضافه کنند.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "اعضای گروه می‌توانند دوباره شما را به این گروه اضافه کنند.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "این گروه را باز میکنید؟";
@@ -642,25 +642,25 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "فیلد مخاطبی انتخاب نشده است.";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Contact Support";
+"CONTACT_SUPPORT" = "ارتباط با پشتیبانی";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal نتوانست بود درخواست پشتیبانی شما را کامل کند.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "دوباره تلاش کنید";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "لاگ های اشکال زدایی شما به ما کمک خواهند کرد تا مشکل خود را سریع‌تر حل کنید. ارسال logs اختیاری است.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "ارسال تاریخچه گزارش خرابی؟";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "ارسال با تاریخچه گزارش خرابی";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "ارسال بدون تاریخچه گزارش خرابی";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "باز کردن در Maps";
@@ -1167,10 +1167,10 @@
 "GROUP_CREATED" = "گروه ساخته شد.";
 
 /* conversation history entry when the local user created a group */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "شما گروه رو خلق کردی";
 
 /* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@شما را به گروه اضافه کرد.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "بعضی از اعضا به گروه اضافه نشدند. برای امتحان دوباره لمس کنید.";
@@ -1203,31 +1203,31 @@
 "GROUP_UPDATED" = "گروه ، به روز رسانی شده است.";
 
 /* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
-"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@و%@ به گروه پیوستند.";
 
 /* conversation history entry. Embeds the {{added user's name}} */
-"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@به گروه پیوست.";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "عکس پروفایل گروه حذف شد.";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "عکس پروفایل بروز شد";
 
 /* conversation history entry. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "شما گروه را به‌روزرسانی کردید.";
 
 /* conversation history entry. Embeds {{remote user's name}} */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@به روز رسانی گروه.";
 
 /* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+"GROUP_UPDATED_NAME_REMOVED" = "نام را حذف کرد.";
 
 /* conversation history entry. Embeds {{group name}} */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "نام گروه اکنون “%@”.";
 
 /* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
+"GROUP_UPDATED_READDED_YOU" = "شما را دوباره به گروه اضافه کرد.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "شما از این گروه خارج شده‌اید.";
@@ -1252,6 +1252,9 @@
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "اولین مکالمه خود را از اینجا شروع کنید.";
+
+/* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "درخواست پیام";
@@ -1467,10 +1470,10 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "این ماه";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "بعدا به من یادآوری کن";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "بعدا به شما یادآوری می‌کنیم";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "کپی متن پیام";
@@ -1545,37 +1548,37 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "مسدود سازی";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "بلاک و حذف";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked contacts can’t call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
 
-/* Action sheet title to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE" = "Block and delete conversation?";
+/* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ مسدود شود؟";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
 
-/* Action sheet title to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE" = "Block, delete, and leave group?";
+/* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "حذف";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted on all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "گفتگو حذف شود؟";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_ACTION" = "Delete and Leave";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "حذف و ترک";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_MESSAGE" = "You will leave this group and it will be deleted on all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_TITLE" = "Delete and leave group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "پذیرفتن";
@@ -1623,7 +1626,7 @@
 "MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
 
 /* Toast indicating that a profile name has been created. */
-"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "نام نمایه شما ذخیره شده است";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "تحویل داده شده";
@@ -1842,7 +1845,7 @@
 "ONBOARDING_2FA_ENTER_NUMERIC" = "پین عددی وارد کنید";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "به کمک نیاز دارید؟";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "کد نادرست است";
@@ -2091,7 +2094,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "وارد کردن دوباره پین";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "در حال ایجاد پین …";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
@@ -2118,19 +2121,19 @@
 "PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "چند روز دیگه به شما یادآوری می‌کنیم";
 
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "پین Signal خود را تأیید کنید";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "فردا به شما یادآوری می‌کنیم";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "چند هفته دیگه به شما یادآوری می‌کنیم";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "یه هفته دیگه به شما یادآوری می‌کنیم";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "پین نامعتبر است ، دوباره امتحان کنید.";
@@ -2223,22 +2226,22 @@
 "PROCEED_BUTTON" = "ادامه دادن";
 
 /* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "شروع کنید";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "پروفایل شما اکنون می‌تواند شامل نام‌ خانوادگی نیز باشد.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "نام نمایه خود را تأیید کنید";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "زمانی که یک مکالمهٔ جدید آغاز یا به اشتراک‌گذاری می‌کنید، نمایش داده خواهد شد.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "یک نام نمایه اضافه کنید";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "نام نمایه شما ذخیره شده است";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "انتخاب تصویر پروفایل";
@@ -2337,13 +2340,13 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "ویدیو";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "همه .%@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ به پیام شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "%@ به آلبوم شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
@@ -2385,7 +2388,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "پین خود را فراموش کرده ام.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "به راهنمایی نیاز دارید؟";
 
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";

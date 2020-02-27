@@ -15,6 +15,7 @@ public class ThreadViewModel: NSObject {
     @objc public let name: String
     @objc public let isMuted: Bool
     @objc public let hasPendingMessageRequest: Bool
+    @objc public let addedToGroupByName: String?
 
     var isContactThread: Bool {
         return !isGroupThread
@@ -45,6 +46,12 @@ public class ThreadViewModel: NSObject {
         self.unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction)
         self.hasUnreadMessages = unreadCount > 0
         self.hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+
+        if let groupThread = thread as? TSGroupThread, let addedByAddress = groupThread.groupModel.addedByAddress {
+            self.addedToGroupByName = Environment.shared.contactsManager.displayName(for: addedByAddress, transaction: transaction)
+        } else {
+            self.addedToGroupByName = nil
+        }
     }
 
     @objc

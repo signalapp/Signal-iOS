@@ -49,10 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 
-+ (void)leaveGroupThreadAsync:(TSGroupThread *)groupThread
-           fromViewController:(UIViewController *)fromViewController
-                      success:(void (^)(void))success;
-
 + (TSOutgoingMessage *)enqueueMessageWithInstalledSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
 + (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerInfo *)stickerInfo
                                                 stickerData:(NSData *)stickerData

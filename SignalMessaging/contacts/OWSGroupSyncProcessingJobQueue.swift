@@ -206,6 +206,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
                                                             avatarData: groupDetails.avatarData,
                                                             members: groupDetails.memberAddresses,
                                                             groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                            infoMessagePolicy: .never,
                                                             transaction: transaction)
 
         let groupThread = result.groupThread

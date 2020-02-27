@@ -171,6 +171,7 @@
 		3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
 		347024A0238C85850078D72C /* VersionedProfiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfiles.swift */; };
 		347137FC22A1BCE800F43A63 /* OWSMessageViewOnceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 347137FB22A1BCE800F43A63 /* OWSMessageViewOnceView.m */; };
+		3476236224081F8900D4FB6F /* GroupManager+SignalMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3476236124081F8900D4FB6F /* GroupManager+SignalMessaging.swift */; };
 		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
@@ -1023,6 +1024,7 @@
 		3470249F238C85850078D72C /* VersionedProfiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfiles.swift; sourceTree = "<group>"; };
 		347137FA22A1BCE800F43A63 /* OWSMessageViewOnceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageViewOnceView.h; sourceTree = "<group>"; };
 		347137FB22A1BCE800F43A63 /* OWSMessageViewOnceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageViewOnceView.m; sourceTree = "<group>"; };
+		3476236124081F8900D4FB6F /* GroupManager+SignalMessaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+SignalMessaging.swift"; sourceTree = "<group>"; };
 		34784592237C4813000D1CAA /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/hi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		34784593237C4819000D1CAA /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/Localizable.strings; sourceTree = "<group>"; };
 		347850561FD86544007B8332 /* SAEFailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFailedViewController.swift; sourceTree = "<group>"; };
@@ -1964,7 +1966,6 @@
 		34480B471FD0A60200BC14EF /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				450DF2041E0D74AC003D14BE /* Platform.swift */,
 				349ED991221EE80D008045B0 /* AppPreferences.swift */,
 				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
 				343D3D991E9283F100165CA4 /* BlockListUIUtils.h */,
@@ -1977,6 +1978,7 @@
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				344F248C2007CCD600CFB4F4 /* DisplayableText.swift */,
 				451777C71FD61554001225FF /* FullTextSearcher.swift */,
+				3476236124081F8900D4FB6F /* GroupManager+SignalMessaging.swift */,
 				346129AC1FD1F34E00532771 /* ImageCache.swift */,
 				4C9C50FD22F36FA40054A33F /* OutboundMessage+OWS.swift */,
 				34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */,
@@ -2000,6 +2002,7 @@
 				34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */,
 				34641E1120878FB000E2EDE5 /* OWSWindowManager.h */,
 				34641E1020878FAF00E2EDE5 /* OWSWindowManager.m */,
+				450DF2041E0D74AC003D14BE /* Platform.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				45360B8C1F9521F800FA666C /* Searcher.swift */,
 				346129BD1FD2068600532771 /* ThreadUtil.h */,
@@ -4323,6 +4326,7 @@
 				340872CB2239563500CB25B0 /* AttachmentPrepViewController.swift in Sources */,
 				34C758DA2289DDDD00802527 /* StickerSharingViewController.swift in Sources */,
 				88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */,
+				3476236224081F8900D4FB6F /* GroupManager+SignalMessaging.swift in Sources */,
 				34C758DD228DD81C00802527 /* StickerTooltip.swift in Sources */,
 				34AC0A16211B39EA00997B47 /* OWSNavigationBar.swift in Sources */,
 				34BEDB0B21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift in Sources */,

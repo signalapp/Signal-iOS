@@ -198,6 +198,10 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         // If we're creating the thread, don't show the message request view
         guard thread.shouldThreadBeVisible else { return false }
 
+        // If this thread is blocked AND we're still in the thread, show the message
+        // request view regardless of if we have sent messages or not.
+        if OWSBlockingManager.shared().isThreadBlocked(thread) { return true }
+
         let isGroupThread = thread is TSGroupThread
         let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserInGroup() == true
 
@@ -211,9 +215,13 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
             transaction: transaction.asAnyRead
         ) else { return false }
 
-        // If this thread is blocked AND we're still in the thread, show the message
-        // request view regardless of if we have sent messages or not.
-        if OWSBlockingManager.shared().isThreadBlocked(thread) && (!isGroupThread || isLocalUserInGroup) { return true }
+        if let messageRequestInteractionIdEpoch = SSKPreferences.messageRequestInteractionIdEpoch(transaction: transaction) {
+            guard thread.lastInteractionRowId > messageRequestInteractionIdEpoch else {
+                return false
+            }
+        } else {
+            owsFailDebug("messageRequestInteractionIdEpoch was unexpectedly nil though RemoteConfig.messageRequests was true")
+        }
 
         let interactionFinder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
 

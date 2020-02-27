@@ -309,13 +309,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "ブロックを解除";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "お互いにメッセージや通話ができるようになります。";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "既存のメンバーは、あなたをグループに再加入させることができるようになります。";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "グループのメンバーはあなたをもう一度このグループに加えることができます。";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "このグループのブロックを解除しますか？";
@@ -984,7 +984,7 @@
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "登録ロックPINを入力してください。この電話番号をSignalに再登録する際に必要になります。";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "セキュリティを強化するため、この電話番号をSignalに再登録する際に必要となる、登録ロックPINを有効にしてください。";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "セキュリティを強化するため、登録ロックPINを有効にしてください。この電話番号をSignalに再登録する際に必要となります。";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
 "ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "登録ロックが有効になりました。この電話番号をSignalに再登録する際にPINが必要になります。 ";
@@ -1252,6 +1252,9 @@
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "会話を始めてみましょう";
+
+/* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ があなたをグループに追加しました";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "メッセージリクエスト";
@@ -1545,37 +1548,37 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "ブロック";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ブロックして削除";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked contacts can’t call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ブロックされたユーザは、あなたにメッセージや通話を発信することができなくなります。";
 
-/* Action sheet title to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE" = "Block and delete conversation?";
+/* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ をブロックしますか？";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "このグループから退出して、今後メッセージや更新を受信しなくなります。";
 
-/* Action sheet title to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE" = "Block, delete, and leave group?";
+/* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%@ から退出し、ブロックしますか？";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "削除";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted on all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "この会話はすべての端末から削除されます。";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "会話を削除しますか？";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "消去しますか？";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_ACTION" = "Delete and Leave";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "退出して削除";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_MESSAGE" = "You will leave this group and it will be deleted on all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "このグループから退出し、すべての端末から削除します。";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_TITLE" = "Delete and leave group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "グループから退出し、削除しますか？";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "承認";
@@ -2079,7 +2082,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN作成失敗";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "セキュリティを強化するためのPINは、復元ができません。再度、新たに登録をする必要があります。";
+"PIN_CREATION_EXPLANATION" = "PINはセキュリティを強化するもので、復元はできません。Signalに再登録する際に必要になります。";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINが一致しません。再度試してください。";
@@ -2094,7 +2097,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "PINを作成しています...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "このデバイスを登録したため、新しいPINを選択できます。PINを忘れると、再登録まで7日間待たなければならないことがあります。";
+"PIN_CREATION_RECREATION_EXPLANATION" = "このデバイスを登録したので、新しいPINを選べます。PINを忘れると、再登録には7日かかるかも知れません。";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "新しいPINを登録";
@@ -3138,7 +3141,7 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ からメッセージが届きましたが、Signalの新機能を使用したもののため処理または表示できませんでした。";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "メッセージが届きましたが、Signalの新機能を使用したもののため処理または表示できませんでした。";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "メッセージが届きましたが、Signalの新機能が使用されているため、処理または表示ができませんでした。";
 
 /* Label for button that lets users upgrade the app. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Signalをアップデートしてください";

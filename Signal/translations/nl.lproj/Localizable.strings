@@ -309,13 +309,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Deblokkeren";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Jullie zullen elkaar weer berichten kunnen sturen en elkaar kunnen bellen via Signal.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Bestaande leden kunnen je weer aan de groep toevoegen.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Groepsleden zullen je weer aan deze groep toe kunnen voegen.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Deze groep deblokkeren?";
@@ -1253,6 +1253,9 @@
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Begin je eerste gesprek hier.";
 
+/* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ heeft je aan de groep toegevoegd";
+
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Gespreksverzoeken";
 
@@ -1545,37 +1548,37 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blokkeren";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokkeren en wissen";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked contacts can’t call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Van geblokkeerde contactpersonen zul je de oproepen en berichten niet te zien krijgen. Geblokkeerde contacten kunnen niet zien dat ze geblokkeerd zijn: het lijkt voor hen alsof je telefoon over gaat, en alsof berichten worden afgeleverd. Je huidige profielnaam en foto blijven zichtbaar voor je contactpersoon maar worden ze niet langer bijgewerkt als je ze veranderd.";
 
-/* Action sheet title to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE" = "Block and delete conversation?";
+/* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ blokkeren?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Je zult deze groep verlaten en niet langer berichten of meldingen ontvangen.";
 
-/* Action sheet title to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE" = "Block, delete, and leave group?";
+/* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "“%@” blokkeren en wissen?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Wissen";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted on all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Dit gesprek zal worden gewist van al je apparaten.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Gesprek verwijderen?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Gesprek wissen?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_ACTION" = "Delete and Leave";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Wissen en verlaten";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_MESSAGE" = "You will leave this group and it will be deleted on all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Je zult deze groep verlaten en het gesprek zal van al je apparaten worden gewist.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_TITLE" = "Delete and leave group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Groep wissen en verlaten?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Aanvaarden";
