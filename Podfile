@@ -69,7 +69,7 @@ pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS'
 # third party pods
 ####
 
-pod 'AFNetworking', inhibit_warnings: true
+pod 'AFNetworking/NSURLSession', inhibit_warnings: true
 pod 'PureLayout', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
 pod 'lottie-ios', :inhibit_warnings => true
