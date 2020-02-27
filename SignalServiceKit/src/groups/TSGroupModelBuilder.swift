@@ -70,6 +70,9 @@ public struct TSGroupModelBuilder {
 
         switch groupsVersion {
         case .V1:
+            if groupMembership.pendingMembers.count > 0 {
+                owsFailDebug("v1 group has pending members.")
+            }
             return TSGroupModel(groupId: groupId,
                                 name: name,
                                 avatarData: avatarData,
@@ -126,9 +129,9 @@ public struct TSGroupModelBuilder {
 
         switch groupsVersion {
         case .V1:
-            return GroupAccess.forV1
+            return GroupAccess.defaultForV1
         case .V2:
-            return GroupAccess.defaultV2Access
+            return GroupAccess.defaultForV2
         }
     }
 

@@ -98,7 +98,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
 - (GroupAccess *)groupAccess
 {
-    return GroupAccess.forV1;
+    return GroupAccess.defaultForV1;
 }
 
 - (uint32_t)groupV2Revision

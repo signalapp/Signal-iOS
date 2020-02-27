@@ -233,7 +233,7 @@ public class GroupManager: NSObject {
             }
         }.map(on: .global()) { (proposedGroupMembership: GroupMembership) throws -> TSGroupModel in
             // GroupsV2 TODO: Let users specify access levels in the "new group" view.
-            let groupAccess = GroupAccess.defaultV2Access
+            let groupAccess = GroupAccess.defaultForV2
             let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
                 // Before we create a v2 group, we need to separate out the
                 // pending and non-pending members.  If we already know we're
@@ -598,7 +598,6 @@ public class GroupManager: NSObject {
                                                groupMembership: groupMembership,
                                                dmConfiguration: nil,
                                                transaction: transaction)
-
         } catch GroupsV2Error.redundantChange {
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing groupThread.")
@@ -1380,13 +1379,16 @@ public class GroupManager: NSObject {
         return UpsertGroupResult(action: .updated, groupThread: groupThread)
     }
 
-    private static func insertGroupUpdateInfoMessage(groupThread: TSGroupThread,
-                                                     oldGroupModel: TSGroupModel?,
-                                                     newGroupModel: TSGroupModel,
-                                                     oldDisappearingMessageToken: DisappearingMessageToken?,
-                                                     newDisappearingMessageToken: DisappearingMessageToken,
-                                                     groupUpdateSourceAddress: SignalServiceAddress?,
-                                                     transaction: SDSAnyWriteTransaction) {
+    // MARK: - Group Update Info Messages
+
+    // NOTE: This should only be called by GroupManager and by DebugUI.
+    public static func insertGroupUpdateInfoMessage(groupThread: TSGroupThread,
+                                                    oldGroupModel: TSGroupModel?,
+                                                    newGroupModel: TSGroupModel,
+                                                    oldDisappearingMessageToken: DisappearingMessageToken?,
+                                                    newDisappearingMessageToken: DisappearingMessageToken,
+                                                    groupUpdateSourceAddress: SignalServiceAddress?,
+                                                    transaction: SDSAnyWriteTransaction) {
 
         var userInfo: [InfoMessageUserInfoKey: Any] = [
             .newGroupModel: newGroupModel,
