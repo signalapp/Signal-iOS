@@ -487,10 +487,8 @@ extension SignalCall: CallManagerCallReference { }
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        var iceCandidates: [CallManagerIceCandidate] = []
-
-        for candidate in candidates {
-            iceCandidates.append(CallManagerIceCandidate(sdp: candidate.sdp, sdpMLineIndex: Int32(candidate.sdpMlineIndex), sdpMid: candidate.sdpMid))
+        let iceCandidates = candidates.filter {$0.id == callId}.map { candidate in
+            CallManagerIceCandidate(sdp: candidate.sdp, sdpMLineIndex: Int32(candidate.sdpMlineIndex), sdpMid: candidate.sdpMid)
         }
 
         // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
