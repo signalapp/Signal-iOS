@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import SignalServiceKit
@@ -15,7 +15,7 @@ public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
         owsFailDebug("")
     }
 
-    public func receivedIceUpdate(_ iceUpdate: SSKProtoCallMessageIceUpdate, from caller: SignalServiceAddress) {
+    public func receivedIceUpdate(_ iceUpdate: [SSKProtoCallMessageIceUpdate], from caller: SignalServiceAddress) {
         owsFailDebug("")
     }
 

@@ -930,9 +930,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (callMessage.answer) {
             [self.callMessageHandler receivedAnswer:callMessage.answer fromCaller:envelope.sourceAddress];
         } else if (callMessage.iceUpdate.count > 0) {
-            for (SSKProtoCallMessageIceUpdate *iceUpdate in callMessage.iceUpdate) {
-                [self.callMessageHandler receivedIceUpdate:iceUpdate fromCaller:envelope.sourceAddress];
-            }
+            [self.callMessageHandler receivedIceUpdate:callMessage.iceUpdate fromCaller:envelope.sourceAddress];
         } else if (callMessage.hangup) {
             OWSLogVerbose(@"Received CallMessage with Hangup.");
             [self.callMessageHandler receivedHangup:callMessage.hangup fromCaller:envelope.sourceAddress];

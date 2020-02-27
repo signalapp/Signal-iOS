@@ -483,20 +483,24 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Remote client (could be caller or callee) sent us a connectivity update.
      */
-    public func handleReceivedIceCandidate(thread: TSContactThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
+    public func handleReceivedIceCandidates(thread: TSContactThread, callId: UInt64, candidates: [SSKProtoCallMessageIceUpdate]) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        let candidates: [CallManagerIceCandidate] = [CallManagerIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid)]
+        var iceCandidates: [CallManagerIceCandidate] = []
+
+        for candidate in candidates {
+            iceCandidates.append(CallManagerIceCandidate(sdp: candidate.sdp, sdpMLineIndex: Int32(candidate.sdpMlineIndex), sdpMid: candidate.sdpMid))
+        }
 
         // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
         let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
 
         do {
-            try callManager.receivedIceCandidates(sourceDevice: sourceDevice, callId: callId, candidates: candidates)
+            try callManager.receivedIceCandidates(sourceDevice: sourceDevice, callId: callId, candidates: iceCandidates)
         } catch {
             owsFailDebug("error: \(error)")
-            // we don't necessarily want to fail the call just because CallManager errored on *one*
+            // we don't necessarily want to fail the call just because CallManager errored on an
             // ICE candidate
         }
     }
