@@ -33,9 +33,7 @@ pod 'ZKGroup', git: 'https://github.com/signalapp/signal-zkgroup-swift', testspe
 pod 'Argon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
 # pod 'Argon2', path: '../Argon2', testspecs: ["Tests"]
 
-# Project does not compile with PromiseKit 6.7.1
-# see: https://github.com/mxcl/PromiseKit/issues/990
-pod 'PromiseKit', "6.5.3"
+pod 'PromiseKit'
 
 # pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 pod 'GRDB.swift/SQLCipher'

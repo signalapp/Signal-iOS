@@ -68,14 +68,14 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - PromiseKit (6.5.3):
-    - PromiseKit/CorePromise (= 6.5.3)
-    - PromiseKit/Foundation (= 6.5.3)
-    - PromiseKit/UIKit (= 6.5.3)
-  - PromiseKit/CorePromise (6.5.3)
-  - PromiseKit/Foundation (6.5.3):
+  - PromiseKit (6.13.1):
+    - PromiseKit/CorePromise (= 6.13.1)
+    - PromiseKit/Foundation (= 6.13.1)
+    - PromiseKit/UIKit (= 6.13.1)
+  - PromiseKit/CorePromise (6.13.1)
+  - PromiseKit/Foundation (6.13.1):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.5.3):
+  - PromiseKit/UIKit (6.13.1):
     - PromiseKit/CorePromise
   - PureLayout (3.1.4)
   - Reachability (3.2)
@@ -244,7 +244,7 @@ DEPENDENCIES:
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - PromiseKit (= 6.5.3)
+  - PromiseKit
   - PureLayout
   - Reachability
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
@@ -381,7 +381,7 @@ SPEC CHECKSUMS:
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  PromiseKit: c609029bdd801f792551a504c695c7d3098b42cd
+  PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
@@ -398,6 +398,6 @@ SPEC CHECKSUMS:
   ZKGroup: b5fcf00855c58ffa45861d5427621d8a519f4314
   ZXingObjC: 512b34b9b6920e8ef0461a4159d0814c5e48c28a
 
-PODFILE CHECKSUM: 836f2a2c04b5103574f3d9977e47fafec78d504b
+PODFILE CHECKSUM: 46d2caf69d04432f340e968da34fdada7a65e97b
 
 COCOAPODS: 1.7.5
