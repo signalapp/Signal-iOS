@@ -11,7 +11,6 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <PromiseKit/AnyPromise.h>
-#import <Reachability/Reachability.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
@@ -50,8 +49,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @property (nonatomic) ProfileViewMode profileViewMode;
 
-@property (nonatomic) Reachability *reachability;
-
 @property (nonatomic, readonly) void (^completionHandler)(ProfileViewController *);
 
 @end
@@ -67,11 +64,14 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     return SDSDatabaseStorage.shared;
 }
 
-#pragma mark -
-
 + (SDSKeyValueStore *)keyValueStore
 {
     return [[SDSKeyValueStore alloc] initWithCollection:@"kProfileView_Collection"];
+}
+
+- (id<SSKReachabilityManager>)reachabilityManager
+{
+    return SSKEnvironment.shared.reachabilityManager;
 }
 
 #pragma mark -
@@ -93,8 +93,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                  key:kProfileView_LastPresentedDate
                                          transaction:transaction];
     }];
-
-    self.reachability = [Reachability reachabilityForInternetConnection];
 
     return self;
 }
@@ -543,7 +541,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return;
     }
 
-    if (!self.reachability.isReachable) {
+    if (!self.reachabilityManager.isReachable) {
         [OWSActionSheets
             showErrorAlertWithMessage:
                 NSLocalizedString(@"PROFILE_VIEW_NO_CONNECTION",

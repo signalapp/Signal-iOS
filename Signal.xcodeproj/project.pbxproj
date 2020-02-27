@@ -65,6 +65,7 @@
 		3416BCAA227763A500E761B4 /* OWSMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3416BCA8227763A500E761B4 /* OWSMessageView.m */; };
 		3416BCAC227798D100E761B4 /* StickerPackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3416BCAB227798D000E761B4 /* StickerPackViewController.swift */; };
 		3416BCAE2277A24000E761B4 /* StickerPackDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */; };
+		341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
 		3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421981B21061D2E00C57195 /* ByteParserTest.swift */; };
 		3425648823E214BC0016905B /* OWSConversationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3425648723E214BC0016905B /* OWSConversationSettingsViewController.swift */; };
@@ -899,6 +900,7 @@
 		3416BCA9227763A500E761B4 /* OWSMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageView.h; sourceTree = "<group>"; };
 		3416BCAB227798D000E761B4 /* StickerPackViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackViewController.swift; sourceTree = "<group>"; };
 		3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackDataSource.swift; sourceTree = "<group>"; };
+		341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupsV2Impl+RestoreGroups.swift"; sourceTree = "<group>"; };
 		341F2C0D1F2B8AE700D07D6B /* DebugUIMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMisc.h; sourceTree = "<group>"; };
 		341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMisc.m; sourceTree = "<group>"; };
 		3421981B21061D2E00C57195 /* ByteParserTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteParserTest.swift; sourceTree = "<group>"; };
@@ -2354,6 +2356,7 @@
 				34F0566923DA209300265283 /* GroupsV2Changes.swift */,
 				34BB3C5923C6644B001651FC /* GroupsV2ChangeSetImpl.swift */,
 				34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */,
+				341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */,
 				345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */,
 				3456A73123D63EBE00947219 /* GroupsV2Protos.swift */,
 				3456A73323D741E300947219 /* GroupsV2Test.swift */,
@@ -4274,6 +4277,7 @@
 				451F8A461FD715BA005CB9DA /* OWSGroupAvatarBuilder.m in Sources */,
 				34C2EEB42270D1CE00BCA1D0 /* StickerView.swift in Sources */,
 				346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */,
+				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				34AC09EA211B39B100997B47 /* ModalActivityIndicatorViewController.swift in Sources */,
 				344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */,

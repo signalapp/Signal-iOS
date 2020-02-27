@@ -44,12 +44,14 @@ message StorageRecord {
     UNKNOWN = 0;
     CONTACT = 1;
     GROUPV1 = 2;
+    GROUPV2 = 3;
   }
 
   // @required
   optional uint32        type    = 1;
   optional ContactRecord contact = 2;
   optional GroupV1Record groupV1 = 3;
+  optional GroupV2Record groupV2 = 4;
 }
 
 message ContactRecord {
@@ -83,6 +85,13 @@ message ContactRecord {
 message GroupV1Record {
   // @required
   optional bytes id          = 1;
+  optional bool  blocked     = 2;
+  optional bool  whitelisted = 3;
+}
+
+message GroupV2Record {
+  // @required
+  optional bytes masterKey   = 1;
   optional bool  blocked     = 2;
   optional bool  whitelisted = 3;
 }

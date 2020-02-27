@@ -7,13 +7,18 @@ import PromiseKit
 
 @objc
 public protocol StorageServiceManagerProtocol {
-    func recordPendingDeletions(deletedIds: [AccountId])
+    func recordPendingDeletions(deletedAccountIds: [AccountId])
     func recordPendingDeletions(deletedAddresses: [SignalServiceAddress])
-    func recordPendingDeletions(deletedGroupIds: [Data])
+    func recordPendingDeletions(deletedGroupV1Ids: [Data])
+    func recordPendingDeletions(deletedGroupV2MasterKeys: [Data])
 
-    func recordPendingUpdates(updatedIds: [AccountId])
+    func recordPendingUpdates(updatedAccountIds: [AccountId])
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
-    func recordPendingUpdates(updatedGroupIds: [Data])
+    func recordPendingUpdates(updatedGroupV1Ids: [Data])
+    func recordPendingUpdates(updatedGroupV2MasterKeys: [Data])
+    // A convenience method that calls recordPendingUpdates(updatedGroupV1Ids:)
+    // or recordPendingUpdates(updatedGroupV2MasterKeys:).
+    func recordPendingUpdates(groupModel: TSGroupModel)
 
     func backupPendingChanges()
 
@@ -22,6 +27,8 @@ public protocol StorageServiceManagerProtocol {
 
     func resetLocalData(transaction: SDSAnyWriteTransaction)
 }
+
+// MARK: -
 
 public struct StorageService {
     public enum StorageError: OperationError {
@@ -95,10 +102,19 @@ public struct StorageService {
         public var groupV1Record: StorageServiceProtoGroupV1Record? {
             guard type == StorageServiceProtoStorageRecordType.groupv1.rawValue else { return nil }
             guard let groupV1 = record.groupV1 else {
-                owsFailDebug("unexpectedly missing group record")
+                owsFailDebug("unexpectedly missing group v1 record")
                 return nil
             }
             return groupV1
+        }
+
+        public var groupV2Record: StorageServiceProtoGroupV2Record? {
+            guard type == StorageServiceProtoStorageRecordType.groupv2.rawValue else { return nil }
+            guard let groupV2 = record.groupV2 else {
+                owsFailDebug("unexpectedly missing group v2 record")
+                return nil
+            }
+            return groupV2
         }
 
         public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) throws {
@@ -110,6 +126,12 @@ public struct StorageService {
         public init(identifier: StorageIdentifier, groupV1: StorageServiceProtoGroupV1Record) throws {
             let storageRecord = StorageServiceProtoStorageRecord.builder(type: UInt32(StorageServiceProtoStorageRecordType.groupv1.rawValue))
             storageRecord.setGroupV1(groupV1)
+            self.init(identifier: identifier, record: try storageRecord.build())
+        }
+
+        public init(identifier: StorageIdentifier, groupV2: StorageServiceProtoGroupV2Record) throws {
+            let storageRecord = StorageServiceProtoStorageRecord.builder(type: UInt32(StorageServiceProtoStorageRecordType.groupv2.rawValue))
+            storageRecord.setGroupV2(groupV2)
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 

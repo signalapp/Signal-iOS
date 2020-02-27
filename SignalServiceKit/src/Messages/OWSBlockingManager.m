@@ -55,6 +55,11 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     return SSKEnvironment.shared.storageServiceManager;
 }
 
+- (id<GroupsV2>)groupsV2
+{
+    return SSKEnvironment.shared.groupsV2;
+}
+
 #pragma mark -
 
 + (SDSKeyValueStore *)keyValueStore
@@ -460,7 +465,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         }
 
         if (wasLocallyInitiated) {
-            [self.storageServiceManager recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+            [self.storageServiceManager recordPendingUpdatesWithGroupModel:groupThread.groupModel];
         }
     }
 
@@ -481,10 +486,12 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
             return;
         }
 
+        TSGroupModel *_Nullable groupModel = self.blockedGroupMap[groupId];
+
         [self.blockedGroupMap removeObjectForKey:groupId];
 
-        if (wasLocallyInitiated) {
-            [self.storageServiceManager recordPendingUpdatesWithUpdatedGroupIds:@[ groupId ]];
+        if (wasLocallyInitiated && groupModel != nil) {
+            [self.storageServiceManager recordPendingUpdatesWithGroupModel:groupModel];
         }
     }
 

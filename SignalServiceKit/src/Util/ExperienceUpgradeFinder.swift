@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import Reachability
 
 public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"

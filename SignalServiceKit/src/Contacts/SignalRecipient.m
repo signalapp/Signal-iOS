@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalRecipient.h"
@@ -300,7 +300,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         [newInstance anyInsertWithTransaction:transaction];
 
         // Record with the new contact in the social graph
-        [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ newInstance.accountId ]];
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ newInstance.accountId ]];
 
         return newInstance;
     }
@@ -334,7 +334,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     // Record the updated contact in the social graph
     if (hasChanged) {
         [existingInstance anyOverwritingUpdateWithTransaction:transaction];
-        [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ existingInstance.accountId ]];
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ existingInstance.accountId ]];
     }
 
     return existingInstance;
@@ -379,7 +379,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         }
 
         // Remove the contact from our social graph
-        [self.storageServiceManager recordPendingDeletionsWithDeletedIds:@[ recipient.accountId ]];
+        [self.storageServiceManager recordPendingDeletionsWithDeletedAccountIds:@[ recipient.accountId ]];
     }
 }
 

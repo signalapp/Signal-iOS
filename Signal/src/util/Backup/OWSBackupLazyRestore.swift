@@ -44,10 +44,7 @@ public class BackupLazyRestore: NSObject {
         NotificationCenter.default.addObserver(forName: .registrationStateDidChange, object: nil, queue: nil) { _ in
             self.runIfNecessary()
         }
-        NotificationCenter.default.addObserver(forName: .reachabilityChanged, object: nil, queue: nil) { _ in
-            self.runIfNecessary()
-        }
-        NotificationCenter.default.addObserver(forName: .reachabilityChanged, object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: SSKReachability.owsReachabilityDidChange, object: nil, queue: nil) { _ in
             self.runIfNecessary()
         }
         NotificationCenter.default.addObserver(forName: NSNotification.Name(NSNotificationNameBackupStateDidChange), object: nil, queue: nil) { _ in

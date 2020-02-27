@@ -152,16 +152,19 @@ public class GroupsV2Protos {
         return try builder.build()
     }
 
-    public class func buildGroupContextV2Proto(groupModel: TSGroupModel,
-                                               changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
-
+    public class func masterKeyData(forGroupModel groupModel: TSGroupModel) throws -> Data {
         guard let groupSecretParamsData = groupModel.groupSecretParamsData else {
             throw OWSAssertionError("Missing groupSecretParamsData.")
         }
         let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
+        return try groupSecretParams.getMasterKey().serialize().asData
+    }
+
+    public class func buildGroupContextV2Proto(groupModel: TSGroupModel,
+                                               changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
 
         let builder = SSKProtoGroupContextV2.builder()
-        builder.setMasterKey(try groupSecretParams.getMasterKey().serialize().asData)
+        builder.setMasterKey(try masterKeyData(forGroupModel: groupModel))
         builder.setRevision(groupModel.groupV2Revision)
 
         if let changeActionsProtoData = changeActionsProtoData {

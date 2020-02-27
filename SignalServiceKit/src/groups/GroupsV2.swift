@@ -32,6 +32,8 @@ public protocol GroupsV2: AnyObject {
 
     func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress]) -> AnyPromise
 
+    func masterKeyData(forGroupModel groupModel: TSGroupModel) throws -> Data
+
     func buildGroupContextV2Proto(groupModel: TSGroupModel,
                                   changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2
 
@@ -45,6 +47,11 @@ public protocol GroupsV2: AnyObject {
     func processProfileKeyUpdates()
 
     func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction)
+
+    func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
+                                      transaction: SDSAnyReadTransaction) -> Bool
+
+    func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction)
 }
 
 // MARK: -
@@ -188,11 +195,11 @@ public struct GroupV2Change {
 @objc
 public class GroupV2ContextInfo: NSObject {
     @objc
-    let masterKeyData: Data
+    public let masterKeyData: Data
     @objc
-    let groupSecretParamsData: Data
+    public let groupSecretParamsData: Data
     @objc
-    let groupId: Data
+    public let groupId: Data
 
     public init(masterKeyData: Data, groupSecretParamsData: Data, groupId: Data) {
         self.masterKeyData = masterKeyData
@@ -316,6 +323,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
+    public func masterKeyData(forGroupModel groupModel: TSGroupModel) throws -> Data {
+        owsFail("Not implemented.")
+    }
+
     public func buildGroupContextV2Proto(groupModel: TSGroupModel,
                                          changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
         owsFail("Not implemented.")
@@ -380,6 +391,15 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
 
     public func uploadGroupAvatar(avatarData: Data,
                                   groupSecretParamsData: Data) -> Promise<String> {
+        owsFail("Not implemented.")
+    }
+
+    public func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
+                                             transaction: SDSAnyReadTransaction) -> Bool {
+        owsFail("Not implemented.")
+    }
+
+    public func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 }

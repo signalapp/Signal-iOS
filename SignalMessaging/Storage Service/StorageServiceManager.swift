@@ -11,14 +11,30 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     @objc
     public static let shared = StorageServiceManager()
 
+    // MARK: - Dependencies
+
     var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
     }
+
+    var groupsV2: GroupsV2 {
+        return SSKEnvironment.shared.groupsV2
+    }
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
 
     override init() {
         super.init()
 
         SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.cleanUpUnknownIdentifiers()
+        }
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             NotificationCenter.default.addObserver(
@@ -50,8 +66,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     // MARK: -
 
     @objc
-    public func recordPendingDeletions(deletedIds: [AccountId]) {
-        let operation = StorageServiceOperation.recordPendingDeletions(deletedIds)
+    public func recordPendingDeletions(deletedAccountIds: [AccountId]) {
+        let operation = StorageServiceOperation.recordPendingDeletions(deletedAccountIds: deletedAccountIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         scheduleBackupIfNecessary()
@@ -59,23 +75,31 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) {
-        let operation = StorageServiceOperation.recordPendingDeletions(deletedAddresses)
+        let operation = StorageServiceOperation.recordPendingDeletions(deletedAddresses: deletedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         scheduleBackupIfNecessary()
     }
 
     @objc
-    public func recordPendingDeletions(deletedGroupIds: [Data]) {
-        let operation = StorageServiceOperation.recordPendingDeletions(deletedGroupIds)
+    public func recordPendingDeletions(deletedGroupV1Ids: [Data]) {
+        let operation = StorageServiceOperation.recordPendingDeletions(deletedGroupV1Ids: deletedGroupV1Ids)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         scheduleBackupIfNecessary()
     }
 
     @objc
-    public func recordPendingUpdates(updatedIds: [AccountId]) {
-        let operation = StorageServiceOperation.recordPendingUpdates(updatedIds)
+    public func recordPendingDeletions(deletedGroupV2MasterKeys: [Data]) {
+        let operation = StorageServiceOperation.recordPendingDeletions(deletedGroupV2MasterKeys: deletedGroupV2MasterKeys)
+        StorageServiceOperation.operationQueue.addOperation(operation)
+
+        scheduleBackupIfNecessary()
+    }
+
+    @objc
+    public func recordPendingUpdates(updatedAccountIds: [AccountId]) {
+        let operation = StorageServiceOperation.recordPendingUpdates(updatedAccountIds: updatedAccountIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         scheduleBackupIfNecessary()
@@ -83,18 +107,42 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {
-        let operation = StorageServiceOperation.recordPendingUpdates(updatedAddresses)
+        let operation = StorageServiceOperation.recordPendingUpdates(updatedAddresses: updatedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         scheduleBackupIfNecessary()
     }
 
     @objc
-    public func recordPendingUpdates(updatedGroupIds: [Data]) {
-        let operation = StorageServiceOperation.recordPendingUpdates(updatedGroupIds)
+    public func recordPendingUpdates(updatedGroupV1Ids: [Data]) {
+        let operation = StorageServiceOperation.recordPendingUpdates(updatedGroupV1Ids: updatedGroupV1Ids)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         scheduleBackupIfNecessary()
+    }
+
+    @objc
+    public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {
+        let operation = StorageServiceOperation.recordPendingUpdates(updatedGroupV2MasterKeys: updatedGroupV2MasterKeys)
+        StorageServiceOperation.operationQueue.addOperation(operation)
+
+        scheduleBackupIfNecessary()
+    }
+
+    @objc
+    public func recordPendingUpdates(groupModel: TSGroupModel) {
+        if let groupModelV2 = groupModel as? TSGroupModelV2 {
+            let groupMasterKey: Data
+            do {
+                groupMasterKey = try groupsV2.masterKeyData(forGroupModel: groupModelV2)
+            } catch {
+                owsFailDebug("Missing master key: \(error)")
+                return
+            }
+            recordPendingUpdates(updatedGroupV2MasterKeys: [ groupMasterKey ])
+        } else {
+            recordPendingUpdates(updatedGroupV1Ids: [ groupModel.groupId ])
+        }
     }
 
     @objc
@@ -115,6 +163,11 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     public func resetLocalData(transaction: SDSAnyWriteTransaction) {
         Logger.info("Reseting local storage service data.")
         StorageServiceOperation.keyValueStore.removeAll(transaction: transaction)
+    }
+
+    private func cleanUpUnknownIdentifiers() {
+        let operation = StorageServiceOperation(mode: .cleanUpUnknownIdentifiers)
+        StorageServiceOperation.operationQueue.addOperation(operation)
     }
 
     // MARK: - Backup Scheduling
@@ -171,6 +224,14 @@ class StorageServiceOperation: OWSOperation {
         return SDSKeyValueStore(collection: "kOWSStorageServiceOperation_IdentifierMap")
     }
 
+    private var groupsV2: GroupsV2 {
+        return SSKEnvironment.shared.groupsV2
+    }
+
+    private var groupV2Updates: GroupV2UpdatesSwift {
+        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
+    }
+
     // MARK: -
 
     override var description: String {
@@ -194,6 +255,7 @@ class StorageServiceOperation: OWSOperation {
     fileprivate enum Mode {
         case backup
         case restoreOrCreate
+        case cleanUpUnknownIdentifiers
     }
     private let mode: Mode
 
@@ -243,122 +305,170 @@ class StorageServiceOperation: OWSOperation {
             backupPendingChanges()
         case .restoreOrCreate:
             restoreOrCreateManifestIfNecessary()
+        case .cleanUpUnknownIdentifiers:
+            cleanUpUnknownIdentifiers()
         }
     }
 
-    // MARK: Mark Pending Changes
+    // MARK: - Mark Pending Changes: Accounts
 
-    fileprivate static func recordPendingUpdates(_ updatedAddresses: [SignalServiceAddress]) -> Operation {
+    fileprivate static func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) -> Operation {
         return BlockOperation {
             databaseStorage.write { transaction in
-                let updatedIds = updatedAddresses.map { address in
+                let updatedAccountIds = updatedAddresses.map { address in
                     OWSAccountIdFinder().ensureAccountId(forAddress: address, transaction: transaction)
                 }
 
-                recordPendingUpdates(updatedIds, transaction: transaction)
+                recordPendingUpdates(updatedAccountIds: updatedAccountIds, transaction: transaction)
             }
         }
     }
 
-    fileprivate static func recordPendingUpdates(_ updatedIds: [AccountId]) -> Operation {
+    fileprivate static func recordPendingUpdates(updatedAccountIds: [AccountId]) -> Operation {
         return BlockOperation {
             databaseStorage.write { transaction in
-                recordPendingUpdates(updatedIds, transaction: transaction)
+                recordPendingUpdates(updatedAccountIds: updatedAccountIds, transaction: transaction)
             }
         }
     }
 
-    private static func recordPendingUpdates(_ updatedIds: [AccountId], transaction: SDSAnyWriteTransaction) {
+    private static func recordPendingUpdates(updatedAccountIds: [AccountId], transaction: SDSAnyWriteTransaction) {
         Logger.info("")
 
         var pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
 
-        for accountId in updatedIds {
+        for accountId in updatedAccountIds {
             pendingChanges[accountId] = .updated
         }
 
         StorageServiceOperation.setAccountChangeMap(pendingChanges, transaction: transaction)
     }
 
-    fileprivate static func recordPendingDeletions(_ deletedAddress: [SignalServiceAddress]) -> Operation {
+    fileprivate static func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) -> Operation {
         return BlockOperation {
             databaseStorage.write { transaction in
-                let deletedIds = deletedAddress.map { address in
+                let deletedAccountIds = deletedAddresses.map { address in
                     OWSAccountIdFinder().ensureAccountId(forAddress: address, transaction: transaction)
                 }
 
-                recordPendingDeletions(deletedIds, transaction: transaction)
+                recordPendingDeletions(deletedAccountIds: deletedAccountIds, transaction: transaction)
             }
         }
     }
 
-    fileprivate static func recordPendingDeletions(_ deletedIds: [AccountId]) -> Operation {
+    fileprivate static func recordPendingDeletions(deletedAccountIds: [AccountId]) -> Operation {
         return BlockOperation {
             databaseStorage.write { transaction in
-                recordPendingDeletions(deletedIds, transaction: transaction)
+                recordPendingDeletions(deletedAccountIds: deletedAccountIds, transaction: transaction)
             }
         }
     }
 
-    private static func recordPendingDeletions(_ deletedIds: [AccountId], transaction: SDSAnyWriteTransaction) {
+    private static func recordPendingDeletions(deletedAccountIds: [AccountId], transaction: SDSAnyWriteTransaction) {
         Logger.info("")
 
         var pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
 
-        for accountId in deletedIds {
+        for accountId in deletedAccountIds {
             pendingChanges[accountId] = .deleted
         }
 
         StorageServiceOperation.setAccountChangeMap(pendingChanges, transaction: transaction)
     }
 
-    fileprivate static func recordPendingUpdates(_ updatedGroupIds: [Data]) -> Operation {
+    // MARK: - Mark Pending Changes: v1 Groups
+
+    fileprivate static func recordPendingUpdates(updatedGroupV1Ids: [Data]) -> Operation {
         return BlockOperation {
             databaseStorage.write { transaction in
-                recordPendingUpdates(updatedGroupIds, transaction: transaction)
+                recordPendingUpdates(updatedGroupV1Ids: updatedGroupV1Ids, transaction: transaction)
             }
         }
     }
 
-    private static func recordPendingUpdates(_ updatedGroupIds: [Data], transaction: SDSAnyWriteTransaction) {
+    private static func recordPendingUpdates(updatedGroupV1Ids: [Data], transaction: SDSAnyWriteTransaction) {
         Logger.info("")
 
-        var pendingChanges = StorageServiceOperation.groupIdChangeMap(transaction: transaction)
+        var pendingChanges = StorageServiceOperation.groupV1IdChangeMap(transaction: transaction)
 
-        for groupId in updatedGroupIds {
+        for groupId in updatedGroupV1Ids {
             pendingChanges[groupId] = .updated
         }
 
-        StorageServiceOperation.setGroupIdChangeMap(pendingChanges, transaction: transaction)
+        StorageServiceOperation.setGroupV1IdChangeMap(pendingChanges, transaction: transaction)
     }
 
-    fileprivate static func recordPendingDeletions(_ deletedGroupIds: [Data]) -> Operation {
-         return BlockOperation {
-             databaseStorage.write { transaction in
-                 recordPendingDeletions(deletedGroupIds, transaction: transaction)
-             }
-         }
-     }
+    fileprivate static func recordPendingDeletions(deletedGroupV1Ids: [Data]) -> Operation {
+        return BlockOperation {
+            databaseStorage.write { transaction in
+                recordPendingDeletions(deletedGroupV1Ids: deletedGroupV1Ids, transaction: transaction)
+            }
+        }
+    }
 
-     private static func recordPendingDeletions(_ deletedGroupIds: [Data], transaction: SDSAnyWriteTransaction) {
-         Logger.info("")
+    private static func recordPendingDeletions(deletedGroupV1Ids: [Data], transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
 
-         var pendingChanges = StorageServiceOperation.groupIdChangeMap(transaction: transaction)
+        var pendingChanges = StorageServiceOperation.groupV1IdChangeMap(transaction: transaction)
 
-         for groupId in deletedGroupIds {
-             pendingChanges[groupId] = .deleted
-         }
+        for groupId in deletedGroupV1Ids {
+            pendingChanges[groupId] = .deleted
+        }
 
-         StorageServiceOperation.setGroupIdChangeMap(pendingChanges, transaction: transaction)
-     }
+        StorageServiceOperation.setGroupV1IdChangeMap(pendingChanges, transaction: transaction)
+    }
 
-    // MARK: Backup
+    // MARK: - Mark Pending Changes: v2 Groups
+
+    fileprivate static func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) -> Operation {
+        return BlockOperation {
+            databaseStorage.write { transaction in
+                recordPendingUpdates(updatedGroupV2MasterKeys: updatedGroupV2MasterKeys, transaction: transaction)
+            }
+        }
+    }
+
+    private static func recordPendingUpdates(updatedGroupV2MasterKeys: [Data], transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+
+        var pendingChanges = StorageServiceOperation.groupV2MasterKeyChangeMap(transaction: transaction)
+
+        for masterKey in updatedGroupV2MasterKeys {
+            pendingChanges[masterKey] = .updated
+        }
+
+        StorageServiceOperation.setGroupV2MasterKeyChangeMap(pendingChanges, transaction: transaction)
+    }
+
+    fileprivate static func recordPendingDeletions(deletedGroupV2MasterKeys: [Data]) -> Operation {
+        return BlockOperation {
+            databaseStorage.write { transaction in
+                recordPendingDeletions(deletedGroupV2MasterKeys: deletedGroupV2MasterKeys, transaction: transaction)
+            }
+        }
+    }
+
+    private static func recordPendingDeletions(deletedGroupV2MasterKeys: [Data], transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+
+        var pendingChanges = StorageServiceOperation.groupV2MasterKeyChangeMap(transaction: transaction)
+
+        for masterKey in deletedGroupV2MasterKeys {
+            pendingChanges[masterKey] = .deleted
+        }
+
+        StorageServiceOperation.setGroupV2MasterKeyChangeMap(pendingChanges, transaction: transaction)
+    }
+
+    // MARK: - Backup
 
     private func backupPendingChanges() {
         var pendingAccountChanges: [AccountId: ChangeState] = [:]
         var accountIdentifierMap: BidirectionalDictionary<AccountId, StorageService.StorageIdentifier> = [:]
-        var pendingGroupChanges: [Data: ChangeState] = [:]
-        var groupIdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
+        var pendingGroupV1Changes: [Data: ChangeState] = [:]
+        var groupV1IdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
+        var pendingGroupV2Changes: [Data: ChangeState] = [:]
+        var groupV2IdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
         var unknownIdentifiers: [StorageService.StorageIdentifier] = []
         var version: UInt64 = 0
 
@@ -368,8 +478,10 @@ class StorageServiceOperation: OWSOperation {
         databaseStorage.read { transaction in
             pendingAccountChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
             accountIdentifierMap = StorageServiceOperation.accountToIdentifierMap(transaction: transaction)
-            pendingGroupChanges = StorageServiceOperation.groupIdChangeMap(transaction: transaction)
-            groupIdentifierMap = StorageServiceOperation.groupIdToIdentifierMap(transaction: transaction)
+            pendingGroupV1Changes = StorageServiceOperation.groupV1IdChangeMap(transaction: transaction)
+            groupV1IdentifierMap = StorageServiceOperation.groupV1IdToIdentifierMap(transaction: transaction)
+            pendingGroupV2Changes = StorageServiceOperation.groupV2MasterKeyChangeMap(transaction: transaction)
+            groupV2IdentifierMap = StorageServiceOperation.groupV2MasterKeyToIdentifierMap(transaction: transaction)
             unknownIdentifiers = StorageServiceOperation.unknownIdentifiers(transaction: transaction)
             version = StorageServiceOperation.manifestVersion(transaction: transaction) ?? 0
 
@@ -414,27 +526,57 @@ class StorageServiceOperation: OWSOperation {
                     }
             }
 
-            // Build an up-to-date storage item for every pending group update
+            // Build an up-to-date storage item for every pending v1 group update
             updatedItems +=
-                pendingGroupChanges.lazy.filter { $0.value == .updated }.compactMap { groupId, _ in
+                pendingGroupV1Changes.lazy.filter { $0.value == .updated }.compactMap { groupId, _ in
                     do {
                         // If there is an existing identifier for this group,
                         // mark it for deletion. We generate a fresh identifer
                         // every time a contact record changes so other devices
                         // know which records have changes to fetch.
-                        if let storageIdentifier = groupIdentifierMap[groupId] {
+                        if let storageIdentifier = groupV1IdentifierMap[groupId] {
                             deletedIdentifiers.append(storageIdentifier)
                         }
 
                         // Generate a fresh identifier
                         let storageIdentifier = StorageService.StorageIdentifier.generate()
-                        groupIdentifierMap[groupId] = storageIdentifier
+                        groupV1IdentifierMap[groupId] = storageIdentifier
 
                         let groupV1Record = try StorageServiceProtoGroupV1Record.build(for: groupId, transaction: transaction)
                         let storageItem = try StorageService.StorageItem(identifier: storageIdentifier, groupV1: groupV1Record)
 
                         // Clear pending changes
-                        pendingGroupChanges[groupId] = nil
+                        pendingGroupV1Changes[groupId] = nil
+
+                        return storageItem
+                    } catch {
+                        owsFailDebug("Unexpectedly failed to process changes for account \(error)")
+                        // If for some reason we failed, we'll just skip it and try this account again next backup.
+                        return nil
+                    }
+            }
+
+            // Build an up-to-date storage item for every pending v2 group update
+            updatedItems +=
+                pendingGroupV2Changes.lazy.filter { $0.value == .updated }.compactMap { groupMasterKey, _ in
+                    do {
+                        // If there is an existing identifier for this group,
+                        // mark it for deletion. We generate a fresh identifer
+                        // every time a contact record changes so other devices
+                        // know which records have changes to fetch.
+                        if let storageIdentifier = groupV2IdentifierMap[groupMasterKey] {
+                            deletedIdentifiers.append(storageIdentifier)
+                        }
+
+                        // Generate a fresh identifier
+                        let storageIdentifier = StorageService.StorageIdentifier.generate()
+                        groupV2IdentifierMap[groupMasterKey] = storageIdentifier
+
+                        let groupV2Record = try StorageServiceProtoGroupV2Record.build(for: groupMasterKey, transaction: transaction)
+                        let storageItem = try StorageService.StorageItem(identifier: storageIdentifier, groupV2: groupV2Record)
+
+                        // Clear pending changes
+                        pendingGroupV2Changes[groupMasterKey] = nil
 
                         return storageItem
                     } catch {
@@ -463,20 +605,38 @@ class StorageServiceOperation: OWSOperation {
                 return identifier
         }
 
-        // Lookup the identifier for every pending group deletion
+        // Lookup the identifier for every pending group v1 deletion
         deletedIdentifiers +=
-            pendingGroupChanges.lazy.filter { $0.value == .deleted }.compactMap { groupId, _ in
+            pendingGroupV1Changes.lazy.filter { $0.value == .deleted }.compactMap { groupId, _ in
                 // Clear the pending change
-                pendingGroupChanges[groupId] = nil
+                pendingGroupV1Changes[groupId] = nil
 
-                guard let identifier = groupIdentifierMap[groupId] else {
+                guard let identifier = groupV1IdentifierMap[groupId] else {
                     // This group doesn't exist in our records, it may have been
                     // added and then deleted before a backup occured. We can safely skip it.
                     return nil
                 }
 
                 // Remove this group from the mapping
-                groupIdentifierMap[groupId] = nil
+                groupV1IdentifierMap[groupId] = nil
+
+                return identifier
+        }
+
+        // Lookup the identifier for every pending group v2 deletion
+        deletedIdentifiers +=
+            pendingGroupV2Changes.lazy.filter { $0.value == .deleted }.compactMap { groupMasterKey, _ in
+                // Clear the pending change
+                pendingGroupV2Changes[groupMasterKey] = nil
+
+                guard let identifier = groupV2IdentifierMap[groupMasterKey] else {
+                    // This group doesn't exist in our records, it may have been
+                    // added and then deleted before a backup occured. We can safely skip it.
+                    return nil
+                }
+
+                // Remove this group from the mapping
+                groupV2IdentifierMap[groupMasterKey] = nil
 
                 return identifier
         }
@@ -491,9 +651,10 @@ class StorageServiceOperation: OWSOperation {
 
         let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: version)
 
-        let allKeys = accountIdentifierMap.map { $1.data } +
-            groupIdentifierMap.map { $1.data } +
-            unknownIdentifiers.map { $0.data }
+        let allKeys = (accountIdentifierMap.map { $1.data } +
+            groupV1IdentifierMap.map { $1.data } +
+            groupV2IdentifierMap.map { $1.data } +
+            unknownIdentifiers.map { $0.data })
 
         // We must persist any unknown identifiers, as they are potentially associated with
         // valid records that this version of the app doesn't yet understand how to parse.
@@ -522,10 +683,12 @@ class StorageServiceOperation: OWSOperation {
                 self.databaseStorage.write { transaction in
                     StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
                     StorageServiceOperation.setAccountChangeMap(pendingAccountChanges, transaction: transaction)
-                    StorageServiceOperation.setGroupIdChangeMap(pendingGroupChanges, transaction: transaction)
+                    StorageServiceOperation.setGroupV1IdChangeMap(pendingGroupV1Changes, transaction: transaction)
+                    StorageServiceOperation.setGroupV2MasterKeyChangeMap(pendingGroupV2Changes, transaction: transaction)
                     StorageServiceOperation.setManifestVersion(version, transaction: transaction)
                     StorageServiceOperation.setAccountToIdentifierMap(accountIdentifierMap, transaction: transaction)
-                    StorageServiceOperation.setGroupIdToIdentifierMap(groupIdentifierMap, transaction: transaction)
+                    StorageServiceOperation.setGroupV1IdToIdentifierMap(groupV1IdentifierMap, transaction: transaction)
+                    StorageServiceOperation.setGroupV2MasterKeyToIdentifierMap(groupV2IdentifierMap, transaction: transaction)
                 }
 
                 // Notify our other devices that the storage manifest has changed.
@@ -541,7 +704,7 @@ class StorageServiceOperation: OWSOperation {
         }.retainUntilComplete()
     }
 
-    // MARK: Restore
+    // MARK: - Restore
 
     private func restoreOrCreateManifestIfNecessary() {
         var manifestVersion: UInt64?
@@ -598,7 +761,8 @@ class StorageServiceOperation: OWSOperation {
     private func createNewManifest(version: UInt64) {
         var allItems: [StorageService.StorageItem] = []
         var accountIdentifierMap: BidirectionalDictionary<AccountId, StorageService.StorageIdentifier> = [:]
-        var groupIdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
+        var groupV1IdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
+        var groupV2IdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
 
         databaseStorage.read { transaction in
             SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
@@ -622,22 +786,42 @@ class StorageServiceOperation: OWSOperation {
             TSGroupThread.anyEnumerate(transaction: transaction) { thread, _ in
                 guard let groupThread = thread as? TSGroupThread else { return }
 
-                // TODO: Support v2 groups
-                guard case .V1 = groupThread.groupModel.groupsVersion else { return }
+                switch groupThread.groupModel.groupsVersion {
+                case .V1:
+                    let groupId = groupThread.groupModel.groupId
+                    let identifier = StorageService.StorageIdentifier.generate()
+                    groupV1IdentifierMap[groupId] = identifier
 
-                let groupId = groupThread.groupModel.groupId
-                let identifier = StorageService.StorageIdentifier.generate()
-                groupIdentifierMap[groupId] = identifier
+                    do {
+                        let groupV1Record = try StorageServiceProtoGroupV1Record.build(for: groupId, transaction: transaction)
+                        allItems.append(
+                            try .init(identifier: identifier, groupV1: groupV1Record)
+                        )
+                    } catch {
+                        // We'll just skip it, something may be wrong with our local data.
+                        // We'll try and backup this group again when something changes.
+                        owsFailDebug("failed to build group record with error: \(error)")
+                    }
+                case .V2:
+                    guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                        owsFailDebug("Invalid group model.")
+                        return
+                    }
 
-                do {
-                    let groupV1Record = try StorageServiceProtoGroupV1Record.build(for: groupId, transaction: transaction)
-                    allItems.append(
-                        try .init(identifier: identifier, groupV1: groupV1Record)
-                    )
-                } catch {
-                    // We'll just skip it, something may be wrong with our local data.
-                    // We'll try and backup this group again when something changes.
-                    owsFailDebug("failed to build group record with error: \(error)")
+                    do {
+                        let groupMasterKey = try GroupsV2Protos.masterKeyData(forGroupModel: groupModel)
+                        let identifier = StorageService.StorageIdentifier.generate()
+                        groupV2IdentifierMap[groupMasterKey] = identifier
+
+                        let groupV2Record = try StorageServiceProtoGroupV2Record.build(for: groupMasterKey, transaction: transaction)
+                        allItems.append(
+                            try .init(identifier: identifier, groupV2: groupV2Record)
+                        )
+                    } catch {
+                        // We'll just skip it, something may be wrong with our local data.
+                        // We'll try and backup this group again when something changes.
+                        owsFailDebug("failed to build group record with error: \(error)")
+                    }
                 }
             }
         }
@@ -669,11 +853,13 @@ class StorageServiceOperation: OWSOperation {
                 self.databaseStorage.write { transaction in
                     StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
                     StorageServiceOperation.setAccountChangeMap([:], transaction: transaction)
-                    StorageServiceOperation.setGroupIdChangeMap([:], transaction: transaction)
+                    StorageServiceOperation.setGroupV1IdChangeMap([:], transaction: transaction)
+                    StorageServiceOperation.setGroupV2MasterKeyChangeMap([:], transaction: transaction)
                     StorageServiceOperation.setUnknownIdentifiersTypeMap([:], transaction: transaction)
                     StorageServiceOperation.setManifestVersion(version, transaction: transaction)
                     StorageServiceOperation.setAccountToIdentifierMap(accountIdentifierMap, transaction: transaction)
-                    StorageServiceOperation.setGroupIdToIdentifierMap(groupIdentifierMap, transaction: transaction)
+                    StorageServiceOperation.setGroupV1IdToIdentifierMap(groupV1IdentifierMap, transaction: transaction)
+                    StorageServiceOperation.setGroupV2MasterKeyToIdentifierMap(groupV2IdentifierMap, transaction: transaction)
                 }
 
                 return self.reportSuccess()
@@ -692,18 +878,22 @@ class StorageServiceOperation: OWSOperation {
 
     private func mergeLocalManifest(withRemoteManifest manifest: StorageServiceProtoManifestRecord, backupAfterSuccess: Bool) {
         var accountIdentifierMap: BidirectionalDictionary<AccountId, StorageService.StorageIdentifier> = [:]
-        var groupIdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
+        var groupV1IdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
+        var groupV2IdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
         var unknownIdentifiersTypeMap: [UInt32: [StorageService.StorageIdentifier]] = [:]
         var pendingAccountChanges: [AccountId: ChangeState] = [:]
-        var pendingGroupChanges: [Data: ChangeState] = [:]
+        var pendingGroupV1Changes: [Data: ChangeState] = [:]
+        var pendingGroupV2Changes: [Data: ChangeState] = [:]
         var consecutiveConflicts = 0
 
         databaseStorage.write { transaction in
             accountIdentifierMap = StorageServiceOperation.accountToIdentifierMap(transaction: transaction)
-            groupIdentifierMap = StorageServiceOperation.groupIdToIdentifierMap(transaction: transaction)
+            groupV1IdentifierMap = StorageServiceOperation.groupV1IdToIdentifierMap(transaction: transaction)
+            groupV2IdentifierMap = StorageServiceOperation.groupV2MasterKeyToIdentifierMap(transaction: transaction)
             unknownIdentifiersTypeMap = StorageServiceOperation.unknownIdentifiersTypeMap(transaction: transaction)
             pendingAccountChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
-            pendingGroupChanges = StorageServiceOperation.groupIdChangeMap(transaction: transaction)
+            pendingGroupV1Changes = StorageServiceOperation.groupV1IdChangeMap(transaction: transaction)
+            pendingGroupV2Changes = StorageServiceOperation.groupV2MasterKeyChangeMap(transaction: transaction)
 
             // Increment our conflict count.
             consecutiveConflicts = StorageServiceOperation.consecutiveConflicts(transaction: transaction)
@@ -725,7 +915,10 @@ class StorageServiceOperation: OWSOperation {
             return reportError(OWSAssertionError("exceeded max consectuive conflicts, creating a new manifest"))
         }
 
-        let localKeysCount = accountIdentifierMap.count + groupIdentifierMap.count + unknownIdentifiersTypeMap.flatMap { $0.value }.count
+        let localKeysCount = (accountIdentifierMap.count +
+            groupV1IdentifierMap.count +
+            groupV2IdentifierMap.count +
+            unknownIdentifiersTypeMap.flatMap { $0.value }.count)
 
         // Calculate new or updated items by looking up the ids
         // of any items we don't know about locally. Since a new
@@ -744,7 +937,8 @@ class StorageServiceOperation: OWSOperation {
         let newOrUpdatedItems = Array(
             allManifestItems
                 .subtracting(accountIdentifierMap.backwardKeys)
-                .subtracting(groupIdentifierMap.backwardKeys)
+                .subtracting(groupV1IdentifierMap.backwardKeys)
+                .subtracting(groupV2IdentifierMap.backwardKeys)
                 .subtracting(unknownIdentifiersTypeMap.flatMap { $0.value })
         )
 
@@ -784,17 +978,50 @@ class StorageServiceOperation: OWSOperation {
 
                         case .needsUpdate(let groupId):
                             // our local version was newer, flag this account as needing a sync
-                            pendingGroupChanges[groupId] = .updated
+                            pendingGroupV1Changes[groupId] = .updated
 
                             // update the mapping
-                            groupIdentifierMap[groupId] = item.identifier
+                            groupV1IdentifierMap[groupId] = item.identifier
 
                         case .resolved(let groupId):
                             // We're all resolved, so if we had a pending change for this group clear it out.
-                            pendingGroupChanges[groupId] = nil
+                            pendingGroupV1Changes[groupId] = nil
 
                             // update the mapping
-                            groupIdentifierMap[groupId] = item.identifier
+                            groupV1IdentifierMap[groupId] = item.identifier
+                        }
+                    } else if let groupV2Record = item.groupV2Record {
+                        switch groupV2Record.mergeWithLocalGroup(transaction: transaction) {
+                        case .invalid:
+                            // This record was invalid, ignore it.
+                            // we'll clear it out in the next backup.
+                            break
+
+                        case .needsUpdate(let groupMasterKey):
+                            // our local version was newer, flag this account as needing a sync
+                            pendingGroupV2Changes[groupMasterKey] = .updated
+
+                            // update the mapping
+                            groupV2IdentifierMap[groupMasterKey] = item.identifier
+
+                            self.groupsV2.restoreGroupFromStorageServiceIfNecessary(masterKeyData: groupMasterKey,
+                                                                                    transaction: transaction)
+
+                        case .needsRefreshFromService(let groupMasterKey):
+                            // We're all resolved, so if we had a pending change for this group clear it out.
+                            pendingGroupV2Changes[groupMasterKey] = nil
+
+                            // update the mapping
+                            groupV2IdentifierMap[groupMasterKey] = item.identifier
+
+                            self.groupsV2.restoreGroupFromStorageServiceIfNecessary(masterKeyData: groupMasterKey,
+                                                                                    transaction: transaction)
+                        case .resolved(let groupMasterKey):
+                            // We're all resolved, so if we had a pending change for this group clear it out.
+                            pendingGroupV2Changes[groupMasterKey] = nil
+
+                            // update the mapping
+                            groupV2IdentifierMap[groupMasterKey] = item.identifier
                         }
                     } else {
                         // This is not a record type we know about yet, so record this identifier in
@@ -810,10 +1037,16 @@ class StorageServiceOperation: OWSOperation {
 
                 // Mark any orphaned records as pending update so we re-add them to the manifest.
 
-                var orphanedGroupCount = 0
-                Set(groupIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
-                    if let groupId = groupIdentifierMap[identifier] { pendingGroupChanges[groupId] = .updated }
-                    orphanedGroupCount += 1
+                var orphanedGroupV1Count = 0
+                Set(groupV1IdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let groupId = groupV1IdentifierMap[identifier] { pendingGroupV1Changes[groupId] = .updated }
+                    orphanedGroupV1Count += 1
+                }
+
+                var orphanedGroupV2Count = 0
+                Set(groupV2IdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let groupMasterKey = groupV2IdentifierMap[identifier] { pendingGroupV2Changes[groupMasterKey] = .updated }
+                    orphanedGroupV2Count += 1
                 }
 
                 var orphanedAccountCount = 0
@@ -822,14 +1055,19 @@ class StorageServiceOperation: OWSOperation {
                     orphanedAccountCount += 1
                 }
 
-                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingAccountChanges.count + pendingGroupChanges.count) pending updates remaining including \(orphanedAccountCount) orphaned accounts and \(orphanedGroupCount) orphaned groups.")
+                let pendingChangesCount = (pendingAccountChanges.count +
+                    pendingGroupV1Changes.count +
+                    pendingGroupV2Changes.count)
+                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingChangesCount) pending updates remaining including \(orphanedAccountCount) orphaned accounts and \(orphanedGroupV1Count) orphaned v1 groups and \(orphanedGroupV2Count) orphaned v2 groups.")
 
                 StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
                 StorageServiceOperation.setAccountChangeMap(pendingAccountChanges, transaction: transaction)
-                StorageServiceOperation.setGroupIdChangeMap(pendingGroupChanges, transaction: transaction)
+                StorageServiceOperation.setGroupV1IdChangeMap(pendingGroupV1Changes, transaction: transaction)
+                StorageServiceOperation.setGroupV2MasterKeyChangeMap(pendingGroupV2Changes, transaction: transaction)
                 StorageServiceOperation.setManifestVersion(manifest.version, transaction: transaction)
                 StorageServiceOperation.setAccountToIdentifierMap(accountIdentifierMap, transaction: transaction)
-                StorageServiceOperation.setGroupIdToIdentifierMap(groupIdentifierMap, transaction: transaction)
+                StorageServiceOperation.setGroupV1IdToIdentifierMap(groupV1IdentifierMap, transaction: transaction)
+                StorageServiceOperation.setGroupV2MasterKeyToIdentifierMap(groupV2IdentifierMap, transaction: transaction)
                 StorageServiceOperation.setUnknownIdentifiersTypeMap(unknownIdentifiersTypeMap, transaction: transaction)
 
                 if backupAfterSuccess { StorageServiceManager.shared.backupPendingChanges() }
@@ -868,13 +1106,39 @@ class StorageServiceOperation: OWSOperation {
         }.retainUntilComplete()
     }
 
+    // MARK: - Clean Up Unknown Identifiers
+
+    private func cleanUpUnknownIdentifiers() {
+        databaseStorage.write { transaction in
+            // We may have learned of new record types; if so we should
+            // cull them from the unknownIdentifiersTypeMap on launch.
+            let knownTypes: [UInt32] = [
+                UInt32(StorageServiceProtoStorageRecordType.contact.rawValue),
+                UInt32(StorageServiceProtoStorageRecordType.groupv1.rawValue),
+                UInt32(StorageServiceProtoStorageRecordType.groupv2.rawValue)
+            ]
+
+            let oldUnknownIdentifiersTypeMap = StorageServiceOperation.unknownIdentifiersTypeMap(transaction: transaction)
+            var newUnknownIdentifiersTypeMap = oldUnknownIdentifiersTypeMap
+            knownTypes.forEach { newUnknownIdentifiersTypeMap[$0] = nil }
+            guard oldUnknownIdentifiersTypeMap.count != newUnknownIdentifiersTypeMap.count else {
+                // No change to record.
+                return
+            }
+
+            StorageServiceOperation.setUnknownIdentifiersTypeMap(newUnknownIdentifiersTypeMap, transaction: transaction)
+        }
+    }
+
     // MARK: - Accessors
 
     private static let accountToIdentifierMapKey = "accountToIdentifierMap"
-    private static let groupIdToIdentifierMapKey = "groupIdToIdentifierMap"
+    private static let groupV1IdToIdentifierMapKey = "groupIdToIdentifierMap"
+    private static let groupV2MasterKeyToIdentifierMapKey = "groupV2MasterKeyToIdentifierMap"
     private static let unknownIdentifierTypeMapKey = "unknownIdentifierTypeMapKey"
     private static let accountChangeMapKey = "accountChangeMap"
-    private static let groupIdChangeMapKey = "groupIdChangeMap"
+    private static let groupV1IdChangeMapKey = "groupIdChangeMap"
+    private static let groupV2MasterKeyChangeMapKey = "groupV2MasterKeyChangeMap"
     private static let manifestVersionKey = "manifestVersion"
     private static let consecutiveConflictsKey = "consecutiveConflicts"
 
@@ -902,18 +1166,34 @@ class StorageServiceOperation: OWSOperation {
         )
     }
 
-    private static func groupIdToIdentifierMap(transaction: SDSAnyReadTransaction) -> BidirectionalDictionary<Data, StorageService.StorageIdentifier> {
-        guard let anyDictionary = keyValueStore.getObject(groupIdToIdentifierMapKey, transaction: transaction) as? AnyBidirectionalDictionary,
+    private static func groupV1IdToIdentifierMap(transaction: SDSAnyReadTransaction) -> BidirectionalDictionary<Data, StorageService.StorageIdentifier> {
+        guard let anyDictionary = keyValueStore.getObject(groupV1IdToIdentifierMapKey, transaction: transaction) as? AnyBidirectionalDictionary,
             let dictionary = BidirectionalDictionary<Data, Data>(anyDictionary) else {
-            return [:]
+                return [:]
         }
         return dictionary.mapValues { .init(data: $0) }
     }
 
-    private static func setGroupIdToIdentifierMap( _ dictionary: BidirectionalDictionary<Data, StorageService.StorageIdentifier>, transaction: SDSAnyWriteTransaction) {
+    private static func groupV2MasterKeyToIdentifierMap(transaction: SDSAnyReadTransaction) -> BidirectionalDictionary<Data, StorageService.StorageIdentifier> {
+        guard let anyDictionary = keyValueStore.getObject(groupV2MasterKeyToIdentifierMapKey, transaction: transaction) as? AnyBidirectionalDictionary,
+            let dictionary = BidirectionalDictionary<Data, Data>(anyDictionary) else {
+                return [:]
+        }
+        return dictionary.mapValues { .init(data: $0) }
+    }
+
+    private static func setGroupV1IdToIdentifierMap( _ dictionary: BidirectionalDictionary<Data, StorageService.StorageIdentifier>, transaction: SDSAnyWriteTransaction) {
         keyValueStore.setObject(
             AnyBidirectionalDictionary(dictionary.mapValues { $0.data }),
-            key: groupIdToIdentifierMapKey,
+            key: groupV1IdToIdentifierMapKey,
+            transaction: transaction
+        )
+    }
+
+    private static func setGroupV2MasterKeyToIdentifierMap( _ dictionary: BidirectionalDictionary<Data, StorageService.StorageIdentifier>, transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setObject(
+            AnyBidirectionalDictionary(dictionary.mapValues { $0.data }),
+            key: groupV2MasterKeyToIdentifierMapKey,
             transaction: transaction
         )
     }
@@ -922,12 +1202,12 @@ class StorageServiceOperation: OWSOperation {
         return unknownIdentifiersTypeMap(transaction: transaction).flatMap { $0.value }
     }
 
-    private static func unknownIdentifiersTypeMap(transaction: SDSAnyReadTransaction) -> [UInt32: [StorageService.StorageIdentifier]] {
+    fileprivate static func unknownIdentifiersTypeMap(transaction: SDSAnyReadTransaction) -> [UInt32: [StorageService.StorageIdentifier]] {
         guard let unknownIdentifiers = keyValueStore.getObject(unknownIdentifierTypeMapKey, transaction: transaction) as? [UInt32: [Data]] else { return [:] }
         return unknownIdentifiers.mapValues { $0.map { .init(data: $0) } }
     }
 
-    private static func setUnknownIdentifiersTypeMap( _ dictionary: [UInt32: [StorageService.StorageIdentifier]], transaction: SDSAnyWriteTransaction) {
+    fileprivate static func setUnknownIdentifiersTypeMap( _ dictionary: [UInt32: [StorageService.StorageIdentifier]], transaction: SDSAnyWriteTransaction) {
         keyValueStore.setObject(
             dictionary.mapValues { $0.map { $0.data }},
             key: unknownIdentifierTypeMapKey,
@@ -940,6 +1220,7 @@ class StorageServiceOperation: OWSOperation {
         case updated = 1
         case deleted = 2
     }
+
     private static func accountChangeMap(transaction: SDSAnyReadTransaction) -> [AccountId: ChangeState] {
         let accountIdToIdentifierData = keyValueStore.getObject(accountChangeMapKey, transaction: transaction) as? [AccountId: Int] ?? [:]
         return accountIdToIdentifierData.compactMapValues { ChangeState(rawValue: $0) }
@@ -949,13 +1230,22 @@ class StorageServiceOperation: OWSOperation {
         keyValueStore.setObject(map.mapValues { $0.rawValue }, key: accountChangeMapKey, transaction: transaction)
     }
 
-    private static func groupIdChangeMap(transaction: SDSAnyReadTransaction) -> [Data: ChangeState] {
-        let accountIdToIdentifierData = keyValueStore.getObject(groupIdChangeMapKey, transaction: transaction) as? [Data: Int] ?? [:]
+    private static func groupV1IdChangeMap(transaction: SDSAnyReadTransaction) -> [Data: ChangeState] {
+        let accountIdToIdentifierData = keyValueStore.getObject(groupV1IdChangeMapKey, transaction: transaction) as? [Data: Int] ?? [:]
         return accountIdToIdentifierData.compactMapValues { ChangeState(rawValue: $0) }
     }
 
-    private static func setGroupIdChangeMap(_ map: [Data: ChangeState], transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setObject(map.mapValues { $0.rawValue }, key: groupIdChangeMapKey, transaction: transaction)
+    private static func setGroupV1IdChangeMap(_ map: [Data: ChangeState], transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setObject(map.mapValues { $0.rawValue }, key: groupV1IdChangeMapKey, transaction: transaction)
+    }
+
+    private static func setGroupV2MasterKeyChangeMap(_ map: [Data: ChangeState], transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setObject(map.mapValues { $0.rawValue }, key: groupV2MasterKeyChangeMapKey, transaction: transaction)
+    }
+
+    private static func groupV2MasterKeyChangeMap(transaction: SDSAnyReadTransaction) -> [Data: ChangeState] {
+        let accountIdToIdentifierData = keyValueStore.getObject(groupV2MasterKeyChangeMapKey, transaction: transaction) as? [Data: Int] ?? [:]
+        return accountIdToIdentifierData.compactMapValues { ChangeState(rawValue: $0) }
     }
 
     private static var maxConsecutiveConflicts = 3
