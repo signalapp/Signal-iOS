@@ -102,6 +102,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
             UIView.accessibilityIdentifier(in: self, name: "phoneNumberTextField")
 
         phoneNumberTextField.textAlignment = .right
+        phoneNumberTextField.keyboardType = .numberPad
         phoneNumberTextField.delegate = self
         phoneNumberTextField.returnKeyType = .done
         phoneNumberTextField.becomeFirstResponder()
