@@ -321,11 +321,11 @@ message SyncMessage {
     optional AttachmentPointer blob = 1;
     optional bytes             data = 101; // Loki
   }
-  
+
   // Loki
   message OpenGroupDetails {
-    optional string            url       = 1;
-    optional uint64            channelId = 2;
+    optional string url       = 1;
+    optional uint64 channelId = 2;
   }
 
   message Blocked {
