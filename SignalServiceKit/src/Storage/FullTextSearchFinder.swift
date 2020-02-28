@@ -9,8 +9,8 @@ import GRDB
 public class FullTextSearchFinder: NSObject {
     public func enumerateObjects(searchText: String, transaction: SDSAnyReadTransaction, block: @escaping (Any, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let yapRead):
-            YDBFullTextSearchFinder().enumerateObjects(searchText: searchText, transaction: yapRead, block: block)
+        case .yapRead:
+            owsFailDebug("YDB FTS no longer supported.")
         case .grdbRead(let grdbRead):
             GRDBFullTextSearchFinder.enumerateObjects(searchText: searchText, transaction: grdbRead, block: block)
         }
@@ -185,83 +185,6 @@ extension FullTextSearchFinder {
         // 6. Join terms into query string.
         let query = filteredQueryTerms.joined(separator: " ")
         return query
-    }
-}
-
-// MARK: -
-
-@objc
-public class YDBFullTextSearchFinder: NSObject {
-
-    public func enumerateObjects(searchText: String, transaction: YapDatabaseReadTransaction, block: @escaping (Any, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        guard let ext: YapDatabaseFullTextSearchTransaction = ext(transaction: transaction) else {
-            owsFailDebug("ext was unexpectedly nil")
-            return
-        }
-
-        let query = FullTextSearchFinder.query(searchText: searchText)
-
-        guard query.count > 0 else {
-            owsFailDebug("Empty query.")
-            return
-        }
-
-        Logger.verbose("query: \(query)")
-
-        let maxSearchResults = 500
-        var searchResultCount = 0
-        let snippetOptions = YapDatabaseFullTextSearchSnippetOptions()
-        snippetOptions.startMatchText = ""
-        snippetOptions.endMatchText = ""
-        ext.enumerateKeysAndObjects(matching: query, with: snippetOptions) { (snippet: String, _: String, _: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>) in
-            guard searchResultCount < maxSearchResults else {
-                stop.pointee = true
-                return
-            }
-            searchResultCount += 1
-
-            block(object, snippet, stop)
-        }
-    }
-
-    // MARK: - Extension Registration
-
-    private static let dbExtensionName: String = "FullTextSearchFinderExtension"
-
-    private func ext(transaction: YapDatabaseReadTransaction) -> YapDatabaseFullTextSearchTransaction? {
-        return transaction.safeFullTextSearchTransaction(YDBFullTextSearchFinder.dbExtensionName)
-    }
-
-    @objc
-    public class func asyncRegisterDatabaseExtension(storage: OWSStorage) {
-        storage.asyncRegister(dbExtensionConfig, withName: dbExtensionName)
-    }
-
-    // Only for testing.
-    public class func ensureDatabaseExtensionRegistered(storage: OWSStorage) {
-        guard storage.registeredExtension(dbExtensionName) == nil else {
-            return
-        }
-
-        storage.register(dbExtensionConfig, withName: dbExtensionName)
-    }
-
-    private class var dbExtensionConfig: YapDatabaseFullTextSearch {
-        AssertIsOnMainThread()
-
-        let contentColumnName = "content"
-
-        let handler = YapDatabaseFullTextSearchHandler.withObjectBlock { (transaction: YapDatabaseReadTransaction, dict: NSMutableDictionary, _: String, _: String, object: Any) in
-            dict[contentColumnName] = AnySearchIndexer.indexContent(object: object, transaction: transaction.asAnyRead)
-        }
-
-        // update search index on contact name changes?
-
-        return YapDatabaseFullTextSearch(columnNames: ["content"],
-                                         options: nil,
-                                         handler: handler,
-                                         ftsVersion: YapDatabaseFullTextSearchFTS5Version,
-                                         versionTag: "1")
     }
 }
 

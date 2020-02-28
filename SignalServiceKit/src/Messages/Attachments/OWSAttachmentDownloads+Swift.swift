@@ -6,9 +6,11 @@ import Foundation
 import PromiseKit
 
 public extension OWSAttachmentDownloads {
-    func downloadAttachmentPointer(_ attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
+    func downloadAttachmentPointer(_ attachmentPointer: TSAttachmentPointer,
+                                   bypassPendingMessageRequest: Bool) -> Promise<TSAttachmentStream> {
         return Promise { resolver in
             self.downloadAttachmentPointer(attachmentPointer,
+                                           bypassPendingMessageRequest: bypassPendingMessageRequest,
                                            success: resolver.fulfill,
                                            failure: resolver.reject)
         }.map { attachments in

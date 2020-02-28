@@ -15,12 +15,21 @@ class GRDBFinderTest: SignalBaseTest {
         return SSKEnvironment.shared.storageCoordinator
     }
 
+    var tsAccountManager: TSAccountManager {
+        return SSKEnvironment.shared.tsAccountManager
+    }
+
     // MARK: -
 
     override func setUp() {
         super.setUp()
 
         storageCoordinator.useGRDBForTests()
+
+        // ensure local client has necessary "registered" state
+        let localE164Identifier = "+13235551234"
+        let localUUID = UUID()
+        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
     }
 
     override func tearDown() {

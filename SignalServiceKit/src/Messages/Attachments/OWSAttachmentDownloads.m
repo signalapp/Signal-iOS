@@ -321,12 +321,13 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 }
 
 - (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
+      bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                           failure:(void (^)(NSError *error))failure
 {
     [self downloadAttachmentPointer:attachmentPointer
                     nullableMessage:nil
-        bypassPendingMessageRequest:YES
+        bypassPendingMessageRequest:bypassPendingMessageRequest
                             success:success
                             failure:failure];
 }
