@@ -1149,7 +1149,6 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarPointer anyInsertWithTransaction:transaction];
 
     [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
-        message:nil
         bypassPendingMessageRequest:YES
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);

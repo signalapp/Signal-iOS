@@ -593,6 +593,16 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             thread3 = contactThreadFactory.create(transaction: transaction.asAnyWrite)
             thread4 = groupThreadFactory.create(transaction: transaction.asAnyWrite)
 
+            // There should be 2 "group update" info messages.
+            XCTAssertEqual(2, TSInteraction.anyCount(transaction: transaction.asAnyRead))
+            // For simplicity, remove the "group update" info messages.
+            do {
+                let interactions = TSInteraction.anyFetchAll(transaction: transaction.asAnyRead)
+                for interaction in interactions {
+                    interaction.anyRemove(transaction: transaction.asAnyWrite)
+                }
+            }
+
             let messageFactory = IncomingMessageFactory()
 
             // We deliberately interleave message order across different

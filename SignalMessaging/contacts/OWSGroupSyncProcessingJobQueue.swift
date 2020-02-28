@@ -155,7 +155,8 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
 
         switch attachment {
         case let attachmentPointer as TSAttachmentPointer:
-            return self.attachmentDownloads.downloadAttachmentPointer(attachmentPointer)
+            return self.attachmentDownloads.downloadAttachmentPointer(attachmentPointer,
+                                                                      bypassPendingMessageRequest: true)
         case let attachmentStream as TSAttachmentStream:
             return Promise.value(attachmentStream)
         default:
