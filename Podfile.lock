@@ -1,10 +1,4 @@
 PODS:
-  - AFNetworking (3.2.1):
-    - AFNetworking/NSURLSession (= 3.2.1)
-    - AFNetworking/Reachability (= 3.2.1)
-    - AFNetworking/Security (= 3.2.1)
-    - AFNetworking/Serialization (= 3.2.1)
-    - AFNetworking/UIKit (= 3.2.1)
   - AFNetworking/NSURLSession (3.2.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
@@ -12,8 +6,6 @@ PODS:
   - AFNetworking/Reachability (3.2.1)
   - AFNetworking/Security (3.2.1)
   - AFNetworking/Serialization (3.2.1)
-  - AFNetworking/UIKit (3.2.1):
-    - AFNetworking/NSURLSession
   - Argon2 (1.3.0)
   - Argon2/Tests (1.3.0)
   - AxolotlKit (0.9.0):
@@ -76,14 +68,14 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - PromiseKit (6.5.3):
-    - PromiseKit/CorePromise (= 6.5.3)
-    - PromiseKit/Foundation (= 6.5.3)
-    - PromiseKit/UIKit (= 6.5.3)
-  - PromiseKit/CorePromise (6.5.3)
-  - PromiseKit/Foundation (6.5.3):
+  - PromiseKit (6.13.1):
+    - PromiseKit/CorePromise (= 6.13.1)
+    - PromiseKit/Foundation (= 6.13.1)
+    - PromiseKit/UIKit (= 6.13.1)
+  - PromiseKit/CorePromise (6.13.1)
+  - PromiseKit/Foundation (6.13.1):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.5.3):
+  - PromiseKit/UIKit (6.13.1):
     - PromiseKit/CorePromise
   - PureLayout (3.1.4)
   - Reachability (3.2)
@@ -114,7 +106,7 @@ PODS:
   - SignalRingRTC/WebRTC (0.3.3):
     - SignalCoreKit
   - SignalServiceKit (0.9.0):
-    - AFNetworking
+    - AFNetworking/NSURLSession
     - Argon2
     - AxolotlKit
     - blurhash
@@ -135,7 +127,7 @@ PODS:
     - YapDatabase/SQLCipher
     - YYImage/WebP
   - SignalServiceKit/Tests (0.9.0):
-    - AFNetworking
+    - AFNetworking/NSURLSession
     - Argon2
     - AxolotlKit
     - blurhash
@@ -155,10 +147,10 @@ PODS:
     - SwiftProtobuf
     - YapDatabase/SQLCipher
     - YYImage/WebP
-  - SQLCipher (4.0.1):
-    - SQLCipher/standard (= 4.0.1)
-  - SQLCipher/common (4.0.1)
-  - SQLCipher/standard (4.0.1):
+  - SQLCipher (4.3.0):
+    - SQLCipher/standard (= 4.3.0)
+  - SQLCipher/common (4.3.0)
+  - SQLCipher/standard (4.3.0):
     - SQLCipher/common
   - SSZipArchive (2.1.4)
   - Starscream (3.0.6)
@@ -232,12 +224,12 @@ PODS:
     - YYImage/Core
   - ZKGroup (0.0.1)
   - ZKGroup/Tests (0.0.1)
-  - ZXingObjC (3.6.4):
-    - ZXingObjC/All (= 3.6.4)
-  - ZXingObjC/All (3.6.4)
+  - ZXingObjC (3.6.5):
+    - ZXingObjC/All (= 3.6.5)
+  - ZXingObjC/All (3.6.5)
 
 DEPENDENCIES:
-  - AFNetworking
+  - AFNetworking/NSURLSession
   - Argon2 (from `https://github.com/signalapp/Argon2.git`)
   - Argon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
@@ -252,7 +244,7 @@ DEPENDENCIES:
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - PromiseKit (= 6.5.3)
+  - PromiseKit
   - PureLayout
   - Reachability
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
@@ -269,7 +261,7 @@ DEPENDENCIES:
   - YYImage
   - ZKGroup (from `https://github.com/signalapp/signal-zkgroup-swift`)
   - ZKGroup/Tests (from `https://github.com/signalapp/signal-zkgroup-swift`)
-  - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC`)
+  - ZXingObjC (from `https://github.com/zxingify/zxingify-objc.git`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -328,7 +320,7 @@ EXTERNAL SOURCES:
   ZKGroup:
     :git: https://github.com/signalapp/signal-zkgroup-swift
   ZXingObjC:
-    :git: https://github.com/TheLevelUp/ZXingObjC
+    :git: https://github.com/zxingify/zxingify-objc.git
 
 CHECKOUT OPTIONS:
   Argon2:
@@ -372,8 +364,8 @@ CHECKOUT OPTIONS:
     :commit: 06e500809d4f910187c3fffe878e5131193710d0
     :git: https://github.com/signalapp/signal-zkgroup-swift
   ZXingObjC:
-    :commit: cac61d5404b3ee75fca58433dd2ae825c631e4ee
-    :git: https://github.com/TheLevelUp/ZXingObjC
+    :commit: fce3786177fd7032c62b230df8beeb206722d38e
+    :git: https://github.com/zxingify/zxingify-objc.git
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
@@ -389,23 +381,23 @@ SPEC CHECKSUMS:
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  PromiseKit: c609029bdd801f792551a504c695c7d3098b42cd
+  PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
   SignalMetadataKit: a7aacedf262d947c22e2c619f0fd217163d2a637
   SignalRingRTC: 02c1229fa80b5168bbfb9a8541905dbfe1594046
-  SignalServiceKit: f8fa79a211d0bafa4d8b149b62fdea389b6eafc5
-  SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
+  SignalServiceKit: cb2f67a0d53d0aebf588058e96f155eb5c8e6b75
+  SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
   SwiftProtobuf: 4fd9645e69b72cbae6ec8da5be0cdd20ca6565dd
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
   ZKGroup: b5fcf00855c58ffa45861d5427621d8a519f4314
-  ZXingObjC: 512b34b9b6920e8ef0461a4159d0814c5e48c28a
+  ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 707f23267f11009796fe7720de804b73562a50c9
+PODFILE CHECKSUM: ec1d8aac8db377ea49b938ad0a2d002fdf3c7dc7
 
 COCOAPODS: 1.7.5

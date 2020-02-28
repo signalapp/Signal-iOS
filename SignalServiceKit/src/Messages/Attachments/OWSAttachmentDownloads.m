@@ -22,6 +22,7 @@
 #import "TSMessage.h"
 #import "TSNetworkManager.h"
 #import "TSThread.h"
+#import <AFNetworking/AFHTTPSessionManager.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/OWSSignalService.h>

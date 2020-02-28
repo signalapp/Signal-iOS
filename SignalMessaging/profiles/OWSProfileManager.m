@@ -4,6 +4,7 @@
 
 #import "OWSProfileManager.h"
 #import "Environment.h"
+#import <AFNetworking/AFHTTPSessionManager.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>

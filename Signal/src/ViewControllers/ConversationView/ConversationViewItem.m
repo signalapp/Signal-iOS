@@ -8,6 +8,7 @@
 #import "OWSMessageHeaderView.h"
 #import "OWSSystemMessageCell.h"
 #import "Signal-Swift.h"
+#import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/OWSContact.h>

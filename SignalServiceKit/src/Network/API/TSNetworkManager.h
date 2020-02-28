@@ -2,8 +2,6 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-#import <AFNetworking/AFHTTPSessionManager.h>
-
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSErrorDomain const TSNetworkManagerErrorDomain;

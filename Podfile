@@ -33,9 +33,7 @@ pod 'ZKGroup', git: 'https://github.com/signalapp/signal-zkgroup-swift', testspe
 pod 'Argon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
 # pod 'Argon2', path: '../Argon2', testspecs: ["Tests"]
 
-# Project does not compile with PromiseKit 6.7.1
-# see: https://github.com/mxcl/PromiseKit/issues/990
-pod 'PromiseKit', "6.5.3"
+pod 'PromiseKit'
 
 # pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 pod 'GRDB.swift/SQLCipher'
@@ -69,12 +67,14 @@ pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS'
 # third party pods
 ####
 
-pod 'AFNetworking', inhibit_warnings: true
+pod 'AFNetworking/NSURLSession', inhibit_warnings: true
 pod 'PureLayout', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
 pod 'lottie-ios', :inhibit_warnings => true
 pod 'YYImage', :inhibit_warnings => true
-pod 'ZXingObjC', git: 'https://github.com/TheLevelUp/ZXingObjC', :binary => true
+
+# For catalyst we need to be on master until 3.6.7 or later is released
+pod 'ZXingObjC', git: 'https://github.com/zxingify/zxingify-objc.git', inhibit_warnings: true, binary: true
 
 target 'Signal' do
   # Pods only available inside the main Signal app

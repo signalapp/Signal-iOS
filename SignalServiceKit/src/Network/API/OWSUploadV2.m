@@ -3,6 +3,7 @@
 //
 
 #import "OWSUploadV2.h"
+#import <AFNetworking/AFURLRequestSerialization.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>

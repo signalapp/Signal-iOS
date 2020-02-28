@@ -12,7 +12,7 @@
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSRequest.h"
-#import <AFNetworking/AFNetworking.h>
+#import <AFNetworking/AFHTTPSessionManager.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
