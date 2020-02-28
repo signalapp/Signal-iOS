@@ -538,13 +538,13 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
     // For performance reasons, we cache one instance of each kind of
     // cell and uses these cells for measurement.
-    static NSMutableDictionary<NSNumber *, ConversationViewCell *> *measurementCellCache = nil;
+    static NSMutableDictionary<NSString *, ConversationViewCell *> *measurementCellCache = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         measurementCellCache = [NSMutableDictionary new];
     });
 
-    NSNumber *cellCacheKey = @(self.interaction.interactionType);
+    NSString *cellCacheKey = self.cellReuseIdentifier;
     ConversationViewCell *_Nullable measurementCell = measurementCellCache[cellCacheKey];
     if (!measurementCell) {
         switch (self.interaction.interactionType) {
@@ -616,12 +616,9 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 }
 
-- (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
-                                             indexPath:(NSIndexPath *)indexPath
+- (nullable NSString *)cellReuseIdentifier
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(collectionView);
-    OWSAssertDebug(indexPath);
     OWSAssertDebug(self.interaction);
 
     switch (self.interaction.interactionType) {
@@ -629,39 +626,41 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
             OWSFailDebug(@"Unknown interaction type.");
             return nil;
         case OWSInteractionType_IncomingMessage:
-            return [collectionView
-                dequeueReusableCellWithReuseIdentifier:[OWSMessageCell
-                                                           cellReuseIdentifierForMessageCellType:self.messageCellType
-                                                                               isOutgoingMessage:NO]
-                                          forIndexPath:indexPath];
+            return [OWSMessageCell cellReuseIdentifierForMessageCellType:self.messageCellType isOutgoingMessage:NO];
         case OWSInteractionType_OutgoingMessage:
-            return [collectionView
-                dequeueReusableCellWithReuseIdentifier:[OWSMessageCell
-                                                           cellReuseIdentifierForMessageCellType:self.messageCellType
-                                                                               isOutgoingMessage:YES]
-                                          forIndexPath:indexPath];
+            return [OWSMessageCell cellReuseIdentifierForMessageCellType:self.messageCellType isOutgoingMessage:YES];
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:
         case OWSInteractionType_Call:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
+            return [OWSSystemMessageCell cellReuseIdentifier];
         case OWSInteractionType_Offer:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
+            return [OWSContactOffersCell cellReuseIdentifier];
 
         case OWSInteractionType_TypingIndicator:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
+            return [OWSTypingIndicatorCell cellReuseIdentifier];
         case OWSInteractionType_ThreadDetails:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSThreadDetailsCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
+            return [OWSThreadDetailsCell cellReuseIdentifier];
         case OWSInteractionType_UnreadIndicator:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
+            return [OWSUnreadIndicatorCell cellReuseIdentifier];
         case OWSInteractionType_DateHeader:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSDateHeaderCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
+            return [OWSDateHeaderCell cellReuseIdentifier];
     }
+}
+
+- (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
+                                             indexPath:(NSIndexPath *)indexPath
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(collectionView);
+    OWSAssertDebug(indexPath);
+
+    NSString *_Nullable cellReuseIdentifier = self.cellReuseIdentifier;
+    if (!cellReuseIdentifier) {
+        OWSFailDebug(@"Unknown cell type.");
+        return nil;
+    }
+
+    return [collectionView dequeueReusableCellWithReuseIdentifier:cellReuseIdentifier forIndexPath:indexPath];
 }
 
 - (nullable TSAttachmentStream *)firstValidAlbumAttachment

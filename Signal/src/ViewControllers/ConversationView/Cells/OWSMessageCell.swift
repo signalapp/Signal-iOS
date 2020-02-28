@@ -6,24 +6,6 @@ import Foundation
 
 @objc
 extension OWSMessageCell {
-    var messageCellType: OWSMessageCellType {
-        if let viewItem = viewItem { return viewItem.messageCellType }
-
-        // If accessed before the reuseIdentifier is defined, we don't know
-        // what type of thing this is. In practice, this will only happen
-        // while we're measuring the cell in which case we have nothing to
-        // really cleanup. TODO: maybe should fail here sometimes.
-        guard let reuseIdentifier = reuseIdentifier else { return .unknown }
-
-        let components = reuseIdentifier.split(separator: "-")
-        guard components.count == 3 else {
-            owsFailDebug("unexpected reuseIdentifier")
-            return .unknown
-        }
-
-        return OWSMessageCellType(stringValue: String(components[1]))
-    }
-
     class func cellReuseIdentifier(forMessageCellType cellType: OWSMessageCellType, isOutgoingMessage: Bool) -> String {
         // We use dashes instead of underscores as separators here since `OWSMessageCellType`
         // stringValue contains underscores.

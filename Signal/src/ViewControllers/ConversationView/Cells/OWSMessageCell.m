@@ -38,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL isPresentingMenuController;
 
+@property (nonatomic, readonly) OWSMessageCellType messageCellType;
+
 @end
 
 #pragma mark -
@@ -58,6 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Ensure only called once.
     OWSAssertDebug(!self.messageBubbleView);
+
+    _messageCellType = OWSMessageCellType_Unknown;
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
@@ -119,11 +123,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Convenience Accessors
 
-- (OWSMessageCellType)cellType
-{
-    return self.viewItem.messageCellType;
-}
-
 - (TSMessage *)message
 {
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
@@ -152,9 +151,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSMessageView *)messageView
 {
-    if (self.cellType == OWSMessageCellType_StickerMessage) {
+    if (self.messageCellType == OWSMessageCellType_StickerMessage) {
         return self.messageStickerView;
-    } else if (self.cellType == OWSMessageCellType_ViewOnce) {
+    } else if (self.messageCellType == OWSMessageCellType_ViewOnce) {
         return self.messageViewOnceView;
     } else {
         return self.messageBubbleView;
@@ -178,6 +177,21 @@ NS_ASSUME_NONNULL_BEGIN
     self.avatarView.hidden = ![self updateAvatarView];
     self.reactionCountsView.hidden = ![self updateReactionsView];
     self.sendFailureBadgeView.hidden = !self.shouldHaveSendFailureBadge;
+}
+
+- (void)setViewItem:(nullable id<ConversationViewItem>)viewItem
+{
+    OWSAssertIsOnMainThread();
+
+    [super setViewItem:viewItem];
+
+    if (viewItem) {
+        if (!self.hasPreparedForDisplay) {
+            _messageCellType = viewItem.messageCellType;
+        } else {
+            OWSAssertDebug(self.messageCellType == viewItem.messageCellType);
+        }
+    }
 }
 
 // This will only ever be called *once* and should prepare for displaying a specific
@@ -640,7 +654,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Right now, only stickers need the reply button to fade in.
     // If we add other message types that don't have bubbles,
     // we should add them here.
-    return self.cellType == OWSMessageCellType_StickerMessage;
+    return self.messageCellType == OWSMessageCellType_StickerMessage;
 }
 
 - (void)setIsReplyActive:(BOOL)isReplyActive
