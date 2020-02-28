@@ -100,8 +100,8 @@ NS_SWIFT_NAME(MessageSender)
                         failure:(void (^)(NSError *error))failureHandler;
 
 - (OWSMessageSend *)getSessionRestoreMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey;
-- (LKFriendRequestMessage *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey inThread:(TSContactThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (OWSMessageSend *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey;
+- (LKFriendRequestMessage *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)sendMessage:(OWSMessageSend *)messageSend;
 
 @end

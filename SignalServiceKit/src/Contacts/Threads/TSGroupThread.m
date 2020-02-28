@@ -211,7 +211,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return [linkedDeviceHexEncodedPublicKeys intersectsSet:[NSSet setWithArray:self.groupModel.groupMemberIds]];
 }
 
-- (BOOL)isUserAdminForGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (BOOL)isUserAdminInGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (hexEncodedPublicKey == nil) { return NO; }
     NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:hexEncodedPublicKey in:transaction];
@@ -241,13 +241,13 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    NSMutableSet<NSString *> *newGroupMemberIds = [NSMutableSet setWithArray:self.groupModel.groupMemberIds];
+    NSMutableSet<NSString *> *newGroupMemberIDs = [NSMutableSet setWithArray:self.groupModel.groupMemberIds];
     NSString *userHexEncodedPublicKey = TSAccountManager.localNumber;
     if (userHexEncodedPublicKey != nil) {
         NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
-        [newGroupMemberIds minusSet:linkedDeviceHexEncodedPublicKeys];
+        [newGroupMemberIDs minusSet:linkedDeviceHexEncodedPublicKeys];
     }
-    self.groupModel.groupMemberIds = newGroupMemberIds.allObjects;
+    self.groupModel.groupMemberIds = newGroupMemberIDs.allObjects;
     [self saveWithTransaction:transaction];
 }
 

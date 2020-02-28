@@ -21,12 +21,8 @@
             let protoAsData = data[index..<(index+sizeAsInt)]
             guard let proto = try? SSKProtoGroupDetails.parseData(protoAsData) else { break }
             index += sizeAsInt
-            var groupModel = TSGroupModel.init(title: proto.name,
-                                               memberIds: proto.members,
-                                               image: nil,
-                                               groupId: proto.id,
-                                               groupType: GroupType.closedGroup,
-                                               adminIds: proto.admins)
+            var groupModel = TSGroupModel(title: proto.name, memberIds: proto.members, image: nil,
+                groupId: proto.id, groupType: GroupType.closedGroup, adminIds: proto.admins)
             result.append(groupModel)
         }
         return result

@@ -330,9 +330,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     NSMutableArray<AnyPromise *> *promises = @[].mutableCopy;
     [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
         if (![obj isKindOfClass:[TSGroupThread class]]) {
-            if (![obj isKindOfClass:[TSContactThread class]]) {
-                OWSLogWarn(@"Ignoring non group thread in thread collection: %@", obj);
-                
+            if (![obj isKindOfClass:[TSContactThread class]]) { // FIXME: Isn't this redundant?
+                OWSLogWarn(@"Ignoring non-group thread in thread collection: %@.", obj);
             }
             return;
         }
@@ -355,11 +354,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         [self.messageSender sendMessage:syncGroupsMessage
             success:^{
-                OWSLogInfo(@"Successfully sent groups sync message.");
+                OWSLogInfo(@"Successfully sent group sync message.");
                 resolve(@(1));
             }
             failure:^(NSError *error) {
-                OWSLogError(@"Failed to send groups sync message with error: %@.", error);
+                OWSLogError(@"Failed to send group sync message due to error: %@.", error);
                 resolve(error);
             }];
     }];

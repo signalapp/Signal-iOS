@@ -173,9 +173,8 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         storage.dbReadConnection.readWrite { transaction in
             masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: userHexEncodedPublicKey, in: transaction) ?? userHexEncodedPublicKey
         }
-        let members = [String](selectedContacts) + [ masterHexEncodedPublicKey ]
+        let members = selectedContacts + [ masterHexEncodedPublicKey ]
         let admins = [ masterHexEncodedPublicKey ]
-        
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(Randomness.generateRandomBytes(kGroupIdLength)!.toHexString())
         let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         let thread = TSGroupThread.getOrCreateThread(with: group)
