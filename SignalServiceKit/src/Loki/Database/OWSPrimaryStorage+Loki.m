@@ -124,7 +124,7 @@
         @try {
             PreKeyBundle *preKeyBundle = [self generatePreKeyBundleForContact:pubKey forceClean:forceClean];
             if (![Ed25519 throws_verifySignature:preKeyBundle.signedPreKeySignature
-                                       publicKey:preKeyBundle.preKeyPublic
+                                       publicKey:preKeyBundle.identityKey.throws_removeKeyType
                                             data:preKeyBundle.signedPreKeyPublic]) {
                 @throw [NSException exceptionWithName:InvalidKeyException reason:@"KeyIsNotValidlySigned" userInfo:nil];
             }
