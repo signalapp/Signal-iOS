@@ -1149,7 +1149,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
-    _Nullable id<ConversationViewItem> (^viewItemForInteraction)(TSInteraction *) = ^(TSInteraction *interaction) {
+    _Nullable id<ConversationViewItem> (^createViewItemForInteraction)(TSInteraction *) = ^(
+        TSInteraction *interaction) {
         OWSAssertDebug(interaction.uniqueId.length > 0);
 
         id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
@@ -1162,8 +1163,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
         viewItemCache[interaction.uniqueId] = viewItem;
 
-        if (viewItem.messageCellType == OWSMessageCellType_StickerMessage && viewItem.stickerAttachment == nil
-            && !viewItem.isFailedSticker) {
+        if (viewItem && viewItem.messageCellType == OWSMessageCellType_StickerMessage
+            && viewItem.stickerAttachment == nil && !viewItem.isFailedSticker) {
             return (id<ConversationViewItem>)nil;
         }
 
@@ -1208,7 +1209,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if (interaction) {
-            id<ConversationViewItem> _Nullable headerViewItem = viewItemForInteraction(interaction);
+            id<ConversationViewItem> _Nullable headerViewItem = createViewItemForInteraction(interaction);
             [headerViewItem clearNeedsUpdate];
             [viewItems addObject:headerViewItem];
         }
@@ -1217,20 +1218,24 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     __block BOOL hasError = NO;
-    _Nullable id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *)
-        = ^(TSInteraction *interaction) {
-            OWSAssertDebug(interaction.uniqueId.length > 0);
+    _Nullable id<ConversationViewItem> (^tryToAddViewItemForInteraction)(TSInteraction *)
+        = ^_Nullable id<ConversationViewItem>(TSInteraction *interaction)
+    {
+        OWSAssertDebug(interaction.uniqueId.length > 0);
 
-            id<ConversationViewItem> _Nullable viewItem = viewItemForInteraction(interaction);
+        id<ConversationViewItem> _Nullable viewItem = createViewItemForInteraction(interaction);
+        if (!viewItem) {
+            return nil;
+        }
 
-            // Insert a dynamic header item before this item if necessary
-            addHeaderViewItemIfNecessary(viewItem);
+        // Insert a dynamic header item before this item if necessary
+        addHeaderViewItemIfNecessary(viewItem);
 
-            [viewItem clearNeedsUpdate];
-            [viewItems addObject:viewItem];
+        [viewItem clearNeedsUpdate];
+        [viewItems addObject:viewItem];
 
-            return viewItem;
-        };
+        return viewItem;
+    };
 
     NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
     BOOL canLoadMoreItems = self.messageMapping.canLoadOlder;
@@ -1259,13 +1264,13 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSThreadDetailsInteraction alloc] initWithThread:self.thread
                                                           timestamp:NSDate.ows_millisecondTimeStamp];
 
-            tryToAddViewItem(threadDetails);
+            tryToAddViewItemForInteraction(threadDetails);
         } else {
             OWSContactOffersInteraction *_Nullable offers =
                 [self tryToBuildContactOffersInteractionWithTransaction:transaction];
 
             if (offers) {
-                id<ConversationViewItem> _Nullable offersItem = tryToAddViewItem(offers);
+                id<ConversationViewItem> _Nullable offersItem = tryToAddViewItemForInteraction(offers);
                 if (!offersItem) {
                     OWSFailDebug(@"Contact offers should never be filtered out.");
                     // Do nothing.
@@ -1285,7 +1290,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (TSInteraction *interaction in interactions) {
-        tryToAddViewItem(interaction);
+        tryToAddViewItemForInteraction(interaction);
     }
 
     if (self.unsavedOutgoingMessages.count > 0) {
@@ -1294,7 +1299,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Duplicate interaction: %@", outgoingMessage.uniqueId);
                 continue;
             }
-            tryToAddViewItem(outgoingMessage);
+            tryToAddViewItemForInteraction(outgoingMessage);
             [interactionIds addObject:outgoingMessage.uniqueId];
         }
     }
@@ -1304,7 +1309,7 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSTypingIndicatorInteraction alloc] initWithThread:self.thread
                                                         timestamp:[NSDate ows_millisecondTimeStamp]
                                                           address:self.typingIndicatorsSender];
-        tryToAddViewItem(typingIndicatorInteraction);
+        tryToAddViewItemForInteraction(typingIndicatorInteraction);
     }
 
     // Flag to ensure that we only increment once per launch.
