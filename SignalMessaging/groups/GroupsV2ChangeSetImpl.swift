@@ -376,7 +376,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         if shouldUpdateAvatar {
-            if newAvatarUrlPath != currentGroupModel.avatarUrlPath {
+            if newAvatarUrlPath == currentGroupModel.avatarUrlPath {
                 // Redundant change, not a conflict.
                 owsFailDebug("This should never occur.")
             } else {
