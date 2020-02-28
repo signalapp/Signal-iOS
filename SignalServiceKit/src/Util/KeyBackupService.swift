@@ -292,15 +292,6 @@ public class KeyBackupService: NSObject {
             }
         }
 
-        var ivLength: UInt {
-            switch self {
-            case .storageService, .storageServiceManifest, .storageServiceRecord:
-                return 16
-            default:
-                return kAESGCM256_DefaultIVLength
-            }
-        }
-
         static var syncableKeys: [DerivedKey] {
             return [
                 .storageService
@@ -364,7 +355,7 @@ public class KeyBackupService: NSObject {
 
         guard let encryptedData = Cryptography.encryptAESGCMWithDataAndConcatenateResults(
             plainTextData: data,
-            initializationVectorLength: keyType.ivLength,
+            initializationVectorLength: kAESGCM256_DefaultIVLength,
             key: key
         ) else {
             owsFailDebug("Failed to encrypt data")
@@ -382,7 +373,7 @@ public class KeyBackupService: NSObject {
 
         guard let data = Cryptography.decryptAESGCMConcatenatedData(
             encryptedData: encryptedData,
-            initializationVectorLength: keyType.ivLength,
+            initializationVectorLength: kAESGCM256_DefaultIVLength,
             key: key
         ) else {
             // TODO: Derive Storage Service Key - until we use the restored key for storage service,
