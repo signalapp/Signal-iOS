@@ -937,6 +937,23 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:senderCertificate udAccess:theirUDAccess localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
 }
 
+- (LKFriendRequestMessage *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey inThread:(TSContactThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+    // Force hide slave device thread
+    NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction];
+    thread.isForceHidden = masterHexEncodedPublicKey != nil && ![masterHexEncodedPublicKey isEqualToString:hexEncodedPublicKey];
+    if (thread.friendRequestStatus == LKThreadFriendRequestStatusNone || thread.friendRequestStatus == LKThreadFriendRequestStatusRequestExpired) {
+        [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
+    }
+    [thread saveWithTransaction:transaction];
+    LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Please accept to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]
+           expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
+    message.skipSave = YES;
+    [message saveWithTransaction:transaction];
+    return message;
+}
+
 - (OWSMessageSend *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey
 {
     __block TSContactThread *thread;

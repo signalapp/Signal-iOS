@@ -9,6 +9,12 @@ import PromiseKit
 
 @objc
 public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {
+    public func syncAllGroups() -> AnyPromise {
+        Logger.info("")
+
+        return AnyPromise()
+    }
+    
 
     @objc public func sendConfigurationSyncMessage() {
         Logger.info("")

@@ -168,8 +168,14 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
             return showError(title: NSLocalizedString("A closed group cannot have more than 10 members", comment: ""))
         }
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-        let members = [String](selectedContacts) + [ userHexEncodedPublicKey ]
-        let admins = [ userHexEncodedPublicKey ]
+        let storage = OWSPrimaryStorage.shared()
+        var masterHexEncodedPublicKey = ""
+        storage.dbReadConnection.readWrite { transaction in
+            masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: userHexEncodedPublicKey, in: transaction) ?? userHexEncodedPublicKey
+        }
+        let members = [String](selectedContacts) + [ masterHexEncodedPublicKey ]
+        let admins = [ masterHexEncodedPublicKey ]
+        
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(Randomness.generateRandomBytes(kGroupIdLength)!.toHexString())
         let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         let thread = TSGroupThread.getOrCreateThread(with: group)

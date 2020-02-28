@@ -26,11 +26,12 @@ NS_ASSUME_NONNULL_BEGIN
     [groupBuilder setName:group.groupName];
     [groupBuilder setMembers:group.groupMemberIds];
     [groupBuilder setColor:groupThread.conversationColorName];
+    [groupBuilder setAdmins:group.groupAdminIds];
 
     if ([OWSBlockingManager.sharedManager isGroupIdBlocked:group.groupId]) {
         [groupBuilder setBlocked:YES];
     }
-
+    /*
     NSData *avatarPng;
     if (group.groupImage) {
         SSKProtoGroupDetailsAvatarBuilder *avatarBuilder = [SSKProtoGroupDetailsAvatar builder];
@@ -46,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [groupBuilder setAvatar:avatarProto];
         }
-    }
+    } */
 
     OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:groupThread.uniqueId transaction:transaction];
@@ -69,12 +70,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint32_t groupDataLength = (uint32_t)groupData.length;
 
-    [self writeVariableLengthUInt32:groupDataLength];
+    [self writeUInt32:groupDataLength];
     [self writeData:groupData];
 
-    if (avatarPng) {
-        [self writeData:avatarPng];
-    }
+//    if (avatarPng) {
+//        [self writeData:avatarPng];
+//    }
 }
 
 @end
