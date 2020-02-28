@@ -4,15 +4,15 @@
 
 import Foundation
 
-private let strokeHeight: CGFloat = 4
+private let strokeHeight: CGFloat = 1
 
-@objc(OWSUnreadIndicatorCell)
-public class UnreadIndicatorCell: ConversationViewCell {
+@objc(OWSDateHeaderCell)
+public class DateHeaderCell: ConversationViewCell {
 
     // MARK: -
 
     @objc
-    public static let cellReuseIdentifier = "UnreadIndicatorCell"
+    public static let cellReuseIdentifier = "DateHeaderCell"
 
     @available(*, unavailable, message:"use other constructor instead.")
     @objc
@@ -60,22 +60,14 @@ public class UnreadIndicatorCell: ConversationViewCell {
             owsFailDebug("conversationStyle was unexpectedly nil")
             return
         }
-        guard let interaction = viewItem.interaction as? UnreadIndicatorInteraction else {
-            owsFailDebug("unexpected interaction type")
-            return
-        }
 
-        titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold()
+        titleLabel.font = .ows_dynamicTypeBody2
         titleLabel.textColor = Theme.primaryTextColor
 
         let date = viewItem.interaction.receivedAtDate()
         let dateString = DateUtil.formatDate(forConversationDateBreaks: date)
 
-        var title = NSLocalizedString("MESSAGES_VIEW_UNREAD_INDICATOR", comment: "Indicator that separates read from unread messages.")
-        if interaction.shouldShowDate {
-            title = dateString.appending(" \u{00B7} ").appending(title)
-        }
-        titleLabel.text = title.localizedUppercase
+        titleLabel.text = dateString.localizedUppercase
 
         strokeView.backgroundColor = Theme.secondaryTextAndIconColor
 

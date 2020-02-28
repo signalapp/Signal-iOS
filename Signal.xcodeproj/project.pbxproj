@@ -184,7 +184,6 @@
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
 		34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
-		348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 348570A620F67574004FF32B /* OWSMessageHeaderView.m */; };
 		3488F9362191CC4000E524CC /* ConversationMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488F9352191CC4000E524CC /* ConversationMediaView.swift */; };
 		348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
@@ -617,6 +616,8 @@
 		8835DE08230E092F00DC6B66 /* FindByPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */; };
 		8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */ = {isa = PBXBuildFile; fileRef = 8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */; };
 		8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8837F74023DA0B0F00772A32 /* MegaphoneView.swift */; };
+		88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88535063240829950011D318 /* DateHeaderInteraction.swift */; };
+		8853506824084E470011D318 /* OWSDateHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8853506724084E470011D318 /* OWSDateHeaderCell.swift */; };
 		8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */; };
 		8855DF89238F2E690066D96F /* EmojiCountsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */; };
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
@@ -1038,8 +1039,6 @@
 		34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanDataCleanerTest.m; sourceTree = "<group>"; };
 		34843B2A214FE295004DED45 /* MockEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MockEnvironment.m; sourceTree = "<group>"; };
 		34843B2B214FE295004DED45 /* MockEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MockEnvironment.h; sourceTree = "<group>"; };
-		348570A620F67574004FF32B /* OWSMessageHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageHeaderView.m; sourceTree = "<group>"; };
-		348570A720F67574004FF32B /* OWSMessageHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageHeaderView.h; sourceTree = "<group>"; };
 		3488F9352191CC4000E524CC /* ConversationMediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationMediaView.swift; sourceTree = "<group>"; };
 		348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadFinderPerformanceTest.swift; sourceTree = "<group>"; };
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
@@ -1524,6 +1523,8 @@
 		8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationSuccess.json; sourceTree = "<group>"; };
 		8837F74023DA0B0F00772A32 /* MegaphoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MegaphoneView.swift; sourceTree = "<group>"; };
+		88535063240829950011D318 /* DateHeaderInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHeaderInteraction.swift; sourceTree = "<group>"; };
+		8853506724084E470011D318 /* OWSDateHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDateHeaderCell.swift; sourceTree = "<group>"; };
 		8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiReactorsTableView.swift; sourceTree = "<group>"; };
 		8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCountsCollectionView.swift; sourceTree = "<group>"; };
 		88594E592335B08000390B19 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
@@ -2061,6 +2062,7 @@
 				88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */,
 				34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */,
 				4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */,
+				88535063240829950011D318 /* DateHeaderInteraction.swift */,
 			);
 			path = ConversationView;
 			sourceTree = "<group>";
@@ -2480,8 +2482,6 @@
 				34D1F0A21F867BFC0066283D /* OWSMessageCell.m */,
 				34D920E520E179C100D51158 /* OWSMessageFooterView.h */,
 				34D920E620E179C200D51158 /* OWSMessageFooterView.m */,
-				348570A720F67574004FF32B /* OWSMessageHeaderView.h */,
-				348570A620F67574004FF32B /* OWSMessageHeaderView.m */,
 				347137FA22A1BCE800F43A63 /* OWSMessageViewOnceView.h */,
 				347137FB22A1BCE800F43A63 /* OWSMessageViewOnceView.m */,
 				34C2EEB82272244500BCA1D0 /* OWSMessageStickerView.h */,
@@ -2500,6 +2500,7 @@
 				34B6A906218B5240007C4606 /* TypingIndicatorCell.swift */,
 				88D1D40522EF8F1100F472C5 /* ThreadDetailsCell.swift */,
 				4CFF115423A9C6DC0007F9D7 /* OWSUnreadIndicatorCell.swift */,
+				8853506724084E470011D318 /* OWSDateHeaderCell.swift */,
 				4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */,
 			);
 			path = Cells;
@@ -4454,7 +4455,6 @@
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
 				4CFF115523A9C6DC0007F9D7 /* OWSUnreadIndicatorCell.swift in Sources */,
 				34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */,
-				348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */,
 				34B6A907218B5241007C4606 /* TypingIndicatorCell.swift in Sources */,
 				4C68FDAE2385F5A4002576B1 /* DebugUIDataStoreViewController.swift in Sources */,
 				4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */,
@@ -4564,6 +4564,7 @@
 				88D23D2723CEC0C700B0E74B /* WebRTCCallMessageHandler.swift in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
+				88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
@@ -4665,6 +4666,7 @@
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
 				34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */,
+				8853506824084E470011D318 /* OWSDateHeaderCell.swift in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,
 				3448E15E221333F5004B052E /* OnboardingController.swift in Sources */,

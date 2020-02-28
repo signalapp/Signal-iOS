@@ -4,11 +4,8 @@
 
 import Foundation
 
-@objc(OWSUnreadIndicatorInteraction)
-public class UnreadIndicatorInteraction: TSInteraction {
-
-    @objc
-    public static let UnreadIndicatorInteractionId = "UnreadIndicatorInteractionId"
+@objc(OWSDateHeaderInteraction)
+public class DateHeaderInteraction: TSInteraction {
 
     @objc
     public override func isDynamicInteraction() -> Bool {
@@ -17,7 +14,7 @@ public class UnreadIndicatorInteraction: TSInteraction {
 
     @objc
     public override func interactionType() -> OWSInteractionType {
-        return .unreadIndicator
+        return .dateHeader
     }
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -32,12 +29,9 @@ public class UnreadIndicatorInteraction: TSInteraction {
         notImplemented()
     }
 
-    public let shouldShowDate: Bool
-
     @objc
-    public init(thread: TSThread, timestamp: UInt64, receivedAtTimestamp: UInt64, shouldShowDate: Bool) {
-        self.shouldShowDate = shouldShowDate
-        super.init(uniqueId: UnreadIndicatorInteraction.UnreadIndicatorInteractionId,
+    public init(thread: TSThread, timestamp: UInt64, receivedAtTimestamp: UInt64) {
+        super.init(uniqueId: "DateHeader_\(timestamp)",
                    timestamp: timestamp,
                    receivedAtTimestamp: receivedAtTimestamp,
                    in: thread)

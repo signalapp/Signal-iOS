@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInteraction.h"
@@ -33,6 +33,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
             return @"OWSInteractionType_Offer";
         case OWSInteractionType_UnreadIndicator:
             return @"OWSInteractionType_UnreadIndicator";
+        case OWSInteractionType_DateHeader:
+            return @"OWSInteractionType_DateHeader";
     }
 }
 
