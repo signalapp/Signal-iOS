@@ -146,12 +146,6 @@ typedef void (^SystemMessageActionBlock)(void);
     return 20.f;
 }
 
-- (void)configureFonts
-{
-    // Update cell to reflect changes in dynamic text.
-    self.titleLabel.font = UIFont.ows_dynamicTypeSubheadlineFont;
-}
-
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
@@ -315,9 +309,23 @@ typedef void (^SystemMessageActionBlock)(void);
     OWSAssertDebug(label);
     OWSAssertDebug(self.viewItem.systemMessageText.length > 0);
 
-    [self configureFonts];
+    NSMutableAttributedString *labelText =
+        [[NSMutableAttributedString alloc] initWithString:self.viewItem.systemMessageText
+                                               attributes:@{
+                                                   NSFontAttributeName : UIFont.ows_dynamicTypeSubheadlineFont,
+                                               }];
 
-    label.text = self.viewItem.systemMessageText;
+    if (self.shouldShowTimestamp) {
+        NSString *timestampText = [DateUtil formatMessageTimestamp:interaction.timestamp];
+        [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
+        [labelText appendAttributedString:[[NSAttributedString alloc]
+                                              initWithString:timestampText.localizedUppercaseString
+                                                  attributes:@{
+                                                      NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font,
+                                                  }]];
+    }
+
+    label.attributedText = labelText;
 }
 
 - (CGFloat)topVMargin
@@ -338,6 +346,11 @@ typedef void (^SystemMessageActionBlock)(void);
 - (CGFloat)iconSize
 {
     return 20.f;
+}
+
+- (BOOL)shouldShowTimestamp
+{
+    return self.viewItem.interaction.interactionType == OWSInteractionType_Call;
 }
 
 - (CGSize)titleSize
