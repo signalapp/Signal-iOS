@@ -53,7 +53,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
     private var isDrainingQueue = false
     private var isAppInBackground = AtomicBool(false)
 
-    private typealias BatchCompletionBlock = ([IncomingGroupsV2MessageJob], SDSAnyWriteTransaction, Bool) -> Void
+    private typealias BatchCompletionBlock = ([IncomingGroupsV2MessageJob], Bool, SDSAnyWriteTransaction) -> Void
 
     override init() {
         super.init()
@@ -195,7 +195,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
 
-        let completion: BatchCompletionBlock = { (processedJobs, transaction, shouldWaitBeforeRetrying) in
+        let completion: BatchCompletionBlock = { (processedJobs, shouldWaitBeforeRetrying, transaction) in
             // NOTE: This transaction is the same transaction as the transaction
             //       passed to processJobs() in the "sync" case but is a different
             //       transaction in the "async" case.
@@ -380,14 +380,14 @@ class IncomingGroupsV2MessageQueue: NSObject {
             assert(jobInfos.count == 1)
             guard let jobInfo = jobInfos.first else {
                 owsFailDebug("Missing job")
-                completion([], transaction, false)
+                completion([], false, transaction)
                 return
             }
             updateGroupAndProcessJobAsync(jobInfo: jobInfo, completion: completion)
         } else {
             let processedJobs = performLocalProcessingSync(jobInfos: jobInfos,
                                                            transaction: transaction)
-            completion(processedJobs, transaction, false)
+            completion(processedJobs, false, transaction)
         }
     }
 
@@ -455,7 +455,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
             case .successShouldProcess:
                 self.databaseStorage.write { transaction in
                     let processedJobs = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)
-                    completion(processedJobs, transaction, false)
+                    completion(processedJobs, false, transaction)
                 }
             case .failureShouldDiscard:
                 throw GroupsV2Error.shouldDiscard
@@ -472,7 +472,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                     // Retry
                     // _Do not_ include the job in the processed jobs.
                     // _Do_ wait before retrying.
-                    completion([], transaction, true)
+                    completion([], true, transaction)
                 } else {
                     owsFailDebug("Discarding unprocess-able message: \(error)")
 
@@ -480,7 +480,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                     // _Do_ include the job in the processed jobs.
                     //      It will be discarded.
                     // _Do not_ wait before retrying.
-                    completion([jobInfo.job], transaction, false)
+                    completion([jobInfo.job], false, transaction)
                 }
             }
         }.retainUntilComplete()
