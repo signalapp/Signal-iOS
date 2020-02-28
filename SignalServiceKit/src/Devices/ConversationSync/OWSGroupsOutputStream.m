@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray *membersE164 = [NSMutableArray new];
     NSMutableArray *members = [NSMutableArray new];
 
-    for (SignalServiceAddress *address in group.groupMembers) {
+    for (SignalServiceAddress *address in [GroupMembership normalize:group.groupMembers]) {
         // We currently include an independent group member list
         // of just the phone numbers to support older pre-UUID
         // clients. Eventually we probably want to remove this.
@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO setActive based on soft delete?
 
-    NSData *groupAvatarData;
+    NSData *_Nullable groupAvatarData = nil;
     if (group.groupAvatarData.length > 0) {
         SSKProtoGroupDetailsAvatarBuilder *avatarBuilder = [SSKProtoGroupDetailsAvatar builder];
 

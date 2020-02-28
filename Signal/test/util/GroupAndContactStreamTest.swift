@@ -8,6 +8,25 @@ import Contacts
 
 class GroupAndContactStreamTest: SignalBaseTest {
 
+    // MARK: - Dependencies
+
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
+    // MARK: - Test Life Cycle
+
+    override func setUp() {
+        super.setUp()
+
+        // ensure local client has necessary "registered" state
+        let localE164Identifier = "+13235551234"
+        let localUUID = UUID()
+        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
+    }
+
+    // MARK: -
+
     let outputContactSyncData = "IQoMKzEzMjMxMTExMTExEgdBbGljZS0xIgRibHVlQABYADkSB0FsaWNlLTIiBGJsdWVAAEokMzFDRTE0MTItOUEyOC00RTZGLUI0RUUtMjIyMjIyMjIyMjIyWABHCgwrMTMyMTMzMzMzMzMSB0FsaWNlLTMiBGJsdWVAAEokMUQ0QUIwNDUtODhGQi00QzRFLTlGNkEtMzMzMzMzMzMzMzMzWAA="
 
     func test_writeContactSync() throws {
@@ -88,8 +107,17 @@ class GroupAndContactStreamTest: SignalBaseTest {
         }
     }
 
-    let outputGroupSyncData = "pwEKEHNddRc9sZVW92G7XH8DdEgaDCsxMzIxMzIxNDMyMRoMKzEzMjEzMjE0MzIzMAA6BWJyb3duSg4SDCsxMzIxMzIxNDMyMUo0CiQxRDRBQjA0NS04OEZCLTRDNEUtOUY2QS1GOTIxMTI0QkQ1MjkSDCsxMzIxMzIxNDMyM0omCiQzMUNFMTQxMi05QTI4LTRFNkYtQjRFRS1BMjVDMzE3OUQwODVYAJABChBzbbYXPbGVVvdhu1x/A3RIEglCb29rIENsdWIaDCsxMzIxMzIxNDMyMRoMKzE1NTUzMjE0MzIzMAA6CWJsdWVfZ3JleUoOEgwrMTMyMTMyMTQzMjFKNAokNTU1NTU1NTUtODhGQi00QzRFLTlGNkEtRjkyMTEyNEJENTI5EgwrMTU1NTMyMTQzMjNQAVgBiwEKEHN99xc9sZVW92G7XH8DdEgSCUNvb2sgQmx1YhoMKzEzMjEzMjEzMzMzGgwrMTU1NTMyMTIyMjIwADoEYmx1ZUoOEgwrMTMyMTMyMTMzMzNKNAokNTU1NTU1NTUtODhGQi00QzRFLTlGNkEtMjIyMjIyMjIyMjIyEgwrMTU1NTMyMTIyMjJQAFgB"
+    let outputGroupSyncData = "uQEKEHNddRc9sZVW92G7XH8DdEgaDCsxMzIxMzIxNDMyMRoMKzEzMjEzMjE0MzIzIg4KCWltYWdlL3BuZxCjATAAOgVicm93bkoOEgwrMTMyMTMyMTQzMjFKNAokMUQ0QUIwNDUtODhGQi00QzRFLTlGNkEtRjkyMTEyNEJENTI5EgwrMTMyMTMyMTQzMjNKJgokMzFDRTE0MTItOUEyOC00RTZGLUI0RUUtQTI1QzMxNzlEMDg1UAJYAIlQTkcNChoKAAAADUlIRFIAAAABAAAAAQgGAAAAHxXEiQAAAAFzUkdCAK7OHOkAAABEZVhJZk1NACoAAAAIAAGHaQAEAAAAAQAAABoAAAAAAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAAGgAwAEAAAAAQAAAAEAAAAA+SKd/gAAAA1JREFUCB1j+M/A8B8ABQAB/8gPYhYAAAAASUVORK5CYIKgAQoQc222Fz2xlVb3YbtcfwN0SBIJQm9vayBDbHViGgwrMTMyMTMyMTQzMjEaDCsxNTU1MzIxNDMyMyIOCglpbWFnZS9wbmcQowEwADoJYmx1ZV9ncmV5Sg4SDCsxMzIxMzIxNDMyMUo0CiQ1NTU1NTU1NS04OEZCLTRDNEUtOUY2QS1GOTIxMTI0QkQ1MjkSDCsxNTU1MzIxNDMyM1ABWAGJUE5HDQoaCgAAAA1JSERSAAAAAQAAAAEIBgAAAB8VxIkAAAABc1JHQgCuzhzpAAAARGVYSWZNTQAqAAAACAABh2kABAAAAAEAAAAaAAAAAAADoAEAAwAAAAEAAQAAoAIABAAAAAEAAAABoAMABAAAAAEAAAABAAAAAPkinf4AAAANSURBVAgdY2Bg+P8fAAMCAf+n4VSlAAAAAElFTkSuQmCCmwEKEHN99xc9sZVW92G7XH8DdEgSCUNvb2sgQmx1YhoMKzEzMjEzMjEzMzMzGgwrMTU1NTMyMTIyMjIiDgoJaW1hZ2UvcG5nEKMBMAA6BGJsdWVKDhIMKzEzMjEzMjEzMzMzSjQKJDU1NTU1NTU1LTg4RkItNEM0RS05RjZBLTIyMjIyMjIyMjIyMhIMKzE1NTUzMjEyMjIyUABYAYlQTkcNChoKAAAADUlIRFIAAAABAAAAAQgGAAAAHxXEiQAAAAFzUkdCAK7OHOkAAABEZVhJZk1NACoAAAAIAAGHaQAEAAAAAQAAABoAAAAAAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAAGgAwAEAAAAAQAAAAEAAAAA+SKd/gAAAA1JREFUCB1jYPjP8B8ABAEB/zB9GO4AAAAASUVORK5CYII="
+
+    let groupImageData1 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAAD5Ip3+AAAADUlEQVQIHWP4z8DwHwAFAAH/yA9iFgAAAABJRU5ErkJggg=="
+    let groupImageData2 =  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAAD5Ip3+AAAADUlEQVQIHWNgYPj/HwADAgH/p+FUpQAAAABJRU5ErkJggg=="
+    let groupImageData3 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAAD5Ip3+AAAADUlEQVQIHWNg+M/wHwAEAQH/MH0Y7gAAAABJRU5ErkJggg=="
+
     func test_writeGroupSync() throws {
+        let groupAvatarData1 = Data(base64Encoded: groupImageData1)!
+        let groupAvatarData2 = Data(base64Encoded: groupImageData2)!
+        let groupAvatarData3 = Data(base64Encoded: groupImageData3)!
+
         let group1: TSGroupThread = {
             let groupId = Data(base64Encoded: "c111Fz2xlVb3YbtcfwN0SA==")!
             let groupMembers: [SignalServiceAddress] = [
@@ -101,6 +129,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             var thread: TSGroupThread!
             write { transaction in
                 thread = try! GroupManager.createGroupForTests(members: groupMembers,
+                                                               avatarData: groupAvatarData1,
                                                                groupId: groupId,
                                                                transaction: transaction)
                 thread.updateConversationColorName(.burlap, transaction: transaction)
@@ -119,6 +148,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             write {
                 thread = try! GroupManager.createGroupForTests(members: groupMembers,
                                                                name: "Book Club",
+                                                               avatarData: groupAvatarData2,
                                                                groupId: groupId,
                                                                transaction: $0)
                 thread.shouldThreadBeVisible = true
@@ -140,6 +170,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             write { transaction in
                 thread = try! GroupManager.createGroupForTests(members: groupMembers,
                                                                name: "Cook Blub",
+                                                               avatarData: groupAvatarData3,
                                                                groupId: groupId,
                                                                transaction: transaction)
                 thread.shouldThreadBeVisible = true
@@ -161,6 +192,10 @@ class GroupAndContactStreamTest: SignalBaseTest {
     }
 
     func test_readGroupSync() throws {
+        let groupAvatarData1 = Data(base64Encoded: groupImageData1)!
+        let groupAvatarData2 = Data(base64Encoded: groupImageData2)!
+        let groupAvatarData3 = Data(base64Encoded: groupImageData3)!
+
         var groups: [GroupDetails] = []
 
         let data = Data(base64Encoded: outputGroupSyncData)!
@@ -193,7 +228,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.conversationColorName, ConversationColorName.burlap.rawValue)
             XCTAssertEqual(group.isBlocked, false)
             XCTAssertEqual(group.expireTimer, 0)
-            XCTAssertEqual(group.avatarData, nil)
+            XCTAssertEqual(group.avatarData, groupAvatarData1)
             XCTAssertEqual(false, group.isArchived)
             XCTAssertNil(group.inboxSortOrder)
         }
@@ -209,7 +244,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.conversationColorName, ConversationColorName.taupe.rawValue)
             XCTAssertEqual(group.isBlocked, false)
             XCTAssertEqual(group.expireTimer, 0)
-            XCTAssertEqual(group.avatarData, nil)
+            XCTAssertEqual(group.avatarData, groupAvatarData2)
             XCTAssertEqual(true, group.isArchived)
             XCTAssertEqual(1, group.inboxSortOrder)
         }
@@ -225,7 +260,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.conversationColorName, ConversationColorName.blue.rawValue)
             XCTAssertEqual(group.isBlocked, false)
             XCTAssertEqual(group.expireTimer, 0)
-            XCTAssertEqual(group.avatarData, nil)
+            XCTAssertEqual(group.avatarData, groupAvatarData3)
             XCTAssertEqual(true, group.isArchived)
             XCTAssertEqual(0, group.inboxSortOrder)
         }

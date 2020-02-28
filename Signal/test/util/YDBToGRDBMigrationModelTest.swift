@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -35,11 +35,19 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         return SSKEnvironment.shared.storageCoordinator
     }
 
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: -
 
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+
+        // ensure local client has necessary "registered" state
+        let localE164Identifier = "+13235551234"
+        let localUUID = UUID()
+        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
     }
 
     override func tearDown() {
