@@ -1397,6 +1397,9 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "సమూహాన్ని వదులు";
 
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "ఈ QR కోడ్ చెల్లదు. దయచేసి మీరు లింక్ చేయదలిచిన పరికరంలో ప్రదర్శించబడే QR కోడ్‌ను స్కాన్ చేస్తున్నారని నిర్ధారించుకోండి.";
 
@@ -3190,6 +3193,9 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "మద్దతు ఇవ్వ లేదు";
+
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "మీ పిన్ను సృష్టించండి";

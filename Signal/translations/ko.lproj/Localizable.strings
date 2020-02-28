@@ -1397,6 +1397,9 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "그룹 나가기";
 
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "이 QR 코드는 올바르지 않습니다. 스캔하고자 하는 기기에 있는 QR 코드를 읽혔는지 다시 한 번 확인하세요.";
 
@@ -3190,6 +3193,9 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "내 번호 생성";

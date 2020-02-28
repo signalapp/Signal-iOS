@@ -1397,6 +1397,9 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "ترک کردن گروه";
 
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "کد QR معتبر نمی باشد. لطفا مطمئن شوید که در حال اسکن کد QR نمایش داده روی دستگاهی که قصد پیوند به آن را دارید می باشید.";
 
@@ -1557,7 +1560,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ مسدود شود؟";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "شما این گروه را ترک می‌کنید و دیگر پیام‌ها و بروزرسانی‌ها را دریافت نمی‌کنید.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
@@ -1566,7 +1569,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "حذف";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "این مکالمه از روی تمامی دستگاه‌های شما حذف خواهد شد.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "گفتگو حذف شود؟";
@@ -1575,7 +1578,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "حذف و ترک";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "شما این گروه را ترک کرده و گروه از روی تمامی دستگاه‌هایتان حذف خواهد شد.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
@@ -3063,7 +3066,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of%@, %@, and %lu additional groups";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "در این مکالمه می‌توانید برای خودتان یادداشت اضافه کنید. اگر حساب‌تان به دستگاه‌ دیگری پیوند داده شده باشد، یادداشت‌های جدید همگام خواهند شد.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "کاربر از %@";
@@ -3190,6 +3193,9 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "پشتیبانی نشده است";
+
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "پین خود را ایجاد کنید";

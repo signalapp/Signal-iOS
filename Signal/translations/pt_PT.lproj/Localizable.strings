@@ -309,13 +309,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Desbloquear";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Poderá enviar mensagens e ligar um para o outro.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Os membros actuais poderão voltar a adicionar o seu contacto ao grupo.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Os membros do grupo serão capazes de o adicionar novamente a este grupo.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Desbloquear este grupo?";
@@ -1397,6 +1397,9 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Abandonar o grupo";
 
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "O código QR é inválido, verifique que está a ler o código QR apresentado no dispositivo que deseja associar.";
 
@@ -1557,7 +1560,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Bloquear %@?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Irá abandonar este grupo e deixará de poder receber mensagens ou atualizações.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
@@ -1566,7 +1569,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Eliminar";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Está conversa será eliminada de todos os seus dispositivos.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Eliminar conversa?";
@@ -1575,7 +1578,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Irá abandonar este grupo, e ele será eliminado de todos os seus dispositivos.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
@@ -3190,6 +3193,9 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Não suportado";
+
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Crie o seu PIN";

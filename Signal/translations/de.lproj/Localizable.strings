@@ -1397,6 +1397,9 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Gruppe verlassen";
 
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Dieser QR-Code ist ungültig. Stelle bitte sicher, dass du den QR-Code einscannst, der auf dem zu koppelnden Gerät angezeigt wird.";
 
@@ -1617,7 +1620,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Freigeben";
 
 /* Header for message requests splash screen */
-"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Einführung von Nachrichtenanfragen";
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Einführung von Unterhaltungsanfragen";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Profilname hinzufügen";
@@ -3190,6 +3193,9 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nicht unterstützt";
+
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Deine PIN erstellen";

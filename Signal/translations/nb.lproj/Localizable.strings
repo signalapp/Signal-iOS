@@ -1254,7 +1254,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start din første samtale her.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ la deg til gruppen";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Meldingsforespørsel";
@@ -1396,6 +1396,9 @@
 
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Forlat gruppe";
+
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Denne QR-koden er ikke gyldig. Du må skanne QR-koden som vises på enheten du vil godkjenne.";
@@ -1551,7 +1554,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokker og slett";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blokkerte personer vil ikke kunne ringe deg eller sende deg meldinger.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Blokker %@?";
@@ -1560,13 +1563,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Du vil forlate denne gruppen og vil ikke lenger motta meldinger eller oppdateringer.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Blokker og forlat %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Slett";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Denne samtalen vil slettes fra alle enhetene dine.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Slett samtale?";
@@ -1575,10 +1578,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Slett og forlat";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Du vil forlate denne gruppen, og den blir slettet fra alle enhetene dine.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Slette og forlate gruppen?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Godta";
@@ -3190,6 +3193,9 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Ikke støttet";
+
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Opprett PIN-koden";

@@ -354,7 +354,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ blokkeren?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Geblokkeerde gebruikers kunnen jou nog steeds bellen of berichten sturen, maar je zult daar niets van zien.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Geblokkeerde gebruikers kunnen jou nog steeds bellen of berichten sturen en weten dus niet dat ze geblokkeerd zijn, maar je zult die oproepen en berichten niet zien.";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Bladeren";
@@ -1397,6 +1397,9 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Groep verlaten";
 
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Deze QR-code is ongeldig. Zorg dat je de QR-code scant die wordt weergeven op het apparaat dat je wilt koppelen.";
 
@@ -1548,10 +1551,10 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blokkeren";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokkeren en wissen";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokkeren en verwijderen";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Van geblokkeerde contactpersonen zul je de oproepen en berichten niet te zien krijgen. Geblokkeerde contacten kunnen niet zien dat ze geblokkeerd zijn: het lijkt voor hen alsof je telefoon over gaat, en alsof berichten worden afgeleverd. Je huidige profielnaam en foto blijven zichtbaar voor je contactpersoon maar worden ze niet langer bijgewerkt als je ze veranderd.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Je zult de oproepen en berichten afkomstig van geblokkeerde contactpersonen niet te zien krijgen. Geblokkeerde contacten kunnen niet zien dat ze geblokkeerd zijn: het lijkt voor hen alsof je telefoon over gaat, en alsof berichten worden afgeleverd. Je huidige profielnaam en foto blijven zichtbaar voor je contactpersoon maar worden ze niet langer bijgewerkt als je ze veranderd.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ blokkeren?";
@@ -1560,25 +1563,25 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Je zult deze groep verlaten en niet langer berichten of meldingen ontvangen.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "“%@” blokkeren en wissen?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "“%@” blokkeren en verwijderen?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Wissen";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Verwijderen";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Dit gesprek zal worden gewist van al je apparaten.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Gesprek wissen?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Gesprek verwijderen?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Wissen en verlaten";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Verwijderen en verlaten";
 
 /* Action sheet message to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Je zult deze groep verlaten en het gesprek zal van al je apparaten worden gewist.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Groep wissen en verlaten?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Groep verwijderen en verlaten?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Aanvaarden";
@@ -1623,7 +1626,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Een profielnaam toevoegen";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "Je kunt vanaf nu kiezen om een nieuw gesprek te aanvaarden of te verwijderen. Door profielnamen weet men van wie ze een bericht krijgen.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Je kunt vanaf nu kiezen of je een nieuw gesprek wilt aanvaarden. Door profielnamen weet men van wie men een bericht krijgt.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Je profielnaam is opgeslagen.";
@@ -3190,6 +3193,9 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Niet ondersteund";
+
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Pincode aanmaken";

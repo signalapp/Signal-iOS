@@ -663,10 +663,10 @@
 "CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Envia-ho sense el registre de depuració";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Obrir a Mapes";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Obre al Mapes";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Enviar mail";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Envia un correu";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Contacte sense nom";
@@ -675,13 +675,13 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Això no es pot desfer.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Esborrar conversa?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Voleu suprimir la conversa?";
 
 /* Indicates that the user can tap to download this image. */
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Baixa";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "No podeu seleccionar més de %@ converses.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Només podeu seleccionar fins a %@ converses.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grups";
@@ -711,7 +711,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Afegeix a un contacte existent";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Afegeix als contactes del sistema";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Afegeix als contactes";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bloca aquest grup";
@@ -729,7 +729,7 @@
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informació del grup";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silencia";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenci";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Silencia";
@@ -738,43 +738,43 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "No silenciat";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Silencia'l un dia";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Silencia un dia";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Silencia'l una hora";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Silencia una hora";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Silencia'l un minut";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Silencia un minut";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Silencia'l una setmana";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Silencia una setmana";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Silencia'l un any";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Silencia un any";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "fins al %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Crea un contacte nou";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Crea un contacte";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Cerca la conversa";
+"CONVERSATION_SETTINGS_SEARCH" = "Cerca a la conversa";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Canvieu-ho";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Configuració";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "No silenciïs";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Aquest usuari és als contactes.";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "L'usuari és als contactes.";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Aquest grup pot veure el vostre perfil.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "El grup pot veure el vostre perfil.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Aquest usuari pot veure el vostre perfil.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "L'usuari pot veure el vostre perfil.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Comparteix el perfil";
@@ -789,22 +789,22 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Afegeix als contactes";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Compartiu el perfil amb aquest ususari";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Compartiu el perfil amb aquest usuari";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Aquest usuari no és als vostres contactes.";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "L'usuari no és als vostres contactes.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Es carreguen més missatges...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "S'estan carregant més missatges...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Mostra'n més";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Bloca aquest ususari";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Bloca aquest usuari";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Restablir la sessió us permetrà tornar a rebre missatges de %@, però no recuperareu cap missatge que ja sigui corromput.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Restablir la sessió us permetrà tornar a rebre missatges de %@, però no recuperareu cap missatge que ja s'hagi malmès.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Trieu un codi internacional";
@@ -816,7 +816,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Això pot trigar uns minuts.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimitzant la base de dades";
+"DATABASE_VIEW_OVERLAY_TITLE" = "S'està optimitzant la base de dades";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "Fa %@ h";
@@ -894,10 +894,10 @@
 "DISAPPEARING_MESSAGES" = "Missatges efímers";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Els missatges en aquesta discussió desapareixeran després de  %@";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Els missatges d'aquest xat desapareixeran en %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "En activar-ho, els missatges enviats i rebuts en aquesta conversa desapareixeran després que s'hagin llegit.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "En activar-ho, els missatges enviats i rebuts en la conversa desapareixeran després que s'hagin llegit.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Els missatges desapareixen en %@";
@@ -1344,10 +1344,10 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Convidar més d'un usuari al mateix temps generarà un missatge grupal i els destinataris podran veure's mútuament.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Els missatges desapareixeran en %@.";
+"KEEP_MESSAGES_DURATION" = "Els missatges s'esborren en %@.";
 
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Els missatges no desapareixeran.";
+"KEEP_MESSAGES_FOREVER" = "Els missatges no s'esborren.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Ves a tot el contingut";
@@ -1396,6 +1396,9 @@
 
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Abandona el grup";
+
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Aquest codi QR no és vàlid. Si us plau, assegureu-vos que escanegeu el codi QR que es mostra al dispositiu que voleu enllaçar.";
@@ -1683,7 +1686,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Més d'un membre del grup ja no està marcat com a verificat. Toqueu per a més opcions.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toqueu aquí per anar a la configuració.";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toqueu per a obrir la configuració";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "MIssatges nous";
@@ -1962,7 +1965,7 @@
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha desactivat els missatges efímers.";
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha establert el temps dels missatges efímers a %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha establert els missatges efímers en %@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "El Signal està patint problemes tècnics. Este treballant per a recuperar el servei tan ràpid com sigui possible.";
@@ -3191,6 +3194,9 @@
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "No s'admet";
 
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
+
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creeu el PIN";
 
@@ -3315,4 +3321,4 @@
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Heu de completar la configuració abans de continuar.";
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Heu establert el temps dels missatges efímers a %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Heu establert els missatges efímers en %@.";

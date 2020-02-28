@@ -1254,7 +1254,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Începe prima ta conversație aici.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ te-a adăugat la grup";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Cerere mesaj";
@@ -1396,6 +1396,9 @@
 
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Părăsește grupul";
+
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Acest cod QR nu este valid. Te rugăm să te asiguri că scanezi codul QR afișat pe dispozitivul pe care vrei să-l conectezi.";
@@ -1551,7 +1554,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blocați și ștergeți";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Persoanele blocate nu vor putea să vă sune sau să vă trimită mesaje.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Blochez pe %@?";
@@ -1560,13 +1563,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Veți părăsi acest grup și nu veți mai primi mesaje sau actualizări.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Blocați și părăsiți %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Șterge";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Această conversație o să fie ștearsă de pe toate dispozitivele dvs.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Șterg conversația?";
@@ -1575,10 +1578,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Ștergeți și părăsiți";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Veți părăsi acest grup și va fi șters de pe toate dispozitivele dvs.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Ștergeți și părăsiți grupul?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Acceptați";
@@ -3190,6 +3193,9 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Funcționalitatea nu este suportată";
+
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creeați-vă PIN-ul";

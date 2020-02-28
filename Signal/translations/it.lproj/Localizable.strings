@@ -1397,6 +1397,9 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Abbandona il gruppo";
 
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Questo codice QR non è valido. Assicurarati che stai effettuando la scansione del codice QR visualizzato sul dispositivo che desideri collegare.";
 
@@ -1551,7 +1554,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blocca ed elimina";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Gli utenti bloccati non potranno chiamarti o inviarti messaggi.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Le persone bloccate non potranno chiamarti o inviarti messaggi.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Bloccare %@?";
@@ -1569,7 +1572,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Questa conversazione verrà eliminata da tutti i tuoi dispositivi.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Elimina conversazione?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Eliminare la conversazione?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Elimina e abbandona";
@@ -3190,6 +3193,9 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Non consentito";
+
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Crea il tuo PIN";

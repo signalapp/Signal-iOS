@@ -1254,10 +1254,10 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "התחל את השיחה הראשונה שלך כאן.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ הוסיף אותך אל הקבוצה";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "בקשת הודעה";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "בקשת התכתבות";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "לא נמצאו תוצאות עבור '%@'";
@@ -1396,6 +1396,9 @@
 
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "עזוב קבוצה";
+
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "קוד QR זה אינו תקף. אנא וודא שאתה סורק את קוד ה־QR המוצג על המכשיר שאתה רוצה לקשר.";
@@ -1551,7 +1554,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "חסום ומחק";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "אנשים חסומים לא יוכלו להתקשר אליך או לשלוח לך הודעות.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "לחסום את %@?";
@@ -1560,13 +1563,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "תעזוב קבוצה זו ולא תקבל יותר הודעות או עדכונים.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "לחסום ולעזוב את %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "מחק";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "שיחה זו תימחק מכל המכשירים שלך.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "למחוק שיחה?";
@@ -1575,10 +1578,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "מחק ועזוב";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "תעזוב קבוצה זו, והיא תימחק מכל המכשירים שלך.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "למחוק ולעזוב קבוצה?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "קבל";
@@ -1608,7 +1611,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "האם אתה רוצה להרשות אל %@ לשלוח אליך הודעות? הוא לא יידע שראית את ההודעות שלו עד שלא תסכים.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "האם אתה רוצה להיצטרף אל הקבוצה %@? הקבוצה לא תידע שראית את ההודעות שלה עד שלא תסכים.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "האם אתה רוצה להצטרף אל הקבוצה %@? הקבוצה לא תידע שראית את ההודעות שלה עד שלא תסכים.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "שתף פרופיל";
@@ -1623,7 +1626,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "הוסף שם פרופיל";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "אתה כעת יכול לבחור באפשרויות \"קבל\" או \"מחק\" שיחה חדשה. שמות מאפשרים לאנשים לדעת עם מי הם מתכתבים.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "אתה יכול לבחור כעת באפשרויות \"קבל\" או \"מחק\" שיחה חדשה. שמות מאפשרים לאנשים לדעת עם מי הם מתכתבים.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "שם הפרופיל שלך נשמר.";
@@ -3190,6 +3193,9 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "בלתי נתמך";
+
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "צור את ה־PIN שלך";
