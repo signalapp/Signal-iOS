@@ -395,8 +395,6 @@ public class GroupManager: NSObject {
 
             // We must call this _after_ we try to fetch profile key credentials for
             // all members.
-            //
-            // GroupsV2 TODO: We may need to consult the user's capabilities.
             let isPending = !groupsV2.hasProfileKeyCredential(for: address,
                                                               transaction: transaction)
             guard let role = newGroupMembership.role(for: address) else {
@@ -525,8 +523,6 @@ public class GroupManager: NSObject {
         let groupModel = try builder.build(transaction: transaction)
 
         // Just create it in the database, don't create it on the service.
-        //
-        // GroupsV2 TODO: Update method to handle admins, pending members, etc.
         return try remoteUpsertExistingGroup(groupModel: groupModel,
                                              disappearingMessageToken: nil,
                                              groupUpdateSourceAddress: localAddress,
@@ -703,8 +699,6 @@ public class GroupManager: NSObject {
     }
 
     // If dmConfiguration is nil, don't change the disappearing messages configuration.
-    //
-    // GroupsV2 TODO: This should block on message processing.
     private static func localUpdateExistingGroupV2(groupModel proposedGroupModel: TSGroupModelV2,
                                                    dmConfiguration: OWSDisappearingMessagesConfiguration?,
                                                    groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
@@ -860,10 +854,12 @@ public class GroupManager: NSObject {
             throw OWSAssertionError("hasAvatarUrlPath: \(hasAvatarData) != hasAvatarData.")
         }
 
-        // GroupsV2 TODO: Eventually we won't need to increment the revision here,
-        //                since we'll probably be updating the TSGroupThread's
-        //                group models with one derived from the service.
-        let newRevision = oldGroupModel.revision + 1
+        // We don't need to increment the revision here,
+        // this is a "proposed" new group model; we'll
+        // eventually derive a new group model from
+        // protos received from the service and apply
+        // that the to the local database.
+        let newRevision = oldGroupModel.revision
 
         var builder = proposedGroupModel.asBuilder
         builder.groupMembership = groupMembership
@@ -1183,12 +1179,13 @@ public class GroupManager: NSObject {
                     // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
                     // which causes this code to be called. Once we're more aggressive about durable sending retry,
                     // we could get rid of this "retryable tappable error message".
-                    return self.messageSender.sendTemporaryAttachment(.promise,
-                                                                      dataSource: dataSource,
-                                                                      contentType: OWSMimeTypeImagePng,
-                                                                      message: message)
-                        .done(on: .global()) { _ in
-                            Logger.debug("Successfully sent group update with avatar")
+                    return firstly {
+                        self.messageSender.sendTemporaryAttachment(.promise,
+                                                                   dataSource: dataSource,
+                                                                   contentType: OWSMimeTypeImagePng,
+                                                                   message: message)
+                    }.done(on: .global()) { _ in
+                        Logger.debug("Successfully sent group update with avatar")
                     }.recover(on: .global()) { error in
                         owsFailDebug("Failed to send group avatar update with error: \(error)")
                         throw error
@@ -1243,7 +1240,7 @@ public class GroupManager: NSObject {
         // We need to send v2 group updates to pending members
         // as well.  Normal group sends only include "full members".
         assert(messageBuilder.additionalRecipients == nil)
-        let additionalRecipients = groupThread.groupModel.pendingMembers.filter { address in
+        let additionalRecipients = groupThread.groupModel.groupMembership.pendingMembers.filter { address in
             return doesUserSupportGroupsV2(address: address,
                                            transaction: transaction)
         }

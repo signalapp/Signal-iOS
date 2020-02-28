@@ -14,6 +14,10 @@ public extension GroupManager {
         return SDSDatabaseStorage.shared
     }
 
+    fileprivate class var messageProcessing: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
+    }
+
     // MARK: -
 
     static func leaveGroupOrDeclineInviteAsyncWithUI(groupThread: TSGroupThread,
@@ -31,7 +35,7 @@ public extension GroupManager {
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: false) { modalView in
             firstly {
-                self.localLeaveGroupOrDeclineInvite(groupThread: groupThread).asVoid()
+                self.leaveGroupOrDeclineInvitePromise(groupThread: groupThread).asVoid()
             }.done { _ in
                 modalView.dismiss {
                     success?()
@@ -52,10 +56,7 @@ public extension GroupManager {
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
                                                         firstly { () -> Promise<TSGroupThread> in
-                                                            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                                                                throw OWSAssertionError("Invalid group model.")
-                                                            }
-                                                            return GroupManager.localAcceptInviteToGroupV2(groupModel: groupModel)
+                                                            self.acceptGroupInvitePromise(groupThread: groupThread)
                                                         }.done { _ in
                                                             modalActivityIndicator.dismiss {
                                                                 success()
@@ -69,6 +70,45 @@ public extension GroupManager {
                                                                 OWSActionSheets.showActionSheet(title: title)
                                                             }
                                                         }.retainUntilComplete()
+        }
+    }
+}
+
+// MARK: -
+
+extension GroupManager {
+    static func leaveGroupOrDeclineInvitePromise(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+        return firstly { () -> Promise<Void> in
+            guard groupThread.groupModel.groupsVersion == .V2 else {
+                return Promise.value(())
+            }
+            // v2 group updates need to block on message processing.
+            return firstly {
+                self.messageProcessing.allMessageFetchingAndProcessingPromise()
+            }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+                GroupsV2Error.timeout
+            }
+        }.then(on: .global()) {
+            GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread)
+        }
+    }
+
+    static func acceptGroupInvitePromise(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+        return firstly { () -> Promise<Void> in
+            guard groupThread.groupModel.groupsVersion == .V2 else {
+                return Promise.value(())
+            }
+            // v2 group updates need to block on message processing.
+            return firstly {
+                self.messageProcessing.allMessageFetchingAndProcessingPromise()
+            }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+                GroupsV2Error.timeout
+            }
+        }.then(on: .global()) { _ -> Promise<TSGroupThread> in
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid group model.")
+            }
+            return GroupManager.localAcceptInviteToGroupV2(groupModel: groupModel)
         }
     }
 }

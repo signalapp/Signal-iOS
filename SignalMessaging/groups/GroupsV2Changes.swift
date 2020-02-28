@@ -238,7 +238,12 @@ public class GroupsV2Changes {
 
         if let action = changeActionsProto.modifyTitle {
             if let titleData = action.title {
-                newGroupName = try groupV2Params.decryptString(titleData)
+                do {
+                    newGroupName = try groupV2Params.decryptString(titleData)
+                } catch {
+                    owsFailDebug("Invalid title: \(error)")
+                    newGroupName = nil
+                }
             } else {
                 // Change clears the group title.
                 newGroupName = nil
@@ -248,8 +253,14 @@ public class GroupsV2Changes {
         if let action = changeActionsProto.modifyAvatar {
             if let avatarUrl = action.avatar,
                 !avatarUrl.isEmpty {
-                newAvatarData = try downloadedAvatars.avatarData(for: avatarUrl)
-                newAvatarUrlPath = avatarUrl
+                do {
+                    newAvatarData = try downloadedAvatars.avatarData(for: avatarUrl)
+                    newAvatarUrlPath = avatarUrl
+                } catch {
+                    owsFailDebug("Missing or invalid avatar: \(error)")
+                    newAvatarData = nil
+                    newAvatarUrlPath = nil
+                }
             } else {
                 // Change clears the group avatar.
                 newAvatarData = nil
@@ -264,9 +275,13 @@ public class GroupsV2Changes {
             newDisappearingMessageToken = DisappearingMessageToken.disabledToken
 
             if let disappearingMessagesTimerEncrypted = action.timer {
-                let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
-                let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
-                newDisappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: disappearingMessagesProto.duration)
+                do {
+                    let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
+                    let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
+                    newDisappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: disappearingMessagesProto.duration)
+                } catch {
+                    owsFailDebug("Could not decrypt and parse disappearing messages state: \(error).")
+                }
             }
         }
 

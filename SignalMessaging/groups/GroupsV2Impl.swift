@@ -240,9 +240,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             // applying the change set locally.
             let downloadedAvatars = GroupV2DownloadedAvatars.from(changeSet: changeSet)
 
-            // GroupsV2 TODO: Instead of loading the group model from the database,
-            // we should use exactly the same group model that was used to construct
-            // the update request - which should reflect pre-update service state.
             return firstly {
                 // We can ignoreSignature because these protos came from the service.
                 return self.updateGroupWithChangeActions(groupId: groupId,
@@ -253,33 +250,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> UpdatedV2Group in
                 return UpdatedV2Group(groupThread: groupThread, changeActionsProtoData: changeActionsProtoData)
             }
-
-            // GroupsV2 TODO: Propagate failure in a consumable way.
-            /*
-             If the group change is successfully applied, the service will respond:
-             
-             200 OK HTTP/2
-             Content-Type: application/x-protobuf
-             
-             {encoded and signed GroupChange}
-             
-             The response body contains the fully signed and populated group change record, which clients can transmit to group members out of band.
-             
-             If the group change conflicts with a version that has already been applied (for example, the version in the supplied proto is not current version + 1) , the service will respond:
-             
-             409 Conflict HTTP/2
-             Content-Type: application/x-protobuf
-             
-             {encoded_current_group_record}
-             
-             */
         }.then(on: DispatchQueue.global()) { (updatedV2Group: UpdatedV2Group) -> Promise<TSGroupThread> in
 
             GroupManager.updateProfileWhitelist(withGroupThread: updatedV2Group.groupThread)
-
-            // GroupsV2 TODO: We should skip sending this message if none of the
-            //                group state (including disappearing messages state)
-            //                changed.
 
             return GroupManager.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
                                                        changeActionsProtoData: updatedV2Group.changeActionsProtoData)
@@ -572,9 +545,32 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             // avatar with the avatar data.
             var promises = [Promise<(String, Data)>]()
             for avatarUrlPath in undownloadedAvatarUrlPaths {
-                let promise = firstly {
+                let (downloadPromise, resolver) = Promise<Data>.pending()
+                firstly { () -> Promise<Data> in
                     self.fetchAvatarData(avatarUrlPath: avatarUrlPath,
                                          groupV2Params: groupV2Params)
+                }.done(on: DispatchQueue.global()) { avatarData in
+                    resolver.fulfill(avatarData)
+                }.catch(on: DispatchQueue.global()) { error in
+                    // GroupsV2 TODO: Fulfill with empty data if service returns
+                    // 4xx status code. We don't want the group to be left in an
+                    // unrecoverable state if the the avatar is missing from the
+                    // CDN.
+                    resolver.reject(error)
+                }.retainUntilComplete()
+
+                let promise = downloadPromise.map(on: DispatchQueue.global()) { (avatarData: Data) -> Data in
+                    guard avatarData.count > 0 else {
+                        owsFailDebug("Empty avatarData.")
+                        return avatarData
+                    }
+                    do {
+                        return try groupV2Params.decryptBlob(avatarData)
+                    } catch {
+                        owsFailDebug("Invalid avatar data: \(error)")
+                        // Empty avatar data will be discarded below.
+                        return Data()
+                    }
                 }.map(on: DispatchQueue.global()) { (avatarData: Data) -> (String, Data) in
                     return (avatarUrlPath, avatarData)
                 }
@@ -584,6 +580,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 when(fulfilled: promises)
             }.map(on: DispatchQueue.global()) { (avatars: [(String, Data)]) -> GroupV2DownloadedAvatars in
                 for (avatarUrlPath, avatarData) in avatars {
+                    guard avatarData.count > 0 else {
+                        owsFailDebug("Empty avatarData.")
+                        continue
+                    }
                     downloadedAvatars.set(avatarData: avatarData, avatarUrlPath: avatarUrlPath)
                 }
                 return downloadedAvatars
@@ -603,11 +603,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         let operation = GroupsV2AvatarDownloadOperation(urlPath: avatarUrlPath)
         let promise = operation.promise
         avatarDownloadQueue.addOperation(operation)
-        return firstly {
-            return promise
-        }.map(on: DispatchQueue.global()) { (avatarData: Data) -> Data in
-            return try groupV2Params.decryptBlob(avatarData)
-        }
+        return promise
     }
 
     // MARK: - Accept Invites

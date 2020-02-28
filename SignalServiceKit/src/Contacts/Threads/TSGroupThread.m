@@ -226,9 +226,12 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return [self.class stableColorNameForNewConversationWithString:[self threadIdFromGroupId:groupId]];
 }
 
-- (NSSet<SignalServiceAddress *> *)allPendingAndNonPendingMembers
+- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    return self.groupModel.allPendingAndNonPendingMembers;
+    if (self.isGroupV2Thread) {
+        OWSFailDebug(@"In normal usage we should only soft delete v2 groups.");
+    }
+    [super anyWillRemoveWithTransaction:transaction];
 }
 
 @end

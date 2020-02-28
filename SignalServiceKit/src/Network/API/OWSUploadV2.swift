@@ -59,7 +59,11 @@ public extension OWSUploadV2 {
                     owsFailDebug("Missing task.")
                 }
 
-                owsFailDebug("Error: \(error)")
+                if IsNetworkConnectivityFailure(error) {
+                    Logger.warn("Error: \(error)")
+                } else {
+                    owsFailDebug("Error: \(error)")
+                }
                 resolver.reject(error)
             })
         }

@@ -10,13 +10,13 @@ public enum GroupsV2Error: Error {
     //
     // GroupsV2 TODO: We must handle this.  Not try to retry.
     case redundantChange
-    // GroupsV2 TODO: We must handle this.  We've probably been removed from the group.
     case unauthorized
     case shouldRetry
     case shouldDiscard
     case groupNotInDatabase
     case timeout
     case localUserNotInGroup
+    case conflictingChange
 }
 
 @objc
@@ -161,7 +161,6 @@ public protocol GroupV2UpdatesSwift: GroupV2Updates {
 
 // MARK: -
 
-// GroupsV2 TODO: Can we eventually remove this and just use TSGroupModelV2?
 public protocol GroupV2Snapshot {
     var groupSecretParamsData: Data { get }
 

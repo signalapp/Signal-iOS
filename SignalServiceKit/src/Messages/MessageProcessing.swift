@@ -388,8 +388,7 @@ public class MessageProcessing: NSObject {
             owsFailDebug("Not registered.")
             return false
         }
-        // Groupsv2 TODO: We don't want to process incoming messages
-        // in the share extension, but we need to block on latest
+        // In the share extension, don't block on latest
         // groups v2 state when sending messages.
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             owsFailDebug("Should not process incoming messages.")

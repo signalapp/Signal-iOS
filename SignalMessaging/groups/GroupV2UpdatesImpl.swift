@@ -247,7 +247,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     owsFailDebug("Missing localAddress.")
                     return false
                 }
-                let isLocalUserInGroup = groupThread.groupModel.groupMembership.isMemberOrPendingMemberOfAnyRole(localAddress)
+                let isLocalUserInGroup = groupThread.groupModel.groupMembership.isPendingOrNonPendingMember(localAddress)
                 // Auth errors are expected if we've left the group,
                 // but we should still try to refresh so we can learn
                 // if we've been re-added.
@@ -281,10 +281,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     //   backoff.
     // * If reachability changes, we should retry network errors
     //   immediately.
-    //
-    // It should upsert the group thread if it does not exist.
-    //
-    // GroupsV2 TODO: Implement properly.
     private func refreshGroupFromService(groupSecretParamsData: Data,
                                          groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
 
@@ -315,7 +311,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                               groupUpdateMode: groupUpdateMode)
                 .recover { (error) throws -> Promise<TSGroupThread> in
                     let shouldTrySnapshot = { () -> Bool in
-                        // GroupsV2 TODO: This should not fail over in the case of networking problems.
+                        if IsNetworkConnectivityFailure(error) {
+                            Logger.warn("Error: \(error)")
+                            return false
+                        }
+
                         switch error {
                         case GroupsV2Error.groupNotInDatabase:
                             // Unknown groups are handled by snapshot.
@@ -351,12 +351,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                              changeActionsProto: GroupsProtoGroupChangeActions,
                                              downloadedAvatars: GroupV2DownloadedAvatars,
                                              transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
-        // GroupsV2 TODO: When applying snapshots and change actions to the local
-        // database, we should check revision in the local database.
-        //
-        // GroupsV2 TODO: Instead of loading the group model from the database,
-        // we should use exactly the same group model that was used to construct
-        // the update request - which should reflect pre-update service state.
 
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             throw OWSAssertionError("Missing groupThread.")

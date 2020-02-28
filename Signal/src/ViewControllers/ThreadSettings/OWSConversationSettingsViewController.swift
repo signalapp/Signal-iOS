@@ -34,13 +34,18 @@ public extension OWSConversationSettingsViewController {
                                                                 self.navigationController?.popViewController(animated: true)
                                                             }
                                                         }.catch { error in
-                                                            owsFailDebug("Could not update group: \(error)")
+                                                            switch error {
+                                                            case GroupsV2Error.redundantChange:
+                                                                // Treat GroupsV2Error.redundantChange as a success.
+                                                                modalActivityIndicator.dismiss {
+                                                                    self.navigationController?.popViewController(animated: true)
+                                                                }
+                                                            default:
+                                                                owsFailDebug("Could not update group: \(error)")
 
-                                                            // GroupsV2 TODO: We might want to treat GroupsV2Error.redundantChange
-                                                            // as a success once we've finalized the conflict resolution behavior.
-
-                                                            modalActivityIndicator.dismiss {
-                                                                UpdateGroupViewController.showUpdateErrorUI(error: error)
+                                                                modalActivityIndicator.dismiss {
+                                                                    UpdateGroupViewController.showUpdateErrorUI(error: error)
+                                                                }
                                                             }
                                                         }.retainUntilComplete()
         }

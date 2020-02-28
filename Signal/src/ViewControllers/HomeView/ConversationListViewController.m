@@ -1600,7 +1600,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
 
-    // GroupsV2 TODO: Should we leave v2 groups here?
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
