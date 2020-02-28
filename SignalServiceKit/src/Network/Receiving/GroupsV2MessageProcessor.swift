@@ -53,7 +53,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
     private var isDrainingQueue = false
     private var isAppInBackground = AtomicBool(false)
 
-    private typealias BatchCompletionBlock = ([IncomingGroupsV2MessageJob], SDSAnyWriteTransaction) -> Void
+    private typealias BatchCompletionBlock = ([IncomingGroupsV2MessageJob], Bool, SDSAnyWriteTransaction) -> Void
 
     override init() {
         super.init()
@@ -143,7 +143,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
         }
     }
 
-    private func drainQueue() {
+    private func drainQueue(retryDelayAfterFailure: TimeInterval = 1.0) {
         guard AppReadiness.isAppReady() || CurrentAppContext().isRunningTests else {
             owsFailDebug("App is not ready.")
             return
@@ -160,11 +160,11 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 return
             }
             self.isDrainingQueue = true
-            self.drainQueueWorkStep()
+            self.drainQueueWorkStep(retryDelayAfterFailure: retryDelayAfterFailure)
         }
     }
 
-    private func drainQueueWorkStep() {
+    private func drainQueueWorkStep(retryDelayAfterFailure: TimeInterval = 1.0) {
         assertOnQueue(serialQueue)
 
         guard !DebugFlags.suppressBackgroundActivity else {
@@ -195,32 +195,54 @@ class IncomingGroupsV2MessageQueue: NSObject {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
 
-        databaseStorage.write { outerTransaction in
-            self.processJobs(jobs: batchJobs,
-                             transaction: outerTransaction) { (processedJobs, completionTransaction) in
-                                // NOTE: completionTransaction is the same transaction as outerTransaction
-                                //       in the "sync" case but a different transaction in the "async" case.
-                                let uniqueIds = processedJobs.map { $0.uniqueId }
-                                self.finder.removeJobs(withUniqueIds: uniqueIds,
-                                                       transaction: completionTransaction.unwrapGrdbWrite)
+        let completion: BatchCompletionBlock = { (processedJobs, shouldWaitBeforeRetrying, transaction) in
+            // NOTE: This transaction is the same transaction as the transaction
+            //       passed to processJobs() in the "sync" case but is a different
+            //       transaction in the "async" case.
+            let uniqueIds = processedJobs.map { $0.uniqueId }
+            self.finder.removeJobs(withUniqueIds: uniqueIds,
+                                   transaction: transaction.unwrapGrdbWrite)
 
-                                let jobCount: UInt = self.finder.jobCount(transaction: completionTransaction)
+            let jobCount: UInt = self.finder.jobCount(transaction: transaction)
 
-                                Logger.verbose("completed \(processedJobs.count)/\(batchJobs.count) jobs. \(jobCount) jobs left.")
+            Logger.verbose("completed \(processedJobs.count)/\(batchJobs.count) jobs. \(jobCount) jobs left.")
 
-                                completionTransaction.addAsyncCompletion {
-                                    assert(backgroundTask != nil)
-                                    backgroundTask = nil
+            transaction.addAsyncCompletion {
+                assert(backgroundTask != nil)
+                backgroundTask = nil
 
-                                    // Wait a bit in hopes of increasing the batch size.
-                                    // This delay won't affect the first message to arrive when this queue is idle,
-                                    // so by definition we're receiving more than one message and can benefit from
-                                    // batching.
-                                    self.serialQueue.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                                        self.drainQueueWorkStep()
-                                    }
-                                }
+                if shouldWaitBeforeRetrying {
+                    // Retry with exponential backoff.
+                    self.serialQueue.async {
+                        // After successfully processing a batch drainQueueWorkStep()
+                        // calls itself to process the next batch, if any.
+                        // The isDrainingQueue flag is cleared when all batches have
+                        // been processed.
+                        //
+                        // After failures, we clear isDrainingQueue immediately and
+                        // call drainQueue(), not drainQueueWorkStep() after a delay.
+                        // That allows us to kick off another batch immediately if
+                        // reachability changes, etc.
+                        self.isDrainingQueue = false
+                        self.serialQueue.asyncAfter(deadline: DispatchTime.now() + retryDelayAfterFailure) {
+                            self.drainQueue(retryDelayAfterFailure: retryDelayAfterFailure * 2)
+                        }
+                    }
+                } else {
+                    // Wait always a bit in hopes of increasing the size of the next batch.
+                    // This delay won't affect the first message to arrive when this queue is idle,
+                    // so by definition we're receiving more than one message and can benefit from
+                    // batching.
+                    let batchSpacingSeconds: TimeInterval = 0.5
+                    self.serialQueue.asyncAfter(deadline: DispatchTime.now() + batchSpacingSeconds) {
+                        self.drainQueueWorkStep()
+                    }
+                }
             }
+        }
+
+        databaseStorage.write { transaction in
+            self.processJobs(jobs: batchJobs, transaction: transaction, completion: completion)
         }
     }
 
@@ -358,14 +380,14 @@ class IncomingGroupsV2MessageQueue: NSObject {
             assert(jobInfos.count == 1)
             guard let jobInfo = jobInfos.first else {
                 owsFailDebug("Missing job")
-                completion([], transaction)
+                completion([], false, transaction)
                 return
             }
             updateGroupAndProcessJobAsync(jobInfo: jobInfo, completion: completion)
         } else {
             let processedJobs = performLocalProcessingSync(jobInfos: jobInfos,
                                                            transaction: transaction)
-            completion(processedJobs, transaction)
+            completion(processedJobs, false, transaction)
         }
     }
 
@@ -433,7 +455,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
             case .successShouldProcess:
                 self.databaseStorage.write { transaction in
                     let processedJobs = self.performLocalProcessingSync(jobInfos: [jobInfo], transaction: transaction)
-                    completion(processedJobs, transaction)
+                    completion(processedJobs, false, transaction)
                 }
             case .failureShouldDiscard:
                 throw GroupsV2Error.shouldDiscard
@@ -444,19 +466,22 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 throw GroupsV2Error.shouldDiscard
             }
         }.recover(on: .global()) { error in
-            Logger.warn("error: \(type(of: error)) \(error)")
-
-            switch error {
-            case GroupsV2Error.shouldRetry:
-                // GroupsV2 TODO: We need to handle retry.
-                break
-            default:
-                break
-            }
-
-            // Default to discarding jobs on failure.
             self.databaseStorage.write { transaction in
-                completion([jobInfo.job], transaction)
+                if self.isRetryableError(error) {
+                    Logger.warn("Error: \(error)")
+                    // Retry
+                    // _Do not_ include the job in the processed jobs.
+                    // _Do_ wait before retrying.
+                    completion([], true, transaction)
+                } else {
+                    owsFailDebug("Discarding unprocess-able message: \(error)")
+
+                    // Do not retry
+                    // _Do_ include the job in the processed jobs.
+                    //      It will be discarded.
+                    // _Do not_ wait before retrying.
+                    completion([jobInfo.job], false, transaction)
+                }
             }
         }.retainUntilComplete()
     }
@@ -576,7 +601,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 Logger.info("Successfully applied embedded change proto from group context.")
                 return resolver.fulfill(.successShouldProcess)
             }.catch(on: .global()) { error in
-                if error.isNetworkConnectivityFailure {
+                if self.isRetryableError(error) {
                     Logger.warn("Error: \(error)")
                     return resolver.fulfill(.failureShouldRetry)
                 } else {
@@ -607,23 +632,25 @@ class IncomingGroupsV2MessageQueue: NSObject {
         }.map(on: .global()) { (_) in
             return UpdateOutcome.successShouldProcess
         }.recover(on: .global()) { error -> Guarantee<UpdateOutcome> in
-            // GroupsV2 TODO: We need to distinguish network errors from other (un-retryable errors).
-            Logger.warn("error: \(type(of: error)) \(error)")
-
-            switch error {
-            case let networkManagerError as NetworkManagerError:
-                guard networkManagerError.isNetworkConnectivityError else {
-                    return Guarantee.value(UpdateOutcome.failureShouldDiscard)
-                }
-
-                // GroupsV2 TODO: Consult networkManagerError.statusCode.
-                return Guarantee.value(UpdateOutcome.failureShouldRetry)
-            case GroupsV2Error.timeout:
+            if self.isRetryableError(error) {
                 Logger.warn("error: \(type(of: error)) \(error)")
                 return Guarantee.value(UpdateOutcome.failureShouldRetry)
-            default:
+            } else {
+                owsFailDebug("error: \(type(of: error)) \(error)")
                 return Guarantee.value(UpdateOutcome.failureShouldDiscard)
             }
+        }
+    }
+
+    private func isRetryableError(_ error: Error) -> Bool {
+        if IsNetworkConnectivityFailure(error) {
+            return true
+        }
+        switch error {
+        case GroupsV2Error.timeout, GroupsV2Error.shouldRetry:
+            return true
+        default:
+            return false
         }
     }
 
