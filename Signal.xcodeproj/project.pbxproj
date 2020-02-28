@@ -643,6 +643,9 @@
 		88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F923DBA1360005C012 /* IntroducingPINs.swift */; };
 		88A505FC23DBAE4F0005C012 /* Reactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505FB23DBAE4F0005C012 /* Reactions.swift */; };
 		88A595E323AB48E80029E835 /* NotificationServiceExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A595E223AB48E80029E835 /* NotificationServiceExtensionContext.swift */; };
+		88A9419524099F7E000E9700 /* attachment_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 88A9419424099F7E000E9700 /* attachment_dark.json */; };
+		88A9419724099F85000E9700 /* attachment_light.json in Resources */ = {isa = PBXBuildFile; fileRef = 88A9419624099F85000E9700 /* attachment_light.json */; };
+		88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A941982409A391000E9700 /* LottieToggleButton.swift */; };
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
@@ -1561,6 +1564,9 @@
 		88A505FB23DBAE4F0005C012 /* Reactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactions.swift; sourceTree = "<group>"; };
 		88A595E223AB48E80029E835 /* NotificationServiceExtensionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtensionContext.swift; sourceTree = "<group>"; };
 		88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformProgressView.swift; sourceTree = "<group>"; };
+		88A9419424099F7E000E9700 /* attachment_dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = attachment_dark.json; sourceTree = "<group>"; };
+		88A9419624099F85000E9700 /* attachment_light.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = attachment_light.json; sourceTree = "<group>"; };
+		88A941982409A391000E9700 /* LottieToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieToggleButton.swift; sourceTree = "<group>"; };
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
@@ -2887,6 +2893,7 @@
 				45A663C41F92EC760027B59E /* GroupTableViewCell.swift */,
 				886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */,
 				34129B8521EF8779005457A8 /* LinkPreviewView.swift */,
+				88A941982409A391000E9700 /* LottieToggleButton.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
 				34386A53207D271C009F5D9C /* NeverClearView.swift */,
 				34F308A01ECB469700BB7697 /* OWSBezierPathView.h */,
@@ -3000,9 +3007,19 @@
 			path = "Upgrade Views";
 			sourceTree = "<group>";
 		};
+		88A9419324099F6E000E9700 /* Attachment Keyboard */ = {
+			isa = PBXGroup;
+			children = (
+				88A9419424099F7E000E9700 /* attachment_dark.json */,
+				88A9419624099F85000E9700 /* attachment_light.json */,
+			);
+			path = "Attachment Keyboard";
+			sourceTree = "<group>";
+		};
 		88BFD4712335C2A4001797D7 /* Lottie */ = {
 			isa = PBXGroup;
 			children = (
+				88A9419324099F6E000E9700 /* Attachment Keyboard */,
 				8889006223DBB38700F40186 /* Reactions Megaphone */,
 				4C9D34942369EFC7006A4307 /* launchApp.json */,
 				4C9D34842369EA3E006A4307 /* NotificationPermission */,
@@ -3744,11 +3761,13 @@
 				8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */,
 				8889006E23DBB39B00F40186 /* reactionMegaphone_0.png in Resources */,
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
+				88A9419724099F85000E9700 /* attachment_light.json in Resources */,
 				8889007223DBB39B00F40186 /* reactionMegaphone_4.png in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				4C9D34952369EFC7006A4307 /* launchApp.json in Resources */,
 				8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
+				88A9419524099F7E000E9700 /* attachment_dark.json in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
 				4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */,
@@ -4558,6 +4577,7 @@
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
 				34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */,
+				88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */,
 				3448E15C22133274004B052E /* OnboardingPermissionsViewController.swift in Sources */,
 				8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */,
 				34D920E720E179C200D51158 /* OWSMessageFooterView.m in Sources */,
