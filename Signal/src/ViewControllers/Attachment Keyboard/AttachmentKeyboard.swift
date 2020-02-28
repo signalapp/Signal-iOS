@@ -113,7 +113,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
     func setupGalleryButton() {
         addSubview(galleryButton)
-        galleryButton.setTemplateImage(#imageLiteral(resourceName: "photo-outline-28"), tintColor: .white)
+        galleryButton.setTemplateImage(#imageLiteral(resourceName: "photo-album-outline-28"), tintColor: .white)
         galleryButton.setBackgroundImage(UIImage(color: UIColor.black.withAlphaComponent(0.7)), for: .normal)
 
         galleryButton.autoSetDimensions(to: CGSize(width: 48, height: 48))
