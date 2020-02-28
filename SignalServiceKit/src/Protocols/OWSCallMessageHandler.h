@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
            fromCaller:(SignalServiceAddress *)caller NS_SWIFT_NAME(receivedOffer(_:from:));
 - (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer
             fromCaller:(SignalServiceAddress *)caller NS_SWIFT_NAME(receivedAnswer(_:from:));
-- (void)receivedIceUpdate:(SSKProtoCallMessageIceUpdate *)iceUpdate
+- (void)receivedIceUpdate:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdate
                fromCaller:(SignalServiceAddress *)caller NS_SWIFT_NAME(receivedIceUpdate(_:from:));
 - (void)receivedHangup:(SSKProtoCallMessageHangup *)hangup
             fromCaller:(SignalServiceAddress *)caller NS_SWIFT_NAME(receivedHangup(_:from:));

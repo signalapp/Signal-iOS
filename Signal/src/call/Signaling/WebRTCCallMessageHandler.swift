@@ -48,16 +48,11 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sessionDescription: answer.sessionDescription)
     }
 
-    public func receivedIceUpdate(_ iceUpdate: SSKProtoCallMessageIceUpdate, from caller: SignalServiceAddress) {
+    public func receivedIceUpdate(_ iceUpdate: [SSKProtoCallMessageIceUpdate], from caller: SignalServiceAddress) {
         AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-
-        // Discrepency between our protobuf's sdpMlineIndex, which is unsigned, 
-        // while the RTC iOS API requires a signed int.
-        let lineIndex = Int32(iceUpdate.sdpMlineIndex)
-
-        self.callService.handleReceivedIceCandidate(thread: thread, callId: iceUpdate.id, sdp: iceUpdate.sdp, lineIndex: lineIndex, mid: iceUpdate.sdpMid)
+        self.callService.handleReceivedIceCandidates(thread: thread, callId: iceUpdate[0].id, candidates: iceUpdate)
     }
 
     public func receivedHangup(_ hangup: SSKProtoCallMessageHangup, from caller: SignalServiceAddress) {
