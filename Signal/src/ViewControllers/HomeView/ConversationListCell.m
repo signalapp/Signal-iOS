@@ -415,6 +415,20 @@ NS_ASSUME_NONNULL_BEGIN
                                                         }]];
         }
         NSString *displayableText = thread.lastMessageText;
+
+        if (thread.draftText.length > 0 && !hasUnreadMessages) {
+            displayableText = thread.draftText;
+
+            [snippetText
+                appendAttributedString:[[NSAttributedString alloc]
+                                           initWithString:NSLocalizedString(@"HOME_VIEW_DRAFT_PREFIX",
+                                                              @"A prefix indicating that a message preview is a draft")
+                                               attributes:@{
+                                                   NSFontAttributeName : self.snippetFont.ows_italic,
+                                                   NSForegroundColorAttributeName : Theme.secondaryTextAndIconColor,
+                                               }]];
+        }
+
         if (displayableText) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
                                                     initWithString:displayableText
