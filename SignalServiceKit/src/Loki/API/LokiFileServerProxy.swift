@@ -44,6 +44,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
     }
     
     internal func performLokiFileServerNSURLRequest(_ request: NSURLRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> LokiAPI.RawResponsePromise {
+        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
         var headers = getCanonicalHeaders(for: request)
         return Promise<LokiAPI.RawResponse> { [server = self.server, keyPair = self.keyPair, httpSession = self.httpSession] seal in
             DispatchQueue.global().async {
@@ -116,9 +117,9 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                     let uncheckedJSON = try? JSONSerialization.jsonObject(with: uncheckedJSONAsData, options: .allowFragments) as? JSON
                     guard let json = uncheckedJSON else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
                     return json
-                }.done { rawResponse in
+                }.done(on: DispatchQueue.global()) { rawResponse in
                     seal.fulfill(rawResponse)
-                }.catch { error in
+                }.catch(on: DispatchQueue.global()) { error in
                     print("[Loki] File server proxy request failed with error: \(error.localizedDescription).")
                     seal.reject(HTTPError.from(error: error) ?? error)
                 }

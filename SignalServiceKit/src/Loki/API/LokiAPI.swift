@@ -142,7 +142,7 @@ public final class LokiAPI : NSObject {
                 destinations.append(contentsOf: slaveDestinations)
                 seal.fulfill(destinations)
             }
-            if let transaction = transaction {
+            if let transaction = transaction, transaction.connection.pendingTransactionCount != 0 {
                 getDestinationsInternal(in: transaction)
             } else {
                 storage.dbReadConnection.read { transaction in

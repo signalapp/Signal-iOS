@@ -3081,7 +3081,11 @@ typedef enum : NSUInteger {
 
 - (void)sendMediaNavDidCancel:(SendMediaNavigationController *)sendMediaNavigationController
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (!self.isFirstResponder) {
+            [self becomeFirstResponder];
+        }
+    }];
 }
 
 - (void)sendMediaNav:(SendMediaNavigationController *)sendMediaNavigationController
@@ -3096,15 +3100,16 @@ typedef enum : NSUInteger {
     // the new message scroll into view.
     [self scrollToBottomAnimated:NO];
 
-    [self dismissViewControllerAnimated:YES
-                             completion:^{
-//                                 OWSAssertDebug(self.isFirstResponder);
-                                 if (@available(iOS 10, *)) {
-                                     // do nothing
-                                 } else {
-                                     [self reloadInputViews];
-                                 }
-                             }];
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (!self.isFirstResponder) {
+            [self becomeFirstResponder];
+        }
+        if (@available(iOS 10, *)) {
+            // do nothing
+        } else {
+            [self reloadInputViews];
+        }
+    }];
 }
 
 - (nullable NSString *)sendMediaNavInitialMessageText:(SendMediaNavigationController *)sendMediaNavigationController

@@ -73,9 +73,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self writeUInt32:groupDataLength];
     [self writeData:groupData];
 
-//    if (avatarPng) {
-//        [self writeData:avatarPng];
-//    }
+    /*
+    if (avatarPng) {
+        [self writeData:avatarPng];
+    }
+     */
 }
 
 @end

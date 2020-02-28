@@ -57,7 +57,7 @@ public class LokiDotNetAPI : NSObject {
         func setAuthTokenInternal(in transaction: YapDatabaseReadWriteTransaction) {
             transaction.setObject(newValue, forKey: server, inCollection: authTokenCollection)
         }
-        if let transaction = transaction {
+        if let transaction = transaction, transaction.connection.pendingTransactionCount != 0 {
             setAuthTokenInternal(in: transaction)
         } else {
             storage.dbReadWriteConnection.readWrite { transaction in

@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoSyncMessageGroups *_Nullable groupsProto = [groupsBuilder buildAndReturnError:&error];
     if (error || !groupsProto) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
+        OWSFailDebug(@"Couldn't build protobuf due to error: %@.", error);
         return nil;
     }
 

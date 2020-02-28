@@ -1077,7 +1077,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else if (syncMessage.contacts != nil) {
         if (wasSentByMasterDevice && syncMessage.contacts.data.length > 0) {
-            OWSLogInfo(@"[Loki] Received contact sync message.");
+            [LKLogger print:@"[Loki] Received contact sync message."];
             NSData *data = syncMessage.contacts.data;
             ContactParser *parser = [[ContactParser alloc] initWithData:data];
             NSArray<NSString *> *hexEncodedPublicKeys = [parser parseHexEncodedPublicKeys];
@@ -1088,7 +1088,8 @@ NS_ASSUME_NONNULL_BEGIN
                 switch (friendRequestStatus) {
                     case LKThreadFriendRequestStatusNone: {
                         OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-                        LKFriendRequestMessage *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey inThread:thread transaction:transaction];
+                        LKFriendRequestMessage *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey transaction:transaction];
+                        [automatedFriendRequestMessage saveWithTransaction:transaction];
                         [self.messageSenderJobQueue addMessage:automatedFriendRequestMessage transaction:transaction];
                         break;
                     }
@@ -1105,7 +1106,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (syncMessage.groups != nil) {
         if (wasSentByMasterDevice && syncMessage.groups.data.length > 0) {
-            OWSLogInfo(@"[Loki] Received group sync message.");
+            [LKLogger print:@"[Loki] Received group sync message."];
             NSData *data = syncMessage.groups.data;
             GroupParser *parser = [[GroupParser alloc] initWithData:data];
             NSArray<TSGroupModel *> *groupModels = [parser parseGroupModels];
@@ -1428,7 +1429,7 @@ NS_ASSUME_NONNULL_BEGIN
         }).catchOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(NSError *error) {
             dispatch_semaphore_signal(semaphore);
         }) retainUntilComplete];
-        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC));
+        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
     }
 
     if (groupId.length > 0) {
@@ -1461,7 +1462,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
-                if (oldGroupThread && ![oldGroupThread isUserAdminForGroup:hexEncodedPublicKey transaction:transaction]) {
+                if (oldGroupThread && ![oldGroupThread isUserAdminInGroup:hexEncodedPublicKey transaction:transaction]) {
                     [LKLogger print:[NSString stringWithFormat:@"[Loki] Received a group update from a non-admin user for %@; ignoring.", [LKGroupUtilities getEncodedGroupID:groupId]]];
                     return nil;
                 }
