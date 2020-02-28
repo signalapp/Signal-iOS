@@ -1124,6 +1124,13 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             }
         }
+    } else if (syncMessage.openGroups != nil) {
+        if (wasSentByMasterDevice && syncMessage.openGroups.count > 0) {
+            OWSLogInfo(@"[Loki] Received open group sync message.");
+            for (SSKProtoSyncMessageOpenGroups* openGroup in syncMessage.openGroups) {
+                [LKPublicChatManager.shared addChatWithServer:openGroup.url channel:openGroup.channel];
+            }
+        }
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }

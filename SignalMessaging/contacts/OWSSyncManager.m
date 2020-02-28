@@ -17,6 +17,7 @@
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
+#import <SignalServiceKit/OWSSyncOpenGroupsMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -359,6 +360,24 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             }
             failure:^(NSError *error) {
                 OWSLogError(@"Failed to send group sync message due to error: %@.", error);
+                resolve(error);
+            }];
+    }];
+    [promise retainUntilComplete];
+    return promise;
+}
+
+- (AnyPromise *)syncAllOpenGroups
+{
+    OWSSyncOpenGroupsMessage *syncOpenGroupsMessage = [[OWSSyncOpenGroupsMessage alloc] init];
+    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        [self.messageSender sendMessage:syncOpenGroupsMessage
+            success:^{
+                OWSLogInfo(@"Successfully sent open groups syn message.");
+                resolve(@(1));
+            }
+            failure:^(NSError *error) {
+                OWSLogError(@"Failed to send open group sync message with error: %@.", error);
                 resolve(error);
             }];
     }];
