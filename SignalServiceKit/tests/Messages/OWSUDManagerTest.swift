@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -40,7 +40,10 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         // Configure UDManager
         self.write { transaction in
-            self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, for: self.aliceAddress, transaction: transaction)
+            self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
+                                                  for: self.aliceAddress,
+                                                  wasLocallyInitiated: true,
+                                                  transaction: transaction)
         }
 
         udManager.certificateValidator = MockCertificateValidator()
@@ -198,7 +201,10 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         let bobRecipientAddress = SignalServiceAddress(phoneNumber: "+13213214322")
         XCTAssertFalse(bobRecipientAddress.isLocalAddress)
         self.write { transaction in
-            self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, for: bobRecipientAddress, transaction: transaction)
+            self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
+                                                  for: bobRecipientAddress,
+                                                  wasLocallyInitiated: true,
+                                                  transaction: transaction)
         }
 
         do {
@@ -267,7 +273,10 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         let bobRecipientAddress = SignalServiceAddress(phoneNumber: "+13213214322")
         XCTAssertFalse(bobRecipientAddress.isLocalAddress)
         write { transaction in
-            self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, for: bobRecipientAddress, transaction: transaction)
+            self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
+                                                  for: bobRecipientAddress,
+                                                  wasLocallyInitiated: true,
+                                                  transaction: transaction)
         }
 
         let completed = self.expectation(description: "completed")
