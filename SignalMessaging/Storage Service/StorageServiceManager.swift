@@ -132,14 +132,19 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     @objc
     public func recordPendingUpdates(groupModel: TSGroupModel) {
         if let groupModelV2 = groupModel as? TSGroupModelV2 {
-            let groupMasterKey: Data
+            let masterKeyData: Data
             do {
-                groupMasterKey = try groupsV2.masterKeyData(forGroupModel: groupModelV2)
+                masterKeyData = try groupsV2.masterKeyData(forGroupModel: groupModelV2)
             } catch {
                 owsFailDebug("Missing master key: \(error)")
                 return
             }
-            recordPendingUpdates(updatedGroupV2MasterKeys: [ groupMasterKey ])
+            guard groupsV2.isValidGroupV2MasterKey(masterKeyData) else {
+                owsFailDebug("Invalid master key.")
+                return
+            }
+
+            recordPendingUpdates(updatedGroupV2MasterKeys: [ masterKeyData ])
         } else {
             recordPendingUpdates(updatedGroupV1Ids: [ groupModel.groupId ])
         }

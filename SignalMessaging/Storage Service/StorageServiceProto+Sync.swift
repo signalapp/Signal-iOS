@@ -369,6 +369,10 @@ extension StorageServiceProtoGroupV2Record {
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoGroupV2Record {
 
+        guard groupsV2.isValidGroupV2MasterKey(masterKeyData) else {
+            throw OWSAssertionError("Invalid master key.")
+        }
+
         let groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
         let groupId = groupContextInfo.groupId
 
@@ -381,11 +385,26 @@ extension StorageServiceProtoGroupV2Record {
     }
 
     // Embeds the master key.
-    enum MergeState {
+    enum MergeState: CustomStringConvertible {
         case resolved(Data)
         case needsUpdate(Data)
         case needsRefreshFromService(Data)
         case invalid
+
+        // MARK: - CustomStringConvertible
+        
+        public var description: String {
+            switch self {
+            case .resolved:
+                return "resolved"
+            case .needsUpdate:
+                return "needsUpdate"
+            case .needsRefreshFromService:
+                return "needsRefreshFromService"
+            case .invalid:
+                return "invalid"
+            }
+        }
     }
 
     func mergeWithLocalGroup(transaction: SDSAnyWriteTransaction) -> MergeState {
@@ -402,6 +421,11 @@ extension StorageServiceProtoGroupV2Record {
         // Should this prove unreliable, we may need to start maintaining time stamps
         // representing the remote and local last update time for every value we sync.
         // For now, we'd like to avoid that as it adds its own set of problems.
+
+        guard groupsV2.isValidGroupV2MasterKey(masterKey) else {
+            owsFailDebug("Invalid master key.")
+            return .invalid
+        }
 
         let groupContextInfo: GroupV2ContextInfo
         do {

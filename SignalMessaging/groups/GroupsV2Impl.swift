@@ -1134,6 +1134,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                   groupId: groupId)
     }
 
+    public func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool {
+        return masterKeyData.count == GroupMasterKey.SIZE
+    }
+
     // MARK: - Utils
 
     private var daysSinceEpoch: UInt32 {
