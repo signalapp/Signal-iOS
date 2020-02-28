@@ -2,6 +2,8 @@
 #import <AxolotlKit/PreKeyRecord.h>
 #import <AxolotlKit/PreKeyBundle.h>
 #import <YapDatabase/YapDatabase.h>
+#import <Curve25519Kit/Ed25519.h>
+#import <AxolotlKit/AxolotlExceptions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
