@@ -26,7 +26,6 @@ public enum ThemeIcon: UInt {
     case cameraButton
     case micButton
 
-    case attachmentButtonSelected
     case attachmentCamera
     case attachmentContact
     case attachmentFile
@@ -103,18 +102,16 @@ public extension Theme {
             return isDarkThemeEnabled ? "camera-solid-24" : "camera-outline-24"
         case .micButton:
             return isDarkThemeEnabled ? "mic-solid-24" : "mic-outline-24"
-        case .attachmentButtonSelected:
-            return isDarkThemeEnabled ? "x-box-filled-28-dark" : "x-box-filled-28-light"
         case .attachmentCamera:
-            return isDarkThemeEnabled ? "camera-outline-32" : "camera-outline-32-with-background"
+            return "camera-outline-32"
         case .attachmentContact:
-            return isDarkThemeEnabled ? "contact-outline-32" : "contact-outline-32-with-background"
+            return "contact-outline-32"
         case .attachmentFile:
-            return isDarkThemeEnabled ? "file-outline-32" : "file-outline-32-with-background"
+            return "file-outline-32"
         case .attachmentGif:
-            return isDarkThemeEnabled ? "gif-outline-32" : "gif-outline-32-with-background"
+            return "gif-outline-32"
         case .attachmentLocation:
-            return isDarkThemeEnabled ? "location-outline-32" : "location-outline-32-with-background"
+            return "location-outline-32"
 
         case .messageActionReply:
             return isDarkThemeEnabled ? "reply-filled-24" : "reply-outline-24"
