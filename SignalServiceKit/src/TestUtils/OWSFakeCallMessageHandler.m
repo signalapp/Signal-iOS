@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFakeCallMessageHandler.h"
@@ -10,7 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFakeCallMessageHandler
 
-- (void)receivedOffer:(SSKProtoCallMessageOffer *)offer fromCaller:(SignalServiceAddress *)caller
+- (void)receivedOffer:(SSKProtoCallMessageOffer *)offer
+           fromCaller:(SignalServiceAddress *)caller
+      sentAtTimestamp:(uint64_t)sentAtTimestamp
 {
     OWSLogInfo(@"");
 }

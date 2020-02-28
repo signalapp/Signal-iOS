@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol OWSCallMessageHandler <NSObject>
 
 - (void)receivedOffer:(SSKProtoCallMessageOffer *)offer
-           fromCaller:(SignalServiceAddress *)caller NS_SWIFT_NAME(receivedOffer(_:from:));
+           fromCaller:(SignalServiceAddress *)caller
+      sentAtTimestamp:(uint64_t)sentAtTimestamp NS_SWIFT_NAME(receivedOffer(_:from:sentAtTimestamp:));
 - (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer
             fromCaller:(SignalServiceAddress *)caller NS_SWIFT_NAME(receivedAnswer(_:from:));
 - (void)receivedIceUpdate:(SSKProtoCallMessageIceUpdate *)iceUpdate

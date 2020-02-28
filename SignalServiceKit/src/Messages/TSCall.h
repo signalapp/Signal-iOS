@@ -30,7 +30,8 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initWithCallType:(RPRecentCallType)callType
-                        inThread:(TSContactThread *)thread NS_DESIGNATED_INITIALIZER;
+                        inThread:(TSContactThread *)thread
+                 sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

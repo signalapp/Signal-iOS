@@ -209,7 +209,7 @@ extension SignalCall: CallManagerCallReference { }
         }
 
         // Create a callRecord for outgoing calls immediately.
-        let callRecord = TSCall(callType: .outgoingIncomplete, in: call.thread)
+        let callRecord = TSCall(callType: .outgoingIncomplete, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
         databaseStorage.write { transaction in
             callRecord.anyInsert(transaction: transaction)
         }
@@ -240,7 +240,7 @@ extension SignalCall: CallManagerCallReference { }
             return
         }
 
-        let callRecord = TSCall(callType: .incomingIncomplete, in: call.thread)
+        let callRecord = TSCall(callType: .incomingIncomplete, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
         databaseStorage.write { transaction in
             callRecord.anyInsert(transaction: transaction)
         }
@@ -293,7 +293,7 @@ extension SignalCall: CallManagerCallReference { }
                 callRecord.updateCallType(.outgoingMissed)
             }
         } else if call.state == .localRinging {
-            let callRecord = TSCall(callType: .incomingDeclined, in: call.thread)
+            let callRecord = TSCall(callType: .incomingDeclined, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
             databaseStorage.write { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
@@ -374,11 +374,11 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Received an incoming call Offer from call initiator.
      */
-    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
+    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String, sentAtTimestamp: UInt64) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        let newCall = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress)
+        let newCall = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress, sentAtTimestamp: sentAtTimestamp)
         calls.insert(newCall)
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
@@ -386,7 +386,7 @@ extension SignalCall: CallManagerCallReference { }
 
         guard tsAccountManager.isOnboarded() else {
             Logger.warn("user is not onboarded, skipping call.")
-            let callRecord = TSCall(callType: .incomingMissed, in: thread)
+            let callRecord = TSCall(callType: .incomingMissed, in: thread, sentAtTimestamp: sentAtTimestamp)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
             databaseStorage.write { transaction in
@@ -413,7 +413,7 @@ extension SignalCall: CallManagerCallReference { }
                 self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
             }
 
-            let callRecord = TSCall(callType: .incomingMissedBecauseOfChangedIdentity, in: thread)
+            let callRecord = TSCall(callType: .incomingMissedBecauseOfChangedIdentity, in: thread, sentAtTimestamp: sentAtTimestamp)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
             databaseStorage.write { transaction in
@@ -705,7 +705,7 @@ extension SignalCall: CallManagerCallReference { }
                 }
             } else {
                 assert(call.direction == .incoming)
-                let callRecord = TSCall(callType: .incomingMissed, in: call.thread)
+                let callRecord = TSCall(callType: .incomingMissed, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
                 databaseStorage.write { callRecord.anyInsert(transaction: $0) }
                 call.callRecord = callRecord
                 callUIAdapter.reportMissedCall(call)
@@ -945,7 +945,7 @@ extension SignalCall: CallManagerCallReference { }
         if let existingCallRecord = call.callRecord {
             callRecord = existingCallRecord
         } else {
-            callRecord = TSCall(callType: .incomingMissed, in: call.thread)
+            callRecord = TSCall(callType: .incomingMissed, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
             call.callRecord = callRecord
         }
 

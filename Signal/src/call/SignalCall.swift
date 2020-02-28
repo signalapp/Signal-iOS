@@ -129,6 +129,8 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
 
     public let thread: TSContactThread
 
+    public let sentAtTimestamp: UInt64
+
     public var callRecord: TSCall? {
         didSet {
             AssertIsOnMainThread()
@@ -219,13 +221,14 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, localId: UUID, state: CallState, remoteAddress: SignalServiceAddress) {
+    init(direction: CallDirection, localId: UUID, state: CallState, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64) {
         self.direction = direction
         self.localId = localId
         self.state = state
         self.remoteAddress = remoteAddress
         self.thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
         self.audioActivity = AudioActivity(audioDescription: "[SignalCall] with \(remoteAddress)", behavior: .call)
+        self.sentAtTimestamp = sentAtTimestamp
     }
 
     deinit {
@@ -252,11 +255,11 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
     }
 
     public class func outgoingCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
-        return SignalCall(direction: .outgoing, localId: localId, state: .dialing, remoteAddress: remoteAddress)
+        return SignalCall(direction: .outgoing, localId: localId, state: .dialing, remoteAddress: remoteAddress, sentAtTimestamp: Date.ows_millisecondTimestamp())
     }
 
-    public class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
-        return SignalCall(direction: .incoming, localId: localId, state: .answering, remoteAddress: remoteAddress)
+    public class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64) -> SignalCall {
+        return SignalCall(direction: .incoming, localId: localId, state: .answering, remoteAddress: remoteAddress, sentAtTimestamp: sentAtTimestamp)
     }
 
     // -
