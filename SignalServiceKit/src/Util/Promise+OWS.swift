@@ -10,36 +10,61 @@ public extension Promise {
             return nil
         }
 
-        return race(self.map { $0 }, timeout)
+        return race(
+            self.map { (a: T?) -> (T?, Bool) in
+                (a, false)
+            },
+            timeout.map { (a: T?) -> (T?, Bool) in
+                (a, true)
+            }
+        ).map { result, didTimeout in
+            if didTimeout {
+                Logger.info("Timed out, returning nil value.")
+            }
+            return result
+        }
     }
 
     func timeout(seconds: TimeInterval, substituteValue: T) -> Promise<T> {
         let timeout: Promise<T> = after(seconds: seconds).map {
-            Logger.info("Timed out, returning substitute value.")
             return substituteValue
         }
 
-        return race(self, timeout)
+        return race(
+            self.map { ($0, false) },
+            timeout.map { ($0, true) }
+        ).map { result, didTimeout in
+            if didTimeout {
+                Logger.info("Timed out, returning substitute value.")
+            }
+            return result
+        }
     }
 
     func timeout(seconds: TimeInterval, timeoutErrorBlock: @escaping () -> Error) -> Promise<T> {
         let timeout: Promise<T> = after(seconds: seconds).map {
-            Logger.info("Timed out, throwing error.")
-            throw timeoutErrorBlock()
+            throw TimeoutError(underlyingError: timeoutErrorBlock())
         }
 
-        return race(self, timeout)
+        return race(self, timeout).recover { error -> Promise<T> in
+            switch error {
+            case let timeoutError as TimeoutError:
+                Logger.info("Timed out, throwing error.")
+                return Promise(error: timeoutError.underlyingError)
+            default:
+                return Promise(error: error)
+            }
+        }
     }
+}
+
+struct TimeoutError: Error {
+    let underlyingError: Error
 }
 
 public extension Promise where T == Void {
     func timeout(seconds: TimeInterval) -> Promise<Void> {
-        let timeout: Promise<Void> = after(seconds: seconds).map {
-            Logger.info("Timed out, returning substitute value.")
-            return ()
-        }
-
-        return race(self, timeout)
+        return timeout(seconds: seconds, substituteValue: ())
     }
 }
 
@@ -49,27 +74,37 @@ public extension Guarantee {
             return nil
         }
 
-        return race(self.map { $0 }, timeout)
+        return race(
+            self.map { ($0, false) },
+            timeout.map { ($0, true) }
+        ).map { result, didTimeout in
+            if didTimeout {
+                Logger.info("Timed out, returning nil value.")
+            }
+            return result
+        }
     }
 
     func timeout(seconds: TimeInterval, substituteValue: T) -> Guarantee<T> {
         let timeout: Guarantee<T> = after(seconds: seconds).map {
-            Logger.info("Timed out, returning substitute value.")
             return substituteValue
         }
 
-        return race(self, timeout)
+        return race(
+            self.map { ($0, false) },
+            timeout.map { ($0, true) }
+        ).map { result, didTimeout in
+            if didTimeout {
+                Logger.info("Timed out, returning substitute value.")
+            }
+            return result
+        }
     }
 }
 
 public extension Guarantee where T == Void {
     func timeout(seconds: TimeInterval) -> Guarantee<Void> {
-        let timeout: Guarantee<Void> = after(seconds: seconds).map {
-            Logger.info("Timed out, returning substitute value.")
-            return ()
-        }
-
-        return race(self, timeout)
+        timeout(seconds: seconds, substituteValue: ())
     }
 }
 
