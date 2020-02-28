@@ -21,7 +21,7 @@ public enum GroupsV2Error: Error {
 @objc
 public protocol GroupsV2: AnyObject {
 
-    func createNewGroupOnServiceObjc(groupModel: TSGroupModel) -> AnyPromise
+    func createNewGroupOnServiceObjc(groupModel: TSGroupModelV2) -> AnyPromise
 
     func generateGroupSecretParamsData() throws -> Data
 
@@ -32,9 +32,9 @@ public protocol GroupsV2: AnyObject {
 
     func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress]) -> AnyPromise
 
-    func masterKeyData(forGroupModel groupModel: TSGroupModel) throws -> Data
+    func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data
 
-    func buildGroupContextV2Proto(groupModel: TSGroupModel,
+    func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                   changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2
 
     func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo
@@ -59,21 +59,21 @@ public protocol GroupsV2: AnyObject {
 // MARK: -
 
 public protocol GroupsV2Swift: GroupsV2 {
-    func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void>
+    func createNewGroupOnService(groupModel: TSGroupModelV2) -> Promise<Void>
 
     func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
 
     func tryToEnsureUuidsForGroupMembers(for addresses: [SignalServiceAddress]) -> Promise<Void>
 
-    func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot>
+    func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) -> Promise<GroupV2Snapshot>
 
     func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
 
     func fetchGroupChangeActions(groupSecretParamsData: Data,
                                  firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]>
 
-    func buildChangeSet(oldGroupModel: TSGroupModel,
-                        newGroupModel: TSGroupModel,
+    func buildChangeSet(oldGroupModel: TSGroupModelV2,
+                        newGroupModel: TSGroupModelV2,
                         oldDMConfiguration: OWSDisappearingMessagesConfiguration,
                         newDMConfiguration: OWSDisappearingMessagesConfiguration,
                         transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet
@@ -83,11 +83,11 @@ public protocol GroupsV2Swift: GroupsV2 {
     // reflect changes after the change set.
     func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread>
 
-    func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread>
+    func acceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread>
 
-    func leaveGroupV2OrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread>
+    func leaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread>
 
-    func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
+    func updateDisappearingMessageStateOnService(groupModel: TSGroupModelV2,
                                                  disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
@@ -97,7 +97,7 @@ public protocol GroupsV2Swift: GroupsV2 {
                                       ignoreSignature: Bool,
                                       groupSecretParamsData: Data) throws -> Promise<TSGroupThread>
 
-     func uploadGroupAvatar(avatarData: Data, groupSecretParamsData: Data) -> Promise<String>
+    func uploadGroupAvatar(avatarData: Data, groupSecretParamsData: Data) -> Promise<String>
 }
 
 // MARK: -
@@ -109,7 +109,7 @@ public protocol GroupsV2ChangeSet: AnyObject {
     var newAvatarData: Data? { get }
     var newAvatarUrlPath: String? { get }
 
-    func buildGroupChangeProto(currentGroupModel: TSGroupModel,
+    func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
                                currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
 }
 
@@ -154,7 +154,7 @@ public protocol GroupV2UpdatesSwift: GroupV2Updates {
 
 // MARK: -
 
-// GroupsV2 TODO: Can we eventually remove this and just use TSGroupModel?
+// GroupsV2 TODO: Can we eventually remove this and just use TSGroupModelV2?
 public protocol GroupV2Snapshot {
     var groupSecretParamsData: Data { get }
 
@@ -248,7 +248,7 @@ public struct GroupV2DownloadedAvatars {
     }
 
     public static func from(groupModel: TSGroupModelV2) -> GroupV2DownloadedAvatars {
-        return from(avatarData: groupModel.groupAvatarData, avatarUrlPath: groupModel.groupAvatarUrlPath)
+        return from(avatarData: groupModel.groupAvatarData, avatarUrlPath: groupModel.avatarUrlPath)
     }
 
     public static func from(changeSet: GroupsV2ChangeSet) -> GroupV2DownloadedAvatars {
@@ -279,11 +279,11 @@ public struct GroupV2DownloadedAvatars {
 
 public class MockGroupsV2: NSObject, GroupsV2Swift {
 
-    public func createNewGroupOnService(groupModel: TSGroupModel) -> Promise<Void> {
+    public func createNewGroupOnService(groupModel: TSGroupModelV2) -> Promise<Void> {
         owsFail("Not implemented.")
     }
 
-    public func createNewGroupOnServiceObjc(groupModel: TSGroupModel) -> AnyPromise {
+    public func createNewGroupOnServiceObjc(groupModel: TSGroupModelV2) -> AnyPromise {
         owsFail("Not implemented.")
     }
 
@@ -312,7 +312,7 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModel) -> Promise<GroupV2Snapshot> {
+    public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) -> Promise<GroupV2Snapshot> {
         owsFail("Not implemented.")
     }
 
@@ -325,17 +325,17 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func masterKeyData(forGroupModel groupModel: TSGroupModel) throws -> Data {
+    public func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data {
         owsFail("Not implemented.")
     }
 
-    public func buildGroupContextV2Proto(groupModel: TSGroupModel,
+    public func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                          changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
         owsFail("Not implemented.")
     }
 
-    public func buildChangeSet(oldGroupModel: TSGroupModel,
-                               newGroupModel: TSGroupModel,
+    public func buildChangeSet(oldGroupModel: TSGroupModelV2,
+                               newGroupModel: TSGroupModelV2,
                                oldDMConfiguration: OWSDisappearingMessagesConfiguration,
                                newDMConfiguration: OWSDisappearingMessagesConfiguration,
                                transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet {
@@ -346,15 +346,15 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func acceptInviteToGroupV2(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+    public func acceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 
-    public func leaveGroupV2OrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+    public func leaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 
-    public func updateDisappearingMessageStateOnService(groupThread: TSGroupThread,
+    public func updateDisappearingMessageStateOnService(groupModel: TSGroupModelV2,
                                                         disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }

@@ -727,18 +727,17 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Unknown v2 group.");
             return nil;
         }
-        if (groupThread.groupModel.groupV2Revision < revision) {
-            // GroupsV2 TODO: Restore this assert when the Android bug is fixed.
-            OWSLogVerbose(@"sourceAddress: %@", envelope.sourceAddress);
-            OWSLogError(@"Invalid v2 group revision[%@]: %lu < %lu",
-                groupThread.groupModel.groupId.hexadecimalString,
-                (unsigned long)groupThread.groupModel.groupV2Revision,
+        if (![groupThread.groupModel isKindOfClass:TSGroupModelV2.class]) {
+            OWSFailDebug(@"Invalid group model.");
+            return nil;
+        }
+        TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
+
+        if (groupModel.revision < revision) {
+            OWSFailDebug(@"Invalid v2 group revision[%@]: %lu < %lu",
+                groupModel.groupId.hexadecimalString,
+                (unsigned long)groupModel.revision,
                 (unsigned long)revision);
-            //            OWSFailDebug(@"Invalid v2 group revision[%@]: %lu < %lu",
-            //                         groupThread.groupModel.groupId.hexadecimalString,
-            //                (unsigned long)groupThread.groupModel.groupV2Revision,
-            //                (unsigned long)revision);
-            // GroupsV2 TODO: Arguably we could process the data message.
             return nil;
         }
 
@@ -1207,13 +1206,11 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 NSError *_Nullable error;
                 UpsertGroupResult *_Nullable result =
-                    [GroupManager remoteUpdateToExistingGroupV1WithGroupId:groupId
-                                                                      name:oldGroupThread.groupModel.groupName
-                                                                avatarData:avatarData
-                                                           groupMembership:oldGroupThread.groupModel.groupMembership
-                                                  groupUpdateSourceAddress:groupUpdateSourceAddress
-                                                               transaction:transaction
-                                                                     error:&error];
+                    [GroupManager remoteUpdateAvatarToExistingGroupV1WithGroupModel:oldGroupThread.groupModel
+                                                                         avatarData:avatarData
+                                                           groupUpdateSourceAddress:groupUpdateSourceAddress
+                                                                        transaction:transaction
+                                                                              error:&error];
                 if (error != nil || result == nil) {
                     OWSFailDebug(@"Error: %@", error);
                     return;

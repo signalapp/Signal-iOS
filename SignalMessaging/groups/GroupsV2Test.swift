@@ -67,21 +67,20 @@ public class GroupsV2Test: NSObject {
         Logger.verbose("otherAddresses: \(otherAddresses)")
         firstly {
             GroupManager.localCreateNewGroup(members: members,
-                                        name: title0,
-                                        shouldSendMessage: true)
+                                             name: title0,
+                                             shouldSendMessage: true)
         }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<GroupV2Snapshot> in
-            let groupModel = groupThread.groupModel
-            guard groupModel.groupsVersion == .V2 else {
-                throw OWSAssertionError("Not a V2 group.")
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid group model.")
             }
             return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
         }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> Data in
             let groupModel = try self.databaseStorage.read { transaction in
-                return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
+                return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction) as! TSGroupModelV2
             }
             let groupId = groupModel.groupId
-            guard groupModel.groupV2Revision == 0 else {
-                throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
+            guard groupModel.revision == 0 else {
+                throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.revision).")
             }
 
             guard groupV2Snapshot.revision == 0 else {
@@ -120,50 +119,56 @@ public class GroupsV2Test: NSObject {
             return groupId
         }.then(on: .global()) { (groupId: Data) throws -> Promise<TSGroupThread> in
             let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
-            let groupModel = groupThread.groupModel
-            guard groupModel.groupMembership.administrators == localAddressSet else {
+            let oldGroupModel = groupThread.groupModel as! TSGroupModelV2
+            guard oldGroupModel.groupMembership.administrators == localAddressSet else {
                 throw OWSAssertionError("Unexpected groupMembership.")
             }
-            guard groupModel.groupMembership.nonAdminMembers.isEmpty else {
+            guard oldGroupModel.groupMembership.nonAdminMembers.isEmpty else {
                 throw OWSAssertionError("Unexpected groupMembership.")
             }
-            guard groupModel.groupV2Revision == 0 else {
-                throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
+            guard oldGroupModel.revision == 0 else {
+                throw OWSAssertionError("Unexpected groupV2Revision: \(oldGroupModel.revision).")
             }
-            guard groupModel.groupName == title0 else {
-                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+            guard oldGroupModel.groupName == title0 else {
+                throw OWSAssertionError("Unexpected group title: \(oldGroupModel.groupName).")
             }
-            guard groupModel.groupAvatarData == nil else {
-                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
+            guard oldGroupModel.groupAvatarData == nil else {
+                throw OWSAssertionError("Unexpected group avatarData: \(oldGroupModel.groupAvatarData?.hexadecimalString).")
             }
 
-            var groupMembershipBuilder = groupModel.groupMembership.asBuilder
+            var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
             for address in otherAddresses {
                 groupMembershipBuilder.remove(address)
                 groupMembershipBuilder.addNonPendingMember(address, role: .normal)
             }
             let groupMembership = groupMembershipBuilder.build()
 
-            let groupAccess = groupModel.groupAccess
+            var groupModelBuilder = oldGroupModel.asBuilder
+            groupModelBuilder.name = title1
+            groupModelBuilder.avatarData = avatar1Data
+            groupModelBuilder.avatarUrlPath = nil
+            groupModelBuilder.groupMembership = groupMembership
+            let newGroupModel = try self.databaseStorage.read { transaction in
+                try groupModelBuilder.build(transaction: transaction)
+            }
+
             // GroupsV2 TODO: Add and remove members, change avatar, etc.
 
-            return GroupManager.localUpdateExistingGroup(groupId: groupId,
-                                                         name: title1,
-                                                         avatarData: avatar1Data,
-                                                         groupMembership: groupMembership,
-                                                         groupAccess: groupAccess,
-                                                         groupsVersion: groupModel.groupsVersion,
+            return GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
                                                          dmConfiguration: dmConfiguration,
                                                          groupUpdateSourceAddress: localAddress)
         }.then(on: .global()) { (groupThread) -> Promise<GroupV2Snapshot> in
-            return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupThread.groupModel)
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid group model.")
+            }
+            return groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
         }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> Data in
             let groupModel = try self.databaseStorage.read { transaction in
-                return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
+                return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction) as! TSGroupModelV2
             }
             let groupId = groupModel.groupId
-            guard groupModel.groupV2Revision == 1 else {
-                throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
+            guard groupModel.revision == 1 else {
+                throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.revision).")
             }
 
             guard groupV2Snapshot.revision == 1 else {
@@ -203,49 +208,56 @@ public class GroupsV2Test: NSObject {
             return groupId
         }.then(on: .global()) { (groupId: Data) throws -> Promise<TSGroupThread> in
             let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
-            let groupModel = groupThread.groupModel
-            guard groupModel.groupMembership.administrators == localAddressSet else {
+            guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid group model.")
+            }
+            guard oldGroupModel.groupMembership.administrators == localAddressSet else {
                 throw OWSAssertionError("Unexpected groupMembership.")
             }
-            guard groupModel.groupMembership.nonAdminMembers == otherAddresses else {
+            guard oldGroupModel.groupMembership.nonAdminMembers == otherAddresses else {
                 throw OWSAssertionError("Unexpected groupMembership.")
             }
-            guard groupModel.groupV2Revision == 1 else {
-                throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
+            guard oldGroupModel.revision == 1 else {
+                throw OWSAssertionError("Unexpected groupV2Revision: \(oldGroupModel.revision).")
             }
-            guard groupModel.groupName == title1 else {
-                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+            guard oldGroupModel.groupName == title1 else {
+                throw OWSAssertionError("Unexpected group title: \(oldGroupModel.groupName).")
             }
-            guard groupModel.groupAvatarData == avatar1Data else {
-                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
+            guard oldGroupModel.groupAvatarData == avatar1Data else {
+                throw OWSAssertionError("Unexpected group avatarData: \(oldGroupModel.groupAvatarData?.hexadecimalString).")
             }
 
-            var groupMembershipBuilder = groupModel.groupMembership.asBuilder
+            var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
             for address in otherAddresses {
                 groupMembershipBuilder.remove(address)
             }
             let groupMembership = groupMembershipBuilder.build()
 
-            let groupAccess = groupModel.groupAccess
+            var groupModelBuilder = oldGroupModel.asBuilder
+            groupModelBuilder.avatarData = nil
+            groupModelBuilder.avatarUrlPath = nil
+            groupModelBuilder.groupMembership = groupMembership
+            let newGroupModel = try self.databaseStorage.read { transaction in
+                try groupModelBuilder.build(transaction: transaction)
+            }
+
             // GroupsV2 TODO: Add and remove members, change avatar, etc.
 
-            return GroupManager.localUpdateExistingGroup(groupId: groupId,
-                                                    name: title1,
-                                                    avatarData: nil,
-                                                    groupMembership: groupMembership,
-                                                    groupAccess: groupAccess,
-                                                    groupsVersion: groupModel.groupsVersion,
-                                                    dmConfiguration: dmConfiguration,
-                                                    groupUpdateSourceAddress: localAddress)
-        }.then(on: .global()) { (groupThread) -> Promise<GroupV2Snapshot> in
-            return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupThread.groupModel)
+            return GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
+                                                         dmConfiguration: dmConfiguration,
+                                                         groupUpdateSourceAddress: localAddress)
+        }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<GroupV2Snapshot> in
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid group model.")
+            }
+            return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
         }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> Data in
             let groupModel = try self.databaseStorage.read { transaction in
-                return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
+                return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction) as! TSGroupModelV2
             }
             let groupId: Data = groupModel.groupId
-            guard groupModel.groupV2Revision == 2 else {
-                throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
+            guard groupModel.revision == 2 else {
+                throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.revision).")
             }
 
             guard groupV2Snapshot.revision == 2 else {
@@ -285,15 +297,15 @@ public class GroupsV2Test: NSObject {
             return groupId
         }.map(on: .global()) { (groupId: Data) throws -> Data in
             let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
-            let groupModel = groupThread.groupModel
+            let groupModel = groupThread.groupModel as! TSGroupModelV2
             guard groupModel.groupMembership.administrators == localAddressSet else {
                 throw OWSAssertionError("Unexpected groupMembership.")
             }
             guard groupModel.groupMembership.nonAdminMembers.isEmpty else {
                 throw OWSAssertionError("Unexpected groupMembership.")
             }
-            guard groupModel.groupV2Revision == 2 else {
-                throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.groupV2Revision).")
+            guard groupModel.revision == 2 else {
+                throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.revision).")
             }
             guard groupModel.groupName == title1 else {
                 throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")

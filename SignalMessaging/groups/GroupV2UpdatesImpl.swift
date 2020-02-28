@@ -89,15 +89,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func tryToRefreshV2GroupThreadWithThrottling(_ groupThread: TSGroupThread,
                                                          groupUpdateMode: GroupUpdateMode) {
         firstly { () -> Promise<Void> in
-            let groupModel = groupThread.groupModel
-            guard groupModel.groupsVersion == .V2 else {
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 return Promise.value(())
             }
             let groupId = groupModel.groupId
-            guard let groupSecretParamsData = groupModel.groupSecretParamsData,
-                groupSecretParamsData.count > 0 else {
-                    return Promise(error: OWSAssertionError("Missing groupSecretParamsData."))
-            }
+            let groupSecretParamsData = groupModel.secretParamsData
             return tryToRefreshV2GroupThreadWithThrottling(groupId: groupId,
                                                            groupSecretParamsData: groupSecretParamsData,
                                                            groupUpdateMode: groupUpdateMode)
@@ -360,8 +356,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                              changeActionsProto: changeActionsProto,
                                                                              downloadedAvatars: downloadedAvatars,
                                                                              transaction: transaction)
-        guard changedGroupModel.newGroupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
-            throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
+        guard changedGroupModel.newGroupModel.revision > changedGroupModel.oldGroupModel.revision else {
+            throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.revision).")
         }
 
         let groupUpdateSourceAddress = SignalServiceAddress(uuid: changedGroupModel.changeAuthorUuid)
@@ -374,11 +370,14 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
         GroupManager.storeProfileKeysFromGroupProtos(changedGroupModel.profileKeys)
 
-        guard updatedGroupThread.groupModel.groupV2Revision > changedGroupModel.oldGroupModel.groupV2Revision else {
-            throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
+        guard let updatedGroupModel = updatedGroupThread.groupModel as? TSGroupModelV2 else {
+            throw OWSAssertionError("Invalid group model.")
         }
-        guard updatedGroupThread.groupModel.groupV2Revision >= changedGroupModel.newGroupModel.groupV2Revision else {
-            throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.groupV2Revision).")
+        guard updatedGroupModel.revision > changedGroupModel.oldGroupModel.revision else {
+            throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.revision).")
+        }
+        guard updatedGroupModel.revision >= changedGroupModel.newGroupModel.revision else {
+            throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.revision).")
         }
         return updatedGroupThread
     }
@@ -437,13 +436,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             guard let oldGroupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing group thread.")
             }
-            guard oldGroupThread.groupModel.groupsVersion == .V2 else {
-                throw OWSAssertionError("Invalid groupsVersion: \(oldGroupThread.groupModel.groupsVersion).")
+            guard let oldGroupModel = oldGroupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid group model.")
             }
-            guard let groupSecretParamsData = oldGroupThread.groupModel.groupSecretParamsData else {
-                throw OWSAssertionError("Missing groupSecretParamsData.")
-            }
-            let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+            let groupV2Params = try oldGroupModel.groupV2Params()
 
             var groupThread = oldGroupThread
 
@@ -464,11 +460,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                         return groupThread
                     }
                 }
-                let oldGroupModel = groupThread.groupModel
+                guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                    throw OWSAssertionError("Invalid group model.")
+                }
                 let builder = try TSGroupModelBuilder(groupV2Snapshot: groupChange.snapshot)
-                let newGroupModel = try  builder.build(transaction: transaction)
+                let newGroupModel = try builder.build(transaction: transaction)
 
-                if changeRevision == oldGroupModel.groupV2Revision {
+                if changeRevision == oldGroupModel.revision {
                     if !oldGroupModel.isEqual(to: newGroupModel) {
                         // Sometimes we re-apply the snapshot corresponding to the
                         // current revision when refreshing the group from the service.
@@ -547,7 +545,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             let builder = try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
-            let newGroupModel = try  builder.build(transaction: transaction)
+            let newGroupModel = try builder.build(transaction: transaction)
             let newDisappearingMessageToken = groupV2Snapshot.disappearingMessageToken
             // groupUpdateSourceAddress is nil because we don't know the
             // author(s) of changes reflected in the snapshot.
@@ -563,7 +561,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             // If the group state includes a stale profile key for the
             // local user, schedule an update to fix that.
             if let profileKey = groupV2Snapshot.profileKeys[localUuid],
-            profileKey != localProfileKey.keyData {
+                profileKey != localProfileKey.keyData {
                 self.groupsV2.updateLocalProfileKeyInGroup(groupId: newGroupModel.groupId, transaction: transaction)
             }
 

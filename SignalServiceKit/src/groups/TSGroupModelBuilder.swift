@@ -94,6 +94,13 @@ public struct TSGroupModelBuilder {
         }
     }
 
+    public func buildAsV2(transaction: SDSAnyReadTransaction) throws -> TSGroupModelV2 {
+        guard let model = try build(transaction: transaction) as? TSGroupModelV2 else {
+            throw OWSAssertionError("Invalid group model.")
+        }
+        return model
+    }
+
     private func buildGroupId(groupsVersion: GroupsVersion,
                               newGroupSeed: NewGroupSeed) throws -> Data {
         if let value = groupId {
@@ -158,10 +165,13 @@ public extension TSGroupModel {
         builder.name = self.groupName
         builder.avatarData = self.groupAvatarData
         builder.groupMembership = self.groupMembership
-        builder.groupAccess = self.groupAccess
         builder.groupsVersion = self.groupsVersion
-        builder.groupV2Revision = self.groupV2Revision
-        builder.groupSecretParamsData = self.groupSecretParamsData
+        if let v2 = self as? TSGroupModelV2 {
+            builder.groupAccess = v2.access
+            builder.groupV2Revision = v2.revision
+            builder.groupSecretParamsData = v2.secretParamsData
+            builder.avatarUrlPath = v2.avatarUrlPath
+        }
         return builder
     }
 }

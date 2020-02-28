@@ -96,21 +96,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return [[GroupMembership alloc] initWithV1Members:[NSSet setWithArray:self.groupMembers]];
 }
 
-- (GroupAccess *)groupAccess
-{
-    return GroupAccess.defaultForV1;
-}
-
-- (uint32_t)groupV2Revision
-{
-    return 0;
-}
-
-- (nullable NSData *)groupSecretParamsData
-{
-    return nil;
-}
-
 + (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image
 {
     if (image == nil) {
