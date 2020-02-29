@@ -93,23 +93,19 @@ public class LegacyContactDiscoveryOperation: OWSOperation {
             return
         }
 
-        owsFailDebug("CDS TODO")
-
-        // CDS TODO - Commented out while API settles.
-        //
         // Compare against new CDS service
-        // let modernContactDiscoveryOperation = ContactDiscoveryOperation(contactsToLookup: self.contactsToLookup)
-        // let operations = modernContactDiscoveryOperation.dependencies + [modernContactDiscoveryOperation]
-        // ContactDiscoveryOperation.operationQueue.addOperations(operations, waitUntilFinished: false)
-        //
-        // guard let legacyRegisteredPhoneNumbers = self.registeredPhoneNumbers else {
-        //     owsFailDebug("legacyRegisteredPhoneNumbers was unexpectedly nil")
-        //     return
-        // }
-        //
-        // let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredPhoneNumbers: legacyRegisteredPhoneNumbers)
-        // cdsFeedbackOperation.addDependency(modernContactDiscoveryOperation)
-        // ContactDiscoveryOperation.operationQueue.addOperation(cdsFeedbackOperation)
+        let modernContactDiscoveryOperation = ContactDiscoveryOperation(phoneNumbersToLookup: self.phoneNumbersToLookup)
+        let operations = modernContactDiscoveryOperation.dependencies + [modernContactDiscoveryOperation]
+        ContactDiscoveryOperation.operationQueue.addOperations(operations, waitUntilFinished: false)
+
+        guard let legacyRegisteredPhoneNumbers = self.registeredPhoneNumbers else {
+            owsFailDebug("legacyRegisteredPhoneNumbers was unexpectedly nil")
+            return
+        }
+
+        let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredPhoneNumbers: legacyRegisteredPhoneNumbers)
+        cdsFeedbackOperation.addDependency(modernContactDiscoveryOperation)
+        ContactDiscoveryOperation.operationQueue.addOperation(cdsFeedbackOperation)
     }
 
     // MARK: Private Helpers
@@ -174,25 +170,19 @@ public class ContactDiscoveryOperation: OWSOperation {
         return queue
     }()
 
-    @objc
-    public var registeredAddresses: Set<SignalServiceAddress> {
-        assert(!dependencies.map { $0.isFinished }.contains(false))
-        return Set(registeredContacts.map { $0.address })
-    }
-
-    let contactsToLookup: [CDSContactQuery]
+    let phoneNumbersToLookup: [String]
     var registeredContacts: Set<CDSRegisteredContact>
 
-    required init(contactsToLookup: [CDSContactQuery]) {
-        assert(contactsToLookup.count == Set(contactsToLookup.map { $0.e164PhoneNumber }).count)
-        self.contactsToLookup = contactsToLookup
+    required init(phoneNumbersToLookup: [String]) {
+        assert(phoneNumbersToLookup.count == Set(phoneNumbersToLookup).count)
+        self.phoneNumbersToLookup = phoneNumbersToLookup
         self.registeredContacts = Set()
 
         super.init()
 
-        Logger.debug("with contactsToLookup.count: \(contactsToLookup.count)")
-        for batchContacts in contactsToLookup.chunked(by: batchSize) {
-            let batchOperation = CDSBatchOperation(contactsToLookup: batchContacts)
+        Logger.debug("with phoneNumbersToLookup.count: \(phoneNumbersToLookup.count)")
+        for phoneNumberBatch in phoneNumbersToLookup.chunked(by: batchSize) {
+            let batchOperation = CDSBatchOperation(phoneNumbersToLookup: phoneNumberBatch)
             self.addDependency(batchOperation)
         }
     }
@@ -225,13 +215,9 @@ public class ContactDiscoveryOperation: OWSOperation {
 public
 class CDSBatchOperation: OWSOperation {
 
-    private let contactsToLookup: [CDSContactQuery]
-    private var phoneNumbersToLookup: [String] {
-        return contactsToLookup.map { $0.e164PhoneNumber }
-    }
+    private let phoneNumbersToLookup: [String]
 
     private(set) var registeredContacts: Set<CDSRegisteredContact>?
-    private(set) var erroredContacts: Set<CDSErroredContact>?
 
     var contactDiscoveryService: ContactDiscoveryService {
         return ContactDiscoveryService()
@@ -239,12 +225,12 @@ class CDSBatchOperation: OWSOperation {
 
     // MARK: Initializers
 
-    public required init(contactsToLookup: [CDSContactQuery]) {
-        self.contactsToLookup = contactsToLookup
+    public required init(phoneNumbersToLookup: [String]) {
+        self.phoneNumbersToLookup = phoneNumbersToLookup
 
         super.init()
 
-        Logger.debug("with contactsToLookup: \(contactsToLookup.count)")
+        Logger.debug("with phoneNumbersToLookup: \(phoneNumbersToLookup.count)")
     }
 
     // MARK: OWSOperationOverrides
@@ -260,10 +246,9 @@ class CDSBatchOperation: OWSOperation {
         }
 
         firstly {
-            self.makeContactDiscoveryRequest(contactsToLookup: self.contactsToLookup)
-        }.done(on: .global()) { (registeredContacts, erroredContacts) in
+            self.makeContactDiscoveryRequest(phoneNumbersToLookup: self.phoneNumbersToLookup)
+        }.done(on: .global()) { registeredContacts in
             self.registeredContacts = registeredContacts
-            self.erroredContacts = erroredContacts
             self.reportSuccess()
         }.catch(on: .global()) { error in
             switch error {
@@ -275,96 +260,108 @@ class CDSBatchOperation: OWSOperation {
         }.retainUntilComplete()
     }
 
-    typealias IntersectionResult = (Set<CDSRegisteredContact>, Set<CDSErroredContact>)
-    private func makeContactDiscoveryRequest(contactsToLookup: [CDSContactQuery]) -> Promise<IntersectionResult> {
-        let contactCount = UInt(contactsToLookup.count)
+    private func makeContactDiscoveryRequest(phoneNumbersToLookup: [String]) -> Promise<Set<CDSRegisteredContact>> {
+        let contactCount = UInt(phoneNumbersToLookup.count)
 
-        return firstly { () -> Promise<RemoteAttestation> in
-            return RemoteAttestation.perform(for: .contactDiscovery)
-        }.then(on: .global()) { (remoteAttestation: RemoteAttestation) -> Promise<IntersectionResult> in
+        return firstly { () -> Promise<RemoteAttestation.CDSAttestation> in
+            RemoteAttestation.performForCDS()
+        }.then(on: .global()) { (attestation: RemoteAttestation.CDSAttestation) -> Promise<Set<CDSRegisteredContact>> in
             return firstly { () -> Promise<ContactDiscoveryService.IntersectionResponse> in
-                let encryptionResult = try self.buildEncryptedRequestData(contacts: self.contactsToLookup,
-                                                                          remoteAttestation: remoteAttestation)
+                let query = try self.buildIntersectionQuery(phoneNumbersToLookup: phoneNumbersToLookup,
+                                                            remoteAttestations: attestation.remoteAttestations)
+                return self.contactDiscoveryService.getRegisteredSignalUsers(query: query,
+                                                                             cookies: attestation.cookies,
+                                                                             authUsername: attestation.auth.username,
+                                                                             authPassword: attestation.auth.password,
+                                                                             enclaveName: attestation.enclaveConfig.enclaveName,
+                                                                             host: attestation.enclaveConfig.host,
+                                                                             censorshipCircumventionPrefix: attestation.enclaveConfig.censorshipCircumventionPrefix)
+            }.map(on: .global()) { response -> Set<CDSRegisteredContact> in
+                guard let responseAttestion = (attestation.remoteAttestations.first { $0.requestId == response.requestId }) else {
+                    throw OWSAssertionError("unable to find responseAttestation for requestId: \(response.requestId)")
+                }
 
-                assert(encryptionResult.ciphertext.count == contactCount * 40)
-                return self.contactDiscoveryService.getRegisteredSignalUsers(remoteAttestation: remoteAttestation,
-                                                                             addressCount: contactCount,
-                                                                             encryptedAddressData: encryptionResult.ciphertext,
-                                                                             cryptIv: encryptionResult.initializationVector,
-                                                                             cryptMac: encryptionResult.authTag)
-            }.map(on: .global()) { response -> IntersectionResult in
                 guard let plaintext = Cryptography.decryptAESGCM(withInitializationVector: response.iv,
                                                                  ciphertext: response.data,
                                                                  additionalAuthenticatedData: nil,
                                                                  authTag: response.mac,
-                                                                 key: remoteAttestation.keys.serverKey) else {
+                                                                 key: responseAttestion.keys.serverKey) else {
                                                                     throw ContactDiscoveryError.parseError(description: "decryption failed")
                 }
 
-                // 16 bytes per UUID + 1 byte per error
-                assert(plaintext.count == contactCount * 17)
+                // 16 bytes per UUID
+                assert(plaintext.count == contactCount * 16)
                 let dataParser = OWSDataParser(data: plaintext)
-                let errorsData = try dataParser.nextData(length: contactCount, name: "errors")
                 let uuidsData = try dataParser.nextData(length: contactCount * 16, name: "uuids")
 
                 guard dataParser.isEmpty else {
                     throw OWSAssertionError("failed check: dataParse.isEmpty")
                 }
 
-                let errors = type(of: self).boolArray(from: errorsData)
                 let uuids = type(of: self).uuidArray(from: uuidsData)
 
                 guard uuids.count == contactCount else {
                     throw OWSAssertionError("failed check: uuids.count == contactCount")
                 }
 
-                guard errors.count == uuids.count else {
-                    throw OWSAssertionError("failed check: errors.length == uuids.length")
-                }
-
                 let unregisteredUuid = UUID(uuid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
                 var registeredContacts: Set<CDSRegisteredContact> = Set()
-                var erroredContacts: Set<CDSErroredContact> = Set()
 
-                for (index, contactLookup) in contactsToLookup.enumerated() {
-                    guard errors[index] == false else {
-                        Logger.error("error with lookup for contact: \(contactLookup.e164PhoneNumber)")
-                        erroredContacts.insert(CDSErroredContact(contact: contactLookup))
-                        continue
-                    }
-
+                for (index, e164PhoneNumber) in phoneNumbersToLookup.enumerated() {
                     guard uuids[index] != unregisteredUuid else {
-                        Logger.verbose("not a signal user: \(contactLookup.e164PhoneNumber)")
+                        Logger.verbose("not a signal user: \(e164PhoneNumber)")
                         continue
                     }
 
-                    Logger.verbose("signal user: \(contactLookup.e164PhoneNumber)")
+                    Logger.verbose("signal user: \(e164PhoneNumber)")
                     registeredContacts.insert(CDSRegisteredContact(signalUuid: uuids[index],
-                                                                   contact: contactLookup))
+                                                                   e164PhoneNumber: e164PhoneNumber))
                 }
 
-                return (registeredContacts, erroredContacts)
+                return registeredContacts
             }
         }
     }
 
-    func buildEncryptedRequestData(contacts: [CDSContactQuery], remoteAttestation: RemoteAttestation) throws -> AES25GCMEncryptionResult {
+    func buildIntersectionQuery(phoneNumbersToLookup: [String], remoteAttestations: [RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
+        let noncePlainTextData = Randomness.generateRandomBytes(32)
+        let addressPlainTextData = try type(of: self).encodePhoneNumbers(phoneNumbersToLookup)
+        let queryData = Data.join([noncePlainTextData, addressPlainTextData])
 
-        let addressPlainTextData = try type(of: self).encodePhoneNumbers(contacts.map { $0.e164PhoneNumber })
-        let noncePlainTextData = Data(contacts.flatMap { $0.nonce })
-
-        let plaintext = Data.join([addressPlainTextData, noncePlainTextData])
-
-        guard let encryptionResult = Cryptography.encryptAESGCM(plainTextData: plaintext,
+        let key = OWSAES256Key.generateRandom()
+        guard let encryptionResult = Cryptography.encryptAESGCM(plainTextData: queryData,
                                                                 initializationVectorLength: kAESGCM256_DefaultIVLength,
-                                                                additionalAuthenticatedData: remoteAttestation.requestId,
-                                                                key: remoteAttestation.keys.clientKey) else {
+                                                                additionalAuthenticatedData: nil,
+                                                                key: key) else {
+                                                                    throw ContactDiscoveryError.assertionError(description: "Encryption failure")
+        }
+        assert(encryptionResult.ciphertext.count == phoneNumbersToLookup.count * 8 + 32)
 
-            throw ContactDiscoveryError.assertionError(description: "Encryption failure")
+        let queryEnvelopes: [ContactDiscoveryService.IntersectionQuery.EnclaveEnvelope] = try remoteAttestations.map { remoteAttestation in
+            guard let perEnclaveKey = Cryptography.encryptAESGCM(plainTextData: key.keyData,
+                                                                 initializationVectorLength: kAESGCM256_DefaultIVLength,
+                                                                 additionalAuthenticatedData: remoteAttestation.requestId,
+                                                                 key: remoteAttestation.keys.clientKey) else {
+                                                                    throw OWSAssertionError("failed to encrypt perEnclaveKey")
+            }
+
+            return ContactDiscoveryService.IntersectionQuery.EnclaveEnvelope(requestId: remoteAttestation.requestId,
+                                                                             data: perEnclaveKey.ciphertext,
+                                                                             iv: perEnclaveKey.initializationVector,
+                                                                             mac: perEnclaveKey.authTag)
         }
 
-        return encryptionResult
+        guard let commitment = Cryptography.computeSHA256Digest(queryData) else {
+            throw OWSAssertionError("commitment was unexpectedly nil")
+        }
+
+        return ContactDiscoveryService.IntersectionQuery(addressCount: UInt(phoneNumbersToLookup.count),
+                                                         commitment: commitment,
+                                                         data: encryptionResult.ciphertext,
+                                                         iv: encryptionResult.initializationVector,
+                                                         mac: encryptionResult.authTag,
+                                                         envelopes: queryEnvelopes)
     }
 
     class func encodePhoneNumbers(_ phoneNumbers: [String]) throws -> Data {
@@ -388,12 +385,6 @@ class CDSBatchOperation: OWSOperation {
         }
 
         return output
-    }
-
-    class func boolArray(from data: Data) -> [Bool] {
-        return data.withUnsafeBytes {
-            [Bool]($0.bindMemory(to: Bool.self))
-        }
     }
 
     class func uuidArray(from data: Data) -> [UUID] {
@@ -538,69 +529,9 @@ extension CDSFeedbackOperation.FeedbackResult {
     }
 }
 
-extension RemoteAttestationError {
-    var reason: String? {
-        return userInfo[RemoteAttestationErrorKey_Reason] as? String
-    }
-}
-
-extension RemoteAttestation {
-    class func perform(for service: RemoteAttestationService) -> Promise<RemoteAttestation> {
-        return Promise { resolver in
-            self.perform(for: service, success: resolver.fulfill, failure: resolver.reject)
-        }
-    }
-
-    class func perform(for service: RemoteAttestationService, auth: RemoteAttestationAuth?) -> Promise<RemoteAttestation> {
-        return Promise { resolver in
-            self.perform(for: service, auth: auth, success: resolver.fulfill, failure: resolver.reject)
-        }
-    }
-}
-
-public struct CDSContactQuery {
-    static let nonceLength: Int32 = 32
-
-    let e164PhoneNumber: String
-    let nonce: Data
-
-    init(e164PhoneNumber: String, nonce: Data) throws {
-        self.e164PhoneNumber = e164PhoneNumber
-        guard nonce.count == type(of: self).nonceLength else {
-            throw OWSAssertionError("invalid nonce length: \(nonce.count)")
-        }
-        self.nonce = nonce
-    }
-}
-
-extension CDSContactQuery: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(e164PhoneNumber)
-    }
-}
-
-extension CDSContactQuery: Equatable {
-    public static func == (lhs: CDSContactQuery, rhs: CDSContactQuery) -> Bool {
-        return lhs.e164PhoneNumber == rhs.e164PhoneNumber
-    }
-}
-
 public struct CDSRegisteredContact: Hashable {
     let signalUuid: UUID
-    let contact: CDSContactQuery
-
-    var e164PhoneNumber: String {
-        return contact.e164PhoneNumber
-    }
-
-    var address: SignalServiceAddress {
-        return SignalServiceAddress(uuid: signalUuid, phoneNumber: e164PhoneNumber)
-    }
-}
-
-public struct CDSErroredContact: Hashable {
-    let contact: CDSContactQuery
-    var e164PhoneNumber: String { return contact.e164PhoneNumber }
+    let e164PhoneNumber: String
 }
 
 extension ContactDiscoveryService.ServiceError: OperationError {

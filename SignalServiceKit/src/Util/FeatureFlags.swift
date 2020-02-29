@@ -148,7 +148,7 @@ public class FeatureFlags: NSObject {
     public static let useOnlyModernContactDiscovery = false
 
     @objc
-    public static let compareLegacyContactDiscoveryAgainstModern = false
+    public static let compareLegacyContactDiscoveryAgainstModern = !isUsingProductionService
 
     @objc
     public static let phoneNumberPrivacy = false

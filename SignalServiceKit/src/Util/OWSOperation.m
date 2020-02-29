@@ -233,7 +233,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)failOperationWithError:(NSError *)error
 {
-    OWSLogDebug(@"[%@] failed terminally", self);
+    OWSLogDebug(@"[%@] failed terminally with error: %@", self, error);
     self.failingError = error;
 
     [self didFailWithError:error];

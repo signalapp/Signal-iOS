@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *reportData;
 @property (nonatomic, readonly) NSData *signature;
 
-+ (nullable RemoteAttestationQuote *)parseQuoteFromData:(NSData *)quoteData;
++ (nullable RemoteAttestationQuote *)parseQuoteFromData:(NSData *)quoteData
+                                                  error:(NSError **)error;
 
 - (BOOL)isDebugQuote;
 
