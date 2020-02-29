@@ -445,6 +445,10 @@ extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDe
     var attachmentApprovalTextInputContextIdentifier: String? {
         return nil
     }
+
+    var attachmentApprovalRecipientNames: [String] {
+        selectedConversationsForConversationPicker.map { $0.title }
+    }
 }
 
 // MARK: -

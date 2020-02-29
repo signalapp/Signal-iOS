@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -75,6 +75,10 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDel
 
     public var attachmentApprovalTextInputContextIdentifier: String? {
         return approvalDelegate?.attachmentApprovalTextInputContextIdentifier
+    }
+
+    public var attachmentApprovalRecipientNames: [String] {
+        return approvalDelegate?.attachmentApprovalRecipientNames ?? []
     }
 }
 
