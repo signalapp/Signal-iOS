@@ -1730,27 +1730,6 @@
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
 
-/* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censorship Circumvention: On";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTED" = "Connected";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTING" = "Connecting";
-
-/* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
-
-/* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "Network Status";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "Offline";
-
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find by Phone Number";
 
