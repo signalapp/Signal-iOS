@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSError.h"
@@ -40,8 +40,12 @@ NSError *OWSErrorMakeNoSuchSignalRecipientError()
             @"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT", @"Error message when attempting to send message"));
 }
 
-NSError *OWSErrorMakeAssertionError(NSString *description)
+NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...)
 {
+    va_list args;
+    va_start(args, descriptionFormat);
+    NSString *description = [[NSString alloc] initWithFormat:descriptionFormat arguments:args];
+    va_end(args);
     OWSCFailDebug(@"Assertion failed: %@", description);
     return OWSErrorWithCodeDescription(OWSErrorCodeAssertionFailure,
         NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));

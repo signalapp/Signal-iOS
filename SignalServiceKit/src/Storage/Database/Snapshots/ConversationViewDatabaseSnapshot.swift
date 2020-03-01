@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -203,12 +203,12 @@ extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
         AssertIsOnMainThread()
         do {
             guard let committedInteractionChanges = self.committedInteractionChanges else {
-                throw OWSErrorMakeAssertionError("committedInteractionChanges were unexpectedly nil")
+                throw OWSAssertionError("committedInteractionChanges were unexpectedly nil")
             }
             self.committedInteractionChanges = nil
 
             guard let committedThreadChanges = self.committedThreadChanges else {
-                throw OWSErrorMakeAssertionError("committedThreadChanges was unexpectedly nil")
+                throw OWSAssertionError("committedThreadChanges was unexpectedly nil")
             }
             self.committedThreadChanges = nil
 

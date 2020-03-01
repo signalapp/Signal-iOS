@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -299,7 +299,7 @@ extension GiphyError: LocalizedError {
 
         return Promise { resolver in
             guard ContentProxy.configureSessionManager(sessionManager: sessionManager, forUrl: urlString) else {
-                throw OWSErrorMakeAssertionError("Could not configure trending")
+                throw OWSAssertionError("Could not configure trending")
             }
 
             sessionManager.get(urlString,
@@ -308,7 +308,7 @@ extension GiphyError: LocalizedError {
                                success: { _, value in
                                 Logger.info("pending request succeeded")
                                 guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
-                                    resolver.reject(OWSErrorMakeAssertionError("unable to parse trending images"))
+                                    resolver.reject(OWSAssertionError("unable to parse trending images"))
                                     return
                                 }
                                 resolver.fulfill(imageInfos)

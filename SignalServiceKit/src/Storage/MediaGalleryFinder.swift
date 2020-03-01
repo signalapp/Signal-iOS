@@ -141,7 +141,7 @@ public class GRDBMediaGalleryFinder: NSObject {
 
     public static let isVisualMediaContentTypeDatabaseFunction = DatabaseFunction("IsVisualMediaContentType") { (args: [DatabaseValue]) -> DatabaseValueConvertible? in
         guard let contentType = String.fromDatabaseValue(args[0]) else {
-            throw OWSErrorMakeAssertionError("unexpected arguments: \(args)")
+            throw OWSAssertionError("unexpected arguments: \(args)")
         }
 
         return MIMETypeUtil.isVisualMedia(contentType)

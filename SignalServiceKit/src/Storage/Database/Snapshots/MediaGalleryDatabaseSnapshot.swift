@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -99,7 +99,7 @@ extension MediaGalleryDatabaseObserver: DatabaseSnapshotDelegate {
 
         do {
             guard let committedDeletes = self.committedDeletes else {
-                throw OWSErrorMakeAssertionError("committedDeletes were unexpectedly nil")
+                throw OWSAssertionError("committedDeletes were unexpectedly nil")
             }
             self.committedDeletes = nil
 
@@ -119,7 +119,7 @@ extension MediaGalleryDatabaseObserver: DatabaseSnapshotDelegate {
         AssertIsOnMainThread()
         do {
             guard let deletedAttachmentIds = self.deletedAttachmentIds else {
-                throw OWSErrorMakeAssertionError("deletedAttachmentIds were unexpectedly nil")
+                throw OWSAssertionError("deletedAttachmentIds were unexpectedly nil")
             }
             self.deletedAttachmentIds = nil
 

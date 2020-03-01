@@ -882,7 +882,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 """,
                 arguments: [threadUniqueId]) else {
-                    throw assertionError("count was unexpectedly nil")
+                    throw OWSAssertionError("count was unexpectedly nil")
             }
             return count
         } catch {
@@ -1229,8 +1229,4 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         )
         """
     }()
-}
-
-private func assertionError(_ description: String) -> Error {
-    return OWSErrorMakeAssertionError(description)
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -143,8 +143,4 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
             owsFailDebug("error: \(error)")
         }
     }
-}
-
-private func assertionError(_ description: String) -> Error {
-    return OWSErrorMakeAssertionError(description)
 }

@@ -414,7 +414,7 @@ public class SDSKeyValueStore: NSObject {
                 guard let numberOfKeys = try UInt.fetchOne(grdbRead.database,
                                                            sql: sql,
                                                            arguments: [collection]) else {
-                                                            throw OWSErrorMakeAssertionError("numberOfKeys was unexpectedly nil")
+                                                            throw OWSAssertionError("numberOfKeys was unexpectedly nil")
                 }
                 return numberOfKeys
             } catch {
