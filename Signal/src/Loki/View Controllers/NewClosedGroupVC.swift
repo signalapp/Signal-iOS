@@ -65,7 +65,8 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("New Closed Group", comment: "")
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        let titleLabelFontSize = isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize
+        titleLabel.font = .boldSystemFont(ofSize: titleLabelFontSize)
         navigationItem.titleView = titleLabel
         // Set up content
         if !contacts.isEmpty {
