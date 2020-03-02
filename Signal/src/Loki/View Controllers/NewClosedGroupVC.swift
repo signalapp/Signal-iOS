@@ -107,7 +107,7 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
             explanationLabel.text = NSLocalizedString("You don't have any contacts yet", comment: "")
             let createNewPrivateChatButton = Button(style: .prominentOutline, size: .medium)
             createNewPrivateChatButton.setTitle(NSLocalizedString("Start a Session", comment: ""), for: UIControl.State.normal)
-            createNewPrivateChatButton.addTarget(self, action: #selector(createPrivateChat), for: UIControl.Event.touchUpInside)
+            createNewPrivateChatButton.addTarget(self, action: #selector(createNewPrivateChat), for: UIControl.Event.touchUpInside)
             createNewPrivateChatButton.set(.width, to: 160)
             let stackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
             stackView.axis = .vertical
@@ -201,9 +201,9 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
         }
     }
     
-    @objc private func createPrivateChat() {
+    @objc private func createNewPrivateChat() {
         presentingViewController?.dismiss(animated: true, completion: nil)
-        SignalApp.shared().homeViewController!.createPrivateChat()
+        SignalApp.shared().homeViewController!.createNewPrivateChat()
     }
 }
 
