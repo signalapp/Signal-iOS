@@ -5178,7 +5178,7 @@ typedef enum : NSUInteger {
     CGFloat newDistance = newFrame.origin.y - previousDistance;
 
     CGPoint newContentOffset = CGPointMake(0, newDistance);
-    self.collectionView.contentOffset = newContentOffset;
+    [self.collectionView setContentOffset:newContentOffset animated:NO];
 }
 
 - (void)conversationViewModelRangeDidChangeWithTransaction:(SDSAnyReadTransaction *)transaction
