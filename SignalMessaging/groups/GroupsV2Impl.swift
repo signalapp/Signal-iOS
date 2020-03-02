@@ -552,10 +552,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 }.done(on: DispatchQueue.global()) { avatarData in
                     resolver.fulfill(avatarData)
                 }.catch(on: DispatchQueue.global()) { error in
-                    // GroupsV2 TODO: Fulfill with empty data if service returns
-                    // 4xx status code. We don't want the group to be left in an
-                    // unrecoverable state if the the avatar is missing from the
-                    // CDN.
+                    if let statusCode = StatusCodeForError(error)?.intValue,
+                        statusCode == 404 {
+                        // Fulfill with empty data if service returns 404 status code.
+                        // We don't want the group to be left in an unrecoverable state
+                        // if the the avatar is missing from the CDN.
+                        resolver.fulfill(Data())
+                    }
+
                     resolver.reject(error)
                 }.retainUntilComplete()
 
