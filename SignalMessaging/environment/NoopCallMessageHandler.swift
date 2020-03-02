@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import SignalServiceKit
@@ -7,7 +7,7 @@ import SignalServiceKit
 @objc
 public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
 
-    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress) {
+    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sentAtTimestamp: UInt64) {
         owsFailDebug("")
     }
 

@@ -521,26 +521,35 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
      shouldClearStaleCache:(BOOL)shouldClearStaleCache
 {
     dispatch_async(self.intersectionQueue, ^{
+        NSMutableArray *allContacts = [contacts mutableCopy];
         NSMutableDictionary<NSString *, Contact *> *allContactsMap = [NSMutableDictionary new];
         for (Contact *contact in contacts) {
             for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
                 NSString *phoneNumberE164 = phoneNumber.toE164;
-                // Don't keep a system contact record for the local user.
-                if (phoneNumberE164.length > 0 && ![phoneNumberE164 isEqualToString:TSAccountManager.localNumber]) {
+
+                // Ignore any system contact records for the local contact.
+                // For the local user we never want to show the avatar /
+                // name that you have entered for yourself in your system
+                // contacts. Instead, we always want to display your profile
+                // name and avatar.
+                BOOL isLocalContact = [phoneNumberE164 isEqualToString:TSAccountManager.localNumber];
+                if (isLocalContact) {
+                    [allContacts removeObject:contact];
+                } else if (phoneNumberE164.length > 0) {
                     allContactsMap[phoneNumberE164] = contact;
                 }
             }
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.allContacts = contacts;
+            self.allContacts = allContacts;
             self.allContactsMap = [allContactsMap copy];
             [self.cnContactCache removeAllObjects];
             [self.cnContactAvatarCache removeAllObjects];
 
             [self.avatarCache removeAllImages];
 
-            [self intersectContacts:contacts
+            [self intersectContacts:allContacts
                     isUserRequested:isUserRequested
                          completion:^(NSError *_Nullable error) {
                              // TODO: Should we do this on error?

@@ -138,53 +138,6 @@
                              [weakSelf showProfile];
                          }]];
 
-    if (OWSSignalService.sharedInstance.isCensorshipCircumventionActive) {
-        [section
-            addItem:[OWSTableItem disclosureItemWithText:
-                                      NSLocalizedString(@"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE",
-                                          @"Indicates to the user that censorship circumvention has been activated.")
-                                             actionBlock:^{
-                                                 [weakSelf showAdvanced];
-                                             }]];
-    } else {
-        [section addItem:[OWSTableItem
-                             itemWithCustomCellBlock:^{
-                                 UITableViewCell *cell = [OWSTableItem newCell];
-                                 cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
-                                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                                 UILabel *accessoryLabel = [UILabel new];
-                                 if (weakSelf.tsAccountManager.isDeregistered) {
-                                     accessoryLabel.text = self.tsAccountManager.isPrimaryDevice
-                                         ? NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
-                                             @"Error indicating that this device is no longer registered.")
-                                         : NSLocalizedString(@"NETWORK_STATUS_DELINKED",
-                                             @"Error indicating that this device is no longer linked.");
-                                     accessoryLabel.textColor = UIColor.ows_accentRedColor;
-                                 } else {
-                                     switch (TSSocketManager.shared.socketState) {
-                                         case OWSWebSocketStateClosed:
-                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
-                                             accessoryLabel.textColor = UIColor.ows_accentRedColor;
-                                             break;
-                                         case OWSWebSocketStateConnecting:
-                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
-                                             accessoryLabel.textColor = UIColor.ows_accentYellowColor;
-                                             break;
-                                         case OWSWebSocketStateOpen:
-                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
-                                             accessoryLabel.textColor = UIColor.ows_accentGreenColor;
-                                             break;
-                                     }
-                                 }
-                                 [accessoryLabel sizeToFit];
-                                 cell.accessoryView = accessoryLabel;
-                                 cell.accessibilityIdentifier
-                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(AppSettingsViewController, @"network_status");
-                                 return cell;
-                             }
-                                         actionBlock:nil]];
-    }
-
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")
                                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"invite")
@@ -622,21 +575,9 @@
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(socketStateDidChange)
-                                                 name:NSNotificationWebSocketStateDidChange
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localProfileDidChange:)
                                                  name:kNSNotificationNameLocalProfileDidChange
                                                object:nil];
-}
-
-- (void)socketStateDidChange
-{
-    OWSAssertIsOnMainThread();
-
-    [self updateTableContents];
 }
 
 - (void)localProfileDidChange:(id)notification
