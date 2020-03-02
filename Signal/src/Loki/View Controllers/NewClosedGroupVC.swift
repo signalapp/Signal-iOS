@@ -105,7 +105,7 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
             explanationLabel.lineBreakMode = .byWordWrapping
             explanationLabel.textAlignment = .center
             explanationLabel.text = NSLocalizedString("You don't have any contacts yet", comment: "")
-            let createNewPrivateChatButton = Button(style: .prominentOutline, size: .medium)
+            let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
             createNewPrivateChatButton.setTitle(NSLocalizedString("Start a Session", comment: ""), for: UIControl.State.normal)
             createNewPrivateChatButton.addTarget(self, action: #selector(createNewPrivateChat), for: UIControl.Event.touchUpInside)
             createNewPrivateChatButton.set(.width, to: 160)
