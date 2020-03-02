@@ -257,9 +257,6 @@ extension ConversationViewController: MessageRequestDelegate {
     func messageRequestViewDidTapUnblock(mode: MessageRequestMode) {
         AssertIsOnMainThread()
 
-        blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true)
-        messageRequestViewDidTapAccept(mode: mode)
-
         let threadName: String
         let message: String
         if let groupThread = thread as? TSGroupThread {

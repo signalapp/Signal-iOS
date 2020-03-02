@@ -302,6 +302,12 @@ const CGFloat kIconViewLength = 24;
 
     BOOL isNoteToSelf = self.thread.isNoteToSelf;
 
+    BOOL isLocalUserInGroup = YES;
+    if (self.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        isLocalUserInGroup = groupThread.isLocalUserInGroup;
+    }
+
     __weak OWSConversationSettingsViewController *weakSelf = self;
 
     // Main section.
@@ -486,7 +492,7 @@ const CGFloat kIconViewLength = 24;
                                                    icon:ThemeIconSettingsProfile
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController, @"share_profile")];
-                            cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+                            cell.userInteractionEnabled = isLocalUserInGroup;
 
                             return cell;
                         }
@@ -546,7 +552,7 @@ const CGFloat kIconViewLength = 24;
                                      [subtitleLabel autoPinTrailingToSuperviewMargin];
                                      [subtitleLabel autoPinBottomToSuperviewMargin];
 
-                                     cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+                                     cell.userInteractionEnabled = isLocalUserInGroup;
 
                                      switchView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                          OWSConversationSettingsViewController, @"disappearing_messages_switch");
@@ -599,7 +605,7 @@ const CGFloat kIconViewLength = 24;
                                          [slider autoPinTrailingToSuperviewMargin];
                                          [slider autoPinBottomToSuperviewMargin];
 
-                                         cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+                                         cell.userInteractionEnabled = isLocalUserInGroup;
 
                                          slider.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                              OWSConversationSettingsViewController, @"disappearing_messages_slider");
@@ -653,7 +659,7 @@ const CGFloat kIconViewLength = 24;
                                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                           OWSConversationSettingsViewController,
                                                                           @"edit_group")];
-                                          cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+                                          cell.userInteractionEnabled = isLocalUserInGroup;
                                           return cell;
                                       }
                                       actionBlock:^{
@@ -670,7 +676,7 @@ const CGFloat kIconViewLength = 24;
                                                     icon:ThemeIconSettingsShowGroup
                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                              OWSConversationSettingsViewController, @"group_members")];
-                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+                    cell.userInteractionEnabled = isLocalUserInGroup;
                     return cell;
                 }
                 actionBlock:^{
@@ -684,7 +690,7 @@ const CGFloat kIconViewLength = 24;
                                                     icon:ThemeIconSettingsLeaveGroup
                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                              OWSConversationSettingsViewController, @"leave_group")];
-                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+                    cell.userInteractionEnabled = isLocalUserInGroup;
 
                     return cell;
                 }
@@ -1274,16 +1280,6 @@ const CGFloat kIconViewLength = 24;
     [alert addAction:[OWSActionSheets cancelAction]];
 
     [self presentActionSheet:alert];
-}
-
-- (BOOL)hasLeftGroup
-{
-    if (self.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        return !groupThread.isLocalUserInGroup;
-    }
-
-    return NO;
 }
 
 - (void)leaveGroup

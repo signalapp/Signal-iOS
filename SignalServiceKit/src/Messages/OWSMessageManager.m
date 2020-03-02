@@ -742,6 +742,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if (!groupThread.isLocalUserInGroup) {
+            // We don't want to process messages for groups in which we are a pending member.
             OWSLogInfo(@"Ignoring messages for left group.");
             return nil;
         }
