@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -20,6 +20,7 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_ThreadDetails,
     OWSInteractionType_Offer,
     OWSInteractionType_UnreadIndicator,
+    OWSInteractionType_DateHeader
 };
 
 NSString *NSStringFromOWSInteractionType(OWSInteractionType value);

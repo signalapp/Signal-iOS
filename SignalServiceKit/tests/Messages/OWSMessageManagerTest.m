@@ -120,6 +120,8 @@ NSString *const kAliceRecipientId = @"+13213214321";
 
     SSKProtoEnvelopeBuilder *envelopeBuilder =
         [SSKProtoEnvelope builderWithTimestamp:12345];
+    [envelopeBuilder setSourceE164:@"+13213214321"];
+    [envelopeBuilder setSourceUuid:NSUUID.UUID.UUIDString];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
 
     SSKProtoGroupContextBuilder *groupContextBuilder =
@@ -155,6 +157,8 @@ NSString *const kAliceRecipientId = @"+13213214321";
 
     SSKProtoEnvelopeBuilder *envelopeBuilder =
         [SSKProtoEnvelope builderWithTimestamp:12345];
+    [envelopeBuilder setSourceE164:@"+13213214321"];
+    [envelopeBuilder setSourceUuid:NSUUID.UUID.UUIDString];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
 
     SSKProtoGroupContextBuilder *groupContextBuilder =

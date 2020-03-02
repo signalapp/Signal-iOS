@@ -2,18 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "file-32-dark.png",
-      "scale" : "1x"
-    },
-    {
-      "idiom" : "universal",
-      "filename" : "file-32-dark@2x.png",
-      "scale" : "2x"
-    },
-    {
-      "idiom" : "universal",
-      "filename" : "file-32-dark@3x.png",
-      "scale" : "3x"
+      "filename" : "file-outline-32.pdf"
     }
   ],
   "info" : {

@@ -104,7 +104,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     override func tearDown() {
         super.tearDown()
 
-        SDSDatabaseStorage.shouldLogDBQueries = FeatureFlags.logSQLQueries
+        SDSDatabaseStorage.shouldLogDBQueries = DebugFlags.logSQLQueries
     }
 
     override func setUp() {
@@ -112,6 +112,11 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         // Replace this singleton.
         SSKEnvironment.shared.contactsManager = GRDBFullTextSearcherContactsManager()
+
+        // ensure local client has necessary "registered" state
+        let localE164Identifier = "+13235551234"
+        let localUUID = UUID()
+        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
         self.write { transaction in
             let bookClubGroupThread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],

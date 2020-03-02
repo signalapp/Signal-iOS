@@ -62,7 +62,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
 @property (nonatomic, readonly) ConversationInputTextView *inputTextView;
 @property (nonatomic, readonly) UIButton *cameraButton;
-@property (nonatomic, readonly) UIButton *attachmentButton;
+@property (nonatomic, readonly) LottieToggleButton *attachmentButton;
 @property (nonatomic, readonly) UIButton *sendButton;
 @property (nonatomic, readonly) UIButton *voiceMemoButton;
 @property (nonatomic, readonly) UIButton *stickerButton;
@@ -217,7 +217,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self.cameraButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _cameraButton);
 
-    _attachmentButton = [[UIButton alloc] init];
+    _attachmentButton = [[LottieToggleButton alloc] init];
     self.attachmentButton.accessibilityLabel
         = NSLocalizedString(@"ATTACHMENT_LABEL", @"Accessibility label for attaching photos");
     self.attachmentButton.accessibilityHint = NSLocalizedString(
@@ -225,9 +225,8 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self.attachmentButton addTarget:self
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
-    [self.attachmentButton setTemplateImageName:@"plus-24" tintColor:Theme.primaryIconColor];
-    NSString *selectedImageName = [Theme iconName:ThemeIconAttachmentButtonSelected];
-    [self.attachmentButton setImage:[UIImage imageNamed:selectedImageName] forState:UIControlStateSelected];
+    self.attachmentButton.animationName = Theme.isDarkThemeEnabled ? @"attachment_dark" : @"attachment_light";
+    self.attachmentButton.animationSize = CGSizeMake(28, 28);
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(55, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
@@ -576,7 +575,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                                           stickerPack:stickerPack
                                        wasTappedBlock:^{
                                            [weakSelf removeStickerTooltip];
-                                           [weakSelf toggleKeyboardType:KeyboardType_Sticker];
+                                           [weakSelf toggleKeyboardType:KeyboardType_Sticker animated:YES];
                                        }];
     self.stickerTooltip = tooltip;
 
@@ -653,7 +652,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                                                                     : Theme.primaryIconColor);
         }
 
-        self.attachmentButton.selected = self.desiredKeyboardType == KeyboardType_Attachment;
+        [self.attachmentButton setSelected:self.desiredKeyboardType == KeyboardType_Attachment animated:isAnimated];
 
         [self updateSuggestedStickers];
 
@@ -1127,7 +1126,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 {
     OWSLogVerbose(@"");
 
-    [self toggleKeyboardType:KeyboardType_Attachment];
+    [self toggleKeyboardType:KeyboardType_Attachment animated:YES];
 }
 
 - (void)stickerButtonPressed
@@ -1145,17 +1144,17 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         return;
     }
 
-    [self toggleKeyboardType:KeyboardType_Sticker];
+    [self toggleKeyboardType:KeyboardType_Sticker animated:YES];
 }
 
 #pragma mark - Keyboards
 
-- (void)toggleKeyboardType:(KeyboardType)keyboardType
+- (void)toggleKeyboardType:(KeyboardType)keyboardType animated:(BOOL)animated
 {
     OWSAssertDebug(self.inputToolbarDelegate);
 
     if (self.desiredKeyboardType == keyboardType) {
-        self.desiredKeyboardType = KeyboardType_System;
+        [self setDesiredKeyboardType:KeyboardType_System animated:animated];
     } else {
         // For switching to anything other than the system keyboard,
         // make sure this conversation isn't blocked before presenting it.
@@ -1163,13 +1162,13 @@ const CGFloat kMaxIPadTextViewHeight = 142;
             __weak ConversationInputToolbar *weakSelf = self;
             [self.inputToolbarDelegate showUnblockConversationUI:^(BOOL isBlocked) {
                 if (!isBlocked) {
-                    [weakSelf toggleKeyboardType:keyboardType];
+                    [weakSelf toggleKeyboardType:keyboardType animated:animated];
                 }
             }];
             return;
         }
 
-        self.desiredKeyboardType = keyboardType;
+        [self setDesiredKeyboardType:keyboardType animated:animated];
     }
 
     [self beginEditingMessage];
@@ -1177,13 +1176,18 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
 - (void)setDesiredKeyboardType:(KeyboardType)desiredKeyboardType
 {
+    [self setDesiredKeyboardType:desiredKeyboardType animated:NO];
+}
+
+- (void)setDesiredKeyboardType:(KeyboardType)desiredKeyboardType animated:(BOOL)animated
+{
     if (_desiredKeyboardType == desiredKeyboardType) {
         return;
     }
 
     _desiredKeyboardType = desiredKeyboardType;
 
-    [self ensureButtonVisibilityWithIsAnimated:NO doLayout:YES];
+    [self ensureButtonVisibilityWithIsAnimated:animated doLayout:YES];
 
     if (self.isInputViewFirstResponder) {
         // If any keyboard is presented, make sure the correct
@@ -1219,7 +1223,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     OWSAssertIsOnMainThread();
 
     if (self.desiredKeyboardType != KeyboardType_Sticker) {
-        [self toggleKeyboardType:KeyboardType_Sticker];
+        [self toggleKeyboardType:KeyboardType_Sticker animated:NO];
     }
 }
 
@@ -1228,7 +1232,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     OWSAssertIsOnMainThread();
 
     if (self.desiredKeyboardType != KeyboardType_Attachment) {
-        [self toggleKeyboardType:KeyboardType_Attachment];
+        [self toggleKeyboardType:KeyboardType_Attachment animated:NO];
     }
 }
 

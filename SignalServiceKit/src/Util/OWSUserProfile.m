@@ -432,7 +432,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
                      transaction:(SDSAnyWriteTransaction *)transaction
-                      completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
                applyChanges:^(OWSUserProfile *userProfile) {
@@ -441,7 +440,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                functionName:__PRETTY_FUNCTION__
         wasLocallyInitiated:YES
                 transaction:transaction
-                 completion:completion];
+                 completion:nil];
 }
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey

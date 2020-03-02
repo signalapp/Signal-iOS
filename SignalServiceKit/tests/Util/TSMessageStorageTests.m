@@ -3,6 +3,7 @@
 //
 
 #import "SSKBaseTestObjC.h"
+#import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
@@ -22,6 +23,15 @@
 
 @implementation TSMessageStorageTests
 
+// MARK: - Dependencies
+
+- (TSAccountManager *)tsAccountManager
+{
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+// MARK: -
+
 - (SignalServiceAddress *)localAddress
 {
     return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"];
@@ -35,6 +45,11 @@
 - (void)setUp
 {
     [super setUp];
+
+    // ensure local client has necessary "registered" state
+    NSString *localE164Identifier = @"+13235551234";
+    NSUUID *localUUID = NSUUID.UUID;
+    [self.tsAccountManager registerForTestsWithLocalNumber:localE164Identifier uuid:localUUID];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         self.thread = [TSContactThread getOrCreateThreadWithContactAddress:self.otherAddress transaction:transaction];

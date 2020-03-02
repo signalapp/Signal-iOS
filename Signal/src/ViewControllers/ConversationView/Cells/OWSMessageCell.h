@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewCell.h"
@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UITapGestureRecognizer *contentViewTapGestureRecognizer;
 @property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
-
-+ (NSString *)cellReuseIdentifier;
 
 @end
 

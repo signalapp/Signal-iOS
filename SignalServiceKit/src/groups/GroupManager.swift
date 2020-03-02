@@ -547,6 +547,7 @@ public class GroupManager: NSObject {
                                                    members: [SignalServiceAddress],
                                                    disappearingMessageToken: DisappearingMessageToken?,
                                                    groupUpdateSourceAddress: SignalServiceAddress?,
+                                                   infoMessagePolicy: InfoMessagePolicy = .always,
                                                    transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         guard isValidGroupId(groupId, groupsVersion: .V1) else {
@@ -567,6 +568,7 @@ public class GroupManager: NSObject {
         return try remoteUpsertExistingGroup(groupModel: groupModel,
                                              disappearingMessageToken: disappearingMessageToken,
                                              groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                             infoMessagePolicy: infoMessagePolicy,
                                              transaction: transaction)
     }
 
@@ -574,12 +576,14 @@ public class GroupManager: NSObject {
     public static func remoteUpsertExistingGroup(groupModel: TSGroupModel,
                                                  disappearingMessageToken: DisappearingMessageToken?,
                                                  groupUpdateSourceAddress: SignalServiceAddress?,
+                                                 infoMessagePolicy: InfoMessagePolicy = .always,
                                                  transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: groupModel,
                                                                                      newDisappearingMessageToken: disappearingMessageToken,
                                                                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                      canInsert: true,
+                                                                                     infoMessagePolicy: infoMessagePolicy,
                                                                                      transaction: transaction)
     }
 
@@ -1045,8 +1049,8 @@ public class GroupManager: NSObject {
             let message = messageBuilder.build()
             self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
 
-            let threadMessageCount = groupThread.numberOfInteractions(with: transaction)
-            let skipInfoMessage = threadMessageCount == 0
+            let hasMessages = groupThread.numberOfInteractions(with: transaction) > 0
+            let infoMessagePolicy: InfoMessagePolicy = hasMessages ? .always : .never
 
             var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
             groupMembershipBuilder.remove(localAddress)
@@ -1060,7 +1064,7 @@ public class GroupManager: NSObject {
             let result = try self.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                           newDisappearingMessageToken: nil,
                                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                          skipInfoMessage: skipInfoMessage,
+                                                                                          infoMessagePolicy: infoMessagePolicy,
                                                                                           transaction: transaction)
             return result.groupThread
         }
@@ -1073,6 +1077,29 @@ public class GroupManager: NSObject {
             return self.groupsV2.leaveGroupV2OrDeclineInvite(groupModel: groupModel)
         }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
             GroupsV2Error.timeout
+        }
+    }
+
+    @objc
+    public static func leaveGroupOrDeclineInviteAsyncWithoutUI(groupThread: TSGroupThread,
+                                                               transaction: SDSAnyWriteTransaction,
+                                                               success: (() -> Void)?) {
+
+        guard groupThread.isLocalUserInGroup else {
+            owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
+            return
+        }
+
+        sendGroupQuitMessage(inThread: groupThread, transaction: transaction)
+
+        transaction.addAsyncCompletion {
+            firstly {
+                self.localLeaveGroupOrDeclineInvite(groupThread: groupThread).asVoid()
+            }.done { _ in
+                success?()
+            }.catch { error in
+                owsFailDebug("Leave group failed: \(error)")
+            }.retainUntilComplete()
         }
     }
 
@@ -1200,25 +1227,52 @@ public class GroupManager: NSObject {
         }
     }
 
+    public static func sendGroupQuitMessage(inThread groupThread: TSGroupThread,
+                                            transaction: SDSAnyWriteTransaction) {
+
+        guard groupThread.groupModel.groupsVersion == .V1 else {
+            return
+        }
+
+        let message = TSOutgoingMessage(in: groupThread,
+                                        groupMetaMessage: .quit,
+                                        expiresInSeconds: 0)
+        messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+    }
+
     // MARK: - Group Database
+
+    @objc
+    public enum InfoMessagePolicy: UInt {
+        case always
+        case insertsOnly
+        case updatesOnly
+        case never
+    }
 
     // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
     public static func insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: TSGroupModel,
                                                                        disappearingMessageToken: DisappearingMessageToken?,
                                                                        groupUpdateSourceAddress: SignalServiceAddress?,
+                                                                       infoMessagePolicy: InfoMessagePolicy = .always,
                                                                        transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let groupThread = TSGroupThread(groupModelPrivate: groupModel)
         groupThread.anyInsert(transaction: transaction)
 
         let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
 
-        insertGroupUpdateInfoMessage(groupThread: groupThread,
-                                     oldGroupModel: nil,
-                                     newGroupModel: groupModel,
-                                     oldDisappearingMessageToken: nil,
-                                     newDisappearingMessageToken: newDisappearingMessageToken,
-                                     groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                     transaction: transaction)
+        switch infoMessagePolicy {
+        case .always, .insertsOnly:
+            insertGroupUpdateInfoMessage(groupThread: groupThread,
+                                         oldGroupModel: nil,
+                                         newGroupModel: groupModel,
+                                         oldDisappearingMessageToken: nil,
+                                         newDisappearingMessageToken: newDisappearingMessageToken,
+                                         groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                         transaction: transaction)
+        default:
+            break
+        }
 
         notifyStorageServiceOfInsertedGroup(groupModel: groupModel,
                                             transaction: transaction)
@@ -1231,6 +1285,7 @@ public class GroupManager: NSObject {
                                                                                     newDisappearingMessageToken: DisappearingMessageToken?,
                                                                                     groupUpdateSourceAddress: SignalServiceAddress?,
                                                                                     canInsert: Bool,
+                                                                                    infoMessagePolicy: InfoMessagePolicy = .always,
                                                                                     transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         let threadId = TSGroupThread.threadId(fromGroupId: newGroupModel.groupId)
@@ -1241,6 +1296,7 @@ public class GroupManager: NSObject {
             let thread = insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: newGroupModel,
                                                                          disappearingMessageToken: newDisappearingMessageToken,
                                                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
+            infoMessagePolicy: infoMessagePolicy,
                                                                          transaction: transaction)
             return UpsertGroupResult(action: .inserted, groupThread: thread)
         }
@@ -1248,6 +1304,7 @@ public class GroupManager: NSObject {
         return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                            newDisappearingMessageToken: newDisappearingMessageToken,
                                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                           infoMessagePolicy: infoMessagePolicy,
                                                                            transaction: transaction)
     }
 
@@ -1255,7 +1312,7 @@ public class GroupManager: NSObject {
     public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: TSGroupModel,
                                                                                newDisappearingMessageToken: DisappearingMessageToken?,
                                                                                groupUpdateSourceAddress: SignalServiceAddress?,
-                                                                               skipInfoMessage: Bool = false,
+                                                                               infoMessagePolicy: InfoMessagePolicy = .always,
                                                                                transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
         // Step 1: First reload latest thread state. This ensures:
@@ -1325,7 +1382,8 @@ public class GroupManager: NSObject {
             return updateThreadResult
         }
 
-        if !skipInfoMessage {
+        switch infoMessagePolicy {
+        case .always, .updatesOnly:
             insertGroupUpdateInfoMessage(groupThread: groupThread,
                                          oldGroupModel: oldGroupModel,
                                          newGroupModel: newGroupModel,
@@ -1333,6 +1391,8 @@ public class GroupManager: NSObject {
                                          newDisappearingMessageToken: updateDMResult.newDisappearingMessageToken,
                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
                                          transaction: transaction)
+        default:
+            break
         }
 
         return UpsertGroupResult(action: .updated, groupThread: groupThread)

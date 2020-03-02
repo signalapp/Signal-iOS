@@ -158,6 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            members:members
                                                           disappearingMessageToken:disappearingMessageToken
                                                           groupUpdateSourceAddress:localAddress
+                                                                 infoMessagePolicy:InfoMessagePolicyAlways
                                                                        transaction:transaction
                                                                              error:&groupError]
                                   .groupThread;

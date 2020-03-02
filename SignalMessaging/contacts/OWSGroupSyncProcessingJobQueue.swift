@@ -155,7 +155,8 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
 
         switch attachment {
         case let attachmentPointer as TSAttachmentPointer:
-            return self.attachmentDownloads.downloadAttachmentPointer(attachmentPointer)
+            return self.attachmentDownloads.downloadAttachmentPointer(attachmentPointer,
+                                                                      bypassPendingMessageRequest: true)
         case let attachmentStream as TSAttachmentStream:
             return Promise.value(attachmentStream)
         default:
@@ -209,6 +210,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
                                                                   members: groupDetails.memberAddresses,
                                                                   disappearingMessageToken: disappearingMessageToken,
                                                                   groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                  infoMessagePolicy: .never,
                                                                   transaction: transaction)
 
         let groupThread = result.groupThread

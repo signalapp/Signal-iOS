@@ -717,20 +717,18 @@ class StorageServiceOperation: OWSOperation {
             manifestVersion = StorageServiceOperation.manifestVersion(transaction: transaction)
         }
 
-        StorageService.fetchManifest().done(on: .global()) { manifest in
-            guard let manifest = manifest else {
-                // There is no existing manifest, lets create one with all our contacts.
+        StorageService.fetchLatestManifest(greaterThanVersion: manifestVersion).done(on: .global()) { response in
+            switch response {
+            case .noExistingManifest:
+                // There is no existing manifest, lets create one.
                 return self.createNewManifest(version: 1)
-            }
-
-            guard manifest.version != manifestVersion else {
+            case .noNewerManifest:
                 // Our manifest version matches the server version, nothing to do here.
                 return self.reportSuccess()
+            case .latestManifest(let manifest):
+                // Our manifest is not the latest, merge in the latest copy.
+                self.mergeLocalManifest(withRemoteManifest: manifest, backupAfterSuccess: false)
             }
-
-            // Our manifest is not the latest, merge in the latest copy.
-            self.mergeLocalManifest(withRemoteManifest: manifest, backupAfterSuccess: false)
-
         }.catch { error in
             if let storageError = error as? StorageService.StorageError {
 

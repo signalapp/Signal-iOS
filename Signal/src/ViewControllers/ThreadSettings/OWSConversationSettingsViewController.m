@@ -1288,14 +1288,13 @@ const CGFloat kIconViewLength = 24;
 
 - (void)leaveGroup
 {
-    OWSAssertDebug(self.isGroupThread);
-
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    [ThreadUtil leaveGroupOrDeclineInviteAsync:groupThread
-                            fromViewController:self
-                                       success:^{
-                                           [self.navigationController popViewControllerAnimated:YES];
-                                       }];
+    [GroupManager
+        leaveGroupOrDeclineInviteAsyncWithUIWithGroupThread:groupThread
+                                         fromViewController:self
+                                                    success:^{
+                                                        [self.navigationController popViewControllerAnimated:YES];
+                                                    }];
 }
 
 - (void)disappearingMessagesSwitchValueDidChange:(UISwitch *)sender

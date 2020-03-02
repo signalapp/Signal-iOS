@@ -5,7 +5,6 @@
 #import "ConversationViewItem.h"
 #import "OWSContactOffersCell.h"
 #import "OWSMessageCell.h"
-#import "OWSMessageHeaderView.h"
 #import "OWSSystemMessageCell.h"
 #import "Signal-Swift.h"
 #import <MobileCoreServices/UTCoreTypes.h>
@@ -151,7 +150,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
 @implementation ConversationInteractionViewItem
 
-@synthesize shouldShowDate = _shouldShowDate;
 @synthesize shouldShowSenderAvatar = _shouldShowSenderAvatar;
 @synthesize didCellMediaFailToLoad = _didCellMediaFailToLoad;
 @synthesize interaction = _interaction;
@@ -363,20 +361,27 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     return message.isViewOnceMessage;
 }
 
-- (BOOL)hasCellHeader
+- (BOOL)canShowDate
 {
-    return self.shouldShowDate && ![self.interaction isKindOfClass:OWSUnreadIndicatorCell.class];
-}
-
-- (void)setShouldShowDate:(BOOL)shouldShowDate
-{
-    if (_shouldShowDate == shouldShowDate) {
-        return;
+    switch (self.interaction.interactionType) {
+        case OWSInteractionType_Unknown:
+        case OWSInteractionType_TypingIndicator:
+        case OWSInteractionType_ThreadDetails:
+        case OWSInteractionType_Offer:
+        case OWSInteractionType_DateHeader:
+            return NO;
+        case OWSInteractionType_Info: {
+            // Only show the date for non-synced thread messages;
+            TSInfoMessage *infoMessage = (TSInfoMessage *)self.interaction;
+            return infoMessage.messageType != TSInfoMessageSyncedThread;
+        }
+        case OWSInteractionType_UnreadIndicator:
+        case OWSInteractionType_IncomingMessage:
+        case OWSInteractionType_OutgoingMessage:
+        case OWSInteractionType_Error:
+        case OWSInteractionType_Call:
+            return YES;
     }
-
-    _shouldShowDate = shouldShowDate;
-
-    [self clearCachedLayoutState];
 }
 
 - (void)setShouldShowSenderAvatar:(BOOL)shouldShowSenderAvatar
@@ -534,13 +539,13 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
     // For performance reasons, we cache one instance of each kind of
     // cell and uses these cells for measurement.
-    static NSMutableDictionary<NSNumber *, ConversationViewCell *> *measurementCellCache = nil;
+    static NSMutableDictionary<NSString *, ConversationViewCell *> *measurementCellCache = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         measurementCellCache = [NSMutableDictionary new];
     });
 
-    NSNumber *cellCacheKey = @(self.interaction.interactionType);
+    NSString *cellCacheKey = self.cellReuseIdentifier;
     ConversationViewCell *_Nullable measurementCell = measurementCellCache[cellCacheKey];
     if (!measurementCell) {
         switch (self.interaction.interactionType) {
@@ -568,6 +573,9 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
             case OWSInteractionType_UnreadIndicator:
                 measurementCell = [OWSUnreadIndicatorCell new];
                 break;
+            case OWSInteractionType_DateHeader:
+                measurementCell = [OWSDateHeaderCell new];
+                break;
         }
 
         OWSAssertDebug(measurementCell);
@@ -581,24 +589,63 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 {
     OWSAssertDebug(previousLayoutItem);
 
-    if (self.hasCellHeader) {
-        return self.conversationStyle.headerViewDateHeaderVMargin;
-    }
+    static const CGFloat defaultSpacing = 12.f;
+    static const CGFloat compactSpacing = 2.f;
 
-    // "Bubble Collapse".  Adjacent messages with the same author should be close together.
-    if (self.interaction.interactionType == OWSInteractionType_IncomingMessage
-        && previousLayoutItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-        TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
-        if ([incomingMessage.authorAddress isEqualToAddress:previousIncomingMessage.authorAddress]) {
-            return 2.f;
-        }
-    } else if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage
-        && previousLayoutItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        return 2.f;
-    }
+    switch (self.interaction.interactionType) {
+        case OWSInteractionType_DateHeader:
+        case OWSInteractionType_UnreadIndicator:
+            return self.conversationStyle.headerViewDateHeaderVMargin;
+        case OWSInteractionType_IncomingMessage:
+            if (previousLayoutItem.interaction.interactionType == self.interaction.interactionType) {
+                TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
+                TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
+                if ([incomingMessage.authorAddress isEqualToAddress:previousIncomingMessage.authorAddress]) {
+                    return compactSpacing;
+                }
+            }
 
-    return 12.f;
+            return defaultSpacing;
+        case OWSInteractionType_OutgoingMessage:
+            if (previousLayoutItem.interaction.interactionType == self.interaction.interactionType) {
+                return compactSpacing;
+            }
+
+            return defaultSpacing;
+        default:
+            return defaultSpacing;
+    }
+}
+
+- (nullable NSString *)cellReuseIdentifier
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.interaction);
+
+    switch (self.interaction.interactionType) {
+        case OWSInteractionType_Unknown:
+            OWSFailDebug(@"Unknown interaction type.");
+            return nil;
+        case OWSInteractionType_IncomingMessage:
+            return [OWSMessageCell cellReuseIdentifierForMessageCellType:self.messageCellType isOutgoingMessage:NO];
+        case OWSInteractionType_OutgoingMessage:
+            return [OWSMessageCell cellReuseIdentifierForMessageCellType:self.messageCellType isOutgoingMessage:YES];
+        case OWSInteractionType_Error:
+        case OWSInteractionType_Info:
+        case OWSInteractionType_Call:
+            return [OWSSystemMessageCell cellReuseIdentifier];
+        case OWSInteractionType_Offer:
+            return [OWSContactOffersCell cellReuseIdentifier];
+
+        case OWSInteractionType_TypingIndicator:
+            return [OWSTypingIndicatorCell cellReuseIdentifier];
+        case OWSInteractionType_ThreadDetails:
+            return [OWSThreadDetailsCell cellReuseIdentifier];
+        case OWSInteractionType_UnreadIndicator:
+            return [OWSUnreadIndicatorCell cellReuseIdentifier];
+        case OWSInteractionType_DateHeader:
+            return [OWSDateHeaderCell cellReuseIdentifier];
+    }
 }
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
@@ -607,35 +654,14 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     OWSAssertIsOnMainThread();
     OWSAssertDebug(collectionView);
     OWSAssertDebug(indexPath);
-    OWSAssertDebug(self.interaction);
 
-    switch (self.interaction.interactionType) {
-        case OWSInteractionType_Unknown:
-            OWSFailDebug(@"Unknown interaction type.");
-            return nil;
-        case OWSInteractionType_IncomingMessage:
-        case OWSInteractionType_OutgoingMessage:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
-        case OWSInteractionType_Error:
-        case OWSInteractionType_Info:
-        case OWSInteractionType_Call:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
-        case OWSInteractionType_Offer:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
-
-        case OWSInteractionType_TypingIndicator:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
-        case OWSInteractionType_ThreadDetails:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSThreadDetailsCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
-        case OWSInteractionType_UnreadIndicator:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
+    NSString *_Nullable cellReuseIdentifier = self.cellReuseIdentifier;
+    if (!cellReuseIdentifier) {
+        OWSFailDebug(@"Unknown cell type.");
+        return nil;
     }
+
+    return [collectionView dequeueReusableCellWithReuseIdentifier:cellReuseIdentifier forIndexPath:indexPath];
 }
 
 - (nullable TSAttachmentStream *)firstValidAlbumAttachment
@@ -792,6 +818,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSInteractionType_TypingIndicator:
         case OWSInteractionType_Offer:
         case OWSInteractionType_UnreadIndicator:
+        case OWSInteractionType_DateHeader:
             return;
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:

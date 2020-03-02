@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -60,6 +60,10 @@ public class UnreadIndicatorCell: ConversationViewCell {
             owsFailDebug("conversationStyle was unexpectedly nil")
             return
         }
+        guard let interaction = viewItem.interaction as? UnreadIndicatorInteraction else {
+            owsFailDebug("unexpected interaction type")
+            return
+        }
 
         titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold()
         titleLabel.textColor = Theme.primaryTextColor
@@ -68,7 +72,7 @@ public class UnreadIndicatorCell: ConversationViewCell {
         let dateString = DateUtil.formatDate(forConversationDateBreaks: date)
 
         var title = NSLocalizedString("MESSAGES_VIEW_UNREAD_INDICATOR", comment: "Indicator that separates read from unread messages.")
-        if (viewItem.shouldShowDate) {
+        if interaction.shouldShowDate {
             title = dateString.appending(" \u{00B7} ").appending(title)
         }
         titleLabel.text = title.localizedUppercase

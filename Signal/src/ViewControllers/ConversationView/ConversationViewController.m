@@ -669,18 +669,22 @@ typedef enum : NSUInteger {
             forCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSContactOffersCell class]
             forCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]];
-    [self.collectionView registerClass:[OWSMessageCell class]
-            forCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSThreadDetailsCell class]
             forCellWithReuseIdentifier:[OWSThreadDetailsCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSUnreadIndicatorCell class]
             forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
+    [self.collectionView registerClass:[OWSDateHeaderCell class]
+            forCellWithReuseIdentifier:[OWSDateHeaderCell cellReuseIdentifier]];
     [self.collectionView registerClass:LoadMoreMessagesView.class
             forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                    withReuseIdentifier:LoadMoreMessagesView.reuseIdentifier];
     [self.collectionView registerClass:LoadMoreMessagesView.class
             forSupplementaryViewOfKind:UICollectionElementKindSectionFooter
                    withReuseIdentifier:LoadMoreMessagesView.reuseIdentifier];
+
+    for (NSString *cellReuseIdentifier in OWSMessageCell.allCellReuseIdentifiers) {
+        [self.collectionView registerClass:[OWSMessageCell class] forCellWithReuseIdentifier:cellReuseIdentifier];
+    }
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification

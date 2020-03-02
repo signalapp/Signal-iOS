@@ -78,7 +78,7 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Fejl";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Kunne ikke hente database";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
@@ -309,13 +309,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Ophæv blokade";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "I vil være i stand til at sende beskeder og ringe til hinanden";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Eksisterende medlemmer vil kunne tilføje dig til gruppen igen";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Medlemmer af gruppen kan tilføje dig til gruppen igen";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Fjern blokering af gruppen?";
@@ -768,7 +768,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ophæv dæmpning";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Denne bruger er i dine kontakter.";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Denne gruppe kan se din profil.";
@@ -897,7 +897,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Beskeder i denne samtale vil forsvinde efter %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Når de er aktiveret, forsvinder meddelelser, der sendes og modtages i denne samtale, efter at de er blevet set.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Når funktionen er aktiveret, forsvinder meddelelser, der sendes og modtages i denne samtale, efter at de er blevet set.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Beskeder forsvinder efter %@";
@@ -909,7 +909,7 @@
 "DISMISS_BUTTON_TEXT" = "Luk";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censurens omgåelse beliggenhed";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Område for censuromgåelse";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan aktivere adgang i iOS Indstillinger-appen.";
@@ -1253,8 +1253,11 @@
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Begynd din første samtale her.";
 
+/* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Rediger forespørgsel";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Ingen resultater fundet for '%@'";
@@ -1394,6 +1397,9 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Forlad gruppe";
 
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Denne QR-kode er ikke gyldig. Sørg for, at du scanner QR-koden, der vises på den enhed, du vil tilkoble.";
 
@@ -1413,13 +1419,13 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan QR-koden, der vises på den enhed, du vil tilkoble.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR kode";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR-kode";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Tilknyt ny enhed";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link eksempelvisning";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Forhåndsvisning af link";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Tilknyttede enheder";
@@ -1548,34 +1554,34 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked contacts can’t call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
 
-/* Action sheet title to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE" = "Block and delete conversation?";
+/* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Bloker %@?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Du forlader gruppen og vil ikke længere modtage beskeder eller opdateringer";
 
-/* Action sheet title to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE" = "Block, delete, and leave group?";
+/* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Slet";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted on all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Samtalen vil blive slettet fra alle dine enheder";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Slet samtale?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_ACTION" = "Delete and Leave";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_MESSAGE" = "You will leave this group and it will be deleted on all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Du forlader gruppen og den vil blive slettet fra alle dine enheder";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_DELETE_GROUP_TITLE" = "Delete and leave group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Godkend";
@@ -1623,7 +1629,7 @@
 "MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
 
 /* Toast indicating that a profile name has been created. */
-"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Dit profilnavn er blevet gemt";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Leveret";
@@ -1722,7 +1728,7 @@
 "NETWORK_ERROR_RECOVERY" = "Se venligst om du er online og prøv igen.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censurens omgåelse: På";
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censuromgåelse: På";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTED" = "Forbundet";
@@ -1809,19 +1815,19 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Du har muligvis fået beskeder, mens din %@ blev genstartet.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "Handlinger omfatter \"Markér som læst\", \"Svar\" og \"Ring tilbage\".";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Intet navn eller indhold";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Afspil, mens appen er åben";
+"NOTIFICATIONS_SECTION_INAPP" = "Afspil mens appen er åben";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Lyde";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Navn, indhold og handlinger";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Kun navn";
@@ -2238,7 +2244,7 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Dit profilnavn er blevet gemt";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Indstil profilbillede";
@@ -2250,31 +2256,31 @@
 "PROFILE_VIEW_CREATE_USERNAME" = "Create Username";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
-"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Dit efternavn er for langt.";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Dit fornavn er påkrævet. ";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Dit fornavn er for langt.";
 
 /* Default text for the family name field of the profile view. */
 "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
 
 /* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Efternavn";
 
 /* Default text for the given name field of the profile view. */
 "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
 
 /* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "Fornavn";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Din Signal profil vil være synlig for dine kontakter, når du starter nye samtaler, og når du deler den med andre brugere og grupper.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Din Signal-profil vil være synlig for dine kontakter når du starter nye samtaler og når du deler den med andre brugere og grupper.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tryk her for at lære mere.";
@@ -2295,10 +2301,10 @@
 "PUSH_MANAGER_REPLY" = "Svar";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Genregistreret til push-meddelelser.";
+"PUSH_REGISTER_SUCCESS" = "Push-meddelelser er genaktiveret.";
 
 /* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Push meddelelser";
+"PUSH_REGISTER_TITLE" = "Push-meddelelser";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -2418,7 +2424,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Du har forsøgt for ofte. Vent venligst et minut.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Kunne ikke genregistrere til push-meddelelser.";
+"REGISTRATION_BODY" = "Kunne ikke genaktivere push-meddelelser.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landekode";
@@ -2487,7 +2493,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Det er ikke den rigtige PIN.";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Register igen for at få push meddelelser";
+"REREGISTER_FOR_PUSH" = "Genaktiver push-meddelelser";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Prøv igen";
@@ -2511,7 +2517,7 @@
 "SCAN_CODE_INSTRUCTIONS" = "Scan QR-koden på din kontakts enhed.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "Scan QR kode";
+"SCAN_QR_CODE_VIEW_TITLE" = "Scan QR-kode";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Øjeblikkelig";
@@ -2652,7 +2658,7 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Bloker";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censurens omgåelse";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censuromgåelse";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Placering: %@";
@@ -2661,19 +2667,19 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Hvis aktiveret, vil Signal forsøge at omgå censur. Aktivér ikke denne funktion, medmindre du er på et sted, hvor Signal er censureret.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censur omgåelse er blevet aktiveret baseret på din kontos telefonnummer.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censuromgåelse er blevet aktiveret baseret på din kontos telefonnummer.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Du har manuelt deaktiveret censur omgåelse.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Du har manuelt deaktiveret omgåelse af censur.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censuromgåelse kan kun aktiveres, når den er tilsluttet internettet.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Omgåelse af censur kan kun aktiveres, når den er tilsluttet internettet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censur omgåelse er ikke nødvendigt; du har allerede forbindelse til Signal-tjenesten.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Omgåelse af censur er ikke nødvendigt; du har allerede forbindelse til Signal-tjenesten.";
 
 /* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censurens omgåelse";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censuromgåelse";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Aktiver fejlrapporteringslog";
@@ -2757,13 +2763,13 @@
 "SETTINGS_BLOCK_LIST_TITLE" = "Blokeret";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Videresend altid opkald";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Omdiriger altid opkald";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relæ alle opkald via en Signal-server for at undgå at afsløre din IP-adresse til din kontaktperson. Aktivering vil reducere opkaldskvaliteten.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Omdiriger alle opkald via en Signal-server for at undgå at afsløre din IP-adresse til din samtalepartner. Aktivering vil reducere opkaldskvaliteten.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Ryd samtale historik";
+"SETTINGS_CLEAR_HISTORY" = "Ryd samtalehistorik";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nUdgivet under GPLv3–licensen";
@@ -2784,7 +2790,7 @@
 "SETTINGS_HELP_HEADER" = "Hjælp";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Ryd samtale historik";
+"SETTINGS_HISTORYLOG_TITLE" = "Ryd samtalehistorik";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Information";
@@ -2796,31 +2802,31 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "Du kan få fat på mig ved at bruge @signalapp. Hent det nu: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Besked lyd";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Beskedtone";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Vilkår og privatlivspolitik";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send link eksempelvisning";
+"SETTINGS_LINK_PREVIEWS" = "Send links med forhåndsvisning";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Eksempelvisning er understøttet for Imgur, Instagram, Pinterest, Reddit og YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Eksempelvisning er understøttet for Imgur, Instagram, Pinterest, Reddit og YouTube-links.";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link eksempelvisninger";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Forhåndsvisning af links";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Indstillinger";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Opkalds- og besked-meddelelser kan vises, mens telefonen er låst. Du vil muligvis begrænse, hvad der vises i disse meddelelser.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Opkalds- og beskedmeddelelser kan vises mens telefonen er låst. Du vil muligvis begrænse hvad der vises i disse meddelelser.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Meddelelses indhold";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Meddelelsesindhold";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joined Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt tilmeldte sig Signal";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Begivenheder";
@@ -2844,7 +2850,7 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Vis navn og nummer";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Vis opkald i \"Seneste\" listen i iOS Telefon appen.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Vis opkald i \"Seneste\"-listen i iOS-appen.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Vis opkald i Seneste";
@@ -2856,10 +2862,10 @@
 "SETTINGS_PRIVACY_TITLE" = "Privatliv";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Læskvitteringer";
+"SETTINGS_READ_RECEIPT" = "Kvittering for læsning";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Se og del, når meddelelser er blevet læst. Denne indstilling er valgfri og gælder for alle samtaler.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Se og del når meddelelser er blevet læst. Denne indstilling er valgfri og gælder for alle samtaler.";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Re-link";
@@ -2916,7 +2922,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registreringslås";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Skrive indikator";
+"SETTINGS_TYPING_INDICATORS" = "Skriveindikatorer";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Se og del, når der skrives meddelelser. Denne indstilling er valgfri og gælder for alle samtaler.";
@@ -2925,19 +2931,19 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Lær mere";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sikker afsender";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Forseglet afsender";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Vis indikator";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Vis indikatorer";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Vis et status ikon når ´Mere info´ vælges for beskeder som er modtaget, ved brug af sikker afsender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Vis et statusikon når 'Mere info' vælges for beskeder som er leveret ved brug af forseglet afsender.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Tillad fra alle";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Aktiver ´Sikker afsender´ for indgående beskeder fra personer som ikke er kontakter, og som hvem du ikke har delt din profil med";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Aktivér forseglet afsender for indgående beskeder fra personer som ikke er kontakter og personer som du ikke har delt din profil med.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Version";
@@ -3060,7 +3066,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan tilføje egne notater i samtalen. Hvis din konto har forbundne enheder, vil notaterne blive synkroniseret";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
@@ -3188,6 +3194,9 @@
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Ikke understøttet ";
 
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "Group could not be updated.";
+
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Opret din PIN";
 
@@ -3276,7 +3285,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Verifikationsstatus ændret.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Vis Sikkerhedsnummer";
+"VERIFY_PRIVACY" = "Vis sikkerhedsnummer";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Gennemse Sikkerhedsnumre";

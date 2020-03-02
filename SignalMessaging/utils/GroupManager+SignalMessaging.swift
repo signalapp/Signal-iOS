@@ -6,28 +6,43 @@ import Foundation
 import PromiseKit
 
 @objc
-public extension ThreadUtil {
+public extension GroupManager {
 
-    static func leaveGroupOrDeclineInviteAsync(_ groupThread: TSGroupThread,
-                                               fromViewController: UIViewController,
-                                               success: @escaping () -> Void) {
-        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
-                                                     canCancel: false) { modalActivityIndicator in
-                                                        firstly { () -> Promise<TSGroupThread> in
-                                                            GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread)
-                                                        }.done { _ in
-                                                            modalActivityIndicator.dismiss {
-                                                                success()
-                                                            }
-                                                        }.catch { error in
-                                                            owsFailDebug("Error: \(error)")
+    // MARK: - Dependencies
 
-                                                            modalActivityIndicator.dismiss {
-                                                                let title = NSLocalizedString("GROUPS_LEAVE_GROUP_FAILED",
-                                                                                              comment: "Error indicating that a group could not be left.")
-                                                                OWSActionSheets.showActionSheet(title: title)
-                                                            }
-                                                        }.retainUntilComplete()
+    private class var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
+    static func leaveGroupOrDeclineInviteAsyncWithUI(groupThread: TSGroupThread,
+                                                     fromViewController: UIViewController,
+                                                     success: (() -> Void)?) {
+
+        guard groupThread.isLocalUserInGroup else {
+            owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
+            return
+        }
+
+        databaseStorage.write { transaction in
+            sendGroupQuitMessage(inThread: groupThread, transaction: transaction)
+        }
+
+        ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: false) { modalView in
+            firstly {
+                self.localLeaveGroupOrDeclineInvite(groupThread: groupThread).asVoid()
+            }.done { _ in
+                modalView.dismiss {
+                    success?()
+                }
+            }.catch { error in
+                owsFailDebug("Leave group failed: \(error)")
+                modalView.dismiss {
+                    OWSActionSheets.showActionSheet(title: NSLocalizedString("LEAVE_GROUP_FAILED",
+                                                                             comment: "Error indicating that a group could not be left."))
+                }
+            }.retainUntilComplete()
         }
     }
 

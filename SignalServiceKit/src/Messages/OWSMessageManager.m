@@ -1097,6 +1097,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              members:newMembers.allObjects
                                             disappearingMessageToken:disappearingMessageToken
                                             groupUpdateSourceAddress:groupUpdateSourceAddress
+                                                   infoMessagePolicy:InfoMessagePolicyAlways
                                                          transaction:transaction
                                                                error:&error];
             if (error != nil || result == nil) {
@@ -1129,6 +1130,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              members:newMembers.allObjects
                                             disappearingMessageToken:nil
                                             groupUpdateSourceAddress:groupUpdateSourceAddress
+                                                   infoMessagePolicy:InfoMessagePolicyAlways
                                                          transaction:transaction
                                                                error:&error];
             if (error != nil || result == nil) {
@@ -1186,7 +1188,6 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarPointer anyInsertWithTransaction:transaction];
 
     [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
-        message:nil
         bypassPendingMessageRequest:YES
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);

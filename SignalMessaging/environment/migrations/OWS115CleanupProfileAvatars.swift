@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -44,7 +44,7 @@ public class OWS115EnsureProfileAvatars: YDBDatabaseMigration {
                     continue
                 }
                 Logger.info("removing reference to non-existant avatar file")
-                profile.update(withAvatarFileName: nil, transaction: transaction.asAnyWrite, completion: {})
+                profile.update(withAvatarFileName: nil, transaction: transaction.asAnyWrite)
             }
         }
     }

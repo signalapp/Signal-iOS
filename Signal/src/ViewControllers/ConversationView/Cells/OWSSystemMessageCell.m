@@ -4,7 +4,6 @@
 
 #import "OWSSystemMessageCell.h"
 #import "ConversationViewItem.h"
-#import "OWSMessageHeaderView.h"
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -54,8 +53,6 @@ typedef void (^SystemMessageActionBlock)(void);
 @property (nonatomic) UIButton *button;
 @property (nonatomic) UIStackView *vStackView;
 @property (nonatomic) UIView *cellBackgroundView;
-@property (nonatomic) OWSMessageHeaderView *headerView;
-@property (nonatomic) NSLayoutConstraint *headerViewHeightConstraint;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
 @property (nonatomic, nullable) SystemMessageAction *action;
 
@@ -82,9 +79,6 @@ typedef void (^SystemMessageActionBlock)(void);
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
     self.layoutConstraints = @[];
-
-    self.headerView = [OWSMessageHeaderView new];
-    self.headerViewHeightConstraint = [self.headerView autoSetDimension:ALDimensionHeight toSize:0];
 
     self.iconView = [UIImageView new];
     [self.iconView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
@@ -124,10 +118,8 @@ typedef void (^SystemMessageActionBlock)(void);
     self.cellBackgroundView.layer.cornerRadius = 5.f;
     [self.contentView addSubview:self.cellBackgroundView];
 
-    UIStackView *cellStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ self.headerView, self.vStackView ]];
-    cellStackView.axis = UILayoutConstraintAxisVertical;
-    [self.contentView addSubview:cellStackView];
-    [cellStackView autoPinEdgesToSuperviewEdges];
+    [self.contentView addSubview:self.vStackView];
+    [self.vStackView autoPinEdgesToSuperviewEdges];
 
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
@@ -204,19 +196,6 @@ typedef void (^SystemMessageActionBlock)(void);
     CGSize buttonSize = [self.button sizeThatFits:CGSizeZero];
 
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
-
-    if (self.viewItem.hasCellHeader) {
-        self.headerView.hidden = NO;
-
-        CGFloat headerHeight =
-            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
-                .height;
-
-        [self.headerView loadForDisplayWithViewItem:self.viewItem conversationStyle:self.conversationStyle];
-        self.headerViewHeightConstraint.constant = headerHeight;
-    } else {
-        self.headerView.hidden = YES;
-    }
 
     self.vStackView.layoutMargins = UIEdgeInsetsMake(self.topVMargin,
         self.conversationStyle.fullWidthGutterLeading,
@@ -378,12 +357,6 @@ typedef void (^SystemMessageActionBlock)(void);
     TSInteraction *interaction = self.viewItem.interaction;
 
     CGSize result = CGSizeMake(self.conversationStyle.viewWidth, 0);
-
-    if (self.viewItem.hasCellHeader) {
-        result.height +=
-            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
-                .height;
-    }
 
     UIImage *_Nullable icon = [self iconForInteraction:interaction];
     if (icon) {
@@ -594,29 +567,12 @@ typedef void (^SystemMessageActionBlock)(void);
 {
     OWSAssertDebug(self.delegate);
 
-    if ([self isGestureInCellHeader:longPress]) {
-        return;
-    }
-
     __unused TSInteraction *interaction = self.viewItem.interaction;
     OWSAssertDebug(interaction);
 
     if (longPress.state == UIGestureRecognizerStateBegan) {
         [self.delegate conversationCell:self didLongpressSystemMessageViewItem:self.viewItem];
     }
-}
-
-- (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
-{
-    OWSAssertDebug(self.viewItem);
-
-    if (!self.viewItem.hasCellHeader) {
-        return NO;
-    }
-
-    CGPoint location = [sender locationInView:self];
-    CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
-    return location.y <= headerBottom.y;
 }
 
 - (void)buttonWasPressed:(id)sender

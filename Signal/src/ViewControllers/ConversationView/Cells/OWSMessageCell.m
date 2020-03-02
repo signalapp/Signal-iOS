@@ -5,7 +5,6 @@
 #import "OWSMessageCell.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSMessageBubbleView.h"
-#import "OWSMessageHeaderView.h"
 #import "OWSMessageStickerView.h"
 #import "OWSMessageViewOnceView.h"
 #import "Signal-Swift.h"
@@ -18,15 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 // The non-nullable properties are so frequently used that it's easier
 // to always keep one around.
 
-@property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) OWSMessageStickerView *messageStickerView;
 @property (nonatomic) OWSMessageViewOnceView *messageViewOnceView;
 @property (nonatomic) AvatarImageView *avatarView;
-@property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
+@property (nonatomic, nullable) UIView *sendFailureBadgeView;
 @property (nonatomic) ReactionCountsView *reactionCountsView;
-
-@property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
+@property (nonatomic, nullable) NSLayoutConstraint *messageBottomConstraint;
 
 @property (nonatomic) UITapGestureRecognizer *messageViewTapGestureRecognizer;
 @property (nonatomic) UITapGestureRecognizer *contentViewTapGestureRecognizer;
@@ -37,8 +34,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat swipeableContentViewInitialX;
 @property (nonatomic) CGFloat messageViewInitialX;
 @property (nonatomic) BOOL isReplyActive;
+@property (nonatomic) BOOL hasPreparedForDisplay;
 
 @property (nonatomic) BOOL isPresentingMenuController;
+
+@property (nonatomic, readonly) OWSMessageCellType messageCellType;
 
 @end
 
@@ -61,16 +61,14 @@ NS_ASSUME_NONNULL_BEGIN
     // Ensure only called once.
     OWSAssertDebug(!self.messageBubbleView);
 
+    _messageCellType = OWSMessageCellType_Unknown;
+
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
-
-    _viewConstraints = [NSMutableArray new];
 
     self.messageBubbleView = [OWSMessageBubbleView new];
     self.messageStickerView = [OWSMessageStickerView new];
     self.messageViewOnceView = [OWSMessageViewOnceView new];
-
-    self.headerView = [OWSMessageHeaderView new];
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
@@ -102,6 +100,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.reactionCountsView = [ReactionCountsView new];
 
     [self setupSwipeContainer];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileDidChange:)
+                                                 name:kNSNotificationNameOtherUsersProfileDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -118,17 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.messageViewOnceView.conversationStyle = conversationStyle;
 }
 
-+ (NSString *)cellReuseIdentifier
-{
-    return NSStringFromClass([self class]);
-}
-
 #pragma mark - Convenience Accessors
-
-- (OWSMessageCellType)cellType
-{
-    return self.viewItem.messageCellType;
-}
 
 - (TSMessage *)message
 {
@@ -158,9 +151,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSMessageView *)messageView
 {
-    if (self.cellType == OWSMessageCellType_StickerMessage) {
+    if (self.messageCellType == OWSMessageCellType_StickerMessage) {
         return self.messageStickerView;
-    } else if (self.cellType == OWSMessageCellType_ViewOnce) {
+    } else if (self.messageCellType == OWSMessageCellType_ViewOnce) {
         return self.messageViewOnceView;
     } else {
         return self.messageBubbleView;
@@ -171,6 +164,40 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplay
 {
+    if (!self.hasPreparedForDisplay) {
+        [self prepareForDisplay];
+    }
+
+    OWSMessageView *messageView = self.messageView;
+    messageView.cellMediaCache = self.delegate.cellMediaCache;
+    messageView.viewItem = self.viewItem;
+    [messageView configureViews];
+    [messageView loadContent];
+
+    self.avatarView.hidden = ![self updateAvatarView];
+    self.reactionCountsView.hidden = ![self updateReactionsView];
+    self.sendFailureBadgeView.hidden = !self.shouldHaveSendFailureBadge;
+}
+
+- (void)setViewItem:(nullable id<ConversationViewItem>)viewItem
+{
+    OWSAssertIsOnMainThread();
+
+    [super setViewItem:viewItem];
+
+    if (viewItem) {
+        if (!self.hasPreparedForDisplay) {
+            _messageCellType = viewItem.messageCellType;
+        } else {
+            OWSAssertDebug(self.messageCellType == viewItem.messageCellType);
+        }
+    }
+}
+
+// This will only ever be called *once* and should prepare for displaying a specific
+// type of message cell. Future reused cells will always use the same type.
+- (void)prepareForDisplay
+{
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.viewItem);
     OWSAssertDebug(self.viewItem.interaction);
@@ -179,140 +206,95 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.messageStickerView);
     OWSAssertDebug(self.messageViewOnceView);
 
-    OWSMessageView *messageView = self.messageView;
-    messageView.viewItem = self.viewItem;
-    messageView.cellMediaCache = self.delegate.cellMediaCache;
-    [messageView configureViews];
-    [messageView loadContent];
-    [self.contentView addSubview:messageView];
-    [messageView addGestureRecognizer:self.messageViewTapGestureRecognizer];
+    self.hasPreparedForDisplay = YES;
 
-    if (self.viewItem.hasCellHeader) {
-        CGFloat headerHeight =
-            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
-                .height;
-        [self.headerView loadForDisplayWithViewItem:self.viewItem conversationStyle:self.conversationStyle];
-        [self.contentView addSubview:self.headerView];
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.headerView autoSetDimension:ALDimensionHeight toSize:headerHeight],
-            [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeLeading],
-            [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
-            [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-            [messageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerView],
-        ]];
-    } else {
-        [self.viewConstraints addObjectsFromArray:@[
-            [messageView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        ]];
-    }
+    UIStackView *messageStackView = [UIStackView new];
+    messageStackView.axis = UILayoutConstraintAxisHorizontal;
+    messageStackView.spacing = self.sendFailureBadgeSpacing;
+    [self.contentView addSubview:messageStackView];
+
+    [messageStackView addArrangedSubview:self.messageView];
+    [messageStackView addGestureRecognizer:self.messageViewTapGestureRecognizer];
+    [messageStackView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    self.messageBottomConstraint = [messageStackView autoPinBottomToSuperviewMarginWithInset:0];
+
+    [messageStackView addSubview:self.reactionCountsView];
 
     if (self.isIncoming) {
-        [self.viewConstraints addObjectsFromArray:@[
-            [messageView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading],
-            [messageView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                          withInset:self.conversationStyle.gutterTrailing
-                                           relation:NSLayoutRelationGreaterThanOrEqual],
-        ]];
-    } else {
-        if (self.shouldHaveSendFailureBadge) {
-            self.sendFailureBadgeView = [UIImageView new];
-            self.sendFailureBadgeView.image =
-                [self.sendFailureBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            self.sendFailureBadgeView.tintColor = UIColor.ows_accentRedColor;
-            [self.contentView addSubview:self.sendFailureBadgeView];
+        [messageStackView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading];
+        [messageStackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                           withInset:self.conversationStyle.gutterTrailing
+                                            relation:NSLayoutRelationGreaterThanOrEqual];
 
-            CGFloat sendFailureBadgeBottomMargin
-                = round(self.conversationStyle.lastTextLineAxis - self.sendFailureBadgeSize * 0.5f);
-            [self.viewConstraints addObjectsFromArray:@[
-                [messageView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                              withInset:self.conversationStyle.gutterLeading
-                                               relation:NSLayoutRelationGreaterThanOrEqual],
-                [self.sendFailureBadgeView autoPinLeadingToTrailingEdgeOfView:messageView
-                                                                       offset:self.sendFailureBadgeSpacing],
-                // V-align the "send failure" badge with the
-                // last line of the text (if any, or where it
-                // would be).
-                [messageView autoPinEdge:ALEdgeBottom
+        [self.reactionCountsView autoPinEdge:ALEdgeLeading
+                                      toEdge:ALEdgeLeading
+                                      ofView:messageStackView
+                                  withOffset:6
+                                    relation:NSLayoutRelationGreaterThanOrEqual];
+
+        // Only incoming messages ever show the avatar view, setup accordingly.
+        [self.swipeableContentView addSubview:self.avatarView];
+
+        // V-align the "group sender" avatar with the
+        // last line of the text (if any, or where it
+        // would be).
+        [messageStackView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8];
+        [messageStackView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView];
+    } else {
+        [messageStackView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                           withInset:self.conversationStyle.gutterLeading
+                                            relation:NSLayoutRelationGreaterThanOrEqual];
+        [messageStackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing];
+
+        [self.reactionCountsView autoPinEdge:ALEdgeTrailing
+                                      toEdge:ALEdgeTrailing
+                                      ofView:messageStackView
+                                  withOffset:-6
+                                    relation:NSLayoutRelationLessThanOrEqual];
+
+        // Only outgoing messages ever show send failures, show setup accordingly.
+        self.sendFailureBadgeView = [UIView new];
+        [messageStackView addArrangedSubview:self.sendFailureBadgeView];
+
+        UIImageView *sendFailureImageView = [UIImageView new];
+        [sendFailureImageView setTemplateImage:self.sendFailureBadge tintColor:UIColor.ows_accentRedColor];
+        [self.sendFailureBadgeView addSubview:sendFailureImageView];
+
+        CGFloat sendFailureBadgeBottomMargin
+            = round(self.conversationStyle.lastTextLineAxis - self.sendFailureBadgeSize * 0.5f);
+        [sendFailureImageView autoPinWidthToSuperview];
+        [sendFailureImageView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:sendFailureBadgeBottomMargin];
+        [sendFailureImageView autoSetDimension:ALDimensionWidth toSize:self.sendFailureBadgeSize];
+        [sendFailureImageView autoSetDimension:ALDimensionHeight toSize:self.sendFailureBadgeSize];
+    }
+
+    // We want the reaction bubbles to stick to the middle of the screen inset from
+    // the edge of the bubble with a small amount of padding unless the bubble is smaller
+    // than the reactions view in which case it will break these constraints and extend
+    // further into the middle of the screen than the message itself.
+    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
+                         forConstraints:^{
+                             if (self.isIncoming) {
+                                 [self.reactionCountsView autoPinEdge:ALEdgeTrailing
+                                                               toEdge:ALEdgeTrailing
+                                                               ofView:messageStackView
+                                                           withOffset:-6];
+                             } else {
+                                 [self.reactionCountsView autoPinEdge:ALEdgeLeading
+                                                               toEdge:ALEdgeLeading
+                                                               ofView:messageStackView
+                                                           withOffset:6];
+                             }
+                         }];
+
+    [self.reactionCountsView autoPinEdge:ALEdgeTop
                                   toEdge:ALEdgeBottom
-                                  ofView:self.sendFailureBadgeView
-                              withOffset:sendFailureBadgeBottomMargin],
-                [self.sendFailureBadgeView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                                            withInset:self.conversationStyle.errorGutterTrailing],
-                [self.sendFailureBadgeView autoSetDimension:ALDimensionWidth toSize:self.sendFailureBadgeSize],
-                [self.sendFailureBadgeView autoSetDimension:ALDimensionHeight toSize:self.sendFailureBadgeSize],
-            ]];
-        } else {
-            [self.viewConstraints addObjectsFromArray:@[
-                [messageView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                              withInset:self.conversationStyle.gutterLeading
-                                               relation:NSLayoutRelationGreaterThanOrEqual],
-                [messageView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing],
-            ]];
-        }
-    }
-
-    if ([self updateAvatarView]) {
-        [self.viewConstraints addObjectsFromArray:@[
-            // V-align the "group sender" avatar with the
-            // last line of the text (if any, or where it
-            // would be).
-            [messageView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
-            [messageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView],
-        ]];
-    }
-
-    if ([self updateReactionsView]) {
-        // We never want the reaction counts to go closer to the edge of the screen than
-        // the edge of the bubble with a small amount of padding
-        if (self.isIncoming) {
-            [self.viewConstraints addObject:[self.reactionCountsView autoPinEdge:ALEdgeLeading
-                                                                          toEdge:ALEdgeLeading
-                                                                          ofView:messageView
-                                                                      withOffset:6
-                                                                        relation:NSLayoutRelationGreaterThanOrEqual]];
-        } else {
-            [self.viewConstraints addObject:[self.reactionCountsView autoPinEdge:ALEdgeTrailing
-                                                                          toEdge:ALEdgeTrailing
-                                                                          ofView:messageView
-                                                                      withOffset:-6
-                                                                        relation:NSLayoutRelationLessThanOrEqual]];
-        }
-
-        // We want the reaction bubbles to stick to the middle of the screen inset from
-        // the edge of the bubble with a small amount of padding unless the bubble is smaller
-        // than the reactions view in which case it will break these constraints and extend
-        // further into the middle of the screen than the message itself.
-        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
-                             forConstraints:^{
-                                 if (self.isIncoming) {
-                                     [self.viewConstraints addObject:[self.reactionCountsView autoPinEdge:ALEdgeTrailing
-                                                                                                   toEdge:ALEdgeTrailing
-                                                                                                   ofView:messageView
-                                                                                               withOffset:-6]];
-                                 } else {
-                                     [self.viewConstraints addObject:[self.reactionCountsView autoPinEdge:ALEdgeLeading
-                                                                                                   toEdge:ALEdgeLeading
-                                                                                                   ofView:messageView
-                                                                                               withOffset:6]];
-                                 }
-                             }];
-
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.reactionCountsView autoPinEdge:ALEdgeTop
-                                          toEdge:ALEdgeBottom
-                                          ofView:messageView
-                                      withOffset:-ReactionCountsView.inset],
-            [self.reactionCountsView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.contentView]
-        ]];
-    } else {
-        [messageView autoPinBottomToSuperviewMarginWithInset:0];
-    }
+                                  ofView:messageStackView
+                              withOffset:-ReactionCountsView.inset];
 
     // Swipe-to-reply
-    [self.viewConstraints addObjectsFromArray:@[
-        [self.swipeToReplyImageView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:messageView withOffset:8],
-        [self.swipeToReplyImageView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:messageView],
-    ]];
+    [self.swipeToReplyImageView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:messageStackView withOffset:8];
+    [self.swipeToReplyImageView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:messageStackView];
 }
 
 - (UIImage *)sendFailureBadge
@@ -370,12 +352,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                 colorName:self.viewItem.authorConversationColorName
                                                  diameter:self.avatarSize] build];
     self.avatarView.image = authorAvatarImage;
-    [self.swipeableContentView addSubview:self.avatarView];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(otherUsersProfileDidChange:)
-                                                 name:kNSNotificationNameOtherUsersProfileDidChange
-                                               object:nil];
 
     return YES;
 }
@@ -411,7 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self updateAvatarView];
+    self.avatarView.hidden = ![self updateAvatarView];
 }
 
 #pragma mark - Reactions
@@ -420,11 +396,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)updateReactionsView
 {
     if (!self.viewItem.reactionState.hasReactions) {
+        self.messageBottomConstraint.constant = 0;
         return NO;
     }
 
+    self.messageBottomConstraint.constant = -(ReactionCountsView.height - ReactionCountsView.inset);
     [self.reactionCountsView configureWith:self.viewItem.reactionState];
-    [self.messageView addSubview:self.reactionCountsView];
 
     return YES;
 }
@@ -447,12 +424,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(cellSize.width > 0 && cellSize.height > 0);
 
-    if (self.viewItem.hasCellHeader) {
-        cellSize.height +=
-            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
-                .height;
-    }
-
     if (self.viewItem.reactionState.hasReactions) {
         cellSize.height += ReactionCountsView.height - ReactionCountsView.inset;
     }
@@ -472,30 +443,26 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super prepareForReuse];
 
-    [NSLayoutConstraint deactivateConstraints:self.viewConstraints];
-    self.viewConstraints = [NSMutableArray new];
-
-    [self.messageBubbleView prepareForReuse];
-    [self.messageBubbleView unloadContent];
-    [self.messageBubbleView removeFromSuperview];
-    [self.messageStickerView prepareForReuse];
-    [self.messageStickerView unloadContent];
-    [self.messageStickerView removeFromSuperview];
-    [self.messageViewOnceView prepareForReuse];
-    [self.messageViewOnceView unloadContent];
-    [self.messageViewOnceView removeFromSuperview];
-
-    [self.headerView removeFromSuperview];
+    switch (self.messageCellType) {
+        case OWSMessageCellType_StickerMessage:
+            [self.messageStickerView prepareForReuse];
+            [self.messageStickerView unloadContent];
+            break;
+        case OWSMessageCellType_ViewOnce:
+            [self.messageViewOnceView prepareForReuse];
+            [self.messageViewOnceView unloadContent];
+            break;
+        default:
+            [self.messageBubbleView prepareForReuse];
+            [self.messageBubbleView unloadContent];
+            break;
+    }
 
     self.avatarView.image = nil;
-    [self.avatarView removeFromSuperview];
+    self.avatarView.hidden = YES;
 
-    [self.reactionCountsView removeFromSuperview];
-
-    [self.sendFailureBadgeView removeFromSuperview];
-    self.sendFailureBadgeView = nil;
-
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.reactionCountsView.hidden = YES;
+    self.sendFailureBadgeView.hidden = YES;
 
     [self resetSwipePositionAnimated:NO];
     self.swipeToReplyImageView.alpha = 0;
@@ -523,10 +490,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (sender.state != UIGestureRecognizerStateRecognized) {
         OWSLogVerbose(@"Ignoring tap on message: %@", self.viewItem.interaction.debugDescription);
-        return;
-    }
-
-    if ([self isGestureInCellHeader:sender]) {
         return;
     }
 
@@ -564,11 +527,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.delegate);
 
     switch (sender.state) {
-        case UIGestureRecognizerStateBegan:
-            if ([self isGestureInCellHeader:sender]) {
-                return;
-            }
-
+        case UIGestureRecognizerStateBegan: {
             BOOL shouldAllowReply = [self shouldAllowReply];
             CGPoint locationInMessageBubble = [sender locationInView:self.messageView];
             switch ([self.messageView gestureLocationForLocation:locationInMessageBubble]) {
@@ -600,6 +559,7 @@ NS_ASSUME_NONNULL_BEGIN
                     break;
             }
             break;
+        }
         case UIGestureRecognizerStateEnded:
             [self.delegate conversationCell:self didEndLongpress:self.viewItem];
             break;
@@ -620,19 +580,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self handleSwipeToReplyGesture:sender];
-}
-
-- (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
-{
-    OWSAssertDebug(self.viewItem);
-
-    if (!self.viewItem.hasCellHeader) {
-        return NO;
-    }
-
-    CGPoint location = [sender locationInView:self];
-    CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
-    return location.y <= headerBottom.y;
 }
 
 - (BOOL)isGestureInAvatar:(UIGestureRecognizer *)sender
@@ -707,7 +654,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Right now, only stickers need the reply button to fade in.
     // If we add other message types that don't have bubbles,
     // we should add them here.
-    return self.cellType == OWSMessageCellType_StickerMessage;
+    return self.messageCellType == OWSMessageCellType_StickerMessage;
 }
 
 - (void)setIsReplyActive:(BOOL)isReplyActive

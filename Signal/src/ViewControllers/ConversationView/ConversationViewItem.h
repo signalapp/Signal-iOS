@@ -93,12 +93,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @property (nonatomic, readonly) BOOL isQuotedReply;
 @property (nonatomic, readonly) BOOL hasQuotedAttachment;
 @property (nonatomic, readonly) BOOL hasQuotedText;
-@property (nonatomic, readonly) BOOL hasCellHeader;
 
 @property (nonatomic, readonly) BOOL hasPerConversationExpiration;
 @property (nonatomic, readonly) BOOL isViewOnceMessage;
 
-@property (nonatomic) BOOL shouldShowDate;
+@property (nonatomic, readonly) BOOL canShowDate;
 @property (nonatomic) BOOL shouldShowSenderAvatar;
 @property (nonatomic, nullable) NSAttributedString *senderName;
 @property (nonatomic, nullable) NSString *senderUsername;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -32,8 +32,11 @@ public class UnreadIndicatorInteraction: TSInteraction {
         notImplemented()
     }
 
+    public let shouldShowDate: Bool
+
     @objc
-    public init(thread: TSThread, timestamp: UInt64, receivedAtTimestamp: UInt64) {
+    public init(thread: TSThread, timestamp: UInt64, receivedAtTimestamp: UInt64, shouldShowDate: Bool) {
+        self.shouldShowDate = shouldShowDate
         super.init(uniqueId: UnreadIndicatorInteraction.UnreadIndicatorInteractionId,
                    timestamp: timestamp,
                    receivedAtTimestamp: receivedAtTimestamp,
