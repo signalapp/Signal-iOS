@@ -575,21 +575,9 @@
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(socketStateDidChange)
-                                                 name:NSNotificationWebSocketStateDidChange
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localProfileDidChange:)
                                                  name:kNSNotificationNameLocalProfileDidChange
                                                object:nil];
-}
-
-- (void)socketStateDidChange
-{
-    OWSAssertIsOnMainThread();
-
-    [self updateTableContents];
 }
 
 - (void)localProfileDidChange:(id)notification
