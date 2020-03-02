@@ -1092,17 +1092,28 @@ public class GroupManager: NSObject {
             return Promise.value(())
         }
 
-        return databaseStorage.write(.promise) { transaction in
-            let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
-            let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
-            messageBuilder.groupMetaMessage = .new
-            messageBuilder.expiresInSeconds = expiresInSeconds
-            self.addAdditionalRecipients(to: messageBuilder,
-                                         groupThread: thread,
-                                         transaction: transaction)
-            let message = messageBuilder.build()
-            self.messageSenderJobQueue.add(message: message.asPreparer,
-                                           transaction: transaction)
+        return firstly {
+            return databaseStorage.write(.promise) { transaction in
+                let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
+                let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
+                messageBuilder.groupMetaMessage = .new
+                messageBuilder.expiresInSeconds = expiresInSeconds
+                self.addAdditionalRecipients(to: messageBuilder,
+                                             groupThread: thread,
+                                             transaction: transaction)
+                let message = messageBuilder.build()
+                self.messageSenderJobQueue.add(message: message.asPreparer,
+                                               transaction: transaction)
+            }
+        }.then(on: .global()) { _ -> Promise<Void> in
+            // The "new group" update message for v1 groups doesn't support avatars.
+            // So, if a new v1 group has an avatar, we need to send a group update
+            // message.
+            guard thread.groupModel.groupsVersion == .V1,
+                thread.groupModel.groupAvatarData != nil else {
+                    return Promise.value(())
+            }
+            return self.sendGroupUpdateMessage(thread: thread)
         }
     }
 
