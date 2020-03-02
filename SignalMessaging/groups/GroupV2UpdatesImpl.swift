@@ -292,6 +292,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                               groupUpdateMode: groupUpdateMode)
                 .recover { (error) throws -> Promise<TSGroupThread> in
                     let shouldTrySnapshot = { () -> Bool in
+                        // This should not fail over in the case of networking problems.
                         if IsNetworkConnectivityFailure(error) {
                             Logger.warn("Error: \(error)")
                             return false
