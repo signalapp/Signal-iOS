@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -54,6 +54,10 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
 
     var sendMediaNavTextInputContextIdentifier: String? {
         return nil
+    }
+
+    var sendMediaNavRecipientNames: [String] {
+        return selectedConversations.map { $0.title }
     }
 }
 

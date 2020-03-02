@@ -3264,6 +3264,11 @@ typedef enum : NSUInteger {
     return self.textInputContextIdentifier;
 }
 
+- (NSArray<NSString *> *)sendMediaNavRecipientNames
+{
+    return @[ [self.contactsManager displayNameForThreadWithSneakyTransaction:self.thread] ];
+}
+
 #pragma mark -
 
 - (void)sendContactShare:(ContactShareViewModel *)contactShare
@@ -3986,6 +3991,11 @@ typedef enum : NSUInteger {
 - (nullable NSString *)attachmentApprovalTextInputContextIdentifier
 {
     return self.textInputContextIdentifier;
+}
+
+- (NSArray<NSString *> *)attachmentApprovalRecipientNames
+{
+    return @[ [self.contactsManager displayNameForThreadWithSneakyTransaction:self.thread] ];
 }
 
 #pragma mark -

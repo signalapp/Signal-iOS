@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,6 +16,7 @@ protocol SendMediaNavDelegate: AnyObject {
     var sendMediaNavApprovalButtonImageName: String { get }
     var sendMediaNavCanSaveAttachments: Bool { get }
     var sendMediaNavTextInputContextIdentifier: String? { get }
+    var sendMediaNavRecipientNames: [String] { get }
 }
 
 @objc
@@ -656,6 +657,10 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
 
     var attachmentApprovalTextInputContextIdentifier: String? {
         return sendMediaNavDelegate?.sendMediaNavTextInputContextIdentifier
+    }
+
+    var attachmentApprovalRecipientNames: [String] {
+        return sendMediaNavDelegate?.sendMediaNavRecipientNames ?? []
     }
 }
 
