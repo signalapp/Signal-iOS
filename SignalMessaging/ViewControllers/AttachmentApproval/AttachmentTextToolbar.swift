@@ -216,6 +216,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         placeholderTextView.isEditable = false
         placeholderTextView.textContainer.maximumNumberOfLines = 1
         placeholderTextView.textContainer.lineBreakMode = .byTruncatingTail
+        placeholderTextView.textColor = .ows_whiteAlpha60
 
         return placeholderTextView
     }()
