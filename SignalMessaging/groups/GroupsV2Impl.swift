@@ -552,7 +552,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 }.done(on: DispatchQueue.global()) { avatarData in
                     resolver.fulfill(avatarData)
                 }.catch(on: DispatchQueue.global()) { error in
-                    if let statusCode = StatusCodeForError(error)?.intValue,
+                    if let statusCode = error.httpStatusCode,
                         statusCode == 404 {
                         // Fulfill with empty data if service returns 404 status code.
                         // We don't want the group to be left in an unrecoverable state
