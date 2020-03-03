@@ -2300,9 +2300,6 @@
 /* message header label when someone else is quoting you */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Απάντηση σε Εσάς";
 
-/* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Απάντηση στον Εαυτό σας";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Το αρχικό μήνυμα δεν βρέθηκε.";
 
@@ -2371,6 +2368,9 @@
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Υποδεχτείτε τις Αντιδράσεις";
+
+/* Text describing the local user in the reaction details pane. */
+"REACTIONS_DETAIL_YOU" = "Εσείς";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ξέχασα το ΡΙΝ μου.";

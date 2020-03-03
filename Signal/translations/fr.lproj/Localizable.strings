@@ -144,7 +144,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Enregistrée";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message pour %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envoyer";
@@ -1245,7 +1245,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Rechercher";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+"HOME_VIEW_DRAFT_PREFIX" = "Brouillon :";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Certains de vos contacts sont déjà sur Signal, dont %@.";
@@ -2300,9 +2300,6 @@
 /* message header label when someone else is quoting you */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Vous répond";
 
-/* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Réponse à vous-même";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Le message original est introuvable.";
 
@@ -2371,6 +2368,9 @@
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Nous présentons les réactions";
+
+/* Text describing the local user in the reaction details pane. */
+"REACTIONS_DETAIL_YOU" = "Vous";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "J’ai oublié mon NIP.";
