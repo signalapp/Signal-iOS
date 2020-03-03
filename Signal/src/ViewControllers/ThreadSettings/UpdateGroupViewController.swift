@@ -139,7 +139,8 @@ extension UpdateGroupViewController {
         }
 
         return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: oldGroupModel)
+            return GroupManager.messageProcessingPromise(for: oldGroupModel,
+                                                         description: self.logTag)
         }.then(on: .global()) { _ in
             // dmConfiguration: nil means don't change disappearing messages configuration.
             GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,

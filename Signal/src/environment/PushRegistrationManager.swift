@@ -190,8 +190,10 @@ public enum PushRegistrationError: Error {
 
         UIApplication.shared.registerForRemoteNotifications()
 
-        return promise.timeout(seconds: 10) {
-            PushRegistrationError.timeout
+        return firstly {
+            promise.timeout(seconds: 10, description: "Register for vanilla push token") {
+                PushRegistrationError.timeout
+            }
         }.recover { error -> Promise<Data> in
             switch error {
             case PushRegistrationError.timeout:

@@ -55,7 +55,8 @@ extension OWSConversationSettingsViewController {
                                                  thread: TSThread) -> Promise<Void> {
 
         return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: thread)
+            return GroupManager.messageProcessingPromise(for: thread,
+                                                         description: self.logTag)
         }.map(on: .global()) {
             // We're sending a message, so we're accepting any pending message request.
             ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)

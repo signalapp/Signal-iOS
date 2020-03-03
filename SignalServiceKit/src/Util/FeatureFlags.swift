@@ -284,6 +284,9 @@ public class DebugFlags: NSObject {
     @objc
     public static let groupsV2forceInvites = false
 
+    @objc
+    public static let isMessageProcessingVerbose = false
+
     // Currently this flag is only honored by TSNetworkManager,
     // but we could eventually honor in other places as well:
     //

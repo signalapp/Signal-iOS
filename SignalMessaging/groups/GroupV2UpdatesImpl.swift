@@ -388,7 +388,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                           groupSecretParamsData: groupSecretParamsData,
                                                           groupChanges: groupChanges,
                                                           groupUpdateMode: groupUpdateMode)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: "Update via changes") {
             GroupsV2Error.timeout
         }
     }
@@ -573,7 +574,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }.then(on: .global()) { groupV2Snapshot in
             return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
                                                                     groupUpdateMode: groupUpdateMode)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: "Update via snapshot") {
             GroupsV2Error.timeout
         }
     }

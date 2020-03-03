@@ -75,7 +75,8 @@ public extension GroupManager {
 extension GroupManager {
     static func leaveGroupOrDeclineInvitePromise(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
         return firstly {
-            return GroupManager.messageProcessingPromise(for: groupThread)
+            return GroupManager.messageProcessingPromise(for: groupThread,
+                                                         description: "Leave or decline invite")
         }.then(on: .global()) {
             GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread)
         }
@@ -83,7 +84,8 @@ extension GroupManager {
 
     static func acceptGroupInvitePromise(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
         return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: groupThread)
+            return GroupManager.messageProcessingPromise(for: groupThread,
+                                                         description: "Accept invite")
         }.then(on: .global()) { _ -> Promise<TSGroupThread> in
             guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 throw OWSAssertionError("Invalid group model.")

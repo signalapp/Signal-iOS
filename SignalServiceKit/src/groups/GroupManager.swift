@@ -333,7 +333,8 @@ public class GroupManager: NSObject {
             } else {
                 return Promise.value(thread)
             }
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: "Create new group") {
             GroupsV2Error.timeout
         }
     }
@@ -765,7 +766,8 @@ public class GroupManager: NSObject {
             }
         }.then(on: .global()) { (_: UpdateInfo, changeSet: GroupsV2ChangeSet) throws -> Promise<TSGroupThread> in
             return self.groupsV2.updateExistingGroupOnService(changeSet: changeSet)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: "Update existing group") {
             GroupsV2Error.timeout
         }
         // GroupsV2 TODO: Handle redundant change error.
@@ -930,7 +932,8 @@ public class GroupManager: NSObject {
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             return groupsV2.updateDisappearingMessageStateOnService(groupModel: groupModel,
                                                                     disappearingMessageToken: disappearingMessageToken)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: "Update DM state") {
             GroupsV2Error.timeout
         }.asVoid()
     }
@@ -1016,7 +1019,8 @@ public class GroupManager: NSObject {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             return self.groupsV2.acceptInviteToGroupV2(groupModel: groupModel)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: "Accept invite") {
             GroupsV2Error.timeout
         }
     }
@@ -1075,7 +1079,8 @@ public class GroupManager: NSObject {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             return self.groupsV2.leaveGroupV2OrDeclineInvite(groupModel: groupModel)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: "Leave group") {
             GroupsV2Error.timeout
         }
     }
@@ -1614,26 +1619,29 @@ public class GroupManager: NSObject {
 // MARK: -
 
 public extension GroupManager {
-    class func messageProcessingPromise(for thread: TSThread) -> Promise<Void> {
+    class func messageProcessingPromise(for thread: TSThread,
+                                        description: String) -> Promise<Void> {
         guard thread.isGroupV2Thread else {
             return Promise.value(())
         }
 
-        return messageProcessingPromise()
+        return messageProcessingPromise(description: description)
     }
 
-    class func messageProcessingPromise(for groupModel: TSGroupModel) -> Promise<Void> {
+    class func messageProcessingPromise(for groupModel: TSGroupModel,
+                                        description: String) -> Promise<Void> {
         guard groupModel.groupsVersion == .V2 else {
             return Promise.value(())
         }
 
-        return messageProcessingPromise()
+        return messageProcessingPromise(description: description)
     }
 
-    private class func messageProcessingPromise() -> Promise<Void> {
+    private class func messageProcessingPromise(description: String) -> Promise<Void> {
         return firstly {
             self.messageProcessing.allMessageFetchingAndProcessingPromise()
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: description) {
             GroupsV2Error.timeout
         }
     }
