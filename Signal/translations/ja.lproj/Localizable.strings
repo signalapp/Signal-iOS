@@ -143,6 +143,9 @@
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "保存済み";
 
+/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "送信";
 
@@ -1241,6 +1244,9 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "検索";
 
+/* A prefix indicating that a message preview is a draft */
+"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "連絡先には、すでにSignalを使用中の人がいます: %@";
 
@@ -1726,27 +1732,6 @@
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "ネットに接続しているか、確認してください。";
-
-/* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "検閲回避オン";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTED" = "接続中";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTING" = "接続しています";
-
-/* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "リンクされていません";
-
-/* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "登録されていません";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "ネットワーク";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "オフライン";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "電話番号で検索";

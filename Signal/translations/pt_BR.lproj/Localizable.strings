@@ -143,6 +143,9 @@
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Salvo";
 
+/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Enviar";
 
@@ -1241,6 +1244,9 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Buscar";
 
+/* A prefix indicating that a message preview is a draft */
+"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Alguns dos seus contatos já estão no Signal, inclusive %@.";
 
@@ -1726,27 +1732,6 @@
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Verifique se você está on-line e tente novamente.";
-
-/* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Driblagem de Censura: Ativada";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTED" = "Conectado";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTING" = "Conectando";
-
-/* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
-
-/* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "Descadastrado";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "Status de rede";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "Off-line";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Encontrar pelo número de telefone";

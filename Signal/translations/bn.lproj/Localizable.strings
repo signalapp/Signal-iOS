@@ -143,6 +143,9 @@
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "সংরক্ষিত";
 
+/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "পাঠান";
 
@@ -1241,6 +1244,9 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "অনুসন্ধান";
 
+/* A prefix indicating that a message preview is a draft */
+"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "%@ সহ আপনার কিছু পরিচিতি ইতিমধ্যে Signal -এ রয়েছে।";
 
@@ -1726,27 +1732,6 @@
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "আপনি অনলাইনে আছেন কিনা তা পরীক্ষা করে দেখুন এবং আবার চেষ্টা করুন।";
-
-/* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "সেন্সরশিপ এড়ানো: চালু";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTED" = "সংযুক্ত";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTING" = "সংযুক্ত হচ্ছে ...";
-
-/* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "আর সংযুক্ত নেই";
-
-/* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "আর নিবন্ধিত নেই";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "নেটওয়ার্কের অবস্থা";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "অফলাইন";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ফোন নাম্বার দিয়ে খুজুন";
