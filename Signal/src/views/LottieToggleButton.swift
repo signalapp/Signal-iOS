@@ -37,7 +37,8 @@ class LottieToggleButton: UIButton {
                 fromProgress: animationView.currentProgress,
                 toProgress: isSelected ? 1 : 0,
                 loopMode: .playOnce
-            ) { [weak self] _ in
+            ) { [weak self] complete in
+                guard complete else { return }
                 self?.isSelected = isSelected
             }
         } else {
