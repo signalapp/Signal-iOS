@@ -51,6 +51,14 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         return result
     }()
     
+    private lazy var fadeView: UIView = {
+        let result = UIView()
+        let gradient = Gradients.transparentToBlack75
+        result.setGradient(gradient)
+        result.isUserInteractionEnabled = false
+        return result
+    }()
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         SignalApp.shared().homeViewController = self
@@ -95,6 +103,8 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         }
         tableView.pin(.trailing, to: .trailing, of: view)
         tableView.pin(.bottom, to: .bottom, of: view)
+        view.addSubview(fadeView)
+        fadeView.pin(to: view)
         // Set up search bar
 //        tableView.tableHeaderView = searchBar
 //        searchBar.sizeToFit()

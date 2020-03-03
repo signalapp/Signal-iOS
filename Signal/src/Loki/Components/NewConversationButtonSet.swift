@@ -10,6 +10,7 @@ final class NewConversationButtonSet : UIView {
     private let spacing = Values.largeSpacing
     private let iconSize = CGFloat(24)
     private let maxDragDistance = CGFloat(56)
+    private let dragMargin = CGFloat(16)
     
     // MARK: Components
     private lazy var mainButton = NewConversationButton(isMainButton: true, icon: #imageLiteral(resourceName: "Plus").scaled(to: CGSize(width: iconSize, height: iconSize)))
@@ -120,9 +121,9 @@ final class NewConversationButtonSet : UIView {
         let buttons = [ joinOpenGroupButton, createNewPrivateChatButton, createNewClosedGroupButton ]
         let buttonToExpand = buttons.first { button in
             var hasUserDraggedBeyondButton = false
-            if button == joinOpenGroupButton && touch.isLeft(of: joinOpenGroupButton) { hasUserDraggedBeyondButton = true }
-            if button == createNewPrivateChatButton && touch.isAbove(createNewPrivateChatButton) { hasUserDraggedBeyondButton = true }
-            if button == createNewClosedGroupButton && touch.isRight(of: createNewClosedGroupButton) { hasUserDraggedBeyondButton = true }
+            if button == joinOpenGroupButton && touch.isLeft(of: joinOpenGroupButton, with: dragMargin) { hasUserDraggedBeyondButton = true }
+            if button == createNewPrivateChatButton && touch.isAbove(createNewPrivateChatButton, with: dragMargin) { hasUserDraggedBeyondButton = true }
+            if button == createNewClosedGroupButton && touch.isRight(of: createNewClosedGroupButton, with: dragMargin) { hasUserDraggedBeyondButton = true }
             return button.contains(touch) || hasUserDraggedBeyondButton
         }
         if let buttonToExpand = buttonToExpand {
@@ -138,9 +139,9 @@ final class NewConversationButtonSet : UIView {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first, isUserDragging else { return }
-        if joinOpenGroupButton.contains(touch) || touch.isLeft(of: joinOpenGroupButton) { delegate?.joinOpenGroup() }
-        else if createNewPrivateChatButton.contains(touch) || touch.isAbove(createNewPrivateChatButton) { delegate?.createNewPrivateChat() }
-        else if createNewClosedGroupButton.contains(touch) || touch.isRight(of: createNewClosedGroupButton) { delegate?.createNewClosedGroup() }
+        if joinOpenGroupButton.contains(touch) || touch.isLeft(of: joinOpenGroupButton, with: dragMargin) { delegate?.joinOpenGroup() }
+        else if createNewPrivateChatButton.contains(touch) || touch.isAbove(createNewPrivateChatButton, with: dragMargin) { delegate?.createNewPrivateChat() }
+        else if createNewClosedGroupButton.contains(touch) || touch.isRight(of: createNewClosedGroupButton, with: dragMargin) { delegate?.createNewClosedGroup() }
         reset()
     }
     
@@ -266,28 +267,28 @@ private extension UIView {
 
 private extension UITouch {
     
-    func isLeft(of view: UIView) -> Bool {
-        return isContainedVertically(in: view) && location(in: view).x < view.bounds.minX
+    func isLeft(of view: UIView, with margin: CGFloat = 0) -> Bool {
+        return isContainedVertically(in: view, with: margin) && location(in: view).x < view.bounds.minX
     }
     
-    func isAbove(_ view: UIView) -> Bool {
-        return isContainedHorizontally(in: view) && location(in: view).y < view.bounds.minY
+    func isAbove(_ view: UIView, with margin: CGFloat = 0) -> Bool {
+        return isContainedHorizontally(in: view, with: margin) && location(in: view).y < view.bounds.minY
     }
     
-    func isRight(of view: UIView) -> Bool {
-        return isContainedVertically(in: view) && location(in: view).x > view.bounds.maxX
+    func isRight(of view: UIView, with margin: CGFloat = 0) -> Bool {
+        return isContainedVertically(in: view, with: margin) && location(in: view).x > view.bounds.maxX
     }
     
-    func isBelow(_ view: UIView) -> Bool {
-        return isContainedHorizontally(in: view) && location(in: view).y > view.bounds.maxY
+    func isBelow(_ view: UIView, with margin: CGFloat = 0) -> Bool {
+        return isContainedHorizontally(in: view, with: margin) && location(in: view).y > view.bounds.maxY
     }
     
-    private func isContainedHorizontally(in view: UIView) -> Bool {
-        return (view.bounds.minX...view.bounds.maxX) ~= location(in: view).x
+    private func isContainedHorizontally(in view: UIView, with margin: CGFloat = 0) -> Bool {
+        return ((view.bounds.minX - margin)...(view.bounds.maxX + margin)) ~= location(in: view).x
     }
     
-    private func isContainedVertically(in view: UIView) -> Bool {
-        return (view.bounds.minY...view.bounds.maxY) ~= location(in: view).y
+    private func isContainedVertically(in view: UIView, with margin: CGFloat = 0) -> Bool {
+        return ((view.bounds.minY - margin)...(view.bounds.maxY + margin)) ~= location(in: view).y
     }
 }
 
