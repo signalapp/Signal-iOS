@@ -1133,7 +1133,7 @@ public class GroupManager: NSObject {
             _ = try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                             newDisappearingMessageToken: nil,
                                                                             groupUpdateSourceAddress: nil,
-                                                                            skipInfoMessage: false,
+                                                                            infoMessagePolicy: .always,
                                                                             transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
