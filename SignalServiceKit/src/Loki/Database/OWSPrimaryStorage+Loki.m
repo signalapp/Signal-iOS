@@ -81,15 +81,16 @@
 
 #define LKPreKeyBundleCollection @"LKPreKeyBundleCollection"
 
-- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey {
+- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey forceClean:(BOOL)forceClean {
     // Check pre keys to make sure we have them
     [TSPreKeyManager checkPreKeys];
     
     ECKeyPair *_Nullable keyPair = self.identityManager.identityKeyPair;
     OWSAssertDebug(keyPair);
+    
 
     // Refresh the signed pre key if needed
-    if (self.currentSignedPreKey == nil) {
+    if (self.currentSignedPreKey == nil || forceClean) {
         SignedPreKeyRecord *signedPreKeyRecord = [self generateRandomSignedRecord];
         [signedPreKeyRecord markAsAcceptedByService];
         [self storeSignedPreKey:signedPreKeyRecord.Id signedPreKeyRecord:signedPreKeyRecord];
@@ -114,6 +115,27 @@
                                                   signedPreKeySignature:signedPreKey.signature
                                                             identityKey:keyPair.publicKey.prependKeyType];
     return bundle;
+}
+
+- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey {
+    NSInteger failureCount = 0;
+    BOOL forceClean = NO;
+    while (failureCount < 3) {
+        @try {
+            PreKeyBundle *preKeyBundle = [self generatePreKeyBundleForContact:pubKey forceClean:forceClean];
+            if (![Ed25519 throws_verifySignature:preKeyBundle.signedPreKeySignature
+                                       publicKey:preKeyBundle.identityKey.throws_removeKeyType
+                                            data:preKeyBundle.signedPreKeyPublic]) {
+                @throw [NSException exceptionWithName:InvalidKeyException reason:@"KeyIsNotValidlySigned" userInfo:nil];
+            }
+            return preKeyBundle;
+        } @catch (NSException *exception) {
+            failureCount++;
+            forceClean = YES;
+        }
+    }
+    OWSLogWarn(@"[Loki] Failed to generate a valid pre key bundle for: %@.", pubKey);
+    return nil;
 }
 
 - (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)pubKey {
