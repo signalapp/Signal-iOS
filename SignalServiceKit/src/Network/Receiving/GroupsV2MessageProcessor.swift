@@ -313,7 +313,9 @@ class IncomingGroupsV2MessageQueue: NSObject {
             }
             guard let groupThread = TSGroupThread.fetch(groupId: groupContextInfo.groupId,
                                                         transaction: transaction) else {
-                                                            // The user might have just deleted the thread.
+                                                            // The user might have just deleted the thread
+                                                            // but this race should be extremely rare.
+                                                            // Usually this should indicate a bug.
                                                             owsFailDebug("Missing thread.")
                                                             return true
             }
@@ -677,7 +679,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
         if IsNetworkConnectivityFailure(error) {
             return true
         }
-        if let statusCode = StatusCodeForError(error)?.intValue,
+        if let statusCode = error.httpStatusCode,
             statusCode == 401 {
             return true
         }

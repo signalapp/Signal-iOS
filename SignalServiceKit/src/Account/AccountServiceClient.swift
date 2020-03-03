@@ -33,7 +33,7 @@ public class AccountServiceClient: NSObject {
                                                      preauthChallenge: preauthChallenge,
                                                      captchaToken: captchaToken,
                                                      transport: transport).recover { error in
-                                                        if StatusCodeForError(error)?.intValue == 402 {
+                                                        if error.httpStatusCode == 402 {
                                                             throw AccountServiceClientError.captchaRequired
                                                         }
             throw error

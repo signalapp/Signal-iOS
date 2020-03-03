@@ -720,7 +720,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
                 // Fall through to retry if retry-able,
                 // otherwise reject immediately.
-                if let statusCode = StatusCodeForError(error)?.intValue {
+                if let statusCode = error.httpStatusCode {
                     switch statusCode {
                     case 401:
                         // Retry auth errors after retrieving new temporal credentials.
@@ -784,7 +784,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                         return resolver.reject(error)
                     }
 
-                    if let statusCode = StatusCodeForError(error)?.intValue {
+                    if let statusCode = error.httpStatusCode {
                         if [401, 403, 409].contains(statusCode) {
                             // These status codes will be handled by performServiceRequest.
                             Logger.warn("Request error: \(error)")

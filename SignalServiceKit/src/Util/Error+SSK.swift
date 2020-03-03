@@ -5,9 +5,10 @@
 import Foundation
 
 extension NSError {
-    // Only StatusCodeForError() should use this method.
+    // Only HTTPStatusCodeForError() or hasFatalAFStatusCode()
+    // should use this method.
     // It only works for AFNetworking errors.
-    // Use StatusCodeForError() instead.
+    // Use HTTPStatusCodeForError() instead.
     @objc
     public func afHttpStatusCode() -> NSNumber? {
         guard domain == AFURLResponseSerializationErrorDomain else {

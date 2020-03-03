@@ -678,7 +678,7 @@ public class OnboardingController: NSObject {
     }
 
     private func requestingVerificationDidFail(viewController: UIViewController, error: Error) {
-        if let statusCode = StatusCodeForError(error)?.intValue {
+        if let statusCode = error.httpStatusCode {
             switch statusCode {
             case 400:
                 OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),

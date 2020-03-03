@@ -84,7 +84,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             Logger.debug("don't report PK rotation failure w/ network error")
             return
         }
-        guard let statusCode = StatusCodeForError(error)?.intValue else {
+        guard let statusCode = error.httpStatusCode else {
             Logger.debug("don't report PK rotation failure w/ non NetworkManager error: \(error)")
             return
         }

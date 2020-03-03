@@ -208,7 +208,7 @@ class UsernameViewController: OWSViewController {
                     self.usernameSavedOrCanceled()
                 }
             }.catch { error in
-                if StatusCodeForError(error)?.intValue == 409 {
+                if error.httpStatusCode == 409 {
                     modalView.dismiss { self.validationState = .inUse }
                     return
                 }

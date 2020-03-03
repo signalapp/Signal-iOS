@@ -194,7 +194,7 @@ public class RequestMaker: NSObject {
                                               wasSentByWebsocket: false)
                 }.recover { (error: Error) -> Promise<RequestMakerResult> in
                     if isUDRequest,
-                        let statusCode = StatusCodeForError(error)?.intValue,
+                        let statusCode = error.httpStatusCode,
                         statusCode == 401 || statusCode == 403 {
                         // If a UD request fails due to service response (as opposed to network
                         // failure), mark recipient as _not_ in UD mode, then retry.

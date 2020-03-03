@@ -55,7 +55,7 @@ public struct ContactDiscoveryService {
                     throw error
                 }
 
-                if let statusCode = StatusCodeForError(error)?.intValue {
+                if let statusCode = error.httpStatusCode {
                     if statusCode == 429 {
                         // TODO add Retry-After for rate limiting
                         throw ServiceError.tooManyRequests(httpCode: statusCode)

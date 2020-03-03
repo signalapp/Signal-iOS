@@ -92,8 +92,8 @@ public extension TSNetworkManager {
         }
     }
 
-    // NOTE: This function should only be called from StatusCodeForError().
-    static func swiftStatusCodeForError(_ error: Error?) -> NSNumber? {
+    // NOTE: This function should only be called from HTTPStatusCodeForError().
+    static func swiftHTTPStatusCodeForError(_ error: Error?) -> NSNumber? {
         guard let error = error else {
             return nil
         }
@@ -111,5 +111,13 @@ public extension TSNetworkManager {
         default:
             return nil
         }
+    }
+}
+
+// MARK: -
+
+public extension Error {
+    var httpStatusCode: Int? {
+        HTTPStatusCodeForError(self)?.intValue
     }
 }

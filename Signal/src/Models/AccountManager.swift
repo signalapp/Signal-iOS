@@ -124,7 +124,7 @@ public class AccountManager: NSObject {
                 Logger.warn("Push not supported: \(description)")
             case is NetworkManagerError:
                 // not deployed to production yet.
-                if StatusCodeForError(error)?.intValue == 404 {
+                if error.httpStatusCode == 404 {
                     Logger.warn("404 while requesting preauthChallenge: \(error)")
                 } else {
                     fallthrough
