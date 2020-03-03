@@ -930,7 +930,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
-    if ([thread isKindOfClass:TSContactThread.class]) {
+    if (thread.isNoteToSelf) {
+        return MessageStrings.noteToSelf;
+    } else if ([thread isKindOfClass:TSContactThread.class]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         return [self displayNameForAddress:contactThread.contactAddress transaction:transaction];
     } else if ([thread isKindOfClass:TSGroupThread.class]) {
@@ -944,7 +946,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
 {
-    if ([thread isKindOfClass:TSContactThread.class]) {
+    if (thread.isNoteToSelf) {
+        return MessageStrings.noteToSelf;
+    } else if ([thread isKindOfClass:TSContactThread.class]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         __block NSString *name;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
