@@ -4229,7 +4229,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"conversationScreenSearchResultSet: %@", conversationScreenSearchResultSet.debugDescription);
+    OWSLogVerbose(@"conversationScreenSearchResultSet: %@", conversationScreenSearchResultSet.debugDescription);
     self.lastSearchedText = conversationScreenSearchResultSet.searchText;
     [UIView performWithoutAnimation:^{
         [self.collectionView reloadItemsAtIndexPaths:self.collectionView.indexPathsForVisibleItems];
