@@ -4348,6 +4348,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     7: .same(proto: "verified"),
     9: .same(proto: "configuration"),
     8: .same(proto: "padding"),
+    100: .same(proto: "openGroups"),
   ]
 
   fileprivate class _StorageClass {
