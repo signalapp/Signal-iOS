@@ -1,5 +1,5 @@
 
-final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIViewControllerPreviewingDelegate, SeedReminderViewDelegate {
+final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIViewControllerPreviewingDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
     private var threadViewModelCache: [String:ThreadViewModel] = [:]
     private var isObservingDatabase = true
     private var isViewVisible = false { didSet { updateIsObservingDatabase() } }
@@ -45,23 +45,17 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         return result
     }()
     
-    private lazy var newConversationButton: UIButton = {
-        let result = UIButton()
-        result.setTitle("+", for: UIControl.State.normal)
-        result.titleLabel!.font = .systemFont(ofSize: 35)
-        result.setTitleColor(UIColor(hex: 0x121212), for: UIControl.State.normal)
-        result.titleEdgeInsets = UIEdgeInsets(top: 0, left: 1, bottom: 4, right: 0) // Slight adjustment to make the plus exactly centered
-        result.backgroundColor = Colors.accent
-        let size = Values.newConversationButtonSize
-        result.layer.cornerRadius = size / 2
-        result.layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size, height: size))).cgPath
-        result.layer.shadowColor = Colors.newConversationButtonShadow.cgColor
-        result.layer.shadowOffset = CGSize(width: 0, height: 0.8)
-        result.layer.shadowOpacity = 1
-        result.layer.shadowRadius = 6
-        result.layer.masksToBounds = false
-        result.set(.width, to: size)
-        result.set(.height, to: size)
+    private lazy var newConversationButtonSet: NewConversationButtonSet = {
+        let result = NewConversationButtonSet()
+        result.delegate = self
+        return result
+    }()
+    
+    private lazy var fadeView: UIView = {
+        let result = UIView()
+        let gradient = Gradients.transparentToBlack75
+        result.setGradient(gradient)
+        result.isUserInteractionEnabled = false
         return result
     }()
     
@@ -109,15 +103,16 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         }
         tableView.pin(.trailing, to: .trailing, of: view)
         tableView.pin(.bottom, to: .bottom, of: view)
+        view.addSubview(fadeView)
+        fadeView.pin(to: view)
         // Set up search bar
 //        tableView.tableHeaderView = searchBar
 //        searchBar.sizeToFit()
 //        tableView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
-        // Set up new conversation button
-        newConversationButton.addTarget(self, action: #selector(createPrivateChat), for: UIControl.Event.touchUpInside)
-        view.addSubview(newConversationButton)
-        newConversationButton.center(.horizontal, in: view)
-        newConversationButton.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
+        // Set up new conversation button set
+        view.addSubview(newConversationButtonSet)
+        newConversationButtonSet.center(.horizontal, in: view)
+        newConversationButtonSet.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
         // Set up previewing
         if (traitCollection.forceTouchCapability == .available) {
             registerForPreviewing(with: self, sourceView: tableView)
@@ -261,17 +256,6 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureView)
-        let newClosedGroupButton = UIButton(type: .custom)
-        newClosedGroupButton.setImage(#imageLiteral(resourceName: "btnGroup--white"), for: UIControl.State.normal)
-        newClosedGroupButton.addTarget(self, action: #selector(createClosedGroup), for: UIControl.Event.touchUpInside)
-        newClosedGroupButton.tintColor = Colors.text
-        let joinPublicChatButton = UIButton(type: .custom)
-        joinPublicChatButton.setImage(#imageLiteral(resourceName: "Globe"), for: UIControl.State.normal)
-        joinPublicChatButton.addTarget(self, action: #selector(joinPublicChat), for: UIControl.Event.touchUpInside)
-        joinPublicChatButton.tintColor = Colors.text
-        let buttonStackView = UIStackView(arrangedSubviews: [ newClosedGroupButton, joinPublicChatButton ])
-        buttonStackView.axis = .horizontal
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: buttonStackView)
     }
     
     // MARK: Interaction
@@ -371,21 +355,21 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc private func joinPublicChat() {
+    @objc func joinOpenGroup() {
         let joinPublicChatVC = JoinPublicChatVC()
         let navigationController = OWSNavigationController(rootViewController: joinPublicChatVC)
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc private func createClosedGroup() {
-        let newClosedGroupVC = NewClosedGroupVC()
-        let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
+    @objc func createNewPrivateChat() {
+        let newPrivateChatVC = NewPrivateChatVC()
+        let navigationController = OWSNavigationController(rootViewController: newPrivateChatVC)
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc func createPrivateChat() {
-        let newPrivateChatVC = NewPrivateChatVC()
-        let navigationController = OWSNavigationController(rootViewController: newPrivateChatVC)
+    @objc func createNewClosedGroup() {
+        let newClosedGroupVC = NewClosedGroupVC()
+        let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
         present(navigationController, animated: true, completion: nil)
     }
     

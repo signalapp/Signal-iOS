@@ -573,6 +573,8 @@
 		B82B408E239DC00D00A248E7 /* DisplayNameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B408D239DC00D00A248E7 /* DisplayNameVC.swift */; };
 		B82B4090239DD75000A248E7 /* RestoreVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B408F239DD75000A248E7 /* RestoreVC.swift */; };
 		B82B4094239DF15900A248E7 /* ConversationTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B4093239DF15900A248E7 /* ConversationTitleView.swift */; };
+		B83F2B86240C7B8F000A54AB /* NewConversationButtonSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B83F2B85240C7B8F000A54AB /* NewConversationButtonSet.swift */; };
+		B83F2B88240CB75A000A54AB /* UIImage+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
 		B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F4235022F30083A1CD /* MentionUtilities.swift */; };
 		B847570323D5698100759540 /* LokiPushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B847570223D5698100759540 /* LokiPushNotificationManager.swift */; };
@@ -587,7 +589,6 @@
 		B8544E3523D5201400299F14 /* UIView+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
-		B8783E9C23EB8DDE00404FB8 /* GeneralUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8783E9B23EB8DDE00404FB8 /* GeneralUtilities.swift */; };
 		B8783E9E23EB948D00404FB8 /* UILabel+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */; };
 		B885D5F4233491AB00EE0D8E /* DeviceLinkingModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */; };
 		B886B4A72398B23E00211ABE /* QRCodeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B886B4A62398B23E00211ABE /* QRCodeVC.swift */; };
@@ -1416,6 +1417,8 @@
 		B82B408D239DC00D00A248E7 /* DisplayNameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayNameVC.swift; sourceTree = "<group>"; };
 		B82B408F239DD75000A248E7 /* RestoreVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreVC.swift; sourceTree = "<group>"; };
 		B82B4093239DF15900A248E7 /* ConversationTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTitleView.swift; sourceTree = "<group>"; };
+		B83F2B85240C7B8F000A54AB /* NewConversationButtonSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationButtonSet.swift; sourceTree = "<group>"; };
+		B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Scaling.swift"; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
 		B84664F4235022F30083A1CD /* MentionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionUtilities.swift; sourceTree = "<group>"; };
 		B847570023D568EB00759540 /* SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1429,7 +1432,6 @@
 		B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceUtilities.swift; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
-		B8783E9B23EB8DDE00404FB8 /* GeneralUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralUtilities.swift; sourceTree = "<group>"; };
 		B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Interaction.swift"; sourceTree = "<group>"; };
 		B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinkingModal.swift; sourceTree = "<group>"; };
 		B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Constraints.swift"; sourceTree = "<group>"; };
@@ -2786,6 +2788,7 @@
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
 				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
+				B83F2B85240C7B8F000A54AB /* NewConversationButtonSet.swift */,
 				B8BB82B02390C37000BA5194 /* SearchBar.swift */,
 				B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */,
 				B85357C023A1B81900AAF6CD /* SeedReminderViewDelegate.swift */,
@@ -2802,11 +2805,11 @@
 			children = (
 				B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */,
 				B8544E3023D16CA500299F14 /* DeviceUtilities.swift */,
-				B8783E9B23EB8DDE00404FB8 /* GeneralUtilities.swift */,
 				B847570223D5698100759540 /* LokiPushNotificationManager.swift */,
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 				B886B4A82398BA1500211ABE /* QRCode.swift */,
 				B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */,
+				B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -3846,6 +3849,7 @@
 				340FC8B8204DAC8D007AEB0F /* AddToGroupViewController.m in Sources */,
 				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
 				B893063F2383961A005EAA8E /* ScanQRCodeWrapperVC.swift in Sources */,
+				B83F2B86240C7B8F000A54AB /* NewConversationButtonSet.swift in Sources */,
 				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
@@ -3883,6 +3887,7 @@
 				B885D5F4233491AB00EE0D8E /* DeviceLinkingModal.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
+				B83F2B88240CB75A000A54AB /* UIImage+Scaling.swift in Sources */,
 				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
 				346E9D5421B040B700562252 /* RegistrationController.swift in Sources */,
@@ -3900,7 +3905,6 @@
 				3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */,
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
-				B8783E9C23EB8DDE00404FB8 /* GeneralUtilities.swift in Sources */,
 				B80C6B572384A56D00FDBC8B /* DeviceLinksVC.swift in Sources */,
 				34A8B3512190A40E00218A25 /* MediaAlbumCellView.swift in Sources */,
 				34D1F0AE1F867BFC0066283D /* OWSMessageCell.m in Sources */,
