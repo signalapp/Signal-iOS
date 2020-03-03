@@ -104,15 +104,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         tableView.pin(.trailing, to: .trailing, of: view)
         tableView.pin(.bottom, to: .bottom, of: view)
         view.addSubview(fadeView)
-<<<<<<< HEAD
         fadeView.pin(to: view)
-=======
-        fadeView.pin(.leading, to: .leading, of: view)
-        let topInset = 0.15 * view.height()
-        fadeView.pin(.top, to: .top, of: view, withInset: topInset)
-        fadeView.pin(.trailing, to: .trailing, of: view)
-        fadeView.pin(.bottom, to: .bottom, of: view)
->>>>>>> b56fc0d01031a276b79be70736da8a48d720ebb6
         // Set up search bar
 //        tableView.tableHeaderView = searchBar
 //        searchBar.sizeToFit()
