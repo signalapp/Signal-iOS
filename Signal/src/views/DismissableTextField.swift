@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,7 +40,7 @@ class DismissInputBar: UIToolbar {
 }
 
 @objc
-public class DismissableTextField: UITextField, DismissInputBarDelegate {
+public class DismissableTextField: OWSTextField, DismissInputBarDelegate {
 
     private let dismissBar: DismissInputBar
 

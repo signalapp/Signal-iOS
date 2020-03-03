@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "PinEntryView.h"
@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createPinTextfield
 {
-    if (UIDevice.currentDevice.isShorterThanIPhone5) {
+    if (UIDevice.currentDevice.isIPhone5OrShorter) {
         self.pinTextfield = [DismissableTextField new];
     } else {
         self.pinTextfield = [OWSTextField new];
