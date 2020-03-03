@@ -75,6 +75,10 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDel
     public var attachmentApprovalTextInputContextIdentifier: String? {
         return approvalDelegate?.attachmentApprovalTextInputContextIdentifier
     }
+
+    public var attachmentApprovalRecipientNames: [String] {
+        return approvalDelegate?.attachmentApprovalRecipientNames ?? []
+    }
 }
 
 protocol GifPickerViewControllerDelegate: class {

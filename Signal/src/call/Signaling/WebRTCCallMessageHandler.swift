@@ -34,11 +34,11 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: - Call Handlers
 
-    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress) {
+    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sentAtTimestamp: UInt64) {
         AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.sessionDescription)
+        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.sessionDescription, sentAtTimestamp: sentAtTimestamp)
     }
 
     public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress) {

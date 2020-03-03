@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol OWSCallMessageHandler <NSObject>
 
 - (void)receivedOffer:(SSKProtoCallMessageOffer *)offer
-           fromCaller:(SignalServiceAddress *)caller NS_SWIFT_NAME(receivedOffer(_:from:));
+           fromCaller:(SignalServiceAddress *)caller
+      sentAtTimestamp:(uint64_t)sentAtTimestamp NS_SWIFT_NAME(receivedOffer(_:from:sentAtTimestamp:));
 - (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer
             fromCaller:(SignalServiceAddress *)caller NS_SWIFT_NAME(receivedAnswer(_:from:));
 - (void)receivedIceUpdate:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdate

@@ -37,6 +37,8 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
     optional func attachmentApprovalBackButtonTitle() -> String
 
     @objc var attachmentApprovalTextInputContextIdentifier: String? { get }
+
+    @objc var attachmentApprovalRecipientNames: [String] { get }
 }
 
 // MARK: -
@@ -285,7 +287,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         bottomToolView.update(isEditingCaptions: isEditingCaptions,
                               currentAttachmentItem: currentAttachmentItem,
                               shouldHideControls: shouldHideControls,
-                              isApproved: isApproved)
+                              isApproved: isApproved,
+                              recipientNames: approvalDelegate?.attachmentApprovalRecipientNames ?? [])
     }
 
     public var messageText: String? {

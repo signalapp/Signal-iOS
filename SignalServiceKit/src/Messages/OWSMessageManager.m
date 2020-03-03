@@ -926,7 +926,9 @@ NS_ASSUME_NONNULL_BEGIN
     // definition will end if the app exits.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (callMessage.offer) {
-            [self.callMessageHandler receivedOffer:callMessage.offer fromCaller:envelope.sourceAddress];
+            [self.callMessageHandler receivedOffer:callMessage.offer
+                                        fromCaller:envelope.sourceAddress
+                                   sentAtTimestamp:envelope.timestamp];
         } else if (callMessage.answer) {
             [self.callMessageHandler receivedAnswer:callMessage.answer fromCaller:envelope.sourceAddress];
         } else if (callMessage.iceUpdate.count > 0) {

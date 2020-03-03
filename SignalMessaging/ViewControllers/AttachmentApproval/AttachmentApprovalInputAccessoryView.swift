@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -135,13 +135,13 @@ class AttachmentApprovalInputAccessoryView: UIView {
     }
 
     private func updateFirstResponder() {
-        if (shouldHideControls) {
+        if shouldHideControls {
             if attachmentCaptionToolbar.textView.isFirstResponder {
                 attachmentCaptionToolbar.textView.resignFirstResponder()
             } else if attachmentTextToolbar.textView.isFirstResponder {
                 attachmentTextToolbar.textView.resignFirstResponder()
             }
-        } else if (isEditingCaptions) {
+        } else if isEditingCaptions {
             // While editing captions, the keyboard should always remain visible.
             if !attachmentCaptionToolbar.textView.isFirstResponder {
                 attachmentCaptionToolbar.textView.becomeFirstResponder()
@@ -158,7 +158,8 @@ class AttachmentApprovalInputAccessoryView: UIView {
     public func update(isEditingCaptions: Bool,
                        currentAttachmentItem: AttachmentApprovalItem?,
                        shouldHideControls: Bool,
-                       isApproved: Bool) {
+                       isApproved: Bool,
+                       recipientNames: [String]) {
         // De-bounce
         guard self.isEditingCaptions != isEditingCaptions ||
             self.currentAttachmentItem != currentAttachmentItem ||
@@ -173,6 +174,8 @@ class AttachmentApprovalInputAccessoryView: UIView {
         self.currentAttachmentItem = currentAttachmentItem
         self.shouldHideControls = shouldHideControls
         self.isApproved = isApproved
+
+        self.attachmentTextToolbar.recipientNames = recipientNames
 
         updateContents()
     }

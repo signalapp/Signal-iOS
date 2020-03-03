@@ -21,6 +21,7 @@ public class ThreadViewModel: NSObject {
         return !isGroupThread
     }
 
+    @objc public let draftText: String?
     @objc public let lastMessageText: String?
     @objc public let lastMessageForInbox: TSInteraction?
 
@@ -52,6 +53,8 @@ public class ThreadViewModel: NSObject {
         } else {
             self.addedToGroupByName = nil
         }
+
+        self.draftText = thread.currentDraft(with: transaction)
     }
 
     @objc
