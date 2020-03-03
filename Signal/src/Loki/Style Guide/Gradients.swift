@@ -27,5 +27,5 @@ final class Gradient : NSObject {
 final class Gradients : NSObject {
     
     @objc static let defaultLokiBackground = Gradient(start: UIColor(hex: 0x171717), end: UIColor(hex: 0x121212))
-    @objc static let transparentToBlack75 = Gradient(start: UIColor(red: 0, green: 0, blue: 0, alpha: 0), end: UIColor(red: 0, green: 0, blue: 0, alpha: 0.75))
+    @objc static let transparentToBlack75 = Gradient(start: UIColor(red: 0, green: 0, blue: 0, alpha: 0), end: UIColor(red: 0, green: 0, blue: 0, alpha: 1))
 }
