@@ -242,15 +242,7 @@ public class GroupsV2Protos {
                 throw OWSAssertionError("Group member missing role.")
             }
 
-            let uuid: UUID
-            do {
-                uuid = try groupV2Params.uuid(forUserId: userID)
-            } catch {
-                // GroupsV2 TODO: We might surface invalid/corrupt state
-                // in the UI.
-                owsFailDebug("Error parsing uuid: \(error)")
-                continue
-            }
+            let uuid = try groupV2Params.uuid(forUserId: userID)
 
             let member = GroupV2SnapshotImpl.Member(userID: userID,
                                                     uuid: uuid,
@@ -287,17 +279,8 @@ public class GroupsV2Protos {
             }
             let timestamp = pendingMemberProto.timestamp
 
-            let uuid: UUID
-            let addedByUuid: UUID
-            do {
-                uuid = try groupV2Params.uuid(forUserId: userId)
-                addedByUuid = try groupV2Params.uuid(forUserId: addedByUserId)
-            } catch {
-                // GroupsV2 TODO: We might surface invalid/corrupt state
-                // in the UI.
-                owsFailDebug("Error parsing uuid: \(error)")
-                continue
-            }
+            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserId)
 
             guard memberProto.hasRole, let role = memberProto.role else {
                 throw OWSAssertionError("Group member missing role.")
