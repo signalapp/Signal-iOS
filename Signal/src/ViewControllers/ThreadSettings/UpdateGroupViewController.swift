@@ -18,10 +18,6 @@ public extension UpdateGroupViewController {
         return SDSDatabaseStorage.shared
     }
 
-    private var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
-    }
-
     // MARK: -
 
     func canAddOrInviteMember(oldGroupModel: TSGroupModel,
@@ -143,15 +139,7 @@ extension UpdateGroupViewController {
         }
 
         return firstly { () -> Promise<Void> in
-            guard newGroupModel.groupsVersion == .V2 else {
-                return Promise.value(())
-            }
-            // v2 group updates need to block on message processing.
-            return firstly {
-                messageProcessing.allMessageFetchingAndProcessingPromise()
-            }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
-                GroupsV2Error.timeout
-            }
+            return GroupManager.messageProcessingPromise(for: oldGroupModel)
         }.then(on: .global()) { _ in
             // dmConfiguration: nil means don't change disappearing messages configuration.
             GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,

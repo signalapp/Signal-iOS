@@ -68,6 +68,10 @@ public class GroupManager: NSObject {
         return SSKEnvironment.shared.storageServiceManager
     }
 
+    fileprivate class var messageProcessing: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
+    }
+
     // MARK: -
 
     // Never instantiate this class.
@@ -1603,6 +1607,34 @@ public class GroupManager: NSObject {
             return true
         default:
             return false
+        }
+    }
+}
+
+// MARK: -
+
+public extension GroupManager {
+    class func messageProcessingPromise(for thread: TSThread) -> Promise<Void> {
+        guard thread.isGroupV2Thread else {
+            return Promise.value(())
+        }
+
+        return messageProcessingPromise()
+    }
+
+    class func messageProcessingPromise(for groupModel: TSGroupModel) -> Promise<Void> {
+        guard groupModel.groupsVersion == .V2 else {
+            return Promise.value(())
+        }
+
+        return messageProcessingPromise()
+    }
+
+    private class func messageProcessingPromise() -> Promise<Void> {
+        return firstly {
+            self.messageProcessing.allMessageFetchingAndProcessingPromise()
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+            GroupsV2Error.timeout
         }
     }
 }

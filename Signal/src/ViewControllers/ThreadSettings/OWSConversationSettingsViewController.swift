@@ -9,12 +9,8 @@ public extension OWSConversationSettingsViewController {
 
     // MARK: - Dependencies
 
-    private var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
-    }
-
     var databaseStorage: SDSDatabaseStorage {
-    return .shared
+        return .shared
     }
 
     // MARK: -
@@ -59,15 +55,7 @@ extension OWSConversationSettingsViewController {
                                                  thread: TSThread) -> Promise<Void> {
 
         return firstly { () -> Promise<Void> in
-            guard thread.isGroupV2Thread else {
-                return Promise.value(())
-            }
-            // v2 group updates need to block on message processing.
-            return firstly {
-                messageProcessing.allMessageFetchingAndProcessingPromise()
-            }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
-                GroupsV2Error.timeout
-            }
+            return GroupManager.messageProcessingPromise(for: thread)
         }.map(on: .global()) {
             // We're sending a message, so we're accepting any pending message request.
             ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)

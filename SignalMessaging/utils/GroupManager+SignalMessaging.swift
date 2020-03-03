@@ -14,10 +14,6 @@ public extension GroupManager {
         return SDSDatabaseStorage.shared
     }
 
-    fileprivate class var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
-    }
-
     // MARK: -
 
     static func leaveGroupOrDeclineInviteAsyncWithUI(groupThread: TSGroupThread,
@@ -78,16 +74,8 @@ public extension GroupManager {
 
 extension GroupManager {
     static func leaveGroupOrDeclineInvitePromise(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
-        return firstly { () -> Promise<Void> in
-            guard groupThread.groupModel.groupsVersion == .V2 else {
-                return Promise.value(())
-            }
-            // v2 group updates need to block on message processing.
-            return firstly {
-                self.messageProcessing.allMessageFetchingAndProcessingPromise()
-            }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
-                GroupsV2Error.timeout
-            }
+        return firstly {
+            return GroupManager.messageProcessingPromise(for: groupThread)
         }.then(on: .global()) {
             GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread)
         }
@@ -95,15 +83,7 @@ extension GroupManager {
 
     static func acceptGroupInvitePromise(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
         return firstly { () -> Promise<Void> in
-            guard groupThread.groupModel.groupsVersion == .V2 else {
-                return Promise.value(())
-            }
-            // v2 group updates need to block on message processing.
-            return firstly {
-                self.messageProcessing.allMessageFetchingAndProcessingPromise()
-            }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
-                GroupsV2Error.timeout
-            }
+            return GroupManager.messageProcessingPromise(for: groupThread)
         }.then(on: .global()) { _ -> Promise<TSGroupThread> in
             guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 throw OWSAssertionError("Invalid group model.")
