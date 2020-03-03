@@ -1238,7 +1238,8 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         // also add all current and pending members to the profile whitelist
         // individually as well just in case delivery of the profile key
         // fails.
-        [self addUsersToProfileWhitelist:groupThread.allPendingAndNonPendingMembers.allObjects];
+        NSSet<SignalServiceAddress *> *allPendingAndNonPendingMembers = groupThread.groupModel.groupMembership.allUsers;
+        [self addUsersToProfileWhitelist:allPendingAndNonPendingMembers.allObjects];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress];

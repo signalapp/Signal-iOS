@@ -18,10 +18,6 @@ public extension UpdateGroupViewController {
         return SDSDatabaseStorage.shared
     }
 
-    private var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
-    }
-
     // MARK: -
 
     func canAddOrInviteMember(oldGroupModel: TSGroupModel,
@@ -93,10 +89,20 @@ public extension UpdateGroupViewController {
                                                                 delegate.popAllConversationSettingsViews()
                                                             }
                                                         }.catch { error in
-                                                            owsFailDebug("Could not update group: \(error)")
+                                                            if case GroupsV2Error.redundantChange = error {
+                                                                if let groupThread = (self.databaseStorage.read { transaction in
+                                                                    TSGroupThread.fetch(groupId: newGroupModel.groupId, transaction: transaction)
+                                                                    }) {
+                                                                    // Treat GroupsV2Error.redundantChange as a success.
+                                                                    modalActivityIndicator.dismiss {
+                                                                        delegate.conversationSettingsDidUpdate(groupThread)
+                                                                        delegate.popAllConversationSettingsViews()
+                                                                    }
+                                                                    return
+                                                                }
+                                                            }
 
-                                                            // GroupsV2 TODO: We might want to treat GroupsV2Error.redundantChange
-                                                            // as a success once we've finalized the conflict resolution behavior.
+                                                            owsFailDebug("Could not update group: \(error)")
 
                                                             modalActivityIndicator.dismiss {
                                                                 UpdateGroupViewController.showUpdateErrorUI(error: error)
@@ -133,15 +139,8 @@ extension UpdateGroupViewController {
         }
 
         return firstly { () -> Promise<Void> in
-            guard newGroupModel.groupsVersion == .V2 else {
-                return Promise.value(())
-            }
-            // v2 group updates need to block on message processing.
-            return firstly {
-                messageProcessing.allMessageFetchingAndProcessingPromise()
-            }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
-                GroupsV2Error.timeout
-            }
+            return GroupManager.messageProcessingPromise(for: oldGroupModel,
+                                                         description: self.logTag)
         }.then(on: .global()) { _ in
             // dmConfiguration: nil means don't change disappearing messages configuration.
             GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,

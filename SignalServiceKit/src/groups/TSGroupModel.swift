@@ -4,21 +4,6 @@
 
 import Foundation
 
-@objc
-public extension TSGroupModel {
-    // GroupsV2 TODO: Remove?
-    var pendingMembers: Set<SignalServiceAddress> {
-        return groupMembership.pendingMembers
-    }
-
-    // GroupsV2 TODO: Remove?
-    var allPendingAndNonPendingMembers: Set<SignalServiceAddress> {
-        return groupMembership.allUsers
-    }
-}
-
-// MARK: -
-
 // Like TSGroupModel, TSGroupModelV2 is intended to be immutable.
 //
 // NOTE: This class is tightly coupled to TSGroupModelBuilder.

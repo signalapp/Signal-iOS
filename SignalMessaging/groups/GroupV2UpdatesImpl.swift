@@ -247,7 +247,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     owsFailDebug("Missing localAddress.")
                     return false
                 }
-                let isLocalUserInGroup = groupThread.groupModel.groupMembership.isMemberOrPendingMemberOfAnyRole(localAddress)
+                let isLocalUserInGroup = groupThread.groupModel.groupMembership.isPendingOrNonPendingMember(localAddress)
                 // Auth errors are expected if we've left the group,
                 // but we should still try to refresh so we can learn
                 // if we've been re-added.
@@ -281,41 +281,23 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     //   backoff.
     // * If reachability changes, we should retry network errors
     //   immediately.
-    //
-    // It should upsert the group thread if it does not exist.
-    //
-    // GroupsV2 TODO: Implement properly.
     private func refreshGroupFromService(groupSecretParamsData: Data,
                                          groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
 
         return firstly {
             return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
-        }.map(on: .global()) { () throws -> Bool in
-            guard let localAddress = self.tsAccountManager.localAddress else {
-                throw OWSAssertionError("Missing localAddress.")
-            }
-            let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
-            let thread = self.databaseStorage.read { transaction in
-                return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
-            }
-            var canFetchChangeActions = false
-            if let groupThread = thread {
-                // Pending members can fetch snapshots but not change actions.
-                let groupMembership = groupThread.groupModel.groupMembership
-                canFetchChangeActions = groupMembership.isNonPendingMember(localAddress)
-            }
-            return canFetchChangeActions
-        }.then(on: DispatchQueue.global()) { (canFetchChangeActions: Bool) throws -> Promise<TSGroupThread> in
-            guard canFetchChangeActions else {
-                return self.fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: groupSecretParamsData,
-                                                                           groupUpdateMode: groupUpdateMode)
-            }
+        }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
             // Try to use individual changes.
             return self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                               groupUpdateMode: groupUpdateMode)
                 .recover { (error) throws -> Promise<TSGroupThread> in
                     let shouldTrySnapshot = { () -> Bool in
-                        // GroupsV2 TODO: This should not fail over in the case of networking problems.
+                        // This should not fail over in the case of networking problems.
+                        if IsNetworkConnectivityFailure(error) {
+                            Logger.warn("Error: \(error)")
+                            return false
+                        }
+
                         switch error {
                         case GroupsV2Error.groupNotInDatabase:
                             // Unknown groups are handled by snapshot.
@@ -351,12 +333,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                              changeActionsProto: GroupsProtoGroupChangeActions,
                                              downloadedAvatars: GroupV2DownloadedAvatars,
                                              transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
-        // GroupsV2 TODO: When applying snapshots and change actions to the local
-        // database, we should check revision in the local database.
-        //
-        // GroupsV2 TODO: Instead of loading the group model from the database,
-        // we should use exactly the same group model that was used to construct
-        // the update request - which should reflect pre-update service state.
 
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             throw OWSAssertionError("Missing groupThread.")
@@ -409,23 +385,28 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]) throws -> Promise<TSGroupThread> in
             let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
             return self.tryToApplyGroupChangesFromService(groupId: groupId,
+                                                          groupSecretParamsData: groupSecretParamsData,
                                                           groupChanges: groupChanges,
                                                           groupUpdateMode: groupUpdateMode)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: "Update via changes") {
             GroupsV2Error.timeout
         }
     }
 
     private func tryToApplyGroupChangesFromService(groupId: Data,
+                                                   groupSecretParamsData: Data,
                                                    groupChanges: [GroupV2Change],
                                                    groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         switch groupUpdateMode {
         case .upToCurrentRevisionImmediately:
             return tryToApplyGroupChangesFromServiceNow(groupId: groupId,
+                                                        groupSecretParamsData: groupSecretParamsData,
                                                         groupChanges: groupChanges,
                                                         upToRevision: nil)
         case .upToSpecificRevisionImmediately(let upToRevision):
             return tryToApplyGroupChangesFromServiceNow(groupId: groupId,
+                                                        groupSecretParamsData: groupSecretParamsData,
                                                         groupChanges: groupChanges,
                                                         upToRevision: upToRevision)
         case .upToCurrentRevisionAfterMessageProcessWithThrottling:
@@ -433,6 +414,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 return self.messageProcessing.allMessageFetchingAndProcessingPromise()
             }.then(on: .global()) { _ in
                 return self.tryToApplyGroupChangesFromServiceNow(groupId: groupId,
+                                                                 groupSecretParamsData: groupSecretParamsData,
                                                                  groupChanges: groupChanges,
                                                                  upToRevision: nil)
             }
@@ -440,6 +422,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     }
 
     private func tryToApplyGroupChangesFromServiceNow(groupId: Data,
+                                                      groupSecretParamsData: Data,
                                                       groupChanges: [GroupV2Change],
                                                       upToRevision: UInt32?) -> Promise<TSGroupThread> {
 
@@ -449,7 +432,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
 
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
-            guard let oldGroupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            // See comment on getOrCreateThreadForGroupChanges(...).
+            guard let oldGroupThread = self.getOrCreateThreadForGroupChanges(groupId: groupId,
+                                                                             groupSecretParamsData: groupSecretParamsData,
+                                                                             groupChanges: groupChanges,
+                                                                             transaction: transaction) else {
                 throw OWSAssertionError("Missing group thread.")
             }
             guard let oldGroupModel = oldGroupThread.groupModel as? TSGroupModelV2 else {
@@ -525,6 +512,59 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
     }
 
+    // When learning about v2 groups for the first time, we can always
+    // insert them into the database using a snapshot.  However we prefer
+    // to create them from group changes if possible, because group
+    // changes have more information.  Critically, we can usually determine
+    // who create the group or who added or invited us to the group.
+    //
+    // Therefore, before starting to apply group changes we use this
+    // method to insert the group into the database if necessary.
+    private func getOrCreateThreadForGroupChanges(groupId: Data,
+                                                  groupSecretParamsData: Data,
+                                                  groupChanges: [GroupV2Change],
+                                                  transaction: SDSAnyWriteTransaction) -> TSGroupThread? {
+        if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            return groupThread
+        }
+
+        do {
+            let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+
+            guard let groupChange = groupChanges.first else {
+                return nil
+            }
+
+            let builder = try TSGroupModelBuilder(groupV2Snapshot: groupChange.snapshot)
+            let newGroupModel = try builder.build(transaction: transaction)
+
+            // Many change actions have author info, e.g. addedByUserID. But we can
+            // safely assume that all actions in the "change actions" have the same author.
+            guard let changeAuthorUuidData = groupChange.changeActionsProto.sourceUuid else {
+                throw OWSAssertionError("Missing changeAuthorUuid.")
+            }
+            let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
+            let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
+
+            let newDisappearingMessageToken = groupChange.snapshot.disappearingMessageToken
+
+            let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                                                       newDisappearingMessageToken: newDisappearingMessageToken,
+                                                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                                                       canInsert: true,
+                                                                                                       transaction: transaction)
+
+            // NOTE: We don't need to worry about profile keys here.  This method is
+            // only used by tryToApplyGroupChangesFromServiceNow() which will take
+            // care of that.
+
+            return result.groupThread
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
+    }
+
     // MARK: - Current Snapshot
 
     private func fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: Data,
@@ -534,7 +574,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }.then(on: .global()) { groupV2Snapshot in
             return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
                                                                     groupUpdateMode: groupUpdateMode)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: "Update via snapshot") {
             GroupsV2Error.timeout
         }
     }

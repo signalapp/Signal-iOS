@@ -249,6 +249,24 @@ public class GroupMembership: MTLModel {
         return memberState.isAdministrator
     }
 
+    @objc
+    public func isNonPendingMember(_ address: SignalServiceAddress) -> Bool {
+        return nonPendingMembers.contains(address)
+    }
+
+    public func isNonPendingMember(_ uuid: UUID) -> Bool {
+        return isNonPendingMember(SignalServiceAddress(uuid: uuid))
+    }
+
+    @objc
+    public func isPendingMember(_ address: SignalServiceAddress) -> Bool {
+        return pendingMembers.contains(address)
+    }
+
+    public func isPendingMember(_ uuid: UUID) -> Bool {
+        return isPendingMember(SignalServiceAddress(uuid: uuid))
+    }
+
     // When we check "is X a member?" we might mean...
     //
     // * Is X a "full" member or a pending member?
@@ -260,32 +278,16 @@ public class GroupMembership: MTLModel {
     // This method is intended tests the inclusive case: pending
     // or non-pending, any role.
     @objc
-    public func isMemberOrPendingMemberOfAnyRole(_ address: SignalServiceAddress) -> Bool {
-        return contains(address)
-    }
-
-    @objc
-    public func isNonPendingMember(_ address: SignalServiceAddress) -> Bool {
-        return nonPendingMembers.contains(address)
-    }
-
-    @objc
     public func isPendingOrNonPendingMember(_ address: SignalServiceAddress) -> Bool {
-        return allUsers.contains(address)
+        return memberStateMap[address] != nil
+    }
+
+    public func isPendingOrNonPendingMember(_ uuid: UUID) -> Bool {
+        return isPendingOrNonPendingMember(SignalServiceAddress(uuid: uuid))
     }
 
     public func addedByUuid(forPendingMember address: SignalServiceAddress) -> UUID? {
         return memberStateMap[address]?.addedByUuid
-    }
-
-    // GroupsV2 TODO: We may remove this method.
-    public func contains(_ address: SignalServiceAddress) -> Bool {
-        return memberStateMap[address] != nil
-    }
-
-    // GroupsV2 TODO: We may remove this method.
-    public func contains(_ uuid: UUID) -> Bool {
-        return memberStateMap[SignalServiceAddress(uuid: uuid)] != nil
     }
 
     @objc

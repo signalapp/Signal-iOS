@@ -81,8 +81,8 @@ public class GroupsV2Protos {
         // Collect credentials for all members except self.
 
         let groupBuilder = GroupsProtoGroup.builder()
-        // GroupsV2 TODO: Constant-ize, revisit.
-        groupBuilder.setVersion(0)
+        let initialRevision: UInt32 = 0
+        groupBuilder.setVersion(initialRevision)
         groupBuilder.setPublicKey(groupV2Params.groupPublicParamsData)
         // GroupsV2 TODO: Will production implementation of encryptString() pad?
         groupBuilder.setTitle(try groupV2Params.encryptString(groupModel.groupName?.stripped ?? " "))
@@ -201,7 +201,6 @@ public class GroupsV2Protos {
 
     // MARK: -
 
-    // GroupsV2 TODO: How can we make this parsing less brittle?
     public class func parse(groupProto: GroupsProtoGroup,
                             downloadedAvatars: GroupV2DownloadedAvatars,
                             groupV2Params: GroupV2Params) throws -> GroupV2Snapshot {
@@ -219,7 +218,15 @@ public class GroupsV2Protos {
         var avatarData: Data?
         if let avatar = groupProto.avatar, !avatar.isEmpty {
             avatarUrlPath = avatar
-            avatarData = try downloadedAvatars.avatarData(for: avatar)
+            do {
+                avatarData = try downloadedAvatars.avatarData(for: avatar)
+            } catch {
+                // This should only occur if the avatar is no longer available
+                // on the CDN.
+                owsFailDebug("Could not download avatar: \(error).")
+                avatarData = nil
+                avatarUrlPath = nil
+            }
         }
 
         // This client can learn of profile keys from parsing group state protos.
@@ -285,7 +292,6 @@ public class GroupsV2Protos {
             pendingMembers.append(pendingMember)
         }
 
-        // GroupsV2 TODO: Is GroupsProtoAccessControl required?
         guard let accessControl = groupProto.accessControl else {
             throw OWSAssertionError("Missing accessControl.")
         }

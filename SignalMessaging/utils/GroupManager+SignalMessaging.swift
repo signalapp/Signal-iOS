@@ -31,7 +31,7 @@ public extension GroupManager {
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: false) { modalView in
             firstly {
-                self.localLeaveGroupOrDeclineInvite(groupThread: groupThread).asVoid()
+                self.leaveGroupOrDeclineInvitePromise(groupThread: groupThread).asVoid()
             }.done { _ in
                 modalView.dismiss {
                     success?()
@@ -52,10 +52,7 @@ public extension GroupManager {
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
                                                         firstly { () -> Promise<TSGroupThread> in
-                                                            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                                                                throw OWSAssertionError("Invalid group model.")
-                                                            }
-                                                            return GroupManager.localAcceptInviteToGroupV2(groupModel: groupModel)
+                                                            self.acceptGroupInvitePromise(groupThread: groupThread)
                                                         }.done { _ in
                                                             modalActivityIndicator.dismiss {
                                                                 success()
@@ -69,6 +66,31 @@ public extension GroupManager {
                                                                 OWSActionSheets.showActionSheet(title: title)
                                                             }
                                                         }.retainUntilComplete()
+        }
+    }
+}
+
+// MARK: -
+
+extension GroupManager {
+    static func leaveGroupOrDeclineInvitePromise(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+        return firstly {
+            return GroupManager.messageProcessingPromise(for: groupThread,
+                                                         description: "Leave or decline invite")
+        }.then(on: .global()) {
+            GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread)
+        }
+    }
+
+    static func acceptGroupInvitePromise(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+        return firstly { () -> Promise<Void> in
+            return GroupManager.messageProcessingPromise(for: groupThread,
+                                                         description: "Accept invite")
+        }.then(on: .global()) { _ -> Promise<TSGroupThread> in
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid group model.")
+            }
+            return GroupManager.localAcceptInviteToGroupV2(groupModel: groupModel)
         }
     }
 }

@@ -388,8 +388,7 @@ public class MessageProcessing: NSObject {
             owsFailDebug("Not registered.")
             return false
         }
-        // Groupsv2 TODO: We don't want to process incoming messages
-        // in the share extension, but we need to block on latest
+        // In the share extension, don't block on latest
         // groups v2 state when sending messages.
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             owsFailDebug("Should not process incoming messages.")
@@ -400,15 +399,24 @@ public class MessageProcessing: NSObject {
             let isWebsocketDrained = (self.socketManager.socketState() == .open &&
                 self.socketManager.hasEmptiedInitialQueue())
             guard isWebsocketDrained else {
+                if DebugFlags.isMessageProcessingVerbose {
+                    Logger.verbose("!isWebsocketDrained")
+                }
                 return false
             }
         } else {
             guard messageFetcherJob.completedRestFetches > 0 else {
+                if DebugFlags.isMessageProcessingVerbose {
+                    Logger.verbose("completedRestFetches: \(messageFetcherJob.completedRestFetches)")
+                }
                 return false
             }
         }
 
         guard messageFetcherJob.areAllFetchCyclesComplete else {
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("!areAllFetchCyclesComplete")
+            }
             return false
         }
 
@@ -422,6 +430,9 @@ public class MessageProcessing: NSObject {
             return false
         }
         guard !hasPendingDecryptionOrProcess else {
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("hasPendingDecryptionOrProcess")
+            }
             return false
         }
         return true

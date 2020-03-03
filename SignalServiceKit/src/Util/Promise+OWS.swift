@@ -41,7 +41,7 @@ public extension Promise {
         }
     }
 
-    func timeout(seconds: TimeInterval, timeoutErrorBlock: @escaping () -> Error) -> Promise<T> {
+    func timeout(seconds: TimeInterval, description: String? = nil, timeoutErrorBlock: @escaping () -> Error) -> Promise<T> {
         let timeout: Promise<T> = after(seconds: seconds).map {
             throw TimeoutError(underlyingError: timeoutErrorBlock())
         }
@@ -49,7 +49,11 @@ public extension Promise {
         return race(self, timeout).recover { error -> Promise<T> in
             switch error {
             case let timeoutError as TimeoutError:
-                Logger.info("Timed out, throwing error.")
+                if let description = description {
+                    Logger.info("Timed out, throwing error: \(description).")
+                } else {
+                    Logger.info("Timed out, throwing error.")
+                }
                 return Promise(error: timeoutError.underlyingError)
             default:
                 return Promise(error: error)

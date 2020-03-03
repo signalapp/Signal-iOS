@@ -222,9 +222,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(dataMessage);
     OWSAssertDebug(envelope);
 
-    // GroupsV2 TODO: Handle groups v2.
-    if (dataMessage.group) {
-        return [self.blockingManager isGroupIdBlocked:dataMessage.group.id];
+    NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+    if (groupId != nil) {
+        return [self.blockingManager isGroupIdBlocked:groupId];
     } else {
         BOOL senderBlocked = [self isEnvelopeSenderBlocked:envelope];
 
@@ -535,9 +535,9 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
         NSString *logMessage =
             [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceAddress];
-        // GroupsV2 TODO: Handle groups v2.
-        if (dataMessage.group) {
-            logMessage = [logMessage stringByAppendingFormat:@" in group: %@", dataMessage.group.id];
+        NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+        if (groupId != nil) {
+            logMessage = [logMessage stringByAppendingFormat:@" in group: %@", groupId];
         }
         OWSLogError(@"%@", logMessage);
         return;
@@ -633,7 +633,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (dataMessage.group != nil) {
         // V1 Group.
         SSKProtoGroupContext *groupContext = dataMessage.group;
-        NSData *_Nullable groupId = groupContext.id;
+        NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
         if (![GroupManager isValidGroupId:groupId groupsVersion:GroupsVersionV1]) {
             OWSFailDebug(@"Invalid group id: %lu.", (unsigned long)groupId.length);
             return nil;
@@ -753,6 +753,32 @@ NS_ASSUME_NONNULL_BEGIN
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
                                                                            transaction:transaction];
         return thread;
+    }
+}
+
+- (nullable NSData *)groupIdForDataMessage:(SSKProtoDataMessage *)dataMessage
+{
+    if (dataMessage.group != nil) {
+        // V1 Group.
+        SSKProtoGroupContext *groupContext = dataMessage.group;
+        return groupContext.id;
+    } else if (dataMessage.groupV2 != nil) {
+        // V2 Group.
+        SSKProtoGroupContextV2 *groupV2 = dataMessage.groupV2;
+        if (!groupV2.hasMasterKey) {
+            OWSFailDebug(@"Missing masterKey.");
+            return nil;
+        }
+        NSError *_Nullable error;
+        GroupV2ContextInfo *_Nullable groupContextInfo =
+            [self.groupsV2 groupV2ContextInfoForMasterKeyData:groupV2.masterKey error:&error];
+        if (error != nil || groupContextInfo == nil) {
+            OWSFailDebug(@"Invalid group context.");
+            return nil;
+        }
+        return groupContextInfo.groupId;
+    } else {
+        return nil;
     }
 }
 
@@ -1343,32 +1369,30 @@ NS_ASSUME_NONNULL_BEGIN
         if (dataMessage && destination.isValid && dataMessage.hasProfileKey) {
             // If we observe a linked device sending our profile key to another
             // user, we can infer that that user belongs in our profile whitelist.
-            //
-            // GroupsV2 TODO: Handle groups v2.
-            if (dataMessage.group) {
-                [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
+            NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+            if (groupId != nil) {
+                [self.profileManager addGroupIdToProfileWhitelist:groupId];
             } else {
                 [self.profileManager addUserToProfileWhitelist:destination];
             }
         }
 
-        SSKProtoGroupContext *_Nullable groupContext = dataMessage.group;
-        BOOL isDataMessageGroupStateChange = (groupContext != nil && groupContext.hasType
-            && (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeUpdate
-                || dataMessage.group.unwrappedType == SSKProtoGroupContextTypeQuit));
+        SSKProtoGroupContext *_Nullable groupContextV1 = dataMessage.group;
+        BOOL isV1GroupStateChange = (groupContextV1 != nil && groupContextV1.hasType
+            && (groupContextV1.unwrappedType == SSKProtoGroupContextTypeUpdate
+                || groupContextV1.unwrappedType == SSKProtoGroupContextTypeQuit));
 
-        if (isDataMessageGroupStateChange) {
-            // GroupsV2 TODO: Handle groups v2.
+        if (isV1GroupStateChange) {
             [self handleGroupStateChangeWithEnvelope:envelope
                                          dataMessage:dataMessage
-                                        groupContext:groupContext
+                                        groupContext:groupContextV1
                                          transaction:transaction];
         } else if (dataMessage.reaction != nil) {
             TSThread *_Nullable thread = nil;
-            // GroupsV2 TODO: Handle groups v2.
-            if (groupContext != nil && [GroupManager isValidGroupId:groupContext.id groupsVersion:GroupsVersionV1]) {
-                // GroupsV2 TODO: We may eventually want and be able to create the group here.
-                thread = [TSGroupThread fetchWithGroupId:dataMessage.group.id transaction:transaction];
+
+            NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+            if (groupId != nil) {
+                thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
             } else {
                 thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
                                                                   transaction:transaction];
@@ -1620,7 +1644,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"Received 'Request Group Info' message for group: %@ from: %@", groupId, envelope.sourceAddress);
 
-    TSGroupThread *_Nullable gThread = [TSGroupThread fetchWithGroupId:dataMessage.group.id transaction:transaction];
+    TSGroupThread *_Nullable gThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
     if (!gThread) {
         OWSLogWarn(@"Unknown group: %@", groupId);
         return;

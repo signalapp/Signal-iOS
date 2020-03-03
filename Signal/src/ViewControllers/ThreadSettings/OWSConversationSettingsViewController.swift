@@ -9,12 +9,8 @@ public extension OWSConversationSettingsViewController {
 
     // MARK: - Dependencies
 
-    private var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
-    }
-
     var databaseStorage: SDSDatabaseStorage {
-    return .shared
+        return .shared
     }
 
     // MARK: -
@@ -34,13 +30,18 @@ public extension OWSConversationSettingsViewController {
                                                                 self.navigationController?.popViewController(animated: true)
                                                             }
                                                         }.catch { error in
-                                                            owsFailDebug("Could not update group: \(error)")
+                                                            switch error {
+                                                            case GroupsV2Error.redundantChange:
+                                                                // Treat GroupsV2Error.redundantChange as a success.
+                                                                modalActivityIndicator.dismiss {
+                                                                    self.navigationController?.popViewController(animated: true)
+                                                                }
+                                                            default:
+                                                                owsFailDebug("Could not update group: \(error)")
 
-                                                            // GroupsV2 TODO: We might want to treat GroupsV2Error.redundantChange
-                                                            // as a success once we've finalized the conflict resolution behavior.
-
-                                                            modalActivityIndicator.dismiss {
-                                                                UpdateGroupViewController.showUpdateErrorUI(error: error)
+                                                                modalActivityIndicator.dismiss {
+                                                                    UpdateGroupViewController.showUpdateErrorUI(error: error)
+                                                                }
                                                             }
                                                         }.retainUntilComplete()
         }
@@ -54,15 +55,8 @@ extension OWSConversationSettingsViewController {
                                                  thread: TSThread) -> Promise<Void> {
 
         return firstly { () -> Promise<Void> in
-            guard thread.isGroupV2Thread else {
-                return Promise.value(())
-            }
-            // v2 group updates need to block on message processing.
-            return firstly {
-                messageProcessing.allMessageFetchingAndProcessingPromise()
-            }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration) {
-                GroupsV2Error.timeout
-            }
+            return GroupManager.messageProcessingPromise(for: thread,
+                                                         description: self.logTag)
         }.map(on: .global()) {
             // We're sending a message, so we're accepting any pending message request.
             ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
