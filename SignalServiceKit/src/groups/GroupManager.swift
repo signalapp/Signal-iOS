@@ -1085,7 +1085,7 @@ public class GroupManager: NSObject {
                                                                transaction: SDSAnyWriteTransaction,
                                                                success: (() -> Void)?) {
 
-        guard groupThread.isLocalUserInGroup else {
+        guard groupThread.isLocalUserPendingOrNonPendingMember else {
             owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
             return
         }
