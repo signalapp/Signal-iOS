@@ -98,9 +98,6 @@ public class GroupsV2Changes {
             guard let role = TSGroupMemberRole.role(for: protoRole) else {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
-            guard let profileKeyCiphertextData = member.profileKey else {
-                throw OWSAssertionError("Missing profileKeyCiphertext.")
-            }
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
@@ -110,11 +107,18 @@ public class GroupsV2Changes {
             groupMembershipBuilder.remove(address)
             groupMembershipBuilder.addNonPendingMember(address, role: role)
 
-            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            do {
+                guard let profileKeyCiphertextData = member.profileKey else {
+                    throw OWSAssertionError("Missing profileKeyCiphertext.")
+                }
+                let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
             let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
+            uuid: uuid)
 
-            profileKeys[uuid] = profileKey
+                profileKeys[uuid] = profileKey
+            } catch {
+                owsFailDebug("Error parsing profile key: \(error)")
+            }
         }
 
         for action in changeActionsProto.deleteMembers {
@@ -157,16 +161,21 @@ public class GroupsV2Changes {
             }
             let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
             let uuidCiphertext = try presentation.getUuidCiphertext()
-            let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
 
             let address = SignalServiceAddress(uuid: uuid)
             guard oldGroupMembership.nonPendingMembers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            profileKeys[uuid] = profileKey
+
+            do {
+                let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
+                let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                              uuid: uuid)
+                profileKeys[uuid] = profileKey
+            } catch {
+                owsFailDebug("Error parsing profile key: \(error)")
+            }
         }
 
         for action in changeActionsProto.addPendingMembers {
@@ -218,10 +227,7 @@ public class GroupsV2Changes {
             }
             let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
             let uuidCiphertext = try presentation.getUuidCiphertext()
-            let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
 
             let address = SignalServiceAddress(uuid: uuid)
             guard oldGroupMembership.pendingMembers.contains(address) else {
@@ -236,7 +242,14 @@ public class GroupsV2Changes {
             groupMembershipBuilder.remove(address)
             groupMembershipBuilder.addNonPendingMember(address, role: role)
 
-            profileKeys[uuid] = profileKey
+            do {
+                let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
+                let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                              uuid: uuid)
+                profileKeys[uuid] = profileKey
+            } catch {
+                owsFailDebug("Error parsing profile key: \(error)")
+            }
         }
 
         if let action = changeActionsProto.modifyTitle {
