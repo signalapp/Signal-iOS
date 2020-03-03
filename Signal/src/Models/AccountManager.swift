@@ -122,9 +122,9 @@ public class AccountManager: NSObject {
             switch error {
             case PushRegistrationError.pushNotSupported(description: let description):
                 Logger.warn("Push not supported: \(description)")
-            case let networkError as NetworkManagerError:
+            case is NetworkManagerError:
                 // not deployed to production yet.
-                if networkError.statusCode == 404, TSConstants.isUsingProductionService {
+                if error.httpStatusCode == 404 {
                     Logger.warn("404 while requesting preauthChallenge: \(error)")
                 } else {
                     fallthrough

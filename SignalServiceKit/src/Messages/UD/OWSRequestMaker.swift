@@ -140,9 +140,10 @@ public class RequestMaker: NSObject {
                     resolver.fulfill(RequestMakerResult(responseObject: responseObject,
                                                         wasSentByUD: isUDRequest,
                                                         wasSentByWebsocket: true))
-                }) { (statusCode: Int, responseData: Data?, error: Error) in
-                    resolver.reject(RequestMakerError.websocketRequestError(statusCode: statusCode, responseData: responseData, underlyingError: error))
-                }
+                    },
+                                   failure: { (statusCode: Int, responseData: Data?, error: Error) in
+                                    resolver.reject(RequestMakerError.websocketRequestError(statusCode: statusCode, responseData: responseData, underlyingError: error))
+                    })
                 }.recover { (error: Error) -> Promise<RequestMakerResult> in
                     switch error {
                     case RequestMakerError.websocketRequestError(let statusCode, _, _):
@@ -192,27 +193,22 @@ public class RequestMaker: NSObject {
                                               wasSentByUD: isUDRequest,
                                               wasSentByWebsocket: false)
                 }.recover { (error: Error) -> Promise<RequestMakerResult> in
-                    switch error {
-                    case NetworkManagerError.taskError(let task, _):
-                        let statusCode = task.statusCode()
-                        if isUDRequest && (statusCode == 401 || statusCode == 403) {
-                            // If a UD request fails due to service response (as opposed to network
-                            // failure), mark recipient as _not_ in UD mode, then retry.
-                            self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
-                            self.profileManager.updateProfile(for: self.address)
-                            self.udAuthFailureBlock()
+                    if isUDRequest,
+                        let statusCode = error.httpStatusCode,
+                        statusCode == 401 || statusCode == 403 {
+                        // If a UD request fails due to service response (as opposed to network
+                        // failure), mark recipient as _not_ in UD mode, then retry.
+                        self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
+                        self.profileManager.updateProfile(for: self.address)
+                        self.udAuthFailureBlock()
 
-                            if self.canFailoverUDAuth {
-                                Logger.info("UD REST request '\(self.label)' auth failed; failing over to non-UD REST request.")
-                                return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
-                            } else {
-                                Logger.info("UD REST request '\(self.label)' auth failed; aborting.")
-                                throw RequestMakerUDAuthError.udAuthFailure
-                            }
+                        if self.canFailoverUDAuth {
+                            Logger.info("UD REST request '\(self.label)' auth failed; failing over to non-UD REST request.")
+                            return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
+                        } else {
+                            Logger.info("UD REST request '\(self.label)' auth failed; aborting.")
+                            throw RequestMakerUDAuthError.udAuthFailure
                         }
-                        break
-                    default:
-                        break
                     }
 
                     if isUDRequest {

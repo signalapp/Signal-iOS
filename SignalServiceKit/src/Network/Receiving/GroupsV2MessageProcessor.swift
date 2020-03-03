@@ -270,6 +270,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
     }
 
     private func canJobBeDiscarded(jobInfo: IncomingGroupsV2MessageJobInfo,
+                                   shouldDiscardIfNotAMember: Bool = false,
                                    transaction: SDSAnyReadTransaction) -> Bool {
         // We want to discard asap to avoid problems with batching.
         guard let envelope = jobInfo.envelope else {
@@ -297,6 +298,34 @@ class IncomingGroupsV2MessageQueue: NSObject {
         guard groupContext.hasRevision else {
             Logger.info("Missing revision.")
             return true
+        }
+
+        // We need to pre-process all incoming envelopes; they might change
+        // our group state.
+        //
+        // But we should only pass envelopes to the MessageManager for
+        // processing if they correspond to v2 groups of which we are a
+        // non-pending member.
+        if shouldDiscardIfNotAMember {
+            guard let localAddress = self.tsAccountManager.localAddress else {
+                owsFailDebug("Missing localAddress.")
+                return true
+            }
+            guard let groupThread = TSGroupThread.fetch(groupId: groupContextInfo.groupId,
+                                                        transaction: transaction) else {
+                                                            // The user might have just deleted the thread
+                                                            // but this race should be extremely rare.
+                                                            // Usually this should indicate a bug.
+                                                            owsFailDebug("Missing thread.")
+                                                            return true
+            }
+            guard groupThread.groupModel.groupMembership.isNonPendingMember(localAddress) else {
+                // * The user might have just left the group.
+                // * We may have just learned that we were removed from the group.
+                // * We might be a pending member with an invite.
+                Logger.warn("Discarding envelope; not an active group member.")
+                return true
+            }
         }
 
         return false
@@ -412,7 +441,9 @@ class IncomingGroupsV2MessageQueue: NSObject {
         for jobInfo in jobInfos {
             let job = jobInfo.job
 
-            if canJobBeDiscarded(jobInfo: jobInfo, transaction: transaction) {
+            if canJobBeDiscarded(jobInfo: jobInfo,
+                                 shouldDiscardIfNotAMember: true,
+                                 transaction: transaction) {
                 // Do nothing.
                 Logger.verbose("Discarding job.")
             } else {
@@ -637,15 +668,19 @@ class IncomingGroupsV2MessageQueue: NSObject {
             if self.isRetryableError(error) {
                 Logger.warn("error: \(type(of: error)) \(error)")
                 return Guarantee.value(UpdateOutcome.failureShouldRetry)
-            } else {
-                owsFailDebug("error: \(type(of: error)) \(error)")
-                return Guarantee.value(UpdateOutcome.failureShouldDiscard)
             }
+
+            owsFailDebug("error: \(type(of: error)) \(error)")
+            return Guarantee.value(UpdateOutcome.failureShouldDiscard)
         }
     }
 
     private func isRetryableError(_ error: Error) -> Bool {
         if IsNetworkConnectivityFailure(error) {
+            return true
+        }
+        if let statusCode = error.httpStatusCode,
+            statusCode == 401 {
             return true
         }
         switch error {

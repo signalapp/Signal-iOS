@@ -49,21 +49,19 @@ public class RotateSignedPreKeyOperation: OWSOperation {
     }
 
     override public func didFail(error: Error) {
-        switch error {
-        case let networkManagerError as NetworkManagerError:
-            guard !networkManagerError.isNetworkConnectivityError else {
-                Logger.debug("don't report SPK rotation failure w/ network error")
-                return
-            }
-
-            guard networkManagerError.statusCode >= 400 && networkManagerError.statusCode <= 599 else {
-                Logger.debug("don't report SPK rotation failure w/ non application error")
-                return
-            }
-
-            TSPreKeyManager.incrementPreKeyUpdateFailureCount()
-        default:
-            Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
+        guard !IsNetworkConnectivityFailure(error) else {
+            Logger.debug("don't report SPK rotation failure w/ network error")
+            return
         }
+        guard let statusCode = error.httpStatusCode else {
+            Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
+            return
+        }
+        guard statusCode >= 400 && statusCode <= 599 else {
+            Logger.debug("don't report SPK rotation failure w/ non application error")
+            return
+        }
+
+        TSPreKeyManager.incrementPreKeyUpdateFailureCount()
     }
 }

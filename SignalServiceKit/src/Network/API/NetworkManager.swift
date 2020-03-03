@@ -10,7 +10,8 @@ public enum NetworkManagerError: Error {
     case taskError(task: URLSessionDataTask, underlyingError: Error)
 }
 
-public extension NetworkManagerError {
+fileprivate extension NetworkManagerError {
+    // NOTE: This function should only be called from TSNetworkManager.isSwiftNetworkConnectivityError.
     var isNetworkConnectivityError: Bool {
         switch self {
         case .taskError(_, let underlyingError):
@@ -18,6 +19,7 @@ public extension NetworkManagerError {
         }
     }
 
+    // NOTE: This function should only be called from TSNetworkManager.swiftStatusCodeForError.
     var statusCode: Int {
         switch self {
         case .taskError(let task, _):
@@ -32,6 +34,8 @@ public extension NetworkManagerError {
         }
     }
 }
+
+// MARK: -
 
 extension NetworkManagerError: CustomNSError {
     public var errorCode: Int {
@@ -81,8 +85,31 @@ public extension TSNetworkManager {
                 return true
             }
             return false
+        case RequestMakerError.websocketRequestError(_, _, let underlyingError):
+            return IsNetworkConnectivityFailure(underlyingError)
         default:
             return false
+        }
+    }
+
+    // NOTE: This function should only be called from HTTPStatusCodeForError().
+    static func swiftHTTPStatusCodeForError(_ error: Error?) -> NSNumber? {
+        guard let error = error else {
+            return nil
+        }
+        switch error {
+        case let networkManagerError as NetworkManagerError:
+            guard networkManagerError.statusCode > 0 else {
+                return nil
+            }
+            return NSNumber(value: networkManagerError.statusCode)
+        case RequestMakerError.websocketRequestError(let statusCode, _, _):
+            guard statusCode > 0 else {
+                return nil
+            }
+            return NSNumber(value: statusCode)
+        default:
+            return nil
         }
     }
 }
@@ -90,7 +117,7 @@ public extension TSNetworkManager {
 // MARK: -
 
 public extension Error {
-    var isNetworkConnectivityFailure: Bool {
-        return IsNetworkConnectivityFailure(self)
+    var httpStatusCode: Int? {
+        HTTPStatusCodeForError(self)?.intValue
     }
 }

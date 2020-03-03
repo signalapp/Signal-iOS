@@ -64,7 +64,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         assertOnQueue(serialQueue)
 
         switch groupUpdateMode {
-        case .upToSpecificRevisionImmediately:
+        case .upToSpecificRevisionImmediately, .upToCurrentRevisionImmediately:
             return false
         case .upToCurrentRevisionAfterMessageProcessWithThrottling:
             return true
@@ -72,6 +72,14 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     }
 
     // MARK: -
+
+    public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
+                                                                  groupSecretParamsData: Data) -> Promise<Void> {
+        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
+        return tryToRefreshV2GroupThreadWithThrottling(groupId: groupId,
+                                                       groupSecretParamsData: groupSecretParamsData,
+                                                       groupUpdateMode: groupUpdateMode)
+    }
 
     @objc
     public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
@@ -201,22 +209,25 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 self.reportSuccess()
             }.catch(on: .global()) { (error) in
 
-                var shouldIgnoreError = false
-                switch error {
-                case GroupsV2Error.unauthorized:
-                    if self.shouldIgnoreAuthFailures {
-                        shouldIgnoreError = true
-                    }
-                default:
-                    break
-                }
-
                 let nsError: NSError = error as NSError
-                if shouldIgnoreError {
-                    Logger.warn("Group refresh failed: \(error)")
+                if case GroupsV2Error.unauthorized = error {
+                    if self.shouldIgnoreAuthFailures {
+                        Logger.warn("Group refresh failed: \(error)")
+                        nsError.isRetryable = false
+                    } else {
+                        owsFailDebug("Group refresh failed: \(error)")
+                        nsError.isRetryable = true
+                    }
+                } else if case GroupsV2Error.localUserNotInGroup = error {
+                    Logger.warn("Local user not in group: \(error)")
                     nsError.isRetryable = false
+                } else if IsNetworkConnectivityFailure(error) {
+                    Logger.warn("Group refresh failed: \(error)")
+                    nsError.isRetryable = true
+                } else if case GroupsV2Error.timeout = error {
+                    Logger.warn("Group refresh timed out: \(error)")
+                    nsError.isRetryable = true
                 } else {
-                    // GroupsV2 TODO: Only fail if non-network error.
                     owsFailDebug("Group refresh failed: \(error)")
                     nsError.isRetryable = true
                 }
@@ -309,7 +320,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                         case GroupsV2Error.groupNotInDatabase:
                             // Unknown groups are handled by snapshot.
                             return true
-                        case GroupsV2Error.unauthorized:
+                        case GroupsV2Error.unauthorized,
+                             GroupsV2Error.localUserNotInGroup:
                             // We can recover from some auth edge cases
                             // using a snapshot.
                             return true
@@ -408,6 +420,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                    groupChanges: [GroupV2Change],
                                                    groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         switch groupUpdateMode {
+        case .upToCurrentRevisionImmediately:
+            return tryToApplyGroupChangesFromServiceNow(groupId: groupId,
+                                                        groupChanges: groupChanges,
+                                                        upToRevision: nil)
         case .upToSpecificRevisionImmediately(let upToRevision):
             return tryToApplyGroupChangesFromServiceNow(groupId: groupId,
                                                         groupChanges: groupChanges,
@@ -526,6 +542,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: GroupV2Snapshot,
                                                              groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         switch groupUpdateMode {
+        case .upToCurrentRevisionImmediately:
+            return tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
         case .upToSpecificRevisionImmediately:
             return tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
         case .upToCurrentRevisionAfterMessageProcessWithThrottling:

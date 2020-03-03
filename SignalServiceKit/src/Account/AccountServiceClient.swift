@@ -33,14 +33,9 @@ public class AccountServiceClient: NSObject {
                                                      preauthChallenge: preauthChallenge,
                                                      captchaToken: captchaToken,
                                                      transport: transport).recover { error in
-            switch error {
-            case let networkingError as NetworkManagerError:
-                if networkingError.statusCode == 402 {
-                    throw AccountServiceClientError.captchaRequired
-                }
-            default:
-                break
-            }
+                                                        if error.httpStatusCode == 402 {
+                                                            throw AccountServiceClientError.captchaRequired
+                                                        }
             throw error
         }
     }

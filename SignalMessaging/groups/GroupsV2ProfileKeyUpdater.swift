@@ -161,6 +161,11 @@ class GroupsV2ProfileKeyUpdater {
             }.catch(on: .global() ) { error in
                 Logger.warn("Failed: \(error).")
 
+                guard !IsNetworkConnectivityFailure(error) else {
+                    // Retry later.
+                    return self.didFail(groupId: groupId, retryDelay: retryDelay)
+                }
+
                 switch error {
                 case GroupsV2Error.shouldDiscard:
                     // If a non-recoverable error occurs (e.g. we've
@@ -169,21 +174,16 @@ class GroupsV2ProfileKeyUpdater {
                 case GroupsV2Error.redundantChange:
                     // If the update is no longer necessary, skip it.
                     self.markAsComplete(groupId: groupId)
-                case let networkManagerError as NetworkManagerError:
-                    if networkManagerError.isNetworkConnectivityError {
+                case is NetworkManagerError:
+                    if let statusCode = error.httpStatusCode,
+                        400 <= statusCode && statusCode <= 599 {
+                        // If a non-recoverable error occurs (e.g. we've been kicked
+                        // out of the group), give up.
+                        Logger.info("Failed: \(statusCode)")
+                        self.markAsComplete(groupId: groupId)
+                    } else {
                         // Retry later.
                         self.didFail(groupId: groupId, retryDelay: retryDelay)
-                    } else {
-                        let statusCode = networkManagerError.statusCode
-                        if 400 <= statusCode && statusCode <= 599 {
-                            // If a non-recoverable error occurs (e.g. we've been kicked
-                            // out of the group), give up.
-                            Logger.info("Failed: \(networkManagerError.statusCode)")
-                            self.markAsComplete(groupId: groupId)
-                        } else {
-                            // Retry later.
-                            self.didFail(groupId: groupId, retryDelay: retryDelay)
-                        }
                     }
                 default:
                     // This should never occur. If it does, we don't want

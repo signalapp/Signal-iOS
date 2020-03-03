@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -224,7 +224,11 @@ class AppStoreVersionService: NSObject {
 
         let (promise, resolver) = Promise<AppStoreRecord>.pending()
 
-        let task = URLSession.ephemeral.dataTask(with: lookupURL) { (data, _, error) in
+        let task = URLSession.ephemeral.dataTask(with: lookupURL) { (data, _, networkError) in
+            if let networkError = networkError {
+                return resolver.reject(networkError)
+            }
+
             guard let data = data else {
                 Logger.warn("data was unexpectedly nil")
                 resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())

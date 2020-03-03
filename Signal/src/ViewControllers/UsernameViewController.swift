@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -208,7 +208,7 @@ class UsernameViewController: OWSViewController {
                     self.usernameSavedOrCanceled()
                 }
             }.catch { error in
-                if case .taskError(let task, _)? = error as? NetworkManagerError, task.statusCode() == 409 {
+                if error.httpStatusCode == 409 {
                     modalView.dismiss { self.validationState = .inUse }
                     return
                 }
