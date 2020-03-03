@@ -71,7 +71,8 @@ final class SeedVC : UIViewController {
         let navigationBarTitleLabel = UILabel()
         navigationBarTitleLabel.text = NSLocalizedString("Your Recovery Phrase", comment: "")
         navigationBarTitleLabel.textColor = Colors.text
-        navigationBarTitleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        let titleLabelFontSize = isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize
+        navigationBarTitleLabel.font = .boldSystemFont(ofSize: titleLabelFontSize)
         navigationItem.titleView = navigationBarTitleLabel
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
@@ -145,7 +146,7 @@ final class SeedVC : UIViewController {
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, copyButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
-        mainStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: isSmallScreen ? Values.smallSpacing : Values.mediumSpacing, trailing: 0)
+        mainStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: Values.mediumSpacing, trailing: 0)
         mainStackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: view)
