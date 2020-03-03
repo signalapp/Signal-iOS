@@ -48,6 +48,7 @@
 #import "LKSessionRequestMessage.h"
 #import "LKSessionRestoreMessage.h"
 #import "LKDeviceLinkMessage.h"
+#import "LKUnlinkDeviceMessage.h"
 #import "LKAddressMessage.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/CipherMessage.h>
@@ -987,7 +988,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isGroupMessage = messageSend.thread.isGroupThread;
     BOOL isPublicChatMessage = isGroupMessage && ((TSGroupThread *)messageSend.thread).isPublicChat;
     BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
-    if (isPublicChatMessage || isDeviceLinkMessage) {
+    BOOL isUnlinkDeviceMessage = [message isKindOfClass:LKUnlinkDeviceMessage.class];
+    if (isPublicChatMessage || isDeviceLinkMessage || isUnlinkDeviceMessage) {
         [self sendMessage:messageSend];
     } else {
         BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];
