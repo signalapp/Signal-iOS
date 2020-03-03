@@ -118,7 +118,7 @@
 }
 
 - (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey {
-    int failureCount = 0;
+    NSInteger failureCount = 0;
     BOOL forceClean = NO;
     while (failureCount < 3) {
         @try {
@@ -130,11 +130,11 @@
             }
             return preKeyBundle;
         } @catch (NSException *exception) {
-            failureCount ++;
+            failureCount++;
             forceClean = YES;
         }
     }
-    OWSLogWarn(@"[Loki] Failed to generate a valid PreKeyBundle for %@", pubKey);
+    OWSLogWarn(@"[Loki] Failed to generate a valid pre key bundle for: %@.", pubKey);
     return nil;
 }
 
