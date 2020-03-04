@@ -296,6 +296,11 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     return nil;
 }
 
+- (NSArray<NSString *> *)attachmentApprovalRecipientNames
+{
+    return @[ [self.contactsManager displayNameForThreadWithSneakyTransaction:self.thread] ];
+}
+
 #pragma mark - TextApprovalViewControllerDelegate
 
 - (void)textApproval:(TextApprovalViewController *)approvalViewController didApproveMessage:(NSString *)messageText
