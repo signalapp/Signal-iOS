@@ -18,6 +18,13 @@ public class DisappearingMessageToken: MTLModel {
         // Use zero duration if not enabled.
         self.durationSeconds = isEnabled ? durationSeconds : 0
 
+        if isEnabled != self.isEnabled {
+            owsFailDebug("isEnabled: \(isEnabled) != self.isEnabled: \(self.isEnabled)")
+        }
+        if durationSeconds != self.durationSeconds {
+            owsFailDebug("durationSeconds: \(durationSeconds) != self.durationSeconds: \(self.durationSeconds)")
+        }
+
         super.init()
     }
 
