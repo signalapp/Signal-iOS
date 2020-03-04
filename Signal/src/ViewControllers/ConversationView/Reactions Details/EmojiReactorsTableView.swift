@@ -166,7 +166,7 @@ private class EmojiReactorCell: UITableViewCell {
         emojiLabel.text = item.emoji
 
         if item.address.isLocalAddress {
-            nameLabel.text = item.displayName
+            nameLabel.text = NSLocalizedString("REACTIONS_DETAIL_YOU", comment: "Text describing the local user in the reaction details pane.")
             avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
             profileLabel.isHidden = true
         } else {
