@@ -72,6 +72,16 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     self.screenBlockingButton = button;
 
     [self updateUIWithState:ScreenLockUIStateScreenProtection isLogoAtTop:NO animated:NO];
+
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(themeDidChange)
+                                               name:ThemeDidChangeNotification
+                                             object:nil];
+}
+
+- (void)themeDidChange
+{
+    self.view.backgroundColor = Theme.launchScreenBackgroundColor;
 }
 
 // The "screen blocking" window has three possible states:

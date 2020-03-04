@@ -58,6 +58,10 @@ public class LoadingViewController: UIViewController {
                                                selector: #selector(didEnterBackground),
                                                name: .OWSApplicationDidEnterBackground,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(themeDidChange),
+                                               name: .ThemeDidChange,
+                                               object: nil)
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -138,6 +142,10 @@ public class LoadingViewController: UIViewController {
         Logger.info("")
 
         viewHasEnteredBackground = true
+    }
+
+    @objc func themeDidChange() {
+        view.backgroundColor = Theme.launchScreenBackground
     }
 
     // MARK: Orientation
