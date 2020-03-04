@@ -4,8 +4,8 @@
 
 #import "SAEScreenLockViewController.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/AppContext.h>
 #import <SignalMessaging/Theme.h>
+#import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

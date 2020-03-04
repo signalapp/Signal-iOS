@@ -68,7 +68,7 @@ public extension UIColor {
     /// Nav Bar, Primary Buttons
     @objc(ows_accentBlueColor)
     class var ows_accentBlue: UIColor {
-        return self.ows_signalBlue
+        return UIColor(rgbHex: 0x2C6BED)
     }
 
     /// Making calls, success states

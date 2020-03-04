@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -323,7 +323,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     private var controlTintColor: UIColor {
         switch mode {
         case .small, .large:
-            return UIColor.ows_signalBlue
+            return UIColor.ows_accentBlue
         case .attachmentApproval:
             return UIColor.white
         }

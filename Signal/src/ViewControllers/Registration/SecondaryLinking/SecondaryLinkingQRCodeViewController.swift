@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -41,7 +41,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT",
                                                   comment: "Link text for page with troubleshooting info shown on the QR scanning screen")
-        explanationLabel.textColor = .ows_signalBlue
+        explanationLabel.textColor = .ows_accentBlue
         explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center

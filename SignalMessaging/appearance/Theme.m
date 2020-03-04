@@ -387,7 +387,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (UIColor *)cursorColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_signalBlueColor;
+    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_accentBlueColor;
 }
 
 + (UIColor *)darkThemeBackgroundColor

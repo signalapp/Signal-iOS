@@ -99,7 +99,7 @@ typedef void (^SystemMessageActionBlock)(void);
     contentStackView.alignment = UIStackViewAlignmentCenter;
 
     self.button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.button setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
+    [self.button setTitleColor:UIColor.ows_accentBlueColor forState:UIControlStateNormal];
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.button.layer.cornerRadius = 4.f;
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];

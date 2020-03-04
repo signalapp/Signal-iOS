@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -65,7 +65,7 @@ public class OWSButton: UIButton {
         button.layer.cornerRadius = buttonWidth / 2
         button.autoSetDimensions(to: CGSize(width: buttonWidth, height: buttonWidth))
 
-        button.backgroundColor = .ows_signalBlue
+        button.backgroundColor = .ows_accentBlue
 
         return button
     }

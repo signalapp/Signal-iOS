@@ -254,7 +254,7 @@ const NSUInteger kMinimumSearchLength = 2;
         [inviteContactsButton setTitle:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                                            "Label for the cell that presents the 'invite contacts' workflow.")
                               forState:UIControlStateNormal];
-        [inviteContactsButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
+        [inviteContactsButton setTitleColor:UIColor.ows_accentBlueColor forState:UIControlStateNormal];
         [inviteContactsButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
         [contents addSubview:inviteContactsButton];
         [inviteContactsButton autoHCenterInSuperview];
@@ -272,7 +272,7 @@ const NSUInteger kMinimumSearchLength = 2;
             setTitle:NSLocalizedString(@"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
                          @"Label for a button that lets users search for contacts by phone number")
             forState:UIControlStateNormal];
-        [searchByPhoneNumberButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
+        [searchByPhoneNumberButton setTitleColor:UIColor.ows_accentBlueColor forState:UIControlStateNormal];
         [searchByPhoneNumberButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
         [contents addSubview:searchByPhoneNumberButton];
         [searchByPhoneNumberButton autoHCenterInSuperview];

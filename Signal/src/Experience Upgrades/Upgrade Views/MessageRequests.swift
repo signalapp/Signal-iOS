@@ -77,7 +77,7 @@ class MessageRequestsSplash: SplashViewController {
         let primaryButton = OWSFlatButton.button(title: primaryButtonTitle(),
                                                  font: UIFont.ows_dynamicTypeBody.ows_semibold(),
                                                  titleColor: .white,
-                                                 backgroundColor: .ows_signalBlue,
+                                                 backgroundColor: .ows_accentBlue,
                                                  target: self,
                                                  selector: #selector(didTapPrimaryButton))
         primaryButton.autoSetHeightUsingFont()

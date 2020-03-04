@@ -56,7 +56,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
                                            @"Label for button on lock screen that lets users unlock Signal.")
                                   font:[OWSFlatButton fontForHeight:kButtonHeight]
-                            titleColor:UIColor.ows_signalBlueColor
+                            titleColor:UIColor.ows_accentBlueColor
                        backgroundColor:[UIColor whiteColor]
                                 target:self
                               selector:@selector(showUnlockUI)];

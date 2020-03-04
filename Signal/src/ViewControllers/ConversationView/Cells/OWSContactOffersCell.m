@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactOffersCell.h"
@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.titleLabel.textColor = Theme.secondaryTextAndIconColor;
     for (UIButton *button in self.buttons) {
-        [button setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
+        [button setTitleColor:UIColor.ows_accentBlueColor forState:UIControlStateNormal];
         [button setBackgroundColor:Theme.conversationButtonBackgroundColor];
     }
 
