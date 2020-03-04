@@ -218,7 +218,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         givenNameLabel.font = [[UIFont ows_dynamicTypeBodyClampedFont] ows_semibold];
         [givenNameRow addArrangedSubview:givenNameLabel];
 
-        UITextField *givenNameTextField = [OWSTextField new];
+        UITextField *givenNameTextField;
+        if (UIDevice.currentDevice.isIPhone5OrShorter) {
+            givenNameTextField = [DismissableTextField new];
+        } else {
+            givenNameTextField = [OWSTextField new];
+        }
         self.givenNameTextField = givenNameTextField;
         givenNameTextField.returnKeyType = UIReturnKeyNext;
         givenNameTextField.autocorrectionType = UITextAutocorrectionTypeNo;
@@ -257,7 +262,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         familyNameLabel.font = [[UIFont ows_dynamicTypeBodyClampedFont] ows_semibold];
         [familyNameRow addArrangedSubview:familyNameLabel];
 
-        UITextField *familyNameTextField = [OWSTextField new];
+        UITextField *familyNameTextField;
+        if (UIDevice.currentDevice.isIPhone5OrShorter) {
+            familyNameTextField = [DismissableTextField new];
+        } else {
+            familyNameTextField = [OWSTextField new];
+        }
         self.familyNameTextField = familyNameTextField;
         familyNameTextField.returnKeyType = UIReturnKeyDone;
         familyNameTextField.autocorrectionType = UITextAutocorrectionTypeNo;
