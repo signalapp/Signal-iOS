@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSWindowManager.h"
@@ -208,11 +208,10 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_CallView();
     window.opaque = YES;
-    // TODO: What's the right color to use here?
-    window.backgroundColor = UIColor.ows_signalBlueColor;
+    window.backgroundColor = Theme.launchScreenBackgroundColor;
 
     UIViewController *viewController = [OWSWindowRootViewController new];
-    viewController.view.backgroundColor = UIColor.ows_signalBlueColor;
+    viewController.view.backgroundColor = Theme.launchScreenBackgroundColor;
 
     // NOTE: Do not use OWSNavigationController for call window.
     // It adjusts the size of the navigation bar to reflect the

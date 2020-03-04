@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScreenLockUI.h"
@@ -385,7 +385,7 @@ NS_ASSUME_NONNULL_BEGIN
     window.hidden = NO;
     window.windowLevel = UIWindowLevel_Background;
     window.opaque = YES;
-    window.backgroundColor = UIColor.ows_signalBlueColor;
+    window.backgroundColor = Theme.launchScreenBackgroundColor;
 
     ScreenLockViewController *viewController = [ScreenLockViewController new];
     viewController.delegate = self;

@@ -80,7 +80,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         providerConfiguration.supportedHandleTypes = [.phoneNumber, .generic]
 
-        let iconMaskImage = #imageLiteral(resourceName: "logoSignal")
+        let iconMaskImage = #imageLiteral(resourceName: "signal-logo-128")
         providerConfiguration.iconTemplateImageData = iconMaskImage.pngData()
 
         // We don't set the ringtoneSound property, so that we use either the

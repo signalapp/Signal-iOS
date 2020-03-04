@@ -50,6 +50,13 @@ public enum ThemeIcon: UInt {
 
 @objc
 public extension Theme {
+    @objc(launchScreenBackgroundColor)
+    class var launchScreenBackground: UIColor {
+        // We only adapt for dark theme on iOS 13+, because only iOS 13 supports
+        // handling dark / light appearance in the launch screen storyboard.
+        guard #available(iOS 13, *) else { return .ows_signalBlue }
+        return Theme.isDarkThemeEnabled ? .ows_signalBlueDark : .ows_signalBlue
+    }
 
     class func iconImage(_ icon: ThemeIcon) -> UIImage {
         let name = iconName(icon)

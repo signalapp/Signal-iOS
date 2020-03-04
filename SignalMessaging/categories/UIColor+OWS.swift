@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -55,7 +55,12 @@ public extension UIColor {
 
     @objc(ows_signalBlueColor)
     class var ows_signalBlue: UIColor {
-        return UIColor(rgbHex: 0x2090EA)
+        return UIColor(rgbHex: 0x3A76F0)
+    }
+
+    @objc(ows_signalBlueDarkColor)
+    class var ows_signalBlueDark: UIColor {
+        return UIColor(rgbHex: 0x1851B4)
     }
 
     // MARK: Accent Colors

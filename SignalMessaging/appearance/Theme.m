@@ -93,7 +93,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
     if (!self.storageCoordinator.isStorageReady) {
         // Don't cache this value until it reflects the data store.
-        return NO;
+        return self.isSystemDarkThemeEnabled;
     }
 
     if (self.isDarkThemeEnabledNumber == nil) {
