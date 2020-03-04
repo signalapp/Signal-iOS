@@ -5205,6 +5205,8 @@
 					"-Werror=protocol",
 					"-Werror=incomplete-implementation",
 					"-Werror=objc-literal-conversion",
+					"-Werror=objc-property-synthesis",
+					"-Werror=objc-protocol-property-synthesis",
 				);
 			};
 			name = "Testable Release";
@@ -5909,6 +5911,8 @@
 					"-Werror=protocol",
 					"-Werror=incomplete-implementation",
 					"-Werror=objc-literal-conversion",
+					"-Werror=objc-property-synthesis",
+					"-Werror=objc-protocol-property-synthesis",
 				);
 			};
 			name = Debug;
@@ -5987,6 +5991,8 @@
 					"-Werror=protocol",
 					"-Werror=incomplete-implementation",
 					"-Werror=objc-literal-conversion",
+					"-Werror=objc-property-synthesis",
+					"-Werror=objc-protocol-property-synthesis",
 				);
 			};
 			name = "App Store Release";
