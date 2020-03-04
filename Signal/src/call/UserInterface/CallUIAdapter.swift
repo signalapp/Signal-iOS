@@ -211,10 +211,14 @@ extension CallUIAdaptee {
         adaptee.answerCall(call)
     }
 
-    internal func didTerminateCall(_ call: SignalCall?) {
+    internal func didTerminateCall(_ call: SignalCall?, hasCallInProgress: Bool) {
         AssertIsOnMainThread()
 
-        self.audioSession.isRTCAudioEnabled = false
+        // If the call we're terminating was terminated due to "busy", we still have a call in
+        // progress, otherwise, we terminate the audio.
+        if !hasCallInProgress {
+            self.audioSession.isRTCAudioEnabled = false
+        }
         if let call = call {
             self.audioSession.endAudioActivity(call.audioActivity)
         }
