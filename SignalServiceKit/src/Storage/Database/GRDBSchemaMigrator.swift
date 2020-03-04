@@ -85,6 +85,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_populateGalleryItems
         case dataMigration_markOnboardedUsers_v2
         case dataMigration_rotateStorageServiceKeyAndResetLocalDataV2
+        case dataMigration_clearLaunchScreenCache
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -456,6 +457,10 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db).asAnyWrite
             SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction)
             KeyBackupService.rotateStorageServiceKey(transaction: transaction)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_clearLaunchScreenCache.rawValue) { _ in
+            OWSFileSystem.deleteFileIfExists(NSHomeDirectory() + "/Library/SplashBoard")
         }
     }
 }
