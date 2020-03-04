@@ -143,6 +143,9 @@
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "บันทึกแล้ว";
 
+/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "ส่ง";
 
@@ -273,10 +276,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "กำลังคืนค่าไฟล์";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "มีข้อมูลสำรองอยู่";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "กำลังกู้คืนข้อมูลสำรอง";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "ความคืบหน้า";
@@ -291,13 +294,13 @@
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "คุณจะไม่ได้รับข้อความหรือความเคลื่อนไหวจากกลุ่มนี้อีกต่อไป ";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "บล็อก";
+"BLOCK_LIST_BLOCK_BUTTON" = "ปิดกั้น";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "ปิดกั้นและออกจากกลุ่ม \"%@\" หรือไม่?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "บล็อก %@ หรือไม่";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "ปิดกั้น %@ หรือไม่?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "กลุ่มที่ถูกปิดกั้น";
@@ -306,58 +309,58 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "ผู้ใช้ที่ถูกปิดกั้น";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "เลิกบล็อก";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "เลิกปิดกั้น";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "คุณจะสามารถส่งข้อความและโทรหากันและกันได้";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "สมาชิกในกลุ่มสามารถเพิ่มรายชื่อของคุณได้อีกครั้ง";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "สมาชิกกลุ่มจะสามารถเพิ่มคุณเข้ากลุ่มนี้อีก";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "เลิกปิดกั้นกลุ่มนี้หรือไม่?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "เลิกบล็อก %@ หรือไม่";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "เลิกปิดกั้น %@ หรือไม่?";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "บล็อก";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "ปิดกั้น";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ ถูกปิดกั้นแล้ว";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ผู้ใช้ถูกบล็อก";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ผู้ใช้ถูกปิดกั้น";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "กลุ่มถูกปิดกั้นแล้ว";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "กลุ่มถูกปิดกั้น";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "คุณไม่สามารถบล็อกตัวเอง";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "คุณไม่สามารถปิดกั้นตัวเอง";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "ข้อผิดพลาด";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ has been unblocked.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ ถูกเลิกปิดกั้นแล้ว";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
 
 /* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "บล็อค";
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "ปิดกั้น";
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "บล็อค %@ หรือไม่";
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "ปิดกั้น %@ หรือไม่?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "ผู้ใช้ที่ถูกปิดกั้นจะไม่สามารถโทรหรือส่งข้อความหาคุณได้";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "เรียกดู";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "ทำต่อ";
@@ -399,7 +402,7 @@
 "CALL_MISSED_NOTIFICATION_BODY" = "☎️ ไม่ได้รับสาย";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "ไม่มีการตอบรับ";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -423,7 +426,7 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "ปฏิเสธสายเข้า";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tap here to turn on your video";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "แตะเพื่อเปิดวีดิโอของคุณ";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "วางสาย";
@@ -564,7 +567,7 @@
 "CONTACT_ADDRESS" = "ที่อยู่";
 
 /* An indicator that a contact or group has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "บล็อคแล้ว";
+"CONTACT_CELL_IS_BLOCKED" = "ถูกปิดกั้น";
 
 /* An indicator that a contact is no longer verified. */
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "ยังไม่ถูกตรวจยืนยัน";
@@ -714,10 +717,10 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "บล็อคกลุ่มนี้";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "ปิดกั้นกลุ่มนี้";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "บล็อกผู้ใช้นี้";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "ปิดกั้นผู้ใช้นี้";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "ข้อมูลผู้ติดต่อ";
@@ -801,7 +804,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "บล็อกผู้ใช้นี้";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "ปิดกั้นผู้ใช้นี้";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "การรีเซ็ตเซสชันของคุณจะทำให้คุณรับข้อความในอนาคตจาก %@ ได้ แต่จะไม่สามารถเรียกคืนข้อความใดๆ ที่เสียหายไปแล้วได้";
@@ -1014,7 +1017,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "ส่งข้อความไปหาผู้ใช้ไม่สำเร็จ เนื่องจากคุณได้บล็อกเขา";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "ส่งข้อความไปหาผู้ใช้ไม่สำเร็จ เนื่องจากคุณได้ปิดกั้นเขา";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try again.";
@@ -1236,10 +1239,13 @@
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "การสนทนาที่ถูกเก็บในที่เก็บถาวร";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "บล็อกแล้ว";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "ถูกปิดกั้น";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "ค้นหา";
+
+/* A prefix indicating that a message preview is a draft */
+"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
@@ -1257,7 +1263,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "คำร้องขอส่งข้อความ";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
@@ -1353,7 +1359,7 @@
 "KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Archive Conversation";
+"KEY_COMMAND_ARCHIVE" = "เก็บบทสนทนาลงที่เก็บถาวร";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
@@ -1548,13 +1554,13 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "ข้อความ";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_ACTION" = "บล็อก";
+"MESSAGE_REQUEST_BLOCK_ACTION" = "ปิดกั้น";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ปิดกั้นและลบ";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ผู้คนที่ถูกปิดกั้นจะไม่สามารถจะไม่สามารถโทรหรือส่งข้อความหาคุณได้";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "บล็อก %@ หรือไม่";
@@ -1563,13 +1569,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "คุณจะออกจากลุ่มนี้และจะไม่ได้รับข้อความหรือความเคลื่อนไหวอีก";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "ปิดกั้นและลบ %@ หรือไม่?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "ลบ";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "การสนทนานี้จะถูกลบออกจากทุกอุปกรณ์ของคุณ";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "จะลบการสนทนาหรือ?";
@@ -1578,7 +1584,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "คุณจะออกจากกลุ่มนี้และมันจะถูกลบออกจากทุกอุปกรณ์ของคุณ";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
@@ -1587,13 +1593,13 @@
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "ยอมรับ";
 
 /* A button used to block a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "บล็อก";
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "ปิดกั้น";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "คุณต้องการปล่อยให้ %@ ส่งข้อความหาคุณหรือไม่? คุณจะไม่ได้รับข้อความใดจนกว่าคุณจะเลิกปิดกั้นพวกเขา";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "คุณต้องการปล่อยให้กลุ่ม %@ ส่งข้อความหาคุณหรือไม่? คุณจะไม่ได้รับข้อความใดจนกว่าคุณจะเลิกปิดกั้นพวกเขา";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "ลบ";
@@ -1623,7 +1629,7 @@
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "เพิ่มชื่อโปรไฟล์";
 
 /* Body text for message requests splash screen */
 "MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
@@ -1635,7 +1641,7 @@
 "MESSAGE_STATUS_DELIVERED" = "ส่งถึงแล้ว";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "Downloading";
+"MESSAGE_STATUS_DOWNLOADING" = "กำลังดาวน์โหลด";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Sending failed.";
@@ -1668,19 +1674,19 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ไม่มีเครื่องหมายว่าตรวจยืนยันแล้วอีกต่อไป แตะเพื่อดูตัวเลือก";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "คุณได้ปิดกั้นผู้ใช้นี้";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ไม่มีเครื่องหมายว่าตรวจยืนยันแล้วอีกต่อไป แตะเพื่อดูตัวเลือก ";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "คุณได้ปิดกั้นสมาชิก 1 รายในกลุ่มนี้";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "คุณได้ปิดกั้นกลุ่มนี้";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "คุณได้ปิดกั้นสมาชิก %@ รายในกลุ่มนี้";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "สมาชิกมากกว่าหนึ่งคนของกลุ่มนี้ไม่มีเครื่องหมายว่าถูกตรวจยืนยันแล้ว แตะเพื่อดูตัวเลือก";
@@ -1726,27 +1732,6 @@
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
-
-/* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "การหลบเลี่ยงการปิดกั้นข้อมูล: เปิด";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTED" = "เชื่อมต่อแล้ว";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTING" = "กำลังเชื่อมต่อ";
-
-/* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
-
-/* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "สถานะเครือข่าย";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "ออฟไลน์";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ค้นหาโดยหมายเลขโทรศัพท์";
@@ -2151,7 +2136,7 @@
 "PINS_MEGAPHONE_HAS_PIN_ACTION" = "เปลี่ยนรหัส PIN";
 
 /* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Your Registration Lock is now called a PIN. Updating it takes seconds.";
+"PINS_MEGAPHONE_HAS_PIN_BODY" = "จากนี้กุญแจลงทะเบียนของคุณจะถูกเรียกว่ารหัส PIN การปรับปรุงมันจะใช้เวลาสักครู่";
 
 /* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
@@ -2163,7 +2148,7 @@
 "PINS_MEGAPHONE_NO_PIN_ACTION" = "สร้างรหัส PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs add another layer of security to your Signal account.";
+"PINS_MEGAPHONE_NO_PIN_BODY" = "รหัส PIN เพิ่มความปลอดภัยอีกชั้นให้กับบัญชี Signal ของคุณ";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
@@ -2232,13 +2217,13 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "โปรไฟล์ของคุณตอนนี้สามารถเพิ่มชื่อสกุลได้แล้วถ้าต้องการ";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "สิ่งนี้จะถูกแสดงเมื่อคุณเริ่มการสนทนาใหม่หรือแบ่งปันมัน";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
@@ -2385,7 +2370,7 @@
 "REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "รู้จักกับ Reactions";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ฉันลืมรหัส PIN";
@@ -2655,7 +2640,7 @@
 "SETTINGS_ABOUT" = "เกี่ยวกับ";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "บล็อก";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "ปิดกั้น";
 
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "การหลบเลี่ยงการปิดกั้นข้อมูล";
@@ -2751,7 +2736,7 @@
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "สำรองข้อมูลได้สำเร็จ";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "เพิ่มผู้ใช้ที่จะถูกปิดกั้น";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "คุณไม่มีผู้ติดต่อบน Signal";
@@ -2760,7 +2745,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "ค้นหาไม่พบ";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "บล็อกแล้ว";
+"SETTINGS_BLOCK_LIST_TITLE" = "ถูกปิดกั้น";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "ส่งต่อสายทุกครั้ง";
@@ -3036,19 +3021,19 @@
 "STICKERS_MANAGE_VIEW_TITLE" = "สติกเกอร์";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Sticker Pack";
+"STICKERS_PACK_DEFAULT_TITLE" = "ชุดสติกเกอร์";
 
 /* Title of the 'share sticker pack' view. */
 "STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Sticker Pack";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "ชุดสติกเกอร์";
 
 /* Label indicating that the sticker pack failed to load. */
 "STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
 
 /* Label for the 'uninstall sticker pack' button. */
-"STICKERS_UNINSTALL_BUTTON" = "Uninstall";
+"STICKERS_UNINSTALL_BUTTON" = "ลบ";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "รหัสความปลอดภัยระหว่างคุณกับ %@ ถูกต้องตรงกัน คุณสามารถทำเครื่องหมายว่าผู้ติดต่อนี้ได้รับการตรวจยืนยันแล้ว";
@@ -3066,7 +3051,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "คุณสามารถเพิ่มบันทึกสำหรับตัวคุณเองในการสนทนานี้ ถ้าบัญชีของคุณมีอุปกรณ์ที่เชื่อมโยงอยู่ บันทึกใหม่ทุกอันจะถูกปรับปรุงถึงกัน";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
@@ -3129,7 +3114,7 @@
 "UNARCHIVE_ACTION" = "นำออกจากที่เก็บถาวร";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "ผู้ใช้ไม่อยู่ในผู้ติดต่อของคุณ คุณต้องการบล็อกผู้ใช้นี้หรือไม่";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "ผู้ใช้ไม่อยู่ในรายชื่อผู้ติดต่อของคุณ คุณต้องการปิดกั้นผู้ใช้นี้หรือไม่?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "ผู้ติดต่อที่ไม่รู้จัก";

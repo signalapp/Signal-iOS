@@ -143,6 +143,9 @@
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "சேமித்த";
 
+/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "அனுப்புக";
 
@@ -1241,6 +1244,9 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "தேடல்";
 
+/* A prefix indicating that a message preview is a draft */
+"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "உங்கள் தொடர்புகள் சில ஏற்கனவே  Signal லில் உள்ளன%@  உட்பட.";
 
@@ -1726,27 +1732,6 @@
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "நீங்கள் ஆன்லைனில் இருக்கிறீர்களா என்பதை சரிபார்த்து மீண்டும் முயற்சிக்கவும்.";
-
-/* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "தணிக்கை சுற்றறிக்கை: ஆன்";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTED" = "இணைக்கப்பட்டது";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTING" = "இணைக்கிறது";
-
-/* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "இனியும் இணைப்பில் இல்லை ";
-
-/* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "நீண்ட நேரம் பதிவு செய்யப்படவில்லை";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "பிணைய நிலை";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "ஆஃப்லைன்";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "தொலைபேசி எண் மூலம் கண்டுபிடிக்கவும்";

@@ -164,6 +164,10 @@ const CGFloat kIconViewLength = 24;
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationNameOtherUsersProfileDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(profileWhitelistDidChange:)
+                                                 name:kNSNotificationNameProfileWhitelistDidChange
+                                               object:nil];
 }
 
 - (NSString *)threadName
@@ -1555,6 +1559,28 @@ const CGFloat kIconViewLength = 24;
 
     if (address.isValid && contactThread && [contactThread.contactAddress isEqualToAddress:address]) {
         [self updateTableContents];
+    }
+}
+
+- (void)profileWhitelistDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    // If profile whitelist just changed, we may need to refresh the view.
+    SignalServiceAddress *_Nullable address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
+    if (address != nil && !self.thread.isGroupThread) {
+        TSContactThread *contactThread = (TSContactThread *)self.thread;
+        if ([contactThread.contactAddress isEqualToAddress:address]) {
+            [self updateTableContents];
+        }
+    }
+
+    if (groupId.length > 0 && self.thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
+            [self updateTableContents];
+        }
     }
 }
 
