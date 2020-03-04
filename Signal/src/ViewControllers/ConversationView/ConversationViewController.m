@@ -1459,7 +1459,7 @@ typedef enum : NSUInteger {
     }
 
     if (self.isShowingSearchUI) {
-        if (@available(iOS 11.0, *)) {
+        if (@available(iOS 13.0, *)) {
             OWSAssertDebug(self.navigationItem.searchController != nil);
         } else {
             self.navigationItem.rightBarButtonItems = @[];
@@ -4185,7 +4185,7 @@ typedef enum : NSUInteger {
 {
     self.isShowingSearchUI = YES;
 
-    if (@available(iOS 11.0, *)) {
+    if (@available(iOS 13.0, *)) {
         self.navigationItem.searchController = self.searchController.uiSearchController;
     } else {
         // Note: setting a searchBar as the titleView causes UIKit to render the navBar
@@ -4201,7 +4201,7 @@ typedef enum : NSUInteger {
 {
     self.isShowingSearchUI = NO;
 
-    if (@available(iOS 11.0, *)) {
+    if (@available(iOS 13.0, *)) {
         self.navigationItem.searchController = nil;
         // HACK: For some reason at this point the OWSNavbar retains the extra space it
         // used to house the search bar. This only seems to occur when dismissing
