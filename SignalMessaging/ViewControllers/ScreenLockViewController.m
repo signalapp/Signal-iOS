@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ScreenLockViewController.h"
@@ -36,7 +36,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 {
     [super loadView];
 
-    self.view.backgroundColor = UIColor.ows_signalBlueColor;
+    self.view.backgroundColor = Theme.launchScreenBackgroundColor;
 
     UIView *edgesView = [UIView containerView];
     [self.view addSubview:edgesView];
@@ -44,18 +44,19 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [edgesView autoPinWidthToSuperview];
 
-    UIImage *image = [UIImage imageNamed:@"logoSignal"];
+    UIImage *image = [UIImage imageNamed:@"signal-logo-128-launch-screen"];
     UIImageView *imageView = [UIImageView new];
     imageView.image = image;
     [edgesView addSubview:imageView];
     [imageView autoHCenterInSuperview];
+    [imageView autoSetDimensionsToSize:CGSizeMake(128, 128)];
 
     const CGFloat kButtonHeight = 40.f;
     OWSFlatButton *button =
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
                                            @"Label for button on lock screen that lets users unlock Signal.")
                                   font:[OWSFlatButton fontForHeight:kButtonHeight]
-                            titleColor:UIColor.ows_signalBlueColor
+                            titleColor:UIColor.ows_accentBlueColor
                        backgroundColor:[UIColor whiteColor]
                                 target:self
                               selector:@selector(showUnlockUI)];
@@ -71,6 +72,16 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     self.screenBlockingButton = button;
 
     [self updateUIWithState:ScreenLockUIStateScreenProtection isLogoAtTop:NO animated:NO];
+
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(themeDidChange)
+                                               name:ThemeDidChangeNotification
+                                             object:nil];
+}
+
+- (void)themeDidChange
+{
+    self.view.backgroundColor = Theme.launchScreenBackgroundColor;
 }
 
 // The "screen blocking" window has three possible states:

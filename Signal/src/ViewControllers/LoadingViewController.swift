@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,12 +19,13 @@ public class LoadingViewController: UIViewController {
 
     override public func loadView() {
         self.view = UIView()
-        view.backgroundColor = UIColor.ows_signalBlue
+        view.backgroundColor = Theme.launchScreenBackground
 
-        self.logoView = UIImageView(image: #imageLiteral(resourceName: "logoSignal"))
+        self.logoView = UIImageView(image: #imageLiteral(resourceName: "signal-logo-128-launch-screen"))
         view.addSubview(logoView)
 
         logoView.autoCenterInSuperview()
+        logoView.autoSetDimensions(to: CGSize(square: 128))
 
         self.topLabel = buildLabel()
         topLabel.alpha = 0
@@ -56,6 +57,10 @@ public class LoadingViewController: UIViewController {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didEnterBackground),
                                                name: .OWSApplicationDidEnterBackground,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(themeDidChange),
+                                               name: .ThemeDidChange,
                                                object: nil)
     }
 
@@ -137,6 +142,10 @@ public class LoadingViewController: UIViewController {
         Logger.info("")
 
         viewHasEnteredBackground = true
+    }
+
+    @objc func themeDidChange() {
+        view.backgroundColor = Theme.launchScreenBackground
     }
 
     // MARK: Orientation

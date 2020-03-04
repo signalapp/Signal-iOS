@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIUtil.h"
@@ -49,8 +49,8 @@
     //                                                 ? UIKeyboardAppearanceDark
     //                                                 : UIKeyboardAppearanceDefault);
 
-    [[UISwitch appearance] setOnTintColor:UIColor.ows_signalBlueColor];
-    [[UIToolbar appearance] setTintColor:UIColor.ows_signalBlueColor];
+    [[UISwitch appearance] setOnTintColor:UIColor.ows_accentBlueColor];
+    [[UIToolbar appearance] setTintColor:UIColor.ows_accentBlueColor];
 
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
     UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : Theme.navbarTitleColor };

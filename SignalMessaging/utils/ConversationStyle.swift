@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -153,13 +153,13 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
-    public let bubbleColorOutgoingFailed = UIColor.ows_signalBlue
+    public let bubbleColorOutgoingFailed = UIColor.ows_accentBlue
 
     @objc
-    public let bubbleColorOutgoingSending = UIColor.ows_signalBlue
+    public let bubbleColorOutgoingSending = UIColor.ows_accentBlue
 
     @objc
-    public let bubbleColorOutgoingSent = UIColor.ows_signalBlue
+    public let bubbleColorOutgoingSent = UIColor.ows_accentBlue
 
     @objc
     public let dateBreakTextColor = UIColor.ows_gray60

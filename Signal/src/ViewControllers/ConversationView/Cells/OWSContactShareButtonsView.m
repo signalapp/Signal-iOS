@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactShareButtonsView.h"
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"unexpected button state.");
     }
     label.font = OWSContactShareButtonsView.buttonFont;
-    label.textColor = (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_signalBlueColor);
+    label.textColor = (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_accentBlueColor);
     label.textAlignment = NSTextAlignmentCenter;
     [self addSubview:label];
     [label ows_autoPinToSuperviewEdges];

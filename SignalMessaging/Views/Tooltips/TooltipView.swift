@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,7 +39,7 @@ public class TooltipView: UIView {
 
     public var bubbleColor: UIColor {
         owsFailDebug("Not implemented.")
-        return UIColor.ows_signalBlue
+        return UIColor.ows_accentBlue
     }
 
     public var bubbleInsets: UIEdgeInsets {

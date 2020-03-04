@@ -238,7 +238,7 @@ public class PinSetupViewController: OWSViewController {
         pinStackRow.setContentHuggingVerticalHigh()
         pinStackRow.setCompressionResistanceVerticalHigh()
 
-        pinTypeToggle.setTitleColor(.ows_signalBlue, for: .normal)
+        pinTypeToggle.setTitleColor(.ows_accentBlue, for: .normal)
         pinTypeToggle.titleLabel?.font = .systemFont(ofSize: 15)
         pinTypeToggle.addTarget(self, action: #selector(togglePinType), for: .touchUpInside)
         pinTypeToggle.accessibilityIdentifier = "pinCreation.pinTypeToggle"
@@ -248,7 +248,7 @@ public class PinSetupViewController: OWSViewController {
         let font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         let buttonHeight = OWSFlatButton.heightForFont(font)
         nextButton.setTitle(title: CommonStrings.nextButton, font: font, titleColor: .white)
-        nextButton.setBackgroundColors(upColor: .ows_signalBlue)
+        nextButton.setBackgroundColors(upColor: .ows_accentBlue)
         nextButton.addTarget(target: self, selector: #selector(nextPressed))
         nextButton.autoSetDimension(.height, toSize: buttonHeight)
         nextButton.accessibilityIdentifier = "pinCreation.nextButton"

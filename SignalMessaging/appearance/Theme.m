@@ -93,7 +93,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
     if (!self.storageCoordinator.isStorageReady) {
         // Don't cache this value until it reflects the data store.
-        return NO;
+        return self.isSystemDarkThemeEnabled;
     }
 
     if (self.isDarkThemeEnabledNumber == nil) {
@@ -387,7 +387,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (UIColor *)cursorColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_signalBlueColor;
+    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_accentBlueColor;
 }
 
 + (UIColor *)darkThemeBackgroundColor

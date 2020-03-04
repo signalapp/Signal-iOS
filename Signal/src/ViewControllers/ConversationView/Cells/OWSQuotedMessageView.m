@@ -189,7 +189,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         }];
     innerBubbleView.layer.mask = maskLayer;
     if (self.isForPreview) {
-        innerBubbleView.backgroundColor = [UIColor.ows_signalBlueColor colorWithAlphaComponent:0.4f];
+        innerBubbleView.backgroundColor = [UIColor.ows_accentBlueColor colorWithAlphaComponent:0.4f];
     } else {
         innerBubbleView.backgroundColor = self.quoteBubbleBackgroundColor;
     }
@@ -207,7 +207,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     UIView *stripeView = [UIView new];
     if (self.isForPreview) {
-        stripeView.backgroundColor = UIColor.ows_signalBlueColor;
+        stripeView.backgroundColor = UIColor.ows_accentBlueColor;
     } else {
         stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];
     }

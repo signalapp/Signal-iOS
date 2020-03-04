@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -59,7 +59,7 @@ class ContactNameFieldView: UIView {
         let nameLabel = UILabel()
         nameLabel.text = name
         nameLabel.font = UIFont.ows_dynamicTypeBody
-        nameLabel.textColor = UIColor.ows_signalBlue
+        nameLabel.textColor = UIColor.ows_accentBlue
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
         nameLabel.setContentHuggingHigh()

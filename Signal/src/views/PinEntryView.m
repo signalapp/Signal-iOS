@@ -77,13 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (UILabel *)createForgotLink
 {
     UILabel *label = [UILabel new];
-    label.textColor = UIColor.ows_signalBlueColor;
+    label.textColor = UIColor.ows_accentBlueColor;
     NSString *text = NSLocalizedString(
         @"REGISTER_2FA_FORGOT_PIN", @"Label for 'I forgot my PIN' link in the 2FA registration view.");
     label.attributedText = [[NSAttributedString alloc]
         initWithString:text
             attributes:@{
-                NSForegroundColorAttributeName : UIColor.ows_signalBlueColor,
+                NSForegroundColorAttributeName : UIColor.ows_accentBlueColor,
                 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
             }];
     label.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
@@ -100,14 +100,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createSubmitButton
 {
     const CGFloat kSubmitButtonHeight = 47.f;
-    // NOTE: We use ows_signalBlueColor instead of ows_signalBlueColor
+    // NOTE: We use ows_accentBlueColor instead of ows_accentBlueColor
     //       throughout the onboarding flow to be consistent with the headers.
     OWSFlatButton *submitButton =
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"REGISTER_2FA_SUBMIT_BUTTON",
                                            @"Label for 'submit' button in the 2FA registration view.")
                                   font:[OWSFlatButton fontForHeight:kSubmitButtonHeight]
                             titleColor:[UIColor whiteColor]
-                       backgroundColor:UIColor.ows_signalBlueColor
+                       backgroundColor:UIColor.ows_accentBlueColor
                                 target:self
                               selector:@selector(submitButtonWasPressed)];
     self.submitButton = submitButton;

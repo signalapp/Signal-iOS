@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationScrollButton.h"
@@ -82,9 +82,9 @@ NS_ASSUME_NONNULL_BEGIN
     UIColor *backgroundColor;
     if (self.hasUnreadMessages) {
         foregroundColor = UIColor.whiteColor;
-        backgroundColor = UIColor.ows_signalBlueColor;
+        backgroundColor = UIColor.ows_accentBlueColor;
     } else {
-        foregroundColor = UIColor.ows_signalBlueColor;
+        foregroundColor = UIColor.ows_accentBlueColor;
         backgroundColor = Theme.scrollButtonBackgroundColor;
     }
 

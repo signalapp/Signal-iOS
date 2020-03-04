@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +25,7 @@ class CallVideoHintView: UIView {
 
         let layerView = OWSLayerView()
         let shapeLayer = CAShapeLayer()
-        shapeLayer.fillColor = UIColor.ows_signalBlue.cgColor
+        shapeLayer.fillColor = UIColor.ows_accentBlue.cgColor
         layerView.layer.addSublayer(shapeLayer)
         addSubview(layerView)
         layerView.autoPinEdgesToSuperviewEdges()

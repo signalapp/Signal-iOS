@@ -161,7 +161,7 @@ public class PinReminderViewController: OWSViewController {
                                      comment: "Label for the 'submit' button."),
             font: font,
             titleColor: .white,
-            backgroundColor: .ows_signalBlue,
+            backgroundColor: .ows_accentBlue,
             target: self,
             selector: #selector(submitPressed)
         )
@@ -171,7 +171,7 @@ public class PinReminderViewController: OWSViewController {
         // Secondary button
         let forgotButton = UIButton()
         forgotButton.setTitle(NSLocalizedString("PIN_REMINDER_FORGOT_PIN", comment: "Text asking if the user forgot their pin for the 'pin reminder' dialog."), for: .normal)
-        forgotButton.setTitleColor(.ows_signalBlue, for: .normal)
+        forgotButton.setTitleColor(.ows_accentBlue, for: .normal)
         forgotButton.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
         forgotButton.addTarget(self, action: #selector(forgotPressed), for: .touchUpInside)
         forgotButton.accessibilityIdentifier = "pinReminder.forgotButton"

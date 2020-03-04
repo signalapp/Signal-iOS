@@ -220,7 +220,7 @@
                               : NSLocalizedString(@"SETTINGS_RELINK_BUTTON", @"Label for re-link button.")
                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reregister")
                                                 selector:@selector(reregisterUser)
-                                                   color:UIColor.ows_signalBlueColor]];
+                                                   color:UIColor.ows_accentBlueColor]];
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
                                                                   @"Label for 'delete data' button.")
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
@@ -329,7 +329,7 @@
     } else {
         titleLabel.text = NSLocalizedString(
             @"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT", @"Text prompting user to edit their profile name.");
-        titleLabel.textColor = UIColor.ows_signalBlueColor;
+        titleLabel.textColor = UIColor.ows_accentBlueColor;
         titleLabel.font = [UIFont ows_dynamicTypeHeadlineFont];
     }
     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;

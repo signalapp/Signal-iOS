@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -36,7 +36,7 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY",
                                                   comment: "Link explaining what to do when trying to link a device before having a primary device.")
-        explanationLabel.textColor = .ows_signalBlue
+        explanationLabel.textColor = .ows_accentBlue
         explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,7 +40,7 @@ public class ViewOnceTooltip: TooltipView {
     }
 
     public override var bubbleColor: UIColor {
-        return UIColor.ows_signalBlue
+        return UIColor.ows_accentBlue
     }
 
     public override var bubbleInsets: UIEdgeInsets {
