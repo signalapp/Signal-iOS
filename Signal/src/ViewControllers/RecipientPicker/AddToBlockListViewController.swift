@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,18 +13,6 @@ protocol AddToBlockListDelegate: class {
 class AddToBlockListViewController: OWSViewController {
     @objc weak var delegate: AddToBlockListDelegate?
     let recipientPicker = RecipientPickerViewController()
-
-    var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,8 +34,6 @@ class AddToBlockListViewController: OWSViewController {
         BlockListUIUtils.showBlockAddressActionSheet(
             address,
             from: self,
-            blockingManager: blockingManager,
-            contactsManager: contactsManager,
             completionBlock: { [weak self] isBlocked in
                 guard isBlocked else { return }
                 self?.delegate?.addToBlockListComplete()
@@ -59,9 +45,6 @@ class AddToBlockListViewController: OWSViewController {
         BlockListUIUtils.showBlockThreadActionSheet(
             thread,
             from: self,
-            blockingManager: blockingManager,
-            contactsManager: contactsManager,
-            messageSender: messageSender,
             completionBlock: { [weak self] isBlocked in
                 guard isBlocked else { return }
                 self?.delegate?.addToBlockListComplete()
@@ -109,6 +92,11 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
             guard recipientPicker.contactsViewHelper.isThreadBlocked(thread) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         accessoryViewForRecipient recipient: PickedRecipient) -> UIView? {
+        return nil
     }
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}

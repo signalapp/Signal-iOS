@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,6 +7,14 @@ import ContactsUI
 
 @objc
 class MemberActionSheet: NSObject {
+
+    // MARK: - Dependencies
+
+    private var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    // MARK: -
 
     @objc
     let address: SignalServiceAddress
@@ -39,7 +47,7 @@ class MemberActionSheet: NSObject {
         actionSheet.customHeader = MemberHeader(address: address) { [weak actionSheet] in
             actionSheet?.dismiss(animated: true, completion: {
                 // If we can edit contacts, present the contact for this user when tapping the header.
-                guard contactsViewHelper.contactsManager.supportsContactEditing else { return }
+                guard self.contactsManager.supportsContactEditing else { return }
 
                 guard let contactVC = contactsViewHelper.contactViewController(for: self.address, editImmediately: true) else {
                     return owsFailDebug("unexpectedly failed to present contact view")
@@ -63,8 +71,6 @@ class MemberActionSheet: NSObject {
                 BlockListUIUtils.showUnblockAddressActionSheet(
                     self.address,
                     from: fromViewController,
-                    blockingManager: contactsViewHelper.blockingManager,
-                    contactsManager: contactsViewHelper.contactsManager,
                     completionBlock: nil
                 )
             }
@@ -105,8 +111,6 @@ class MemberActionSheet: NSObject {
             BlockListUIUtils.showBlockAddressActionSheet(
                 self.address,
                 from: fromViewController,
-                blockingManager: contactsViewHelper.blockingManager,
-                contactsManager: contactsViewHelper.contactsManager,
                 completionBlock: nil
             )
         }

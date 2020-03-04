@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <PureLayout/PureLayout.h>
@@ -64,12 +64,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 #pragma mark - Manual Layout
 
-- (CGFloat)left;
-- (CGFloat)right;
-- (CGFloat)top;
-- (CGFloat)bottom;
-- (CGFloat)width;
-- (CGFloat)height;
+@property (nonatomic, readonly) CGFloat left;
+@property (nonatomic, readonly) CGFloat right;
+@property (nonatomic, readonly) CGFloat top;
+@property (nonatomic, readonly) CGFloat bottom;
+@property (nonatomic, readonly) CGFloat width;
+@property (nonatomic, readonly) CGFloat height;
 
 - (void)centerOnSuperview;
 

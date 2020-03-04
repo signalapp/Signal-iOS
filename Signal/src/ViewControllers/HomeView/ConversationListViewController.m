@@ -787,6 +787,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchResultsController viewDidAppear:animated];
 
     self.hasEverAppeared = YES;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showNewConversationView];
+    });
 }
 
 - (void)viewDidDisappear:(BOOL)animated

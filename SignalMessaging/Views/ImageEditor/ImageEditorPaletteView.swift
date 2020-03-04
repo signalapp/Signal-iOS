@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -273,7 +273,7 @@ public class ImageEditorPaletteView: UIView {
     private let selectionSize: CGFloat = 20
 
     private func selectColor(atLocationY y: CGFloat) {
-        let palettePhase = y.inverseLerp(0, imageView.height(), shouldClamp: true)
+        let palettePhase = y.inverseLerp(0, imageView.height, shouldClamp: true)
         self.selectedValue = value(for: palettePhase)
 
         updateState()
@@ -336,7 +336,7 @@ public class ImageEditorPaletteView: UIView {
             owsFailDebug("Missing selectionConstraint.")
             return
         }
-        let selectionY = imageWrapper.height() * selectedValue.palettePhase
+        let selectionY = imageWrapper.height * selectedValue.palettePhase
         selectionConstraint.constant = selectionY
 
         guard let previewConstraint = previewConstraint else {

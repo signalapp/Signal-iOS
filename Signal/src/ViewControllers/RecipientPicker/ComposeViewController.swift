@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -26,12 +26,23 @@ class ComposeViewController: OWSViewController {
                                                                                   comment: "Accessibility label for the new group button")
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        DispatchQueue.main.async {
+            self.newGroupPressed()
+        }
+    }
+
     @objc func dismissPressed() {
         dismiss(animated: true)
     }
 
     @objc func newGroupPressed() {
-        navigationController?.pushViewController(NewGroupViewController(), animated: true)
+        let newGroupView: UIViewController = (FeatureFlags.groupsV2CreateGroups
+            ? NewGroupViewController2()
+            : NewGroupViewController())
+        navigationController?.pushViewController(newGroupView, animated: true)
     }
 
     func newConversation(address: SignalServiceAddress) {
@@ -83,6 +94,11 @@ extension ComposeViewController: RecipientPickerDelegate {
             guard recipientPicker.contactsViewHelper.isThreadBlocked(thread) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         accessoryViewForRecipient recipient: PickedRecipient) -> UIView? {
+        return nil
     }
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}

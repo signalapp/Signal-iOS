@@ -46,6 +46,21 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
+- (OWSBlockingManager *)blockingManager
+{
+    return OWSBlockingManager.sharedManager;
+}
+
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
+}
+
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
 #pragma mark -
 
 - (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate
@@ -58,14 +73,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(delegate);
     _delegate = delegate;
 
-    _blockingManager = [OWSBlockingManager sharedManager];
     _blockListCache = [OWSBlockListCache new];
     [_blockListCache startObservingAndSyncStateWithDelegate:self];
 
     _fullTextSearcher = FullTextSearcher.shared;
-
-    _contactsManager = Environment.shared.contactsManager;
-    _profileManager = [OWSProfileManager sharedManager];
 
     // We don't want to notify the delegate in the `updateContacts`.
     [self updateContacts];

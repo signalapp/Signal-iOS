@@ -475,8 +475,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (isBlocked) {
         [BlockListUIUtils showUnblockAddressActionSheet:recipient.address
                                      fromViewController:self
-                                        blockingManager:self.recipientPicker.contactsViewHelper.blockingManager
-                                        contactsManager:self.recipientPicker.contactsViewHelper.contactsManager
                                         completionBlock:^(BOOL isStillBlocked) {
                                             if (!isStillBlocked) {
                                                 [weakSelf addRecipient:recipient];
@@ -492,7 +490,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                    @"a recipient to a group when "
                                                    @"their safety "
                                                    @"number has recently changed")
-                               contactsManager:self.recipientPicker.contactsViewHelper.contactsManager
                                     completion:^(BOOL didConfirmIdentity) {
                                         if (didConfirmIdentity) {
                                             [weakSelf addRecipient:recipient];
@@ -533,6 +530,12 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         return nil;
     }
+}
+
+- (nullable UIView *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+           accessoryViewForRecipient:(PickedRecipient *)recipient
+{
+    return nil;
 }
 
 - (void)recipientPickerTableViewWillBeginDragging:(RecipientPickerViewController *)recipientPickerViewController

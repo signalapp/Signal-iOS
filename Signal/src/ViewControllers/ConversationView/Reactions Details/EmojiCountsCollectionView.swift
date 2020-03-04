@@ -150,6 +150,6 @@ class EmojiCountCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        selectedBackgroundView?.layer.cornerRadius = height() / 2
+        selectedBackgroundView?.layer.cornerRadius = height / 2
     }
 }

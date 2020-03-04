@@ -241,7 +241,7 @@ class ReactionsDetailSheet: UIViewController {
             let growThreshold = startingHeight * 1.5
             let velocityThreshold: CGFloat = 500
 
-            let currentHeight = contentView.height()
+            let currentHeight = contentView.height
             let currentVelocity = sender.velocity(in: view).y
 
             enum CompletionState { case growing, dismissing, cancelling }
@@ -305,14 +305,14 @@ class ReactionsDetailSheet: UIViewController {
     func beginInteractiveTransitionIfNecessary(_ sender: UIPanGestureRecognizer) -> Bool {
         // If we're at the top of the scrollView, or the view is not
         // currently maximized, we want to do an interactive transition.
-        guard currentPageReactorsView.contentOffset.y <= 0 || contentView.height() < maximizedHeight else { return false }
+        guard currentPageReactorsView.contentOffset.y <= 0 || contentView.height < maximizedHeight else { return false }
 
         if startingTranslation == nil {
             startingTranslation = sender.translation(in: view).y
         }
 
         if startingHeight == nil {
-            startingHeight = contentView.height()
+            startingHeight = contentView.height
         }
 
         return true

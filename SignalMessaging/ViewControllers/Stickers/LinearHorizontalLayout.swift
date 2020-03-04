@@ -93,6 +93,6 @@ class LinearHorizontalLayout: UICollectionViewLayout {
         guard let collectionView = collectionView else {
             return false
         }
-        return collectionView.width() != newBounds.size.width
+        return collectionView.width != newBounds.size.width
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BlockListViewController.h"
@@ -113,8 +113,6 @@ NS_ASSUME_NONNULL_BEGIN
                             actionBlock:^{
                                 [BlockListUIUtils showUnblockAddressActionSheet:address
                                                              fromViewController:weakSelf
-                                                                blockingManager:helper.blockingManager
-                                                                contactsManager:helper.contactsManager
                                                                 completionBlock:^(BOOL isBlocked) {
                                                                     [weakSelf updateTableContents];
                                                                 }];
@@ -150,7 +148,6 @@ NS_ASSUME_NONNULL_BEGIN
                                               actionBlock:^{
                                                   [BlockListUIUtils showUnblockGroupActionSheet:blockedGroup
                                                                              fromViewController:weakSelf
-                                                                                blockingManager:helper.blockingManager
                                                                                 completionBlock:^(BOOL isBlocked) {
                                                                                     [weakSelf updateTableContents];
                                                                                 }];

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -42,7 +42,7 @@ public class ActionSheetController: OWSViewController {
     /// The height of the entire action sheet, including any portion
     /// that extends off screen / is in the scrollable region
     var height: CGFloat {
-        return stackView.height() + bottomLayoutGuide.length
+        return stackView.height + bottomLayoutGuide.length
     }
 
     @objc
@@ -183,7 +183,7 @@ public class ActionSheetController: OWSViewController {
 
         // Always scroll to the bottom initially, so it's clear to the
         // user that there's more to scroll to if it goes offscreen.
-        scrollView.contentOffset = CGPoint(x: 0, y: scrollView.contentSize.height - scrollView.height() + bottomInset)
+        scrollView.contentOffset = CGPoint(x: 0, y: scrollView.contentSize.height - scrollView.height + bottomInset)
     }
 
     @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {

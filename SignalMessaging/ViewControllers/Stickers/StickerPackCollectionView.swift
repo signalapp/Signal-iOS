@@ -205,7 +205,7 @@ public class StickerPackCollectionView: UICollectionView {
         stickerView.autoCenterInSuperview()
         let vMargin: CGFloat = 40
         let hMargin: CGFloat = 60
-        stickerView.autoSetDimension(.width, toSize: hostView.height() - vMargin * 2, relation: .lessThanOrEqual)
+        stickerView.autoSetDimension(.width, toSize: hostView.height - vMargin * 2, relation: .lessThanOrEqual)
         stickerView.autoPinEdge(toSuperviewEdge: .top, withInset: vMargin, relation: .greaterThanOrEqual)
         stickerView.autoPinEdge(toSuperviewEdge: .bottom, withInset: vMargin, relation: .greaterThanOrEqual)
         stickerView.autoPinEdge(toSuperviewEdge: .leading, withInset: hMargin, relation: .greaterThanOrEqual)
@@ -337,7 +337,7 @@ extension StickerPackCollectionView {
         let cellWidth = (contentWidth - spacing * (CGFloat(columnCount) - 1)) / CGFloat(columnCount)
         let itemSize = CGSize(width: cellWidth, height: cellWidth)
 
-        if (itemSize != flowLayout.itemSize) {
+        if itemSize != flowLayout.itemSize {
             flowLayout.itemSize = itemSize
             flowLayout.invalidateLayout()
         }

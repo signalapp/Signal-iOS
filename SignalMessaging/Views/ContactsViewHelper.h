@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -24,18 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 @class CNContactViewController;
-@class OWSBlockingManager;
-@class OWSContactsManager;
-@class OWSProfileManager;
 @class SignalServiceAddress;
 
 @interface ContactsViewHelper : NSObject
 
 @property (nonatomic, readonly, weak) id<ContactsViewHelperDelegate> delegate;
-
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-@property (nonatomic, readonly) OWSProfileManager *profileManager;
 
 @property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 

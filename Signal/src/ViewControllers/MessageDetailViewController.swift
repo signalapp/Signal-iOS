@@ -106,7 +106,7 @@ class MessageDetailViewController: OWSViewController {
         }
 
         // We use the navigation controller's width here as ours may not be calculated yet.
-        self.conversationStyle.viewWidth = navigationController?.view.width() ?? view.width()
+        self.conversationStyle.viewWidth = navigationController?.view.width ?? view.width
 
         self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
                                                       comment: "Title for the 'message metadata' view.")

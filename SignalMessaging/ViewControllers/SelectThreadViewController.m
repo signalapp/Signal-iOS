@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SelectThreadViewController.h"
@@ -251,8 +251,6 @@ NS_ASSUME_NONNULL_BEGIN
                                 [BlockListUIUtils
                                     showUnblockThreadActionSheet:thread
                                               fromViewController:strongSelf
-                                                 blockingManager:helper.blockingManager
-                                                 contactsManager:helper.contactsManager
                                                  completionBlock:^(BOOL isStillBlocked) {
                                                      if (!isStillBlocked) {
                                                          [strongSelf.selectThreadViewDelegate threadWasSelected:thread];
@@ -325,8 +323,6 @@ NS_ASSUME_NONNULL_BEGIN
         __weak SelectThreadViewController *weakSelf = self;
         [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
                                            fromViewController:self
-                                              blockingManager:helper.blockingManager
-                                              contactsManager:helper.contactsManager
                                               completionBlock:^(BOOL isBlocked) {
                                                   if (!isBlocked) {
                                                       [weakSelf signalAccountWasSelected:signalAccount];

@@ -443,9 +443,7 @@ extension ConversationPickerViewController: UITableViewDelegate {
             switch item.messageRecipient {
             case .contact(let address):
                 BlockListUIUtils.showUnblockAddressActionSheet(address,
-                                                               from: self,
-                                                               blockingManager: blockingManager,
-                                                               contactsManager: contactsManager) { isStillBlocked in
+                                                               from: self) { isStillBlocked in
                                                                 AssertIsOnMainThread()
 
                                                                 guard !isStillBlocked else {
@@ -458,9 +456,7 @@ extension ConversationPickerViewController: UITableViewDelegate {
                 }
             case .group(let groupThread):
                 BlockListUIUtils.showUnblockThreadActionSheet(groupThread,
-                                                              from: self,
-                                                              blockingManager: blockingManager,
-                                                              contactsManager: contactsManager) { isStillBlocked in
+                                                              from: self) { isStillBlocked in
                                                                 AssertIsOnMainThread()
 
                                                                 guard !isStillBlocked else {

@@ -26,28 +26,36 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     return SDSDatabaseStorage.shared;
 }
 
++ (OWSBlockingManager *)blockingManager
+{
+    return OWSBlockingManager.sharedManager;
+}
+
++ (OWSMessageSender *)messageSender
+{
+    return SSKEnvironment.shared.messageSender;
+}
+
++ (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
 #pragma mark - Block
 
 + (void)showBlockThreadActionSheet:(TSThread *)thread
                 fromViewController:(UIViewController *)fromViewController
-                   blockingManager:(OWSBlockingManager *)blockingManager
-                   contactsManager:(OWSContactsManager *)contactsManager
-                     messageSender:(OWSMessageSender *)messageSender
                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self showBlockAddressActionSheet:contactThread.contactAddress
                        fromViewController:fromViewController
-                          blockingManager:blockingManager
-                          contactsManager:contactsManager
                           completionBlock:completionBlock];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         [self showBlockGroupActionSheet:groupThread
                      fromViewController:fromViewController
-                        blockingManager:blockingManager
-                          messageSender:messageSender
                         completionBlock:completionBlock];
     } else {
         OWSFailDebug(@"unexpected thread type: %@", thread.class);
@@ -56,42 +64,34 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
 + (void)showBlockAddressActionSheet:(SignalServiceAddress *)address
                  fromViewController:(UIViewController *)fromViewController
-                    blockingManager:(OWSBlockingManager *)blockingManager
-                    contactsManager:(OWSContactsManager *)contactsManager
                     completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [contactsManager displayNameForAddress:address];
+    NSString *displayName = [self.contactsManager displayNameForAddress:address];
     [self showBlockAddressesActionSheet:@[ address ]
                             displayName:displayName
                      fromViewController:fromViewController
-                        blockingManager:blockingManager
                         completionBlock:completionBlock];
 }
 
 + (void)showBlockSignalAccountActionSheet:(SignalAccount *)signalAccount
                        fromViewController:(UIViewController *)fromViewController
-                          blockingManager:(OWSBlockingManager *)blockingManager
-                          contactsManager:(OWSContactsManager *)contactsManager
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
+    NSString *displayName = [self.contactsManager displayNameForSignalAccount:signalAccount];
     [self showBlockAddressesActionSheet:@[ signalAccount.recipientAddress ]
                             displayName:displayName
                      fromViewController:fromViewController
-                        blockingManager:blockingManager
                         completionBlock:completionBlock];
 }
 
 + (void)showBlockAddressesActionSheet:(NSArray<SignalServiceAddress *> *)addresses
                           displayName:(NSString *)displayName
                    fromViewController:(UIViewController *)fromViewController
-                      blockingManager:(OWSBlockingManager *)blockingManager
                       completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     OWSAssertDebug(addresses.count > 0);
     OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
-    OWSAssertDebug(blockingManager);
 
     for (SignalServiceAddress *address in addresses) {
         OWSAssertDebug(address.isValid);
@@ -129,7 +129,6 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                             [self blockAddresses:addresses
                                        displayName:displayName
                                 fromViewController:fromViewController
-                                   blockingManager:blockingManager
                                    completionBlock:^(ActionSheetAction *ignore) {
                                        if (completionBlock) {
                                            completionBlock(YES);
@@ -153,13 +152,10 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
 + (void)showBlockGroupActionSheet:(TSGroupThread *)groupThread
                fromViewController:(UIViewController *)fromViewController
-                  blockingManager:(OWSBlockingManager *)blockingManager
-                    messageSender:(OWSMessageSender *)messageSender
                   completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     OWSAssertDebug(groupThread);
     OWSAssertDebug(fromViewController);
-    OWSAssertDebug(blockingManager);
 
     NSString *title = [NSString
         stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT",
@@ -178,8 +174,6 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                         handler:^(ActionSheetAction *_Nonnull action) {
                             [self blockGroup:groupThread
                                 fromViewController:fromViewController
-                                   blockingManager:blockingManager
-                                     messageSender:messageSender
                                    completionBlock:^(ActionSheetAction *ignore) {
                                        if (completionBlock) {
                                            completionBlock(YES);
@@ -204,17 +198,15 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 + (void)blockAddresses:(NSArray<SignalServiceAddress *> *)addresses
            displayName:(NSString *)displayName
     fromViewController:(UIViewController *)fromViewController
-       blockingManager:(OWSBlockingManager *)blockingManager
        completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
     OWSAssertDebug(addresses.count > 0);
     OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
-    OWSAssertDebug(blockingManager);
 
     for (SignalServiceAddress *address in addresses) {
         OWSAssertDebug(address.isValid);
-        [blockingManager addBlockedAddress:address wasLocallyInitiated:YES];
+        [self.blockingManager addBlockedAddress:address wasLocallyInitiated:YES];
     }
 
     [self showOkAlertWithTitle:NSLocalizedString(
@@ -230,13 +222,10 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
 + (void)blockGroup:(TSGroupThread *)groupThread
     fromViewController:(UIViewController *)fromViewController
-       blockingManager:(OWSBlockingManager *)blockingManager
-         messageSender:(OWSMessageSender *)messageSender
        completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
     OWSAssertDebug(groupThread);
     OWSAssertDebug(fromViewController);
-    OWSAssertDebug(blockingManager);
 
     [GroupManager
         leaveGroupOrDeclineInviteAsyncWithUIWithGroupThread:groupThread
@@ -244,8 +233,8 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                                                     success:^{
                                                         // block the group regardless of the ability to deliver the
                                                         // "leave group" message.
-                                                        [blockingManager addBlockedGroup:groupThread.groupModel
-                                                                     wasLocallyInitiated:YES];
+                                                        [self.blockingManager addBlockedGroup:groupThread.groupModel
+                                                                          wasLocallyInitiated:YES];
 
                                                         NSString *alertTitle = NSLocalizedString(
                                                             @"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",
@@ -271,22 +260,17 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
 + (void)showUnblockThreadActionSheet:(TSThread *)thread
                   fromViewController:(UIViewController *)fromViewController
-                     blockingManager:(OWSBlockingManager *)blockingManager
-                     contactsManager:(OWSContactsManager *)contactsManager
                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self showUnblockAddressActionSheet:contactThread.contactAddress
                          fromViewController:fromViewController
-                            blockingManager:blockingManager
-                            contactsManager:contactsManager
                             completionBlock:completionBlock];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         [self showUnblockGroupActionSheet:groupThread.groupModel
                        fromViewController:fromViewController
-                          blockingManager:blockingManager
                           completionBlock:completionBlock];
     } else {
         OWSFailDebug(@"unexpected thread type: %@", thread.class);
@@ -295,42 +279,34 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
 + (void)showUnblockAddressActionSheet:(SignalServiceAddress *)address
                    fromViewController:(UIViewController *)fromViewController
-                      blockingManager:(OWSBlockingManager *)blockingManager
-                      contactsManager:(OWSContactsManager *)contactsManager
                       completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [contactsManager displayNameForAddress:address];
+    NSString *displayName = [self.contactsManager displayNameForAddress:address];
     [self showUnblockAddressesActionSheet:@[ address ]
                               displayName:displayName
                        fromViewController:fromViewController
-                          blockingManager:blockingManager
                           completionBlock:completionBlock];
 }
 
 + (void)showUnblockSignalAccountActionSheet:(SignalAccount *)signalAccount
                          fromViewController:(UIViewController *)fromViewController
-                            blockingManager:(OWSBlockingManager *)blockingManager
-                            contactsManager:(OWSContactsManager *)contactsManager
                             completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
+    NSString *displayName = [self.contactsManager displayNameForSignalAccount:signalAccount];
     [self showUnblockAddressesActionSheet:@[ signalAccount.recipientAddress ]
                               displayName:displayName
                        fromViewController:fromViewController
-                          blockingManager:blockingManager
                           completionBlock:completionBlock];
 }
 
 + (void)showUnblockAddressesActionSheet:(NSArray<SignalServiceAddress *> *)addresses
                             displayName:(NSString *)displayName
                      fromViewController:(UIViewController *)fromViewController
-                        blockingManager:(OWSBlockingManager *)blockingManager
                         completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     OWSAssertDebug(addresses.count > 0);
     OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
-    OWSAssertDebug(blockingManager);
 
     NSString *title = [NSString
         stringWithFormat:
@@ -349,7 +325,6 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                                              [BlockListUIUtils unblockAddresses:addresses
                                                                     displayName:displayName
                                                              fromViewController:fromViewController
-                                                                blockingManager:blockingManager
                                                                 completionBlock:^(ActionSheetAction *ignore) {
                                                                     if (completionBlock) {
                                                                         completionBlock(NO);
@@ -374,17 +349,15 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 + (void)unblockAddresses:(NSArray<SignalServiceAddress *> *)addresses
              displayName:(NSString *)displayName
       fromViewController:(UIViewController *)fromViewController
-         blockingManager:(OWSBlockingManager *)blockingManager
          completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
     OWSAssertDebug(addresses.count > 0);
     OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
-    OWSAssertDebug(blockingManager);
 
     for (SignalServiceAddress *address in addresses) {
         OWSAssertDebug(address.isValid);
-        [blockingManager removeBlockedAddress:address wasLocallyInitiated:YES];
+        [self.blockingManager removeBlockedAddress:address wasLocallyInitiated:YES];
     }
 
     NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
@@ -396,11 +369,9 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
 + (void)showUnblockGroupActionSheet:(TSGroupModel *)groupModel
                  fromViewController:(UIViewController *)fromViewController
-                    blockingManager:(OWSBlockingManager *)blockingManager
                     completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     OWSAssertDebug(fromViewController);
-    OWSAssertDebug(blockingManager);
 
     NSString *title =
         [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_GROUP_TITLE",
@@ -419,7 +390,6 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                                          handler:^(ActionSheetAction *_Nonnull action) {
                                              [BlockListUIUtils unblockGroup:groupModel
                                                          fromViewController:fromViewController
-                                                            blockingManager:blockingManager
                                                             completionBlock:^(ActionSheetAction *ignore) {
                                                                 if (completionBlock) {
                                                                     completionBlock(NO);
@@ -443,13 +413,11 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
 + (void)unblockGroup:(TSGroupModel *)groupModel
     fromViewController:(UIViewController *)fromViewController
-       blockingManager:(OWSBlockingManager *)blockingManager
        completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
     OWSAssertDebug(fromViewController);
-    OWSAssertDebug(blockingManager);
 
-    [blockingManager removeBlockedGroupId:groupModel.groupId wasLocallyInitiated:YES];
+    [self.blockingManager removeBlockedGroupId:groupModel.groupId wasLocallyInitiated:YES];
 
     NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
         @"Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.");

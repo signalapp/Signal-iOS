@@ -1331,9 +1331,6 @@ const CGFloat kIconViewLength = 24;
         }
         [BlockListUIUtils showBlockThreadActionSheet:self.thread
                                   fromViewController:self
-                                     blockingManager:self.blockingManager
-                                     contactsManager:self.contactsManager
-                                       messageSender:self.messageSender
                                      completionBlock:^(BOOL isBlocked) {
                                          // Update switch state if user cancels action.
                                          blockConversationSwitch.on = isBlocked;
@@ -1348,8 +1345,6 @@ const CGFloat kIconViewLength = 24;
         }
         [BlockListUIUtils showUnblockThreadActionSheet:self.thread
                                     fromViewController:self
-                                       blockingManager:self.blockingManager
-                                       contactsManager:self.contactsManager
                                        completionBlock:^(BOOL isBlocked) {
                                            // Update switch state if user cancels action.
                                            blockConversationSwitch.on = isBlocked;

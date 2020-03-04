@@ -594,12 +594,12 @@ class TrimVideoTimelineView: UIView {
             return
         }
 
-        let thumbnailSize: CGFloat = height()
+        let thumbnailSize: CGFloat = height
         guard thumbnailSize > 0 else {
             return
         }
 
-        let thumbnailCount = UInt(ceil(width() / thumbnailSize))
+        let thumbnailCount = UInt(ceil(width / thumbnailSize))
 
         for index in 0..<thumbnailCount {
             // The timeline shows a series of thumbnails reflecting the video
@@ -917,20 +917,20 @@ class TrimVideoTimelineView: UIView {
         let timeBubbleView = OWSLayerView()
         timeBubbleView.backgroundColor = UIColor(white: 0, alpha: 0.6)
         timeBubbleView.layoutCallback = { view in
-            view.layer.cornerRadius = min(view.width(), view.height()) * 0.5
+            view.layer.cornerRadius = min(view.width, view.height) * 0.5
         }
         addSubview(timeBubbleView)
         timeBubbleView.autoPinEdge(.top, to: .bottom, of: self, withOffset: 9)
 
         let bubbleAlpha: Double = time / delegate.untrimmedDurationSeconds
-        let bubbleOffset: CGFloat = width() * CGFloat(bubbleAlpha)
+        let bubbleOffset: CGFloat = width * CGFloat(bubbleAlpha)
         switch alignment {
         case .left:
             timeBubbleView.autoPinEdge(.left, to: .left, of: self, withOffset: bubbleOffset)
         case .right:
             timeBubbleView.autoPinEdge(.right, to: .left, of: self, withOffset: bubbleOffset)
         case .center:
-            timeBubbleView.autoAlignAxis(.vertical, toSameAxisOf: self, withOffset: bubbleOffset - width() * 0.5)
+            timeBubbleView.autoAlignAxis(.vertical, toSameAxisOf: self, withOffset: bubbleOffset - width * 0.5)
         }
 
         let label = UILabel()
