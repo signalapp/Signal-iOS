@@ -20,9 +20,6 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 @property (nonatomic, nullable, readonly) NSString *contactUUID;
 @property (nonatomic, readonly) NSUInteger contactThreadSchemaVersion;
 
-// From TSThread
-@property (nonatomic) NSString *conversationColorName;
-
 @end
 
 @implementation TSContactThread
