@@ -1,33 +1,35 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
 @testable import SignalServiceKit
 
 class ContactDiscoveryOperationTest: SignalBaseTest {
-    func test_boolArrayFromEmptyData() {
+    func test_uuidArrayFromEmptyData() {
         let data = Data()
-        let bools = CDSBatchOperation.boolArray(from: data)
-        XCTAssert(bools == [])
+        let uuids = CDSBatchOperation.uuidArray(from: data)
+        XCTAssertEqual([], uuids)
     }
 
-    func test_boolArrayFromFalseBytes() {
-        let data = Data(repeating: 0x00, count: 4)
-        let bools = CDSBatchOperation.boolArray(from: data)
-        XCTAssert(bools == [false, false, false, false])
+    func test_uuidArrayFromZeroBytes() {
+        let data = Data(repeating: 0x00, count: 16)
+        let uuids = CDSBatchOperation.uuidArray(from: data)
+        XCTAssertEqual([UUID(uuidString: "00000000-0000-0000-0000-000000000000")], uuids)
     }
 
-    func test_boolArrayFromTrueBytes() {
-        let data = Data(repeating: 0x01, count: 4)
-        let bools = CDSBatchOperation.boolArray(from: data)
-        XCTAssert(bools == [true, true, true, true])
-    }
-
-    func test_boolArrayFromMixedBytes() {
-        let data = Data([0x01, 0x00, 0x01, 0x01])
-        let bools = CDSBatchOperation.boolArray(from: data)
-        XCTAssert(bools == [true, false, true, true])
+    func test_uuidArrayFromBytes() {
+        let bytes: [UInt8] = [
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10
+        ]
+        let data = Data(bytes)
+        let uuids = CDSBatchOperation.uuidArray(from: data)
+        let expected = [UUID(uuidString: "00000000-0000-0000-0000-000000000000"),
+                        UUID(uuidString: "00000000-0000-0000-0000-000000000000"),
+                        UUID(uuidString: "01020304-0506-0708-090A-0B0C0D0E0F10")]
+        XCTAssertEqual(expected, uuids)
     }
 
     func test_encodeNumber() {

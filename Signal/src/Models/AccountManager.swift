@@ -86,7 +86,7 @@ public class AccountManager: NSObject {
 
         return firstly { () -> Promise<String?> in
             guard !self.tsAccountManager.isRegistered else {
-                throw OWSErrorMakeAssertionError("requesting account verification when already registered")
+                throw OWSAssertionError("requesting account verification when already registered")
             }
 
             self.tsAccountManager.phoneNumberAwaitingVerification = recipientId

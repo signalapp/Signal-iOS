@@ -587,47 +587,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 #pragma mark - Remote Attestation
 
-+ (TSRequest *)remoteAttestationRequestForService:(RemoteAttestationService)service
-                                      withKeyPair:(ECKeyPair *)keyPair
-                                      enclaveName:(NSString *)enclaveName
-                                     authUsername:(NSString *)authUsername
-                                     authPassword:(NSString *)authPassword
-{
-    OWSAssertDebug(keyPair);
-    OWSAssertDebug(enclaveName.length > 0);
-    OWSAssertDebug(authUsername.length > 0);
-    OWSAssertDebug(authPassword.length > 0);
-
-    NSString *path = [NSString stringWithFormat:@"v1/attestation/%@", enclaveName];
-    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                                            method:@"PUT"
-                                        parameters:@{
-                                            // We DO NOT prepend the "key type" byte.
-                                            @"clientPublic" : [keyPair.publicKey base64EncodedStringWithOptions:0],
-                                        }];
-    request.authUsername = authUsername;
-    request.authPassword = authPassword;
-
-    switch (service) {
-        case RemoteAttestationServiceContactDiscovery:
-            request.customHost = TSConstants.contactDiscoveryURL;
-            request.customCensorshipCircumventionPrefix = TSConstants.contactDiscoveryCensorshipPrefix;
-            break;
-        case RemoteAttestationServiceKeyBackup:
-            request.customHost = TSConstants.keyBackupURL;
-            request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
-            break;
-    }
-
-    // Don't bother with the default cookie store;
-    // these cookies are ephemeral.
-    //
-    // NOTE: TSNetworkManager now separately disables default cookie handling for all requests.
-    [request setHTTPShouldHandleCookies:NO];
-
-    return request;
-}
-
 + (TSRequest *)remoteAttestationAuthRequestForService:(RemoteAttestationService)service
 {
     NSString *path;
@@ -643,45 +602,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 }
 
 #pragma mark - CDS
-
-+ (TSRequest *)cdsEnclaveRequestWithRequestId:(NSData *)requestId
-                                 addressCount:(NSUInteger)addressCount
-                         encryptedAddressData:(NSData *)encryptedAddressData
-                                      cryptIv:(NSData *)cryptIv
-                                     cryptMac:(NSData *)cryptMac
-                                  enclaveName:(NSString *)enclaveName
-                                 authUsername:(NSString *)authUsername
-                                 authPassword:(NSString *)authPassword
-                                      cookies:(NSArray<NSHTTPCookie *> *)cookies
-{
-    NSString *path = [NSString stringWithFormat:@"v1/discovery/%@", enclaveName];
-
-    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                                            method:@"PUT"
-                                        parameters:@{
-                                            @"requestId" : requestId.base64EncodedString,
-                                            @"addressCount" : @(addressCount),
-                                            @"data" : encryptedAddressData.base64EncodedString,
-                                            @"iv" : cryptIv.base64EncodedString,
-                                            @"mac" : cryptMac.base64EncodedString,
-                                        }];
-
-    request.authUsername = authUsername;
-    request.authPassword = authPassword;
-    request.customHost = TSConstants.contactDiscoveryURL;
-    request.customCensorshipCircumventionPrefix = TSConstants.contactDiscoveryCensorshipPrefix;
-
-    // Don't bother with the default cookie store;
-    // these cookies are ephemeral.
-    //
-    // NOTE: TSNetworkManager now separately disables default cookie handling for all requests.
-    [request setHTTPShouldHandleCookies:NO];
-    // Set the cookie header.
-    OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
-    [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
-
-    return request;
-}
 
 + (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
                                      reason:(nullable NSString *)reason

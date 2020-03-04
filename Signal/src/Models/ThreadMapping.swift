@@ -191,10 +191,6 @@ class ThreadMapping: NSObject {
         }
     }
 
-    func assertionError(_ description: String) -> Error {
-        return OWSErrorMakeAssertionError(description)
-    }
-
     @objc
     func updateAndCalculateDiff(isViewingArchive: Bool,
                                 updatedItemIds allUpdatedItemIds: Set<String>,
@@ -237,7 +233,7 @@ class ThreadMapping: NSObject {
         let deletedThreadIds = oldThreadIds.filter { !newThreadIds.contains($0) }
         for deletedThreadId in deletedThreadIds.reversed() {
             guard let oldIndex = oldThreadIds.firstIndexAsInt(of: deletedThreadId) else {
-                throw assertionError("oldIndex was unexpectedly nil")
+                throw OWSAssertionError("oldIndex was unexpectedly nil")
             }
             assert(newThreadIds.firstIndexAsInt(of: deletedThreadId) == nil)
             rowChanges.append(ThreadMappingRowChange(type: .delete,
@@ -250,7 +246,7 @@ class ThreadMapping: NSObject {
                 assert(naiveThreadIdOrdering[oldIndex] == deletedThreadId)
                 naiveThreadIdOrdering.remove(at: oldIndex)
             } else {
-                throw assertionError("Could not delete item.")
+                throw OWSAssertionError("Could not delete item.")
             }
         }
 
@@ -262,7 +258,7 @@ class ThreadMapping: NSObject {
         for insertedThreadId in insertedThreadIds {
             assert(oldThreadIds.firstIndexAsInt(of: insertedThreadId) == nil)
             guard let newIndex = newThreadIds.firstIndexAsInt(of: insertedThreadId) else {
-                throw assertionError("newIndex was unexpectedly nil")
+                throw OWSAssertionError("newIndex was unexpectedly nil")
             }
             rowChanges.append(ThreadMappingRowChange(type: .insert,
                                                uniqueRowId: insertedThreadId,
@@ -273,7 +269,7 @@ class ThreadMapping: NSObject {
             if newIndex >= 0 && newIndex <= naiveThreadIdOrdering.count {
                 naiveThreadIdOrdering.insert(insertedThreadId, at: newIndex)
             } else {
-                throw assertionError("Could not insert item.")
+                throw OWSAssertionError("Could not insert item.")
             }
         }
 
@@ -290,7 +286,7 @@ class ThreadMapping: NSObject {
         //   performs reloads internally.
         // * We move in ascending "new" order.
         guard Set<String>(newThreadIds) == Set<String>(naiveThreadIdOrdering) else {
-            throw assertionError("Could not map contents.")
+            throw OWSAssertionError("Could not map contents.")
         }
 
         var movedThreadIds = [String]()
@@ -299,10 +295,10 @@ class ThreadMapping: NSObject {
                 continue
             }
             guard let newIndex = newThreadIds.firstIndexAsInt(of: threadId) else {
-                throw assertionError("newIndex was unexpectedly nil.")
+                throw OWSAssertionError("newIndex was unexpectedly nil.")
             }
             guard let naiveIndex = naiveThreadIdOrdering.firstIndexAsInt(of: threadId) else {
-                throw assertionError("threadId not in newThreadIdOrdering.")
+                throw OWSAssertionError("threadId not in newThreadIdOrdering.")
             }
             guard newIndex != naiveIndex else {
                 continue
@@ -317,12 +313,12 @@ class ThreadMapping: NSObject {
             if newIndex >= 0 && newIndex <= naiveThreadIdOrdering.count {
                 naiveThreadIdOrdering.insert(threadId, at: newIndex)
             } else {
-                throw assertionError("Could not insert item.")
+                throw OWSAssertionError("Could not insert item.")
             }
         }
         // Once the moves are complete, the new ordering should be correct.
         guard newThreadIds == naiveThreadIdOrdering else {
-            throw assertionError("Could not reorder contents.")
+            throw OWSAssertionError("Could not reorder contents.")
         }
 
         // 4. Updates
@@ -333,7 +329,7 @@ class ThreadMapping: NSObject {
         let updatedThreadIds = updatedItemIds.subtracting(insertedThreadIds).subtracting(deletedThreadIds).subtracting(movedThreadIds)
         for updatedThreadId in updatedThreadIds {
             guard let oldIndex = oldThreadIds.firstIndexAsInt(of: updatedThreadId) else {
-                throw assertionError("oldIndex was unexpectedly nil")
+                throw OWSAssertionError("oldIndex was unexpectedly nil")
             }
             rowChanges.append(ThreadMappingRowChange(type: .update,
                                                      uniqueRowId: updatedThreadId,

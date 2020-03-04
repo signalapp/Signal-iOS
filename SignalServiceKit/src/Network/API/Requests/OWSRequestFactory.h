@@ -2,6 +2,8 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/RemoteAttestation.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class ECKeyPair;
@@ -12,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignedPreKeyRecord;
 @class TSRequest;
 
-typedef NS_ENUM(NSUInteger, RemoteAttestationService);
 typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVoice = 1, TSVerificationTransportSMS };
 
 @interface OWSRequestFactory : NSObject
@@ -117,25 +118,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 #pragma mark - Remote Attestation
 
-+ (TSRequest *)remoteAttestationRequestForService:(RemoteAttestationService)service
-                                      withKeyPair:(ECKeyPair *)keyPair
-                                      enclaveName:(NSString *)enclaveName
-                                     authUsername:(NSString *)authUsername
-                                     authPassword:(NSString *)authPassword;
-
 + (TSRequest *)remoteAttestationAuthRequestForService:(RemoteAttestationService)service;
 
 #pragma mark - CDS
 
-+ (TSRequest *)cdsEnclaveRequestWithRequestId:(NSData *)requestId
-                                 addressCount:(NSUInteger)addressCount
-                         encryptedAddressData:(NSData *)encryptedAddressData
-                                      cryptIv:(NSData *)cryptIv
-                                     cryptMac:(NSData *)cryptMac
-                                  enclaveName:(NSString *)enclaveName
-                                 authUsername:(NSString *)authUsername
-                                 authPassword:(NSString *)authPassword
-                                      cookies:(NSArray<NSHTTPCookie *> *)cookies;
 + (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
                                      reason:(nullable NSString *)reason NS_SWIFT_NAME(cdsFeedbackRequest(status:reason:));
 

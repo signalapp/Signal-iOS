@@ -188,7 +188,7 @@ extension GRDBGenericDatabaseObserver: DatabaseSnapshotDelegate {
 
         do {
             guard let committedChanges = self.committedChanges else {
-                throw OWSErrorMakeAssertionError("committedChanges was unexpectedly nil")
+                throw OWSAssertionError("committedChanges was unexpectedly nil")
             }
             self.committedChanges = nil
 

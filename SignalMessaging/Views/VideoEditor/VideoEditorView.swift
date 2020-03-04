@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -341,7 +341,7 @@ public class VideoEditorView: UIView {
             }
         }.then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
             guard let fileExtension = videoFilePath.fileExtension else {
-                return Promise(error: OWSErrorMakeAssertionError("Missing fileExtension."))
+                return Promise(error: OWSAssertionError("Missing fileExtension."))
             }
             let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
             do {
@@ -364,7 +364,7 @@ public class VideoEditorView: UIView {
                         return
                     }
                     guard didSucceed else {
-                        resolver.reject(OWSErrorMakeAssertionError("Video export failed."))
+                        resolver.reject(OWSAssertionError("Video export failed."))
                         return
                     }
                     resolver.fulfill(())

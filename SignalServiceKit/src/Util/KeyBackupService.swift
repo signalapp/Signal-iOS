@@ -661,7 +661,7 @@ public class KeyBackupService: NSObject {
         with auth: RemoteAttestationAuth? = nil,
         and requestOptionBuilder: @escaping (Token) throws -> RequestType
     ) -> Promise<RequestType.ResponseOptionType> {
-        return RemoteAttestation.makePromise(for: .keyBackup, with: auth).then { remoteAttestation in
+        return RemoteAttestation.performForKeyBackup(auth: auth).then { remoteAttestation in
             fetchToken(for: remoteAttestation).map { ($0, remoteAttestation) }
         }.map(on: DispatchQueue.global()) { tokenResponse, remoteAttestation -> (TSRequest, RemoteAttestation) in
             let requestOption = try requestOptionBuilder(tokenResponse)
@@ -935,7 +935,7 @@ public class KeyBackupService: NSObject {
     private static func fetchBackupId(auth: RemoteAttestationAuth?) -> Promise<Data> {
         if let currentToken = Token.next { return Promise.value(currentToken.backupId) }
 
-        return RemoteAttestation.makePromise(for: .keyBackup, with: auth).then { remoteAttestation in
+        return RemoteAttestation.performForKeyBackup(auth: auth).then { remoteAttestation in
             fetchToken(for: remoteAttestation).map { $0.backupId }
         }
     }
@@ -959,21 +959,6 @@ public class KeyBackupService: NSObject {
         }
     }
 }
-
-// PRAGMA MARK: -
-
-extension RemoteAttestation {
-    static func makePromise(for service: RemoteAttestationService, with auth: RemoteAttestationAuth? = nil) -> Promise<RemoteAttestation> {
-        return Promise { resolver in
-            perform(for: service, auth: auth, success: {
-                resolver.fulfill($0)
-            }, failure: {
-                resolver.reject($0)
-            })
-        }
-    }
-}
-
 // PRAGMA MARK: -
 
 private protocol KBSRequestOption {
