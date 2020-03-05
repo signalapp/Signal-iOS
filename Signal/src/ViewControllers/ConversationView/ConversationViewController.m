@@ -5177,6 +5177,35 @@ typedef enum : NSUInteger {
     CGFloat newDistance = newFrame.origin.y - previousDistance;
 
     CGPoint newContentOffset = CGPointMake(0, newDistance);
+
+    // Note: It's important that we call `setContentOffset:animated:NO` rather than `setContentOffset:`,
+    // even though `setContentOffset:` is, by default, not animated. UICollectionView does some
+    // other work in `setContentOffset:animated:NO`. Without that additional work, we see situations
+    // where contentOffset is incorrectly reset to the top - causing the user to inexplicably be
+    // farther back in their history than they expect.
+    //
+    // When using `[self.collectionView setContentOffset:newContentOffset]`, a trivial repro is:
+    //
+    //   - have enough messages that you can load in a couple pages (e.g. 100)
+    //   - tap the top of the navbar to hit UICollectionView's "scroll to top" tap gesture
+    //   - you see "loading more..." which is shortly replaced by the newly loaded messages
+    //   - At this point you would expect to maintain the conversation context, such that the messages
+    //     visible before loading are visible at the same screen coordinates.
+    //   - But instead, after the messages load in, you are immediately scrolled back even farther
+    //     to the *new* top of the conversation, causing *another* page of messages to be loaded.
+    //
+    // I'm unclear what the underlying issue is, but it may be related to:
+    //  - we set contentOffset here, but collectionView hasn't yet internally updated it's contentSize
+    //    to reflect the new layout. Maybe this triggers a "reset".
+    //  - Manually setting the collectionView.contentSize view [collectionView setContentSize:]` to
+    //    the new `[self safeContentHeight]` also did not remedy the issue, so it seems like there is
+    //    some other relevant state.
+    //  - I could find no public API to trigger collectionView to update it's own contentSize sync,
+    //    but a debugger shows it as happening as a result of `[collectionView layoutSubviews]`
+    //  - manually calling layout methods doesn't update the content size: e.g.
+    //    - [collectionView layoutIfNeeded]; // <- doesn't help
+    //    - [collectionView setNeedsLayout]; [collectionView layoutIfNeeded]; // <- doesn't help
+    //    - [collectionView layoutSubviews]; // <- doesn't help
     [self.collectionView setContentOffset:newContentOffset animated:NO];
 }
 
