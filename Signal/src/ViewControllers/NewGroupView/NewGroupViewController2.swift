@@ -76,7 +76,6 @@ public class NewGroupViewController2: OWSViewController {
 
         // First section.
 
-        // TODO: Revisit design.
         searchBar.delegate = self
         let firstSection = searchBar.view
         view.addSubview(firstSection)
@@ -222,7 +221,6 @@ public class NewGroupViewController2: OWSViewController {
 
     // MARK: -
 
-    // GroupsV2 TODO: Convert avatarImage to avatarData.
     private func createGroupThread(name: String?,
                                    avatarImage: UIImage?,
                                    members: [SignalServiceAddress],
