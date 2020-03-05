@@ -84,8 +84,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
             return
         }
 
-        let vc = SFSafariViewController(url: URL(string: "https://support.signal.org/hc/en-us/articles/360007320451")!)
-        present(vc, animated: true)
+        UIApplication.shared.open(URL(string: "https://support.signal.org/hc/en-us/articles/360007320451")!)
     }
 
     // MARK: -
