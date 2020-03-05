@@ -42,15 +42,13 @@ final class NewConversationButtonSet : UIView {
         verticalButtonConstraints[createNewClosedGroupButton] = createNewClosedGroupButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
         addSubview(mainButton)
         mainButton.center(.horizontal, in: self)
-        mainButton.pin(.bottom, to: .bottom, of: self)
-        let width = 3 * Values.newConversationButtonExpandedSize + 2 * spacing
+        mainButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
+        let width = 2 * Values.newConversationButtonExpandedSize + 2 * spacing + Values.newConversationButtonCollapsedSize
         set(.width, to: width)
-        let height = 2 * Values.newConversationButtonExpandedSize + spacing
+        let height = Values.newConversationButtonExpandedSize + spacing + Values.newConversationButtonCollapsedSize
         set(.height, to: height)
         collapse(withAnimation: false)
         isUserInteractionEnabled = true
-        let mainButtonTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleMainButtonTapped))
-        mainButton.addGestureRecognizer(mainButtonTapGestureRecognizer)
         let joinOpenGroupButtonTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleJoinOpenGroupButtonTapped))
         joinOpenGroupButton.addGestureRecognizer(joinOpenGroupButtonTapGestureRecognizer)
         let createNewPrivateChatButtonTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCreateNewPrivateChatButtonTapped))
@@ -60,7 +58,6 @@ final class NewConversationButtonSet : UIView {
     }
     
     // MARK: Interaction
-    @objc private func handleMainButtonTapped() { expand(isUserDragging: false) }
     @objc private func handleJoinOpenGroupButtonTapped() { delegate?.joinOpenGroup() }
     @objc private func handleCreateNewPrivateChatButtonTapped() { delegate?.createNewPrivateChat() }
     @objc private func handleCreateNewClosedGroupButtonTapped() { delegate?.createNewClosedGroup() }
@@ -161,7 +158,7 @@ final class NewConversationButtonSet : UIView {
             self.layoutIfNeeded()
             button.frame = frame
             button.layer.cornerRadius = size / 2
-            button.addGlow(ofSize: size)
+            button.setGlow(to: size, with: Colors.newConversationButtonShadow)
             button.backgroundColor = Colors.accent
         }
     }
@@ -185,7 +182,7 @@ final class NewConversationButtonSet : UIView {
             self.layoutIfNeeded()
             button.frame = frame
             button.layer.cornerRadius = size / 2
-            button.removeGlow()
+            button.setGlow(to: size, with: UIColor.black)
             button.backgroundColor = Colors.newConversationButtonCollapsedBackground
         }
     }
@@ -229,9 +226,9 @@ private final class NewConversationButton : UIImageView {
     
     private func setUpViewHierarchy() {
         backgroundColor = isMainButton ? Colors.accent : Colors.newConversationButtonCollapsedBackground
-        let size = isMainButton ? Values.newConversationButtonExpandedSize : Values.newConversationButtonCollapsedSize
+        let size = Values.newConversationButtonCollapsedSize
         layer.cornerRadius = size / 2
-        if isMainButton { addGlow(ofSize: size) }
+        if isMainButton { setGlow(to: size, with: Colors.newConversationButtonShadow) }
         layer.masksToBounds = false
         image = icon
         contentMode = .center
@@ -240,20 +237,12 @@ private final class NewConversationButton : UIImageView {
     }
     
     // General
-    func addGlow(ofSize size: CGFloat) {
+    func setGlow(to size: CGFloat, with color: UIColor) {
         layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size, height: size))).cgPath
-        layer.shadowColor = Colors.newConversationButtonShadow.cgColor
+        layer.shadowColor = color.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 0.8)
         layer.shadowOpacity = 1
         layer.shadowRadius = 6
-    }
-    
-    func removeGlow() {
-        layer.shadowPath = nil
-        layer.shadowColor = nil
-        layer.shadowOffset = CGSize.zero
-        layer.shadowOpacity = 0
-        layer.shadowRadius = 0
     }
 }
 
