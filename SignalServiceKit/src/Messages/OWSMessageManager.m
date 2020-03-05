@@ -1089,8 +1089,19 @@ NS_ASSUME_NONNULL_BEGIN
                     case LKThreadFriendRequestStatusNone: {
                         OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
                         LKFriendRequestMessage *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey transaction:transaction];
-                        [automatedFriendRequestMessage saveWithTransaction:transaction];
-                        [self.messageSenderJobQueue addMessage:automatedFriendRequestMessage transaction:transaction];
+                        thread.isForceHidden = true;
+                        [thread saveWithTransaction:transaction];
+                        [messageSender sendMessage:automatedFriendRequestMessage
+                            success:^{
+                                [automatedFriendRequestMessage remove];
+                                thread.isForceHidden = false;
+                                [thread save];
+                            }
+                            failure:^(NSError *error) {
+                                [automatedFriendRequestMessage remove];
+                                thread.isForceHidden = false;
+                                [thread save];
+                            }];
                         break;
                     }
                     case LKThreadFriendRequestStatusRequestReceived: {
