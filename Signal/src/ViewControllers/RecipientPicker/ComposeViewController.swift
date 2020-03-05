@@ -26,14 +26,6 @@ class ComposeViewController: OWSViewController {
                                                                                   comment: "Accessibility label for the new group button")
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        DispatchQueue.main.async {
-            self.newGroupPressed()
-        }
-    }
-
     @objc func dismissPressed() {
         dismiss(animated: true)
     }
