@@ -199,6 +199,11 @@ class IncomingGroupsV2MessageQueue: NSObject {
             // NOTE: This transaction is the same transaction as the transaction
             //       passed to processJobs() in the "sync" case but is a different
             //       transaction in the "async" case.
+
+            if shouldWaitBeforeRetrying {
+                Logger.warn("shouldWaitBeforeRetrying")
+            }
+
             let uniqueIds = processedJobs.map { $0.uniqueId }
             self.finder.removeJobs(withUniqueIds: uniqueIds,
                                    transaction: transaction.unwrapGrdbWrite)

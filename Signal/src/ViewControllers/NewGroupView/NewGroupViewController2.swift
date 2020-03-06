@@ -33,15 +33,13 @@ public class NewGroupViewController2: OWSViewController {
 
     private let recipientPicker = RecipientPickerViewController()
 
-    private var recipientSet = Set<PickedRecipient>()
+    private var recipientSet = OrderedSet<PickedRecipient>()
 
     private var hasUnsavedChanges: Bool {
         return !recipientSet.isEmpty
     }
 
     private let searchBar = NewGroupSearchBar()
-
-    private var searchBarHeightConstraint: NSLayoutConstraint?
 
     public required init() {
         super.init(nibName: nil, bundle: nil)
@@ -85,7 +83,6 @@ public class NewGroupViewController2: OWSViewController {
         view.addSubview(firstSection)
         firstSection.autoPinWidthToSuperview()
         firstSection.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        searchBarHeightConstraint = firstSection.autoSetDimension(.height, toSize: 0)
 
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowGroups = false
@@ -98,7 +95,7 @@ public class NewGroupViewController2: OWSViewController {
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .leading)
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .trailing)
         recipientPicker.view.autoPinEdge(.top, to: .bottom, of: firstSection)
-        recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
+        autoPinView(toBottomOfViewControllerOrKeyboard: recipientPicker.view, avoidNotch: false)
     }
 
     @objc
@@ -109,23 +106,22 @@ public class NewGroupViewController2: OWSViewController {
     }
 
     private func updateSearchBarHeightConstraint() {
-        guard let searchBarHeightConstraint = searchBarHeightConstraint else {
-            owsFailDebug("Missing searchBarHeightConstraint.")
-            return
-        }
-        let searchBarHeight = searchBar.contentHeight(forWidth: view.width)
-        searchBarHeightConstraint.constant = searchBarHeight
+        searchBar.updateHeightConstraint(forWidth: view.width)
     }
 
     public func removeRecipient(_ recipient: PickedRecipient) {
         recipientSet.remove(recipient)
-        recipientPicker.pickedRecipients = Array(recipientSet)
+        recipientPicker.pickedRecipients = recipientSet.orderedMembers
         updateSearchBar()
     }
 
     public func addRecipient(_ recipient: PickedRecipient) {
-        recipientSet.insert(recipient)
-        recipientPicker.pickedRecipients = Array(recipientSet)
+        guard !recipientSet.contains(recipient) else {
+            owsFailDebug("Recipient already added.")
+            return
+        }
+        recipientSet.append(recipient)
+        recipientPicker.pickedRecipients = recipientSet.orderedMembers
         updateSearchBar()
     }
 
@@ -133,7 +129,7 @@ public class NewGroupViewController2: OWSViewController {
         searchBar.acceptAutocorrectSuggestion()
 
         let members = databaseStorage.uiRead { transaction in
-            Array(self.recipientSet).compactMap { (recipient: PickedRecipient) -> NewGroupMember? in
+            self.recipientSet.orderedMembers.compactMap { (recipient: PickedRecipient) -> NewGroupMember? in
                 guard let address = recipient.address else {
                     owsFailDebug("Invalid recipient.")
                     return nil
@@ -162,6 +158,12 @@ public class NewGroupViewController2: OWSViewController {
         }
     }
 
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        searchBar.ensureInputVisibleAndActive()
+    }
+
     @objc
     func dismissPressed() {
         if !self.hasUnsavedChanges {
@@ -172,17 +174,6 @@ public class NewGroupViewController2: OWSViewController {
 
         OWSActionSheets.showPendingChangesActionSheet { [weak self] in
             self?.dismiss(animated: true)
-        }
-    }
-
-    private var hasAppeared = false
-
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        if !hasAppeared {
-            _ = searchBar.becomeFirstResponder()
-            hasAppeared = true
         }
     }
 
@@ -197,7 +188,7 @@ public class NewGroupViewController2: OWSViewController {
             return
         }
 
-        let memberSet = Set([localAddress] + Array(recipientSet.compactMap { $0.address }))
+        let memberSet = Set([localAddress] + recipientSet.orderedMembers.compactMap { $0.address })
 
         let groupName: String? = nil
         let avatarImage: UIImage? = nil
@@ -378,7 +369,7 @@ extension NewGroupViewController2: RecipientPickerDelegate {
 
         let imageView = UIImageView()
         if isCurrentMember {
-            imageView.setTemplateImageName("check-circle-solid-24", tintColor: .ows_signalBlue)
+            imageView.setTemplateImageName("check-circle-solid-24", tintColor: .ows_accentBlue)
         } else if isBlocked {
             // Use accessoryMessageForRecipient: to show blocked indicator.
             return nil
