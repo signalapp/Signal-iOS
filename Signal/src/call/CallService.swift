@@ -1255,7 +1255,7 @@ extension SignalCall: CallManagerCallReference { }
         }
 
         call.terminate()
-        callUIAdapter.didTerminateCall(call)
+        callUIAdapter.didTerminateCall(call, hasCallInProgress: self.hasCallInProgress)
 
         // Apparently WebRTC will sometimes disable device orientation notifications.
         // After every call ends, we need to ensure they are enabled.

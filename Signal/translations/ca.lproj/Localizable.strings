@@ -144,7 +144,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "S'ha desat";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Missatge per a %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envia";
@@ -240,46 +240,46 @@
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Resposta del servei no vàlida";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "S'està netejant la còpia de seguretat";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Es neteja la còpia de segeuretat";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "S'està inicialitzant la còpia de seguretat";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "S'inicialitza la còpia de seguretat";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "S'estan exportant les dades";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "S'exporten dades";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "S'està exportant la còpia de seguretat";
+"BACKUP_EXPORT_PHASE_EXPORT" = "S'exporta la còpia de seguretat";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "S'està pujant la còpia de seguretat";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Es carrega la còpia de seguretat";
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "No s’ha pogut importar la còpia de seguretat.";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "S'està configurant la còpia de seguretat";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Es configura la còpia de seguretat";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "S'està baixant la còpia de seguretat";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Es baixa la còpia de seguretat";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "S'està finalitzant la còpia de seguretat";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "S'acaba còpia de seguretat";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "S'està important la còpia de seguretat.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "S'importa la còpia de seguretat.";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "S'està restaurant la base de dades";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Es restaura la base de dades";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "S'estan restaurant els fitxers";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Es restauren els fitxers";
 
 /* Label for the backup restore decision section. */
 "BACKUP_RESTORE_DECISION_TITLE" = "Còpia de seguretat disponible";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "S'està restaurant la còpia de seguretat";
+"BACKUP_RESTORE_DESCRIPTION" = "Es restaura la còpia de seguretat";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Progrés";
@@ -429,7 +429,7 @@
 "CALL_VIEW_ENABLE_VIDEO_HINT" = "Toqueu aquí per a activar el vídeo";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "Finalitza la trucada";
+"CALL_VIEW_HANGUP_LABEL" = "Acaba la trucada";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Silencia";
@@ -798,7 +798,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "L'usuari no és als vostres contactes.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "S'estan carregant més missatges...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Es carreguen més missatges...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Mostra'n més";
@@ -819,7 +819,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Això pot trigar uns minuts.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "S'està optimitzant la base de dades";
+"DATABASE_VIEW_OVERLAY_TITLE" = "S'optimitza la base de dades";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "Fa %@ h";
@@ -843,28 +843,28 @@
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "No s'han pogut empacar els registres.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "No s'han pogut penjar els registres.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "No s'han pogut pujar els registres.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Què voleu fer amb l'enllaç al vostre registre de depuració?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "No s'ha pogut trobar cap registre.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "No s'ha trobat cap registre.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Obriu un informe d'error";
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Obrir un informe d'error";
 
 /* Label for the 'copy link' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copia l'enllaç";
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copiar l'enllaç";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Assistència per correu electrònic";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Enviar-lo per correu";
 
 /* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Envia'm-ho";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Enviar-me'l";
 
 /* Label for the 'Share' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "Comparteix";
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Compartir-lo";
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Un pas més";
@@ -873,22 +873,22 @@
 "DEBUG_LOG_COULD_NOT_EMAIL" = "No s'ha pogut obrir l'aplicació de correu.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "S'ha copiat l'enllaç gist al porta-retalls. Ara se us redireccionarà a la llista d'errors del GitHub.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "S'ha copiat l'enllaç gist al porta-retalls. Ara se us reencaminarà a la llista d'errors del GitHub.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirecció al GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Torna a registrar aquest número de telèfon";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Torna a registrar aquest número";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "El dispositiu ja no està registrat. El número de telèfon es pot registrar al Signal des d'un altre dispositiu. Toqueu per tornar a registrar-lo.";
+"DEREGISTRATION_WARNING" = "El dispositiu ja no està registrat. El número es pot registrar al Signal des d'un altre dispositiu. Toqueu per tornar a registrar-lo.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Darrera connexió: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Enllaçat el %@";
+"DEVICE_LINKED_AT_LABEL" = "Enllaçat: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "No s'ha pogut actualitzar la llista.";
@@ -915,7 +915,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Ubicació per a l'elusió de la censura";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Podeu activar l'accés a la Configuració de l'iOS.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Podeu activar l'accés en la Configuració de l'iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "El Signal necessita accés als contactes per a editar la seva informació";
@@ -927,13 +927,13 @@
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contactes";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Edita el grup";
+"EDIT_GROUP_DEFAULT_TITLE" = "Edició del grup";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "S'ha afegit";
 
 /* The title for the 'update group' button. */
-"EDIT_GROUP_UPDATE_BUTTON" = "Actualitza";
+"EDIT_GROUP_UPDATE_BUTTON" = "Actualització";
 
 /* The alert message if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Voleu desar els canvis que heu fet en aquest grup?";
@@ -945,16 +945,16 @@
 "EDIT_ITEM_COPY_ACTION" = "Copia";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Ep,\n\nÚltimament he estat utilitzant el Signal per mantenir les meves converses privades a l'iPhone. M'agradaria que també te l'instal·lessis, per què puguem estar segurs que som els únics que podem llegir els missatges que ens hi enviem.\n\nPots baixar-te-la de l'App Store d'Apple o de la Play Store d'Android: %@\n\nEl Signal funciona com la resta d'aplicacions de missatgeria. Podem enviar-nos fotos i vídeos, fer trucades, i crear grups. La millor part és que ningú més pot veure tot això, ni tan sols la gent que ha creat el Signal!\n\nPots obtenir més informació sobre Open Whisper Systems, la gent que ha creat el Signal, aquí: %@";
+"EMAIL_INVITE_BODY" = "Ep,\n\nÚltimament he estat utilitzant el Signal per a mantenir les meves converses privades a l'iPhone. M'agradaria que també te l'instal·lessis, perquè puguem estar segurs que som els únics que podem llegir els missatges que ens hi enviem.\n\nEl Signal es troba disponible per a Android i iPhones. Baixa'l d'aquí: %@\n\nEl Signal funciona com la resta d'aplicacions de missatgeria. Podem enviar-nos fotos i vídeos, fer trucades i crear grups. La millor part és que ningú més pot veure res d'això, ni tan sols la gent que ha creat el Signal!\n\nPots obtenir més informació sobre Open Whisper Systems, la gent que ha creat el Signal, aquí: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Canviem-nos al Signal";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Cap dels vostres contactes té Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Cap dels vostres contactes té el Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Per què no convideu algú?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Per què no hi convideu algú?";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirmeu el vostre PIN.";
@@ -1245,7 +1245,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Cerca";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+"HOME_VIEW_DRAFT_PREFIX" = "Esborrany:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Alguns dels vostres contactes ja són al Signal, inclòs %@.";
@@ -1293,7 +1293,7 @@
 "IN_CALL_SECURING" = "Respost. S'assegura...";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Ha finalitzat.";
+"IN_CALL_TERMINATED" = "Trucada acabada";
 
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Aquestes converses estan arxivades i només apareixeran a la bústia d'entrada si es reben missatges nous.";
@@ -1404,7 +1404,7 @@
 "LEAVE_GROUP_ACTION" = "Abandona el grup";
 
 /* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+"LEAVE_GROUP_FAILED" = "Hi ha hagut un error en abandonar el grup.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Aquest codi QR no és vàlid. Si us plau, assegureu-vos que escanegeu el codi QR que es mostra al dispositiu que voleu enllaçar.";
@@ -2300,9 +2300,6 @@
 /* message header label when someone else is quoting you */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Resposta per a tu";
 
-/* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Resposta per a si mateix";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "No s'ha trobat el missatge original.";
 
@@ -2371,6 +2368,9 @@
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "S'introdueixen les reaccions";
+
+/* Text describing the local user in the reaction details pane. */
+"REACTIONS_DETAIL_YOU" = "Vós";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "He oblidat el PIN.";
@@ -3180,7 +3180,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "No s'admet";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "Group could not be updated.";
+"UPDATE_GROUP_FAILED" = "No s'ha pogut actualitzar el grup.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creeu el PIN";

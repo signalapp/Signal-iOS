@@ -144,7 +144,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "บันทึกแล้ว";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "ข้อความถึง %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "ส่ง";
@@ -153,7 +153,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "แฟ้มแนบ";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "ดาวน์โหลดล้มเหลว แตะเพื่อลองอีกครั้ง";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "เกิดข้อผิดพลาดในการส่งแฟ้มแนบ";
@@ -177,10 +177,10 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "แฟ้มแนบใหญ่เกินไป";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "แฟ้มแนบมีเนื้อหาที่ผิดรูปแบบ";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "แฟ้มแนบมีรูปแบบแฟ้มที่ไม่ถูกต้อง";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "แฟ้มแนบว่างเปล่า";
@@ -195,13 +195,13 @@
 "ATTACHMENT_KEYBOARD_CONTACT" = "ผู้ติดต่อ";
 
 /* A button to select a file from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_FILE" = "ไฟล์";
+"ATTACHMENT_KEYBOARD_FILE" = "แฟ้ม";
 
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "ตำแหน่งที่ตั้ง";
+"ATTACHMENT_KEYBOARD_LOCATION" = "ที่ตั้ง";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
@@ -210,16 +210,16 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "ไฟล์แนบ";
+"ATTACHMENT_LABEL" = "แฟ้มแนบ";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "เลือกเอกสารไม่สำเร็จ";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "การเลือกเอกสารล้มเหลว";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ไฟล์ที่ไม่รองรับ";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "แฟ้มที่ไม่ได้รองรับ";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "ข้อความเสียง";
@@ -234,46 +234,46 @@
 "BACK_BUTTON" = "กลับ";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "ไม่สามารถส่งออกการสำรองข้อมูลได้";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "ไม่สามารถส่งออกข้อมูลสำรองได้";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "การตอบสนองของบริการไม่ถูกต้อง";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "กำลังล้างการสำรองข้อมูล";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "กำลังล้างข้อมูลสำรอง";
 
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "เริ่มต้นสำรองข้อมูล";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "การส่งออกข้อมูล";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "กำลังส่งออกข้อมูล";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "กำลังส่งออกการสำรองข้อมูล";
+"BACKUP_EXPORT_PHASE_EXPORT" = "กำลังส่งออกข้อมูลสำรอง";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "กำลังอัปโหลดการสำรองข้อมูล";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "กำลังอัปโหลดข้อมูลสำรอง";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "ไม่สามารถส่งออกการสำรองข้อมูลได้";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "ไม่สามารถนำเข้าข้อมูลสำรองได้";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "กำลังกำหนดค่าการสำรองข้อมูล";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "กำลังดาวน์โหลดการสำรองข้อมูล";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "กำลังดาวน์โหลดข้อมูลสำรอง";
 
 /* Indicates that the backup import data is being finalized. */
 "BACKUP_IMPORT_PHASE_FINALIZING" = "กำลังเสร็จสิ้นการสำรองข้อมูล";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "กำลังนำเข้าการสำรองข้อมูล";
+"BACKUP_IMPORT_PHASE_IMPORT" = "กำลังนำเข้าข้อมูลสำรอง";
 
 /* Indicates that the backup database is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "กำลังคืนค่าฐานข้อมูล";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "กำลังคืนค่าไฟล์";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "กำลังคืนค่าแฟ้ม";
 
 /* Label for the backup restore decision section. */
 "BACKUP_RESTORE_DECISION_TITLE" = "มีข้อมูลสำรองอยู่";
@@ -288,7 +288,7 @@
 "BACKUP_RESTORE_STATUS" = "สถานะ";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "พบข้อผิดพลาดที่ไม่คาดคิดระหว่างสำรองข้อมูล";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "คุณจะไม่ได้รับข้อความหรือความเคลื่อนไหวจากกลุ่มนี้อีกต่อไป ";
@@ -525,10 +525,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "กลุ่ม";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "ค้นด้วยหมายเลขโทรศัพท์";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "ค้นหมายเลขโทรศัพท์";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ค้นด้วยชื่อผู้ใช้";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ค้นชื่อผู้ใช้";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
@@ -630,10 +630,10 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "ไม่มีหมายเลขโทรศัพท์ที่ใช้ได้";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "เลือกข้อมูลติดต่อ";
+"CONTACT_PICKER_TITLE" = "เลือกผู้ติดต่อ";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "แบ่งปันรายชื่อ";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "แบ่งปันผู้ติดต่อ";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "แก้ชื่อ";
@@ -657,7 +657,7 @@
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "ส่งปูมดีบัก?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "ส่งปูมดีบักหรือไม่?";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "ส่งพร้อมกับปูมดีบัก";
@@ -801,7 +801,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "แตะเพื่อดูเพิ่ม";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "ปิดกั้นผู้ใช้นี้";
@@ -819,13 +819,13 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "นี่อาจใช้เวลาสองสามนาที";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "จัดระเบียบฐานข้อมูล";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ ชม.ก่อน";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ นาทีก่อน";
 
 /* The present; the current time. */
 "DATE_NOW" = "เดี๋ยวนี้";
@@ -870,7 +870,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "อีกหนึ่งขั้นตอน";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Could not open Email app.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "ไม่สามารถเปิดแอปอีเมลได้";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "คัดลอกลิงก์ของ gist ไว้ในคลิปบอร์ดของคุณแล้ว คุณกำลังถูกนำไปยังรายการประเด็นของ GitHub";
@@ -879,7 +879,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "เปลี่ยนเส้นทางไปยัง GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "ลงทะเบียนหมายเลขโทรศัพท์นี้ใหม่";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
@@ -972,7 +972,7 @@
 "ENABLE_2FA_VIEW_ENABLE_2FA" = "เริ่มใช้";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "ต่อไป";
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "ถัดไป";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN ไม่ตรงกัน";
@@ -999,16 +999,16 @@
 "END_CALL_RESPONDER_IS_BUSY" = "ไม่ว่าง";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "การโทรไม่สำเร็จ";
+"END_CALL_UNCATEGORIZED_FAILURE" = "การโทรล้มเหลว";
 
 /* Label indicating that this OS version is no longer supported. */
 "END_OF_LIFE_OS_WARNING" = "ความสามารถล่าสุดของ Signal ทำงานกับ iOS รุ่นนี้ไม่ได้ กรุณาปรับรุ่นอุปกรณ์นี้เพื่อรับการปรับปรุง Signal ในอนาคต";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "ไม่สามารถเข้าถึงรายการผู้ติดต่อ";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "ไม่สามารถบันทึกแฟ้มวิดีโอ";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "ส่งข้อความไม่สำเร็จ";
@@ -1026,10 +1026,10 @@
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "การส่งข้อความไม่สำเร็จ เนื่องจากไม่มีชื่อผู้รับที่ถูกต้อง";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "คำร้องขอทางเครือข่ายล้มเหลว";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "คำร้องขอทางเครือข่ายหมดเวลา";
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
@@ -1056,7 +1056,7 @@
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "คีย์ของผู้รับไม่ถูกต้อง";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "กุญแจของผู้รับไม่ถูกต้อง";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
@@ -1068,16 +1068,16 @@
 "ERROR_MESSAGE_NO_SESSION" = "ไม่มีเซสชันที่ใช้งานได้สำหรับผู้ติดต่อ";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "รหัสความปลอดภัยถูกเปลี่ยนแล้ว";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "หมายเลขความปลอดภัยถูกเปลี่ยนแล้ว";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "รหัสความปลอดภัยของคุณกับ %@ มีการเปลี่ยนแปลง";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "หมายเลขความปลอดภัยของคุณกับ %@ มีการเปลี่ยนแปลง";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "เกิดข้อผิดพลาดที่ไม่รู้จัก";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "รหัสความปลอดภัยถูกเปลี่ยนแล้ว";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "หมายเลขความปลอดภัยถูกเปลี่ยนแล้ว";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
@@ -1089,7 +1089,7 @@
 "ERROR_SENDING_EXPIRED" = "Signal รุ่นที่คุณมีหมดอายุแล้ว กรุณาปรับปรุงเพื่อส่งข้อความต่อ";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "ผู้ใช้ที่ไม่ได้ลงทะเบียน: %@";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Signal รุ่นที่คุณมีหมดอายุแล้ว! ข้อความจะไม่สามารถส่งได้สำเร็จอีกต่อไป แตะเพื่อปรับปรุงเป็นรุ่นล่าสุด";
@@ -1119,19 +1119,19 @@
 "FINISH_GROUP_CREATION_LABEL" = "สร้างกลุ่มให้เสร็จ";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "ส่งต่อผู้ติดต่อ";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "ส่งต่อข้อความ";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "คุณไม่มีสื่อข้อมูลใดในการสนทนานี้";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "กำลังเรียกสื่อที่ใหม่กว่า...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "กำลังเรียกสื่อที่เก่ากว่า...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "ไฟล์แนบ";
@@ -1143,13 +1143,13 @@
 "GIF_PICKER_ERROR_GENERIC" = "เกิดข้อผิดพลาดที่ไม่รู้จัก";
 
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "ไม่สามารถเลือกไฟล์ GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "ไม่สามารถเลือก GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "โปรดป้อนการค้นหาของคุณ";
 
 /* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "ค้นหาไฟล์ GIF";
+"GIF_PICKER_VIEW_TITLE" = "ค้นหา GIF";
 
 /* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "เกิดข้อผิดพลาด แตะเพื่อลองใหม่";
@@ -1164,16 +1164,16 @@
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimizing Database";
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "จัดระเบียบฐานข้อมูล";
 
 /* conversation history entry */
 "GROUP_CREATED" = "กลุ่มถูกสร้างแล้ว";
 
 /* conversation history entry when the local user created a group */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "คุณได้สร้างกลุ่มแล้ว";
 
 /* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ เพิ่มคุณเข้ากลุ่ม";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "ไม่สามารถเพิ่มสมาชิกทุกคนเข้ากลุ่มได้ แตะเพื่อลองอีกครั้ง";
@@ -1206,13 +1206,13 @@
 "GROUP_UPDATED" = "ปรับปรุงกลุ่ม";
 
 /* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
-"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ และ %@ เข้าร่วมกลุ่ม";
 
 /* conversation history entry. Embeds the {{added user's name}} */
-"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ เข้าร่วมกลุ่ม";
 
 /* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "เอาอวตารของกลุ่มออกแล้ว";
 
 /* conversation history entry */
 "GROUP_UPDATED_AVATAR_UPDATED" = "ปรับปรุงรูปอวตารของกลุ่ม";
@@ -1224,13 +1224,13 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ได้ปรับปรุงกลุ่ม";
 
 /* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+"GROUP_UPDATED_NAME_REMOVED" = "เอาชื่อออกแล้ว";
 
 /* conversation history entry. Embeds {{group name}} */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "ตอนนี้ชื่อกลุ่มคือ “%@”";
 
 /* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
+"GROUP_UPDATED_READDED_YOU" = "เพิ่มคุณกลับเข้ากลุ่มอีกครั้ง";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "คุณได้ออกจากกลุ่ม";
@@ -1245,28 +1245,28 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "ค้นหา";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+"HOME_VIEW_DRAFT_PREFIX" = "ร่าง:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "ผู้ติดต่อบางคนของคุณอยู่บน Signal อยู่แล้ว รวมถึง %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "ผู้ติดต่อบางคนของคุณอยู่บน Signal อยู่แล้ว รวมถึง %@ และ %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "ผู้ติดต่อบางคนของคุณอยู่บน Signal อยู่แล้ว รวมถึง %@, %@ และ %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "เริ่มบทสนทนาแรกของคุณที่นี่";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ เพิ่มคุณเข้ากลุ่ม";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "คำร้องขอส่งข้อความ";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "ไม่พบผลลัพธ์สำหรับ '%@'";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "ที่เก็บถาวร";
@@ -1275,16 +1275,16 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "คุณไม่สามารถแบ่งปันมากกว่า %@ รายการ";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "การเลือกแฟ้มแนบล้มเหลว";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "กำลังเชื่อมต่อ…";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting…";
+"IN_CALL_RECONNECTING" = "กำลังเชื่อมต่อใหม่...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "กำลังเรียกสาย…";
@@ -1320,7 +1320,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ อยู่บน Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "สติกเกอร์";
@@ -1362,7 +1362,7 @@
 "KEY_COMMAND_ARCHIVE" = "เก็บบทสนทนาลงที่เก็บถาวร";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "แสดงแฟ้มแนบ";
 
 /* A keyboard command to open the current conversation's settings. */
 "KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
@@ -1371,7 +1371,7 @@
 "KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "ไปที่การค้นหา GIF";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "กลุ่มใหม่";
@@ -1380,10 +1380,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "ข้อความใหม่";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "ไปที่การสนทนาถัดไป";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "ไปที่การสนทนาก่อนหน้า";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "ค้นหา";
@@ -1392,7 +1392,7 @@
 "KEY_COMMAND_SETTINGS" = "การตั้งค่า";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "แสดงสติกเกอร์";
 
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
@@ -1443,10 +1443,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "สมาชิกกลุ่ม";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "ค้นด้วยชื่อหรือที่อยู่";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "เลือกที่ตั้ง";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "กำลังบันทึก";
@@ -1479,28 +1479,28 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "เดือนนี้";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "เตือนฉันทีหลัง";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "เราจะเตือนคุณในภายหลัง";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "คัดลอกตัวอักษรของข้อความ";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "ลบข้อความนี้";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "ข้อมูลเพิ่มเติม";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "ส่งต่อข้อความนี้";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to This Message";
+"MESSAGE_ACTION_REPLY" = "ตอบกลับข้อความนี้";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "แบ่งปันสื่อ";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "ข้อความ";
@@ -1530,7 +1530,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "ส่งแล้ว";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "ข้ามแล้ว";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "กำลังอัปโหลด";
@@ -1581,13 +1581,13 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "จะลบการสนทนาหรือ?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "ลบและออก";
 
 /* Action sheet message to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "คุณจะออกจากกลุ่มนี้และมันจะถูกลบออกจากทุกอุปกรณ์ของคุณ";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ลบและออกจากกลุ่มหรือไม่?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "ยอมรับ";
@@ -1644,7 +1644,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "กำลังดาวน์โหลด";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "การส่งล้มเหลว";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "ไม่สำเร็จ";
@@ -1653,7 +1653,7 @@
 "MESSAGE_STATUS_READ" = "อ่านแล้ว";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "ข้ามแล้ว";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "การส่งล้มเหลว";
@@ -2300,9 +2300,6 @@
 /* message header label when someone else is quoting you */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "กำลังตอบกลับคุณ";
 
-/* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "ตอบกลับหาคุณเอง";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
 
@@ -2371,6 +2368,9 @@
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "รู้จักกับ Reactions";
+
+/* Text describing the local user in the reaction details pane. */
+"REACTIONS_DETAIL_YOU" = "คุณ";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ฉันลืมรหัส PIN";

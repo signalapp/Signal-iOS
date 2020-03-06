@@ -168,11 +168,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         contactThread = (TSContactThread *)self.thread;
     }
 
-    BOOL isNoteToSelf = contactThread && contactThread.contactAddress.isLocalAddress;
-    if (isNoteToSelf) {
-        threadName = MessageStrings.noteToSelf;
-    }
-
     NSAttributedString *attributedText =
         [[NSAttributedString alloc] initWithString:threadName
                                         attributes:@{

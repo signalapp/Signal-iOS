@@ -1366,9 +1366,12 @@ const CGFloat kIconViewLength = 24;
 {
     OWSAssertDebug(!self.hasPendingMessageRequest);
 
-    // snap the slider to a valid value
     NSUInteger index = (NSUInteger)(slider.value + 0.5);
-    [slider setValue:index animated:YES];
+    if (!slider.isTracking) {
+        // Snap the slider to a valid value unless the user
+        // is still interacting with the control.
+        [slider setValue:index animated:YES];
+    }
     NSNumber *numberOfSeconds = self.disappearingMessagesDurations[index];
     uint32_t durationSeconds = [numberOfSeconds unsignedIntValue];
     self.disappearingMessagesConfiguration =
