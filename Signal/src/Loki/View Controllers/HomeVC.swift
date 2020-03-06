@@ -259,7 +259,13 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         profilePictureView.set(.height, to: profilePictureSize)
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureView)
+        let profilePictureViewContainer = UIView()
+        profilePictureViewContainer.addSubview(profilePictureView)
+        profilePictureView.pin(.leading, to: .leading, of: profilePictureViewContainer, withInset: 4)
+        profilePictureView.pin(.top, to: .top, of: profilePictureViewContainer)
+        profilePictureView.pin(.trailing, to: .trailing, of: profilePictureViewContainer)
+        profilePictureView.pin(.bottom, to: .bottom, of: profilePictureViewContainer)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureViewContainer)
     }
     
     // MARK: Interaction
