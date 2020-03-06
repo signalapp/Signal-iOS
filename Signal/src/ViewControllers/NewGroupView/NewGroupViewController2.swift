@@ -11,6 +11,10 @@ public class NewGroupViewController2: OWSViewController {
 
     // MARK: - Dependencies
 
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     private var contactsManager: OWSContactsManager {
         return Environment.shared.contactsManager
     }
@@ -37,7 +41,7 @@ public class NewGroupViewController2: OWSViewController {
 
     private let searchBar = NewGroupSearchBar()
 
-    private var searchBarHeightConstraint: NSLayoutConstraint!
+    private var searchBarHeightConstraint: NSLayoutConstraint?
 
     public required init() {
         super.init(nibName: nil, bundle: nil)
@@ -77,7 +81,7 @@ public class NewGroupViewController2: OWSViewController {
         // First section.
 
         searchBar.delegate = self
-        let firstSection = searchBar.view
+        let firstSection = searchBar
         view.addSubview(firstSection)
         firstSection.autoPinWidthToSuperview()
         firstSection.autoPin(toTopLayoutGuideOf: self, withInset: 0)
@@ -93,7 +97,6 @@ public class NewGroupViewController2: OWSViewController {
 
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .leading)
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .trailing)
-        //        recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         recipientPicker.view.autoPinEdge(.top, to: .bottom, of: firstSection)
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
     }
@@ -106,6 +109,10 @@ public class NewGroupViewController2: OWSViewController {
     }
 
     private func updateSearchBarHeightConstraint() {
+        guard let searchBarHeightConstraint = searchBarHeightConstraint else {
+            owsFailDebug("Missing searchBarHeightConstraint.")
+            return
+        }
         let searchBarHeight = searchBar.contentHeight(forWidth: view.width)
         searchBarHeightConstraint.constant = searchBarHeight
     }
@@ -125,14 +132,15 @@ public class NewGroupViewController2: OWSViewController {
     private func updateSearchBar() {
         searchBar.acceptAutocorrectSuggestion()
 
-        let members = Array(recipientSet).compactMap { (recipient: PickedRecipient) -> NewGroupMember? in
-            guard let address = recipient.address else {
-                owsFailDebug("Invalid recipient.")
-                return nil
+        let members = databaseStorage.read { transaction in
+            Array(self.recipientSet).compactMap { (recipient: PickedRecipient) -> NewGroupMember? in
+                guard let address = recipient.address else {
+                    owsFailDebug("Invalid recipient.")
+                    return nil
+                }
+                let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
+                return NewGroupMember(recipient: recipient, address: address, displayName: displayName)
             }
-            // TODO: Use a single transaction.
-            let displayName = self.contactsManager.displayName(for: address)
-            return NewGroupMember(recipient: recipient, address: address, displayName: displayName)
         }
         searchBar.members = members
         updateSearchBarHeightConstraint()
@@ -260,13 +268,10 @@ public class NewGroupViewController2: OWSViewController {
     public class func showCreateErrorUI(error: Error) {
         AssertIsOnMainThread()
 
-        let showUpdateNetworkErrorUI = {
+        if error.isNetworkFailureOrTimeout {
             OWSActionSheets.showActionSheet(title: NSLocalizedString("NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK",
                                                                      comment: "Error indicating that a new group could not be created due to network connectivity problems."))
-        }
-
-        if error.isNetworkFailureOrTimeout {
-            return showUpdateNetworkErrorUI()
+            return
         }
 
         OWSActionSheets.showActionSheet(title: NSLocalizedString("NEW_GROUP_CREATION_FAILED",
@@ -301,20 +306,21 @@ extension NewGroupViewController2: RecipientPickerDelegate {
         let isCurrentMember = recipientSet.contains(recipient)
         let isBlocked = self.recipientPicker.contactsViewHelper.isSignalServiceAddressBlocked(address)
 
-        let addRecipientAndPopView = { [weak self] in
+        let addRecipientCompletion = { [weak self] in
             guard let self = self else {
                 return
             }
             self.addRecipient(recipient)
             navigationController.popToViewController(self, animated: true)
         }
+
         if isCurrentMember {
             removeRecipient(recipient)
         } else if isBlocked {
             BlockListUIUtils.showUnblockAddressActionSheet(address,
                                                            from: self) { isStillBlocked in
                                                             if !isStillBlocked {
-                                                                addRecipientAndPopView()
+                                                                addRecipientCompletion()
                                                             }
             }
         } else {
@@ -323,14 +329,14 @@ extension NewGroupViewController2: RecipientPickerDelegate {
             let didShowSNAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(address: address,
                                                                                        confirmationText: confirmationText) { didConfirmIdentity in
                                                                                         if didConfirmIdentity {
-                                                                                            addRecipientAndPopView()
+                                                                                            addRecipientCompletion()
                                                                                         }
             }
             if didShowSNAlert {
                 return
             }
 
-            addRecipientAndPopView()
+            addRecipientCompletion()
         }
     }
 

@@ -19,7 +19,7 @@ public protocol NewGroupSearchBarDelegate: NewGroupMemberCellDelegate {
 // MARK: -
 
 @objc
-public class NewGroupSearchBar: NSObject {
+public class NewGroupSearchBar: UIView {
 
     weak var delegate: NewGroupSearchBarDelegate?
 
@@ -38,12 +38,20 @@ public class NewGroupSearchBar: NSObject {
     }
 
     @objc
-    public required override init() {
+    public required init() {
         self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
 
-        super.init()
+        super.init(frame: .zero)
 
         configure()
+    }
+
+    @available(*, unavailable, message: "use other constructor instead.")
+    @objc
+    required init?(coder aDecoder: NSCoder) {
+        self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+
+        super.init(coder: aDecoder)
     }
 
     private func configure() {
@@ -65,6 +73,9 @@ public class NewGroupSearchBar: NSObject {
         collectionView.isUserInteractionEnabled = true
         collectionView.addGestureRecognizer(UITapGestureRecognizer(target: self,
                                                                    action: #selector(didTapCollectionView)))
+
+        addSubview(collectionView)
+        collectionView.autoPinEdgesToSuperviewEdges()
     }
 
     func contentHeight(forWidth width: CGFloat) -> CGFloat {
@@ -106,10 +117,6 @@ public class NewGroupSearchBar: NSObject {
         }
     }
 
-    public var view: UIView {
-        return collectionView
-    }
-
     public var textFieldAccessibilityIdentifier: String? {
         get {
             textField.accessibilityIdentifier
@@ -119,7 +126,7 @@ public class NewGroupSearchBar: NSObject {
         }
     }
 
-    func becomeFirstResponder() -> Bool {
+    public override func becomeFirstResponder() -> Bool {
         return textField.becomeFirstResponder()
     }
 
@@ -323,16 +330,10 @@ private class NewGroupMemberCell: UICollectionViewCell {
         super.init(coder: aDecoder)
     }
 
-    @available(*, unavailable, message:"Interface Builder is not supported.")
-    @objc
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-
     func configure(member: NewGroupMember) {
         self.member = member
 
-        textLabel.text = contactsManager.displayName(for: member.address)
+        textLabel.text = member.displayName
     }
 
     override func prepareForReuse() {
