@@ -222,9 +222,6 @@ public class FeatureFlags: NSObject {
     public static let sendRecipientUpdates = false
 
     @objc
-    public static let useZKGroups = groupsV2
-
-    @objc
     public static let notificationServiceExtension = build.includes(.dev)
 
     @objc

@@ -244,8 +244,10 @@ public class GroupsV2Protos {
             guard let profileKeyCiphertextData = memberProto.profileKey else {
                 throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
             }
+            let uuid = try groupV2Params.uuid(forUserId: userID)
             let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
             // NOTE: presentation is set when creating and updating groups, not
             //       when fetching group state.
             guard memberProto.hasJoinedAtVersion else {
@@ -253,7 +255,6 @@ public class GroupsV2Protos {
             }
             let joinedAtVersion = memberProto.joinedAtVersion
 
-            let uuid = try groupV2Params.uuid(forUserId: userID)
             let member = GroupV2SnapshotImpl.Member(userID: userID,
                                                     uuid: uuid,
                                                     role: role,

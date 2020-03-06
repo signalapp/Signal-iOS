@@ -277,7 +277,9 @@ extension OWSProfileManager {
     }
 
     private class func updateProfileOnServiceVersioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
-        return VersionedProfiles.updateProfilePromise(profileGivenName: attempt.update.profileGivenName, profileFamilyName: attempt.update.profileFamilyName, profileAvatarData: attempt.update.profileAvatarData)
+        return VersionedProfiles.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
+                                                      profileFamilyName: attempt.update.profileFamilyName,
+                                                      profileAvatarData: attempt.update.profileAvatarData)
             .map(on: .global()) { versionedUpdate in
                 attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
         }
@@ -345,8 +347,6 @@ extension OWSProfileManager {
 // MARK: -
 
 class PendingProfileUpdate: NSObject, NSCoding {
-    // This property is optional so that MTLModel can populate it after initialization.
-    // It should always be set in practice.
     let id: UUID
 
     // If nil, we are clearing the profile given name.

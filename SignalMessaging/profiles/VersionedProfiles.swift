@@ -45,6 +45,10 @@ public class VersionedProfiles: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private class var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
     // MARK: -
 
     public static let credentialStore = SDSKeyValueStore(collection: "VersionedProfiles.credentialStore")
@@ -91,12 +95,15 @@ public class VersionedProfiles: NSObject {
                                            profileAvatarData: Data?) -> Promise<VersionedProfileUpdate> {
 
         return DispatchQueue.global().async(.promise) {
+            guard let localUuid = self.tsAccountManager.localUuid else {
+                throw OWSAssertionError("Missing localUuid.")
+            }
             let profileKey: OWSAES256Key = self.profileManager.localProfileKey()
-            return profileKey
-        }.then(on: DispatchQueue.global()) { (profileKey: OWSAES256Key) -> Promise<TSNetworkManager.Response> in
+            return (localUuid, profileKey)
+        }.then(on: DispatchQueue.global()) { (localUuid: UUID, profileKey: OWSAES256Key) -> Promise<TSNetworkManager.Response> in
             let localProfileKey = try self.parseProfileKey(profileKey: profileKey)
-
-            let commitment = try localProfileKey.getCommitment()
+            let zkgUuid = try localUuid.asZKGUuid()
+            let commitment = try localProfileKey.getCommitment(uuid: zkgUuid)
             let commitmentData = commitment.serialize().asData
             let hasAvatar = profileAvatarData != nil
             var nameData: Data?
@@ -105,20 +112,22 @@ public class VersionedProfiles: NSObject {
                 nameComponents.givenName = profileGivenName
                 nameComponents.familyName = profileFamilyName
 
-                guard let encryptedPaddedProfileName = OWSProfileManager.shared().encrypt(profileNameComponents: nameComponents, profileKey: profileKey) else {
+                guard let encryptedPaddedProfileName = self.profileManager.encrypt(profileNameComponents: nameComponents,
+                                                                                   profileKey: profileKey) else {
                     throw OWSAssertionError("Could not encrypt profile name.")
                 }
                 nameData = encryptedPaddedProfileName
             }
 
-            let profileKeyVersion = try localProfileKey.getProfileKeyVersion()
+            let profileKeyVersion = try localProfileKey.getProfileKeyVersion(uuid: zkgUuid)
             let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
             let request = OWSRequestFactory.versionedProfileSetRequest(withName: nameData, hasAvatar: hasAvatar, version: profileKeyVersionString, commitment: commitmentData)
             return self.networkManager.makePromise(request: request)
         }.then(on: DispatchQueue.global()) { (_: URLSessionDataTask, responseObject: Any?) -> Promise<VersionedProfileUpdate> in
             if let profileAvatarData = profileAvatarData {
                 let profileKey: OWSAES256Key = self.profileManager.localProfileKey()
-                guard let encryptedProfileAvatarData = OWSProfileManager.shared().encrypt(profileData: profileAvatarData, profileKey: profileKey) else {
+                guard let encryptedProfileAvatarData = self.profileManager.encrypt(profileData: profileAvatarData,
+                                                                                   profileKey: profileKey) else {
                     throw OWSAssertionError("Could not encrypt profile avatar.")
                 }
                 return self.parseFormAndUpload(formResponseObject: responseObject,
@@ -153,6 +162,7 @@ public class VersionedProfiles: NSObject {
             let uuid: UUID = address.uuid else {
                 throw OWSAssertionError("Invalid address: \(address)")
         }
+        let zkgUuid = try uuid.asZKGUuid()
 
         var requestContext: ProfileKeyCredentialRequestContext?
         var profileKeyVersionArg: String?
@@ -163,7 +173,7 @@ public class VersionedProfiles: NSObject {
                 return
             }
             let profileKey: ProfileKey = try self.parseProfileKey(profileKey: profileKeyForAddress)
-            let profileKeyVersion = try profileKey.getProfileKeyVersion()
+            let profileKeyVersion = try profileKey.getProfileKeyVersion(uuid: zkgUuid)
             profileKeyVersionArg = try profileKeyVersion.asHexadecimalString()
 
             // We need to request a credential if we don't have one already.
