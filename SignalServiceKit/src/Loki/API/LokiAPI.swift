@@ -122,7 +122,7 @@ public final class LokiAPI : NSObject {
     
     public static func getDestinations(for hexEncodedPublicKey: String) -> Promise<[Destination]> {
         var result: Promise<[Destination]>!
-        storage.dbReadConnection.readWrite { transaction in
+        storage.dbReadWriteConnection.readWrite { transaction in
             result = getDestinations(for: hexEncodedPublicKey, in: transaction)
         }
         return result
