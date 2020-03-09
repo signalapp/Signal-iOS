@@ -988,9 +988,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isGroupMessage = messageSend.thread.isGroupThread;
     BOOL isPublicChatMessage = isGroupMessage && ((TSGroupThread *)messageSend.thread).isPublicChat;
     BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
-    BOOL isUnlinkDeviceMessage = [message isKindOfClass:LKUnlinkDeviceMessage.class];
-    // FIXME: Clean this up
-    if (isPublicChatMessage || isDeviceLinkMessage || isUnlinkDeviceMessage) {
+    if (isPublicChatMessage || isDeviceLinkMessage) {
         [self sendMessage:messageSend];
     } else {
         BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];

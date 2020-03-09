@@ -73,6 +73,9 @@ target 'Signal' do
   pod 'GCDWebServer', '~> 3.0', :inhibit_warnings => true
   pod 'FeedKit', '~> 8.1', :inhibit_warnings => true
   pod 'CryptoSwift', '~> 1.0', :inhibit_warnings => true
+  pod 'FirebaseCore', '~> 6.0', :inhibit_warnings => true # Used for internal testing
+  pod 'Fabric', '~> 1.10', :inhibit_warnings => true # Used for internal testing
+  pod 'Crashlytics', '~> 3.13', :inhibit_warnings => true # Used for internal testing
   pod 'NVActivityIndicatorView', '~> 4.7', :inhibit_warnings => true
 
   target 'SignalTests' do
