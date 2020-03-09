@@ -187,9 +187,23 @@ const CGFloat kIconViewLength = 24;
     return threadName;
 }
 
-- (BOOL)hasPendingMessageRequest
+- (BOOL)canEditSharedConversationSettings
 {
-    return self.threadViewModel.hasPendingMessageRequest;
+    if (self.threadViewModel.hasPendingMessageRequest) {
+        return NO;
+    }
+
+    return self.isLocalUserInConversation;
+}
+
+- (BOOL)isLocalUserInConversation
+{
+    if (!self.isGroupThread) {
+        return YES;
+    }
+
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    return groupThread.isLocalUserInGroup;
 }
 
 - (BOOL)isGroupThread
@@ -305,12 +319,8 @@ const CGFloat kIconViewLength = 24;
     contents.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
 
     BOOL isNoteToSelf = self.thread.isNoteToSelf;
-
-    BOOL isLocalUserInGroup = YES;
-    if (self.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        isLocalUserInGroup = groupThread.isLocalUserInGroup;
-    }
+    BOOL canEditSharedConversationSettings = self.canEditSharedConversationSettings;
+    BOOL isLocalUserInConversation = self.isLocalUserInConversation;
 
     __weak OWSConversationSettingsViewController *weakSelf = self;
 
@@ -496,7 +506,7 @@ const CGFloat kIconViewLength = 24;
                                                    icon:ThemeIconSettingsProfile
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController, @"share_profile")];
-                            cell.userInteractionEnabled = isLocalUserInGroup;
+                            cell.userInteractionEnabled = isLocalUserInConversation;
 
                             return cell;
                         }
@@ -505,7 +515,7 @@ const CGFloat kIconViewLength = 24;
                         }]];
     }
 
-    if (!self.hasPendingMessageRequest) {
+    if (canEditSharedConversationSettings) {
         [mainSection addItem:[OWSTableItem
                                  itemWithCustomCellBlock:^{
                                      UITableViewCell *cell = [OWSTableItem newCell];
@@ -555,8 +565,6 @@ const CGFloat kIconViewLength = 24;
                                      [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
                                      [subtitleLabel autoPinTrailingToSuperviewMargin];
                                      [subtitleLabel autoPinBottomToSuperviewMargin];
-
-                                     cell.userInteractionEnabled = isLocalUserInGroup;
 
                                      switchView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                          OWSConversationSettingsViewController, @"disappearing_messages_switch");
@@ -609,8 +617,6 @@ const CGFloat kIconViewLength = 24;
                                          [slider autoPinTrailingToSuperviewMargin];
                                          [slider autoPinBottomToSuperviewMargin];
 
-                                         cell.userInteractionEnabled = isLocalUserInGroup;
-
                                          slider.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                              OWSConversationSettingsViewController, @"disappearing_messages_slider");
                                          cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
@@ -653,7 +659,7 @@ const CGFloat kIconViewLength = 24;
     if (self.isGroupThread) {
         NSMutableArray<OWSTableItem *> *groupItems = [NSMutableArray new];
 
-        if (!self.hasPendingMessageRequest) {
+        if (canEditSharedConversationSettings) {
             [groupItems addObject:[OWSTableItem
                                       itemWithCustomCellBlock:^{
                                           UITableViewCell *cell = [weakSelf
@@ -663,7 +669,6 @@ const CGFloat kIconViewLength = 24;
                                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                           OWSConversationSettingsViewController,
                                                                           @"edit_group")];
-                                          cell.userInteractionEnabled = isLocalUserInGroup;
                                           return cell;
                                       }
                                       actionBlock:^{
@@ -671,37 +676,36 @@ const CGFloat kIconViewLength = 24;
                                       }]];
         }
 
-        [groupItems addObjectsFromArray:@[
-            [OWSTableItem
-                itemWithCustomCellBlock:^{
-                    UITableViewCell *cell =
-                        [weakSelf disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
-                                                             @"table cell label in conversation settings")
-                                                    icon:ThemeIconSettingsShowGroup
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                             OWSConversationSettingsViewController, @"group_members")];
-                    cell.userInteractionEnabled = isLocalUserInGroup;
-                    return cell;
-                }
-                actionBlock:^{
-                    [weakSelf showGroupMembersView];
-                }],
-            [OWSTableItem
-                itemWithCustomCellBlock:^{
-                    UITableViewCell *cell =
-                        [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
-                                                             @"table cell label in conversation settings")
-                                                    icon:ThemeIconSettingsLeaveGroup
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                             OWSConversationSettingsViewController, @"leave_group")];
-                    cell.userInteractionEnabled = isLocalUserInGroup;
-
-                    return cell;
-                }
-                actionBlock:^{
-                    [weakSelf didTapLeaveGroup];
-                }],
-        ]];
+        if (isLocalUserInConversation) {
+            [groupItems addObjectsFromArray:@[
+                [OWSTableItem
+                    itemWithCustomCellBlock:^{
+                        UITableViewCell *cell = [weakSelf
+                             disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
+                                                        @"table cell label in conversation settings")
+                                               icon:ThemeIconSettingsShowGroup
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                        OWSConversationSettingsViewController, @"group_members")];
+                        return cell;
+                    }
+                    actionBlock:^{
+                        [weakSelf showGroupMembersView];
+                    }],
+                [OWSTableItem
+                    itemWithCustomCellBlock:^{
+                        UITableViewCell *cell = [weakSelf
+                             disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
+                                                        @"table cell label in conversation settings")
+                                               icon:ThemeIconSettingsLeaveGroup
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                        OWSConversationSettingsViewController, @"leave_group")];
+                        return cell;
+                    }
+                    actionBlock:^{
+                        [weakSelf didTapLeaveGroup];
+                    }],
+            ]];
+        }
 
         [contents addSection:[OWSTableSection sectionWithTitle:NSLocalizedString(@"GROUP_MANAGEMENT_SECTION",
                                                                    @"Conversation settings table section title")
@@ -971,7 +975,7 @@ const CGFloat kIconViewLength = 24;
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
 
-    if (self.isGroupThread && !self.hasSavedGroupIcon && !self.hasPendingMessageRequest) {
+    if (self.isGroupThread && !self.hasSavedGroupIcon && self.canEditSharedConversationSettings) {
         UIImageView *cameraImageView = [UIImageView new];
         [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
         [threadInfoView addSubview:cameraImageView];
@@ -1093,7 +1097,7 @@ const CGFloat kIconViewLength = 24;
 
     [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
-    if (!self.hasPendingMessageRequest) {
+    if (self.canEditSharedConversationSettings) {
         [mainSectionHeader
             addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                          action:@selector(conversationNameTouched:)]];
@@ -1107,10 +1111,11 @@ const CGFloat kIconViewLength = 24;
 
 - (void)conversationNameTouched:(UIGestureRecognizer *)sender
 {
-    if (self.hasPendingMessageRequest) {
-        OWSFailDebug(@"failure: hasPendingMessageRequest");
+    if (!self.canEditSharedConversationSettings) {
+        OWSFailDebug(@"failure: !self.canEditSharedConversationSettings");
         return;
     }
+
     if (sender.state == UIGestureRecognizerStateRecognized) {
         if (self.isGroupThread) {
             CGPoint location = [sender locationInView:self.avatarView];
@@ -1211,10 +1216,11 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showUpdateGroupView:(UpdateGroupMode)mode
 {
-    if (self.hasPendingMessageRequest) {
-        OWSFailDebug(@"failure: hasPendingMessageRequest");
+    if (!self.canEditSharedConversationSettings) {
+        OWSFailDebug(@"failure: !self.canEditSharedConversationSettings");
         return;
     }
+
     OWSAssertDebug(self.conversationSettingsViewDelegate);
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
@@ -1299,7 +1305,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)disappearingMessagesSwitchValueDidChange:(UISwitch *)sender
 {
-    OWSAssertDebug(!self.hasPendingMessageRequest);
+    OWSAssertDebug(self.canEditSharedConversationSettings);
 
     UISwitch *disappearingMessagesSwitch = (UISwitch *)sender;
 
@@ -1355,7 +1361,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)toggleDisappearingMessages:(BOOL)flag
 {
-    OWSAssertDebug(!self.hasPendingMessageRequest);
+    OWSAssertDebug(self.canEditSharedConversationSettings);
 
     self.disappearingMessagesConfiguration = [self.disappearingMessagesConfiguration copyWithIsEnabled:flag];
 
@@ -1364,7 +1370,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)durationSliderDidChange:(UISlider *)slider
 {
-    OWSAssertDebug(!self.hasPendingMessageRequest);
+    OWSAssertDebug(self.canEditSharedConversationSettings);
 
     NSUInteger index = (NSUInteger)(slider.value + 0.5);
     if (!slider.isTracking) {
