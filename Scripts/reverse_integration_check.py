@@ -93,6 +93,7 @@ def main():
         '2.44.0.1', 
         '2.44.0.2',
         '2.44.1.1',
+        '3.4.0.8',
     ]
     tags_of_concern = [tag for tag in tags_of_concern if tag not in tags_to_ignore]
 
