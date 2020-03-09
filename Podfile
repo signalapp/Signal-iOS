@@ -127,7 +127,9 @@ def configure_warning_flags(installer)
                                                                   '-Werror=incompatible-pointer-types',
                                                                   '-Werror=protocol',
                                                                   '-Werror=incomplete-implementation',
-                                                                  '-Werror=objc-literal-conversion']
+                                                                  '-Werror=objc-literal-conversion',
+                                                                  '-Werror=objc-property-synthesis',
+                                                                  '-Werror=objc-protocol-property-synthesis']
       end
   end
 end
