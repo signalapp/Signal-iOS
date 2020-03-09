@@ -328,7 +328,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   AxolotlKit:
-    :commit: 97bc4ea1014c0cfac539e87444e3d0bb98a264ba
+    :commit: debc5cb31197bcdbbd8e5d7d03320105e6c169a6
     :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
     :commit: c0538ea830d4ecc0f4dfcaf3dc53c0003847df20
