@@ -171,31 +171,36 @@ public class ConversationMessageMapping: NSObject {
         Logger.debug("fetching set: \(unfetchedSet), nsRange: \(nsRange)")
         let newItems = try fetchInteractions(nsRange: nsRange, transaction: transaction)
 
-        switch direction {
-        case .before:
-            self.loadedIndexSet = loadedIndexSet.union(requestSet)
-            let items = (newItems + self.loadedInteractions)
-            let trimmedItems = items.prefix(maxInteractionLimit)
-            if (items.count != trimmedItems.count) {
-                let trimCount = items.count - trimmedItems.count
-                let trimmedSet = loadedIndexSet.suffix(trimCount)
-                loadedIndexSet.subtract(IndexSet(trimmedSet))
-                Logger.verbose("trimmed newest \(trimCount) items")
+        let isFetchContiguousWithAlreadyLoadedItems = requestSet.union(loadedIndexSet).isContiguous
+        if isFetchContiguousWithAlreadyLoadedItems, let minLoaded = loadedIndexSet.min() {
+            // If fetched items are just before the already loaded ones...
+            if unfetchedSet.max()! < minLoaded {
+                self.loadedIndexSet = loadedIndexSet.union(requestSet)
+                let items = (newItems + self.loadedInteractions)
+                let trimmedItems = items.prefix(maxInteractionLimit)
+                if items.count != trimmedItems.count {
+                    let trimCount = items.count - trimmedItems.count
+                    let trimmedSet = loadedIndexSet.suffix(trimCount)
+                    loadedIndexSet.subtract(IndexSet(trimmedSet))
+                    Logger.verbose("trimmed newest \(trimCount) items")
+                }
+                self.loadedInteractions = Array(trimmedItems)
+
+            // If fetched items are just after the already loaded ones...
+            } else {
+                self.loadedIndexSet = loadedIndexSet.union(requestSet)
+                let items = (self.loadedInteractions + newItems)
+                let trimmedItems = items.suffix(maxInteractionLimit)
+                if items.count != trimmedItems.count {
+                    let trimCount = items.count - trimmedItems.count
+                    let trimmedSet = loadedIndexSet.prefix(trimCount)
+                    loadedIndexSet.subtract(IndexSet(trimmedSet))
+                    Logger.verbose("trimmed oldest \(trimCount) items")
+                }
+                self.loadedInteractions = Array(trimmedItems)
             }
-            self.loadedInteractions = Array(trimmedItems)
-        case .after:
-            self.loadedIndexSet = loadedIndexSet.union(requestSet)
-            let items = (self.loadedInteractions + newItems)
-            let trimmedItems = items.suffix(maxInteractionLimit)
-            if (items.count != trimmedItems.count) {
-                let trimCount = items.count - trimmedItems.count
-                let trimmedSet = loadedIndexSet.prefix(trimCount)
-                loadedIndexSet.subtract(IndexSet(trimmedSet))
-                Logger.verbose("trimmed oldest \(trimCount) items")
-            }
-            self.loadedInteractions = Array(trimmedItems)
-        case .around, .newest:
-            // replace, rather than append, because the new results might not be contiguous
+        } else {
+            // replace, rather than append, because the fetched records are not contiguous
             // with the existing loadedIndexSet
             self.loadedIndexSet = requestSet
             self.loadedInteractions = newItems
@@ -380,5 +385,23 @@ public class ConversationScrollState: NSObject {
         self.referenceViewItem = referenceViewItem
         self.referenceFrame = referenceFrame
         self.contentOffset = contentOffset
+    }
+}
+
+extension IndexSet {
+    var isContiguous: Bool {
+        guard !self.isEmpty else {
+            return true
+        }
+        guard let min = self.min() else {
+            owsFailDebug("min was unexpectedly nil")
+            return true
+        }
+        guard let max = self.max() else {
+            owsFailDebug("min was unexpectedly nil")
+            return true
+        }
+
+        return self == IndexSet(min..<(max+1))
     }
 }

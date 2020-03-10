@@ -215,4 +215,30 @@ class ConversationMessageMappingTest: SignalBaseTest {
         XCTAssertEqual([], diff.updatedItemIds)
         XCTAssertEqual(Set(initiallyLoadedInteractions.map { $0.uniqueId }), diff.removedItemIds)
     }
+
+    func test_loadAroundEdge() throws {
+        let initialMessages: [TSIncomingMessage] = write { transaction in
+            // create more messages than the initial load window can fit
+            let createdMessages = self.messageFactory.create(count: UInt(self.mapping.initialLoadCount * 2), transaction: transaction)
+
+            // mark as read so that we initially load the bottom of the conversation
+            for message in createdMessages {
+                message.debugonly_markAsReadNow(transaction: transaction)
+            }
+
+            return createdMessages
+        }
+
+        for message in initialMessages {
+            self.mapping = ConversationMessageMapping(thread: thread)
+            try read { transaction in
+                try self.mapping.loadInitialMessagePage(focusMessageId: nil, transaction: transaction)
+                try self.mapping.loadMessagePage(aroundInteractionId: message.uniqueId, transaction: transaction)
+            }
+            guard (mapping.loadedInteractions.map { $0.uniqueId }.contains(message.uniqueId)) else {
+                XCTFail("message not loaded: \(message)")
+                return
+            }
+        }
+    }
 }
