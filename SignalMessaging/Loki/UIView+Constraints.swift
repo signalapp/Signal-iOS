@@ -1,10 +1,12 @@
 
+public protocol ConstraintUtilitiesEdge { }
+
 public extension UIView {
     
-    public enum HorizontalEdge { case left, leading, right, trailing }
-    public enum VerticalEdge { case top, bottom }
-    public enum Direction { case horizontal, vertical }
-    public enum Dimension { case width, height }
+    enum HorizontalEdge : ConstraintUtilitiesEdge { case left, leading, right, trailing }
+    enum VerticalEdge : ConstraintUtilitiesEdge { case top, bottom }
+    enum Direction { case horizontal, vertical }
+    enum Dimension { case width, height }
     
     private func anchor(from edge: HorizontalEdge) -> NSLayoutXAxisAnchor {
         switch edge {
@@ -23,7 +25,7 @@ public extension UIView {
     }
     
     @discardableResult
-    public func pin(_ constraineeEdge: HorizontalEdge, to constrainerEdge: HorizontalEdge, of view: UIView, withInset inset: CGFloat = 0) -> NSLayoutConstraint {
+    func pin(_ constraineeEdge: HorizontalEdge, to constrainerEdge: HorizontalEdge, of view: UIView, withInset inset: CGFloat = 0) -> NSLayoutConstraint {
         translatesAutoresizingMaskIntoConstraints = false
         let constraint = anchor(from: constraineeEdge).constraint(equalTo: view.anchor(from: constrainerEdge), constant: inset)
         constraint.isActive = true
@@ -31,19 +33,31 @@ public extension UIView {
     }
     
     @discardableResult
-    public func pin(_ constraineeEdge: VerticalEdge, to constrainerEdge: VerticalEdge, of view: UIView, withInset inset: CGFloat = 0) -> NSLayoutConstraint {
+    func pin(_ constraineeEdge: VerticalEdge, to constrainerEdge: VerticalEdge, of view: UIView, withInset inset: CGFloat = 0) -> NSLayoutConstraint {
         translatesAutoresizingMaskIntoConstraints = false
         let constraint = anchor(from: constraineeEdge).constraint(equalTo: view.anchor(from: constrainerEdge), constant: inset)
         constraint.isActive = true
         return constraint
     }
     
-    public func pin(to view: UIView) {
+    func pin(_ edges: [ConstraintUtilitiesEdge], to view: UIView) {
+        edges.forEach {
+            if let horizontalEdge = $0 as? HorizontalEdge {
+                pin(horizontalEdge, to: horizontalEdge, of: view)
+            } else if let verticalEdge = $0 as? VerticalEdge {
+                pin(verticalEdge, to: verticalEdge, of: view)
+            } else {
+                preconditionFailure() // Should never occur
+            }
+        }
+    }
+    
+    func pin(to view: UIView) {
         [ HorizontalEdge.leading, HorizontalEdge.trailing ].forEach { pin($0, to: $0, of: view) }
         [ VerticalEdge.top, VerticalEdge.bottom ].forEach { pin($0, to: $0, of: view) }
     }
     
-    public func pin(to view: UIView, withInset inset: CGFloat) {
+    func pin(to view: UIView, withInset inset: CGFloat) {
         pin(.leading, to: .leading, of: view, withInset: inset)
         pin(.top, to: .top, of: view, withInset: inset)
         view.pin(.trailing, to: .trailing, of: self, withInset: inset)
@@ -51,7 +65,7 @@ public extension UIView {
     }
     
     @discardableResult
-    public func center(_ direction: Direction, in view: UIView) -> NSLayoutConstraint {
+    func center(_ direction: Direction, in view: UIView) -> NSLayoutConstraint {
         translatesAutoresizingMaskIntoConstraints = false
         let constraint: NSLayoutConstraint = {
             switch direction {
@@ -63,13 +77,13 @@ public extension UIView {
         return constraint
     }
     
-    public func center(in view: UIView) {
+    func center(in view: UIView) {
         center(.horizontal, in: view)
         center(.vertical, in: view)
     }
     
     @discardableResult
-    public func set(_ dimension: Dimension, to size: CGFloat) -> NSLayoutConstraint {
+    func set(_ dimension: Dimension, to size: CGFloat) -> NSLayoutConstraint {
         translatesAutoresizingMaskIntoConstraints = false
         let constraint: NSLayoutConstraint = {
             switch dimension {
