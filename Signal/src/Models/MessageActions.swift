@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,8 +15,7 @@ protocol MessageActionsDelegate: class {
 
 struct MessageActionBuilder {
     static func reply(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        let image = Theme.iconImage(.messageActionReply)
-        return MessageAction(image: image,
+        return MessageAction(.reply,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"),
                              block: { [weak delegate] (_) in
@@ -26,8 +25,7 @@ struct MessageActionBuilder {
     }
 
     static func copyText(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        let image = Theme.iconImage(.messageActionCopy)
-        return MessageAction(image: image,
+        return MessageAction(.copy,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_text"),
                              block: { (_) in
@@ -36,8 +34,7 @@ struct MessageActionBuilder {
     }
 
     static func showDetails(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        let image = Theme.iconImage(.info)
-        return MessageAction(image: image,
+        return MessageAction(.info,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_details"),
                              block: { [weak delegate] (_) in
@@ -46,8 +43,7 @@ struct MessageActionBuilder {
     }
 
     static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        let image = Theme.iconImage(.messageActionDelete)
-        return MessageAction(image: image,
+        return MessageAction(.delete,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
                              block: { (_) in
@@ -56,8 +52,7 @@ struct MessageActionBuilder {
     }
 
     static func shareMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        let image = Theme.iconImage(.messageActionShare)
-        return MessageAction(image: image,
+        return MessageAction(.share,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_SHARE_MEDIA", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "share_media"),
                              block: { sender in
@@ -66,8 +61,7 @@ struct MessageActionBuilder {
     }
 
     static func forwardMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        let image = Theme.iconImage(.messageActionForward)
-        return MessageAction(image: image,
+        return MessageAction(.forward,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_FORWARD_MESSAGE", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "forward_message"),
                              block: { [weak delegate] (_) in

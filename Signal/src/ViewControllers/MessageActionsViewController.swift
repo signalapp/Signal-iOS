@@ -8,18 +8,45 @@ import Foundation
 public class MessageAction: NSObject {
     @objc
     let block: (_ sender: Any?) -> Void
-    let image: UIImage
     let accessibilityIdentifier: String
 
-    public init(image: UIImage,
+    public enum MessageActionType {
+        case reply
+        case copy
+        case info
+        case delete
+        case share
+        case forward
+    }
+
+    let actionType: MessageActionType
+
+    public init(_ actionType: MessageActionType,
                 accessibilityLabel: String,
                 accessibilityIdentifier: String,
                 block: @escaping (_ sender: Any?) -> Void) {
-        self.image = image
+        self.actionType = actionType
         self.accessibilityIdentifier = accessibilityIdentifier
         self.block = block
         super.init()
         self.accessibilityLabel = accessibilityLabel
+    }
+
+    var image: UIImage {
+        switch actionType {
+        case .reply:
+            return Theme.iconImage(.messageActionReply)
+        case .copy:
+            return Theme.iconImage(.messageActionCopy)
+        case .info:
+            return Theme.iconImage(.info)
+        case .delete:
+            return Theme.iconImage(.messageActionDelete)
+        case .share:
+            return Theme.iconImage(.messageActionShare)
+        case .forward:
+            return Theme.iconImage(.messageActionForward)
+        }
     }
 }
 
