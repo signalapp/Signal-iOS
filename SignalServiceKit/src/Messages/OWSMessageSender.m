@@ -355,7 +355,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (message.body.length > 0) {
         OWSAssertDebug([message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
     }
-
+    
+    [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.calculatingPoW object:[[NSNumber alloc] initWithUnsignedLongLong:message.timestamp]];
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableArray<NSString *> *allAttachmentIds = [NSMutableArray new];
 
