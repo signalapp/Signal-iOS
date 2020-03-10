@@ -142,7 +142,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
  */
 - (void)unarchiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(removeAllThreadInteractions(transaction:));
 
 
 #pragma mark Disappearing Messages

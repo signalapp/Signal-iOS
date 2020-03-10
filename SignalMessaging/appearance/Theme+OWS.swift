@@ -38,6 +38,7 @@ public enum ThemeIcon: UInt {
     case messageActionShare
     case messageActionDelete
     case messageActionSave
+    case messageActionSelect
 
     case compose
     case phone
@@ -47,6 +48,8 @@ public enum ThemeIcon: UInt {
     case info
     case groupMessage
 }
+
+// MARK: - Colors
 
 @objc
 public extension Theme {
@@ -58,6 +61,15 @@ public extension Theme {
         return Theme.isDarkThemeEnabled ? .ows_signalBlueDark : .ows_signalBlue
     }
 
+    class var selectedConversationCellColor: UIColor {
+        return Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha30 : UIColor.ows_accentBlue.withAlphaComponent(0.15)
+    }
+}
+
+// MARK: - Icons
+
+@objc
+public extension Theme {
     class func iconImage(_ icon: ThemeIcon) -> UIImage {
         let name = iconName(icon)
         guard let image = UIImage(named: name) else {
@@ -134,6 +146,8 @@ public extension Theme {
         case .messageActionSave:
             // There is no separate dark theme version of this icon, by design.
             return "save-24"
+        case .messageActionSelect:
+            return "select-24"
 
         case .compose:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"

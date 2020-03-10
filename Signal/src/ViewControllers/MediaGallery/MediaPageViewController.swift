@@ -436,7 +436,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
-        let deleteAction = ActionSheetAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""),
+        let deleteAction = ActionSheetAction(title: CommonStrings.deleteButton,
                                          style: .destructive) { _ in
                                             let deletedItem = currentViewController.galleryItem
                                             self.mediaGallery.delete(items: [deletedItem], initiatedBy: self, deleteFromDB: true)

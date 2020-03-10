@@ -9,6 +9,7 @@ protocol MessageActionsDelegate: class {
     func messageActionsShowDetailsForItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsReplyToItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsForwardItem(_ conversationViewItem: ConversationViewItem)
+    func messageActionsStartedSelect(initialItem conversationViewItem: ConversationViewItem)
 }
 
 // MARK: -
@@ -68,6 +69,15 @@ struct MessageActionBuilder {
                                 delegate?.messageActionsForwardItem(conversationViewItem)
         })
     }
+
+    static func selectMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        return MessageAction(.select,
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_SELECT_MESSAGE", comment: "Action sheet accessibility label"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "select_message"),
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsStartedSelect(initialItem: conversationViewItem)
+        })
+    }
 }
 
 @objc
@@ -93,9 +103,8 @@ class ConversationViewItemActions: NSObject {
             actions.append(replyAction)
         }
 
-        if conversationViewItem.canForwardMessage() {
-            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
-        }
+        let selectAction = MessageActionBuilder.selectMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(selectAction)
 
         return actions
     }
@@ -122,9 +131,8 @@ class ConversationViewItemActions: NSObject {
             actions.append(replyAction)
         }
 
-        if conversationViewItem.canForwardMessage() {
-            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
-        }
+        let selectAction = MessageActionBuilder.selectMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(selectAction)
 
         return actions
     }
@@ -144,9 +152,8 @@ class ConversationViewItemActions: NSObject {
             actions.append(replyAction)
         }
 
-        if conversationViewItem.canForwardMessage() {
-            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
-        }
+        let selectAction = MessageActionBuilder.selectMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(selectAction)
 
         return actions
     }
@@ -154,6 +161,7 @@ class ConversationViewItemActions: NSObject {
     @objc
     class func infoMessageActions(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> [MessageAction] {
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        return [deleteAction]
+        let selectAction = MessageActionBuilder.selectMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+        return [deleteAction, selectAction]
     }
 }

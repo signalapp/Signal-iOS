@@ -54,8 +54,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @class TSInteraction;
 @class TSThread;
 
-@protocol MessageActionsDelegate;
-
 @interface ConversationMediaAlbumItem : NSObject
 
 @property (nonatomic, readonly) TSAttachment *attachment;
@@ -175,7 +173,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 - (void)deleteAction;
 
 - (BOOL)canShareMedia;
-- (BOOL)canForwardMessage;
+@property (nonatomic, readonly) BOOL canForwardMessage;
 
 // For view items that correspond to interactions, this is the interaction's unique id.
 // For other view views (like the typing indicator), this is a unique, stable string.

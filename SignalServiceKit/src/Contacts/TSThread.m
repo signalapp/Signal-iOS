@@ -228,6 +228,12 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
         }
         [interaction anyRemoveWithTransaction:transaction];
     }
+
+    // As an optimization, we called `ignoreInteractionUpdatesForThreadUniqueId` so as not
+    // to re-save the thread after *each* interaction deletion. However, we still need to resave
+    // the thread just once, after all the interactions are deleted.
+    self.lastInteractionRowId = 0;
+    [self anyOverwritingUpdateWithTransaction:transaction];
 }
 
 - (BOOL)isNoteToSelf

@@ -17,6 +17,7 @@ public class MessageAction: NSObject {
         case delete
         case share
         case forward
+        case select
     }
 
     let actionType: MessageActionType
@@ -46,6 +47,8 @@ public class MessageAction: NSObject {
             return Theme.iconImage(.messageActionShare)
         case .forward:
             return Theme.iconImage(.messageActionForward)
+        case .select:
+            return Theme.iconImage(.messageActionSelect)
         }
     }
 }
@@ -310,16 +313,16 @@ extension MessageActionsViewController: MessageReactionPickerDelegate {
 }
 
 extension MessageActionsViewController: MessageActionsToolbarDelegate {
-    fileprivate func messageActionsToolbar(_ messageActionsToolbar: MessageActionsToolbar, executedAction: MessageAction) {
+    public func messageActionsToolbar(_ messageActionsToolbar: MessageActionsToolbar, executedAction: MessageAction) {
         delegate?.messageActionsViewControllerRequestedDismissal(self, withAction: executedAction)
     }
 }
 
-private protocol MessageActionsToolbarDelegate: class {
+public protocol MessageActionsToolbarDelegate: class {
     func messageActionsToolbar(_ messageActionsToolbar: MessageActionsToolbar, executedAction: MessageAction)
 }
 
-private class MessageActionsToolbar: UIToolbar {
+public class MessageActionsToolbar: UIToolbar {
 
     weak var actionDelegate: MessageActionsToolbarDelegate?
 
@@ -352,6 +355,7 @@ private class MessageActionsToolbar: UIToolbar {
     // MARK: -
 
     private var itemToAction = [UIBarButtonItem: MessageAction]()
+    private var actionToItem = [MessageAction: UIBarButtonItem]()
     private func buildItems() {
         var newItems = [UIBarButtonItem]()
 
@@ -366,6 +370,7 @@ private class MessageActionsToolbar: UIToolbar {
             actionItem.accessibilityLabel = action.accessibilityLabel
             newItems.append(actionItem)
             itemToAction[actionItem] = action
+            actionToItem[action] = actionItem
 
             if action != actions.last {
                 newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
@@ -379,6 +384,14 @@ private class MessageActionsToolbar: UIToolbar {
         }
 
         items = newItems
+    }
+
+    public func buttonItem(for actionType: MessageAction.MessageActionType) -> UIBarButtonItem? {
+        guard let action = (actions.first { $0.actionType == actionType }) else {
+            return nil
+        }
+        assert(actionToItem[action] != nil)
+        return actionToItem[action]
     }
 
     @objc func didTapItem(_ item: UIBarButtonItem) {

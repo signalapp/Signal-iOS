@@ -44,6 +44,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)conversationCell:(ConversationViewCell *)cell didTapReactions:(id<ConversationViewItem>)viewItem;
 - (BOOL)conversationCellHasPendingMessageRequest:(ConversationViewCell *)cell;
 
+#pragma mark - Selection
+
+@property (nonatomic, readonly) BOOL isShowingSelectionUI;
+- (BOOL)isViewItemSelected:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didSelectViewItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didDeselectViewItem:(id<ConversationViewItem>)viewItem;
+
 #pragma mark - System Cell
 
 - (void)tappedNonBlockingIdentityChangeForAddress:(nullable SignalServiceAddress *)address;
@@ -102,5 +109,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)cellSize;
 
 @end
+
+@class MessageSelectionView;
+
+@protocol SelectableConversationCell <NSObject>
+
+@property (nonatomic, readonly) MessageSelectionView *selectionView;
+
+@end
+
 
 NS_ASSUME_NONNULL_END

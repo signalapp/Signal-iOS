@@ -412,11 +412,6 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return
     }
 
-    func forwardMessageAction(delegate: MessageActionsDelegate) {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
     func deleteAction() {
         owsFailDebug("unexpected invocation")
         return
@@ -427,7 +422,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return false
     }
 
-    func canForwardMessage() -> Bool {
+    var canForwardMessage: Bool {
         owsFailDebug("unexpected invocation")
         return false
     }

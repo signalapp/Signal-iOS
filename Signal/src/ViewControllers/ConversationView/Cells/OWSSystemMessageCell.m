@@ -46,15 +46,17 @@ typedef void (^SystemMessageActionBlock)(void);
 
 #pragma mark -
 
-@interface OWSSystemMessageCell ()
+@interface OWSSystemMessageCell () <UIGestureRecognizerDelegate>
 
 @property (nonatomic) UIImageView *iconView;
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UIButton *button;
-@property (nonatomic) UIStackView *vStackView;
+@property (nonatomic) UIStackView *contentStackView;
 @property (nonatomic) UIView *cellBackgroundView;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
 @property (nonatomic, nullable) SystemMessageAction *action;
+@property (nonatomic) MessageSelectionView *selectionView;
+@property (nonatomic, readonly) UITapGestureRecognizer *contentViewTapGestureRecognizer;
 
 @end
 
@@ -85,18 +87,16 @@ typedef void (^SystemMessageActionBlock)(void);
     [self.iconView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
     [self.iconView setContentHuggingHigh];
 
+    self.selectionView = [MessageSelectionView new];
+    _contentViewTapGestureRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleContentViewTapGesture:)];
+    self.contentViewTapGestureRecognizer.delegate = self;
+    [self.contentView addGestureRecognizer:self.contentViewTapGestureRecognizer];
+
     self.titleLabel = [UILabel new];
     self.titleLabel.numberOfLines = 0;
     self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
-
-    UIStackView *contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.iconView,
-        self.titleLabel,
-    ]];
-    contentStackView.axis = UILayoutConstraintAxisVertical;
-    contentStackView.spacing = self.iconVSpacing;
-    contentStackView.alignment = UIStackViewAlignmentCenter;
 
     self.button = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.button setTitleColor:UIColor.ows_accentBlueColor forState:UIControlStateNormal];
@@ -105,24 +105,44 @@ typedef void (^SystemMessageActionBlock)(void);
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.button autoSetDimension:ALDimensionHeight toSize:self.buttonHeight];
 
-    self.vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        contentStackView,
+    UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.iconView,
+        [UIView spacerWithHeight:self.iconVSpacing],
+        self.titleLabel,
+        [UIView spacerWithHeight:self.buttonVSpacing],
         self.button,
     ]];
-    self.vStackView.axis = UILayoutConstraintAxisVertical;
-    self.vStackView.spacing = self.buttonVSpacing;
-    self.vStackView.alignment = UIStackViewAlignmentCenter;
-    self.vStackView.layoutMarginsRelativeArrangement = YES;
+    vStackView.axis = UILayoutConstraintAxisVertical;
+    vStackView.alignment = UIStackViewAlignmentCenter;
+
+    UIStackView *selectionViewWrapper =
+        [[UIStackView alloc] initWithArrangedSubviews:@[ self.selectionView, [UIView hStretchingSpacer] ]];
+    UIView *trailingCenteredPadding = [UIView hStretchingSpacer];
+    UIStackView *contentStackView =
+        [[UIStackView alloc] initWithArrangedSubviews:@[ selectionViewWrapper, vStackView, trailingCenteredPadding ]];
+
+    // center the vstack with padding views.
+    // It's tricky because we don't want the vStack to move when revealing the
+    // selectionView.
+    [trailingCenteredPadding autoMatchDimension:ALDimensionWidth
+                                    toDimension:ALDimensionWidth
+                                         ofView:selectionViewWrapper];
+
+    contentStackView.axis = UILayoutConstraintAxisHorizontal;
+    contentStackView.spacing = ConversationStyle.messageStackSpacing;
+    contentStackView.layoutMarginsRelativeArrangement = YES;
+    self.contentStackView = contentStackView;
 
     self.cellBackgroundView = [UIView new];
     self.cellBackgroundView.layer.cornerRadius = 5.f;
     [self.contentView addSubview:self.cellBackgroundView];
 
-    [self.contentView addSubview:self.vStackView];
-    [self.vStackView autoPinEdgesToSuperviewEdges];
+    [self.contentView addSubview:contentStackView];
+    [contentStackView autoPinEdgesToSuperviewEdges];
 
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
+    longPress.delegate = self;
     [self addGestureRecognizer:longPress];
 }
 
@@ -173,6 +193,8 @@ typedef void (^SystemMessageActionBlock)(void);
         self.iconView.hidden = YES;
     }
 
+    self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
+
     self.titleLabel.textColor = [self textColor];
     [self applyTitleForInteraction:interaction label:self.titleLabel];
     CGSize titleSize = [self titleSize];
@@ -191,7 +213,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
 
-    self.vStackView.layoutMargins = UIEdgeInsetsMake(self.topVMargin,
+    self.contentStackView.layoutMargins = UIEdgeInsetsMake(self.topVMargin,
         self.conversationStyle.fullWidthGutterLeading,
         self.bottomVMargin,
         self.conversationStyle.fullWidthGutterLeading);
@@ -200,14 +222,63 @@ typedef void (^SystemMessageActionBlock)(void);
         [self.titleLabel autoSetDimension:ALDimensionWidth toSize:titleSize.width],
         [self.button autoSetDimension:ALDimensionWidth toSize:buttonSize.width + self.buttonHPadding * 2.f],
 
-        [self.cellBackgroundView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.vStackView],
-        [self.cellBackgroundView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.vStackView],
+        [self.cellBackgroundView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.contentStackView],
+        [self.cellBackgroundView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.contentStackView],
         // Text in vStackView might flow right up to the edges, so only use half the gutter.
         [self.cellBackgroundView autoPinEdgeToSuperviewEdge:ALEdgeLeading
                                                   withInset:self.conversationStyle.fullWidthGutterLeading * 0.5f],
         [self.cellBackgroundView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
                                                   withInset:self.conversationStyle.fullWidthGutterTrailing * 0.5f],
     ];
+}
+
+- (void)setIsCellVisible:(BOOL)isCellVisible
+{
+    BOOL didChange = self.isCellVisible != isCellVisible;
+
+    [super setIsCellVisible:isCellVisible];
+
+    if (!didChange) {
+        return;
+    }
+
+    if (isCellVisible) {
+        self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
+    }
+}
+
+- (void)setSelected:(BOOL)selected
+{
+    [super setSelected:selected];
+
+    // cellBackgroundView is helpful to focus on the interaction while message actions are
+    // presented, but we don't want it to obscure the "selected" background tint.
+    self.cellBackgroundView.hidden = selected;
+
+    self.selectionView.isSelected = selected;
+}
+
+- (void)handleContentViewTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.delegate);
+    if (self.delegate.isShowingSelectionUI) {
+        if (self.isSelected) {
+            [self.delegate conversationCell:self didDeselectViewItem:self.viewItem];
+        } else {
+            [self.delegate conversationCell:self didSelectViewItem:self.viewItem];
+        }
+    }
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    if (self.delegate.isShowingSelectionUI) {
+        return self.contentViewTapGestureRecognizer == gestureRecognizer;
+    } else {
+        return YES;
+    }
 }
 
 - (UIColor *)textColor
@@ -358,7 +429,7 @@ typedef void (^SystemMessageActionBlock)(void);
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.viewItem);
 
-    CGFloat maxTitleWidth = (CGFloat)floor(self.conversationStyle.fullWidthContentWidth);
+    CGFloat maxTitleWidth = (CGFloat)floor(self.conversationStyle.selectableCenteredContentWidth);
     return [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 }
 
@@ -590,7 +661,16 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (void)buttonWasPressed:(id)sender
 {
-    if (!self.action.block) {
+    if (self.delegate.isShowingSelectionUI) {
+        // While in select mode, any actions should be superseded by the tap gesture.
+        // TODO - this is kind of a hack. A better approach might be to disable the button
+        // when delegate.isShowingSelectionUI changes, but that requires some additional plumbing.
+        if (self.isSelected) {
+            [self.delegate conversationCell:self didDeselectViewItem:self.viewItem];
+        } else {
+            [self.delegate conversationCell:self didSelectViewItem:self.viewItem];
+        }
+    } else if (!self.action.block) {
         OWSFailDebug(@"Missing action");
     } else {
         self.action.block();
@@ -610,6 +690,8 @@ typedef void (^SystemMessageActionBlock)(void);
     [super prepareForReuse];
 
     self.action = nil;
+    self.selectionView.alpha = 1.0;
+    self.selected = NO;
 }
 
 @end

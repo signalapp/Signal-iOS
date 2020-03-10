@@ -50,6 +50,10 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return true
     }
 
+    public func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        ConversationColorName.indigo.rawValue
+    }
+
     public func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
         // If this method ends up being used by the tests, we should provide a better implementation.
         assertionFailure("TODO")

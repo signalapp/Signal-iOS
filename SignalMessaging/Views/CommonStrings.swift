@@ -28,6 +28,9 @@ import Foundation
     static public let nextButton = NSLocalizedString("BUTTON_NEXT", comment: "Label for the 'next' button.")
 
     @objc
+    static public let deleteButton = NSLocalizedString("TXT_DELETE_TITLE", comment: "Label for the delete button in an alert or action sheet.")
+
+    @objc
     static public let retryButton = NSLocalizedString("RETRY_BUTTON_TEXT", comment: "Generic text for button that retries whatever the last action was.")
 
     @objc
