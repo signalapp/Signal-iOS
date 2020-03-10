@@ -133,15 +133,18 @@ NS_ASSUME_NONNULL_BEGIN
     // set of cirumstances where we apply it.
     //
     // During normal scrolling, contentOffset changes are small.
-    if (heightDelta < 1000) {
+    if (fabs(heightDelta) < 1000) {
         // If this is only a small change, it probably does not corresond to jumping across
         // a newly loaded page.
         return NO;
     }
 
-    if (proposedContentOffset.y > 0) {
-        // The top content offset is actually less than 0 due to contentInset/safeArea
-        // If the new contentOffset is > 0, this doesn't reflect an attempt to scroll to top.
+    // The top content offset is actually less than 0 due to contentInset/safeArea
+    // If the new contentOffset is > 0, this doesn't reflect an attempt to scroll to top.
+    BOOL isNearTop = proposedContentOffset.y < 0;
+    BOOL isNearBottom = self.contentSize.height - proposedContentOffset.y < self.bounds.size.height;
+    if (!(isNearTop || isNearBottom)) {
+        // If we're not near the top nor the bottom, then we're not overscrolled and the fix need not apply.
         return NO;
     }
 
