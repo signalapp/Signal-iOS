@@ -995,11 +995,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
         BOOL isSessionRequestMessage = [message isKindOfClass:LKSessionRequestMessage.class];
         [[LKAPI getDestinationsFor:contactID]
-        .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
+        .thenOn(OWSDispatch.sendingQueue, ^(NSSet<LKDestination *> *destinations) {
             // Get master destination
             LKDestination *masterDestination = [destinations filtered:^BOOL(LKDestination *destination) {
                 return [destination.kind isEqual:@"master"];
-            }].firstObject;
+            }].allObjects.firstObject;
             // Send to master destination
             if (masterDestination != nil) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:masterDestination.hexEncodedPublicKey];
@@ -1012,7 +1012,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }
             }
             // Get slave destinations
-            NSArray *slaveDestinations = [destinations filtered:^BOOL(LKDestination *destination) {
+            NSSet *slaveDestinations = [destinations filtered:^BOOL(LKDestination *destination) {
                 return [destination.kind isEqual:@"slave"];
             }];
             // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)

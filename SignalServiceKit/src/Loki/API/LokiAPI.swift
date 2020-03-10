@@ -120,26 +120,27 @@ public final class LokiAPI : NSObject {
         }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
-    public static func getDestinations(for hexEncodedPublicKey: String) -> Promise<[Destination]> {
-        var result: Promise<[Destination]>!
+    public static func getDestinations(for hexEncodedPublicKey: String) -> Promise<Set<Destination>> {
+        var result: Promise<Set<Destination>>!
         storage.dbReadWriteConnection.readWrite { transaction in
             result = getDestinations(for: hexEncodedPublicKey, in: transaction)
         }
         return result
     }
     
-    public static func getDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Promise<[Destination]> {
+    public static func getDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Promise<Set<Destination>> {
         // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
-        let (promise, seal) = Promise<[Destination]>.pending()
+        let (promise, seal) = Promise<Set<Destination>>.pending()
         func getDestinations(in transaction: YapDatabaseReadTransaction? = nil) {
             func getDestinationsInternal(in transaction: YapDatabaseReadTransaction) {
-                var destinations: [Destination] = []
-                let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-                let masterDestination = Destination(hexEncodedPublicKey: masterHexEncodedPublicKey, kind: .master)
-                destinations.append(masterDestination)
-                let deviceLinks = storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
-                let slaveDestinations = deviceLinks.map { Destination(hexEncodedPublicKey: $0.slave.hexEncodedPublicKey, kind: .slave) }
-                destinations.append(contentsOf: slaveDestinations)
+                let query = YapDatabaseQuery(string: "WHERE \(DeviceLinkIndex.slaveHexEncodedPublicKey) = ? OR \(DeviceLinkIndex.masterHexEncodedPublicKey) = ?", parameters: [ hexEncodedPublicKey, hexEncodedPublicKey ])
+                let deviceLinks = Set(DeviceLinkIndex.getDeviceLinks(for: query, in: transaction))
+                var destinations = Set(deviceLinks.flatMap {
+                    return [ Destination(hexEncodedPublicKey: $0.master.hexEncodedPublicKey, kind: .master), Destination(hexEncodedPublicKey: $0.slave.hexEncodedPublicKey, kind: .slave) ]
+                })
+                if destinations.isEmpty {
+                    destinations.insert(Destination(hexEncodedPublicKey: hexEncodedPublicKey, kind: .master))
+                }
                 seal.fulfill(destinations)
             }
             if let transaction = transaction, transaction.connection.pendingTransactionCount != 0 {
