@@ -29,8 +29,14 @@ public extension OWSPrimaryStorage {
     }
     
     public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
-        let query = YapDatabaseQuery(string: "WHERE \(DeviceLinkIndex.masterHexEncodedPublicKey) = ?", parameters: [ masterHexEncodedPublicKey ])
-        return Set(DeviceLinkIndex.getDeviceLinks(for: query, in: transaction))
+        let collection = getDeviceLinkCollection(for: masterHexEncodedPublicKey)
+        guard Set(transaction.allKeys(inCollection: collection)).contains(masterHexEncodedPublicKey) else { return [] } // Fixes a crash that used to occur on Josh's device
+        var result: Set<DeviceLink> = []
+        transaction.enumerateRows(inCollection: collection) { _, object, _, _ in
+            guard let deviceLink = object as? DeviceLink else { return }
+            result.insert(deviceLink)
+        }
+        return result
     }
     
     public func getDeviceLink(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> DeviceLink? {
