@@ -200,49 +200,9 @@ public class MessageFetcherJob: NSObject {
 
     private func fetchUndeliveredMessages() -> Promise<Set<Promise<[SSKProtoEnvelope]>>> {
         return LokiAPI.getMessages()
-        // Loki: Original code
-        // ========
-//        let request = OWSRequestFactory.getMessagesRequest()
-//        self.networkManager.makeRequest(
-//            request,
-//            success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
-//                guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
-//                    Logger.error("response object had unexpected content")
-//                    return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-//                }
-//
-//                resolver.fulfill((envelopes: envelopes, more: more))
-//            },
-//            failure: { (_: URLSessionDataTask?, error: Error?) in
-//                guard let error = error else {
-//                    Logger.error("error was surpringly nil. sheesh rough day.")
-//                    return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-//                }
-//
-//                resolver.reject(error)
-//        })
-        // ========
     }
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
-        let request: TSRequest
-        if let serverGuid = envelope.serverGuid, serverGuid.count > 0 {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
-        } else if let source = envelope.source, source.count > 0, envelope.timestamp > 0 {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: source, timestamp: envelope.timestamp)
-        } else if envelope.type == .unidentifiedSender, envelope.timestamp > 0 {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: envelope.source!, timestamp: envelope.timestamp)
-        } else {
-            owsFailDebug("Cannot ACK message which has neither source, nor server GUID and timestamp.")
-            return
-        }
-
-        self.networkManager.makeRequest(request,
-                                        success: { (_: URLSessionDataTask?, _: Any?) -> Void in
-                                            Logger.debug("acknowledged delivery for message at timestamp: \(envelope.timestamp)")
-        },
-                                        failure: { (_: URLSessionDataTask?, error: Error?) in
-                                            Logger.debug("acknowledging delivery for message at timestamp: \(envelope.timestamp) failed with error: \(String(describing: error))")
-        })
+        // Do nothing
     }
 }
