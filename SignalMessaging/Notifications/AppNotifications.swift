@@ -358,7 +358,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         // While batch processing, some of the necessary changes have not been commited.
-        let rawMessageText = incomingMessage.previewText(with: transaction)
+        let rawMessageText = incomingMessage.previewText(transaction: transaction)
 
         let messageText = rawMessageText.filterStringForDisplay()
 
@@ -582,7 +582,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .noNameNoPreview, .nameNoPreview:
             notificationBody = NotificationStrings.incomingMessageBody
         case .namePreview:
-            notificationBody = infoOrErrorMessage.previewText(with: transaction)
+            notificationBody = infoOrErrorMessage.previewText(transaction: transaction)
         }
 
         let threadId = thread.uniqueId
@@ -602,7 +602,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(for errorMessage: ThreadlessErrorMessage, transaction: SDSAnyWriteTransaction) {
-        let notificationBody = errorMessage.previewText(with: transaction)
+        let notificationBody = errorMessage.previewText(transaction: transaction)
 
         transaction.addAsyncCompletion {
             let sound = self.checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
