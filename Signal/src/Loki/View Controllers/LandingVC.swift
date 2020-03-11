@@ -156,37 +156,14 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         databaseConnection.setObject(keyPair, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
         TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair.hexEncodedPublicKey
         TSAccountManager.sharedInstance().didRegister()
-        setUserInteractionEnabled(false)
-        let _ = LokiFileServerAPI.getDeviceLinks(associatedWith: hexEncodedPublicKey).done(on: DispatchQueue.main) { [weak self] deviceLinks in
-            guard let self = self else { return }
-            defer { self.setUserInteractionEnabled(true) }
-            guard deviceLinks.count < 2 else {
-                let alert = UIAlertController(title: "Multi Device Limit Reached", message: "It's currently not allowed to link more than one device.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", accessibilityIdentifier: nil, style: .default, handler: nil))
-                return self.present(alert, animated: true, completion: nil)
-            }
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            appDelegate.startLongPollerIfNeeded()
-            let deviceLinkingModal = DeviceLinkingModal(mode: .slave, delegate: self)
-            deviceLinkingModal.modalPresentationStyle = .overFullScreen
-            deviceLinkingModal.modalTransitionStyle = .crossDissolve
-            self.present(deviceLinkingModal, animated: true, completion: nil)
-            let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: hexEncodedPublicKey)
-            ThreadUtil.enqueue(linkingRequestMessage)
-        }.catch(on: DispatchQueue.main) { [weak self] _ in
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            appDelegate.stopLongPollerIfNeeded()
-            DispatchQueue.main.async {
-                // FIXME: For some reason resetForRegistration() complains about not being on the main queue
-                // without this (even though the catch closure should be executed on the main queue)
-                TSAccountManager.sharedInstance().resetForReregistration()
-            }
-            guard let self = self else { return }
-            let alert = UIAlertController(title: NSLocalizedString("Couldn't Link Device", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", accessibilityIdentifier: nil, style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-            self.setUserInteractionEnabled(true)
-        }
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.startLongPollerIfNeeded()
+        let deviceLinkingModal = DeviceLinkingModal(mode: .slave, delegate: self)
+        deviceLinkingModal.modalPresentationStyle = .overFullScreen
+        deviceLinkingModal.modalTransitionStyle = .crossDissolve
+        self.present(deviceLinkingModal, animated: true, completion: nil)
+        let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: hexEncodedPublicKey)
+        ThreadUtil.enqueue(linkingRequestMessage)
     }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {

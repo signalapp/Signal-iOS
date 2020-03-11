@@ -167,6 +167,7 @@ public final class LokiAPI : NSObject {
                     lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
                     getDestinations()
                 } else {
+                    print("[Loki] Failed to get device links due to error: \(error).")
                     seal.reject(error)
                 }
             }

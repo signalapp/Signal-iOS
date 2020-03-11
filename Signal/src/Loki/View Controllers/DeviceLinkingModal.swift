@@ -165,9 +165,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         let linkingAuthorizationMessage = DeviceLinkingUtilities.getLinkingAuthorizationMessage(for: deviceLink)
         ThreadUtil.enqueue(linkingAuthorizationMessage)
         SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
-            SSKEnvironment.shared.syncManager.syncAllContacts()
-            SSKEnvironment.shared.syncManager.syncAllGroups()
-            SSKEnvironment.shared.syncManager.syncAllOpenGroups()
+            let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
+            let _ = SSKEnvironment.shared.syncManager.syncAllGroups()
+            let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
             let thread = TSContactThread.getOrCreateThread(contactId: deviceLink.slave.hexEncodedPublicKey)
             thread.friendRequestStatus = .friends
             thread.save()
