@@ -140,8 +140,9 @@ final class LinkDeviceVC : UIViewController, UIPageViewControllerDataSource, UIP
     }
     
     fileprivate func requestDeviceLink(with hexEncodedPublicKey: String) {
-        delegate?.requestDeviceLink(with: hexEncodedPublicKey)
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true) {
+            self.delegate?.requestDeviceLink(with: hexEncodedPublicKey)
+        }
     }
 }
 
