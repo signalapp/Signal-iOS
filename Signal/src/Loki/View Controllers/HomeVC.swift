@@ -252,7 +252,12 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let profilePictureSize = Values.verySmallProfilePictureSize
         let profilePictureView = ProfilePictureView()
         profilePictureView.size = profilePictureSize
-        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
+        let userHexEncodedPublicKey: String
+        if let masterHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] {
+            userHexEncodedPublicKey = masterHexEncodedPublicKey
+        } else {
+            userHexEncodedPublicKey = getUserHexEncodedPublicKey()
+        }
         profilePictureView.hexEncodedPublicKey = userHexEncodedPublicKey
         profilePictureView.update()
         profilePictureView.set(.width, to: profilePictureSize)
