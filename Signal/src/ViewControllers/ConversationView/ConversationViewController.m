@@ -4966,6 +4966,19 @@ typedef enum : NSUInteger {
 
     self.scrollContinuity = ([self isScrolledToBottom] ? kScrollContinuityBottom : kScrollContinuityTop);
 
+    BOOL isSusceptibleToCrashAfterDeletingLastItem;
+    if (@available(iOS 12, *)) {
+        isSusceptibleToCrashAfterDeletingLastItem = NO;
+    } else {
+        isSusceptibleToCrashAfterDeletingLastItem = YES;
+    }
+
+    NSNumber *_Nullable interactionCount;
+    if (isSusceptibleToCrashAfterDeletingLastItem) {
+        interactionCount = @([self.thread numberOfInteractionsWithTransaction:transaction]);
+    }
+
+    __block BOOL shouldInvalidateLayout = NO;
     void (^batchUpdates)(void) = ^{
         OWSAssertIsOnMainThread();
 
@@ -4979,6 +4992,14 @@ typedef enum : NSUInteger {
                     [self.collectionView deleteItemsAtIndexPaths:@[
                         [NSIndexPath indexPathForRow:(NSInteger)updateItem.oldIndex inSection:section]
                     ]];
+
+                    if (isSusceptibleToCrashAfterDeletingLastItem) {
+                        OWSAssertDebug(interactionCount != nil);
+                        if (interactionCount.unsignedLongValue == 0) {
+                            shouldInvalidateLayout = YES;
+                        }
+                    }
+
                     break;
                 }
                 case ConversationUpdateItemType_Insert: {
@@ -5008,6 +5029,11 @@ typedef enum : NSUInteger {
                     break;
                 }
             }
+        }
+
+        if (shouldInvalidateLayout) {
+            OWSLogDebug(@"invalidating layout");
+            [self.layout invalidateLayout];
         }
     };
 

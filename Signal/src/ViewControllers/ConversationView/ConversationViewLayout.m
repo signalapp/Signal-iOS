@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat y = 0;
 
     if (layoutItems.count == 0) {
-        self.footerLayoutAttributes = nil;
+        self.headerLayoutAttributes = nil;
     } else {
         NSIndexPath *headerIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes
