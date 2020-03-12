@@ -1427,9 +1427,6 @@
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
 
-/* Error indicating that a group could not be left. */
-"GROUPS_LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
-
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
 
@@ -1597,6 +1594,9 @@
 
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Leave Group";
+
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid. Please make sure you are scanning the QR code that is displayed on the device you want to link.";
