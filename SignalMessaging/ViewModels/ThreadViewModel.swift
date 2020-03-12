@@ -33,9 +33,15 @@ public class ThreadViewModel: NSObject {
         self.name = Environment.shared.contactsManager.displayName(for: thread, transaction: transaction)
 
         self.isMuted = thread.isMuted
-        self.lastMessageText = thread.lastMessageText(transaction: transaction)
         let lastInteraction = thread.lastInteractionForInbox(transaction: transaction)
         self.lastMessageForInbox = lastInteraction
+
+        if let previewable = lastInteraction as? OWSPreviewText {
+            self.lastMessageText = previewable.previewText(transaction: transaction)
+        } else {
+            self.lastMessageText = ""
+        }
+
         self.lastMessageDate = lastInteraction?.receivedAtDate()
 
         if let contactThread = thread as? TSContactThread {

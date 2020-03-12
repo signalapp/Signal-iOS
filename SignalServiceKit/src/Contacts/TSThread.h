@@ -109,15 +109,6 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 
 - (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
-/**
- *  Returns the string that will be displayed typically in a conversations view as a preview of the last message
- *received in this thread.
- *
- *  @return Thread preview string.
- */
-- (NSString *)lastMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(lastMessageText(transaction:));
-
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(lastInteractionForInbox(transaction:));
 

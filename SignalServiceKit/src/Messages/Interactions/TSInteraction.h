@@ -27,7 +27,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 @protocol OWSPreviewText <NSObject>
 
-- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(previewText(transaction:));
 
 @end
 

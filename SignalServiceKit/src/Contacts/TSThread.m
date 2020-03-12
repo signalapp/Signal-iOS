@@ -396,17 +396,6 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
         mostRecentInteractionForInboxWithTransaction:transaction];
 }
 
-- (NSString *)lastMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    TSInteraction *interaction = [self lastInteractionForInboxWithTransaction:transaction];
-    if ([interaction conformsToProtocol:@protocol(OWSPreviewText)]) {
-        id<OWSPreviewText> previewable = (id<OWSPreviewText>)interaction;
-        return [previewable previewTextWithTransaction:transaction].filterStringForDisplay;
-    } else {
-        return @"";
-    }
-}
-
 // Returns YES IFF the interaction should show up in the inbox as the last message.
 + (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction
 {
