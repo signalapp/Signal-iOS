@@ -234,6 +234,9 @@ extension StorageServiceProtoContactRecordIdentityState {
             return .default
         case .unverified:
             return .noLongerVerified
+        case .UNRECOGNIZED:
+            owsFailDebug("unrecognized verification state")
+            return .default
         }
     }
 }
@@ -392,7 +395,7 @@ extension StorageServiceProtoGroupV2Record {
         case invalid
 
         // MARK: - CustomStringConvertible
-        
+
         public var description: String {
             switch self {
             case .resolved:

@@ -503,7 +503,7 @@ class StorageServiceOperation: OWSOperation {
                         }
 
                         // Generate a fresh identifier
-                        let storageIdentifier = StorageService.StorageIdentifier.generate()
+                        let storageIdentifier = StorageService.StorageIdentifier.generate(type: .contact)
                         accountIdentifierMap[accountId] = storageIdentifier
 
                         let contactRecord = try StorageServiceProtoContactRecord.build(for: accountId, transaction: transaction)
@@ -544,7 +544,7 @@ class StorageServiceOperation: OWSOperation {
                         }
 
                         // Generate a fresh identifier
-                        let storageIdentifier = StorageService.StorageIdentifier.generate()
+                        let storageIdentifier = StorageService.StorageIdentifier.generate(type: .groupv1)
                         groupV1IdentifierMap[groupId] = storageIdentifier
 
                         let groupV1Record = try StorageServiceProtoGroupV1Record.build(for: groupId, transaction: transaction)
@@ -574,7 +574,7 @@ class StorageServiceOperation: OWSOperation {
                         }
 
                         // Generate a fresh identifier
-                        let storageIdentifier = StorageService.StorageIdentifier.generate()
+                        let storageIdentifier = StorageService.StorageIdentifier.generate(type: .groupv2)
                         groupV2IdentifierMap[groupMasterKey] = storageIdentifier
 
                         let groupV2Record = try StorageServiceProtoGroupV2Record.build(for: groupMasterKey, transaction: transaction)
@@ -654,27 +654,28 @@ class StorageServiceOperation: OWSOperation {
         // Bump the manifest version
         version += 1
 
-        let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: version)
-
-        let allKeys = (accountIdentifierMap.map { $1.data } +
-            groupV1IdentifierMap.map { $1.data } +
-            groupV2IdentifierMap.map { $1.data } +
-            unknownIdentifiers.map { $0.data })
-
         // We must persist any unknown identifiers, as they are potentially associated with
         // valid records that this version of the app doesn't yet understand how to parse.
         // Otherwise, this will cause ping-ponging with newer apps when they try and backup
         // new types of records, and then we subsequently delete them.
-        manifestBuilder.setKeys(allKeys)
+        let allIdentifiers =
+            accountIdentifierMap.map { $1 } +
+            groupV1IdentifierMap.map { $1 } +
+            groupV2IdentifierMap.map { $1 } +
+            unknownIdentifiers
+
+        let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: version)
 
         let manifest: StorageServiceProtoManifestRecord
         do {
+            manifestBuilder.setKeys(try allIdentifiers.map { try $0.buildRecord() })
+
             manifest = try manifestBuilder.build()
         } catch {
             return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
 
-        Logger.info("Backing up pending changes with manifest version: \(version). \(updatedItems.count) new items. \(deletedIdentifiers.count) deleted items. Total keys: \(allKeys.count)")
+        Logger.info("Backing up pending changes with manifest version: \(version). \(updatedItems.count) new items. \(deletedIdentifiers.count) deleted items. Total keys: \(allIdentifiers.count)")
 
         StorageService.updateManifest(
             manifest,
@@ -770,7 +771,7 @@ class StorageServiceOperation: OWSOperation {
         databaseStorage.read { transaction in
             SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
                 if recipient.devices.count > 0 {
-                    let identifier = StorageService.StorageIdentifier.generate()
+                    let identifier = StorageService.StorageIdentifier.generate(type: .contact)
                     accountIdentifierMap[recipient.accountId] = identifier
 
                     do {
@@ -792,7 +793,7 @@ class StorageServiceOperation: OWSOperation {
                 switch groupThread.groupModel.groupsVersion {
                 case .V1:
                     let groupId = groupThread.groupModel.groupId
-                    let identifier = StorageService.StorageIdentifier.generate()
+                    let identifier = StorageService.StorageIdentifier.generate(type: .groupv1)
                     groupV1IdentifierMap[groupId] = identifier
 
                     do {
@@ -813,7 +814,7 @@ class StorageServiceOperation: OWSOperation {
 
                     do {
                         let groupMasterKey = try GroupsV2Protos.masterKeyData(forGroupModel: groupModel)
-                        let identifier = StorageService.StorageIdentifier.generate()
+                        let identifier = StorageService.StorageIdentifier.generate(type: .groupv2)
                         groupV2IdentifierMap[groupMasterKey] = identifier
 
                         let groupV2Record = try StorageServiceProtoGroupV2Record.build(for: groupMasterKey, transaction: transaction)
@@ -830,10 +831,10 @@ class StorageServiceOperation: OWSOperation {
         }
 
         let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: version)
-        manifestBuilder.setKeys(allItems.map { $0.identifier.data })
 
         let manifest: StorageServiceProtoManifestRecord
         do {
+            manifestBuilder.setKeys(try allItems.map { try $0.identifier.buildRecord() })
             manifest = try manifestBuilder.build()
         } catch {
             return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
@@ -883,7 +884,7 @@ class StorageServiceOperation: OWSOperation {
         var accountIdentifierMap: BidirectionalDictionary<AccountId, StorageService.StorageIdentifier> = [:]
         var groupV1IdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
         var groupV2IdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
-        var unknownIdentifiersTypeMap: [UInt32: [StorageService.StorageIdentifier]] = [:]
+        var unknownIdentifiersTypeMap: [StorageServiceProtoManifestRecordKeyType: [StorageService.StorageIdentifier]] = [:]
         var pendingAccountChanges: [AccountId: ChangeState] = [:]
         var pendingGroupV1Changes: [Data: ChangeState] = [:]
         var pendingGroupV2Changes: [Data: ChangeState] = [:]
@@ -927,7 +928,7 @@ class StorageServiceOperation: OWSOperation {
         // of any items we don't know about locally. Since a new
         // id is always generated after a change, this should always
         // reflect the only items we need to fetch from the service.
-        let allManifestItems: Set<StorageService.StorageIdentifier> = Set(manifest.keys.map { .init(data: $0) })
+        let allManifestItems: Set<StorageService.StorageIdentifier> = Set(manifest.keys.map { .init(data: $0.data, type: $0.type) })
 
         // Cleanup our unknown identifiers type map to only reflect
         // identifiers that still exist in the manifest.
@@ -1030,9 +1031,9 @@ class StorageServiceOperation: OWSOperation {
                         // This is not a record type we know about yet, so record this identifier in
                         // our unknown mapping. This allows us to skip fetching it in the future and
                         // not accidentally blow it away when we push an update.
-                        var unknownIdentifiersOfType = unknownIdentifiersTypeMap[item.record.type] ?? []
+                        var unknownIdentifiersOfType = unknownIdentifiersTypeMap[item.identifier.type] ?? []
                         unknownIdentifiersOfType.append(item.identifier)
-                        unknownIdentifiersTypeMap[item.record.type] = unknownIdentifiersOfType
+                        unknownIdentifiersTypeMap[item.identifier.type] = unknownIdentifiersOfType
                         continue
                     }
 
@@ -1115,10 +1116,10 @@ class StorageServiceOperation: OWSOperation {
         databaseStorage.write { transaction in
             // We may have learned of new record types; if so we should
             // cull them from the unknownIdentifiersTypeMap on launch.
-            let knownTypes: [UInt32] = [
-                UInt32(StorageServiceProtoStorageRecordType.contact.rawValue),
-                UInt32(StorageServiceProtoStorageRecordType.groupv1.rawValue),
-                UInt32(StorageServiceProtoStorageRecordType.groupv2.rawValue)
+            let knownTypes: [StorageServiceProtoManifestRecordKeyType] = [
+                .contact,
+                .groupv1,
+                .groupv2
             ]
 
             let oldUnknownIdentifiersTypeMap = StorageServiceOperation.unknownIdentifiersTypeMap(transaction: transaction)
@@ -1160,7 +1161,7 @@ class StorageServiceOperation: OWSOperation {
             let dictionary = BidirectionalDictionary<AccountId, Data>(anyDictionary) else {
             return [:]
         }
-        return dictionary.mapValues { .init(data: $0) }
+        return dictionary.mapValues { .init(data: $0, type: .contact) }
     }
 
     private static func setAccountToIdentifierMap( _ dictionary: BidirectionalDictionary<AccountId, StorageService.StorageIdentifier>, transaction: SDSAnyWriteTransaction) {
@@ -1176,7 +1177,7 @@ class StorageServiceOperation: OWSOperation {
             let dictionary = BidirectionalDictionary<Data, Data>(anyDictionary) else {
                 return [:]
         }
-        return dictionary.mapValues { .init(data: $0) }
+        return dictionary.mapValues { .init(data: $0, type: .groupv1) }
     }
 
     private static func groupV2MasterKeyToIdentifierMap(transaction: SDSAnyReadTransaction) -> BidirectionalDictionary<Data, StorageService.StorageIdentifier> {
@@ -1184,7 +1185,7 @@ class StorageServiceOperation: OWSOperation {
             let dictionary = BidirectionalDictionary<Data, Data>(anyDictionary) else {
                 return [:]
         }
-        return dictionary.mapValues { .init(data: $0) }
+        return dictionary.mapValues { .init(data: $0, type: .groupv2) }
     }
 
     private static func setGroupV1IdToIdentifierMap( _ dictionary: BidirectionalDictionary<Data, StorageService.StorageIdentifier>, transaction: SDSAnyWriteTransaction) {
@@ -1207,14 +1208,19 @@ class StorageServiceOperation: OWSOperation {
         return unknownIdentifiersTypeMap(transaction: transaction).flatMap { $0.value }
     }
 
-    fileprivate static func unknownIdentifiersTypeMap(transaction: SDSAnyReadTransaction) -> [UInt32: [StorageService.StorageIdentifier]] {
-        guard let unknownIdentifiers = keyValueStore.getObject(unknownIdentifierTypeMapKey, transaction: transaction) as? [UInt32: [Data]] else { return [:] }
-        return unknownIdentifiers.mapValues { $0.map { .init(data: $0) } }
+    fileprivate static func unknownIdentifiersTypeMap(transaction: SDSAnyReadTransaction) -> [StorageServiceProtoManifestRecordKeyType: [StorageService.StorageIdentifier]] {
+        guard let unknownIdentifiers = keyValueStore.getObject(unknownIdentifierTypeMapKey, transaction: transaction) as? [Int: [Data]] else { return [:] }
+        return Dictionary(uniqueKeysWithValues: unknownIdentifiers.map { item in
+            let type: StorageServiceProtoManifestRecordKeyType = .UNRECOGNIZED(item.key)
+            return (type, item.value.map { .init(data: $0, type: type) })
+        })
     }
 
-    fileprivate static func setUnknownIdentifiersTypeMap( _ dictionary: [UInt32: [StorageService.StorageIdentifier]], transaction: SDSAnyWriteTransaction) {
+    fileprivate static func setUnknownIdentifiersTypeMap( _ dictionary: [StorageServiceProtoManifestRecordKeyType: [StorageService.StorageIdentifier]], transaction: SDSAnyWriteTransaction) {
         keyValueStore.setObject(
-            dictionary.mapValues { $0.map { $0.data }},
+            Dictionary(uniqueKeysWithValues: dictionary.map { item in
+                return (item.key.rawValue, item.value.map { $0.data })
+            }),
             key: unknownIdentifierTypeMapKey,
             transaction: transaction
         )
