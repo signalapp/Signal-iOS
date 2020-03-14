@@ -1,6 +1,6 @@
 name: CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   build_and_test:
@@ -62,11 +62,21 @@ jobs:
 
           fastlane scan --scheme Signal --output_types junit || formatFailures
 
-  # swiftlint:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v1
-  #     - name: Lint files changed in the PR
-  #       uses: norio-nomura/action-swiftlint@3.1.0
-  #       env:
-  #         DIFF_BASE: ${{ github.base_ref }}
+  lint:
+    name: Lint
+
+    runs-on: macOS-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install Dependencies
+        run: brew install swiftlint clang-format
+
+      - name: Lint files changed in the PR
+        run: |
+          python Scripts/precommit.py --ref origin/${{ github.base_ref }}
+
+          # https://help.github.com/en/actions/reference/development-tools-for-github-actions#logging-commands
+          git diff --name-only | sed -E 's/(.*)/::error file=\1::Incorrectly formatted (clang-format)/'
+          git diff --quiet || exit 1
