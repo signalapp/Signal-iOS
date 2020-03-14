@@ -586,6 +586,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
     case contact // 1
     case groupv1 // 2
     case groupv2 // 3
+    case account // 4
     case UNRECOGNIZED(Int)
 
     public init() {
@@ -598,6 +599,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
             case 1: self = .contact
             case 2: self = .groupv1
             case 3: self = .groupv2
+            case 4: self = .account
             default: self = .UNRECOGNIZED(rawValue)
         }
     }
@@ -608,6 +610,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
             case .contact: return 1
             case .groupv1: return 2
             case .groupv2: return 3
+            case .account: return 4
             case .UNRECOGNIZED(let i): return i
         }
     }
@@ -619,6 +622,7 @@ private func StorageServiceProtoManifestRecordKeyTypeWrap(_ value: StorageServic
     case .contact: return .contact
     case .groupv1: return .groupv1
     case .groupv2: return .groupv2
+    case .account: return .account
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
 }
@@ -629,6 +633,7 @@ private func StorageServiceProtoManifestRecordKeyTypeUnwrap(_ value: StorageServ
     case .contact: return .contact
     case .groupv1: return .groupv1
     case .groupv2: return .groupv2
+    case .account: return .account
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
 }
@@ -864,6 +869,7 @@ public enum StorageServiceProtoStorageRecordOneOfRecord: Equatable {
     case contact(StorageServiceProtoContactRecord)
     case groupV1(StorageServiceProtoGroupV1Record)
     case groupV2(StorageServiceProtoGroupV2Record)
+    case account(StorageServiceProtoAccountRecord)
 }
 
 private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageServiceProtos_StorageRecord.OneOf_Record) throws -> StorageServiceProtoStorageRecordOneOfRecord {
@@ -871,6 +877,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageSer
     case .contact(let value): return .contact(try StorageServiceProtoContactRecord.parseProto(value))
     case .groupV1(let value): return .groupV1(try StorageServiceProtoGroupV1Record.parseProto(value))
     case .groupV2(let value): return .groupV2(try StorageServiceProtoGroupV2Record.parseProto(value))
+    case .account(let value): return .account(try StorageServiceProtoAccountRecord.parseProto(value))
     }
 }
 
@@ -879,6 +886,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordUnwrap(_ value: StorageS
     case .contact(let value): return .contact(value.proto)
     case .groupV1(let value): return .groupV1(value.proto)
     case .groupV2(let value): return .groupV2(value.proto)
+    case .account(let value): return .account(value.proto)
     }
 }
 
@@ -1850,6 +1858,262 @@ extension StorageServiceProtoGroupV2Record {
 
 extension StorageServiceProtoGroupV2Record.StorageServiceProtoGroupV2RecordBuilder {
     public func buildIgnoringErrors() -> StorageServiceProtoGroupV2Record? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoAccountRecordConfig
+
+public class StorageServiceProtoAccountRecordConfig: NSObject {
+
+    // MARK: - StorageServiceProtoAccountRecordConfigBuilder
+
+    public class func builder() -> StorageServiceProtoAccountRecordConfigBuilder {
+        return StorageServiceProtoAccountRecordConfigBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoAccountRecordConfigBuilder {
+        let builder = StorageServiceProtoAccountRecordConfigBuilder()
+        if hasReadReceipts {
+            builder.setReadReceipts(readReceipts)
+        }
+        if hasSealedSenderIndicators {
+            builder.setSealedSenderIndicators(sealedSenderIndicators)
+        }
+        if hasTypingIndicators {
+            builder.setTypingIndicators(typingIndicators)
+        }
+        if hasLinkPreviews {
+            builder.setLinkPreviews(linkPreviews)
+        }
+        return builder
+    }
+
+    public class StorageServiceProtoAccountRecordConfigBuilder: NSObject {
+
+        private var proto = StorageServiceProtos_AccountRecord.Config()
+
+        fileprivate override init() {}
+
+        public func setReadReceipts(_ valueParam: Bool) {
+            proto.readReceipts = valueParam
+        }
+
+        public func setSealedSenderIndicators(_ valueParam: Bool) {
+            proto.sealedSenderIndicators = valueParam
+        }
+
+        public func setTypingIndicators(_ valueParam: Bool) {
+            proto.typingIndicators = valueParam
+        }
+
+        public func setLinkPreviews(_ valueParam: Bool) {
+            proto.linkPreviews = valueParam
+        }
+
+        public func build() throws -> StorageServiceProtoAccountRecordConfig {
+            return try StorageServiceProtoAccountRecordConfig.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try StorageServiceProtoAccountRecordConfig.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: StorageServiceProtos_AccountRecord.Config
+
+    public var readReceipts: Bool {
+        return proto.readReceipts
+    }
+    public var hasReadReceipts: Bool {
+        return true
+    }
+
+    public var sealedSenderIndicators: Bool {
+        return proto.sealedSenderIndicators
+    }
+    public var hasSealedSenderIndicators: Bool {
+        return true
+    }
+
+    public var typingIndicators: Bool {
+        return proto.typingIndicators
+    }
+    public var hasTypingIndicators: Bool {
+        return true
+    }
+
+    public var linkPreviews: Bool {
+        return proto.linkPreviews
+    }
+    public var hasLinkPreviews: Bool {
+        return true
+    }
+
+    private init(proto: StorageServiceProtos_AccountRecord.Config) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoAccountRecordConfig {
+        let proto = try StorageServiceProtos_AccountRecord.Config(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: StorageServiceProtos_AccountRecord.Config) throws -> StorageServiceProtoAccountRecordConfig {
+        // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecordConfig -
+
+        // MARK: - End Validation Logic for StorageServiceProtoAccountRecordConfig -
+
+        let result = StorageServiceProtoAccountRecordConfig(proto: proto)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension StorageServiceProtoAccountRecordConfig {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoAccountRecordConfig.StorageServiceProtoAccountRecordConfigBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecordConfig? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoAccountRecord
+
+public class StorageServiceProtoAccountRecord: NSObject {
+
+    // MARK: - StorageServiceProtoAccountRecordBuilder
+
+    public class func builder() -> StorageServiceProtoAccountRecordBuilder {
+        return StorageServiceProtoAccountRecordBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoAccountRecordBuilder {
+        let builder = StorageServiceProtoAccountRecordBuilder()
+        if let _value = contact {
+            builder.setContact(_value)
+        }
+        if let _value = config {
+            builder.setConfig(_value)
+        }
+        return builder
+    }
+
+    public class StorageServiceProtoAccountRecordBuilder: NSObject {
+
+        private var proto = StorageServiceProtos_AccountRecord()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setContact(_ valueParam: StorageServiceProtoContactRecord?) {
+            guard let valueParam = valueParam else { return }
+            proto.contact = valueParam.proto
+        }
+
+        public func setContact(_ valueParam: StorageServiceProtoContactRecord) {
+            proto.contact = valueParam.proto
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setConfig(_ valueParam: StorageServiceProtoAccountRecordConfig?) {
+            guard let valueParam = valueParam else { return }
+            proto.config = valueParam.proto
+        }
+
+        public func setConfig(_ valueParam: StorageServiceProtoAccountRecordConfig) {
+            proto.config = valueParam.proto
+        }
+
+        public func build() throws -> StorageServiceProtoAccountRecord {
+            return try StorageServiceProtoAccountRecord.parseProto(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try StorageServiceProtoAccountRecord.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: StorageServiceProtos_AccountRecord
+
+    public let contact: StorageServiceProtoContactRecord?
+
+    public let config: StorageServiceProtoAccountRecordConfig?
+
+    private init(proto: StorageServiceProtos_AccountRecord,
+                 contact: StorageServiceProtoContactRecord?,
+                 config: StorageServiceProtoAccountRecordConfig?) {
+        self.proto = proto
+        self.contact = contact
+        self.config = config
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoAccountRecord {
+        let proto = try StorageServiceProtos_AccountRecord(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: StorageServiceProtos_AccountRecord) throws -> StorageServiceProtoAccountRecord {
+        var contact: StorageServiceProtoContactRecord?
+        if proto.hasContact {
+            contact = try StorageServiceProtoContactRecord.parseProto(proto.contact)
+        }
+
+        var config: StorageServiceProtoAccountRecordConfig?
+        if proto.hasConfig {
+            config = try StorageServiceProtoAccountRecordConfig.parseProto(proto.config)
+        }
+
+        // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecord -
+
+        // MARK: - End Validation Logic for StorageServiceProtoAccountRecord -
+
+        let result = StorageServiceProtoAccountRecord(proto: proto,
+                                                      contact: contact,
+                                                      config: config)
+        return result
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension StorageServiceProtoAccountRecord {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoAccountRecord.StorageServiceProtoAccountRecordBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecord? {
         return try! self.build()
     }
 }

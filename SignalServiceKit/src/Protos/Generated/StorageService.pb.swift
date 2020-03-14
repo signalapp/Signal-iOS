@@ -142,6 +142,7 @@ struct StorageServiceProtos_ManifestRecord {
       case contact // = 1
       case groupv1 // = 2
       case groupv2 // = 3
+      case account // = 4
       case UNRECOGNIZED(Int)
 
       init() {
@@ -154,6 +155,7 @@ struct StorageServiceProtos_ManifestRecord {
         case 1: self = .contact
         case 2: self = .groupv1
         case 3: self = .groupv2
+        case 4: self = .account
         default: self = .UNRECOGNIZED(rawValue)
         }
       }
@@ -164,6 +166,7 @@ struct StorageServiceProtos_ManifestRecord {
         case .contact: return 1
         case .groupv1: return 2
         case .groupv2: return 3
+        case .account: return 4
         case .UNRECOGNIZED(let i): return i
         }
       }
@@ -210,12 +213,21 @@ struct StorageServiceProtos_StorageRecord {
     set {_uniqueStorage()._record = .groupV2(newValue)}
   }
 
+  var account: StorageServiceProtos_AccountRecord {
+    get {
+      if case .account(let v)? = _storage._record {return v}
+      return StorageServiceProtos_AccountRecord()
+    }
+    set {_uniqueStorage()._record = .account(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Record: Equatable {
     case contact(StorageServiceProtos_ContactRecord)
     case groupV1(StorageServiceProtos_GroupV1Record)
     case groupV2(StorageServiceProtos_GroupV2Record)
+    case account(StorageServiceProtos_AccountRecord)
 
   #if !swift(>=4.1)
     static func ==(lhs: StorageServiceProtos_StorageRecord.OneOf_Record, rhs: StorageServiceProtos_StorageRecord.OneOf_Record) -> Bool {
@@ -223,6 +235,7 @@ struct StorageServiceProtos_StorageRecord {
       case (.contact(let l), .contact(let r)): return l == r
       case (.groupV1(let l), .groupV1(let r)): return l == r
       case (.groupV2(let l), .groupV2(let r)): return l == r
+      case (.account(let l), .account(let r)): return l == r
       default: return false
       }
     }
@@ -384,6 +397,54 @@ struct StorageServiceProtos_GroupV2Record {
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
+}
+
+struct StorageServiceProtos_AccountRecord {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var contact: StorageServiceProtos_ContactRecord {
+    get {return _storage._contact ?? StorageServiceProtos_ContactRecord()}
+    set {_uniqueStorage()._contact = newValue}
+  }
+  /// Returns true if `contact` has been explicitly set.
+  var hasContact: Bool {return _storage._contact != nil}
+  /// Clears the value of `contact`. Subsequent reads from it will return its default value.
+  mutating func clearContact() {_uniqueStorage()._contact = nil}
+
+  var config: StorageServiceProtos_AccountRecord.Config {
+    get {return _storage._config ?? StorageServiceProtos_AccountRecord.Config()}
+    set {_uniqueStorage()._config = newValue}
+  }
+  /// Returns true if `config` has been explicitly set.
+  var hasConfig: Bool {return _storage._config != nil}
+  /// Clears the value of `config`. Subsequent reads from it will return its default value.
+  mutating func clearConfig() {_uniqueStorage()._config = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  struct Config {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var readReceipts: Bool = false
+
+    var sealedSenderIndicators: Bool = false
+
+    var typingIndicators: Bool = false
+
+    var linkPreviews: Bool = false
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+  }
+
+  init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -678,7 +739,8 @@ extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: SwiftProtobuf._Proto
     0: .same(proto: "UNKNOWN"),
     1: .same(proto: "CONTACT"),
     2: .same(proto: "GROUPV1"),
-    3: .same(proto: "GROUPV2")
+    3: .same(proto: "GROUPV2"),
+    4: .same(proto: "ACCOUNT")
   ]
 }
 
@@ -687,7 +749,8 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "contact"),
     2: .same(proto: "groupV1"),
-    3: .same(proto: "groupV2")
+    3: .same(proto: "groupV2"),
+    4: .same(proto: "account")
   ]
 
   fileprivate class _StorageClass {
@@ -738,6 +801,14 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
           }
           try decoder.decodeSingularMessageField(value: &v)
           if let v = v {_storage._record = .groupV2(v)}
+        case 4:
+          var v: StorageServiceProtos_AccountRecord?
+          if let current = _storage._record {
+            try decoder.handleConflictingOneOf()
+            if case .account(let m) = current {v = m}
+          }
+          try decoder.decodeSingularMessageField(value: &v)
+          if let v = v {_storage._record = .account(v)}
         default: break
         }
       }
@@ -753,6 +824,8 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
         try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
       case .groupV2(let v)?:
         try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      case .account(let v)?:
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
       case nil: break
       }
     }
@@ -1050,6 +1123,122 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.masterKey != rhs.masterKey {return false}
     if lhs.blocked != rhs.blocked {return false}
     if lhs.whitelisted != rhs.whitelisted {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".AccountRecord"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "contact"),
+    2: .same(proto: "config")
+  ]
+
+  fileprivate class _StorageClass {
+    var _contact: StorageServiceProtos_ContactRecord?
+    var _config: StorageServiceProtos_AccountRecord.Config?
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _contact = source._contact
+      _config = source._config
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        switch fieldNumber {
+        case 1: try decoder.decodeSingularMessageField(value: &_storage._contact)
+        case 2: try decoder.decodeSingularMessageField(value: &_storage._config)
+        default: break
+        }
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if let v = _storage._contact {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      }
+      if let v = _storage._config {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      }
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_AccountRecord, rhs: StorageServiceProtos_AccountRecord) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._contact != rhs_storage._contact {return false}
+        if _storage._config != rhs_storage._config {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension StorageServiceProtos_AccountRecord.Config: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".Config"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "readReceipts"),
+    2: .same(proto: "sealedSenderIndicators"),
+    3: .same(proto: "typingIndicators"),
+    4: .same(proto: "linkPreviews")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBoolField(value: &self.readReceipts)
+      case 2: try decoder.decodeSingularBoolField(value: &self.sealedSenderIndicators)
+      case 3: try decoder.decodeSingularBoolField(value: &self.typingIndicators)
+      case 4: try decoder.decodeSingularBoolField(value: &self.linkPreviews)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.readReceipts != false {
+      try visitor.visitSingularBoolField(value: self.readReceipts, fieldNumber: 1)
+    }
+    if self.sealedSenderIndicators != false {
+      try visitor.visitSingularBoolField(value: self.sealedSenderIndicators, fieldNumber: 2)
+    }
+    if self.typingIndicators != false {
+      try visitor.visitSingularBoolField(value: self.typingIndicators, fieldNumber: 3)
+    }
+    if self.linkPreviews != false {
+      try visitor.visitSingularBoolField(value: self.linkPreviews, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_AccountRecord.Config, rhs: StorageServiceProtos_AccountRecord.Config) -> Bool {
+    if lhs.readReceipts != rhs.readReceipts {return false}
+    if lhs.sealedSenderIndicators != rhs.sealedSenderIndicators {return false}
+    if lhs.typingIndicators != rhs.typingIndicators {return false}
+    if lhs.linkPreviews != rhs.linkPreviews {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
