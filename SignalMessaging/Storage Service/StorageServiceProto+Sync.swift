@@ -44,6 +44,13 @@ extension StorageServiceProtoContactRecord {
             throw StorageService.StorageError.accountMissing
         }
 
+        return try build(for: address, transaction: transaction)
+    }
+
+    static func build(
+        for address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) throws -> StorageServiceProtoContactRecord {
         let builder = StorageServiceProtoContactRecord.builder()
 
         if let phoneNumber = address.phoneNumber {
@@ -473,6 +480,114 @@ extension StorageServiceProtoGroupV2Record {
         } else if !hasWhitelisted {
             // If the service is missing a whitelisted state, mark it as needing update.
             mergeState = .needsUpdate(masterKey)
+        }
+
+        return mergeState
+    }
+}
+
+// MARK: - Account Record
+
+extension StorageServiceProtoAccountRecord {
+
+    // MARK: - Dependencies
+
+    static var readReceiptManager: OWSReadReceiptManager {
+        return .shared()
+    }
+
+    var readReceiptManager: OWSReadReceiptManager {
+        return .shared()
+    }
+
+    static var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
+
+    var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
+
+    static var typingIndicators: TypingIndicators {
+        return SSKEnvironment.shared.typingIndicators
+    }
+
+    var typingIndicators: TypingIndicators {
+        return SSKEnvironment.shared.typingIndicators
+    }
+
+    // MARK: -
+
+    static func build(transaction: SDSAnyReadTransaction) throws -> StorageServiceProtoAccountRecord {
+        guard let localAddress = TSAccountManager.localAddress else {
+            throw OWSAssertionError("Missing local address")
+        }
+
+        let builder = StorageServiceProtoAccountRecord.builder()
+
+        let localContactRecord = try StorageServiceProtoContactRecord.build(for: localAddress, transaction: transaction)
+        builder.setContact(localContactRecord)
+
+        let configBuilder = StorageServiceProtoAccountRecordConfig.builder()
+
+        let readReceiptsEnabled = readReceiptManager.areReadReceiptsEnabled()
+        configBuilder.setReadReceipts(readReceiptsEnabled)
+
+        let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
+        configBuilder.setSealedSenderIndicators(sealedSenderIndicatorsEnabled)
+
+        let typingIndicatorsEnabled = typingIndicators.areTypingIndicatorsEnabled()
+        configBuilder.setTypingIndicators(typingIndicatorsEnabled)
+
+        let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        configBuilder.setLinkPreviews(linkPreviewsEnabled)
+
+        builder.setConfig(try configBuilder.build())
+
+        return try builder.build()
+    }
+
+    enum MergeState: String {
+        case resolved
+        case needsUpdate
+    }
+
+    func mergeWithLocalAccount(transaction: SDSAnyWriteTransaction) -> MergeState {
+        var mergeState: MergeState = .resolved
+
+        if let contact = contact {
+            switch contact.mergeWithLocalContact(transaction: transaction) {
+            case .needsUpdate, .invalid:
+                mergeState = .needsUpdate
+            case .resolved:
+                break
+            }
+        } else {
+            mergeState = .needsUpdate
+        }
+
+        if let config = config {
+            let localReadReceiptsEnabled = readReceiptManager.areReadReceiptsEnabled()
+            if config.readReceipts != localReadReceiptsEnabled {
+                readReceiptManager.setAreReadReceiptsEnabled(config.readReceipts, transaction: transaction)
+            }
+
+            let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
+            if config.sealedSenderIndicators != sealedSenderIndicatorsEnabled {
+                preferences.setShouldShowUnidentifiedDeliveryIndicators(config.sealedSenderIndicators, transaction: transaction)
+            }
+
+            let typingIndicatorsEnabled = typingIndicators.areTypingIndicatorsEnabled()
+            if config.typingIndicators != typingIndicatorsEnabled {
+                typingIndicators.setTypingIndicatorsEnabled(value: config.typingIndicators, transaction: transaction)
+            }
+
+            let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+            if config.linkPreviews != linkPreviewsEnabled {
+                SSKPreferences.setAreLinkPreviewsEnabled(config.linkPreviews, transaction: transaction)
+            }
+        } else {
+            mergeState = .needsUpdate
         }
 
         return mergeState

@@ -44,6 +44,7 @@ message ManifestRecord {
       CONTACT = 1;
       GROUPV1 = 2;
       GROUPV2 = 3;
+      ACCOUNT = 4;
     }
 
     // @required
@@ -62,6 +63,7 @@ message StorageRecord {
     ContactRecord contact = 1;
     GroupV1Record groupV1 = 2;
     GroupV2Record groupV2 = 3;
+    AccountRecord account = 4;
   }
 }
 
@@ -105,4 +107,16 @@ message GroupV2Record {
   bytes masterKey   = 1;
   bool  blocked     = 2;
   bool  whitelisted = 3;
+}
+
+message AccountRecord {
+  message Config {
+    bool readReceiptsEnabled    = 1;
+    bool sealedSenderIndicators = 2;
+    bool typingIndicators       = 3;
+    bool linkPreviews           = 4;
+  }
+
+  ContactRecord contact = 1;
+  Config        config  = 2;
 }

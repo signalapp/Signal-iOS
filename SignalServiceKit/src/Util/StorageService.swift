@@ -20,6 +20,8 @@ public protocol StorageServiceManagerProtocol {
     // or recordPendingUpdates(updatedGroupV2MasterKeys:).
     func recordPendingUpdates(groupModel: TSGroupModel)
 
+    func recordPendingLocalAccountUpdates()
+
     func backupPendingChanges()
 
     @discardableResult
@@ -70,7 +72,7 @@ public struct StorageService {
 
     /// An identifier representing a given storage item.
     /// This can be used to fetch specific items from the service.
-    public struct StorageIdentifier: Hashable {
+    public struct StorageIdentifier: Hashable, Codable {
         public static let identifierLength: Int32 = 16
         public let data: Data
         public let type: StorageServiceProtoManifestRecordKeyType
@@ -124,6 +126,15 @@ public struct StorageService {
             return record
         }
 
+        public var accountRecord: StorageServiceProtoAccountRecord? {
+            guard case .account = type else { return nil }
+            guard case .account(let record) = record.record else {
+                owsFailDebug("unexpectedly missing account record")
+                return nil
+            }
+            return record
+        }
+
         public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) throws {
             let storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.contact(contact))
@@ -139,6 +150,12 @@ public struct StorageService {
         public init(identifier: StorageIdentifier, groupV2: StorageServiceProtoGroupV2Record) throws {
             let storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.groupV2(groupV2))
+            self.init(identifier: identifier, record: try storageRecord.build())
+        }
+
+        public init(identifier: StorageIdentifier, account: StorageServiceProtoAccountRecord) throws {
+            let storageRecord = StorageServiceProtoStorageRecord.builder()
+            storageRecord.setRecord(.account(account))
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 
@@ -628,3 +645,5 @@ public extension StorageService {
 }
 
 #endif
+
+extension StorageServiceProtoManifestRecordKeyType: Codable {}

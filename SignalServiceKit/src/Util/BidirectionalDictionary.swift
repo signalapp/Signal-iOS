@@ -184,3 +184,7 @@ extension BidirectionalDictionary: ExpressibleByDictionaryLiteral {
         self.init(uniqueKeysWithValues: elements)
     }
 }
+
+// MARK: -
+
+extension BidirectionalDictionary: Codable where ElementOne: Codable, ElementTwo: Codable {}

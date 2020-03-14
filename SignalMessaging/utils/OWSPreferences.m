@@ -308,11 +308,19 @@ NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWa
     return [self boolForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators defaultValue:NO];
 }
 
+- (BOOL)shouldShowUnidentifiedDeliveryIndicatorsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyValueStore getBool:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators
+                          defaultValue:NO
+                           transaction:transaction];
+}
+
 - (void)setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage:(BOOL)value
 {
     [self setBool:value forKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators];
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+    [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
 }
 
 - (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction
