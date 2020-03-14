@@ -1060,6 +1060,15 @@ class StorageServiceOperation: OWSOperation {
                             state.groupV1IdToIdentifierMap[groupId] = item.identifier
                         }
                     } else if let groupV2Record = item.groupV2Record {
+                        // If groups v2 isn't enabled, treat this record as unknown.
+                        // We'll parse it when groups v2 is enabled.
+                        guard FeatureFlags.groupsV2SetCapability else {
+                            var unknownIdentifiersOfType = state.unknownIdentifiersTypeMap[item.identifier.type] ?? []
+                            unknownIdentifiersOfType.append(item.identifier)
+                            state.unknownIdentifiersTypeMap[item.identifier.type] = unknownIdentifiersOfType
+                            continue
+                        }
+
                         switch groupV2Record.mergeWithLocalGroup(transaction: transaction) {
                         case .invalid:
                             // This record was invalid, ignore it.
@@ -1101,7 +1110,6 @@ class StorageServiceOperation: OWSOperation {
                         var unknownIdentifiersOfType = state.unknownIdentifiersTypeMap[item.identifier.type] ?? []
                         unknownIdentifiersOfType.append(item.identifier)
                         state.unknownIdentifiersTypeMap[item.identifier.type] = unknownIdentifiersOfType
-                        continue
                     }
 
                 }
@@ -1174,12 +1182,13 @@ class StorageServiceOperation: OWSOperation {
         databaseStorage.write { transaction in
             // We may have learned of new record types; if so we should
             // cull them from the unknownIdentifiersTypeMap on launch.
-            let knownTypes: [StorageServiceProtoManifestRecordKeyType] = [
+            var knownTypes: [StorageServiceProtoManifestRecordKeyType] = [
                 .contact,
                 .groupv1,
-                .groupv2,
                 .account
             ]
+
+            if FeatureFlags.groupsV2SetCapability { knownTypes.append(.groupv2) }
 
             var state = State.current(transaction: transaction)
 
