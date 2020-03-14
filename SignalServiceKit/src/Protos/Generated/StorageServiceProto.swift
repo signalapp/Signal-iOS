@@ -1376,6 +1376,9 @@ public class StorageServiceProtoContactRecord: NSObject {
         if let _value = nickname {
             builder.setNickname(_value)
         }
+        if hasArchived {
+            builder.setArchived(archived)
+        }
         return builder
     }
 
@@ -1443,6 +1446,10 @@ public class StorageServiceProtoContactRecord: NSObject {
             proto.nickname = valueParam
         }
 
+        public func setArchived(_ valueParam: Bool) {
+            proto.archived = valueParam
+        }
+
         public func build() throws -> StorageServiceProtoContactRecord {
             return try StorageServiceProtoContactRecord.parseProto(proto)
         }
@@ -1499,6 +1506,13 @@ public class StorageServiceProtoContactRecord: NSObject {
         return proto.nickname
     }
     public var hasNickname: Bool {
+        return true
+    }
+
+    public var archived: Bool {
+        return proto.archived
+    }
+    public var hasArchived: Bool {
         return true
     }
 
@@ -1627,6 +1641,9 @@ public class StorageServiceProtoGroupV1Record: NSObject {
         if hasWhitelisted {
             builder.setWhitelisted(whitelisted)
         }
+        if hasArchived {
+            builder.setArchived(archived)
+        }
         return builder
     }
 
@@ -1660,6 +1677,10 @@ public class StorageServiceProtoGroupV1Record: NSObject {
             proto.whitelisted = valueParam
         }
 
+        public func setArchived(_ valueParam: Bool) {
+            proto.archived = valueParam
+        }
+
         public func build() throws -> StorageServiceProtoGroupV1Record {
             return try StorageServiceProtoGroupV1Record.parseProto(proto)
         }
@@ -1684,6 +1705,13 @@ public class StorageServiceProtoGroupV1Record: NSObject {
         return proto.whitelisted
     }
     public var hasWhitelisted: Bool {
+        return true
+    }
+
+    public var archived: Bool {
+        return proto.archived
+    }
+    public var hasArchived: Bool {
         return true
     }
 
@@ -1755,6 +1783,9 @@ public class StorageServiceProtoGroupV2Record: NSObject {
         if hasWhitelisted {
             builder.setWhitelisted(whitelisted)
         }
+        if hasArchived {
+            builder.setArchived(archived)
+        }
         return builder
     }
 
@@ -1788,6 +1819,10 @@ public class StorageServiceProtoGroupV2Record: NSObject {
             proto.whitelisted = valueParam
         }
 
+        public func setArchived(_ valueParam: Bool) {
+            proto.archived = valueParam
+        }
+
         public func build() throws -> StorageServiceProtoGroupV2Record {
             return try StorageServiceProtoGroupV2Record.parseProto(proto)
         }
@@ -1812,6 +1847,13 @@ public class StorageServiceProtoGroupV2Record: NSObject {
         return proto.whitelisted
     }
     public var hasWhitelisted: Bool {
+        return true
+    }
+
+    public var archived: Bool {
+        return proto.archived
+    }
+    public var hasArchived: Bool {
         return true
     }
 

@@ -295,6 +295,11 @@ struct StorageServiceProtos_ContactRecord {
     set {_uniqueStorage()._nickname = newValue}
   }
 
+  var archived: Bool {
+    get {return _storage._archived}
+    set {_uniqueStorage()._archived = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Identity {
@@ -377,6 +382,8 @@ struct StorageServiceProtos_GroupV1Record {
 
   var whitelisted: Bool = false
 
+  var archived: Bool = false
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -393,6 +400,8 @@ struct StorageServiceProtos_GroupV2Record {
   var blocked: Bool = false
 
   var whitelisted: Bool = false
+
+  var archived: Bool = false
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -856,7 +865,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     4: .same(proto: "identity"),
     5: .same(proto: "blocked"),
     6: .same(proto: "whitelisted"),
-    7: .same(proto: "nickname")
+    7: .same(proto: "nickname"),
+    8: .same(proto: "archived")
   ]
 
   fileprivate class _StorageClass {
@@ -867,6 +877,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     var _blocked: Bool = false
     var _whitelisted: Bool = false
     var _nickname: String = String()
+    var _archived: Bool = false
 
     static let defaultInstance = _StorageClass()
 
@@ -880,6 +891,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       _blocked = source._blocked
       _whitelisted = source._whitelisted
       _nickname = source._nickname
+      _archived = source._archived
     }
   }
 
@@ -902,6 +914,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         case 5: try decoder.decodeSingularBoolField(value: &_storage._blocked)
         case 6: try decoder.decodeSingularBoolField(value: &_storage._whitelisted)
         case 7: try decoder.decodeSingularStringField(value: &_storage._nickname)
+        case 8: try decoder.decodeSingularBoolField(value: &_storage._archived)
         default: break
         }
       }
@@ -931,6 +944,9 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       if !_storage._nickname.isEmpty {
         try visitor.visitSingularStringField(value: _storage._nickname, fieldNumber: 7)
       }
+      if _storage._archived != false {
+        try visitor.visitSingularBoolField(value: _storage._archived, fieldNumber: 8)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -947,6 +963,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._blocked != rhs_storage._blocked {return false}
         if _storage._whitelisted != rhs_storage._whitelisted {return false}
         if _storage._nickname != rhs_storage._nickname {return false}
+        if _storage._archived != rhs_storage._archived {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -1051,7 +1068,8 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
     2: .same(proto: "blocked"),
-    3: .same(proto: "whitelisted")
+    3: .same(proto: "whitelisted"),
+    4: .same(proto: "archived")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1060,6 +1078,7 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
       case 1: try decoder.decodeSingularBytesField(value: &self.id)
       case 2: try decoder.decodeSingularBoolField(value: &self.blocked)
       case 3: try decoder.decodeSingularBoolField(value: &self.whitelisted)
+      case 4: try decoder.decodeSingularBoolField(value: &self.archived)
       default: break
       }
     }
@@ -1075,6 +1094,9 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
     if self.whitelisted != false {
       try visitor.visitSingularBoolField(value: self.whitelisted, fieldNumber: 3)
     }
+    if self.archived != false {
+      try visitor.visitSingularBoolField(value: self.archived, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1082,6 +1104,7 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.id != rhs.id {return false}
     if lhs.blocked != rhs.blocked {return false}
     if lhs.whitelisted != rhs.whitelisted {return false}
+    if lhs.archived != rhs.archived {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1092,7 +1115,8 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "masterKey"),
     2: .same(proto: "blocked"),
-    3: .same(proto: "whitelisted")
+    3: .same(proto: "whitelisted"),
+    4: .same(proto: "archived")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1101,6 +1125,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
       case 1: try decoder.decodeSingularBytesField(value: &self.masterKey)
       case 2: try decoder.decodeSingularBoolField(value: &self.blocked)
       case 3: try decoder.decodeSingularBoolField(value: &self.whitelisted)
+      case 4: try decoder.decodeSingularBoolField(value: &self.archived)
       default: break
       }
     }
@@ -1116,6 +1141,9 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if self.whitelisted != false {
       try visitor.visitSingularBoolField(value: self.whitelisted, fieldNumber: 3)
     }
+    if self.archived != false {
+      try visitor.visitSingularBoolField(value: self.archived, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1123,6 +1151,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.masterKey != rhs.masterKey {return false}
     if lhs.blocked != rhs.blocked {return false}
     if lhs.whitelisted != rhs.whitelisted {return false}
+    if lhs.archived != rhs.archived {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
