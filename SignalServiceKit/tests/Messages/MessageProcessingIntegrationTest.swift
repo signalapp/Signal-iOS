@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -69,7 +69,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
     // MARK: - Tests
 
-    func test_contactMessage_e164Envelope() {
+    func xtest_contactMessage_e164Envelope() {
         storageCoordinator.useGRDBForTests()
 
         // Re-initialize this state now that we've just switched databases.

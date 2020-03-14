@@ -214,7 +214,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertEqual(OWSLinkPreviewManager.mimetype(forImageFileExtension: "png"), OWSMimeTypeImagePng)
     }
 
-    func testLinkDownloadAndParsing() {
+    func xtestLinkDownloadAndParsing() {
         let expectation = self.expectation(description: "link download and parsing")
 
         linkPreviewManager.tryToBuildPreviewInfo(previewUrl: "https://www.youtube.com/watch?v=tP-Ipsat90c")
@@ -257,7 +257,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertEqual(content.imageUrl, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
     }
 
-    func testLinkParsingWithRealData1() {
+    func xtestLinkParsingWithRealData1() {
         let expectation = self.expectation(description: "link download and parsing")
 
         linkPreviewManager.downloadLink(url: "https://www.youtube.com/watch?v=tP-Ipsat90c")
@@ -278,7 +278,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         self.waitForExpectations(timeout: 5.0, handler: nil)
     }
 
-    func testLinkParsingWithRealData2() {
+    func xtestLinkParsingWithRealData2() {
         let expectation = self.expectation(description: "link download and parsing")
 
         linkPreviewManager.downloadLink(url: "https://youtu.be/tP-Ipsat90c")
@@ -317,7 +317,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 10.0, handler: nil)
+        self.waitForExpectations(timeout: 5.0, handler: nil)
     }
 
     func testLinkParsingWithRealData4() {

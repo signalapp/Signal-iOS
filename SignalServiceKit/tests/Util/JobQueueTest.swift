@@ -91,7 +91,7 @@ class JobQueueTest: SSKBaseTestSwift {
 
     // MARK: 
 
-    func test_setupMarksInProgressJobsAsReady() {
+    func xtest_setupMarksInProgressJobsAsReady() {
 
         let dispatchGroup = DispatchGroup()
 
