@@ -99,6 +99,10 @@ extension StorageServiceProtoContactRecord {
 
         builder.setProfile(try profileBuilder.build())
 
+        if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
+            builder.setArchived(thread.isArchived)
+        }
+
         return try builder.build()
     }
 
@@ -215,6 +219,19 @@ extension StorageServiceProtoContactRecord {
             mergeState = .needsUpdate(recipient.accountId)
         }
 
+        if let localThread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
+            if hasArchived, archived != localThread.isArchived {
+                if archived {
+                    localThread.archiveThread(updateStorageService: false, transaction: transaction)
+                } else {
+                    localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
+                }
+            } else if !hasArchived {
+                // If the service is missing the archived state, mark it as needing update.
+                mergeState = .needsUpdate(recipient.accountId)
+            }
+        }
+
         return mergeState
     }
 }
@@ -282,6 +299,10 @@ extension StorageServiceProtoGroupV1Record {
         builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
         builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
 
+        if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            builder.setArchived(thread.isArchived)
+        }
+
         return try builder.build()
     }
 
@@ -338,6 +359,19 @@ extension StorageServiceProtoGroupV1Record {
             mergeState = .needsUpdate(id)
         }
 
+        if let localThread = TSGroupThread.fetch(groupId: id, transaction: transaction) {
+            if hasArchived, archived != localThread.isArchived {
+                if archived {
+                    localThread.archiveThread(updateStorageService: false, transaction: transaction)
+                } else {
+                    localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
+                }
+            } else if !hasArchived {
+                // If the service is missing the archived state, mark it as needing update.
+                mergeState = .needsUpdate(id)
+            }
+        }
+
         return mergeState
     }
 }
@@ -390,6 +424,10 @@ extension StorageServiceProtoGroupV2Record {
 
         builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
         builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
+
+        if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            builder.setArchived(thread.isArchived)
+        }
 
         return try builder.build()
     }
@@ -480,6 +518,19 @@ extension StorageServiceProtoGroupV2Record {
         } else if !hasWhitelisted {
             // If the service is missing a whitelisted state, mark it as needing update.
             mergeState = .needsUpdate(masterKey)
+        }
+
+        if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            if hasArchived, archived != localThread.isArchived {
+                if archived {
+                    localThread.archiveThread(updateStorageService: false, transaction: transaction)
+                } else {
+                    localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
+                }
+            } else if !hasArchived {
+                // If the service is missing the archived state, mark it as needing update.
+                mergeState = .needsUpdate(masterKey)
+            }
         }
 
         return mergeState

@@ -570,7 +570,8 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     return [archivalDate compare:lastMessageDate] != NSOrderedAscending;
 }
 
-- (void)archiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)archiveThreadAndUpdateStorageService:(BOOL)updateStorageService
+                                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
@@ -578,14 +579,37 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
                              }];
 
     [self markAllAsReadWithTransaction:transaction];
+
+    if (updateStorageService) {
+        [self recordPendingStorageServiceUpdates];
+    }
 }
 
-- (void)unarchiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)unarchiveThreadAndUpdateStorageService:(BOOL)updateStorageService
+                                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
                                  thread.isArchived = NO;
                              }];
+
+    if (updateStorageService) {
+        [self recordPendingStorageServiceUpdates];
+    }
+}
+
+- (void)recordPendingStorageServiceUpdates
+{
+    if ([self isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self;
+        [SSKEnvironment.shared.storageServiceManager recordPendingUpdatesWithGroupModel:groupThread.groupModel];
+    } else if ([self isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)self;
+        [SSKEnvironment.shared.storageServiceManager
+            recordPendingUpdatesWithUpdatedAddresses:@[ contactThread.contactAddress ]];
+    } else {
+        OWSFailDebug(@"unexpected thread type");
+    }
 }
 
 #pragma mark - Drafts

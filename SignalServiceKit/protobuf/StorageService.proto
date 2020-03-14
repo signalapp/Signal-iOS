@@ -93,6 +93,7 @@ message ContactRecord {
   bool     blocked     = 5;
   bool     whitelisted = 6;
   string   nickname    = 7;
+  bool     archived    = 8;
 }
 
 message GroupV1Record {
@@ -100,6 +101,7 @@ message GroupV1Record {
   bytes id          = 1;
   bool  blocked     = 2;
   bool  whitelisted = 3;
+  bool  archived    = 4;
 }
 
 message GroupV2Record {
@@ -107,11 +109,12 @@ message GroupV2Record {
   bytes masterKey   = 1;
   bool  blocked     = 2;
   bool  whitelisted = 3;
+  bool  archived    = 4;
 }
 
 message AccountRecord {
   message Config {
-    bool readReceiptsEnabled    = 1;
+    bool readReceipts           = 1;
     bool sealedSenderIndicators = 2;
     bool typingIndicators       = 3;
     bool linkPreviews           = 4;

@@ -976,7 +976,9 @@ class StorageServiceOperation: OWSOperation {
 
             return StorageService.fetchItem(for: newLocalAccountIdentifier).done(on: .global()) { item in
                 guard let item = item else {
-                    owsFailDebug("remote manifest contained an identifier for the local account that doesn't exist, mark it for update")
+                    // This can happen in normal use if between fetching the manifest and starting the item
+                    // fetch a linked device has updated the manifest.
+                    Logger.verbose("remote manifest contained an identifier for the local account that doesn't exist, mark it for update")
                     state.localAccountChangeState = .updated
                     return
                 }
