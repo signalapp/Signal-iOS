@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *swipeableContentView;
 @property (nonatomic) UIImageView *swipeToReplyImageView;
 @property (nonatomic) CGFloat swipeableContentViewInitialX;
-@property (nonatomic) CGFloat messageViewInitialX;
+@property (nonatomic, nullable) NSNumber *messageViewInitialX;
 @property (nonatomic) BOOL isReplyActive;
 @property (nonatomic) BOOL hasPreparedForDisplay;
 
@@ -714,7 +714,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (sender.state) {
         case UIGestureRecognizerStateBegan: {
-            self.messageViewInitialX = self.messageView.frame.origin.x;
+            self.messageViewInitialX = @(self.messageView.frame.origin.x);
             self.swipeableContentViewInitialX = self.swipeableContentView.frame.origin.x;
 
             // If this message doesn't allow reply, end the gesture
@@ -752,11 +752,14 @@ NS_ASSUME_NONNULL_BEGIN
     if (hasFailed || hasFinished) {
         [self resetSwipePositionAnimated:YES];
     } else {
-        [self setSwipePosition:translationX animated:hasFinished];
+        OWSAssertDebug(self.messageViewInitialX);
+        [self setSwipePosition:translationX
+            messageViewInitialX:self.messageViewInitialX.doubleValue
+                       animated:hasFinished];
     }
 }
 
-- (void)setSwipePosition:(CGFloat)position animated:(BOOL)animated
+- (void)setSwipePosition:(CGFloat)position messageViewInitialX:(CGFloat)messageViewInitialX animated:(BOOL)animated
 {
     // Scale the translation above or below the desired range,
     // to produce an elastic feeling when you overscroll.
@@ -768,7 +771,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGRect newMessageViewFrame = self.messageView.frame;
-    newMessageViewFrame.origin.x = self.messageViewInitialX + (CurrentAppContext().isRTL ? -position : position);
+    newMessageViewFrame.origin.x = messageViewInitialX + (CurrentAppContext().isRTL ? -position : position);
 
     // The swipe content moves at 1/8th the speed of the message bubble,
     // so that it reveals itself from underneath with an elastic feel.
@@ -796,7 +799,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)resetSwipePositionAnimated:(BOOL)animated
 {
-    [self setSwipePosition:0 animated:animated];
+    if (self.messageViewInitialX != nil) {
+        [self setSwipePosition:0 messageViewInitialX:self.messageViewInitialX.doubleValue animated:animated];
+        self.messageViewInitialX = nil;
+    }
     self.isReplyActive = NO;
 }
 
