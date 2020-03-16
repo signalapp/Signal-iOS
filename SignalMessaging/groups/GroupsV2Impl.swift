@@ -83,6 +83,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     private let serviceStore = SDSKeyValueStore(collection: "GroupsV2Impl.serviceStore")
 
+    // GroupsV2 TODO: Remove this check once zkgroups is in production.
     private func verifyServerPublicParams() {
         let serverPublicParamsBase64 = TSConstants.serverPublicParamsBase64
         let lastServerPublicParamsKey = "lastServerPublicParamsKey"
