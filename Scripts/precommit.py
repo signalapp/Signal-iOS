@@ -438,7 +438,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Precommit script.')
     parser.add_argument('--all', action='store_true', help='process all files in or below current dir')
     parser.add_argument('--path', help='used to specify a path to process.')
+    parser.add_argument('--ref', help='process all files that have changed since the given ref')
     args = parser.parse_args()
+
+    clang_format_commit = 'HEAD'
 
     if args.all:
         for rootdir, dirnames, filenames in os.walk(git_repo_path):
@@ -450,6 +453,20 @@ if __name__ == "__main__":
             for filename in filenames:
                 file_path = os.path.abspath(os.path.join(rootdir, filename))
                 process_if_appropriate(file_path)
+    elif args.ref:
+        filepaths = []
+
+        output = commands.getoutput('git diff --name-only --diff-filter=ACMR HEAD %s' % args.ref)
+        filepaths.extend([line.strip() for line in output.split('\n')])
+
+        # Only process each path once.
+        filepaths = sorted(set(filepaths))
+
+        for filepath in filepaths:
+            filepath = os.path.abspath(os.path.join(git_repo_path, filepath))
+            process_if_appropriate(filepath)
+
+        clang_format_commit = args.ref
     else:
         filepaths = []
         
@@ -470,6 +487,6 @@ if __name__ == "__main__":
 
     print 'git clang-format...'
     # we don't want to format .proto files, so we specify every other supported extension
-    print commands.getoutput('git clang-format --extensions "c,h,m,mm,cc,cp,cpp,c++,cxx,hh,hxx,cu,java,js,ts,cs"')
+    print commands.getoutput('git clang-format --extensions "c,h,m,mm,cc,cp,cpp,c++,cxx,hh,hxx,cu,java,js,ts,cs" --commit %s' % clang_format_commit)
 
     check_diff_for_keywords()

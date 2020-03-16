@@ -31,9 +31,6 @@ class ImageCacheTest: SignalBaseTest {
     }
 
     func testSetGet() {
-        XCTAssertEqual(UIImage(), UIImage())
-        XCTAssertTrue(UIImage() == UIImage())
-
         XCTAssertEqual(firstVariation, imageCache.image(forKey: cacheKey1, diameter: 100))
         XCTAssertEqual(secondVariation, imageCache.image(forKey: cacheKey1, diameter: 200))
         XCTAssertNotEqual(secondVariation, imageCache.image(forKey: cacheKey1, diameter: 100))

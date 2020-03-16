@@ -230,7 +230,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.expireTimer, 0)
             XCTAssertEqual(group.avatarData, groupAvatarData1)
             XCTAssertEqual(false, group.isArchived)
-            XCTAssertNil(group.inboxSortOrder)
+            XCTAssertEqual(2, group.inboxSortOrder)
         }
 
         do {
