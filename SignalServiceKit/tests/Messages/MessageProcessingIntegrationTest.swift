@@ -69,7 +69,9 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
     // MARK: - Tests
 
-    func xtest_contactMessage_e164Envelope() {
+    #if BROKEN_TESTS
+
+    func test_contactMessage_e164Envelope() {
         storageCoordinator.useGRDBForTests()
 
         // Re-initialize this state now that we've just switched databases.
@@ -124,6 +126,8 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
         waitForExpectations(timeout: 1.0)
     }
+
+    #endif
 
     func test_contactMessage_UUIDEnvelope() {
         guard FeatureFlags.allowUUIDOnlyContacts else {

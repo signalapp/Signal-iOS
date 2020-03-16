@@ -214,7 +214,9 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertEqual(OWSLinkPreviewManager.mimetype(forImageFileExtension: "png"), OWSMimeTypeImagePng)
     }
 
-    func xtestLinkDownloadAndParsing() {
+    #if BROKEN_TESTS
+
+    func testLinkDownloadAndParsing() {
         let expectation = self.expectation(description: "link download and parsing")
 
         linkPreviewManager.tryToBuildPreviewInfo(previewUrl: "https://www.youtube.com/watch?v=tP-Ipsat90c")
@@ -231,8 +233,10 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
+
+    #endif
 
     func testLinkDataParsing_Empty() {
         let linkText = ""
@@ -257,7 +261,9 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertEqual(content.imageUrl, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
     }
 
-    func xtestLinkParsingWithRealData1() {
+    #if BROKEN_TESTS
+
+    func testLinkParsingWithRealData1() {
         let expectation = self.expectation(description: "link download and parsing")
 
         linkPreviewManager.downloadLink(url: "https://www.youtube.com/watch?v=tP-Ipsat90c")
@@ -275,10 +281,10 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
-    func xtestLinkParsingWithRealData2() {
+    func testLinkParsingWithRealData2() {
         let expectation = self.expectation(description: "link download and parsing")
 
         linkPreviewManager.downloadLink(url: "https://youtu.be/tP-Ipsat90c")
@@ -296,8 +302,10 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
+
+    #endif
 
     func testLinkParsingWithRealData3() {
         let expectation = self.expectation(description: "link download and parsing")
@@ -317,7 +325,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
     func testLinkParsingWithRealData4() {
@@ -338,7 +346,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
     func testLinkParsingWithRealData5() {
@@ -359,7 +367,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
     func testLinkParsingWithRealData6() {
@@ -380,7 +388,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
     func testLinkParsingWithRealData_instagram_web_link() {
@@ -407,7 +415,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
     func testLinkParsingWithRealData_instagram_app_sharesheet() {
@@ -434,7 +442,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
     func testLinkParsingWithRealData9() {
@@ -455,7 +463,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
     func testLinkParsingWithRealData10() {
@@ -466,7 +474,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 let content = try! self.linkPreviewManager.parse(linkData: linkData)
                 XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.title, "2434 Best Recipes images in 2020 | Food recipes, Food, Eat")
+                XCTAssertEqual(content.title, "2436 Best Recipes images in 2020 | Food recipes, Food, Eat")
                 XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/51/a0/b5/51a0b59e4980fdcddec7c3d322cc148f.jpg")
 
                 expectation.fulfill()
@@ -476,7 +484,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 expectation.fulfill()
             }.retainUntilComplete()
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
     // When using regular expressions to parse link titles, we need to use

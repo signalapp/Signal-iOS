@@ -102,7 +102,9 @@
     XCTAssertEqualObjects(parsed.firstObject, @"+13235551234");
 }
 
-- (void)xtestTryParsePhoneNumbersFromsUserSpecifiedText_Mexico1
+#ifdef BROKEN_TESTS
+
+- (void)testTryParsePhoneNumbersFromsUserSpecifiedText_Mexico1
 {
     NSArray<NSString *> *parsed =
         [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"528341639157" clientPhoneNumber:@"+528341639144"];
@@ -127,6 +129,8 @@
     XCTAssertTrue(parsed.count >= 1);
     XCTAssertTrue([parsed containsObject:@"+13235551234"]);
 }
+
+#endif
 
 - (void)testMissingAreaCode_USA
 {
