@@ -166,6 +166,11 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         ThreadUtil.enqueue(linkingAuthorizationMessage)
         SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
             let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
+            let _ = SSKEnvironment.shared.syncManager.syncAllGroups()
+            let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
+            let thread = TSContactThread.getOrCreateThread(contactId: deviceLink.slave.hexEncodedPublicKey)
+            thread.friendRequestStatus = .friends
+            thread.save()
         }) { _ in
             print("[Loki] Failed to send device link authorization message.")
         }

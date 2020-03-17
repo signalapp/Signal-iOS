@@ -95,7 +95,7 @@ public class ConversationStyle: NSObject {
                 gutterLeading = 16
                 gutterTrailing = 16
             } else {
-                gutterLeading = 16 + 35 + 24 // Values.mediumSpacing + Values.smallProfilePictureSize + Values.largeSpacing
+                gutterLeading = 12 + 35 + 12 // 12 + Values.smallProfilePictureSize + 12
                 gutterTrailing = 16
             }
         } else {

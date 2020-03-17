@@ -229,7 +229,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([self updateAvatarView]) {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:LKValues.largeSpacing],
+            [self.messageBubbleView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:12],
             [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.avatarView],
         ]];
         

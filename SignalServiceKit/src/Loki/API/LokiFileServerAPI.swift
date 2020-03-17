@@ -76,8 +76,15 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                     }
                 })
             }.map(on: DispatchQueue.global()) { deviceLinks -> Set<DeviceLink> in
-                storage.dbReadWriteConnection.readWrite { transaction in
+                func setDeviceLinks(in transaction: YapDatabaseReadWriteTransaction) {
                     storage.setDeviceLinks(deviceLinks, in: transaction)
+                }
+                if let transaction = transaction, transaction.connection.pendingTransactionCount != 0 {
+                    setDeviceLinks(in: transaction)
+                } else {
+                    storage.dbReadWriteConnection.readWrite { transaction in
+                        setDeviceLinks(in: transaction)
+                    }
                 }
                 return deviceLinks
             }

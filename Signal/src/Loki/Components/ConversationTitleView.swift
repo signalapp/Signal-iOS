@@ -134,9 +134,12 @@ final class ConversationTitleView : UIView {
     
     private func clearStatusIfNeededForMessageWithTimestamp(_ timestamp: NSNumber) {
         var uncheckedTargetInteraction: TSInteraction? = nil
-        thread.enumerateInteractions { interaction in
-            guard interaction.timestamp == timestamp.uint64Value else { return }
-            uncheckedTargetInteraction = interaction
+        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+            guard let interactionsByThread = transaction.ext(TSMessageDatabaseViewExtensionName) as? YapDatabaseViewTransaction else { return }
+            interactionsByThread.enumerateKeysAndObjects(inGroup: self.thread.uniqueId!) { _, _, object, _, _ in
+                guard let interaction = object as? TSInteraction, interaction.timestamp == timestamp.uint64Value else { return }
+                uncheckedTargetInteraction = interaction
+            }
         }
         guard let targetInteraction = uncheckedTargetInteraction, targetInteraction.interactionType() == .outgoingMessage else { return }
         self.currentStatus = nil

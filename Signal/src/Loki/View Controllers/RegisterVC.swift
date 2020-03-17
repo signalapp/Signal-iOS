@@ -211,7 +211,7 @@ final class RegisterVC : BaseVC {
         } else if eulaRange.contains(characterIndex) {
             urlAsString = "https://getsession.org/legal/#eula"
         } else if ppRange.contains(characterIndex) {
-            urlAsString = "https://getsession.org/privacy-policy/"
+            urlAsString = "https://getsession.org/legal/#privacy-policy"
         } else {
             urlAsString = nil
         }

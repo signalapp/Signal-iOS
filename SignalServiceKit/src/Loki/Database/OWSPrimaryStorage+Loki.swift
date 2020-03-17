@@ -6,15 +6,7 @@ public extension OWSPrimaryStorage {
     }
 
     public func setDeviceLinks(_ deviceLinks: Set<DeviceLink>, in transaction: YapDatabaseReadWriteTransaction) {
-        let masterHexEncodedPublicKeys = Set(deviceLinks.map { $0.master.hexEncodedPublicKey })
-        guard !masterHexEncodedPublicKeys.isEmpty else { return }
-        guard masterHexEncodedPublicKeys.count == 1 else {
-            print("[Loki] Found inconsistent set of device links.")
-            return
-        }
-        let masterHexEncodedPublicKey = masterHexEncodedPublicKeys.first!
-        let collection = getDeviceLinkCollection(for: masterHexEncodedPublicKey)
-        transaction.removeAllObjects(inCollection: collection)
+        // FIXME: Clear collections first?
         deviceLinks.forEach { addDeviceLink($0, in: transaction) } // TODO: Check the performance impact of this
     }
 
@@ -30,6 +22,7 @@ public extension OWSPrimaryStorage {
     
     public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
         let collection = getDeviceLinkCollection(for: masterHexEncodedPublicKey)
+        guard !transaction.allKeys(inCollection: collection).isEmpty else { return [] } // Fixes a crash that used to occur on Josh's device
         var result: Set<DeviceLink> = []
         transaction.enumerateRows(inCollection: collection) { _, object, _, _ in
             guard let deviceLink = object as? DeviceLink else { return }

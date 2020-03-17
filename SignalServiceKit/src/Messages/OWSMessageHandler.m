@@ -172,6 +172,10 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         [description appendString:verifiedString];
     } else if (syncMessage.contacts) {
         [description appendString:@"Contacts"];
+    } else if (syncMessage.groups) {
+        [description appendString:@"ClosedGroups"];
+    } else if (syncMessage.openGroups) {
+        [description appendString:@"OpenGroups"];
     } else {
         [description appendString:@"Unknown"];
     }

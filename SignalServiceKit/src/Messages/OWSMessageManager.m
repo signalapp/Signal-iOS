@@ -1020,6 +1020,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           messageType:TSInfoMessageTypeGroupUpdate
                                                                         customMessage:updateMessage];
                 [infoMessage saveWithTransaction:transaction];
+            } else if (transcript.isGroupQuit) {
+                TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:transcript.dataMessage.group.id groupType:closedGroup transaction:transaction];
+                [groupThread leaveGroupWithTransaction:transaction];
+                TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp
+                                                                             inThread:groupThread
+                                                                          messageType:TSInfoMessageTypeGroupQuit
+                                                                        customMessage:NSLocalizedString(@"GROUP_YOU_LEFT", nil)];
+                [infoMessage saveWithTransaction:transaction];
             } else {
                 [OWSRecordTranscriptJob
                  processIncomingSentMessageTranscript:transcript
@@ -1043,20 +1051,9 @@ NS_ASSUME_NONNULL_BEGIN
                 [[self.syncManager syncAllContacts] retainUntilComplete];
             });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
-            OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-            NSData *_Nullable syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
-            if (!syncData) {
-                OWSFailDebug(@"Failed to serialize groups sync message.");
-                return;
-            }
-            DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
-            [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
-                                             dataSource:dataSource
-                                            contentType:OWSMimeTypeApplicationOctetStream
-                                         sourceFilename:nil
-                                                caption:nil
-                                         albumMessageId:nil
-                                  isTemporaryAttachment:YES];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [[self.syncManager syncAllGroups] retainUntilComplete];
+            });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
             OWSLogInfo(@"Received request for block list");
             [self.blockingManager syncBlockList];
@@ -1080,7 +1077,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else if (syncMessage.contacts != nil) {
         if (wasSentByMasterDevice && syncMessage.contacts.data.length > 0) {
-            NSLog(@"[Loki] Received contact sync message.");
+            [LKLogger print:@"[Loki] Received contact sync message."];
             NSData *data = syncMessage.contacts.data;
             ContactParser *parser = [[ContactParser alloc] initWithData:data];
             NSArray<NSString *> *hexEncodedPublicKeys = [parser parseHexEncodedPublicKeys];
@@ -1091,10 +1088,20 @@ NS_ASSUME_NONNULL_BEGIN
                 switch (friendRequestStatus) {
                     case LKThreadFriendRequestStatusNone: {
                         OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-                        OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey];
-                        dispatch_async(OWSDispatch.sendingQueue, ^{
-                            [messageSender sendMessage:automatedFriendRequestMessage];
-                        });
+                        LKFriendRequestMessage *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey transaction:transaction];
+                        thread.isForceHidden = true;
+                        [thread saveWithTransaction:transaction];
+                        [messageSender sendMessage:automatedFriendRequestMessage
+                            success:^{
+                                [automatedFriendRequestMessage remove];
+                                thread.isForceHidden = false;
+                                [thread save];
+                            }
+                            failure:^(NSError *error) {
+                                [automatedFriendRequestMessage remove];
+                                thread.isForceHidden = false;
+                                [thread save];
+                            }];
                         break;
                     }
                     case LKThreadFriendRequestStatusRequestReceived: {
@@ -1106,6 +1113,33 @@ NS_ASSUME_NONNULL_BEGIN
                     }
                     default: break; // Do nothing
                 }
+            }
+        }
+    } else if (syncMessage.groups != nil) {
+        if (wasSentByMasterDevice && syncMessage.groups.data.length > 0) {
+            [LKLogger print:@"[Loki] Received group sync message."];
+            NSData *data = syncMessage.groups.data;
+            GroupParser *parser = [[GroupParser alloc] initWithData:data];
+            NSArray<TSGroupModel *> *groupModels = [parser parseGroupModels];
+            for (TSGroupModel *groupModel in groupModels) {
+                TSGroupThread *thread = [TSGroupThread threadWithGroupId:groupModel.groupId transaction:transaction];
+                if (thread == nil) {
+                    thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                    [thread saveWithTransaction:transaction];
+                    [self establishSessionsWithMembersIfNeeded:groupModel.groupMemberIds forThread:thread transaction:transaction];
+                    TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp
+                                                                                 inThread:thread
+                                                                              messageType:TSInfoMessageTypeGroupUpdate
+                                                                            customMessage:@"You have joined the group."];
+                    [infoMessage saveWithTransaction:transaction];
+                }
+            }
+        }
+    } else if (syncMessage.openGroups != nil) {
+        if (wasSentByMasterDevice && syncMessage.openGroups.count > 0) {
+            OWSLogInfo(@"[Loki] Received open group sync message.");
+            for (SSKProtoSyncMessageOpenGroups* openGroup in syncMessage.openGroups) {
+                [LKPublicChatManager.shared addChatWithServer:openGroup.url channel:openGroup.channel];
             }
         }
     } else {
@@ -1325,7 +1359,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Ensure sender is in the group.
-    if (![gThread.groupModel.groupMemberIds containsObject:envelope.source]) {
+    if (![gThread isUserInGroup:envelope.source transaction:transaction]) {
         OWSLogWarn(@"Ignoring 'Request Group Info' message for non-member of group. %@ not in %@",
             envelope.source,
             gThread.groupModel.groupMemberIds);
@@ -1406,7 +1440,7 @@ NS_ASSUME_NONNULL_BEGIN
         }).catchOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(NSError *error) {
             dispatch_semaphore_signal(semaphore);
         }) retainUntilComplete];
-        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC));
+        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
     }
 
     if (groupId.length > 0) {
@@ -1439,7 +1473,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
-                if (oldGroupThread && ![oldGroupThread.groupModel.groupAdminIds containsObject:hexEncodedPublicKey]) {
+                if (oldGroupThread && ![oldGroupThread isUserAdminInGroup:hexEncodedPublicKey transaction:transaction]) {
                     [LKLogger print:[NSString stringWithFormat:@"[Loki] Received a group update from a non-admin user for %@; ignoring.", [LKGroupUtilities getEncodedGroupID:groupId]]];
                     return nil;
                 }

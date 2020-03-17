@@ -3,9 +3,9 @@
 public final class Gradient : NSObject {
     public let start: UIColor
     public let end: UIColor
-    
+
     private override init() { preconditionFailure("Use init(start:end:) instead.") }
-    
+
     @objc public init(start: UIColor, end: UIColor) {
         self.start = start
         self.end = end
@@ -14,7 +14,7 @@ public final class Gradient : NSObject {
 }
 
 @objc public extension UIView {
-    
+
     @objc public func setGradient(_ gradient: Gradient) {
         let layer = CAGradientLayer()
         layer.frame = UIScreen.main.bounds
@@ -25,11 +25,13 @@ public final class Gradient : NSObject {
 
 @objc(LKGradients)
 final public class Gradients : NSObject {
-    
+
     @objc public static var defaultLokiBackground: Gradient {
         switch AppMode.current {
         case .light: return Gradient(start: UIColor(hex: 0xFCFCFC), end: UIColor(hex: 0xFFFFFF))
         case .dark: return Gradient(start: UIColor(hex: 0x171717), end: UIColor(hex: 0x121212))
         }
     }
+
+    @objc public static let transparentToBlack = Gradient(start: UIColor(red: 0, green: 0, blue: 0, alpha: 0), end: UIColor(red: 0, green: 0, blue: 0, alpha: 1))
 }

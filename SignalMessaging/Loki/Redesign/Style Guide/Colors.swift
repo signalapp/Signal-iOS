@@ -35,4 +35,5 @@ public final class Colors : NSObject {
     @objc public static var composeViewTextFieldBackground = UIColor(hex: 0x141414)
     @objc public static var receivedMessageBackground = UIColor(hex: 0x222325)
     @objc public static var sentMessageBackground = UIColor(hex: 0x3F4146)
+    @objc public static var newConversationButtonCollapsedBackground = UIColor(hex: 0x1F1F1F)
 }

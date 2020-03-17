@@ -3,6 +3,8 @@
 //
 
 #import "DataSource.h"
+#import "TSContactThread.h"
+#import "LKFriendRequestMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -99,6 +101,7 @@ NS_SWIFT_NAME(MessageSender)
 
 - (OWSMessageSend *)getSessionRestoreMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey;
 - (OWSMessageSend *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey;
+- (LKFriendRequestMessage *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)sendMessage:(OWSMessageSend *)messageSend;
 
 @end

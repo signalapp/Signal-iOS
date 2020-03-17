@@ -431,7 +431,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                            sessionStore:self.primaryStorage
                                            preKeyStore:self.primaryStorage
                                            signedPreKeyStore:self.primaryStorage
-                                           identityKeyStore:self.primaryStorage
+                                           identityKeyStore:self.identityManager
                                            recipientID:recipientId
                                            deviceID:deviceId];
 

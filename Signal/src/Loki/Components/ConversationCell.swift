@@ -42,7 +42,9 @@ final class ConversationCell : UITableViewCell {
     
     private lazy var statusIndicatorView: UIImageView = {
         let result = UIImageView()
-        result.contentMode = .center
+        result.contentMode = .scaleAspectFit
+        result.layer.cornerRadius = Values.conversationCellStatusIndicatorSize / 2
+        result.layer.masksToBounds = true
         return result
     }()
     
@@ -167,6 +169,7 @@ final class ConversationCell : UITableViewCell {
             typingIndicatorView.isHidden = true
             typingIndicatorView.stopAnimation()
         }
+        statusIndicatorView.backgroundColor = nil
         let lastMessage = threadViewModel.lastMessageForInbox
         if let lastMessage = lastMessage as? TSOutgoingMessage {
             let image: UIImage
@@ -174,7 +177,9 @@ final class ConversationCell : UITableViewCell {
             switch status {
             case .calculatingPoW, .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot")
             case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck")
-            case .read: image = #imageLiteral(resourceName: "FilledCircleCheck")
+            case .read:
+                statusIndicatorView.backgroundColor = .white
+                image = #imageLiteral(resourceName: "FilledCircleCheck")
             case .failed: image = #imageLiteral(resourceName: "message_status_failed").asTintedImage(color: Colors.text)!
             }
             statusIndicatorView.image = image

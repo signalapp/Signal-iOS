@@ -109,21 +109,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSMutableArray<SignalAccount *> *signalAccounts = [self.signalAccounts mutableCopy];
-    
-    NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
-    OWSAssertDebug(localNumber);
-    if (localNumber) {
-        BOOL hasLocalNumber = NO;
-        for (SignalAccount *signalAccount in signalAccounts) {
-            hasLocalNumber |= [signalAccount.recipientId isEqualToString:localNumber];
-        }
-        if (!hasLocalNumber) {
-            SignalAccount *signalAccount = [[SignalAccount alloc] initWithRecipientId:localNumber];
-            // OWSContactsOutputStream requires all signalAccount to have a contact.
-            signalAccount.contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
-            [signalAccounts addObject:signalAccount];
-        }
-    }
 
     // TODO use temp file stream to avoid loading everything into memory at once
     // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,

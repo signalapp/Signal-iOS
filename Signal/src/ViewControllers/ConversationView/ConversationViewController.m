@@ -1440,14 +1440,6 @@ typedef enum : NSUInteger {
 
     [self updateInputToolbarLayout];
     [self ensureScrollDownButton];
-    
-    NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
-    if ([@"Session Public Chat" isEqual:self.thread.name] && ![userDefaults boolForKey:@"hasSeenSessionPublicChatNotice"]) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"The Rules" message:[LKGeneralUtilities getSessionPublicChatNotice] preferredStyle:UIAlertControllerStyleAlert];
-        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-        [self presentViewController:alert animated:YES completion:nil];
-        [userDefaults setBool:YES forKey:@"hasSeenSessionPublicChatNotice"];
-    }
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
@@ -3081,7 +3073,11 @@ typedef enum : NSUInteger {
 
 - (void)sendMediaNavDidCancel:(SendMediaNavigationController *)sendMediaNavigationController
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (!self.isFirstResponder) {
+            [self becomeFirstResponder];
+        }
+    }];
 }
 
 - (void)sendMediaNav:(SendMediaNavigationController *)sendMediaNavigationController
@@ -3096,15 +3092,16 @@ typedef enum : NSUInteger {
     // the new message scroll into view.
     [self scrollToBottomAnimated:NO];
 
-    [self dismissViewControllerAnimated:YES
-                             completion:^{
-//                                 OWSAssertDebug(self.isFirstResponder);
-                                 if (@available(iOS 10, *)) {
-                                     // do nothing
-                                 } else {
-                                     [self reloadInputViews];
-                                 }
-                             }];
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (!self.isFirstResponder) {
+            [self becomeFirstResponder];
+        }
+        if (@available(iOS 10, *)) {
+            // do nothing
+        } else {
+            [self reloadInputViews];
+        }
+    }];
 }
 
 - (nullable NSString *)sendMediaNavInitialMessageText:(SendMediaNavigationController *)sendMediaNavigationController

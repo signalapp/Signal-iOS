@@ -1,14 +1,14 @@
 
-@objc public final class ContactParser : NSObject {
+@objc public final class GroupParser : NSObject {
     private let data: Data
     
     @objc public init(data: Data) {
         self.data = data
     }
     
-    @objc public func parseHexEncodedPublicKeys() -> [String] {
+    @objc public func parseGroupModels() -> [TSGroupModel] {
         var index = 0
-        var result: [String] = []
+        var result: [TSGroupModel] = []
         while index < data.endIndex {
             var uncheckedSize: UInt32? = try? data[index..<(index+4)].withUnsafeBytes { $0.pointee }
             if let size = uncheckedSize, size >= data.count, let intermediate = try? data[index..<(index+4)].reversed() {
@@ -19,9 +19,11 @@
             index += 4
             guard index + sizeAsInt <= data.count else { break }
             let protoAsData = data[index..<(index+sizeAsInt)]
-            guard let proto = try? SSKProtoContactDetails.parseData(protoAsData) else { break }
+            guard let proto = try? SSKProtoGroupDetails.parseData(protoAsData) else { break }
             index += sizeAsInt
-            result.append(proto.number)
+            var groupModel = TSGroupModel(title: proto.name, memberIds: proto.members, image: nil,
+                groupId: proto.id, groupType: GroupType.closedGroup, adminIds: proto.admins)
+            result.append(groupModel)
         }
         return result
     }

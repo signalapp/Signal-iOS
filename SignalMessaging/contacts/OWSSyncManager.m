@@ -16,12 +16,15 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
+#import <SignalServiceKit/OWSSyncGroupsMessage.h>
+#import <SignalServiceKit/LKSyncOpenGroupsMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -280,13 +283,28 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 - (AnyPromise *)syncAllContacts
 {
     NSMutableArray<SignalAccount *> *friends = @[].mutableCopy;
+    NSMutableArray<AnyPromise *> *promises = @[].mutableCopy;
     [TSContactThread enumerateCollectionObjectsUsingBlock:^(TSContactThread *thread, BOOL *stop) {
         NSString *hexEncodedPublicKey = thread.contactIdentifier;
-        if (hexEncodedPublicKey != nil && thread.isContactFriend) {
+        if (hexEncodedPublicKey != nil && thread.isContactFriend && thread.shouldThreadBeVisible && !thread.isForceHidden) {
             [friends addObject:[[SignalAccount alloc] initWithRecipientId:hexEncodedPublicKey]];
         }
     }];
-    return [self syncContactsForSignalAccounts:friends];
+    [friends addObject:[[SignalAccount alloc] initWithRecipientId:self.tsAccountManager.localNumber]];
+    NSMutableArray<SignalAccount *> *signalAccounts = @[].mutableCopy;
+    for (SignalAccount *contact in friends) {
+        [signalAccounts addObject:contact];
+        if (signalAccounts.count >= 3) {
+            [promises addObject:[self syncContactsForSignalAccounts:[signalAccounts copy]]];
+            [signalAccounts removeAllObjects];
+        }
+    }
+    if (signalAccounts.count > 0) {
+        [promises addObject:[self syncContactsForSignalAccounts:signalAccounts]];
+    }
+    AnyPromise *promise = PMKJoin(promises);
+    [promise retainUntilComplete];
+    return promise;
 }
 
 - (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
@@ -300,6 +318,66 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             }
             failure:^(NSError *error) {
                 OWSLogError(@"Failed to send contacts sync message with error: %@.", error);
+                resolve(error);
+            }];
+    }];
+    [promise retainUntilComplete];
+    return promise;
+}
+
+- (AnyPromise *)syncAllGroups
+{
+    NSMutableArray<TSGroupThread *> *groupThreads = @[].mutableCopy;
+    NSMutableArray<AnyPromise *> *promises = @[].mutableCopy;
+    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
+        if (![obj isKindOfClass:[TSGroupThread class]]) {
+            if (![obj isKindOfClass:[TSContactThread class]]) { // FIXME: Isn't this redundant?
+                OWSLogWarn(@"Ignoring non-group thread in thread collection: %@.", obj);
+            }
+            return;
+        }
+        TSGroupThread *thread = (TSGroupThread *)obj;
+        if (thread.groupModel.groupType == closedGroup && thread.shouldThreadBeVisible && !thread.isForceHidden) {
+            [groupThreads addObject:thread];
+        }
+    }];
+    for (TSGroupThread *groupThread in groupThreads) {
+        [promises addObject:[self syncGroupForThread:groupThread]];
+    }
+    AnyPromise *promise = PMKJoin(promises);
+    [promise retainUntilComplete];
+    return promise;
+}
+
+- (AnyPromise *)syncGroupForThread:(TSGroupThread *)thread
+{
+    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithGroupThread:thread];
+    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        [self.messageSender sendMessage:syncGroupsMessage
+            success:^{
+                OWSLogInfo(@"Successfully sent group sync message.");
+                resolve(@(1));
+            }
+            failure:^(NSError *error) {
+                OWSLogError(@"Failed to send group sync message due to error: %@.", error);
+                resolve(error);
+            }];
+    }];
+    [promise retainUntilComplete];
+    return promise;
+}
+
+- (AnyPromise *)syncAllOpenGroups
+{
+    LKSyncOpenGroupsMessage *syncOpenGroupsMessage = [[LKSyncOpenGroupsMessage alloc] init];
+    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        [self.messageSender sendMessage:syncOpenGroupsMessage
+            success:^{
+                OWSLogInfo(@"Successfully sent open group sync message.");
+                resolve(@(1));
+            }
+            failure:^(NSError *error) {
+                OWSLogError(@"Failed to send open group sync message due to error: %@.", error);
                 resolve(error);
             }];
     }];

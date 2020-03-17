@@ -66,7 +66,8 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("New Closed Group", comment: "")
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        let titleLabelFontSize = isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize
+        titleLabel.font = .boldSystemFont(ofSize: titleLabelFontSize)
         navigationItem.titleView = titleLabel
         // Set up content
         if !contacts.isEmpty {
@@ -107,7 +108,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             explanationLabel.text = NSLocalizedString("You don't have any contacts yet", comment: "")
             let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
             createNewPrivateChatButton.setTitle(NSLocalizedString("Start a Session", comment: ""), for: UIControl.State.normal)
-            createNewPrivateChatButton.addTarget(self, action: #selector(createPrivateChat), for: UIControl.Event.touchUpInside)
+            createNewPrivateChatButton.addTarget(self, action: #selector(createNewPrivateChat), for: UIControl.Event.touchUpInside)
             createNewPrivateChatButton.set(.width, to: 180)
             let stackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
             stackView.axis = .vertical
@@ -169,8 +170,13 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             return showError(title: NSLocalizedString("A closed group cannot have more than 10 members", comment: ""))
         }
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-        let members = [String](selectedContacts) + [ userHexEncodedPublicKey ]
-        let admins = [ userHexEncodedPublicKey ]
+        let storage = OWSPrimaryStorage.shared()
+        var masterHexEncodedPublicKey = ""
+        storage.dbReadConnection.readWrite { transaction in
+            masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: userHexEncodedPublicKey, in: transaction) ?? userHexEncodedPublicKey
+        }
+        let members = selectedContacts + [ masterHexEncodedPublicKey ]
+        let admins = [ masterHexEncodedPublicKey ]
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(Randomness.generateRandomBytes(kGroupIdLength)!.toHexString())
         let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         let thread = TSGroupThread.getOrCreateThread(with: group)
@@ -196,9 +202,9 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         }
     }
     
-    @objc private func createPrivateChat() {
+    @objc private func createNewPrivateChat() {
         presentingViewController?.dismiss(animated: true, completion: nil)
-        SignalApp.shared().homeViewController!.createPrivateChat()
+        SignalApp.shared().homeViewController!.createNewPrivateChat()
     }
 }
 
