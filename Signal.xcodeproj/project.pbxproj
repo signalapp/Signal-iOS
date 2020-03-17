@@ -313,7 +313,6 @@
 		34C758DA2289DDDD00802527 /* StickerSharingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C758D92289DDDC00802527 /* StickerSharingViewController.swift */; };
 		34C758DD228DD81C00802527 /* StickerTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C758DC228DD81C00802527 /* StickerTooltip.swift */; };
 		34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA631A2097806E00E526A0 /* OWSContactShareView.m */; };
-		34CCC08223D762DE00022FC6 /* GroupsV2MiscTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CCC08123D762DE00022FC6 /* GroupsV2MiscTest.swift */; };
 		34CCC08423D78B2500022FC6 /* UpdateGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CCC08323D78B2500022FC6 /* UpdateGroupViewController.swift */; };
 		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
 		34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
@@ -1195,7 +1194,6 @@
 		34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageDetailViewController.swift; sourceTree = "<group>"; };
 		34CA63192097806E00E526A0 /* OWSContactShareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareView.h; sourceTree = "<group>"; };
 		34CA631A2097806E00E526A0 /* OWSContactShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareView.m; sourceTree = "<group>"; };
-		34CCC08123D762DE00022FC6 /* GroupsV2MiscTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2MiscTest.swift; sourceTree = "<group>"; };
 		34CCC08323D78B2500022FC6 /* UpdateGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateGroupViewController.swift; sourceTree = "<group>"; };
 		34CE88E51F2FB9A10098030F /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		34CE88E61F2FB9A10098030F /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
@@ -2473,7 +2471,6 @@
 		34CCC08023D762DE00022FC6 /* groups */ = {
 			isa = PBXGroup;
 			children = (
-				34CCC08123D762DE00022FC6 /* GroupsV2MiscTest.swift */,
 			);
 			name = groups;
 			path = Signal/src/groups;
@@ -4768,7 +4765,6 @@
 				4C4BC6C32102D697004040C9 /* ContactDiscoveryOperationTest.swift in Sources */,
 				455AC69E1F4F8B0300134004 /* ImageCacheTest.swift in Sources */,
 				34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */,
-				34CCC08223D762DE00022FC6 /* GroupsV2MiscTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
