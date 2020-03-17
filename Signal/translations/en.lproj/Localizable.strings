@@ -1961,6 +1961,9 @@
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Other Users";
 
+/* The placeholder text for the search input in the 'create new group' view. */
+"NEW_GROUP_SEARCH_PLACEHOLDER" = "Search";
+
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to discard these changes?";
 

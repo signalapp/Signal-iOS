@@ -245,11 +245,10 @@ public class NewGroupViewController2: OWSViewController {
                                                                                              newGroupSeed: newGroupSeed,
                                                                                              shouldSendMessage: true)
                                                         }.done { groupThread in
-                                                            self.presentingViewController?.dismiss(animated: true) {
-                                                                SignalApp.shared().presentConversation(for: groupThread,
-                                                                                                       action: .compose,
-                                                                                                       animated: false)
-                                                            }
+                                                            SignalApp.shared().presentConversation(for: groupThread,
+                                                                                                   action: .compose,
+                                                                                                   animated: false)
+                                                            self.presentingViewController?.dismiss(animated: true)
                                                         }.catch { error in
                                                             owsFailDebug("Could not create group: \(error)")
 
@@ -389,7 +388,9 @@ extension NewGroupViewController2: RecipientPickerDelegate {
         return imageView
     }
 
-    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
+    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {
+        _ = searchBar.resignFirstResponder()
+    }
 }
 
 // MARK: -

@@ -26,12 +26,14 @@ public class NewGroupSearchBar: UIView {
     var members = [NewGroupMember]() {
         didSet {
             resetContentAndLayout()
+            updatePlaceholder()
         }
     }
 
     private let collectionView: UICollectionView
     private let collectionViewLayout = NewGroupSearchBarLayout()
     private let textField = UITextField()
+    private let placeholderLabel = UILabel()
 
     private enum Sections: Int, CaseIterable {
         case members, input
@@ -58,6 +60,12 @@ public class NewGroupSearchBar: UIView {
         textField.textColor = Theme.primaryTextColor
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
+        placeholderLabel.font = .ows_dynamicTypeBody
+        placeholderLabel.backgroundColor = .clear
+        placeholderLabel.textColor = Theme.placeholderColor
+        placeholderLabel.text = NSLocalizedString("NEW_GROUP_SEARCH_PLACEHOLDER",
+                                                  comment: "The placeholder text for the search input in the 'create new group' view.")
+
         collectionViewLayout.layoutDelegate = self
 
         collectionView.dataSource = self
@@ -74,6 +82,13 @@ public class NewGroupSearchBar: UIView {
 
         addSubview(collectionView)
         collectionView.autoPinEdgesToSuperviewEdges()
+
+        placeholderLabel.isHidden = true
+        addSubview(placeholderLabel)
+        placeholderLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: NewGroupSearchBarLayout.hMargin)
+        placeholderLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: NewGroupSearchBarLayout.hMargin)
+        placeholderLabel.autoPinEdge(toSuperviewEdge: .top, withInset: NewGroupSearchBarLayout.vMargin)
+        placeholderLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: NewGroupSearchBarLayout.vMargin)
     }
 
     func contentHeight(forWidth width: CGFloat) -> CGFloat {
@@ -128,11 +143,15 @@ public class NewGroupSearchBar: UIView {
     }
 
     public override func becomeFirstResponder() -> Bool {
-        return textField.becomeFirstResponder()
+        let result = textField.becomeFirstResponder()
+        updatePlaceholder()
+        return result
     }
 
-    public func resignFirstResponder() {
-        textField.resignFirstResponder()
+    public override func resignFirstResponder() -> Bool {
+        let result = textField.resignFirstResponder()
+        updatePlaceholder()
+        return result
     }
 
     func acceptAutocorrectSuggestion() {
@@ -144,10 +163,16 @@ public class NewGroupSearchBar: UIView {
         delegate?.searchBarTextDidChange()
 
         collectionViewLayout.invalidateLayout()
+
+        updatePlaceholder()
     }
 
     @objc func didTapCollectionView(sender: UIGestureRecognizer) {
-        textField.becomeFirstResponder()
+        _ = becomeFirstResponder()
+    }
+
+    private func updatePlaceholder() {
+        placeholderLabel.isHidden = (textField.isFirstResponder || !members.isEmpty)
     }
 }
 
@@ -439,6 +464,9 @@ private class NewGroupSearchBarLayout: UICollectionViewLayout {
         itemAttributesMap.removeAll()
     }
 
+    static let hMargin: CGFloat = 16
+    static let vMargin: CGFloat = 10
+
     override func prepare() {
         super.prepare()
 
@@ -452,8 +480,8 @@ private class NewGroupSearchBarLayout: UICollectionViewLayout {
             contentSize = .zero
             return
         }
-        let hMargin: CGFloat = 16
-        let vMargin: CGFloat = 10
+        let hMargin = NewGroupSearchBarLayout.hMargin
+        let vMargin = NewGroupSearchBarLayout.vMargin
         let hSpacing: CGFloat = 4
         let vSpacing: CGFloat = 4
         let collectionViewWidth = collectionView.width
