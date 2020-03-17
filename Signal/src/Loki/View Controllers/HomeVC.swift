@@ -50,7 +50,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     private lazy var fadeView: UIView = {
         let result = UIView()
-        let gradient = Gradients.transparentToBlack
+        let gradient = Gradients.homeVCFade
         result.setGradient(gradient)
         result.isUserInteractionEnabled = false
         return result

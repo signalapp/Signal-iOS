@@ -241,8 +241,8 @@ private final class NewConversationButton : UIImageView {
         layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size, height: size))).cgPath
         layer.shadowColor = color.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 0.8)
-        layer.shadowOpacity = 1
-        layer.shadowRadius = 6
+        layer.shadowOpacity = isLightMode ? 0.6 : 1
+        layer.shadowRadius = isLightMode ? 4 : 6
     }
 }
 

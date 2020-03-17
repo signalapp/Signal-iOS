@@ -15,7 +15,7 @@ public final class Gradient : NSObject {
 
 @objc public extension UIView {
 
-    @objc public func setGradient(_ gradient: Gradient) {
+    @objc func setGradient(_ gradient: Gradient) {
         let layer = CAGradientLayer()
         layer.frame = UIScreen.main.bounds
         layer.colors = [ gradient.start.cgColor, gradient.end.cgColor ]
@@ -33,5 +33,10 @@ final public class Gradients : NSObject {
         }
     }
 
-    @objc public static let transparentToBlack = Gradient(start: UIColor(red: 0, green: 0, blue: 0, alpha: 0), end: UIColor(red: 0, green: 0, blue: 0, alpha: 1))
+    @objc public static var homeVCFade: Gradient {
+        switch AppMode.current {
+        case .light: return Gradient(start: UIColor(hex: 0xFFFFFF).withAlphaComponent(0), end: UIColor(hex: 0xFFFFFF))
+        case .dark: return Gradient(start: UIColor(hex: 0x000000).withAlphaComponent(0), end: UIColor(hex: 0x000000))
+        }
+    }
 }

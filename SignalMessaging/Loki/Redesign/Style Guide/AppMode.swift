@@ -15,6 +15,11 @@ public var isDarkMode: Bool {
 
 @objc public final class LKAppModeUtilities : NSObject {
 
-    @objc public static func isLightMode() -> Bool { return AppMode.current == .light }
-    @objc public static func isDarkMode() -> Bool { return AppMode.current == .dark }
+    @objc public static var isLightMode: Bool {
+        return AppMode.current == .light
+    }
+
+    @objc public static var isDarkMode: Bool {
+        return AppMode.current == .dark
+    }
 }
