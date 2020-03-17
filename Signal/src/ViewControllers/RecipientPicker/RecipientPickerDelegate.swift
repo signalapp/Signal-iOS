@@ -67,9 +67,6 @@ public class PickedRecipient: NSObject {
 
 @objc
 extension RecipientPickerViewController {
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
 
     func item(forRecipient recipient: PickedRecipient) -> OWSTableItem {
         switch recipient.identifier {
@@ -88,7 +85,7 @@ extension RecipientPickerViewController {
                             cell.ows_setAccessoryView(accessoryView)
                         } else {
                             let accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient)
-                            cell.setAccessoryMessage(delegate.recipientPicker(self, accessoryMessageForRecipient: recipient))
+                            cell.setAccessoryMessage(accessoryMessage)
                         }
                     }
 

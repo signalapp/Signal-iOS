@@ -90,7 +90,7 @@ public class NewGroupViewController2: OWSViewController {
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowGroups = false
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
-        recipientPicker.shouldHideSearchBar = true
+        recipientPicker.shouldShowSearchBar = false
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)

@@ -49,9 +49,7 @@ public class NewGroupSearchBar: UIView {
     @available(*, unavailable, message: "use other constructor instead.")
     @objc
     required init?(coder aDecoder: NSCoder) {
-        self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
-
-        super.init(coder: aDecoder)
+        notImplemented()
     }
 
     private func configure() {

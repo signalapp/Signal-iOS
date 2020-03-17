@@ -114,6 +114,7 @@ const NSUInteger kMinimumSearchLength = 2;
     _shouldShowGroups = YES;
     _shouldShowInvites = NO;
     _shouldShowAlphabetSlider = YES;
+    _shouldShowSearchBar = YES;
 
     return self;
 }
@@ -128,7 +129,7 @@ const NSUInteger kMinimumSearchLength = 2;
     _collation = [UILocalizedIndexedCollation currentCollation];
 
     // Search
-    if (!self.shouldHideSearchBar) {
+    if (self.shouldShowSearchBar) {
         UISearchBar *searchBar = [OWSSearchBar new];
         _searchBar = searchBar;
         searchBar.delegate = self;
@@ -143,7 +144,7 @@ const NSUInteger kMinimumSearchLength = 2;
         SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
         searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
     }
-    
+
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
     _tableViewController.tableViewStyle = UITableViewStylePlain;
@@ -158,7 +159,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
-    if (!self.shouldHideSearchBar) {
+    if (self.shouldShowSearchBar) {
         _tableViewController.tableView.tableHeaderView = self.searchBar;
     }
 
@@ -304,7 +305,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
     [self.contactsViewHelper warmNonSignalContactsCacheAsync];
 
-    if (!self.shouldHideSearchBar) {
+    if (self.shouldShowSearchBar) {
         self.tableViewController.tableView.tableHeaderView = self.searchBar;
     }
 
