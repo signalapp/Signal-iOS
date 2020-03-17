@@ -7,23 +7,18 @@ import Foundation
 @objc
 public class DisappearingMessageToken: MTLModel {
     @objc
-    public var isEnabled: Bool = false
+    public var isEnabled: Bool {
+        return durationSeconds > 0
+    }
+
     @objc
     public var durationSeconds: UInt32 = 0
 
     @objc
     public init(isEnabled: Bool, durationSeconds: UInt32) {
         // Consider disabled if duration is zero.
-        self.isEnabled = isEnabled && durationSeconds > 0
         // Use zero duration if not enabled.
         self.durationSeconds = isEnabled ? durationSeconds : 0
-
-        if isEnabled != self.isEnabled {
-            owsFailDebug("isEnabled: \(isEnabled) != self.isEnabled: \(self.isEnabled)")
-        }
-        if durationSeconds != self.durationSeconds {
-            owsFailDebug("durationSeconds: \(durationSeconds) != self.durationSeconds: \(self.durationSeconds)")
-        }
 
         super.init()
     }
