@@ -18,10 +18,6 @@ final class GroupsV2MiscTest: SignalBaseTest {
     }
 
     func testProfileKeyDerivation() {
-        guard FeatureFlags.useZKGroups else {
-            return
-        }
-
         let count = 1000
 
         do {

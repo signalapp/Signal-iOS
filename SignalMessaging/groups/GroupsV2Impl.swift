@@ -59,6 +59,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         SwiftSingletons.register(self)
 
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.verifyServerPublicParams()
+        }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             guard self.tsAccountManager.isRegisteredAndReady else {
                 return
@@ -74,6 +77,34 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         observeNotifications()
+    }
+
+    // MARK: -
+
+    private let serviceStore = SDSKeyValueStore(collection: "GroupsV2Impl.serviceStore")
+
+    // GroupsV2 TODO: Remove this check once zkgroups is in production.
+    private func verifyServerPublicParams() {
+        let serverPublicParamsBase64 = TSConstants.serverPublicParamsBase64
+        let lastServerPublicParamsKey = "lastServerPublicParamsKey"
+
+        guard serverPublicParamsBase64 != (databaseStorage.read { transaction in
+            return self.serviceStore.getString(lastServerPublicParamsKey, transaction: transaction)
+        }) else {
+            // Nothing to be done; server public params haven't changed.
+            return
+        }
+
+        Logger.info("Server public params have changed.")
+
+        databaseStorage.write { transaction in
+            self.clearTemporalCredentials(transaction: transaction)
+            VersionedProfiles.clearProfileKeyCredentials(transaction: transaction)
+            self.serviceStore.setString(serverPublicParamsBase64, key: lastServerPublicParamsKey, transaction: transaction)
+        }
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.reuploadLocalProfilePromise().retainUntilComplete()
+        }
     }
 
     // MARK: - Notifications
@@ -724,7 +755,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     switch statusCode {
                     case 401:
                         // Retry auth errors after retrieving new temporal credentials.
-                        self.clearTemporalCredentials()
+                        self.databaseStorage.write { transaction in
+                            self.clearTemporalCredentials(transaction: transaction)
+                        }
                         retryIfPossible()
                     case 403:
                         // 403 indicates that we are no longer in the group for
@@ -1028,11 +1061,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
-    private func clearTemporalCredentials() {
-        databaseStorage.write { transaction in
-            // Remove stale auth credentials.
-            self.authCredentialStore.removeAll(transaction: transaction)
-        }
+    private func clearTemporalCredentials(transaction: SDSAnyWriteTransaction) {
+        // Remove stale auth credentials.
+        self.authCredentialStore.removeAll(transaction: transaction)
     }
 
     private func retrieveTemporalCredentialsFromService(localUuid: UUID) -> Promise<AuthCredentialMap> {

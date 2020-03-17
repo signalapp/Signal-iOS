@@ -111,7 +111,8 @@ public class GroupsV2Changes {
             groupMembershipBuilder.addNonPendingMember(address, role: role)
 
             let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
 
             profileKeys[uuid] = profileKey
         }
@@ -158,7 +159,8 @@ public class GroupsV2Changes {
             let uuidCiphertext = try presentation.getUuidCiphertext()
             let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
 
             let address = SignalServiceAddress(uuid: uuid)
             guard oldGroupMembership.nonPendingMembers.contains(address) else {
@@ -218,7 +220,8 @@ public class GroupsV2Changes {
             let uuidCiphertext = try presentation.getUuidCiphertext()
             let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext)
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
 
             let address = SignalServiceAddress(uuid: uuid)
             guard oldGroupMembership.pendingMembers.contains(address) else {

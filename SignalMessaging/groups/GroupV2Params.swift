@@ -79,9 +79,12 @@ public extension GroupV2Params {
         return uuidCiphertext.serialize().asData
     }
 
-    func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext) throws -> Data {
+    func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext,
+                    uuid: UUID) throws -> Data {
+        let zkgUuid = try uuid.asZKGUuid()
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
-        let profileKey = try clientZkGroupCipher.decryptProfileKey(profileKeyCiphertext: profileKeyCiphertext)
+        let profileKey = try clientZkGroupCipher.decryptProfileKey(profileKeyCiphertext: profileKeyCiphertext,
+                                                                   uuid: zkgUuid)
         return profileKey.serialize().asData
     }
 }
