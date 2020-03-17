@@ -256,14 +256,23 @@ class SendMediaNavigationController: OWSNavigationController {
 }
 
 extension SendMediaNavigationController: UINavigationControllerDelegate {
+
+    private func setNavBarBackgroundColor(to color: UIColor) {
+        guard let navBar = navigationBar as? OWSNavigationBar else { return }
+        navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navBar.shadowImage = UIImage()
+        navBar.isTranslucent = false
+        navBar.barTintColor = color
+    }
+
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-//        if let navbarTheme = preferredNavbarTheme(viewController: viewController) {
-//            if let owsNavBar = navigationBar as? OWSNavigationBar {
-//                owsNavBar.overrideTheme(type: navbarTheme)
-//            } else {
-//                owsFailDebug("unexpected navigationBar: \(navigationBar)")
-//            }
-//        }
+        if viewController == captureViewController {
+            setNavBarBackgroundColor(to: .black)
+        } else if viewController == mediaLibraryViewController {
+            setNavBarBackgroundColor(to: .white)
+        } else {
+            setNavBarBackgroundColor(to: Colors.navigationBarBackground)
+        }
 
         switch viewController {
         case is PhotoCaptureViewController:
@@ -286,13 +295,14 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
     // In case back navigation was canceled, we re-apply whatever is showing.
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-//        if let navbarTheme = preferredNavbarTheme(viewController: viewController) {
-//            if let owsNavBar = navigationBar as? OWSNavigationBar {
-//                owsNavBar.overrideTheme(type: navbarTheme)
-//            } else {
-//                owsFailDebug("unexpected navigationBar: \(navigationBar)")
-//            }
-//        }
+        if viewController == captureViewController {
+            setNavBarBackgroundColor(to: .black)
+        } else if viewController == mediaLibraryViewController {
+            setNavBarBackgroundColor(to: .white)
+        } else {
+            setNavBarBackgroundColor(to: Colors.navigationBarBackground)
+        }
+
         self.updateButtons(topViewController: viewController)
     }
 

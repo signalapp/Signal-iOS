@@ -49,7 +49,7 @@ class PhotoCaptureViewController: OWSViewController {
 
     override func loadView() {
         self.view = UIView()
-        self.view.backgroundColor = Colors.navigationBarBackground
+        self.view.backgroundColor = .black
     }
 
     override func viewDidLoad() {

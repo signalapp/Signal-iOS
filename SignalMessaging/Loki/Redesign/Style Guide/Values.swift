@@ -11,11 +11,11 @@ public final class Values : NSObject {
     @objc public static let composeViewTextFieldPlaceholderOpacity = CGFloat(0.4)
     
     // MARK: - Font Sizes
-    @objc public static let verySmallFontSize = CGFloat(10)
-    @objc public static let smallFontSize = CGFloat(13)
-    @objc public static let mediumFontSize = CGFloat(15)
-    @objc public static let largeFontSize = CGFloat(20)
-    @objc public static let veryLargeFontSize = CGFloat(25)
+    @objc public static let verySmallFontSize = isSmallScreen ? CGFloat(10) : CGFloat(12)
+    @objc public static let smallFontSize = isSmallScreen ? CGFloat(13) : CGFloat(15)
+    @objc public static let mediumFontSize = isSmallScreen ? CGFloat(15) : CGFloat(17)
+    @objc public static let largeFontSize = isSmallScreen ? CGFloat(20) : CGFloat(22)
+    @objc public static let veryLargeFontSize = isSmallScreen ? CGFloat(25) : CGFloat(27)
     @objc public static let massiveFontSize = CGFloat(50)
     
     // MARK: - Element Sizes

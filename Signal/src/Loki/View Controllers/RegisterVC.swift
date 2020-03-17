@@ -7,7 +7,7 @@ final class RegisterVC : BaseVC {
     private lazy var publicKeyLabel: UILabel = {
         let result = UILabel()
         result.textColor = Colors.text
-        result.font = Fonts.spaceMono(ofSize: isSmallScreen ? Values.mediumFontSize : Values.largeFontSize)
+        result.font = Fonts.spaceMono(ofSize: isSmallScreen ? Values.mediumFontSize : 20)
         result.numberOfLines = 0
         result.lineBreakMode = .byCharWrapping
         return result

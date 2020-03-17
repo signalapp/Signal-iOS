@@ -2,7 +2,7 @@
 public enum AppMode {
     case light, dark
     
-    public static var current: AppMode = .light
+    public static var current: AppMode = .dark
 }
 
 public var isLightMode: Bool {

@@ -180,7 +180,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         // for iPhoneX devices, extends the black background to the bottom edge of the view.
         let bottomBannerContainer = UIView()
-        bottomBannerContainer.backgroundColor = Colors.navigationBarBackground
+        bottomBannerContainer.backgroundColor = isLightMode ? UIColor.black : Colors.navigationBarBackground
         self.view.addSubview(bottomBannerContainer)
         bottomBannerContainer.autoPinWidthToSuperview()
         bottomBannerContainer.autoPinEdge(.top, to: .bottom, of: self.collectionView)

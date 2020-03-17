@@ -63,7 +63,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     const CGFloat kButtonHeight = 40.f;
     OWSFlatButton *button =
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"Unlock Session", @"")
-                                  font:[UIFont boldSystemFontOfSize:15] // Values.mediumFontSize
+                                  font:[UIFont boldSystemFontOfSize:LKValues.mediumFontSize]
                             titleColor:UIColor.whiteColor
                        backgroundColor:UIColor.clearColor
                                 target:self

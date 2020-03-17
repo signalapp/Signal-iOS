@@ -77,7 +77,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.layoutMargins = UIEdgeInsetsZero;
 
     _profilePictureView = [LKProfilePictureView new];
-    CGFloat profilePictureSize = 45; // Values.mediumProfilePictureSize
+    CGFloat profilePictureSize = LKValues.mediumProfilePictureSize;
     [self.profilePictureView autoSetDimension:ALDimensionWidth toSize:profilePictureSize];
     [self.profilePictureView autoSetDimension:ALDimensionHeight toSize:profilePictureSize];
     self.profilePictureView.size = profilePictureSize;
@@ -106,7 +106,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     [self.accessoryViewContainer setContentHuggingHorizontalHigh];
 
     self.axis = UILayoutConstraintAxisHorizontal;
-    self.spacing = 16; // Values.mediumSpacing
+    self.spacing = LKValues.mediumSpacing;
     self.alignment = UIStackViewAlignmentCenter;
     [self addArrangedSubview:self.profilePictureView];
     [self addArrangedSubview:self.nameContainerView];

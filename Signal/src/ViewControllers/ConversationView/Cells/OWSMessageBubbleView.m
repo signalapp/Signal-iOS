@@ -366,9 +366,10 @@ NS_ASSUME_NONNULL_BEGIN
 
         CGFloat maxGradientHeight = 40.f;
         CAGradientLayer *gradientLayer = [CAGradientLayer new];
+        CGFloat whiteLevel = LKAppModeUtilities.isLightMode ? 1.f : 0.f;
         gradientLayer.colors = @[
-            (id)[UIColor colorWithWhite:0.f alpha:0.f].CGColor,
-            (id)[UIColor colorWithWhite:0.f alpha:0.4f].CGColor,
+            (id)[UIColor colorWithWhite:whiteLevel alpha:0.f].CGColor,
+            (id)[UIColor colorWithWhite:whiteLevel alpha:0.4f].CGColor,
         ];
         OWSLayerView *gradientView =
             [[OWSLayerView alloc] initWithFrame:CGRectZero
@@ -717,7 +718,13 @@ NS_ASSUME_NONNULL_BEGIN
         for (NSTextCheckingResult *match in
             [regex matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
             OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
-            [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.whiteColor range:match.range];
+            UIColor *highlightColor;
+            if (LKAppModeUtilities.isLightMode) {
+                highlightColor = isOutgoingMessage ? UIColor.whiteColor : [LKColors.accent colorWithAlphaComponent:LKValues.unimportantElementOpacity];
+            } else {
+                highlightColor = UIColor.whiteColor;
+            }
+            [attributedText addAttribute:NSBackgroundColorAttributeName value:highlightColor range:match.range];
             [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.blackColor range:match.range];
         }
     }

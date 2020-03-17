@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [attributedPlaceholder addAttribute:NSForegroundColorAttributeName value:foregroundColor range:NSMakeRange(0, placeholder.length)];
                 textField.attributedPlaceholder = attributedPlaceholder;
             }
-            textField.keyboardAppearance = Theme.keyboardAppearance;
+            textField.keyboardAppearance = LKAppModeUtilities.isLightMode ? UIKeyboardAppearanceDefault : UIKeyboardAppearanceDark;
         }
     }];
 }

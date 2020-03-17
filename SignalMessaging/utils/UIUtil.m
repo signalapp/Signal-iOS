@@ -6,6 +6,7 @@
 #import "Theme.h"
 #import "UIColor+OWS.h"
 #import <SignalServiceKit/AppContext.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 #define CONTACT_PICTURE_VIEW_BORDER_WIDTH 0.5f
 
@@ -35,8 +36,8 @@
     UIToolbar.appearance.tintColor = UIColor.whiteColor;
     
     UIBarButtonItem.appearance.tintColor = UIColor.blackColor;
-    [UISwitch.appearance setOnTintColor:[UIColor colorWithRGBHex:0x00F782]]; // Colors.accent
-    [UIToolbar.appearance setTintColor:[UIColor colorWithRGBHex:0x00F782]]; // Colors.accent
+    [UISwitch.appearance setOnTintColor:LKColors.accent];
+    [UIToolbar.appearance setTintColor:LKColors.accent];
     
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
     UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : UIColor.blackColor };

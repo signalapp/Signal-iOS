@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super loadView];
 
     UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"X"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissPressed:)];
-    closeButton.tintColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+    closeButton.tintColor = LKColors.text;
     self.navigationItem.leftBarButtonItem = closeButton;
     
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
     [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     navigationBar.shadowImage = [UIImage new];
     [navigationBar setTranslucent:NO];
-    navigationBar.barTintColor = [UIColor colorWithRGBHex:0x161616]; // Colors.navigationBarBackground
+    navigationBar.barTintColor = LKColors.navigationBarBackground;
 
     [self updateTableContents];
 }
@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         [[DisappearingTimerConfigurationView alloc]
                                             initWithDurationSeconds:disappearingMessagesConfiguration.durationSeconds];
 
-                                    disappearingTimerConfigurationView.tintColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+                                    disappearingTimerConfigurationView.tintColor = LKColors.text;
                                     [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
 
                                     [cell ows_setAccessoryView:disappearingTimerConfigurationView];

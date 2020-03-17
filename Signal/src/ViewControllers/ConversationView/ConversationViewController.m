@@ -4357,7 +4357,7 @@ typedef enum : NSUInteger {
     searchTextField.backgroundColor = LKColors.searchBarBackground;
     searchTextField.textColor = LKColors.text;
     searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Search", @"") attributes:@{ NSForegroundColorAttributeName : LKColors.searchBarPlaceholder }];
-    searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    searchBar.keyboardAppearance = LKAppModeUtilities.isLightMode ? UIKeyboardAppearanceDefault : UIKeyboardAppearanceDark;
     [searchBar setPositionAdjustment:UIOffsetMake(4, 0) forSearchBarIcon:UISearchBarIconSearch];
     [searchBar setSearchTextPositionAdjustment:UIOffsetMake(2, 0)];
     [searchBar setPositionAdjustment:UIOffsetMake(-4, 0) forSearchBarIcon:UISearchBarIconClear];

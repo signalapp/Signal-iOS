@@ -65,8 +65,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         ]
         footerBar.setItems(footerItems, animated: false)
 
-        footerBar.barTintColor = Theme.darkThemeNavbarBackgroundColor
-        footerBar.tintColor = Theme.darkThemeNavbarIconColor
+        footerBar.barTintColor = Colors.navigationBarBackground
+        footerBar.tintColor = Colors.text
 
         return footerBar
     }()
@@ -847,12 +847,13 @@ private class MediaGallerySectionHeader: UICollectionReusableView {
 
         super.init(frame: frame)
 
-        self.backgroundColor = Theme.darkThemeNavbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+        self.backgroundColor = isLightMode ? Colors.cellBackground : Theme.darkThemeNavbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
 
         self.addSubview(blurEffectView)
         self.addSubview(label)
 
         blurEffectView.autoPinEdgesToSuperviewEdges()
+        blurEffectView.isHidden = isLightMode
         label.autoPinEdge(toSuperviewMargin: .trailing)
         label.autoPinEdge(toSuperviewMargin: .leading)
         label.autoVCenterInSuperview()

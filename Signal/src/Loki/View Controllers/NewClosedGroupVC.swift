@@ -289,7 +289,8 @@ private extension NewClosedGroupVC {
             profilePictureView.hexEncodedPublicKey = hexEncodedPublicKey
             profilePictureView.update()
             displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
-            tickImageView.image = hasTick ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
+            let icon = hasTick ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
+            tickImageView.image = icon.asTintedImage(color: Colors.text)!
         }
     }
 }

@@ -131,7 +131,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = .red
+        self.view.backgroundColor = Colors.navigationBarBackground
 
         // avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
         pagerScrollView?.isScrollEnabled = attachmentItems.count > 1
@@ -174,10 +174,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationBar.shadowImage = UIImage()
         navigationBar.isTranslucent = false
-        navigationBar.barTintColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
+        navigationBar.barTintColor = Colors.navigationBarBackground
         navigationBar.respectsTheme = true
-        navigationBar.backgroundColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
-        let backgroundImage = UIImage(color: UIColor(rgbHex: 0x161616)) // Colors.navigationBarBackground
+        navigationBar.backgroundColor = Colors.navigationBarBackground
+        let backgroundImage = UIImage(color: Colors.navigationBarBackground)
         navigationBar.setBackgroundImage(backgroundImage, for: .default)
 
         updateContents()
@@ -290,13 +290,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
                 self?.cancelPressed()
             }
-            cancelButton.setTitleColor(.white, for: .normal)
+            cancelButton.setTitleColor(Colors.text, for: .normal)
             if let titleLabel = cancelButton.titleLabel {
-                titleLabel.font = UIFont.systemFont(ofSize: 18.0)
-                titleLabel.layer.shadowColor = UIColor.black.cgColor
-                titleLabel.layer.shadowRadius = 2.0
-                titleLabel.layer.shadowOpacity = 0.66
-                titleLabel.layer.shadowOffset = .zero
+                titleLabel.font = UIFont.systemFont(ofSize: 17.0)
             } else {
                 owsFailDebug("Missing titleLabel.")
             }
@@ -306,7 +302,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // Mimic a conventional back button, but with a shadow.
             let isRTL = CurrentAppContext().isRTL
             let imageName = isRTL ? "NavBarBackRTL" : "NavBarBack"
-            let backButton = OWSButton(imageName: imageName, tintColor: .white) { [weak self] in
+            let backButton = OWSButton(imageName: imageName, tintColor: Colors.text) { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             }
 
@@ -341,10 +337,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             backButton.frame = CGRect(origin: .zero, size: CGSize(width: backImageSize.width + kExtraRightPadding,
                                                                   height: backImageSize.height + kExtraHeightPadding))
 
-            backButton.layer.shadowColor = UIColor.black.cgColor
-            backButton.layer.shadowRadius = 2.0
-            backButton.layer.shadowOpacity = 0.66
-            backButton.layer.shadowOffset = .zero
             // Note: using a custom leftBarButtonItem breaks the interactive pop gesture.
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
         }

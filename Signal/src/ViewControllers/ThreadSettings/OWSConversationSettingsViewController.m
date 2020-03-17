@@ -994,7 +994,7 @@ const CGFloat kIconViewLength = 24;
     OWSAssertDebug(icon);
     UIImageView *iconView = [UIImageView new];
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    iconView.tintColor = [LKColors.text colorWithAlphaComponent:LKValues.unimportantElementOpacity];
+    iconView.tintColor = LKColors.text;
     iconView.contentMode = UIViewContentModeScaleAspectFit;
     iconView.layer.minificationFilter = kCAFilterTrilinear;
     iconView.layer.magnificationFilter = kCAFilterTrilinear;
@@ -1245,7 +1245,7 @@ const CGFloat kIconViewLength = 24;
 - (void)updateDisappearingMessagesDurationLabel
 {
     if (self.disappearingMessagesConfiguration.isEnabled) {
-        NSString *keepForFormat = NSLocalizedString(@"Disappear after %@", @"");
+        NSString *keepForFormat = @"Disappear after %@";
         self.disappearingMessagesDurationLabel.text =
             [NSString stringWithFormat:keepForFormat, self.disappearingMessagesConfiguration.durationString];
     } else {
