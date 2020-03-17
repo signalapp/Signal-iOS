@@ -679,9 +679,11 @@ class IncomingGroupsV2MessageQueue: NSObject {
         if IsNetworkConnectivityFailure(error) {
             return true
         }
-        if let statusCode = error.httpStatusCode,
-            statusCode == 401 {
-            return true
+        if let statusCode = error.httpStatusCode {
+            if statusCode == 401 ||
+               (500 <= statusCode && statusCode <= 599) {
+                return true
+            }
         }
         switch error {
         case GroupsV2Error.timeout, GroupsV2Error.shouldRetry:
