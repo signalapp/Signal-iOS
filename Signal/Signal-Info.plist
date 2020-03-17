@@ -5,7 +5,7 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>OSXVersion</key>
-		<string>10.15.2</string>
+		<string>10.15.3</string>
 		<key>WebRTCCommit</key>
 		<string>09001c39a8497a1b79c7121e85a9f241ea3eb2fb Production build of RingRTC v1.1.0</string>
 	</dict>

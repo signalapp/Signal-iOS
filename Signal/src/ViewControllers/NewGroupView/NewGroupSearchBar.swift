@@ -35,6 +35,8 @@ public class NewGroupSearchBar: UIView {
     private let textField = UITextField()
     private let placeholderLabel = UILabel()
 
+    private var heightConstraint: NSLayoutConstraint?
+
     private enum Sections: Int, CaseIterable {
         case members, input
     }
@@ -59,6 +61,7 @@ public class NewGroupSearchBar: UIView {
         textField.backgroundColor = .clear
         textField.textColor = Theme.primaryTextColor
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textField.setCompressionResistanceHorizontalHigh()
 
         placeholderLabel.font = .ows_dynamicTypeBody
         placeholderLabel.backgroundColor = .clear
@@ -89,6 +92,8 @@ public class NewGroupSearchBar: UIView {
         placeholderLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: NewGroupSearchBarLayout.hMargin)
         placeholderLabel.autoPinEdge(toSuperviewEdge: .top, withInset: NewGroupSearchBarLayout.vMargin)
         placeholderLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: NewGroupSearchBarLayout.vMargin)
+
+        heightConstraint = autoSetDimension(.height, toSize: 0)
     }
 
     func contentHeight(forWidth width: CGFloat) -> CGFloat {
@@ -110,9 +115,30 @@ public class NewGroupSearchBar: UIView {
 
         UIView.performWithoutAnimation {
             collectionView.reloadSections(IndexSet(integer: Sections.members.rawValue))
-            collectionViewLayout.invalidateLayout()
-            collectionViewLayout.prepare()
         }
+
+        // reloadSections() triggers the collectionView to update
+        // its content during the next view layout update cycle.
+        // After that's complete, we need to make sure the
+        // input cell is visible on screen and first responder.
+        ensureInputVisibleAndActive()
+    }
+
+    func ensureInputVisibleAndActive() {
+        // We need to wait until the next view layout update cycle
+        // is complete before making sure that the input cell is
+        // visible on screen and first responder. performBatchUpdates()
+        // is a convenient way to do so.
+        collectionView.performBatchUpdates(nil, completion: { [weak self] _ in
+            guard let self = self else {
+                return
+            }
+            let collectionView = self.collectionView
+            let bottomOffset = CGPoint(x: 0,
+                                       y: collectionView.contentSize.height - collectionView.bounds.size.height)
+            collectionView.setContentOffset(bottomOffset, animated: false)
+            _ = self.becomeFirstResponder()
+        })
     }
 
     public var placeholder: String? {
@@ -148,15 +174,28 @@ public class NewGroupSearchBar: UIView {
         return result
     }
 
+    func acceptAutocorrectSuggestion() {
+        textField.acceptAutocorrectSuggestion()
+    }
+
     public override func resignFirstResponder() -> Bool {
         let result = textField.resignFirstResponder()
         updatePlaceholder()
         return result
     }
 
-    func acceptAutocorrectSuggestion() {
-        textField.acceptAutocorrectSuggestion()
+    func updateHeightConstraint(forWidth: CGFloat) {
+        guard let heightConstraint = heightConstraint else {
+            owsFailDebug("Missing heightConstraint.")
+            return
+        }
+        let searchBarHeight = contentHeight(forWidth: forWidth)
+        let screenSize = UIScreen.main.bounds.size
+        let maxHeight = floor(min(screenSize.width, screenSize.height) * 0.5)
+        heightConstraint.constant = min(maxHeight, searchBarHeight)
     }
+
+    // MARK: - Events
 
     @objc
     func textFieldDidChange(_ textField: UITextField) {
@@ -164,11 +203,15 @@ public class NewGroupSearchBar: UIView {
 
         collectionViewLayout.invalidateLayout()
 
-        updatePlaceholder()
+        // invalidateLayout() triggers the collectionView to update
+        // its layout during the next view layout update cycle.
+        // After that's complete, we need to make sure the
+        // input cell is visible on screen and first responder.
+        ensureInputVisibleAndActive()
     }
 
     @objc func didTapCollectionView(sender: UIGestureRecognizer) {
-        _ = becomeFirstResponder()
+        ensureInputVisibleAndActive()
     }
 
     private func updatePlaceholder() {
@@ -293,6 +336,10 @@ extension NewGroupSearchBar: UICollectionViewDelegate {
         }
         // TODO: I'm clarifying with the design what the correct behavior is here.
     }
+
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        ensureInputVisibleAndActive()
+    }
 }
 
 // MARK: -
@@ -315,7 +362,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        contentView.backgroundColor = .ows_signalBlue
+        contentView.backgroundColor = .ows_accentBlue
         contentView.layer.cornerRadius = 4
 
         textLabel.font = .ows_dynamicTypeBody
@@ -509,7 +556,9 @@ private class NewGroupSearchBarLayout: UICollectionViewLayout {
             for itemIndex in 0..<itemCount {
                 let indexPath = IndexPath(row: itemIndex, section: section)
                 let cell = layoutDelegate.cellForLayoutMeasurement(at: indexPath)
-                let cellSize = cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+                // We use layoutFittingExpandedSize to ensure we get a proper
+                // measurement for the input cell, whose contents are scrollable.
+                let cellSize = cell.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
 
                 let cellWidth = max(min(cellSize.width, maxCellWidth), minCellWidth)
                 var itemFrame = CGRect(x: 0, y: 0, width: cellWidth, height: cellSize.height)

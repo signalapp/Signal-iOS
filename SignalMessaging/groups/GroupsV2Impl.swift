@@ -103,7 +103,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             self.serviceStore.setString(serverPublicParamsBase64, key: lastServerPublicParamsKey, transaction: transaction)
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            self.reuploadLocalProfilePromise().retainUntilComplete()
+            if FeatureFlags.versionedProfiledUpdate {
+                self.reuploadLocalProfilePromise().retainUntilComplete()
+            }
         }
     }
 
