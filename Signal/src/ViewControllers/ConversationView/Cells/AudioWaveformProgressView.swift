@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -131,9 +131,9 @@ class AudioWaveformProgressView: UIView {
         let unplayedBezierPath = UIBezierPath()
 
         // Calculate the number of lines we want to render based on the view width.
-        let numberOfSamplesToDraw = Int(width() / (sampleWidth + sampleSpacing))
+        let numberOfSamplesToDraw = Int(width / (sampleWidth + sampleSpacing))
         let samplesWidth = CGFloat(numberOfSamplesToDraw) * (sampleWidth + sampleSpacing) - sampleSpacing
-        let sampleHMargin = (width() - samplesWidth) / 2
+        let sampleHMargin = (width - samplesWidth) / 2
 
         playedShapeLayer.frame = layer.frame
         unplayedShapeLayer.frame = layer.frame

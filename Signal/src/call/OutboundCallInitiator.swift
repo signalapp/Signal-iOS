@@ -70,7 +70,6 @@ import SignalMessaging
 
         let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(address: address,
                                                                                 confirmationText: CallStrings.confirmAndCallButtonTitle,
-                                                                                contactsManager: self.contactsManager,
                                                                                 completion: { didConfirmIdentity in
                                                                                     if didConfirmIdentity {
                                                                                         _ = self.initiateCall(address: address, isVideo: isVideo)

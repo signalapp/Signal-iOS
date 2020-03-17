@@ -1,31 +1,28 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
-protocol RecipientPickerDelegate: class {
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        canSelectRecipient recipient: PickedRecipient
-    ) -> Bool
+protocol RecipientPickerDelegate: AnyObject {
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         canSelectRecipient recipient: PickedRecipient) -> Bool
 
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        didSelectRecipient recipient: PickedRecipient
-    )
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         didSelectRecipient recipient: PickedRecipient)
 
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryMessageForRecipient recipient: PickedRecipient
-    ) -> String?
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         accessoryMessageForRecipient recipient: PickedRecipient) -> String?
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         accessoryViewForRecipient recipient: PickedRecipient) -> UIView?
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController)
 }
 
 @objc
-class PickedRecipient: NSObject {
+public class PickedRecipient: NSObject {
     let identifier: Identifier
     enum Identifier: Hashable {
         case address(_ address: SignalServiceAddress)
@@ -58,18 +55,19 @@ class PickedRecipient: NSObject {
         return .init(.address(address))
     }
 
-    override func isEqual(_ object: Any?) -> Bool {
+    public override func isEqual(_ object: Any?) -> Bool {
         guard let otherRecipient = object as? PickedRecipient else { return false }
         return identifier == otherRecipient.identifier
     }
 
-    override var hash: Int {
+    public override var hash: Int {
         return identifier.hashValue
     }
 }
 
 @objc
 extension RecipientPickerViewController {
+
     func item(forRecipient recipient: PickedRecipient) -> OWSTableItem {
         switch recipient.identifier {
         case .address(let address):
@@ -83,7 +81,12 @@ extension RecipientPickerViewController {
                             cell.selectionStyle = .none
                         }
 
-                        cell.setAccessoryMessage(delegate.recipientPicker(self, accessoryMessageForRecipient: recipient))
+                        if let accessoryView = delegate.recipientPicker(self, accessoryViewForRecipient: recipient) {
+                            cell.ows_setAccessoryView(accessoryView)
+                        } else {
+                            let accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient)
+                            cell.setAccessoryMessage(accessoryMessage)
+                        }
                     }
 
                     cell.configure(withRecipientAddress: address)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ShowGroupMembersViewController.h"
@@ -7,7 +7,6 @@
 #import "SignalApp.h"
 #import "ViewControllerUtils.h"
 #import <ContactsUI/ContactsUI.h>
-#import <SignalMessaging/BlockListUIUtils.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/Environment.h>
@@ -31,6 +30,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation ShowGroupMembersViewController
+
+#pragma mark - Dependencies
+
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
+#pragma mark -
 
 - (instancetype)init
 {
@@ -163,9 +171,9 @@ NS_ASSUME_NONNULL_BEGIN
     // Sort the group members using contacts manager.
     NSArray<SignalServiceAddress *> *sortedAddresses = [addresses
         sortedArrayUsingComparator:^NSComparisonResult(SignalServiceAddress *addressA, SignalServiceAddress *addressB) {
-            SignalAccount *signalAccountA = [helper.contactsManager fetchOrBuildSignalAccountForAddress:addressA];
-            SignalAccount *signalAccountB = [helper.contactsManager fetchOrBuildSignalAccountForAddress:addressB];
-            return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
+            SignalAccount *signalAccountA = [self.contactsManager fetchOrBuildSignalAccountForAddress:addressA];
+            SignalAccount *signalAccountB = [self.contactsManager fetchOrBuildSignalAccountForAddress:addressB];
+            return [self.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
         }];
     for (SignalServiceAddress *address in sortedAddresses) {
         [section addItem:[OWSTableItem

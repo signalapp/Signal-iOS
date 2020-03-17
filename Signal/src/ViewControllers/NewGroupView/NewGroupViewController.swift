@@ -47,13 +47,10 @@ public extension NewGroupViewController {
     class func showCreateErrorUI(error: Error) {
         AssertIsOnMainThread()
 
-        let showUpdateNetworkErrorUI = {
+        if error.isNetworkFailureOrTimeout {
             OWSActionSheets.showActionSheet(title: NSLocalizedString("NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK",
                                                                      comment: "Error indicating that a new group could not be created due to network connectivity problems."))
-        }
-
-        if error.isNetworkFailureOrTimeout {
-            return showUpdateNetworkErrorUI()
+            return
         }
 
         OWSActionSheets.showActionSheet(title: NSLocalizedString("NEW_GROUP_CREATION_FAILED",

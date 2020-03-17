@@ -53,13 +53,13 @@ class CallVideoHintView: UIView {
             bezierPath.append(UIBezierPath(roundedRect: bubbleBounds, cornerRadius: 8))
 
             // Tail
-            var tailBottom = CGPoint(x: self.kTailHMargin + self.kTailWidth * 0.5, y: view.height())
-            var tailLeft = CGPoint(x: self.kTailHMargin, y: view.height() - self.kTailHeight)
-            var tailRight = CGPoint(x: self.kTailHMargin + self.kTailWidth, y: view.height() - self.kTailHeight)
-            if (!CurrentAppContext().isRTL) {
-                tailBottom.x = view.width() - tailBottom.x
-                tailLeft.x = view.width() - tailLeft.x
-                tailRight.x = view.width() - tailRight.x
+            var tailBottom = CGPoint(x: self.kTailHMargin + self.kTailWidth * 0.5, y: view.height)
+            var tailLeft = CGPoint(x: self.kTailHMargin, y: view.height - self.kTailHeight)
+            var tailRight = CGPoint(x: self.kTailHMargin + self.kTailWidth, y: view.height - self.kTailHeight)
+            if !CurrentAppContext().isRTL {
+                tailBottom.x = view.width - tailBottom.x
+                tailLeft.x = view.width - tailLeft.x
+                tailRight.x = view.width - tailRight.x
             }
             bezierPath.move(to: tailBottom)
             bezierPath.addLine(to: tailLeft)

@@ -168,18 +168,18 @@ class AttachmentKeyboard: CustomKeyboard {
         // The items should always expand to fit the height of their collection view.
 
         // If we have space we will show two rows of recent photos (e.g. iPad in landscape).
-        if recentPhotosCollectionView.height() > 250 {
+        if recentPhotosCollectionView.height > 250 {
             recentPhotosCollectionView.itemSize = CGSize(square:
-                (recentPhotosCollectionView.height() - recentPhotosCollectionView.spaceBetweenRows) / 2
+                (recentPhotosCollectionView.height - recentPhotosCollectionView.spaceBetweenRows) / 2
             )
 
         // Otherwise, assume the recent photos take up the full height of the collection view.
         } else {
-            recentPhotosCollectionView.itemSize = CGSize(square: recentPhotosCollectionView.height())
+            recentPhotosCollectionView.itemSize = CGSize(square: recentPhotosCollectionView.height)
         }
 
         // There is only ever one row for the attachment format picker.
-        attachmentFormatPickerView.itemSize = CGSize(square: attachmentFormatPickerView.height())
+        attachmentFormatPickerView.itemSize = CGSize(square: attachmentFormatPickerView.height)
     }
 
     func checkPermissions(completion: @escaping () -> Void) {

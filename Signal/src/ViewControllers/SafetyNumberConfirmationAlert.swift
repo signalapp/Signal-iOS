@@ -14,35 +14,33 @@ public class SafetyNumberConfirmationAlert: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
     // MARK: -
 
-    private let contactsManager: OWSContactsManager
-
-    init(contactsManager: OWSContactsManager) {
-        self.contactsManager = contactsManager
+    @objc
+    public class func presentAlertIfNecessary(address: SignalServiceAddress, confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
+        return self.presentAlertIfNecessary(addresses: [address], confirmationText: confirmationText, completion: completion, beforePresentationHandler: nil)
     }
 
     @objc
-    public class func presentAlertIfNecessary(address: SignalServiceAddress, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
-        return self.presentAlertIfNecessary(addresses: [address], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
+    public class func presentAlertIfNecessary(address: SignalServiceAddress, confirmationText: String, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
+        return self.presentAlertIfNecessary(addresses: [address], confirmationText: confirmationText, completion: completion, beforePresentationHandler: beforePresentationHandler)
     }
 
     @objc
-    public class func presentAlertIfNecessary(address: SignalServiceAddress, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
-        return self.presentAlertIfNecessary(addresses: [address], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: beforePresentationHandler)
+    public class func presentAlertIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
+        return self.presentAlertIfNecessary(addresses: addresses, confirmationText: confirmationText, completion: completion, beforePresentationHandler: nil)
     }
 
     @objc
-    public class func presentAlertIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
-        return self.presentAlertIfNecessary(addresses: addresses, confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
-    }
-
-    @objc
-    public class func presentAlertIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
-        return SafetyNumberConfirmationAlert(contactsManager: contactsManager).presentIfNecessary(addresses: addresses,
-                                                                                                  confirmationText: confirmationText,
-                                                                                                  completion: completion,
-                                                                                                  beforePresentationHandler: beforePresentationHandler)
+    public class func presentAlertIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
+        return SafetyNumberConfirmationAlert().presentIfNecessary(addresses: addresses,
+                                                                  confirmationText: confirmationText,
+                                                                  completion: completion,
+                                                                  beforePresentationHandler: beforePresentationHandler)
     }
 
     /**

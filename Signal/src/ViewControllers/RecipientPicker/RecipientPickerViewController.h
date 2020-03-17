@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -27,12 +27,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldShowInvites;
 /// Defaults to `YES`
 @property (nonatomic) BOOL shouldShowAlphabetSlider;
+/// Defaults to `NO`
+@property (nonatomic) BOOL shouldShowSearchBar;
 
 @property (nonatomic, nullable) NSString *findByPhoneNumberButtonTitle;
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @property (nonatomic, nullable) NSArray<PickedRecipient *> *pickedRecipients;
+
+@property (nonatomic, nullable) NSString *customSearchQuery;
 
 @end
 

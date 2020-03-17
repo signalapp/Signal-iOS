@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -60,9 +60,9 @@ class GifPickerLayout: UICollectionViewLayout {
         // We  use 2 or 3 columns, depending on the device.
         // 2 columns will show fewer GIFs at a time,
         // but use less network & be a more responsive experience.
-        let columnCount = UInt(max(2, collectionView.width() / 130))
+        let columnCount = UInt(max(2, collectionView.width / 130))
 
-        let totalViewWidth = UInt(collectionView.width())
+        let totalViewWidth = UInt(collectionView.width)
         let hTotalWhitespace = (2 * hInset) + (hSpacing * (columnCount - 1))
         let hRemainderSpace = totalViewWidth - hTotalWhitespace
         let columnWidth = UInt(hRemainderSpace / columnCount)
@@ -138,6 +138,6 @@ class GifPickerLayout: UICollectionViewLayout {
         guard let collectionView = collectionView else {
             return false
         }
-        return collectionView.width() != newBounds.size.width
+        return collectionView.width != newBounds.size.width
     }
 }

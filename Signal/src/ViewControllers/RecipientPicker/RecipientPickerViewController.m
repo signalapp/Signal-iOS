@@ -5,7 +5,6 @@
 #import "RecipientPickerViewController.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
-#import "NewGroupViewController.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -94,6 +93,11 @@ const NSUInteger kMinimumSearchLength = 2;
     return SDSDatabaseStorage.shared;
 }
 
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
+}
+
 #pragma mark -
 
 - (instancetype)init
@@ -109,6 +113,7 @@ const NSUInteger kMinimumSearchLength = 2;
     _shouldShowGroups = YES;
     _shouldShowInvites = NO;
     _shouldShowAlphabetSlider = YES;
+    _shouldShowSearchBar = YES;
 
     return self;
 }
@@ -123,19 +128,21 @@ const NSUInteger kMinimumSearchLength = 2;
     _collation = [UILocalizedIndexedCollation currentCollation];
 
     // Search
-    UISearchBar *searchBar = [OWSSearchBar new];
-    _searchBar = searchBar;
-    searchBar.delegate = self;
-    if (SSKFeatureFlags.usernames) {
-        searchBar.placeholder = NSLocalizedString(@"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
-            @"Placeholder text indicating the user can search for contacts by name, username, or phone number.");
-    } else {
-        searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
-            @"Placeholder text indicating the user can search for contacts by name or phone number.");
+    if (self.shouldShowSearchBar) {
+        UISearchBar *searchBar = [OWSSearchBar new];
+        _searchBar = searchBar;
+        searchBar.delegate = self;
+        if (SSKFeatureFlags.usernames) {
+            searchBar.placeholder = NSLocalizedString(@"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
+                @"Placeholder text indicating the user can search for contacts by name, username, or phone number.");
+        } else {
+            searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
+                @"Placeholder text indicating the user can search for contacts by name or phone number.");
+        }
+        [searchBar sizeToFit];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
+        searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
     }
-    [searchBar sizeToFit];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
-    searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
 
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
@@ -151,7 +158,9 @@ const NSUInteger kMinimumSearchLength = 2;
 
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
-    _tableViewController.tableView.tableHeaderView = searchBar;
+    if (self.shouldShowSearchBar) {
+        _tableViewController.tableView.tableHeaderView = self.searchBar;
+    }
 
     _noSignalContactsView = [self createNoSignalContactsView];
     self.noSignalContactsView.hidden = YES;
@@ -295,7 +304,9 @@ const NSUInteger kMinimumSearchLength = 2;
 
     [self.contactsViewHelper warmNonSignalContactsCacheAsync];
 
-    self.tableViewController.tableView.tableHeaderView = self.searchBar;
+    if (self.shouldShowSearchBar) {
+        self.tableViewController.tableView.tableHeaderView = self.searchBar;
+    }
 
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
@@ -575,8 +586,6 @@ const NSUInteger kMinimumSearchLength = 2;
 
     NSMutableArray<OWSTableSection *> *sections = [NSMutableArray new];
 
-    ContactsViewHelper *helper = self.contactsViewHelper;
-
     // Contacts, filtered with the search text.
     NSArray<SignalAccount *> *filteredSignalAccounts = searchResults.signalAccounts;
     __block BOOL hasSearchResults = NO;
@@ -598,8 +607,8 @@ const NSUInteger kMinimumSearchLength = 2;
                 [matchedAccountPhoneNumbers addObject:phoneNumber];
             }
 
-            NSString *_Nullable username = [helper.profileManager usernameForAddress:signalAccount.recipientAddress
-                                                                         transaction:transaction];
+            NSString *_Nullable username = [self.profileManager usernameForAddress:signalAccount.recipientAddress
+                                                                       transaction:transaction];
             if (username) {
                 [matchedAccountUsernames addObject:username];
             }
@@ -700,7 +709,7 @@ const NSUInteger kMinimumSearchLength = 2;
     // Username lookup
     if (SSKFeatureFlags.usernames) {
         NSString *usernameMatch = self.searchText;
-        NSString *_Nullable localUsername = helper.profileManager.localUsername;
+        NSString *_Nullable localUsername = self.profileManager.localUsername;
 
         NSError *error;
         NSRegularExpression *startsWithNumberRegex = [[NSRegularExpression alloc] initWithPattern:@"^[0-9]+"
@@ -919,7 +928,7 @@ const NSUInteger kMinimumSearchLength = 2;
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modal) {
-                      [self.contactsViewHelper.profileManager fetchAndUpdateProfileForUsername:username
+                      [self.profileManager fetchAndUpdateProfileForUsername:username
                           success:^(SignalServiceAddress *address) {
                               OWSAssertIsOnMainThread();
                               if (modal.wasCancelled) {
@@ -1129,9 +1138,16 @@ const NSUInteger kMinimumSearchLength = 2;
     return nil;
 }
 
+- (void)setCustomSearchQuery:(nullable NSString *)customSearchQuery
+{
+    _customSearchQuery = customSearchQuery;
+
+    [self searchTextDidChange];
+}
+
 - (NSString *)searchText
 {
-    NSString *rawText = self.searchBar.text;
+    NSString *rawText = (self.customSearchQuery.length > 0 ? self.customSearchQuery : self.searchBar.text);
     return rawText.ows_stripped ?: @"";
 }
 

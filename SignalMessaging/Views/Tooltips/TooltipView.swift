@@ -119,7 +119,7 @@ public class TooltipView: UIView {
         NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
             // Prefer that the tooltip's tail is as far as possible.
             // It should point at the center of the "tail reference view".
-            let edgeOffset = bubbleRounding + tailWidth * 0.5 - tailReferenceView.width() * 0.5
+            let edgeOffset = bubbleRounding + tailWidth * 0.5 - tailReferenceView.width * 0.5
             autoPinEdge(.right, to: .right, of: tailReferenceView, withOffset: edgeOffset)
         }
     }

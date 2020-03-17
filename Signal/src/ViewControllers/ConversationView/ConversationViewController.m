@@ -18,7 +18,6 @@
 #import "DateUtil.h"
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
-#import "NewGroupViewController.h"
 #import "OWSAudioPlayer.h"
 #import "OWSContactOffersCell.h"
 #import "OWSConversationSettingsViewController.h"
@@ -1117,8 +1116,6 @@ typedef enum : NSUInteger {
 
     [BlockListUIUtils showUnblockThreadActionSheet:self.thread
                                 fromViewController:self
-                                   blockingManager:self.blockingManager
-                                   contactsManager:self.contactsManager
                                    completionBlock:completionBlock];
 }
 
@@ -1605,7 +1602,6 @@ typedef enum : NSUInteger {
 {
     return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithAddresses:self.thread.recipientAddresses
                                                               confirmationText:confirmationText
-                                                               contactsManager:self.contactsManager
                                                                     completion:completionHandler
                                                      beforePresentationHandler:nil];
 }

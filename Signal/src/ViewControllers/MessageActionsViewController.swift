@@ -188,10 +188,10 @@ class MessageActionsViewController: UIViewController {
         // The position of the picker is calculated relative to the
         // starting touch point of the presenting gesture.
 
-        var pickerOrigin = initialTouchLocation.minus(CGPoint(x: picker.width() / 2, y: picker.height() / 2))
+        var pickerOrigin = initialTouchLocation.minus(CGPoint(x: picker.width / 2, y: picker.height / 2))
 
         // The picker always starts 25pts above the touch point
-        pickerOrigin.y -= 25 + picker.height()
+        pickerOrigin.y -= 25 + picker.height
 
         // If the picker is not at least 16pts away from the edge
         // of the screen, we offset it so that it is.
@@ -203,14 +203,14 @@ class MessageActionsViewController: UIViewController {
 
         if pickerOrigin.x < backdropView.frame.origin.x + edgeThresholds.left {
             pickerOrigin.x = backdropView.frame.origin.x + edgeThresholds.left
-        } else if pickerOrigin.x > backdropView.frame.maxX - edgeThresholds.right - picker.width() {
-            pickerOrigin.x = backdropView.frame.maxX - edgeThresholds.right - picker.width()
+        } else if pickerOrigin.x > backdropView.frame.maxX - edgeThresholds.right - picker.width {
+            pickerOrigin.x = backdropView.frame.maxX - edgeThresholds.right - picker.width
         }
 
         if pickerOrigin.y < backdropView.frame.origin.y + edgeThresholds.top {
             pickerOrigin.y = backdropView.frame.origin.y + edgeThresholds.top
-        } else if pickerOrigin.y > backdropView.frame.maxY - edgeThresholds.bottom - picker.height() {
-            pickerOrigin.y = backdropView.frame.maxY - edgeThresholds.bottom - picker.height()
+        } else if pickerOrigin.y > backdropView.frame.maxY - edgeThresholds.bottom - picker.height {
+            pickerOrigin.y = backdropView.frame.maxY - edgeThresholds.bottom - picker.height
         }
 
         picker.autoPinEdge(.leading, to: .leading, of: view, withOffset: pickerOrigin.x)

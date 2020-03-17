@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -132,7 +132,7 @@ class AudioMessageView: UIStackView {
         }
 
         let locationInSlider = convert(point, to: waveformProgress)
-        return locationInSlider.x >= 0 && locationInSlider.x <= waveformProgress.width()
+        return locationInSlider.x >= 0 && locationInSlider.x <= waveformProgress.width
     }
 
     @objc func scrubToLocation(_ point: CGPoint) -> TimeInterval {

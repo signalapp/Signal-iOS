@@ -191,7 +191,6 @@
 		348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */; };
-		34941BC523FF25F2002AEA8D /* NewGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34941BC423FF25F2002AEA8D /* NewGroupViewController.swift */; };
 		3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496744C2076768700080B5F /* OWSMessageBubbleView.m */; };
 		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34969559219B605E00DCFE74 /* ImagePickerController.swift */; };
@@ -204,6 +203,10 @@
 		3496957221A301A100DCFE74 /* OWSBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956921A301A100DCFE74 /* OWSBackup.m */; };
 		3496957321A301A100DCFE74 /* OWSBackupJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956A21A301A100DCFE74 /* OWSBackupJob.m */; };
 		3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496956B21A301A100DCFE74 /* OWSBackupAPI.swift */; };
+		34995F182411838D00C70546 /* NewGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F142411838C00C70546 /* NewGroupViewController.swift */; };
+		34995F192411838D00C70546 /* NewGroupSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F152411838C00C70546 /* NewGroupSearchBar.swift */; };
+		34995F1A2411838D00C70546 /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34995F162411838C00C70546 /* NewGroupViewController.m */; };
+		34995F1B2411838D00C70546 /* NewGroupViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F172411838C00C70546 /* NewGroupViewController2.swift */; };
 		3499998122EF1E2100654932 /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997E22EF1E2100654932 /* SearcherTest.swift */; };
 		3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */; };
 		349C3637233D198300D52012 /* LaunchJobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C3636233D198300D52012 /* LaunchJobs.swift */; };
@@ -263,7 +266,6 @@
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
 		34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* SplashViewController.swift */; };
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
-		34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
 		34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */; };
 		34B6A907218B5241007C4606 /* TypingIndicatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A906218B5240007C4606 /* TypingIndicatorCell.swift */; };
@@ -1054,7 +1056,6 @@
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationSigningCertificateTest.m; sourceTree = "<group>"; };
-		34941BC423FF25F2002AEA8D /* NewGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupViewController.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3496744B2076768600080B5F /* OWSMessageBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageBubbleView.h; sourceTree = "<group>"; };
 		3496744C2076768700080B5F /* OWSMessageBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageBubbleView.m; sourceTree = "<group>"; };
@@ -1074,6 +1075,11 @@
 		3496956B21A301A100DCFE74 /* OWSBackupAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSBackupAPI.swift; sourceTree = "<group>"; };
 		3496956C21A301A100DCFE74 /* OWSBackupImportJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupImportJob.h; sourceTree = "<group>"; };
 		3496956D21A301A100DCFE74 /* OWSBackupIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupIO.h; sourceTree = "<group>"; };
+		34995F132411838C00C70546 /* NewGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGroupViewController.h; sourceTree = "<group>"; };
+		34995F142411838C00C70546 /* NewGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupViewController.swift; sourceTree = "<group>"; };
+		34995F152411838C00C70546 /* NewGroupSearchBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupSearchBar.swift; sourceTree = "<group>"; };
+		34995F162411838C00C70546 /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
+		34995F172411838C00C70546 /* NewGroupViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupViewController2.swift; sourceTree = "<group>"; };
 		3499997E22EF1E2100654932 /* SearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearcherTest.swift; sourceTree = "<group>"; };
 		3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBFullTextSearcherTest.swift; sourceTree = "<group>"; };
 		349C3636233D198300D52012 /* LaunchJobs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LaunchJobs.swift; sourceTree = "<group>"; };
@@ -1138,8 +1144,6 @@
 		34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPicker.swift; sourceTree = "<group>"; };
 		34B3F8441E8DF1700035BE1A /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
-		34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGroupViewController.h; sourceTree = "<group>"; };
-		34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
 		34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
 		34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorInteraction.swift; sourceTree = "<group>"; };
 		34B6A906218B5240007C4606 /* TypingIndicatorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorCell.swift; sourceTree = "<group>"; };
@@ -2285,6 +2289,18 @@
 			path = Backup;
 			sourceTree = "<group>";
 		};
+		34995F122411838C00C70546 /* NewGroupView */ = {
+			isa = PBXGroup;
+			children = (
+				34995F132411838C00C70546 /* NewGroupViewController.h */,
+				34995F142411838C00C70546 /* NewGroupViewController.swift */,
+				34995F152411838C00C70546 /* NewGroupSearchBar.swift */,
+				34995F162411838C00C70546 /* NewGroupViewController.m */,
+				34995F172411838C00C70546 /* NewGroupViewController2.swift */,
+			);
+			path = NewGroupView;
+			sourceTree = "<group>";
+		};
 		3499997D22EF1E2100654932 /* FTS */ = {
 			isa = PBXGroup;
 			children = (
@@ -2323,9 +2339,7 @@
 				4CFF4C0920F55BBA005DA313 /* MessageActionsViewController.swift */,
 				34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */,
 				881218EF238CA51600E6F271 /* MessageReactionPicker.swift */,
-				34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */,
-				34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */,
-				34941BC423FF25F2002AEA8D /* NewGroupViewController.swift */,
+				34995F122411838C00C70546 /* NewGroupView */,
 				45D2AC01204885170033C692 /* OWS2FAReminderViewController.swift */,
 				345BC30A2047030600257B7C /* OWS2FASettingsViewController.h */,
 				345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */,
@@ -2942,11 +2956,11 @@
 		8835DDFB230CEE7600DC6B66 /* RecipientPicker */ = {
 			isa = PBXGroup;
 			children = (
+				8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */,
+				8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */,
+				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
 				8835DDF7230CEDC300DC6B66 /* RecipientPickerViewController.h */,
 				8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */,
-				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
-				8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */,
-				8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */,
 			);
 			path = RecipientPicker;
 			sourceTree = "<group>";
@@ -4482,6 +4496,7 @@
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
+				34995F1A2411838D00C70546 /* NewGroupViewController.m in Sources */,
 				34D1F0871F8678AA0066283D /* ConversationViewItem.m in Sources */,
 				88F8195C238375C7007914E8 /* ReactionCountsView.swift in Sources */,
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
@@ -4533,7 +4548,6 @@
 				45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */,
 				340CCB6A23032762005243B3 /* YDBLegacyMigration.m in Sources */,
 				3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */,
-				34941BC523FF25F2002AEA8D /* NewGroupViewController.swift in Sources */,
 				8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */,
 				340E9AC4236095CD00FA362C /* AttachmentMultisend.swift in Sources */,
 				34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */,
@@ -4546,6 +4560,7 @@
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MessageActionsViewController.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
+				34995F192411838D00C70546 /* NewGroupSearchBar.swift in Sources */,
 				349ED990221B0194008045B0 /* Onboarding2FAViewController.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
@@ -4560,6 +4575,7 @@
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
 				34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */,
+				34995F1B2411838D00C70546 /* NewGroupViewController2.swift in Sources */,
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
 				34A4C61E221613D00042EF2E /* OnboardingVerificationViewController.swift in Sources */,
 				4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */,
@@ -4574,6 +4590,7 @@
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
 				88D23D1223CEBFB200B0E74B /* UserNotificationActionHandler.swift in Sources */,
+				34995F182411838D00C70546 /* NewGroupViewController.swift in Sources */,
 				4C63550222F15A6700A8ECE6 /* ThemeHeaderView.swift in Sources */,
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
@@ -4624,7 +4641,6 @@
 				34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */,
 				45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */,
 				4CD4E7D623E8CCFE00834B1B /* AudioSource.swift in Sources */,
-				34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */,
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
 				880BFFEA234590FA00F6FAB1 /* ConversationSplitViewController.swift in Sources */,

@@ -825,7 +825,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                             if didSucceed {
                                 let toastController = ToastController(text: NSLocalizedString("ATTACHMENT_APPROVAL_MEDIA_DID_SAVE",
                                                                                               comment: "toast alert shown after user taps the 'save' button"))
-                                let inset = self.bottomToolView.height() + 16
+                                let inset = self.bottomToolView.height + 16
                                 toastController.presentToastView(fromBottomOfView: self.view, inset: inset)
                             } else {
                                 owsFailDebug("error: \(String(describing: error))")
