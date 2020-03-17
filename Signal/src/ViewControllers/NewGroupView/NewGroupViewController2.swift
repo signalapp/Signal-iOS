@@ -132,7 +132,7 @@ public class NewGroupViewController2: OWSViewController {
     private func updateSearchBar() {
         searchBar.acceptAutocorrectSuggestion()
 
-        let members = databaseStorage.read { transaction in
+        let members = databaseStorage.uiRead { transaction in
             Array(self.recipientSet).compactMap { (recipient: PickedRecipient) -> NewGroupMember? in
                 guard let address = recipient.address else {
                     owsFailDebug("Invalid recipient.")
@@ -217,7 +217,7 @@ public class NewGroupViewController2: OWSViewController {
         }
 
         if !hasUnsavedChanges {
-            // If user made no changes, return to conversation settings view.
+            // If user made no changes, return to 'compose' view.
             navigationController.popViewController(animated: true)
             return
         }

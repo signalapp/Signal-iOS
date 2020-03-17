@@ -78,7 +78,10 @@ public class NewGroupSearchBar: UIView {
 
     func contentHeight(forWidth width: CGFloat) -> CGFloat {
         if collectionView.width != width {
-            // Update collection view frame if necessary.
+            // Collection view content measurement doesn't work
+            // until collection view has non-zero size. To ensure
+            // initial measurement succeeds, update the frame if
+            // necessary.
             var frame = collectionView.frame
             frame.size.width = width
             collectionView.frame = frame
@@ -276,14 +279,6 @@ public protocol NewGroupMemberCellDelegate: class {
 // MARK: -
 
 private class NewGroupMemberCell: UICollectionViewCell {
-
-    // MARK: - Dependencies
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    // MARK: -
 
     static let reuseIdentifier = "NewGroupMemberCell"
 

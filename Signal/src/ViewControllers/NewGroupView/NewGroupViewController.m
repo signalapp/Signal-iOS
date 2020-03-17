@@ -347,7 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.groupNameTextField resignFirstResponder];
 
     if (!self.hasUnsavedChanges) {
-        // If user made no changes, return to conversation settings view.
+        // If user made no changes, return to 'compose' view.
         [self.navigationController popViewControllerAnimated:YES];
         return;
     }

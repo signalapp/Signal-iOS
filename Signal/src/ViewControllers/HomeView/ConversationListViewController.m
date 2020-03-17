@@ -923,7 +923,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // Dismiss any message actions if they're presented
     [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsAnimated:YES];
 
-    NewGroupViewController *viewController = [NewGroupViewController new];
+    UIViewController *newGroupViewController
+        = (SSKFeatureFlags.groupsV2CreateGroups ? [NewGroupViewController2 new] : [NewGroupViewController new]);
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {
@@ -934,7 +935,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         //
         // We just want to make sure contact access is *complete* before showing the compose
         // screen to avoid flicker.
-        OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:viewController];
+        OWSNavigationController *modal =
+            [[OWSNavigationController alloc] initWithRootViewController:newGroupViewController];
         [self.navigationController presentFormSheetViewController:modal animated:YES completion:nil];
     }];
 }
