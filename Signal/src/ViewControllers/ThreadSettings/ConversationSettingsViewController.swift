@@ -155,7 +155,6 @@ class ConversationSettingsViewController: OWSTableViewController {
         return contactsManager.hasSignalAccount(for: contactThread.contactAddress)
     }
 
-    // TODO: Modify type?
     private var disappearingMessagesDurations: [NSNumber] {
         return OWSDisappearingMessagesConfiguration.validDurationsSeconds()
     }
@@ -322,7 +321,8 @@ class ConversationSettingsViewController: OWSTableViewController {
             contactsManager.supportsContactEditing && !hasExistingContact {
             mainSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
                 return self.buildDisclosureCell(name: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
                                                                         comment: "button in conversation settings view."),
@@ -336,7 +336,8 @@ class ConversationSettingsViewController: OWSTableViewController {
 
         mainSection.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {
-                owsFail("Missing self")
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
             }
             return self.buildDisclosureCell(name: MediaStrings.allMedia,
                                             icon: .settingsAllMedia,
@@ -348,7 +349,8 @@ class ConversationSettingsViewController: OWSTableViewController {
 
         mainSection.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {
-                owsFail("Missing self")
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
             }
             let title = NSLocalizedString("CONVERSATION_SETTINGS_SEARCH",
                                           comment: "Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated")
@@ -363,7 +365,8 @@ class ConversationSettingsViewController: OWSTableViewController {
         if !isNoteToSelf && !isGroupThread && thread.hasSafetyNumbers() {
             mainSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
 
                 return self.buildDisclosureCell(name: NSLocalizedString("VERIFY_PRIVACY",
@@ -380,7 +383,8 @@ class ConversationSettingsViewController: OWSTableViewController {
         if !isNoteToSelf && !self.isGroupThread && self.hasExistingContact {
             mainSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
 
                 return self.buildDisclosureCell(name: NSLocalizedString(
@@ -391,7 +395,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                 },
                                          actionBlock: { [weak self] in
                                             guard let self = self else {
-                                                owsFail("Missing self")
+                                                owsFailDebug("Missing self")
+                                                return
                                             }
                                             if self.contactsManager.supportsContactEditing {
                                                 self.presentContactViewController()
@@ -418,7 +423,8 @@ class ConversationSettingsViewController: OWSTableViewController {
         } else if isThreadInProfileWhitelist && !hideProfileShareStatus {
             mainSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
 
                 let title = (self.isGroupThread
@@ -436,7 +442,8 @@ class ConversationSettingsViewController: OWSTableViewController {
         } else {
             mainSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
 
                 let title =
@@ -460,7 +467,8 @@ class ConversationSettingsViewController: OWSTableViewController {
             let switchAction = #selector(disappearingMessagesSwitchValueDidChange)
             mainSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
                 let cell = OWSTableItem.newCell()
                 cell.preservesSuperviewLayoutMargins = true
@@ -514,7 +522,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                 let sliderAction = #selector(durationSliderDidChange)
                 mainSection.add(OWSTableItem(customCellBlock: { [weak self] in
                     guard let self = self else {
-                        owsFail("Missing self")
+                        owsFailDebug("Missing self")
+                        return OWSTableItem.newCell()
                     }
                     let cell = OWSTableItem.newCell()
                     cell.preservesSuperviewLayoutMargins = true
@@ -561,7 +570,8 @@ class ConversationSettingsViewController: OWSTableViewController {
         if shouldShowColorPicker {
             mainSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
 
                 let colorName = self.thread.conversationColorName
@@ -588,7 +598,8 @@ class ConversationSettingsViewController: OWSTableViewController {
             if canEditSharedConversationSettings {
                 groupItems.append(OWSTableItem(customCellBlock: { [weak self] in
                     guard let self = self else {
-                        owsFail("Missing self")
+                        owsFailDebug("Missing self")
+                        return OWSTableItem.newCell()
                     }
 
                     let cell = self.buildDisclosureCell(name: NSLocalizedString("EDIT_GROUP_ACTION",
@@ -606,7 +617,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                 groupItems += [
                     OWSTableItem(customCellBlock: { [weak self] in
                         guard let self = self else {
-                            owsFail("Missing self")
+                            owsFailDebug("Missing self")
+                            return OWSTableItem.newCell()
                         }
 
                         let cell = self.buildDisclosureCell(name: NSLocalizedString("LIST_GROUP_MEMBERS_ACTION",
@@ -620,7 +632,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                     }),
                     OWSTableItem(customCellBlock: { [weak self] in
                         guard let self = self else {
-                            owsFail("Missing self")
+                            owsFailDebug("Missing self")
+                            return OWSTableItem.newCell()
                         }
 
                         let cell = self.buildDisclosureCell(name: NSLocalizedString("LEAVE_GROUP_ACTION",
@@ -650,7 +663,8 @@ class ConversationSettingsViewController: OWSTableViewController {
 
             notificationsSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
 
                 let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
@@ -685,7 +699,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                   customRowHeight: UITableView.automaticDimension,
                                                   actionBlock: { [weak self] in
                                                     guard let self = self else {
-                                                        owsFail("Missing self")
+                                                        owsFailDebug("Missing self")
+                                                        return
                                                     }
                                                     let vc = OWSSoundSettingsViewController()
                                                     vc.thread = self.thread
@@ -694,7 +709,8 @@ class ConversationSettingsViewController: OWSTableViewController {
 
             notificationsSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
 
                 let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
@@ -776,7 +792,8 @@ class ConversationSettingsViewController: OWSTableViewController {
             let switchAction = #selector(blockConversationSwitchDidChange)
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
 
                 let cellTitle =
@@ -816,7 +833,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                 style: .default,
                                                 handler: { [weak self] _ in
                                                     guard let self = self else {
-                                                        owsFail("Missing self")
+                                                        owsFailDebug("Missing self")
+                                                        return
                                                     }
                                                     self.presentContactViewController()
         }))
@@ -827,7 +845,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                 style: .default,
                                                 handler: { [weak self] _ in
                                                     guard let self = self else {
-                                                        owsFail("Missing self")
+                                                        owsFailDebug("Missing self")
+                                                        return
                                                     }
                                                     self.presentAddToContactViewController(address:
                                                         contactThread.contactAddress)
@@ -838,7 +857,6 @@ class ConversationSettingsViewController: OWSTableViewController {
 
     // MARK: -
 
-    // TODO: Semicolons
     // TODO: Logging
     // TODO: Remove fails
     // TODO: check selectors
@@ -1145,7 +1163,8 @@ class ConversationSettingsViewController: OWSTableViewController {
             }
             BlockListUIUtils.showBlockThreadActionSheet(thread, from: self) { [weak self] isBlocked in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return
                 }
 
                 // Update switch state if user cancels action.
@@ -1160,7 +1179,8 @@ class ConversationSettingsViewController: OWSTableViewController {
             }
             BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] isBlocked in
                 guard let self = self else {
-                    owsFail("Missing self")
+                    owsFailDebug("Missing self")
+                    return
                 }
                 // Update switch state if user cancels action.
                 sender.isOn = isBlocked
@@ -1235,7 +1255,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                                   accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "unmute"),
                                   style: .destructive) { [weak self] _ in
                                     guard let self = self else {
-                                        owsFail("Missing self")
+                                        owsFailDebug("Missing self")
+                                        return
                                     }
                                     self.setThreadMutedUntilDate(nil)
             }
@@ -1247,7 +1268,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "mute_1_minute"),
                                                     style: .destructive) { [weak self] _ in
                                                         guard let self = self else {
-                                                            owsFail("Missing self")
+                                                            owsFailDebug("Missing self")
+                                                            return
                                                         }
                                                         self.setThreadMuted {
                                                             var dateComponents = DateComponents()
@@ -1261,7 +1283,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "mute_1_hour"),
                                                     style: .destructive) { [weak self] _ in
                                                         guard let self = self else {
-                                                            owsFail("Missing self")
+                                                            owsFailDebug("Missing self")
+                                                            return
                                                         }
                                                         self.setThreadMuted {
                                                             var dateComponents = DateComponents()
@@ -1274,7 +1297,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "mute_1_day"),
                                                     style: .destructive) { [weak self] _ in
                                                         guard let self = self else {
-                                                            owsFail("Missing self")
+                                                            owsFailDebug("Missing self")
+                                                            return
                                                         }
                                                         self.setThreadMuted {
                                                             var dateComponents = DateComponents()
@@ -1287,7 +1311,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "mute_1_week"),
                                                     style: .destructive) { [weak self] _ in
                                                         guard let self = self else {
-                                                            owsFail("Missing self")
+                                                            owsFailDebug("Missing self")
+                                                            return
                                                         }
                                                         self.setThreadMuted {
                                                             var dateComponents = DateComponents()
@@ -1300,7 +1325,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "mute_1_year"),
                                                     style: .destructive) { [weak self] _ in
                                                         guard let self = self else {
-                                                            owsFail("Missing self")
+                                                            owsFailDebug("Missing self")
+                                                            return
                                                         }
                                                         self.setThreadMuted {
                                                             var dateComponents = DateComponents()
