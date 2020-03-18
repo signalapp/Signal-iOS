@@ -1067,7 +1067,7 @@ class StorageServiceOperation: OWSOperation {
                     } else if let groupV2Record = item.groupV2Record {
                         // If groups v2 isn't enabled, treat this record as unknown.
                         // We'll parse it when groups v2 is enabled.
-                        guard FeatureFlags.groupsV2SetCapability else {
+                        guard FeatureFlags.groupsV2 else {
                             var unknownIdentifiersOfType = state.unknownIdentifiersTypeMap[item.identifier.type] ?? []
                             unknownIdentifiersOfType.append(item.identifier)
                             state.unknownIdentifiersTypeMap[item.identifier.type] = unknownIdentifiersOfType
@@ -1193,7 +1193,7 @@ class StorageServiceOperation: OWSOperation {
                 .account
             ]
 
-            if FeatureFlags.groupsV2SetCapability { knownTypes.append(.groupv2) }
+            if FeatureFlags.groupsV2 { knownTypes.append(.groupv2) }
 
             var state = State.current(transaction: transaction)
 
