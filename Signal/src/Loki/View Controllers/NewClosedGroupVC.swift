@@ -1,5 +1,5 @@
 
-final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableViewDelegate {
+final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
     private var selectedContacts: Set<String> = []
     
     private lazy var contacts: [String] = {
@@ -44,6 +44,7 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
     
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground
@@ -108,7 +109,7 @@ final class NewClosedGroupVC : UIViewController, UITableViewDataSource, UITableV
             let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
             createNewPrivateChatButton.setTitle(NSLocalizedString("Start a Session", comment: ""), for: UIControl.State.normal)
             createNewPrivateChatButton.addTarget(self, action: #selector(createNewPrivateChat), for: UIControl.Event.touchUpInside)
-            createNewPrivateChatButton.set(.width, to: 160)
+            createNewPrivateChatButton.set(.width, to: 180)
             let stackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
             stackView.axis = .vertical
             stackView.spacing = Values.mediumSpacing
@@ -288,7 +289,8 @@ private extension NewClosedGroupVC {
             profilePictureView.hexEncodedPublicKey = hexEncodedPublicKey
             profilePictureView.update()
             displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
-            tickImageView.image = hasTick ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
+            let icon = hasTick ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
+            tickImageView.image = icon.asTintedImage(color: Colors.text)!
         }
     }
 }

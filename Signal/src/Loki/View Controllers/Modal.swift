@@ -1,10 +1,7 @@
 
 @objc(LKModal)
-class Modal : UIViewController {
+class Modal : BaseVC {
     private(set) var verticalCenteringConstraint: NSLayoutConstraint!
-    
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
     
     // MARK: Components
     lazy var contentView: UIView = {

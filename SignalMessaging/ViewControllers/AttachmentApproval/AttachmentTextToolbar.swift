@@ -32,7 +32,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     // Layout Constants
 
-    let kMinTextViewHeight: CGFloat = 38
+    let kMinTextViewHeight: CGFloat = 40
     var maxTextViewHeight: CGFloat {
         // About ~4 lines in portrait and ~3 lines in landscape.
         // Otherwise we risk obscuring too much of the content.
@@ -61,9 +61,9 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         sendButton.setTitle(sendTitle, for: .normal)
         sendButton.addTarget(self, action: #selector(didTapSend), for: .touchUpInside)
 
-        sendButton.titleLabel?.font = .boldSystemFont(ofSize: 15) // Values.mediumFontSize
+        sendButton.titleLabel?.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         sendButton.titleLabel?.textAlignment = .center
-        sendButton.tintColor = UIColor(rgbHex: 0x00F782) // Colors.accent
+        sendButton.tintColor = Colors.accent
 
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
@@ -167,8 +167,8 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     private lazy var textContainer: UIView = {
         let textContainer = UIView()
 
-        textContainer.layer.borderColor = Theme.darkThemePrimaryColor.cgColor
-        textContainer.layer.borderWidth = 0.5
+        textContainer.layer.borderColor = UIColor.white.cgColor
+        textContainer.layer.borderWidth = Values.separatorThickness
         textContainer.layer.cornerRadius = kMinTextViewHeight / 2
         textContainer.clipsToBounds = true
 
@@ -184,12 +184,12 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     private func buildTextView() -> UITextView {
         let textView = AttachmentTextView()
 
-        textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
+        textView.keyboardAppearance = isLightMode ? .default : .dark
         textView.backgroundColor = .clear
-        textView.tintColor = Theme.darkThemePrimaryColor
+        textView.tintColor = .white
 
-        textView.font = .systemFont(ofSize: 15) // Values.mediumFontSize
-        textView.textColor = Theme.darkThemePrimaryColor
+        textView.font = .systemFont(ofSize: Values.mediumFontSize)
+        textView.textColor = .white
         textView.showsVerticalScrollIndicator = false
         textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
 

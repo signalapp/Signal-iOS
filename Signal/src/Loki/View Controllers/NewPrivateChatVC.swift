@@ -1,11 +1,8 @@
 
-final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
-    
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
     
     // MARK: Components
     private lazy var tabBar: TabBar = {
@@ -43,6 +40,7 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
     
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground

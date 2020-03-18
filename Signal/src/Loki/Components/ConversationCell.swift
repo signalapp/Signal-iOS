@@ -141,7 +141,8 @@ final class ConversationCell : UITableViewCell {
                 profilePictureView.hexEncodedPublicKey = ""
                 profilePictureView.isRSSFeed = true
             } else {
-                let users = LokiAPI.userHexEncodedPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
+                var users = LokiAPI.userHexEncodedPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
+                users.remove(getUserHexEncodedPublicKey())
                 let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
                 if !randomUsers.isEmpty {
                     profilePictureView.hexEncodedPublicKey = randomUsers[0]
@@ -175,11 +176,11 @@ final class ConversationCell : UITableViewCell {
             let image: UIImage
             let status = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: lastMessage)
             switch status {
-            case .calculatingPoW, .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot")
-            case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck")
+            case .calculatingPoW, .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot").asTintedImage(color: Colors.text)!
+            case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck").asTintedImage(color: Colors.text)!
             case .read:
-                statusIndicatorView.backgroundColor = .white
-                image = #imageLiteral(resourceName: "FilledCircleCheck")
+                statusIndicatorView.backgroundColor = isLightMode ? .black : .white
+                image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
             case .failed: image = #imageLiteral(resourceName: "message_status_failed").asTintedImage(color: Colors.text)!
             }
             statusIndicatorView.image = image

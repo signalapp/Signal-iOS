@@ -182,7 +182,8 @@ final class NewConversationButtonSet : UIView {
             self.layoutIfNeeded()
             button.frame = frame
             button.layer.cornerRadius = size / 2
-            button.setGlow(to: size, with: UIColor.black)
+            let glowColor = isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black
+            button.setGlow(to: size, with: glowColor)
             button.backgroundColor = Colors.newConversationButtonCollapsedBackground
         }
     }
@@ -228,9 +229,11 @@ private final class NewConversationButton : UIImageView {
         backgroundColor = isMainButton ? Colors.accent : Colors.newConversationButtonCollapsedBackground
         let size = Values.newConversationButtonCollapsedSize
         layer.cornerRadius = size / 2
-        if isMainButton { setGlow(to: size, with: Colors.newConversationButtonShadow) }
+        let glowColor = isMainButton ? Colors.newConversationButtonShadow : (isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black)
+        setGlow(to: size, with: glowColor)
         layer.masksToBounds = false
-        image = icon
+        let iconColor = (isMainButton && isLightMode) ? UIColor.white : Colors.text
+        image = icon.asTintedImage(color: iconColor)!
         contentMode = .center
         widthConstraint = set(.width, to: size)
         heightConstraint = set(.height, to: size)
@@ -241,8 +244,8 @@ private final class NewConversationButton : UIImageView {
         layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size, height: size))).cgPath
         layer.shadowColor = color.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 0.8)
-        layer.shadowOpacity = 1
-        layer.shadowRadius = 6
+        layer.shadowOpacity = isLightMode ? 0.4 : 1
+        layer.shadowRadius = isLightMode ? 4 : 6
     }
 }
 

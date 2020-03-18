@@ -86,21 +86,21 @@ class ImageEditorCropViewController: OWSViewController {
     override func loadView() {
         self.view = UIView()
 
-        self.view.backgroundColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
+        self.view.backgroundColor = Colors.navigationBarBackground
         self.view.layoutMargins = .zero
 
         // MARK: - Buttons
 
         let rotate90Button = OWSButton(imageName: "image_editor_rotate",
-                                       tintColor: UIColor.white) { [weak self] in
+                                       tintColor: Colors.text) { [weak self] in
             self?.rotate90ButtonPressed()
         }
         let flipButton = OWSButton(imageName: "image_editor_flip",
-                                   tintColor: UIColor.white) { [weak self] in
+                                   tintColor: Colors.text) { [weak self] in
                                     self?.flipButtonPressed()
         }
         let cropLockButton = OWSButton(imageName: "image_editor_crop_unlock",
-                                   tintColor: UIColor.white) { [weak self] in
+                                   tintColor: Colors.text) { [weak self] in
                                     self?.cropLockButtonPressed()
         }
         self.cropLockButton = cropLockButton

@@ -74,7 +74,7 @@ public class GalleryRailCellView: UIView {
         layoutMargins = UIEdgeInsets(top: 0, left: cellBorderWidth, bottom: 0, right: cellBorderWidth)
 
         if isSelected {
-            contentContainer.layer.borderColor = UIColor(rgbHex: 0x00F782).cgColor // Colors.accent
+            contentContainer.layer.borderColor = Colors.accent.cgColor
             contentContainer.layer.borderWidth = cellBorderWidth
         } else {
             contentContainer.layer.borderWidth = 0

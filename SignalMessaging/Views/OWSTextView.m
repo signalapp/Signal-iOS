@@ -4,6 +4,7 @@
 
 #import "OWSTextView.h"
 #import "Theme.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,7 +41,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypesExceptLinks
 
 - (void)ows_applyTheme
 {
-    self.keyboardAppearance = Theme.keyboardAppearance;
+    self.keyboardAppearance = LKAppModeUtilities.isLightMode ? UIKeyboardAppearanceDefault : UIKeyboardAppearanceDark;
 }
 
 // MARK: -

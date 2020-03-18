@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       action:@selector(cancelWasPressed:)
                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"cancel")];
     
-    cancelItem.tintColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+    cancelItem.tintColor = LKColors.text;
     
     self.navigationItem.leftBarButtonItem = cancelItem;
 

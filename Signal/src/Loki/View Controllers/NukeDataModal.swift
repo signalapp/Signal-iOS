@@ -24,9 +24,11 @@ final class NukeDataModal : Modal {
         let nukeDataButton = UIButton()
         nukeDataButton.set(.height, to: Values.mediumButtonHeight)
         nukeDataButton.layer.cornerRadius = Values.modalButtonCornerRadius
-        nukeDataButton.backgroundColor = Colors.destructive
+        if isDarkMode {
+            nukeDataButton.backgroundColor = Colors.destructive
+        }
         nukeDataButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
-        nukeDataButton.setTitleColor(Colors.text, for: UIControl.State.normal)
+        nukeDataButton.setTitleColor(isLightMode ? Colors.destructive : Colors.text, for: UIControl.State.normal)
         nukeDataButton.setTitle(NSLocalizedString("Delete", comment: ""), for: UIControl.State.normal)
         nukeDataButton.addTarget(self, action: #selector(nuke), for: UIControl.Event.touchUpInside)
         // Set up button stack view

@@ -8,6 +8,7 @@
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -38,7 +39,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (BOOL)isDarkThemeEnabled
 {
-    return YES;
+    return LKAppModeUtilities.isDarkMode;
 }
 
 - (BOOL)isDarkThemeEnabled
@@ -46,18 +47,10 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     OWSAssertIsOnMainThread();
 
     if (!CurrentAppContext().isMainApp) {
-        // Ignore theme in app extensions.
         return NO;
     }
 
-    if (self.isDarkThemeEnabledNumber == nil) {
-        BOOL isDarkThemeEnabled = [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:ThemeKeyThemeEnabled
-                                                                                  inCollection:ThemeCollection
-                                                                                  defaultValue:NO];
-        self.isDarkThemeEnabledNumber = @(isDarkThemeEnabled);
-    }
-
-    return self.isDarkThemeEnabledNumber.boolValue;
+    return LKAppModeUtilities.isDarkMode;
 }
 
 + (void)setIsDarkThemeEnabled:(BOOL)value
@@ -83,22 +76,22 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)backgroundColor
 {
-    return UIColor.lokiDarkestGray;
+    return LKColors.navigationBarBackground;
 }
 
 + (UIColor *)offBackgroundColor
 {
-    return UIColor.lokiDarkGray;
+    return LKColors.unimportant;
 }
 
 + (UIColor *)primaryColor
 {
-    return UIColor.whiteColor;
+    return LKColors.text;
 }
 
 + (UIColor *)secondaryColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray25Color : UIColor.ows_gray60Color);
+    return LKColors.separator;
 }
 
 + (UIColor *)boldColor
@@ -113,12 +106,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)placeholderColor
 {
-    return UIColor.lokiGray;
+    return LKColors.navigationBarBackground;
 }
 
 + (UIColor *)hairlineColor
 {
-    return UIColor.lokiDarkGray;
+    return LKColors.separator;
 }
 
 #pragma mark - Global App Colors
@@ -140,7 +133,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)darkThemeNavbarIconColor;
 {
-    return UIColor.ows_gray25Color;
+    return LKColors.text;
 }
 
 + (UIColor *)navbarTitleColor
@@ -165,12 +158,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)darkThemeBackgroundColor
 {
-    return UIColor.ows_gray95Color;
+    return LKColors.navigationBarBackground;
 }
 
 + (UIColor *)darkThemePrimaryColor
 {
-    return UIColor.ows_gray05Color;
+    return LKColors.text;
 }
 
 + (UIColor *)galleryHighlightColor
@@ -196,7 +189,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIKeyboardAppearance)keyboardAppearance
 {
-    return Theme.isDarkThemeEnabled ? self.darkThemeKeyboardAppearance : UIKeyboardAppearanceDefault;
+    return LKAppModeUtilities.isLightMode ? UIKeyboardAppearanceDefault : UIKeyboardAppearanceDark;
 }
 
 + (UIKeyboardAppearance)darkThemeKeyboardAppearance;

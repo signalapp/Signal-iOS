@@ -164,12 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Status bar is overlaying the green "call banner"
         return UIStatusBarStyleLightContent;
     } else {
-        UIViewController *presentedViewController = self.presentedViewController;
-        if (presentedViewController) {
-            return presentedViewController.preferredStatusBarStyle;
-        } else {
-            return (Theme.isDarkThemeEnabled ? UIStatusBarStyleLightContent : super.preferredStatusBarStyle);
-        }
+        return LKAppModeUtilities.isLightMode ? UIStatusBarStyleDefault : UIStatusBarStyleLightContent;
     }
 }
 

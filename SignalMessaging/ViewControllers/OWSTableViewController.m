@@ -8,6 +8,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -108,20 +109,20 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (void)configureCell:(UITableViewCell *)cell
 {
-    cell.backgroundColor = [UIColor colorWithRGBHex:0x1B1B1B]; // Colors.cellBackground
+    cell.backgroundColor = LKColors.cellBackground;
     if (@available(iOS 13, *)) {
         cell.contentView.backgroundColor = UIColor.clearColor;
     } else {
-        cell.contentView.backgroundColor = [UIColor colorWithRGBHex:0x1B1B1B]; // Colors.cellBackground
+        cell.contentView.backgroundColor = LKColors.cellBackground;
     }
     
-    cell.textLabel.font = [UIFont systemFontOfSize:15]; // Values.mediumFontSize
-    cell.textLabel.textColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
-    cell.detailTextLabel.font = [UIFont systemFontOfSize:15]; // Values.mediumFontSize
-    cell.detailTextLabel.textColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+    cell.textLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+    cell.textLabel.textColor = LKColors.text;
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+    cell.detailTextLabel.textColor = LKColors.text;
 
     UIView *selectedBackgroundView = [UIView new];
-    selectedBackgroundView.backgroundColor = [UIColor colorWithRGBHex:0x0C0C0C]; // Colors.cellSelected
+    selectedBackgroundView.backgroundColor = LKColors.cellSelected;
     cell.selectedBackgroundView = selectedBackgroundView;
 }
 
@@ -223,7 +224,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         cell.textLabel.text = text;
         cell.accessoryType = accessoryType;
         cell.accessibilityIdentifier = accessibilityIdentifier;
-        cell.tintColor = [UIColor colorWithRGBHex:0x00F782]; // Colors.accent
+        cell.tintColor = LKColors.accent;
         return cell;
     };
     return item;
@@ -350,10 +351,10 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         // These cells look quite different.
         //
         // Smaller font.
-        cell.textLabel.font = [UIFont systemFontOfSize:15]; // Values.mediumFontSize
+        cell.textLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
         // Soft color.
         // TODO: Theme, review with design.
-        cell.textLabel.textColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+        cell.textLabel.textColor = LKColors.text;
         // Centered.
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.userInteractionEnabled = NO;
@@ -397,8 +398,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
         UILabel *accessoryLabel = [UILabel new];
         accessoryLabel.text = accessoryText;
-        accessoryLabel.textColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
-        accessoryLabel.font = [UIFont systemFontOfSize:15]; // Values.mediumFontSize
+        accessoryLabel.textColor = LKColors.text;
+        accessoryLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
         accessoryLabel.textAlignment = NSTextAlignmentRight;
         [accessoryLabel sizeToFit];
         cell.accessoryView = accessoryLabel;
@@ -475,7 +476,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
         UISwitch *cellSwitch = [UISwitch new];
         cell.accessoryView = cellSwitch;
-        cellSwitch.onTintColor = [UIColor colorWithRGBHex:0x00F782]; // Colors.accent
+        cellSwitch.onTintColor = LKColors.accent;
         [cellSwitch setOn:isOnBlock()];
         [cellSwitch addTarget:weakTarget action:selector forControlEvents:UIControlEventValueChanged];
         cellSwitch.enabled = isEnabledBlock();

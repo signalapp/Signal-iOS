@@ -2,7 +2,7 @@
 // MARK: - Device Links View Controller
 
 @objc(LKDeviceLinksVC)
-final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableViewDelegate, DeviceLinkingModalDelegate, DeviceNameModalDelegate {
+final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, DeviceLinkingModalDelegate, DeviceNameModalDelegate {
     private var deviceLinks: [DeviceLink] = [] { didSet { updateUI() } }
     
     // MARK: Components
@@ -27,7 +27,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
         let linkNewDeviceButton = Button(style: .prominentOutline, size: .large)
         linkNewDeviceButton.setTitle(NSLocalizedString("Link a Device", comment: ""), for: UIControl.State.normal)
         linkNewDeviceButton.addTarget(self, action: #selector(linkNewDevice), for: UIControl.Event.touchUpInside)
-        linkNewDeviceButton.set(.width, to: 160)
+        linkNewDeviceButton.set(.width, to: 180)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, linkNewDeviceButton ])
         result.axis = .vertical
         result.spacing = Values.mediumSpacing
@@ -37,6 +37,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground

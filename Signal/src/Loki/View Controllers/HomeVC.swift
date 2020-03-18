@@ -1,5 +1,5 @@
 
-final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIViewControllerPreviewingDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
+final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIViewControllerPreviewingDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
     private var threadViewModelCache: [String:ThreadViewModel] = [:]
     private var isObservingDatabase = true
     private var isViewVisible = false { didSet { updateIsObservingDatabase() } }
@@ -18,9 +18,6 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     }()
     
     private let editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
-    
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
     
     // MARK: Components
     private lazy var seedReminderView: SeedReminderView = {
@@ -44,7 +41,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         result.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
         return result
     }()
-    
+
     private lazy var newConversationButtonSet: NewConversationButtonSet = {
         let result = NewConversationButtonSet()
         result.delegate = self
@@ -53,7 +50,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     
     private lazy var fadeView: UIView = {
         let result = UIView()
-        let gradient = Gradients.transparentToBlack
+        let gradient = Gradients.homeVCFade
         result.setGradient(gradient)
         result.isUserInteractionEnabled = false
         return result
@@ -61,6 +58,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         SignalApp.shared().homeViewController = self
         // Set gradient background
         view.backgroundColor = .clear
