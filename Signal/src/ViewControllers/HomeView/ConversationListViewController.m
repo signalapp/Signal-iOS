@@ -924,7 +924,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsAnimated:YES];
 
     UIViewController *newGroupViewController
-        = (SSKFeatureFlags.groupsV2CreateGroups ? [NewGroupViewController2 new] : [NewGroupViewController new]);
+        = (RemoteConfig.groupsV2CreateGroups ? [NewGroupViewController2 new] : [NewGroupViewController new]);
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {

@@ -10,9 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSGroupThread;
 
 typedef NS_ENUM(NSUInteger, UpdateGroupMode) {
-    UpdateGroupMode_Default = 0,
-    UpdateGroupMode_EditGroupName,
-    UpdateGroupMode_EditGroupAvatar,
+    UpdateGroupModeDefault = 0,
+    UpdateGroupModeEditGroupName,
+    UpdateGroupModeEditGroupAvatar,
 };
 
 @interface UpdateGroupViewController : OWSViewController
@@ -21,7 +21,8 @@ typedef NS_ENUM(NSUInteger, UpdateGroupMode) {
 
 - (instancetype)init NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
-- (nullable instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil
+                         bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithGroupThread:(TSGroupThread *)groupThread mode:(UpdateGroupMode)mode NS_DESIGNATED_INITIALIZER;
 

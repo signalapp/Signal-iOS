@@ -169,17 +169,17 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidAppear:animated];
 
     switch (self.mode) {
-        case UpdateGroupMode_EditGroupName:
+        case UpdateGroupModeEditGroupName:
             [self.groupNameTextField becomeFirstResponder];
             break;
-        case UpdateGroupMode_EditGroupAvatar:
+        case UpdateGroupModeEditGroupAvatar:
             [self showChangeAvatarUI];
             break;
         default:
             break;
     }
     // Only perform these actions the first time the view appears.
-    _mode = UpdateGroupMode_Default;
+    _mode = UpdateGroupModeDefault;
 }
 
 - (UIView *)firstSectionHeader

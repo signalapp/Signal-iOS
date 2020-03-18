@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ public protocol SheetViewControllerDelegate: class {
 public class SheetViewController: UIViewController {
 
     @objc
-    weak var delegate: SheetViewControllerDelegate?
+    public weak var delegate: SheetViewControllerDelegate?
 
     @objc
     public let contentView: UIView = UIView()

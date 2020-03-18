@@ -158,7 +158,7 @@ const CGFloat kIconViewLength = 24;
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(identityStateDidChange:)
-                                                 name:kNSNotificationName_IdentityStateDidChange
+                                                 name:kNSNotificationNameIdentityStateDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -674,7 +674,7 @@ const CGFloat kIconViewLength = 24;
                                           return cell;
                                       }
                                       actionBlock:^{
-                                          [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
+                                          [weakSelf showUpdateGroupView:UpdateGroupModeDefault];
                                       }]];
         }
 
@@ -1124,9 +1124,9 @@ const CGFloat kIconViewLength = 24;
         if (self.isGroupThread) {
             CGPoint location = [sender locationInView:self.avatarView];
             if (CGRectContainsPoint(self.avatarView.bounds, location)) {
-                [self showUpdateGroupView:UpdateGroupMode_EditGroupAvatar];
+                [self showUpdateGroupView:UpdateGroupModeEditGroupAvatar];
             } else {
-                [self showUpdateGroupView:UpdateGroupMode_EditGroupName];
+                [self showUpdateGroupView:UpdateGroupModeEditGroupName];
             }
         } else {
             if (self.contactsManager.supportsContactEditing) {
@@ -1541,7 +1541,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)tappedConversationSearch
 {
-    [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch:self];
+    [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch];
 }
 
 #pragma mark - Notifications

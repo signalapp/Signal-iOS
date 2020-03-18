@@ -180,7 +180,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithMutedUntilDate:(nullable NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction;
 

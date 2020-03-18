@@ -47,6 +47,8 @@ public enum ThemeIcon: UInt {
     case call
     case info
     case groupMessage
+
+    case colorPalette
 }
 
 // MARK: - Colors
@@ -163,6 +165,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "info-solid-24" : "ic_info"
         case .groupMessage:
             return "group-solid-24"
+        case .colorPalette:
+            return "ic_color_palette"
         }
     }
 }

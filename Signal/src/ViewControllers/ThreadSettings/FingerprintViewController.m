@@ -144,7 +144,7 @@ typedef void (^CustomLayoutBlock)(void);
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(identityStateDidChange:)
-                                                 name:kNSNotificationName_IdentityStateDidChange
+                                                 name:kNSNotificationNameIdentityStateDidChange
                                                object:nil];
 }
 
