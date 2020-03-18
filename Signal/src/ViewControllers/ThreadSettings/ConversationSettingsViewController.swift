@@ -858,9 +858,7 @@ class ConversationSettingsViewController: OWSTableViewController {
     // MARK: -
 
     // TODO: Logging
-    // TODO: Remove fails
     // TODO: check selectors
-    // TODO: space after :
 
     private func mainSectionHeader() -> UIView {
         let mainSectionHeader = UIView()
@@ -1027,6 +1025,16 @@ class ConversationSettingsViewController: OWSTableViewController {
 
     private var hasUnsavedChangesToDisappearingMessagesConfiguration: Bool {
         return databaseStorage.uiRead { transaction in
+            if let groupThread = self.thread as? TSGroupThread {
+                guard let latestThread = TSGroupThread.fetch(groupId: groupThread.groupModel.groupId, transaction: transaction) else {
+                    // Thread no longer exists.
+                    return false
+                }
+                guard latestThread.isLocalUserInGroup else {
+                    // Local user is no longer in group, e.g. perhaps they just blocked it.
+                    return false
+                }
+            }
             return self.disappearingMessagesConfiguration.hasChanged(with: transaction)
         }
     }
