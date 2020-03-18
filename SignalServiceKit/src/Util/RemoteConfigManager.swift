@@ -268,7 +268,7 @@ private extension SDSKeyValueStore {
     var remoteConfigKey: String { "remoteConfigKey" }
 
     func getRemoteConfig(transaction: SDSAnyReadTransaction) -> [String: Bool]? {
-        guard let object = getObject(remoteConfigKey, transaction: transaction) else {
+        guard let object = getObject(forKey: remoteConfigKey, transaction: transaction) else {
             return nil
         }
 

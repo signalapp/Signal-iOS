@@ -315,7 +315,7 @@ extension OWSProfileManager {
     }
 
     private class func currentPendingProfileUpdate(transaction: SDSAnyReadTransaction) -> PendingProfileUpdate? {
-        guard let value = settingsStore.getObject(kPendingProfileUpdateKey, transaction: transaction) else {
+        guard let value = settingsStore.getObject(forKey: kPendingProfileUpdateKey, transaction: transaction) else {
             return nil
         }
         guard let update = value as? PendingProfileUpdate else {

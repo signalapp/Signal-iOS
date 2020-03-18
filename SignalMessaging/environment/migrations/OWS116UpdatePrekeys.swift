@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -33,7 +33,7 @@ public class OWS116UpdatePrekeys: YDBDatabaseMigration {
                                         stop.pointee = true
                                         return
                                     }
-                                    guard let record = keyStore.getObject(key, transaction: transaction.asAnyRead) as? PreKeyRecord else {
+                                    guard let record = keyStore.getObject(forKey: key, transaction: transaction.asAnyRead) as? PreKeyRecord else {
                                         owsFailDebug("Missing record.")
                                         return
                                     }
