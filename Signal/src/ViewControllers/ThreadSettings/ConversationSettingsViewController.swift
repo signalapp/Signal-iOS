@@ -857,9 +857,6 @@ class ConversationSettingsViewController: OWSTableViewController {
 
     // MARK: -
 
-    // TODO: Logging
-    // TODO: check selectors
-
     private func mainSectionHeader() -> UIView {
         let mainSectionHeader = UIView()
         let threadInfoView = UIView.container()
