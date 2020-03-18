@@ -1018,6 +1018,11 @@ class StorageServiceOperation: OWSOperation {
             self.databaseStorage.write { transaction in
                 for item in items {
                     if let contactRecord = item.contactRecord {
+                        guard contactRecord.serviceAddress?.isLocalAddress == false else {
+                            owsFailDebug("Remote service contained contact record for local user. Only account record should exist for the local user.")
+                            continue
+                        }
+
                         switch contactRecord.mergeWithLocalContact(transaction: transaction) {
                         case .invalid:
                             // This contact record was invalid, ignore it.

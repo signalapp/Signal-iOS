@@ -44,13 +44,6 @@ extension StorageServiceProtoContactRecord {
             throw StorageService.StorageError.accountMissing
         }
 
-        return try build(for: address, transaction: transaction)
-    }
-
-    static func build(
-        for address: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
-    ) throws -> StorageServiceProtoContactRecord {
         let builder = StorageServiceProtoContactRecord.builder()
 
         if let phoneNumber = address.phoneNumber {
@@ -70,34 +63,27 @@ extension StorageServiceProtoContactRecord {
         builder.setWhitelisted(isInWhitelist)
 
         // Identity
-        let identityBuilder = StorageServiceProtoContactRecordIdentity.builder()
 
         if let identityKey = identityManager.identityKey(for: address, transaction: transaction) {
-            identityBuilder.setKey(identityKey.prependKeyType())
+            builder.setIdentityKey(identityKey.prependKeyType())
         }
 
         let verificationState = identityManager.verificationState(for: address, transaction: transaction)
-        identityBuilder.setState(.from(verificationState))
-
-        builder.setIdentity(try identityBuilder.build())
+        builder.setIdentityState(.from(verificationState))
 
         // Profile
 
-        let profileBuilder = StorageServiceProtoContactRecordProfile.builder()
-
         if let profileKey = profileKey {
-            profileBuilder.setKey(profileKey)
+            builder.setProfileKey(profileKey)
         }
 
         if let profileGivenName = profileGivenName {
-            profileBuilder.setGivenName(profileGivenName)
+            builder.setGivenName(profileGivenName)
         }
 
         if let profileFamilyName = profileFamilyName {
-            profileBuilder.setFamilyName(profileFamilyName)
+            builder.setFamilyName(profileFamilyName)
         }
-
-        builder.setProfile(try profileBuilder.build())
 
         if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
             builder.setArchived(thread.isArchived)
@@ -139,13 +125,15 @@ extension StorageServiceProtoContactRecord {
 
         // Gather some local contact state to do comparisons against.
         let localProfileKey = profileManager.profileKey(for: address, transaction: transaction)
+        let localGivenName = profileManager.givenName(for: address, transaction: transaction)
+        let localFamilyName = profileManager.familyName(for: address, transaction: transaction)
         let localIdentityKey = identityManager.identityKey(for: address, transaction: transaction)
         let localIdentityState = identityManager.verificationState(for: address, transaction: transaction)
         let localIsBlocked = blockingManager.isAddressBlocked(address)
         let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
 
         // If our local profile key record differs from what's on the service, use the service's value.
-        if let profileKey = profile?.key, localProfileKey?.keyData != profileKey {
+        if let profileKey = profileKey, localProfileKey?.keyData != profileKey {
             profileManager.setProfileKeyData(
                 profileKey,
                 for: address,
@@ -153,31 +141,25 @@ extension StorageServiceProtoContactRecord {
                 transaction: transaction
             )
 
-            // We'll immediately schedule a fetch of the new profile, but restore the name
-            // if it exists so we we can start displaying it immediately.
-            if let givenName = profile?.givenName {
-                profileManager.setProfileGivenName(
-                    givenName,
-                    familyName: profile?.familyName,
-                    for: address,
-                    wasLocallyInitiated: false,
-                    transaction: transaction
-                )
-            }
-
         // If we have a local profile key for this user but the service doesn't mark it as needing update.
-        } else if localProfileKey != nil && profile?.hasKey != true {
+        } else if localProfileKey != nil && !hasProfileKey {
             mergeState = .needsUpdate(recipient.accountId)
         }
 
-        // The only thing we currently want to preserve for the local user is profile
-        // information. Everything else doesn't make sense to store / update and can
-        // lead to us being in a weird state such as thinking our own safety number changed.
-        // If more data needs to be restored for the local user it should be done above this line.
-        guard !address.isLocalAddress else { return mergeState }
+        if hasGivenName && localGivenName != givenName || hasFamilyName && localFamilyName != familyName {
+            profileManager.setProfileGivenName(
+                givenName,
+                familyName: familyName,
+                for: address,
+                wasLocallyInitiated: false,
+                transaction: transaction
+            )
+        } else if localGivenName != nil && !hasGivenName || localFamilyName != nil && !hasFamilyName {
+            mergeState = .needsUpdate(recipient.accountId)
+        }
 
         // If our local identity differs from the service, use the service's value.
-        if let identityKeyWithType = identity?.key, let identityState = identity?.state?.verificationState,
+        if let identityKeyWithType = identityKey, let identityState = identityState?.verificationState,
             let identityKey = try? identityKeyWithType.removeKeyType(),
             localIdentityKey != identityKey || localIdentityState != identityState {
 
@@ -190,45 +172,35 @@ extension StorageServiceProtoContactRecord {
             )
 
         // If we have a local identity for this user but the service doesn't mark it as needing update.
-        } else if localIdentityKey != nil && identity?.hasKey != true {
+        } else if localIdentityKey != nil && !hasIdentityKey {
             mergeState = .needsUpdate(recipient.accountId)
         }
 
         // If our local blocked state differs from the service state, use the service's value.
-        if hasBlocked, blocked != localIsBlocked {
+        if blocked != localIsBlocked {
             if blocked {
                 blockingManager.addBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
             } else {
                 blockingManager.removeBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
             }
-
-        // If the service is missing a blocked state, mark it as needing update.
-        } else if !hasBlocked {
-            mergeState = .needsUpdate(recipient.accountId)
         }
 
         // If our local whitelisted state differs from the service state, use the service's value.
-        if hasWhitelisted, whitelisted != localIsWhitelisted {
+        if whitelisted != localIsWhitelisted {
             if whitelisted {
                 profileManager.addUser(toProfileWhitelist: address, wasLocallyInitiated: false, transaction: transaction)
             } else {
                 profileManager.removeUser(fromProfileWhitelist: address, wasLocallyInitiated: false, transaction: transaction)
             }
-        } else if !hasWhitelisted {
-            // If the service is missing a whitelisted state, mark it as needing update.
-            mergeState = .needsUpdate(recipient.accountId)
         }
 
         if let localThread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
-            if hasArchived, archived != localThread.isArchived {
+            if archived != localThread.isArchived {
                 if archived {
                     localThread.archiveThread(updateStorageService: false, transaction: transaction)
                 } else {
                     localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
                 }
-            } else if !hasArchived {
-                // If the service is missing the archived state, mark it as needing update.
-                mergeState = .needsUpdate(recipient.accountId)
             }
         }
 
@@ -328,51 +300,39 @@ extension StorageServiceProtoGroupV1Record {
         // representing the remote and local last update time for every value we sync.
         // For now, we'd like to avoid that as it adds its own set of problems.
 
-        var mergeState: MergeState = .resolved(id)
-
         // Gather some local contact state to do comparisons against.
         let localIsBlocked = blockingManager.isGroupIdBlocked(id)
         let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: id, transaction: transaction)
 
         // If our local blocked state differs from the service state, use the service's value.
-        if hasBlocked, blocked != localIsBlocked {
+        if blocked != localIsBlocked {
             if blocked {
                 blockingManager.addBlockedGroupId(id, wasLocallyInitiated: false, transaction: transaction)
             } else {
                 blockingManager.removeBlockedGroupId(id, wasLocallyInitiated: false, transaction: transaction)
             }
-
-            // If the service is missing a blocked state, mark it as needing update.
-        } else if !hasBlocked {
-            mergeState = .needsUpdate(id)
         }
 
         // If our local whitelisted state differs from the service state, use the service's value.
-        if hasWhitelisted, whitelisted != localIsWhitelisted {
+        if whitelisted != localIsWhitelisted {
             if whitelisted {
                 profileManager.addGroupId(toProfileWhitelist: id, wasLocallyInitiated: false, transaction: transaction)
             } else {
                 profileManager.removeGroupId(fromProfileWhitelist: id, wasLocallyInitiated: false, transaction: transaction)
             }
-        } else if !hasWhitelisted {
-            // If the service is missing a whitelisted state, mark it as needing update.
-            mergeState = .needsUpdate(id)
         }
 
         if let localThread = TSGroupThread.fetch(groupId: id, transaction: transaction) {
-            if hasArchived, archived != localThread.isArchived {
+            if archived != localThread.isArchived {
                 if archived {
                     localThread.archiveThread(updateStorageService: false, transaction: transaction)
                 } else {
                     localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
                 }
-            } else if !hasArchived {
-                // If the service is missing the archived state, mark it as needing update.
-                mergeState = .needsUpdate(id)
             }
         }
 
-        return mergeState
+        return .resolved(id)
     }
 }
 
@@ -496,40 +456,30 @@ extension StorageServiceProtoGroupV2Record {
         let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction)
 
         // If our local blocked state differs from the service state, use the service's value.
-        if hasBlocked, blocked != localIsBlocked {
+        if blocked != localIsBlocked {
             if blocked {
                 blockingManager.addBlockedGroupId(groupId, wasLocallyInitiated: false, transaction: transaction)
             } else {
                 blockingManager.removeBlockedGroupId(groupId, wasLocallyInitiated: false, transaction: transaction)
             }
-
-            // If the service is missing a blocked state, mark it as needing update.
-        } else if !hasBlocked {
-            mergeState = .needsUpdate(masterKey)
         }
 
         // If our local whitelisted state differs from the service state, use the service's value.
-        if hasWhitelisted, whitelisted != localIsWhitelisted {
+        if whitelisted != localIsWhitelisted {
             if whitelisted {
                 profileManager.addGroupId(toProfileWhitelist: groupId, wasLocallyInitiated: false, transaction: transaction)
             } else {
                 profileManager.removeGroupId(fromProfileWhitelist: groupId, wasLocallyInitiated: false, transaction: transaction)
             }
-        } else if !hasWhitelisted {
-            // If the service is missing a whitelisted state, mark it as needing update.
-            mergeState = .needsUpdate(masterKey)
         }
 
         if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            if hasArchived, archived != localThread.isArchived {
+            if archived != localThread.isArchived {
                 if archived {
                     localThread.archiveThread(updateStorageService: false, transaction: transaction)
                 } else {
                     localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
                 }
-            } else if !hasArchived {
-                // If the service is missing the archived state, mark it as needing update.
-                mergeState = .needsUpdate(masterKey)
             }
         }
 
@@ -559,12 +509,20 @@ extension StorageServiceProtoAccountRecord {
         return Environment.shared.preferences
     }
 
-    static var typingIndicators: TypingIndicators {
+    static var typingIndicatorsManager: TypingIndicators {
         return SSKEnvironment.shared.typingIndicators
     }
 
-    var typingIndicators: TypingIndicators {
+    var typingIndicatorsManager: TypingIndicators {
         return SSKEnvironment.shared.typingIndicators
+    }
+
+    static var profileManager: OWSProfileManager {
+        return .shared()
+    }
+
+    var profileManager: OWSProfileManager {
+        return .shared()
     }
 
     // MARK: -
@@ -576,24 +534,36 @@ extension StorageServiceProtoAccountRecord {
 
         let builder = StorageServiceProtoAccountRecord.builder()
 
-        let localContactRecord = try StorageServiceProtoContactRecord.build(for: localAddress, transaction: transaction)
-        builder.setContact(localContactRecord)
+        if let profileKey = profileManager.profileKeyData(for: localAddress, transaction: transaction) {
+            builder.setProfileKey(profileKey)
+        }
 
-        let configBuilder = StorageServiceProtoAccountRecordConfig.builder()
+        if let profileGivenName = profileManager.givenName(for: localAddress, transaction: transaction) {
+            builder.setGivenName(profileGivenName)
+        }
+        if let profileFamilyName = profileManager.familyName(for: localAddress, transaction: transaction) {
+            builder.setFamilyName(profileFamilyName)
+        }
+
+        if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(for: localAddress, transaction: transaction) {
+            builder.setAvatarURL(profileAvatarUrlPath)
+        }
+
+        if let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction) {
+            builder.setNoteToSelfArchived(thread.isArchived)
+        }
 
         let readReceiptsEnabled = readReceiptManager.areReadReceiptsEnabled()
-        configBuilder.setReadReceipts(readReceiptsEnabled)
+        builder.setReadReceipts(readReceiptsEnabled)
 
         let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
-        configBuilder.setSealedSenderIndicators(sealedSenderIndicatorsEnabled)
+        builder.setSealedSenderIndicators(sealedSenderIndicatorsEnabled)
 
-        let typingIndicatorsEnabled = typingIndicators.areTypingIndicatorsEnabled()
-        configBuilder.setTypingIndicators(typingIndicatorsEnabled)
+        let typingIndicatorsEnabled = typingIndicatorsManager.areTypingIndicatorsEnabled()
+        builder.setTypingIndicators(typingIndicatorsEnabled)
 
         let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
-        configBuilder.setLinkPreviews(linkPreviewsEnabled)
-
-        builder.setConfig(try configBuilder.build())
+        builder.setLinkPreviews(linkPreviewsEnabled)
 
         return try builder.build()
     }
@@ -606,39 +576,72 @@ extension StorageServiceProtoAccountRecord {
     func mergeWithLocalAccount(transaction: SDSAnyWriteTransaction) -> MergeState {
         var mergeState: MergeState = .resolved
 
-        if let contact = contact {
-            switch contact.mergeWithLocalContact(transaction: transaction) {
-            case .needsUpdate, .invalid:
-                mergeState = .needsUpdate
-            case .resolved:
-                break
-            }
-        } else {
+        guard let localAddress = TSAccountManager.localAddress else {
+            owsFailDebug("missing local address")
+            return .needsUpdate
+        }
+
+        // Gather some local contact state to do comparisons against.
+        let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)
+        let localGivenName = profileManager.givenName(for: localAddress, transaction: transaction)
+        let localFamilyName = profileManager.familyName(for: localAddress, transaction: transaction)
+        let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, transaction: transaction)
+
+        // If our local profile key record differs from what's on the service, use the service's value.
+        if let profileKey = profileKey, localProfileKey?.keyData != profileKey {
+            profileManager.setProfileKeyData(
+                profileKey,
+                for: localAddress,
+                wasLocallyInitiated: false,
+                transaction: transaction
+            )
+
+            // If we have a local profile key for this user but the service doesn't mark it as needing update.
+        } else if localProfileKey != nil && !hasProfileKey {
             mergeState = .needsUpdate
         }
 
-        if let config = config {
-            let localReadReceiptsEnabled = readReceiptManager.areReadReceiptsEnabled()
-            if config.readReceipts != localReadReceiptsEnabled {
-                readReceiptManager.setAreReadReceiptsEnabled(config.readReceipts, transaction: transaction)
-            }
-
-            let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
-            if config.sealedSenderIndicators != sealedSenderIndicatorsEnabled {
-                preferences.setShouldShowUnidentifiedDeliveryIndicators(config.sealedSenderIndicators, transaction: transaction)
-            }
-
-            let typingIndicatorsEnabled = typingIndicators.areTypingIndicatorsEnabled()
-            if config.typingIndicators != typingIndicatorsEnabled {
-                typingIndicators.setTypingIndicatorsEnabled(value: config.typingIndicators, transaction: transaction)
-            }
-
-            let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
-            if config.linkPreviews != linkPreviewsEnabled {
-                SSKPreferences.setAreLinkPreviewsEnabled(config.linkPreviews, transaction: transaction)
-            }
-        } else {
+        if localGivenName != givenName || localFamilyName != familyName || localAvatarUrl != avatarURL {
+            profileManager.setProfileGivenName(
+                givenName,
+                familyName: familyName,
+                avatarUrlPath: avatarURL,
+                for: localAddress,
+                wasLocallyInitiated: false,
+                transaction: transaction
+            )
+        } else if localGivenName != nil && !hasGivenName || localFamilyName != nil && !hasFamilyName || localAvatarUrl != nil && !hasAvatarURL {
             mergeState = .needsUpdate
+        }
+
+        if let localThread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction) {
+            if noteToSelfArchived != localThread.isArchived {
+                if noteToSelfArchived {
+                    localThread.archiveThread(updateStorageService: false, transaction: transaction)
+                } else {
+                    localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
+                }
+            }
+        }
+
+        let localReadReceiptsEnabled = readReceiptManager.areReadReceiptsEnabled()
+        if readReceipts != localReadReceiptsEnabled {
+            readReceiptManager.setAreReadReceiptsEnabled(readReceipts, transaction: transaction)
+        }
+
+        let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
+        if sealedSenderIndicators != sealedSenderIndicatorsEnabled {
+            preferences.setShouldShowUnidentifiedDeliveryIndicators(sealedSenderIndicators, transaction: transaction)
+        }
+
+        let typingIndicatorsEnabled = typingIndicatorsManager.areTypingIndicatorsEnabled()
+        if typingIndicators != typingIndicatorsEnabled {
+            typingIndicatorsManager.setTypingIndicatorsEnabled(value: typingIndicators, transaction: transaction)
+        }
+
+        let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        if linkPreviews != linkPreviewsEnabled {
+            SSKPreferences.setAreLinkPreviewsEnabled(linkPreviews, transaction: transaction)
         }
 
         return mergeState

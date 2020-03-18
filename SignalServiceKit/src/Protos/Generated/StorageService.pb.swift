@@ -252,123 +252,76 @@ struct StorageServiceProtos_ContactRecord {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var serviceUuid: String {
-    get {return _storage._serviceUuid}
-    set {_uniqueStorage()._serviceUuid = newValue}
-  }
+  var serviceUuid: String = String()
 
-  var serviceE164: String {
-    get {return _storage._serviceE164}
-    set {_uniqueStorage()._serviceE164 = newValue}
-  }
+  var serviceE164: String = String()
 
-  var profile: StorageServiceProtos_ContactRecord.Profile {
-    get {return _storage._profile ?? StorageServiceProtos_ContactRecord.Profile()}
-    set {_uniqueStorage()._profile = newValue}
-  }
-  /// Returns true if `profile` has been explicitly set.
-  var hasProfile: Bool {return _storage._profile != nil}
-  /// Clears the value of `profile`. Subsequent reads from it will return its default value.
-  mutating func clearProfile() {_uniqueStorage()._profile = nil}
+  var profileKey: Data = SwiftProtobuf.Internal.emptyData
 
-  var identity: StorageServiceProtos_ContactRecord.Identity {
-    get {return _storage._identity ?? StorageServiceProtos_ContactRecord.Identity()}
-    set {_uniqueStorage()._identity = newValue}
-  }
-  /// Returns true if `identity` has been explicitly set.
-  var hasIdentity: Bool {return _storage._identity != nil}
-  /// Clears the value of `identity`. Subsequent reads from it will return its default value.
-  mutating func clearIdentity() {_uniqueStorage()._identity = nil}
+  var identityKey: Data = SwiftProtobuf.Internal.emptyData
 
-  var blocked: Bool {
-    get {return _storage._blocked}
-    set {_uniqueStorage()._blocked = newValue}
-  }
+  var identityState: StorageServiceProtos_ContactRecord.IdentityState = .default
 
-  var whitelisted: Bool {
-    get {return _storage._whitelisted}
-    set {_uniqueStorage()._whitelisted = newValue}
-  }
+  var givenName: String = String()
 
-  var nickname: String {
-    get {return _storage._nickname}
-    set {_uniqueStorage()._nickname = newValue}
-  }
+  var familyName: String = String()
 
-  var archived: Bool {
-    get {return _storage._archived}
-    set {_uniqueStorage()._archived = newValue}
-  }
+  var username: String = String()
+
+  var blocked: Bool = false
+
+  var whitelisted: Bool = false
+
+  var archived: Bool = false
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Identity {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
+  enum IdentityState: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case `default` // = 0
+    case verified // = 1
+    case unverified // = 2
+    case UNRECOGNIZED(Int)
 
-    var key: Data = SwiftProtobuf.Internal.emptyData
-
-    var state: StorageServiceProtos_ContactRecord.Identity.State = .default
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    enum State: SwiftProtobuf.Enum {
-      typealias RawValue = Int
-      case `default` // = 0
-      case verified // = 1
-      case unverified // = 2
-      case UNRECOGNIZED(Int)
-
-      init() {
-        self = .default
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .default
-        case 1: self = .verified
-        case 2: self = .unverified
-        default: self = .UNRECOGNIZED(rawValue)
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .default: return 0
-        case .verified: return 1
-        case .unverified: return 2
-        case .UNRECOGNIZED(let i): return i
-        }
-      }
-
+    init() {
+      self = .default
     }
 
-    init() {}
-  }
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .default
+      case 1: self = .verified
+      case 2: self = .unverified
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
 
-  struct Profile {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
+    var rawValue: Int {
+      switch self {
+      case .default: return 0
+      case .verified: return 1
+      case .unverified: return 2
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
 
-    var givenName: String = String()
-
-    var key: Data = SwiftProtobuf.Internal.emptyData
-
-    var username: String = String()
-
-    var familyName: String = String()
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
   }
 
   init() {}
-
-  fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension StorageServiceProtos_ContactRecord.IdentityState: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [StorageServiceProtos_ContactRecord.IdentityState] = [
+    .default,
+    .verified,
+    .unverified
+  ]
+}
+
+#endif  // swift(>=4.2)
 
 struct StorageServiceProtos_GroupV1Record {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -413,47 +366,27 @@ struct StorageServiceProtos_AccountRecord {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var contact: StorageServiceProtos_ContactRecord {
-    get {return _storage._contact ?? StorageServiceProtos_ContactRecord()}
-    set {_uniqueStorage()._contact = newValue}
-  }
-  /// Returns true if `contact` has been explicitly set.
-  var hasContact: Bool {return _storage._contact != nil}
-  /// Clears the value of `contact`. Subsequent reads from it will return its default value.
-  mutating func clearContact() {_uniqueStorage()._contact = nil}
+  var profileKey: Data = SwiftProtobuf.Internal.emptyData
 
-  var config: StorageServiceProtos_AccountRecord.Config {
-    get {return _storage._config ?? StorageServiceProtos_AccountRecord.Config()}
-    set {_uniqueStorage()._config = newValue}
-  }
-  /// Returns true if `config` has been explicitly set.
-  var hasConfig: Bool {return _storage._config != nil}
-  /// Clears the value of `config`. Subsequent reads from it will return its default value.
-  mutating func clearConfig() {_uniqueStorage()._config = nil}
+  var givenName: String = String()
+
+  var familyName: String = String()
+
+  var avatarURL: String = String()
+
+  var noteToSelfArchived: Bool = false
+
+  var readReceipts: Bool = false
+
+  var sealedSenderIndicators: Bool = false
+
+  var typingIndicators: Bool = false
+
+  var linkPreviews: Bool = false
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Config {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    var readReceipts: Bool = false
-
-    var sealedSenderIndicators: Bool = false
-
-    var typingIndicators: Bool = false
-
-    var linkPreviews: Bool = false
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-  }
-
   init() {}
-
-  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -861,206 +794,96 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "serviceUuid"),
     2: .same(proto: "serviceE164"),
-    3: .same(proto: "profile"),
-    4: .same(proto: "identity"),
-    5: .same(proto: "blocked"),
-    6: .same(proto: "whitelisted"),
-    7: .same(proto: "nickname"),
-    8: .same(proto: "archived")
+    3: .same(proto: "profileKey"),
+    4: .same(proto: "identityKey"),
+    5: .same(proto: "identityState"),
+    6: .same(proto: "givenName"),
+    7: .same(proto: "familyName"),
+    8: .same(proto: "username"),
+    9: .same(proto: "blocked"),
+    10: .same(proto: "whitelisted"),
+    11: .same(proto: "archived")
   ]
 
-  fileprivate class _StorageClass {
-    var _serviceUuid: String = String()
-    var _serviceE164: String = String()
-    var _profile: StorageServiceProtos_ContactRecord.Profile?
-    var _identity: StorageServiceProtos_ContactRecord.Identity?
-    var _blocked: Bool = false
-    var _whitelisted: Bool = false
-    var _nickname: String = String()
-    var _archived: Bool = false
-
-    static let defaultInstance = _StorageClass()
-
-    private init() {}
-
-    init(copying source: _StorageClass) {
-      _serviceUuid = source._serviceUuid
-      _serviceE164 = source._serviceE164
-      _profile = source._profile
-      _identity = source._identity
-      _blocked = source._blocked
-      _whitelisted = source._whitelisted
-      _nickname = source._nickname
-      _archived = source._archived
-    }
-  }
-
-  fileprivate mutating func _uniqueStorage() -> _StorageClass {
-    if !isKnownUniquelyReferenced(&_storage) {
-      _storage = _StorageClass(copying: _storage)
-    }
-    return _storage
-  }
-
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    _ = _uniqueStorage()
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      while let fieldNumber = try decoder.nextFieldNumber() {
-        switch fieldNumber {
-        case 1: try decoder.decodeSingularStringField(value: &_storage._serviceUuid)
-        case 2: try decoder.decodeSingularStringField(value: &_storage._serviceE164)
-        case 3: try decoder.decodeSingularMessageField(value: &_storage._profile)
-        case 4: try decoder.decodeSingularMessageField(value: &_storage._identity)
-        case 5: try decoder.decodeSingularBoolField(value: &_storage._blocked)
-        case 6: try decoder.decodeSingularBoolField(value: &_storage._whitelisted)
-        case 7: try decoder.decodeSingularStringField(value: &_storage._nickname)
-        case 8: try decoder.decodeSingularBoolField(value: &_storage._archived)
-        default: break
-        }
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self.serviceUuid)
+      case 2: try decoder.decodeSingularStringField(value: &self.serviceE164)
+      case 3: try decoder.decodeSingularBytesField(value: &self.profileKey)
+      case 4: try decoder.decodeSingularBytesField(value: &self.identityKey)
+      case 5: try decoder.decodeSingularEnumField(value: &self.identityState)
+      case 6: try decoder.decodeSingularStringField(value: &self.givenName)
+      case 7: try decoder.decodeSingularStringField(value: &self.familyName)
+      case 8: try decoder.decodeSingularStringField(value: &self.username)
+      case 9: try decoder.decodeSingularBoolField(value: &self.blocked)
+      case 10: try decoder.decodeSingularBoolField(value: &self.whitelisted)
+      case 11: try decoder.decodeSingularBoolField(value: &self.archived)
+      default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if !_storage._serviceUuid.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._serviceUuid, fieldNumber: 1)
-      }
-      if !_storage._serviceE164.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._serviceE164, fieldNumber: 2)
-      }
-      if let v = _storage._profile {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-      }
-      if let v = _storage._identity {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-      }
-      if _storage._blocked != false {
-        try visitor.visitSingularBoolField(value: _storage._blocked, fieldNumber: 5)
-      }
-      if _storage._whitelisted != false {
-        try visitor.visitSingularBoolField(value: _storage._whitelisted, fieldNumber: 6)
-      }
-      if !_storage._nickname.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._nickname, fieldNumber: 7)
-      }
-      if _storage._archived != false {
-        try visitor.visitSingularBoolField(value: _storage._archived, fieldNumber: 8)
-      }
+    if !self.serviceUuid.isEmpty {
+      try visitor.visitSingularStringField(value: self.serviceUuid, fieldNumber: 1)
+    }
+    if !self.serviceE164.isEmpty {
+      try visitor.visitSingularStringField(value: self.serviceE164, fieldNumber: 2)
+    }
+    if !self.profileKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.profileKey, fieldNumber: 3)
+    }
+    if !self.identityKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.identityKey, fieldNumber: 4)
+    }
+    if self.identityState != .default {
+      try visitor.visitSingularEnumField(value: self.identityState, fieldNumber: 5)
+    }
+    if !self.givenName.isEmpty {
+      try visitor.visitSingularStringField(value: self.givenName, fieldNumber: 6)
+    }
+    if !self.familyName.isEmpty {
+      try visitor.visitSingularStringField(value: self.familyName, fieldNumber: 7)
+    }
+    if !self.username.isEmpty {
+      try visitor.visitSingularStringField(value: self.username, fieldNumber: 8)
+    }
+    if self.blocked != false {
+      try visitor.visitSingularBoolField(value: self.blocked, fieldNumber: 9)
+    }
+    if self.whitelisted != false {
+      try visitor.visitSingularBoolField(value: self.whitelisted, fieldNumber: 10)
+    }
+    if self.archived != false {
+      try visitor.visitSingularBoolField(value: self.archived, fieldNumber: 11)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: StorageServiceProtos_ContactRecord, rhs: StorageServiceProtos_ContactRecord) -> Bool {
-    if lhs._storage !== rhs._storage {
-      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
-        let _storage = _args.0
-        let rhs_storage = _args.1
-        if _storage._serviceUuid != rhs_storage._serviceUuid {return false}
-        if _storage._serviceE164 != rhs_storage._serviceE164 {return false}
-        if _storage._profile != rhs_storage._profile {return false}
-        if _storage._identity != rhs_storage._identity {return false}
-        if _storage._blocked != rhs_storage._blocked {return false}
-        if _storage._whitelisted != rhs_storage._whitelisted {return false}
-        if _storage._nickname != rhs_storage._nickname {return false}
-        if _storage._archived != rhs_storage._archived {return false}
-        return true
-      }
-      if !storagesAreEqual {return false}
-    }
+    if lhs.serviceUuid != rhs.serviceUuid {return false}
+    if lhs.serviceE164 != rhs.serviceE164 {return false}
+    if lhs.profileKey != rhs.profileKey {return false}
+    if lhs.identityKey != rhs.identityKey {return false}
+    if lhs.identityState != rhs.identityState {return false}
+    if lhs.givenName != rhs.givenName {return false}
+    if lhs.familyName != rhs.familyName {return false}
+    if lhs.username != rhs.username {return false}
+    if lhs.blocked != rhs.blocked {return false}
+    if lhs.whitelisted != rhs.whitelisted {return false}
+    if lhs.archived != rhs.archived {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension StorageServiceProtos_ContactRecord.Identity: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = StorageServiceProtos_ContactRecord.protoMessageName + ".Identity"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "key"),
-    2: .same(proto: "state")
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.key)
-      case 2: try decoder.decodeSingularEnumField(value: &self.state)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.key.isEmpty {
-      try visitor.visitSingularBytesField(value: self.key, fieldNumber: 1)
-    }
-    if self.state != .default {
-      try visitor.visitSingularEnumField(value: self.state, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: StorageServiceProtos_ContactRecord.Identity, rhs: StorageServiceProtos_ContactRecord.Identity) -> Bool {
-    if lhs.key != rhs.key {return false}
-    if lhs.state != rhs.state {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension StorageServiceProtos_ContactRecord.Identity.State: SwiftProtobuf._ProtoNameProviding {
+extension StorageServiceProtos_ContactRecord.IdentityState: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "DEFAULT"),
     1: .same(proto: "VERIFIED"),
     2: .same(proto: "UNVERIFIED")
   ]
-}
-
-extension StorageServiceProtos_ContactRecord.Profile: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = StorageServiceProtos_ContactRecord.protoMessageName + ".Profile"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "givenName"),
-    2: .same(proto: "key"),
-    3: .same(proto: "username"),
-    4: .same(proto: "familyName")
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self.givenName)
-      case 2: try decoder.decodeSingularBytesField(value: &self.key)
-      case 3: try decoder.decodeSingularStringField(value: &self.username)
-      case 4: try decoder.decodeSingularStringField(value: &self.familyName)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.givenName.isEmpty {
-      try visitor.visitSingularStringField(value: self.givenName, fieldNumber: 1)
-    }
-    if !self.key.isEmpty {
-      try visitor.visitSingularBytesField(value: self.key, fieldNumber: 2)
-    }
-    if !self.username.isEmpty {
-      try visitor.visitSingularStringField(value: self.username, fieldNumber: 3)
-    }
-    if !self.familyName.isEmpty {
-      try visitor.visitSingularStringField(value: self.familyName, fieldNumber: 4)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: StorageServiceProtos_ContactRecord.Profile, rhs: StorageServiceProtos_ContactRecord.Profile) -> Bool {
-    if lhs.givenName != rhs.givenName {return false}
-    if lhs.key != rhs.key {return false}
-    if lhs.username != rhs.username {return false}
-    if lhs.familyName != rhs.familyName {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
 }
 
 extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -1160,110 +983,71 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
 extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AccountRecord"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "contact"),
-    2: .same(proto: "config")
-  ]
-
-  fileprivate class _StorageClass {
-    var _contact: StorageServiceProtos_ContactRecord?
-    var _config: StorageServiceProtos_AccountRecord.Config?
-
-    static let defaultInstance = _StorageClass()
-
-    private init() {}
-
-    init(copying source: _StorageClass) {
-      _contact = source._contact
-      _config = source._config
-    }
-  }
-
-  fileprivate mutating func _uniqueStorage() -> _StorageClass {
-    if !isKnownUniquelyReferenced(&_storage) {
-      _storage = _StorageClass(copying: _storage)
-    }
-    return _storage
-  }
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    _ = _uniqueStorage()
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      while let fieldNumber = try decoder.nextFieldNumber() {
-        switch fieldNumber {
-        case 1: try decoder.decodeSingularMessageField(value: &_storage._contact)
-        case 2: try decoder.decodeSingularMessageField(value: &_storage._config)
-        default: break
-        }
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if let v = _storage._contact {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-      }
-      if let v = _storage._config {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-      }
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: StorageServiceProtos_AccountRecord, rhs: StorageServiceProtos_AccountRecord) -> Bool {
-    if lhs._storage !== rhs._storage {
-      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
-        let _storage = _args.0
-        let rhs_storage = _args.1
-        if _storage._contact != rhs_storage._contact {return false}
-        if _storage._config != rhs_storage._config {return false}
-        return true
-      }
-      if !storagesAreEqual {return false}
-    }
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension StorageServiceProtos_AccountRecord.Config: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".Config"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "readReceipts"),
-    2: .same(proto: "sealedSenderIndicators"),
-    3: .same(proto: "typingIndicators"),
-    4: .same(proto: "linkPreviews")
+    1: .same(proto: "profileKey"),
+    2: .same(proto: "givenName"),
+    3: .same(proto: "familyName"),
+    4: .same(proto: "avatarUrl"),
+    5: .same(proto: "noteToSelfArchived"),
+    6: .same(proto: "readReceipts"),
+    7: .same(proto: "sealedSenderIndicators"),
+    8: .same(proto: "typingIndicators"),
+    9: .same(proto: "linkPreviews")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBoolField(value: &self.readReceipts)
-      case 2: try decoder.decodeSingularBoolField(value: &self.sealedSenderIndicators)
-      case 3: try decoder.decodeSingularBoolField(value: &self.typingIndicators)
-      case 4: try decoder.decodeSingularBoolField(value: &self.linkPreviews)
+      case 1: try decoder.decodeSingularBytesField(value: &self.profileKey)
+      case 2: try decoder.decodeSingularStringField(value: &self.givenName)
+      case 3: try decoder.decodeSingularStringField(value: &self.familyName)
+      case 4: try decoder.decodeSingularStringField(value: &self.avatarURL)
+      case 5: try decoder.decodeSingularBoolField(value: &self.noteToSelfArchived)
+      case 6: try decoder.decodeSingularBoolField(value: &self.readReceipts)
+      case 7: try decoder.decodeSingularBoolField(value: &self.sealedSenderIndicators)
+      case 8: try decoder.decodeSingularBoolField(value: &self.typingIndicators)
+      case 9: try decoder.decodeSingularBoolField(value: &self.linkPreviews)
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.profileKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.profileKey, fieldNumber: 1)
+    }
+    if !self.givenName.isEmpty {
+      try visitor.visitSingularStringField(value: self.givenName, fieldNumber: 2)
+    }
+    if !self.familyName.isEmpty {
+      try visitor.visitSingularStringField(value: self.familyName, fieldNumber: 3)
+    }
+    if !self.avatarURL.isEmpty {
+      try visitor.visitSingularStringField(value: self.avatarURL, fieldNumber: 4)
+    }
+    if self.noteToSelfArchived != false {
+      try visitor.visitSingularBoolField(value: self.noteToSelfArchived, fieldNumber: 5)
+    }
     if self.readReceipts != false {
-      try visitor.visitSingularBoolField(value: self.readReceipts, fieldNumber: 1)
+      try visitor.visitSingularBoolField(value: self.readReceipts, fieldNumber: 6)
     }
     if self.sealedSenderIndicators != false {
-      try visitor.visitSingularBoolField(value: self.sealedSenderIndicators, fieldNumber: 2)
+      try visitor.visitSingularBoolField(value: self.sealedSenderIndicators, fieldNumber: 7)
     }
     if self.typingIndicators != false {
-      try visitor.visitSingularBoolField(value: self.typingIndicators, fieldNumber: 3)
+      try visitor.visitSingularBoolField(value: self.typingIndicators, fieldNumber: 8)
     }
     if self.linkPreviews != false {
-      try visitor.visitSingularBoolField(value: self.linkPreviews, fieldNumber: 4)
+      try visitor.visitSingularBoolField(value: self.linkPreviews, fieldNumber: 9)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: StorageServiceProtos_AccountRecord.Config, rhs: StorageServiceProtos_AccountRecord.Config) -> Bool {
+  static func ==(lhs: StorageServiceProtos_AccountRecord, rhs: StorageServiceProtos_AccountRecord) -> Bool {
+    if lhs.profileKey != rhs.profileKey {return false}
+    if lhs.givenName != rhs.givenName {return false}
+    if lhs.familyName != rhs.familyName {return false}
+    if lhs.avatarURL != rhs.avatarURL {return false}
+    if lhs.noteToSelfArchived != rhs.noteToSelfArchived {return false}
     if lhs.readReceipts != rhs.readReceipts {return false}
     if lhs.sealedSenderIndicators != rhs.sealedSenderIndicators {return false}
     if lhs.typingIndicators != rhs.typingIndicators {return false}

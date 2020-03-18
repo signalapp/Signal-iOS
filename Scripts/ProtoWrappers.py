@@ -58,6 +58,8 @@ def supress_adjacent_capital_letters(name):
     result = ''.join(chars)
     if result.endswith('Id'):
         result = result[:-2] + 'ID'
+    if result.endswith('Url'):
+        result = result[:-3] + 'URL'
     return result
 
 # Provides conext for writing an indented block surrounded by braces.
@@ -601,10 +603,9 @@ class MessageContext(BaseContext):
                     writer.add('public var %s: Bool {' % field.has_accessor_name() )
                     writer.push_indent()
                     if proto_syntax == 'proto3':
-                        # TODO: We might want to return false for empty Data, String?
                         # TODO: We might want to return false for unknown/0 enum?                        
-                        if field.proto_type == 'bytes':
-                            writer.add('return proto.%s.count > 0' % field.name_swift )
+                        if field.proto_type in ['bytes', 'string']:
+                            writer.add('return !proto.%s.isEmpty' % field.name_swift )
                         else:
                             writer.add('return true')
                     else:

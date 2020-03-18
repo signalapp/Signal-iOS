@@ -1030,7 +1030,7 @@ public enum StorageServiceProtoContactRecordIdentityState: SwiftProtobuf.Enum {
     }
 }
 
-private func StorageServiceProtoContactRecordIdentityStateWrap(_ value: StorageServiceProtos_ContactRecord.Identity.State) -> StorageServiceProtoContactRecordIdentityState {
+private func StorageServiceProtoContactRecordIdentityStateWrap(_ value: StorageServiceProtos_ContactRecord.IdentityState) -> StorageServiceProtoContactRecordIdentityState {
     switch value {
     case .default: return .default
     case .verified: return .verified
@@ -1039,7 +1039,7 @@ private func StorageServiceProtoContactRecordIdentityStateWrap(_ value: StorageS
     }
 }
 
-private func StorageServiceProtoContactRecordIdentityStateUnwrap(_ value: StorageServiceProtoContactRecordIdentityState) -> StorageServiceProtos_ContactRecord.Identity.State {
+private func StorageServiceProtoContactRecordIdentityStateUnwrap(_ value: StorageServiceProtoContactRecordIdentityState) -> StorageServiceProtos_ContactRecord.IdentityState {
     switch value {
     case .default: return .default
     case .verified: return .verified
@@ -1047,300 +1047,6 @@ private func StorageServiceProtoContactRecordIdentityStateUnwrap(_ value: Storag
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
 }
-
-// MARK: - StorageServiceProtoContactRecordIdentity
-
-public class StorageServiceProtoContactRecordIdentity: NSObject {
-
-    // MARK: - StorageServiceProtoContactRecordIdentityBuilder
-
-    public class func builder() -> StorageServiceProtoContactRecordIdentityBuilder {
-        return StorageServiceProtoContactRecordIdentityBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> StorageServiceProtoContactRecordIdentityBuilder {
-        let builder = StorageServiceProtoContactRecordIdentityBuilder()
-        if let _value = key {
-            builder.setKey(_value)
-        }
-        if let _value = state {
-            builder.setState(_value)
-        }
-        return builder
-    }
-
-    public class StorageServiceProtoContactRecordIdentityBuilder: NSObject {
-
-        private var proto = StorageServiceProtos_ContactRecord.Identity()
-
-        fileprivate override init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public func setKey(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.key = valueParam
-        }
-
-        public func setKey(_ valueParam: Data) {
-            proto.key = valueParam
-        }
-
-        public func setState(_ valueParam: StorageServiceProtoContactRecordIdentityState) {
-            proto.state = StorageServiceProtoContactRecordIdentityStateUnwrap(valueParam)
-        }
-
-        public func build() throws -> StorageServiceProtoContactRecordIdentity {
-            return try StorageServiceProtoContactRecordIdentity.parseProto(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoContactRecordIdentity.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: StorageServiceProtos_ContactRecord.Identity
-
-    public var key: Data? {
-        guard hasKey else {
-            return nil
-        }
-        return proto.key
-    }
-    public var hasKey: Bool {
-        return proto.key.count > 0
-    }
-
-    public var state: StorageServiceProtoContactRecordIdentityState? {
-        guard hasState else {
-            return nil
-        }
-        return StorageServiceProtoContactRecordIdentityStateWrap(proto.state)
-    }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedState: StorageServiceProtoContactRecordIdentityState {
-        if !hasState {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: Identity.state.")
-        }
-        return StorageServiceProtoContactRecordIdentityStateWrap(proto.state)
-    }
-    public var hasState: Bool {
-        return true
-    }
-
-    private init(proto: StorageServiceProtos_ContactRecord.Identity) {
-        self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoContactRecordIdentity {
-        let proto = try StorageServiceProtos_ContactRecord.Identity(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_ContactRecord.Identity) throws -> StorageServiceProtoContactRecordIdentity {
-        // MARK: - Begin Validation Logic for StorageServiceProtoContactRecordIdentity -
-
-        // MARK: - End Validation Logic for StorageServiceProtoContactRecordIdentity -
-
-        let result = StorageServiceProtoContactRecordIdentity(proto: proto)
-        return result
-    }
-
-    public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension StorageServiceProtoContactRecordIdentity {
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension StorageServiceProtoContactRecordIdentity.StorageServiceProtoContactRecordIdentityBuilder {
-    public func buildIgnoringErrors() -> StorageServiceProtoContactRecordIdentity? {
-        return try! self.build()
-    }
-}
-
-#endif
-
-// MARK: - StorageServiceProtoContactRecordProfile
-
-public class StorageServiceProtoContactRecordProfile: NSObject {
-
-    // MARK: - StorageServiceProtoContactRecordProfileBuilder
-
-    public class func builder() -> StorageServiceProtoContactRecordProfileBuilder {
-        return StorageServiceProtoContactRecordProfileBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> StorageServiceProtoContactRecordProfileBuilder {
-        let builder = StorageServiceProtoContactRecordProfileBuilder()
-        if let _value = givenName {
-            builder.setGivenName(_value)
-        }
-        if let _value = key {
-            builder.setKey(_value)
-        }
-        if let _value = username {
-            builder.setUsername(_value)
-        }
-        if let _value = familyName {
-            builder.setFamilyName(_value)
-        }
-        return builder
-    }
-
-    public class StorageServiceProtoContactRecordProfileBuilder: NSObject {
-
-        private var proto = StorageServiceProtos_ContactRecord.Profile()
-
-        fileprivate override init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public func setGivenName(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.givenName = valueParam
-        }
-
-        public func setGivenName(_ valueParam: String) {
-            proto.givenName = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public func setKey(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.key = valueParam
-        }
-
-        public func setKey(_ valueParam: Data) {
-            proto.key = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public func setUsername(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.username = valueParam
-        }
-
-        public func setUsername(_ valueParam: String) {
-            proto.username = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public func setFamilyName(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.familyName = valueParam
-        }
-
-        public func setFamilyName(_ valueParam: String) {
-            proto.familyName = valueParam
-        }
-
-        public func build() throws -> StorageServiceProtoContactRecordProfile {
-            return try StorageServiceProtoContactRecordProfile.parseProto(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoContactRecordProfile.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: StorageServiceProtos_ContactRecord.Profile
-
-    public var givenName: String? {
-        guard hasGivenName else {
-            return nil
-        }
-        return proto.givenName
-    }
-    public var hasGivenName: Bool {
-        return true
-    }
-
-    public var key: Data? {
-        guard hasKey else {
-            return nil
-        }
-        return proto.key
-    }
-    public var hasKey: Bool {
-        return proto.key.count > 0
-    }
-
-    public var username: String? {
-        guard hasUsername else {
-            return nil
-        }
-        return proto.username
-    }
-    public var hasUsername: Bool {
-        return true
-    }
-
-    public var familyName: String? {
-        guard hasFamilyName else {
-            return nil
-        }
-        return proto.familyName
-    }
-    public var hasFamilyName: Bool {
-        return true
-    }
-
-    private init(proto: StorageServiceProtos_ContactRecord.Profile) {
-        self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoContactRecordProfile {
-        let proto = try StorageServiceProtos_ContactRecord.Profile(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_ContactRecord.Profile) throws -> StorageServiceProtoContactRecordProfile {
-        // MARK: - Begin Validation Logic for StorageServiceProtoContactRecordProfile -
-
-        // MARK: - End Validation Logic for StorageServiceProtoContactRecordProfile -
-
-        let result = StorageServiceProtoContactRecordProfile(proto: proto)
-        return result
-    }
-
-    public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension StorageServiceProtoContactRecordProfile {
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension StorageServiceProtoContactRecordProfile.StorageServiceProtoContactRecordProfileBuilder {
-    public func buildIgnoringErrors() -> StorageServiceProtoContactRecordProfile? {
-        return try! self.build()
-    }
-}
-
-#endif
 
 // MARK: - StorageServiceProtoContactRecord
 
@@ -1361,20 +1067,29 @@ public class StorageServiceProtoContactRecord: NSObject {
         if let _value = serviceE164 {
             builder.setServiceE164(_value)
         }
-        if let _value = profile {
-            builder.setProfile(_value)
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
         }
-        if let _value = identity {
-            builder.setIdentity(_value)
+        if let _value = identityKey {
+            builder.setIdentityKey(_value)
+        }
+        if let _value = identityState {
+            builder.setIdentityState(_value)
+        }
+        if let _value = givenName {
+            builder.setGivenName(_value)
+        }
+        if let _value = familyName {
+            builder.setFamilyName(_value)
+        }
+        if let _value = username {
+            builder.setUsername(_value)
         }
         if hasBlocked {
             builder.setBlocked(blocked)
         }
         if hasWhitelisted {
             builder.setWhitelisted(whitelisted)
-        }
-        if let _value = nickname {
-            builder.setNickname(_value)
         }
         if hasArchived {
             builder.setArchived(archived)
@@ -1409,23 +1124,57 @@ public class StorageServiceProtoContactRecord: NSObject {
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setProfile(_ valueParam: StorageServiceProtoContactRecordProfile?) {
+        public func setProfileKey(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
-            proto.profile = valueParam.proto
+            proto.profileKey = valueParam
         }
 
-        public func setProfile(_ valueParam: StorageServiceProtoContactRecordProfile) {
-            proto.profile = valueParam.proto
+        public func setProfileKey(_ valueParam: Data) {
+            proto.profileKey = valueParam
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setIdentity(_ valueParam: StorageServiceProtoContactRecordIdentity?) {
+        public func setIdentityKey(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
-            proto.identity = valueParam.proto
+            proto.identityKey = valueParam
         }
 
-        public func setIdentity(_ valueParam: StorageServiceProtoContactRecordIdentity) {
-            proto.identity = valueParam.proto
+        public func setIdentityKey(_ valueParam: Data) {
+            proto.identityKey = valueParam
+        }
+
+        public func setIdentityState(_ valueParam: StorageServiceProtoContactRecordIdentityState) {
+            proto.identityState = StorageServiceProtoContactRecordIdentityStateUnwrap(valueParam)
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setGivenName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.givenName = valueParam
+        }
+
+        public func setGivenName(_ valueParam: String) {
+            proto.givenName = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setFamilyName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.familyName = valueParam
+        }
+
+        public func setFamilyName(_ valueParam: String) {
+            proto.familyName = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setUsername(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.username = valueParam
+        }
+
+        public func setUsername(_ valueParam: String) {
+            proto.username = valueParam
         }
 
         public func setBlocked(_ valueParam: Bool) {
@@ -1434,16 +1183,6 @@ public class StorageServiceProtoContactRecord: NSObject {
 
         public func setWhitelisted(_ valueParam: Bool) {
             proto.whitelisted = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public func setNickname(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.nickname = valueParam
-        }
-
-        public func setNickname(_ valueParam: String) {
-            proto.nickname = valueParam
         }
 
         public func setArchived(_ valueParam: Bool) {
@@ -1461,10 +1200,6 @@ public class StorageServiceProtoContactRecord: NSObject {
 
     fileprivate let proto: StorageServiceProtos_ContactRecord
 
-    public let profile: StorageServiceProtoContactRecordProfile?
-
-    public let identity: StorageServiceProtoContactRecordIdentity?
-
     public var serviceUuid: String? {
         guard hasServiceUuid else {
             return nil
@@ -1472,7 +1207,7 @@ public class StorageServiceProtoContactRecord: NSObject {
         return proto.serviceUuid
     }
     public var hasServiceUuid: Bool {
-        return true
+        return !proto.serviceUuid.isEmpty
     }
 
     public var serviceE164: String? {
@@ -1482,7 +1217,75 @@ public class StorageServiceProtoContactRecord: NSObject {
         return proto.serviceE164
     }
     public var hasServiceE164: Bool {
+        return !proto.serviceE164.isEmpty
+    }
+
+    public var profileKey: Data? {
+        guard hasProfileKey else {
+            return nil
+        }
+        return proto.profileKey
+    }
+    public var hasProfileKey: Bool {
+        return !proto.profileKey.isEmpty
+    }
+
+    public var identityKey: Data? {
+        guard hasIdentityKey else {
+            return nil
+        }
+        return proto.identityKey
+    }
+    public var hasIdentityKey: Bool {
+        return !proto.identityKey.isEmpty
+    }
+
+    public var identityState: StorageServiceProtoContactRecordIdentityState? {
+        guard hasIdentityState else {
+            return nil
+        }
+        return StorageServiceProtoContactRecordIdentityStateWrap(proto.identityState)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedIdentityState: StorageServiceProtoContactRecordIdentityState {
+        if !hasIdentityState {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: ContactRecord.identityState.")
+        }
+        return StorageServiceProtoContactRecordIdentityStateWrap(proto.identityState)
+    }
+    public var hasIdentityState: Bool {
         return true
+    }
+
+    public var givenName: String? {
+        guard hasGivenName else {
+            return nil
+        }
+        return proto.givenName
+    }
+    public var hasGivenName: Bool {
+        return !proto.givenName.isEmpty
+    }
+
+    public var familyName: String? {
+        guard hasFamilyName else {
+            return nil
+        }
+        return proto.familyName
+    }
+    public var hasFamilyName: Bool {
+        return !proto.familyName.isEmpty
+    }
+
+    public var username: String? {
+        guard hasUsername else {
+            return nil
+        }
+        return proto.username
+    }
+    public var hasUsername: Bool {
+        return !proto.username.isEmpty
     }
 
     public var blocked: Bool {
@@ -1496,16 +1299,6 @@ public class StorageServiceProtoContactRecord: NSObject {
         return proto.whitelisted
     }
     public var hasWhitelisted: Bool {
-        return true
-    }
-
-    public var nickname: String? {
-        guard hasNickname else {
-            return nil
-        }
-        return proto.nickname
-    }
-    public var hasNickname: Bool {
         return true
     }
 
@@ -1562,12 +1355,8 @@ public class StorageServiceProtoContactRecord: NSObject {
         return address
     }
 
-    private init(proto: StorageServiceProtos_ContactRecord,
-                 profile: StorageServiceProtoContactRecordProfile?,
-                 identity: StorageServiceProtoContactRecordIdentity?) {
+    private init(proto: StorageServiceProtos_ContactRecord) {
         self.proto = proto
-        self.profile = profile
-        self.identity = identity
     }
 
     @objc
@@ -1581,23 +1370,11 @@ public class StorageServiceProtoContactRecord: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: StorageServiceProtos_ContactRecord) throws -> StorageServiceProtoContactRecord {
-        var profile: StorageServiceProtoContactRecordProfile?
-        if proto.hasProfile {
-            profile = try StorageServiceProtoContactRecordProfile.parseProto(proto.profile)
-        }
-
-        var identity: StorageServiceProtoContactRecordIdentity?
-        if proto.hasIdentity {
-            identity = try StorageServiceProtoContactRecordIdentity.parseProto(proto.identity)
-        }
-
         // MARK: - Begin Validation Logic for StorageServiceProtoContactRecord -
 
         // MARK: - End Validation Logic for StorageServiceProtoContactRecord -
 
-        let result = StorageServiceProtoContactRecord(proto: proto,
-                                                      profile: profile,
-                                                      identity: identity)
+        let result = StorageServiceProtoContactRecord(proto: proto)
         return result
     }
 
@@ -1906,19 +1683,34 @@ extension StorageServiceProtoGroupV2Record.StorageServiceProtoGroupV2RecordBuild
 
 #endif
 
-// MARK: - StorageServiceProtoAccountRecordConfig
+// MARK: - StorageServiceProtoAccountRecord
 
-public class StorageServiceProtoAccountRecordConfig: NSObject {
+public class StorageServiceProtoAccountRecord: NSObject {
 
-    // MARK: - StorageServiceProtoAccountRecordConfigBuilder
+    // MARK: - StorageServiceProtoAccountRecordBuilder
 
-    public class func builder() -> StorageServiceProtoAccountRecordConfigBuilder {
-        return StorageServiceProtoAccountRecordConfigBuilder()
+    public class func builder() -> StorageServiceProtoAccountRecordBuilder {
+        return StorageServiceProtoAccountRecordBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> StorageServiceProtoAccountRecordConfigBuilder {
-        let builder = StorageServiceProtoAccountRecordConfigBuilder()
+    public func asBuilder() -> StorageServiceProtoAccountRecordBuilder {
+        let builder = StorageServiceProtoAccountRecordBuilder()
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
+        if let _value = givenName {
+            builder.setGivenName(_value)
+        }
+        if let _value = familyName {
+            builder.setFamilyName(_value)
+        }
+        if let _value = avatarURL {
+            builder.setAvatarURL(_value)
+        }
+        if hasNoteToSelfArchived {
+            builder.setNoteToSelfArchived(noteToSelfArchived)
+        }
         if hasReadReceipts {
             builder.setReadReceipts(readReceipts)
         }
@@ -1934,11 +1726,55 @@ public class StorageServiceProtoAccountRecordConfig: NSObject {
         return builder
     }
 
-    public class StorageServiceProtoAccountRecordConfigBuilder: NSObject {
+    public class StorageServiceProtoAccountRecordBuilder: NSObject {
 
-        private var proto = StorageServiceProtos_AccountRecord.Config()
+        private var proto = StorageServiceProtos_AccountRecord()
 
         fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setProfileKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.profileKey = valueParam
+        }
+
+        public func setProfileKey(_ valueParam: Data) {
+            proto.profileKey = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setGivenName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.givenName = valueParam
+        }
+
+        public func setGivenName(_ valueParam: String) {
+            proto.givenName = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setFamilyName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.familyName = valueParam
+        }
+
+        public func setFamilyName(_ valueParam: String) {
+            proto.familyName = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setAvatarURL(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.avatarURL = valueParam
+        }
+
+        public func setAvatarURL(_ valueParam: String) {
+            proto.avatarURL = valueParam
+        }
+
+        public func setNoteToSelfArchived(_ valueParam: Bool) {
+            proto.noteToSelfArchived = valueParam
+        }
 
         public func setReadReceipts(_ valueParam: Bool) {
             proto.readReceipts = valueParam
@@ -1956,16 +1792,63 @@ public class StorageServiceProtoAccountRecordConfig: NSObject {
             proto.linkPreviews = valueParam
         }
 
-        public func build() throws -> StorageServiceProtoAccountRecordConfig {
-            return try StorageServiceProtoAccountRecordConfig.parseProto(proto)
+        public func build() throws -> StorageServiceProtoAccountRecord {
+            return try StorageServiceProtoAccountRecord.parseProto(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoAccountRecordConfig.parseProto(proto).serializedData()
+            return try StorageServiceProtoAccountRecord.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: StorageServiceProtos_AccountRecord.Config
+    fileprivate let proto: StorageServiceProtos_AccountRecord
+
+    public var profileKey: Data? {
+        guard hasProfileKey else {
+            return nil
+        }
+        return proto.profileKey
+    }
+    public var hasProfileKey: Bool {
+        return !proto.profileKey.isEmpty
+    }
+
+    public var givenName: String? {
+        guard hasGivenName else {
+            return nil
+        }
+        return proto.givenName
+    }
+    public var hasGivenName: Bool {
+        return !proto.givenName.isEmpty
+    }
+
+    public var familyName: String? {
+        guard hasFamilyName else {
+            return nil
+        }
+        return proto.familyName
+    }
+    public var hasFamilyName: Bool {
+        return !proto.familyName.isEmpty
+    }
+
+    public var avatarURL: String? {
+        guard hasAvatarURL else {
+            return nil
+        }
+        return proto.avatarURL
+    }
+    public var hasAvatarURL: Bool {
+        return !proto.avatarURL.isEmpty
+    }
+
+    public var noteToSelfArchived: Bool {
+        return proto.noteToSelfArchived
+    }
+    public var hasNoteToSelfArchived: Bool {
+        return true
+    }
 
     public var readReceipts: Bool {
         return proto.readReceipts
@@ -1995,119 +1878,8 @@ public class StorageServiceProtoAccountRecordConfig: NSObject {
         return true
     }
 
-    private init(proto: StorageServiceProtos_AccountRecord.Config) {
+    private init(proto: StorageServiceProtos_AccountRecord) {
         self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoAccountRecordConfig {
-        let proto = try StorageServiceProtos_AccountRecord.Config(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_AccountRecord.Config) throws -> StorageServiceProtoAccountRecordConfig {
-        // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecordConfig -
-
-        // MARK: - End Validation Logic for StorageServiceProtoAccountRecordConfig -
-
-        let result = StorageServiceProtoAccountRecordConfig(proto: proto)
-        return result
-    }
-
-    public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension StorageServiceProtoAccountRecordConfig {
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension StorageServiceProtoAccountRecordConfig.StorageServiceProtoAccountRecordConfigBuilder {
-    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecordConfig? {
-        return try! self.build()
-    }
-}
-
-#endif
-
-// MARK: - StorageServiceProtoAccountRecord
-
-public class StorageServiceProtoAccountRecord: NSObject {
-
-    // MARK: - StorageServiceProtoAccountRecordBuilder
-
-    public class func builder() -> StorageServiceProtoAccountRecordBuilder {
-        return StorageServiceProtoAccountRecordBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> StorageServiceProtoAccountRecordBuilder {
-        let builder = StorageServiceProtoAccountRecordBuilder()
-        if let _value = contact {
-            builder.setContact(_value)
-        }
-        if let _value = config {
-            builder.setConfig(_value)
-        }
-        return builder
-    }
-
-    public class StorageServiceProtoAccountRecordBuilder: NSObject {
-
-        private var proto = StorageServiceProtos_AccountRecord()
-
-        fileprivate override init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public func setContact(_ valueParam: StorageServiceProtoContactRecord?) {
-            guard let valueParam = valueParam else { return }
-            proto.contact = valueParam.proto
-        }
-
-        public func setContact(_ valueParam: StorageServiceProtoContactRecord) {
-            proto.contact = valueParam.proto
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public func setConfig(_ valueParam: StorageServiceProtoAccountRecordConfig?) {
-            guard let valueParam = valueParam else { return }
-            proto.config = valueParam.proto
-        }
-
-        public func setConfig(_ valueParam: StorageServiceProtoAccountRecordConfig) {
-            proto.config = valueParam.proto
-        }
-
-        public func build() throws -> StorageServiceProtoAccountRecord {
-            return try StorageServiceProtoAccountRecord.parseProto(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoAccountRecord.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: StorageServiceProtos_AccountRecord
-
-    public let contact: StorageServiceProtoContactRecord?
-
-    public let config: StorageServiceProtoAccountRecordConfig?
-
-    private init(proto: StorageServiceProtos_AccountRecord,
-                 contact: StorageServiceProtoContactRecord?,
-                 config: StorageServiceProtoAccountRecordConfig?) {
-        self.proto = proto
-        self.contact = contact
-        self.config = config
     }
 
     @objc
@@ -2121,23 +1893,11 @@ public class StorageServiceProtoAccountRecord: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: StorageServiceProtos_AccountRecord) throws -> StorageServiceProtoAccountRecord {
-        var contact: StorageServiceProtoContactRecord?
-        if proto.hasContact {
-            contact = try StorageServiceProtoContactRecord.parseProto(proto.contact)
-        }
-
-        var config: StorageServiceProtoAccountRecordConfig?
-        if proto.hasConfig {
-            config = try StorageServiceProtoAccountRecordConfig.parseProto(proto.config)
-        }
-
         // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecord -
 
         // MARK: - End Validation Logic for StorageServiceProtoAccountRecord -
 
-        let result = StorageServiceProtoAccountRecord(proto: proto,
-                                                      contact: contact,
-                                                      config: config)
+        let result = StorageServiceProtoAccountRecord(proto: proto)
         return result
     }
 

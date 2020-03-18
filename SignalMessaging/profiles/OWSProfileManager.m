@@ -1378,16 +1378,22 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     // profile key credential for them.
     [VersionedProfiles clearProfileKeyCredentialForAddress:address transaction:transaction];
 
-    [userProfile
-        clearWithProfileKey:profileKey
-        wasLocallyInitiated:wasLocallyInitiated
-                transaction:transaction
-                 completion:^{
-                     dispatch_async(dispatch_get_main_queue(), ^{
-                         [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown address:address];
-                         [self updateProfileForAddress:address];
-                     });
-                 }];
+    [userProfile clearWithProfileKey:profileKey
+                 wasLocallyInitiated:wasLocallyInitiated
+                         transaction:transaction
+                          completion:^{
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  // If this is the profile for the local user, we always want to defer to local state
+                                  // so skip the update profile for address call.
+                                  if (address.isLocalAddress) {
+                                      return;
+                                  }
+
+                                  [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
+                                                                    address:address];
+                                  [self updateProfileForAddress:address];
+                              });
+                          }];
 }
 
 - (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
@@ -1431,6 +1437,37 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     if (address.isLocalAddress) {
         [self.localUserProfile updateWithGivenName:givenName
                                         familyName:familyName
+                               wasLocallyInitiated:wasLocallyInitiated
+                                       transaction:transaction
+                                        completion:nil];
+    }
+}
+
+- (void)setProfileGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+                 forAddress:(SignalServiceAddress *)address
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
+    [userProfile updateWithGivenName:givenName
+                          familyName:familyName
+                       avatarUrlPath:avatarUrlPath
+                 wasLocallyInitiated:wasLocallyInitiated
+                         transaction:transaction
+                          completion:nil];
+
+    if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
+        [self downloadAvatarForUserProfile:userProfile];
+    }
+
+    if (address.isLocalAddress) {
+        [self.localUserProfile updateWithGivenName:givenName
+                                        familyName:familyName
+                                     avatarUrlPath:avatarUrlPath
                                wasLocallyInitiated:wasLocallyInitiated
                                        transaction:transaction
                                         completion:nil];
@@ -1534,6 +1571,16 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     }
 
     return nil;
+}
+
+- (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
+
+    return userProfile.avatarUrlPath;
 }
 
 - (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address

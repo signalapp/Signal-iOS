@@ -190,7 +190,7 @@ public class AccountManager: NSObject {
                 // Right now the avatar will always be lost since we do not store avatars in
                 // the storage service.
 
-                if self.profileManager.localGivenName() != nil {
+                if self.profileManager.hasProfileName || self.profileManager.localProfileAvatarData() != nil {
                     Logger.debug("restored local profile name. Uploading...")
                     // if we don't have a `localGivenName`, there's nothing to upload, and trying
                     // to upload would fail.
