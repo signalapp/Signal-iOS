@@ -1233,13 +1233,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSData *groupId = groupThread.groupModel.groupId;
         [self addGroupIdToProfileWhitelist:groupId];
-
-        // When we add a group to the profile whitelist, we might as well
-        // also add all current and pending members to the profile whitelist
-        // individually as well just in case delivery of the profile key
-        // fails.
-        NSSet<SignalServiceAddress *> *allPendingAndNonPendingMembers = groupThread.groupModel.groupMembership.allUsers;
-        [self addUsersToProfileWhitelist:allPendingAndNonPendingMembers.allObjects];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress];
@@ -1254,14 +1247,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSData *groupId = groupThread.groupModel.groupId;
         [self addGroupIdToProfileWhitelist:groupId wasLocallyInitiated:YES transaction:transaction];
-
-        // When we add a group to the profile whitelist, we might as well
-        // also add all current members to the profile whitelist
-        // individually as well just in case delivery of the profile key
-        // fails.
-        [self addUsersToProfileWhitelist:groupThread.recipientAddresses
-                     wasLocallyInitiated:YES
-                             transaction:transaction];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress wasLocallyInitiated:YES transaction:transaction];
