@@ -103,13 +103,13 @@ final class ConversationCell : UITableViewCell {
         unreadMessagesIndicatorView.pin(.bottom, to: .bottom, of: contentView)
         // The three lines below are part of a workaround for a weird layout bug
         topLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
-        topLabelStackView.set(.height, to: 18)
-        topLabelSpacer.set(.height, to: 18)
+        topLabelStackView.set(.height, to: 20)
+        topLabelSpacer.set(.height, to: 20)
         timestampLabel.setContentCompressionResistancePriority(.required, for: NSLayoutConstraint.Axis.horizontal)
         // The three lines below are part of a workaround for a weird layout bug
         bottomLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
-        bottomLabelStackView.set(.height, to: 16)
-        bottomLabelSpacer.set(.height, to: 16)
+        bottomLabelStackView.set(.height, to: 18)
+        bottomLabelSpacer.set(.height, to: 18)
         statusIndicatorView.set(.width, to: Values.conversationCellStatusIndicatorSize)
         statusIndicatorView.set(.height, to: Values.conversationCellStatusIndicatorSize)
         snippetLabel.pin(to: snippetLabelContainer)
