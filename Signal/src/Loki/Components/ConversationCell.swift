@@ -60,7 +60,7 @@ final class ConversationCell : UITableViewCell {
     }
     
     private func setUpViewHierarchy() {
-        let cellHeight: CGFloat = 72
+        let cellHeight: CGFloat = 68
         // Set the cell background color
         backgroundColor = Colors.cellBackground
         // Set up the highlight color
@@ -117,11 +117,11 @@ final class ConversationCell : UITableViewCell {
         typingIndicatorView.centerYAnchor.constraint(equalTo: snippetLabel.centerYAnchor).isActive = true
         // Not using a stack view for this is part of a workaround for a weird layout bug
         topLabelStackView.pin(.leading, to: .leading, of: labelContainerView)
-        topLabelStackView.pin(.top, to: .top, of: labelContainerView, withInset: Values.mediumSpacing)
+        topLabelStackView.pin(.top, to: .top, of: labelContainerView, withInset: 12)
         topLabelStackView.pin(.trailing, to: .trailing, of: labelContainerView)
         bottomLabelStackView.pin(.leading, to: .leading, of: labelContainerView)
-        bottomLabelStackView.pin(.top, to: .bottom, of: topLabelStackView, withInset: Values.smallSpacing)
-        labelContainerView.pin(.bottom, to: .bottom, of: bottomLabelStackView, withInset: Values.mediumSpacing)
+        bottomLabelStackView.pin(.top, to: .bottom, of: topLabelStackView, withInset: 6)
+        labelContainerView.pin(.bottom, to: .bottom, of: bottomLabelStackView, withInset: 12)
         // The two lines below are part of a workaround for a weird layout bug
         labelContainerView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
         labelContainerView.set(.height, to: cellHeight)
