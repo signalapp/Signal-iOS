@@ -133,7 +133,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         Assert(validPreviewLink: "https://pinterest.com/something")
         Assert(validPreviewLink: "https://www.pinterest.com/something")
         Assert(validPreviewLink: "https://pin.it/something")
-        Assert(validPreviewLink: "https://www.pinterest.com/ohjoy/recipes/")
+        Assert(validPreviewLink: "https://www.pinterest.com/norat0464/test-board/")
 
         // Strip trailing commas.
         Assert(validPreviewLink: "https://imgur.com/gallery/igHOwDM,")
@@ -469,13 +469,13 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData10() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.pinterest.com/ohjoy/recipes/")
+        linkPreviewManager.downloadLink(url: "https://www.pinterest.com/norat0464/test-board/")
             .done { (linkData) in
                 let content = try! self.linkPreviewManager.parse(linkData: linkData)
                 XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.title, "2436 Best Recipes images in 2020 | Food recipes, Food, Eat")
-                XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/51/a0/b5/51a0b59e4980fdcddec7c3d322cc148f.jpg")
+                XCTAssertEqual(content.title, "Test Board on Pinterest")
+                XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/3e/85/f8/3e85f88e7be0dd1418a5b430d2ee8a55.jpg")
 
                 expectation.fulfill()
             }.catch { (error) in
