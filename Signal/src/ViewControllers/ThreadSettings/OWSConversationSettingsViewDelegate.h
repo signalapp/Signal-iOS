@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)conversationColorWasUpdated;
 
-- (void)conversationSettingsDidUpdateGroupThread:(TSGroupThread *)thread;
+- (void)conversationSettingsDidUpdate;
 
 - (void)conversationSettingsDidRequestConversationSearch;
 

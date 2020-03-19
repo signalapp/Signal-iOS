@@ -148,12 +148,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         for uuid in oldUserUuids.subtracting(newUserUuids) {
-            let wasPending = oldGroupMembership.isPending(SignalServiceAddress(uuid: uuid))
-            if wasPending {
-                removePendingMember(uuid)
-            } else {
-                removeMember(uuid)
-            }
+            removeMember(uuid)
         }
 
         let oldMemberUuids = Set(oldGroupMembership.nonPendingMembers.compactMap { $0.uuid })
@@ -232,11 +227,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     public func addPendingMember(_ uuid: UUID, role: TSGroupMemberRole) {
         assert(pendingMembersToAdd[uuid] == nil)
         pendingMembersToAdd[uuid] = role
-    }
-
-    public func removePendingMember(_ uuid: UUID) {
-        assert(!membersToRemove.contains(uuid))
-        membersToRemove.append(uuid)
     }
 
     public func setShouldAcceptInvite() {

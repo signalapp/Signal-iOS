@@ -21,6 +21,12 @@ public enum ThemeIcon: UInt {
     case settingsViewSafetyNumber
     case settingsUserInContacts
     case settingsAddToContacts
+    case settingsAddMembers
+    case settingsShowAllMembers
+    case settingsEditGroupAccess
+    case settingsViewMakeGroupAdmin
+    case settingsViewRevokeGroupAdmin
+    case settingsViewRemoveFromGroup
 
     case stickerButton
     case cameraButton
@@ -47,8 +53,6 @@ public enum ThemeIcon: UInt {
     case call
     case info
     case groupMessage
-
-    case colorPalette
 }
 
 // MARK: - Colors
@@ -100,6 +104,14 @@ public extension Theme {
             return isDarkThemeEnabled ? "profile-circle-solid-24" : "profile-circle-outline-24"
         case .settingsShowGroup:
             return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
+        case .settingsEditGroupAccess:
+            return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
+        case .settingsViewMakeGroupAdmin:
+            return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
+        case .settingsViewRevokeGroupAdmin:
+            return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
+        case .settingsViewRemoveFromGroup:
+            return "leave-24"
         case .settingsTimer:
             return "timer-24"
         case .settingsTimerDisabled:
@@ -115,6 +127,10 @@ public extension Theme {
             return "ic_color_palette"
         case .settingsSearch:
             return "search-24"
+        case .settingsAddMembers:
+            return "plus-24"
+        case .settingsShowAllMembers:
+            return "ic_chevron_down"
 
         // Input Toolbar
         case .stickerButton:
@@ -165,8 +181,6 @@ public extension Theme {
             return isDarkThemeEnabled ? "info-solid-24" : "ic_info"
         case .groupMessage:
             return "group-solid-24"
-        case .colorPalette:
-            return "ic_color_palette"
         }
     }
 }

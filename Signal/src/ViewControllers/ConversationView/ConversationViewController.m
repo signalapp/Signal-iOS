@@ -246,15 +246,15 @@ typedef enum : NSUInteger {
     _cellMediaCache = [NSCache new];
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
-    _conversationStyle = [[ConversationStyle alloc] initWithThread:threadViewModel.threadRecord];
+    _conversationStyle = [[ConversationStyle alloc] initWithThread:self.thread];
 
     _selectedItems = @{};
 
-    _conversationViewModel = [[ConversationViewModel alloc] initWithThread:threadViewModel.threadRecord
+    _conversationViewModel = [[ConversationViewModel alloc] initWithThread:self.thread
                                                       focusMessageIdOnOpen:focusMessageId
                                                                   delegate:self];
 
-    _searchController = [[ConversationSearchController alloc] initWithThread:threadViewModel.threadRecord];
+    _searchController = [[ConversationSearchController alloc] initWithThread:self.thread];
     _searchController.delegate = self;
 
     // because the search bar view is hosted in the navigation bar, it's not in the CVC's responder
@@ -1773,7 +1773,7 @@ typedef enum : NSUInteger {
 
 - (UIViewController *)buildConversationSettingsView:(BOOL)showVerificationOnAppear
 {
-    BOOL shouldUseNewView = RemoteConfig.groupsV2CreateGroups || self.threadViewModel.threadRecord.isGroupV2Thread;
+    BOOL shouldUseNewView = RemoteConfig.groupsV2CreateGroups || self.thread.isGroupV2Thread;
     if (shouldUseNewView) {
         ConversationSettingsViewController *settingsVC =
             [[ConversationSettingsViewController alloc] initWithThreadViewModel:self.threadViewModel];
@@ -3784,14 +3784,13 @@ typedef enum : NSUInteger {
                                 }];
 }
 
-- (void)conversationSettingsDidUpdateGroupThread:(TSGroupThread *)thread
+- (void)conversationSettingsDidUpdate
 {
     OWSAssertIsOnMainThread();
-    self.thread = thread;
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         // We updated the group, so if there was a pending message request we should accept it.
-        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:thread transaction:transaction];
+        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread transaction:transaction];
         [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
     }];
 }
