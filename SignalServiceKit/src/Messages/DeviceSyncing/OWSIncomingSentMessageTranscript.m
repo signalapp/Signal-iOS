@@ -63,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
     _expirationDuration = _dataMessage.expireTimer;
     _body = _dataMessage.body;
     _dataMessageTimestamp = _dataMessage.timestamp;
+    _disappearingMessageToken = [DisappearingMessageToken tokenForProtoExpireTimer:_dataMessage.expireTimer];
 
     SSKProtoGroupContext *_Nullable groupContextV1 = _dataMessage.group;
     SSKProtoGroupContextV2 *_Nullable groupContextV2 = _dataMessage.groupV2;
@@ -139,9 +140,6 @@ NS_ASSUME_NONNULL_BEGIN
             _thread = groupThread;
 
             if (groupContextV1 != nil) {
-                DisappearingMessageToken *disappearingMessageToken =
-                    [DisappearingMessageToken tokenForProtoExpireTimer:_dataMessage.expireTimer];
-
                 SignalServiceAddress *_Nullable localAddress
                     = OWSIncomingSentMessageTranscript.tsAccountManager.localAddress;
                 if (localAddress == nil) {
@@ -156,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                               name:groupContextV1.name
                                                                         avatarData:nil
                                                                            members:members
-                                                          disappearingMessageToken:disappearingMessageToken
+                                                          disappearingMessageToken:self.disappearingMessageToken
                                                           groupUpdateSourceAddress:localAddress
                                                                  infoMessagePolicy:InfoMessagePolicyAlways
                                                                        transaction:transaction
@@ -166,11 +164,6 @@ NS_ASSUME_NONNULL_BEGIN
                         OWSFailDebug(@"Could not create group: %@", groupError);
                         return nil;
                     }
-                } else {
-                    [GroupManager remoteUpdateDisappearingMessagesWithContactOrV1GroupThread:_thread
-                                                                    disappearingMessageToken:disappearingMessageToken
-                                                                    groupUpdateSourceAddress:localAddress
-                                                                                 transaction:transaction];
                 }
                 if (!_thread.isGroupV1Thread) {
                     OWSFailDebug(@"Invalid thread for v1 group.");

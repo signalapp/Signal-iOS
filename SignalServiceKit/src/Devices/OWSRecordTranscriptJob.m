@@ -62,6 +62,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
++ (TSAccountManager *)tsAccountManager
+{
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark -
 
 + (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)transcript
@@ -185,6 +190,19 @@ NS_ASSUME_NONNULL_BEGIN
                         @"failed to fetch thumbnail for transcript: %llu with error: %@", transcript.timestamp, error);
                 }];
         }
+    }
+
+    if (!transcript.thread.isGroupV2Thread) {
+        SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+        if (localAddress == nil) {
+            OWSFailDebug(@"Missing localAddress.");
+            return;
+        }
+
+        [GroupManager remoteUpdateDisappearingMessagesWithContactOrV1GroupThread:transcript.thread
+                                                        disappearingMessageToken:transcript.disappearingMessageToken
+                                                        groupUpdateSourceAddress:localAddress
+                                                                     transaction:transaction];
     }
 
     if (transcript.isExpirationTimerUpdate) {
