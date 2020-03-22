@@ -25,10 +25,6 @@ public extension GroupManager {
             return
         }
 
-        databaseStorage.write { transaction in
-            sendGroupQuitMessage(inThread: groupThread, transaction: transaction)
-        }
-
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: false) { modalView in
             firstly {
                 self.leaveGroupOrDeclineInvitePromise(groupThread: groupThread).asVoid()
