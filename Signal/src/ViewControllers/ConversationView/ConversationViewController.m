@@ -3014,6 +3014,7 @@ typedef enum : NSUInteger {
             OWSAssertDebug(pickerModal);
 
             [self dismissKeyBoard];
+            pickerModal.modalPresentationStyle = UIModalPresentationFullScreen;
             [self presentViewController:pickerModal animated:YES completion:nil];
         }];
     }];
@@ -3049,6 +3050,7 @@ typedef enum : NSUInteger {
         pickerModal.sendMediaNavDelegate = self;
 
         [self dismissKeyBoard];
+        pickerModal.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:pickerModal animated:YES completion:nil];
     }];
 }

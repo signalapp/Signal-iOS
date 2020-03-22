@@ -58,7 +58,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         // ensure images at the end of the list can be scrolled above the bottom buttons
         let bottomButtonInset = -1 * SendMediaNavigationController.bottomButtonsCenterOffset + SendMediaNavigationController.bottomButtonWidth / 2
-        collectionView.contentInset.bottom = bottomButtonInset + 8
+        collectionView.contentInset.bottom = bottomButtonInset + 16
         view.backgroundColor = .white
 
         // The PhotoCaptureVC needs a shadow behind it's cancel button, so we use a custom icon.
