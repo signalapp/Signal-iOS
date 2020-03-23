@@ -36,6 +36,8 @@ public class ConversationStyle: NSObject {
     @objc static public let groupMessageAvatarDiameter: CGFloat = 28
     @objc static public let selectionViewWidth: CGFloat = 24
     @objc static public let messageStackSpacing: CGFloat = 8
+    @objc static public let defaultMessageSpacing: CGFloat = 12
+    @objc static public let compactMessageSpacing: CGFloat = 2
 
     @objc public var contentWidth: CGFloat {
         return viewWidth - (gutterLeading + gutterTrailing)

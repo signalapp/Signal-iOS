@@ -808,11 +808,6 @@ typedef enum : NSUInteger {
     [self showMessageRequestDialogIfRequired];
 }
 
-- (NSArray<id<ConversationViewItem>> *)viewItems
-{
-    return self.conversationViewModel.viewState.viewItems;
-}
-
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
 {
     NSNumber *_Nullable unreadIndicatorIndex = self.conversationViewModel.viewState.unreadIndicatorIndex;
@@ -4576,17 +4571,6 @@ typedef enum : NSUInteger {
     }
 
     [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
-}
-
-#pragma mark - View Items
-
-- (nullable id<ConversationViewItem>)viewItemForIndex:(NSInteger)index
-{
-    if (index < 0 || index >= (NSInteger)self.viewItems.count) {
-        OWSFailDebug(@"Invalid view item index: %lu", (unsigned long)index);
-        return nil;
-    }
-    return self.viewItems[(NSUInteger)index];
 }
 
 #pragma mark - UICollectionViewDataSource

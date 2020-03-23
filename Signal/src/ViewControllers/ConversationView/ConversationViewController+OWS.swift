@@ -4,6 +4,18 @@
 
 extension ConversationViewController {
     @objc
+    func viewItem(forIndex index: NSInteger) -> ConversationViewItem? {
+        guard index >= 0, index < viewItems.count else {
+            owsFailDebug("Invalid view item index: \(index)")
+            return nil
+        }
+        return viewItems[index]
+    }
+
+    @objc
+    var viewItems: [ConversationViewItem] { conversationViewModel.viewState.viewItems }
+
+    @objc
     func ensureIndexPath(of interaction: TSMessage) -> IndexPath? {
         return databaseStorage.uiRead { transaction in
             self.conversationViewModel.ensureLoadWindowContainsInteractionId(interaction.uniqueId,
@@ -231,6 +243,16 @@ extension ConversationViewController: MessageActionsDelegate {
             return nil
         }
 
+        let topMargin: CGFloat
+        if first.row - 1 >= 0, let firstItem = viewItem(forIndex: first.row), let previousItem = viewItem(forIndex: first.row - 1) {
+            let spacing = firstItem.vSpacing(withPreviousLayoutItem: previousItem)
+            topMargin = spacing / 2
+        } else if first.row - 1 < 0 {
+            topMargin = ConversationStyle.defaultMessageSpacing / 2
+        } else {
+            topMargin = 0
+        }
+
         guard let last = indexPaths.last else {
             owsFailDebug("last was unexpectedly nil")
             return nil
@@ -241,9 +263,19 @@ extension ConversationViewController: MessageActionsDelegate {
             return nil
         }
 
-        let height = lastFrame.bottomLeft.y - firstFrame.topLeft.y
+        let bottomMargin: CGFloat
+        if last.row + 1 < viewItems.count, let lastItem = viewItem(forIndex: last.row), let afterLastItem = viewItem(forIndex: last.row + 1) {
+            let spacing = afterLastItem.vSpacing(withPreviousLayoutItem: lastItem)
+            bottomMargin = spacing / 2
+        } else if last.row + 1 >= viewItems.count {
+            bottomMargin = ConversationStyle.defaultMessageSpacing / 2
+        } else {
+            bottomMargin = 0
+        }
+
+        let height = lastFrame.bottomLeft.y - firstFrame.topLeft.y + topMargin + bottomMargin
         return CGRect(x: firstFrame.topLeft.x,
-                      y: firstFrame.topLeft.y,
+                      y: firstFrame.topLeft.y - topMargin,
                       width: firstFrame.width,
                       height: height)
     }
