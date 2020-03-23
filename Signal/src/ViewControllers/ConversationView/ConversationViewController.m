@@ -444,6 +444,11 @@ typedef enum : NSUInteger {
                                              selector:@selector(handleMessageFailedNotification:)
                                                  name:NSNotification.messageFailed
                                                object:nil];
+    // Device linking
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleUnexpectedDeviceLinkRequestReceivedNotification)
+                                                 name:NSNotification.unexpectedDeviceLinkRequestReceived
+                                               object:nil];
 }
 
 - (BOOL)isGroupConversation
@@ -5476,6 +5481,16 @@ typedef enum : NSUInteger {
         } completion:^(BOOL finished) {
             [self.progressIndicatorView setProgress:0.0f];
         }];
+    });
+}
+
+- (void)handleUnexpectedDeviceLinkRequestReceivedNotification
+{
+    if (!LKDeviceLinkingUtilities.shouldShowUnexpectedDeviceLinkRequestReceivedAlert) { return; }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Device Link Request Received" message:@"Open the device link screen by going to \"Settings\"> \"Devices\" > \"Link a Device\" to link your devices." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
     });
 }
 
