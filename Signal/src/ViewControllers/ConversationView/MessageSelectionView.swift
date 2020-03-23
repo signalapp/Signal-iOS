@@ -49,7 +49,7 @@ public class MessageSelectionView: UIView {
         let imageView = UIImageView(image: image)
         imageView.tintColor = .ows_accentBlue
         wrapper.addSubview(imageView)
-        imageView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 1, leading: 1, bottom: 1, trailing: 1))
+        imageView.autoPinEdgesToSuperviewEdges()
 
         return wrapper
     }()

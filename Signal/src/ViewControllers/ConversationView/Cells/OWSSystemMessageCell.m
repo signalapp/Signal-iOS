@@ -244,6 +244,8 @@ typedef void (^SystemMessageActionBlock)(void);
 
     if (isCellVisible) {
         self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
+    } else {
+        self.selectionView.hidden = YES;
     }
 }
 

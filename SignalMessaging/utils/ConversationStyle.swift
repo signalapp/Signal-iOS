@@ -99,8 +99,8 @@ public class ConversationStyle: NSObject {
         gutterLeading = thread.isGroupThread ? 12 : 16
         gutterTrailing = 16
 
-        fullWidthGutterLeading = 16
-        fullWidthGutterTrailing = 16
+        fullWidthGutterLeading = thread.isGroupThread ? 12 : 16
+        fullWidthGutterTrailing = thread.isGroupThread ? 12 : 16
         headerGutterLeading = 28
         headerGutterTrailing = 28
 
