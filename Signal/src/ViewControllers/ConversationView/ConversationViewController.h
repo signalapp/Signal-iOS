@@ -70,11 +70,8 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 
 @protocol ConversationViewItem;
 
-typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
-    ConversationUIMode_Normal,
-    ConversationUIMode_Search,
-    ConversationUIMode_Selection
-};
+typedef NS_CLOSED_ENUM(NSUInteger,
+    ConversationUIMode) { ConversationUIMode_Normal, ConversationUIMode_Search, ConversationUIMode_Selection };
 
 @interface ConversationViewController (Internal)
 
