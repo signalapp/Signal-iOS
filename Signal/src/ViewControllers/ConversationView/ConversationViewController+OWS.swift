@@ -180,7 +180,12 @@ extension ConversationViewController: MessageActionsDelegate {
             owsFailDebug("forwardButton was unexpectedly nil")
             return
         }
-        forwardButton.isEnabled = selectedItems.count == 1
+
+        if selectedItems.count == 1, let selectedItem = selectedItems.first {
+            forwardButton.isEnabled = selectedItem.value.canForwardMessage
+        } else {
+            forwardButton.isEnabled = false
+        }
     }
 
     @objc
