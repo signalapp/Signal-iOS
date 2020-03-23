@@ -62,7 +62,7 @@ public extension Theme {
     }
 
     class var selectedConversationCellColor: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha30 : UIColor.ows_accentBlue.withAlphaComponent(0.15)
+        return Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_accentBlue.withAlphaComponent(0.15)
     }
 }
 
