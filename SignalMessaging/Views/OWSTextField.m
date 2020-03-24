@@ -4,6 +4,7 @@
 
 #import "OWSTextField.h"
 #import "Theme.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ows_applyTheme
 {
-    self.keyboardAppearance = Theme.keyboardAppearance;
+    self.keyboardAppearance = LKAppModeUtilities.isLightMode ? UIKeyboardAppearanceDefault : UIKeyboardAppearanceDark;
 }
 
 @end

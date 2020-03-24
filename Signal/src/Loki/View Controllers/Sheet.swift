@@ -1,10 +1,9 @@
 
-class Sheet : UIViewController {
+class Sheet : BaseVC {
     private(set) var bottomConstraint: NSLayoutConstraint!
 
     // MARK: Settings
     let overshoot: CGFloat = 40
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
 
     // MARK: Components
     lazy var contentView: UIView = {

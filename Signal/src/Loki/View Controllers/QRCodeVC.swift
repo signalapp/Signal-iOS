@@ -1,12 +1,9 @@
 
-final class QRCodeVC : UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
     private var tabBarTopConstraint: NSLayoutConstraint!
-    
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
     
     // MARK: Components
     private lazy var tabBar: TabBar = {
@@ -44,6 +41,7 @@ final class QRCodeVC : UIViewController, UIPageViewControllerDataSource, UIPageV
     
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground

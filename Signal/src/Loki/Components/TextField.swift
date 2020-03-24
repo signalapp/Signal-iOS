@@ -28,11 +28,11 @@ final class TextField : UITextField {
         placeholder.addAttribute(.foregroundColor, value: placeholderColor, range: NSRange(location: 0, length: placeholder.length))
         attributedPlaceholder = placeholder
         tintColor = Colors.accent
-        keyboardAppearance = .dark
+        keyboardAppearance = isLightMode ? .light : .dark
         if usesDefaultHeight {
             set(.height, to: Values.textFieldHeight)
         }
-        layer.borderColor = Colors.border.withAlphaComponent(Values.textFieldBorderOpacity).cgColor
+        layer.borderColor = isLightMode ? Colors.text.cgColor : Colors.border.withAlphaComponent(Values.textFieldBorderOpacity).cgColor
         layer.borderWidth = Values.borderThickness
         layer.cornerRadius = Values.textFieldCornerRadius
     }

@@ -1,5 +1,5 @@
 
-final class SeedVC : UIViewController {
+final class SeedVC : BaseVC {
     
     private let mnemonic: String = {
         let identityManager = OWSIdentityManager.shared()
@@ -52,11 +52,9 @@ final class SeedVC : UIViewController {
         return result
     }()
     
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
-    
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground

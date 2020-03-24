@@ -10,7 +10,7 @@ final class SeedReminderView : UIView {
         let result = UIProgressView()
         result.progressViewStyle = .bar
         result.progressTintColor = Colors.accent
-        result.backgroundColor = UIColor(hex: 0xFFFFFF).withAlphaComponent(0.1)
+        result.backgroundColor = isLightMode ? UIColor(hex: 0x000000).withAlphaComponent(0.1) : UIColor(hex: 0xFFFFFF).withAlphaComponent(0.1)
         result.set(.height, to: Values.progressBarThickness)
         return result
     }()

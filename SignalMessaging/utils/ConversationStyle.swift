@@ -18,14 +18,14 @@ public class ConversationStyle: NSObject {
         }
     }
 
-    @objc public let contentMarginTop: CGFloat = 24 // Values.largeSpacing
-    @objc public let contentMarginBottom: CGFloat = 24 // Values.largeSpacing
+    @objc public let contentMarginTop: CGFloat = Values.largeSpacing
+    @objc public let contentMarginBottom: CGFloat = Values.largeSpacing
 
     @objc public var gutterLeading: CGFloat = 0
     @objc public var gutterTrailing: CGFloat = 0
 
-    @objc public var headerGutterLeading: CGFloat = 35 // Values.veryLargeSpacing
-    @objc public var headerGutterTrailing: CGFloat = 35 // Values.veryLargeSpacing
+    @objc public var headerGutterLeading: CGFloat = Values.veryLargeSpacing
+    @objc public var headerGutterTrailing: CGFloat = Values.veryLargeSpacing
 
     // These are the gutters used by "full width" views
     // like "contact offer" and "info message".
@@ -114,7 +114,7 @@ public class ConversationStyle: NSObject {
             maxMessageWidth = floor(contentWidth - 32)
         }
 
-        let messageTextFont = UIFont.systemFont(ofSize: 13) // Values.smallFontSize
+        let messageTextFont = UIFont.systemFont(ofSize: Values.smallFontSize)
 
         let baseFontOffset: CGFloat = 16
 
@@ -146,17 +146,17 @@ public class ConversationStyle: NSObject {
 
     @objc
     private static var defaultBubbleColorIncoming: UIColor {
-        return UIColor(rgbHex: 0x222325) // Colors.receivedMessageBackground
+        return Colors.receivedMessageBackground
     }
 
     @objc
-    public let bubbleColorOutgoingFailed = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
+    public let bubbleColorOutgoingFailed = Colors.sentMessageBackground
 
     @objc
-    public let bubbleColorOutgoingSending = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
+    public let bubbleColorOutgoingSending = Colors.sentMessageBackground
 
     @objc
-    public let bubbleColorOutgoingSent = UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
+    public let bubbleColorOutgoingSent = Colors.sentMessageBackground
 
     @objc
     public let dateBreakTextColor = UIColor.ows_gray60
@@ -191,12 +191,12 @@ public class ConversationStyle: NSObject {
 
     @objc
     public static var bubbleTextColorIncoming: UIColor {
-        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
+        return Colors.text
     }
 
     @objc
     public static var bubbleTextColorOutgoing: UIColor {
-        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
+        return Colors.text
     }
 
     @objc
@@ -222,21 +222,21 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
-        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(0.6) // Values.unimportantElementOpacity
+        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(Values.unimportantElementOpacity)
     }
 
     @objc
     public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
         if isIncoming {
-            return UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackground
+            return Colors.sentMessageBackground
         } else {
-            return UIColor(rgbHex: 0x222325) // Colors.receivedMessageBackground
+            return Colors.receivedMessageBackground
         }
     }
 
     @objc
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
-        return UIColor(rgbHex: 0x00F782) // Colors.accent
+        return isLightMode ? UIColor(hex: 0x272726) : Colors.accent
     }
 
     @objc
@@ -246,16 +246,16 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func quotedReplyAuthorColor() -> UIColor {
-        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
+        return Colors.text
     }
 
     @objc
     public func quotedReplyTextColor() -> UIColor {
-        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
+        return Colors.text
     }
 
     @objc
     public func quotedReplyAttachmentColor() -> UIColor {
-        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
+        return Colors.text
     }
 }

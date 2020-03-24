@@ -1,5 +1,5 @@
 
-final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
+final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     private var profilePictureToBeUploaded: UIImage?
     private var displayNameToBeUploaded: String?
     private var isEditingDisplayName = false { didSet { handleIsEditingDisplayNameChanged() } }
@@ -11,9 +11,6 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
             return getUserHexEncodedPublicKey()
         }
     }()
-    
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
     
     // MARK: Components
     private lazy var profilePictureView: ProfilePictureView = {
@@ -55,6 +52,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
     
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground

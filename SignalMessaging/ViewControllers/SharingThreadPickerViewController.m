@@ -88,7 +88,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     // Loki: Customize title
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = NSLocalizedString(@"Share", @"");
-    titleLabel.textColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+    titleLabel.textColor = LKColors.text;
     titleLabel.font = [UIFont boldSystemFontOfSize:25];
     self.navigationItem.titleView = titleLabel;
 }
@@ -105,7 +105,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     const CGFloat contentVMargin = 0;
 
     UIView *header = [UIView new];
-    header.backgroundColor = [UIColor colorWithRGBHex:0x161616]; // Colors.navigationBarBackground
+    header.backgroundColor = LKColors.navigationBarBackground;
     
     UIButton *cancelShareButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [header addSubview:cancelShareButton];

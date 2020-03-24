@@ -60,7 +60,7 @@ final class ConversationCell : UITableViewCell {
     }
     
     private func setUpViewHierarchy() {
-        let cellHeight: CGFloat = 72
+        let cellHeight: CGFloat = 68
         // Set the cell background color
         backgroundColor = Colors.cellBackground
         // Set up the highlight color
@@ -103,13 +103,13 @@ final class ConversationCell : UITableViewCell {
         unreadMessagesIndicatorView.pin(.bottom, to: .bottom, of: contentView)
         // The three lines below are part of a workaround for a weird layout bug
         topLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
-        topLabelStackView.set(.height, to: 18)
-        topLabelSpacer.set(.height, to: 18)
+        topLabelStackView.set(.height, to: 20)
+        topLabelSpacer.set(.height, to: 20)
         timestampLabel.setContentCompressionResistancePriority(.required, for: NSLayoutConstraint.Axis.horizontal)
         // The three lines below are part of a workaround for a weird layout bug
         bottomLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
-        bottomLabelStackView.set(.height, to: 16)
-        bottomLabelSpacer.set(.height, to: 16)
+        bottomLabelStackView.set(.height, to: 18)
+        bottomLabelSpacer.set(.height, to: 18)
         statusIndicatorView.set(.width, to: Values.conversationCellStatusIndicatorSize)
         statusIndicatorView.set(.height, to: Values.conversationCellStatusIndicatorSize)
         snippetLabel.pin(to: snippetLabelContainer)
@@ -117,11 +117,11 @@ final class ConversationCell : UITableViewCell {
         typingIndicatorView.centerYAnchor.constraint(equalTo: snippetLabel.centerYAnchor).isActive = true
         // Not using a stack view for this is part of a workaround for a weird layout bug
         topLabelStackView.pin(.leading, to: .leading, of: labelContainerView)
-        topLabelStackView.pin(.top, to: .top, of: labelContainerView, withInset: Values.mediumSpacing)
+        topLabelStackView.pin(.top, to: .top, of: labelContainerView, withInset: 12)
         topLabelStackView.pin(.trailing, to: .trailing, of: labelContainerView)
         bottomLabelStackView.pin(.leading, to: .leading, of: labelContainerView)
-        bottomLabelStackView.pin(.top, to: .bottom, of: topLabelStackView, withInset: Values.smallSpacing)
-        labelContainerView.pin(.bottom, to: .bottom, of: bottomLabelStackView, withInset: Values.mediumSpacing)
+        bottomLabelStackView.pin(.top, to: .bottom, of: topLabelStackView, withInset: 6)
+        labelContainerView.pin(.bottom, to: .bottom, of: bottomLabelStackView, withInset: 12)
         // The two lines below are part of a workaround for a weird layout bug
         labelContainerView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
         labelContainerView.set(.height, to: cellHeight)
@@ -141,7 +141,8 @@ final class ConversationCell : UITableViewCell {
                 profilePictureView.hexEncodedPublicKey = ""
                 profilePictureView.isRSSFeed = true
             } else {
-                let users = LokiAPI.userHexEncodedPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
+                var users = LokiAPI.userHexEncodedPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
+                users.remove(getUserHexEncodedPublicKey())
                 let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
                 if !randomUsers.isEmpty {
                     profilePictureView.hexEncodedPublicKey = randomUsers[0]
@@ -175,11 +176,11 @@ final class ConversationCell : UITableViewCell {
             let image: UIImage
             let status = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: lastMessage)
             switch status {
-            case .calculatingPoW, .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot")
-            case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck")
+            case .calculatingPoW, .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot").asTintedImage(color: Colors.text)!
+            case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck").asTintedImage(color: Colors.text)!
             case .read:
-                statusIndicatorView.backgroundColor = .white
-                image = #imageLiteral(resourceName: "FilledCircleCheck")
+                statusIndicatorView.backgroundColor = isLightMode ? .black : .white
+                image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
             case .failed: image = #imageLiteral(resourceName: "message_status_failed").asTintedImage(color: Colors.text)!
             }
             statusIndicatorView.image = image

@@ -161,7 +161,7 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
     public override func loadView() {
         self.view = UIView()
-        self.view.backgroundColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
+        self.view.backgroundColor = Colors.navigationBarBackground
         self.view.isOpaque = true
 
         canvasView.configureSubviews()

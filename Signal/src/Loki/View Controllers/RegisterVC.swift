@@ -1,5 +1,5 @@
 
-final class RegisterVC : UIViewController {
+final class RegisterVC : BaseVC {
     private var seed: Data! { didSet { updateKeyPair() } }
     private var keyPair: ECKeyPair! { didSet { updatePublicKeyLabel() } }
     
@@ -7,7 +7,7 @@ final class RegisterVC : UIViewController {
     private lazy var publicKeyLabel: UILabel = {
         let result = UILabel()
         result.textColor = Colors.text
-        result.font = Fonts.spaceMono(ofSize: isSmallScreen ? Values.mediumFontSize : Values.largeFontSize)
+        result.font = Fonts.spaceMono(ofSize: isSmallScreen ? Values.mediumFontSize : 20)
         result.numberOfLines = 0
         result.lineBreakMode = .byCharWrapping
         return result
@@ -37,11 +37,9 @@ final class RegisterVC : UIViewController {
         return result
     }()
     
-    // MARK: Settings
-    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
-    
     // MARK: Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground

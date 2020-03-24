@@ -28,14 +28,14 @@ public final class ProfilePictureView : UIView {
         addSubview(imageView)
         imageView.pin(.leading, to: .leading, of: self)
         imageView.pin(.top, to: .top, of: self)
-        let imageViewSize = CGFloat(45) // Values.mediumProfilePictureSize
+        let imageViewSize = CGFloat(Values.mediumProfilePictureSize)
         imageViewWidthConstraint = imageView.set(.width, to: imageViewSize)
         imageViewHeightConstraint = imageView.set(.height, to: imageViewSize)
         // Set up additional image view
         addSubview(additionalImageView)
         additionalImageView.pin(.trailing, to: .trailing, of: self)
         additionalImageView.pin(.bottom, to: .bottom, of: self)
-        let additionalImageViewSize = CGFloat(35) // Values.smallProfilePictureSize
+        let additionalImageViewSize = CGFloat(Values.smallProfilePictureSize)
         additionalImageView.set(.width, to: additionalImageViewSize)
         additionalImageView.set(.height, to: additionalImageViewSize)
         additionalImageView.layer.cornerRadius = additionalImageViewSize / 2
@@ -49,7 +49,7 @@ public final class ProfilePictureView : UIView {
         }
         let size: CGFloat
         if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey, !isRSSFeed {
-            size = 35 // Values.smallProfilePictureSize
+            size = Values.smallProfilePictureSize
             imageViewWidthConstraint.constant = size
             imageViewHeightConstraint.constant = size
             additionalImageView.isHidden = false
@@ -75,9 +75,9 @@ public final class ProfilePictureView : UIView {
     private func getImageView() -> UIImageView {
         let result = UIImageView()
         result.layer.masksToBounds = true
-        result.backgroundColor = UIColor(rgbHex: 0xD8D8D8) // Colors.unimportant
-        result.layer.borderColor = UIColor(rgbHex: 0x979797).cgColor // Colors.border
-        result.layer.borderWidth = 1 // Values.borderThickness
+        result.backgroundColor = Colors.unimportant
+        result.layer.borderColor = Colors.border.cgColor
+        result.layer.borderWidth = Values.borderThickness
         result.contentMode = .scaleAspectFit
         return result
     }

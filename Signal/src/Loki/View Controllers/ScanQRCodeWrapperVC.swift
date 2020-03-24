@@ -1,5 +1,5 @@
 
-final class ScanQRCodeWrapperVC : UIViewController {
+final class ScanQRCodeWrapperVC : BaseVC {
     var delegate: (UIViewController & OWSQRScannerDelegate)? = nil
     var isPresentedModally = false
     private let message: String
@@ -23,6 +23,7 @@ final class ScanQRCodeWrapperVC : UIViewController {
     }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         // Set up navigation bar if needed
         if isPresentedModally {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(close))

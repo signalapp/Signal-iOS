@@ -86,7 +86,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
         scrollView.autoPinEdgesToSuperviewEdges()
 
-        let backgroundColor = UIColor(rgbHex: 0x161616) // Colors.navigationBarBackground
+        let backgroundColor = Colors.navigationBarBackground
         self.view.backgroundColor = backgroundColor
 
         // Create full screen container view so the scrollView

@@ -37,7 +37,7 @@ final class Button : UIButton {
         }
         let borderColor: UIColor
         switch style {
-        case .unimportant: borderColor = Colors.unimportantButtonBackground
+        case .unimportant: borderColor = isLightMode ? Colors.text : Colors.unimportantButtonBackground
         case .regular: borderColor = Colors.text
         case .prominentOutline: borderColor = Colors.accent
         case .prominentFilled: borderColor = Colors.accent
