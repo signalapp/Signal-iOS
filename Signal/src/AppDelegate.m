@@ -69,7 +69,7 @@ static BOOL isInternalTestVersion = NO;
 
 // Loki
 @property (nonatomic) LKP2PServer *lokiP2PServer;
-@property (nonatomic) LKLongPoller *lokiLongPoller;
+@property (nonatomic) LKPoller *lokiPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiNewsFeedPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiMessengerUpdatesFeedPoller;
 
@@ -181,7 +181,7 @@ static BOOL isInternalTestVersion = NO;
     [DDLog flushLog];
 
     // Loki: Stop pollers
-    [self stopLongPollerIfNeeded];
+    [self stopPollerIfNeeded];
     [self stopOpenGroupPollersIfNeeded];
 }
 
@@ -202,7 +202,7 @@ static BOOL isInternalTestVersion = NO;
     [DDLog flushLog];
 
     // Loki: Stop pollers
-    [self stopLongPollerIfNeeded];
+    [self stopPollerIfNeeded];
     [self stopOpenGroupPollersIfNeeded];
 
     if (self.lokiP2PServer) { [self.lokiP2PServer stop]; }
@@ -784,7 +784,7 @@ static BOOL isInternalTestVersion = NO;
             [LKP2PAPI broadcastOnlineStatus];
 
             // Loki: Start pollers
-            [self startLongPollerIfNeeded];
+            [self startPollerIfNeeded];
             [self startOpenGroupPollersIfNeeded];
 
             // Loki: Get device links
@@ -1477,7 +1477,7 @@ static BOOL isInternalTestVersion = NO;
         [self.lokiFriendRequestExpirationJob startIfNecessary];
         
         // Loki: Start pollers
-        [self startLongPollerIfNeeded];
+        [self startPollerIfNeeded];
         [self startOpenGroupPollersIfNeeded];
 
         // Loki: Get device links
@@ -1591,12 +1591,12 @@ static BOOL isInternalTestVersion = NO;
 
 #pragma mark - Loki
 
-- (void)setUpLongPollerIfNeeded
+- (void)setUpPollerIfNeeded
 {
-    if (self.lokiLongPoller != nil) { return; }
+    if (self.lokiPoller != nil) { return; }
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     if (userHexEncodedPublicKey == nil) { return; }
-    self.lokiLongPoller = [[LKLongPoller alloc] initOnMessagesReceived:^(NSArray<SSKProtoEnvelope *> *messages) {
+    self.lokiPoller = [[LKPoller alloc] initOnMessagesReceived:^(NSArray<SSKProtoEnvelope *> *messages) {
         for (SSKProtoEnvelope *message in messages) {
             NSData *data = [message serializedDataAndReturnError:nil];
             if (data != nil) {
@@ -1608,15 +1608,15 @@ static BOOL isInternalTestVersion = NO;
     }];
 }
 
-- (void)startLongPollerIfNeeded
+- (void)startPollerIfNeeded
 {
-    [self setUpLongPollerIfNeeded];
-    [self.lokiLongPoller startIfNeeded];
+    [self setUpPollerIfNeeded];
+    [self.lokiPoller startIfNeeded];
 }
 
-- (void)stopLongPollerIfNeeded
+- (void)stopPollerIfNeeded
 {
-    [self.lokiLongPoller stopIfNeeded];
+    [self.lokiPoller stopIfNeeded];
 }
 
 - (void)setUpDefaultPublicChatsIfNeeded
@@ -1713,7 +1713,7 @@ static BOOL isInternalTestVersion = NO;
     [SSKEnvironment.shared.messageSenderJobQueue clearAllJobs];
     [SSKEnvironment.shared.identityManager clearIdentityKey];
     [LKAPI clearRandomSnodePool];
-    [self stopLongPollerIfNeeded];
+    [self stopPollerIfNeeded];
     [self stopOpenGroupPollersIfNeeded];
     [self.lokiNewsFeedPoller stop];
     [self.lokiMessengerUpdatesFeedPoller stop];
