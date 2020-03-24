@@ -155,7 +155,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair.hexEncodedPublicKey
         TSAccountManager.sharedInstance().didRegister()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.startLongPollerIfNeeded()
+        appDelegate.startPollerIfNeeded()
         let deviceLinkingModal = DeviceLinkingModal(mode: .slave, delegate: self)
         deviceLinkingModal.modalPresentationStyle = .overFullScreen
         deviceLinkingModal.modalTransitionStyle = .crossDissolve
@@ -176,7 +176,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
     
     func handleDeviceLinkingModalDismissed() {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.stopLongPollerIfNeeded()
+        appDelegate.stopPollerIfNeeded()
         TSAccountManager.sharedInstance().resetForReregistration()
     }
     
