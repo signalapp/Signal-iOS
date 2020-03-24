@@ -88,6 +88,12 @@ target 'SignalShareExtension' do
   shared_pods
 end
 
+target 'LokiPushNotificationService' do
+  project 'Signal'
+  pod 'CryptoSwift', '~> 1.0', :inhibit_warnings => true
+  shared_pods
+end
+
 target 'SignalMessaging' do
   project 'Signal'
   shared_pods

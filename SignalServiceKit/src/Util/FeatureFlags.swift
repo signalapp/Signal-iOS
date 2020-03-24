@@ -29,4 +29,9 @@ public class FeatureFlags: NSObject {
     public static var useCustomPhotoCapture: Bool {
         return true
     }
+    
+    @objc
+    public static var notificationServiceExtension: Bool {
+        return true
+    }
 }
