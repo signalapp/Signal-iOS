@@ -548,9 +548,11 @@
 		4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C63CBFF210A620B003AE45C /* SignalTSan.supp */; };
 		4C68FDAE2385F5A4002576B1 /* DebugUIDataStoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C68FDAD2385F5A4002576B1 /* DebugUIDataStoreViewController.swift */; };
 		4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */; };
+		4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */; };
 		4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */; };
 		4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */; };
 		4C7537892193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */; };
+		4C81DAD5242051C100F4C4D1 /* MessageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C81DAD4242051C100F4C4D1 /* MessageSelectionView.swift */; };
 		4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */; };
 		4C858A52212DC5E1001B45D3 /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */; };
 		4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */; };
@@ -1453,9 +1455,11 @@
 		4C63CBFF210A620B003AE45C /* SignalTSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalTSan.supp; sourceTree = "<group>"; };
 		4C68FDAD2385F5A4002576B1 /* DebugUIDataStoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIDataStoreViewController.swift; sourceTree = "<group>"; };
 		4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAccountDiscovery.swift; sourceTree = "<group>"; };
+		4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewControllerTest.swift; sourceTree = "<group>"; };
 		4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalUBSan.supp; sourceTree = "<group>"; };
 		4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportAlert.swift; sourceTree = "<group>"; };
 		4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWS113MultiAttachmentMediaMessages.swift; sourceTree = "<group>"; };
+		4C81DAD4242051C100F4C4D1 /* MessageSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSelectionView.swift; sourceTree = "<group>"; };
 		4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalBaseTest+Swift.swift"; sourceTree = "<group>"; };
 		4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+OWS.swift"; sourceTree = "<group>"; };
 		4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaZoomAnimationController.swift; sourceTree = "<group>"; };
@@ -2080,6 +2084,7 @@
 				34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */,
 				4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */,
 				88535063240829950011D318 /* DateHeaderInteraction.swift */,
+				4C81DAD4242051C100F4C4D1 /* MessageSelectionView.swift */,
 			);
 			path = ConversationView;
 			sourceTree = "<group>";
@@ -2364,6 +2369,7 @@
 			children = (
 				340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */,
 				4C2A538B23C5462300D28CD8 /* ConversationMessageMappingTest.swift */,
+				4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -4556,6 +4562,7 @@
 				34D1F0AE1F867BFC0066283D /* OWSMessageCell.m in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MessageActionsViewController.swift in Sources */,
+				4C81DAD5242051C100F4C4D1 /* MessageSelectionView.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
 				34995F192411838D00C70546 /* NewGroupSearchBar.swift in Sources */,
 				349ED990221B0194008045B0 /* Onboarding2FAViewController.swift in Sources */,
@@ -4757,6 +4764,7 @@
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
 				34843B2421432293004DED45 /* SignalBaseTest.m in Sources */,
 				4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */,
+				4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */,
 				4C9D347B23679C25006A4307 /* GroupAndContactStreamTest.swift in Sources */,
 				4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift in Sources */,
 				4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */,

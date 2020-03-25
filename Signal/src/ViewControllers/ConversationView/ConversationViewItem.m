@@ -589,9 +589,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 {
     OWSAssertDebug(previousLayoutItem);
 
-    static const CGFloat defaultSpacing = 12.f;
-    static const CGFloat compactSpacing = 2.f;
-
     switch (self.interaction.interactionType) {
         case OWSInteractionType_DateHeader:
         case OWSInteractionType_UnreadIndicator:
@@ -601,19 +598,19 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
                 TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
                 TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
                 if ([incomingMessage.authorAddress isEqualToAddress:previousIncomingMessage.authorAddress]) {
-                    return compactSpacing;
+                    return ConversationStyle.compactMessageSpacing;
                 }
             }
 
-            return defaultSpacing;
+            return ConversationStyle.defaultMessageSpacing;
         case OWSInteractionType_OutgoingMessage:
             if (previousLayoutItem.interaction.interactionType == self.interaction.interactionType) {
-                return compactSpacing;
+                return ConversationStyle.compactMessageSpacing;
             }
 
-            return defaultSpacing;
+            return ConversationStyle.defaultMessageSpacing;
         default:
-            return defaultSpacing;
+            return ConversationStyle.defaultMessageSpacing;
     }
 }
 

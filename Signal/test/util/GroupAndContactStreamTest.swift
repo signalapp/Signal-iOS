@@ -347,6 +347,10 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
         return "Fake Name"
     }
 
+    func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return ConversationColorName.taupe.rawValue
+    }
+
     func nameComponents(for address: SignalServiceAddress) -> PersonNameComponents? {
         return PersonNameComponents()
     }

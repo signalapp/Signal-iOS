@@ -1421,7 +1421,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionConversations: {
             UITableViewRowAction *deleteAction =
                 [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
-                                                   title:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
+                                                   title:CommonStrings.deleteButton
                                                  handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath) {
                                                      [self tableViewCellTappedDelete:swipedIndexPath];
                                                  }];
@@ -1585,7 +1585,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                           @"Title for the 'conversation delete confirmation' alert.")
               message:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
                           @"Message for the 'conversation delete confirmation' alert.")];
-    [alert addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
+    [alert addAction:[[ActionSheetAction alloc] initWithTitle:CommonStrings.deleteButton
                                                         style:ActionSheetActionStyleDestructive
                                                       handler:^(ActionSheetAction *action) {
                                                           [weakSelf deleteThread:thread];

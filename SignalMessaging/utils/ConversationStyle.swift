@@ -33,14 +33,18 @@ public class ConversationStyle: NSObject {
     @objc public var fullWidthGutterLeading: CGFloat = 0
     @objc public var fullWidthGutterTrailing: CGFloat = 0
 
-    @objc public var errorGutterTrailing: CGFloat = 0
+    @objc static public let groupMessageAvatarDiameter: CGFloat = 28
+    @objc static public let selectionViewWidth: CGFloat = 24
+    @objc static public let messageStackSpacing: CGFloat = 8
+    @objc static public let defaultMessageSpacing: CGFloat = 12
+    @objc static public let compactMessageSpacing: CGFloat = 2
 
     @objc public var contentWidth: CGFloat {
         return viewWidth - (gutterLeading + gutterTrailing)
     }
 
-    @objc public var fullWidthContentWidth: CGFloat {
-       return viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing)
+    @objc public var selectableCenteredContentWidth: CGFloat {
+        return viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing) - (Self.selectionViewWidth + Self.messageStackSpacing) * 2
     }
 
     @objc public var headerViewContentWidth: CGFloat {
@@ -92,25 +96,23 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func updateProperties() {
-        if thread.isGroupThread {
-            gutterLeading = 48
-            gutterTrailing = 16
-        } else {
-            gutterLeading = 16
-            gutterTrailing = 16
-        }
-        fullWidthGutterLeading = 16
-        fullWidthGutterTrailing = 16
+        gutterLeading = thread.isGroupThread ? 12 : 16
+        gutterTrailing = 16
+
+        fullWidthGutterLeading = thread.isGroupThread ? 12 : 16
+        fullWidthGutterTrailing = thread.isGroupThread ? 12 : 16
         headerGutterLeading = 28
         headerGutterTrailing = 28
-        errorGutterTrailing = 16
 
-        maxMessageWidth = floor(contentWidth - 32)
+        maxMessageWidth = contentWidth - (Self.selectionViewWidth + Self.messageStackSpacing)
+        if thread.isGroupThread {
+            maxMessageWidth -= (Self.groupMessageAvatarDiameter + Self.messageStackSpacing)
+        }
 
         // This upper bound should have no effect in portrait orientation.
         // It limits body media size in landscape.
         let kMaxBodyMediaSize: CGFloat = 350
-        maxMediaMessageWidth = min(maxMessageWidth, kMaxBodyMediaSize)
+        maxMediaMessageWidth = floor(min(maxMessageWidth, kMaxBodyMediaSize))
 
         let messageTextFont = UIFont.ows_dynamicTypeBody
 

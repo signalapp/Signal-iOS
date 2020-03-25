@@ -28,6 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
+- (NSString *)conversationColorNameForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction;
+
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address;
 
 - (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;

@@ -171,7 +171,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) ConversationProfileState *conversationProfileState;
 @property (nonatomic) BOOL hasTooManyOutgoingMessagesToBlockCached;
 
-@property (nonatomic) NSArray<id<ConversationViewItem>> *persistedViewItems;
 @property (nonatomic) NSArray<TSOutgoingMessage *> *unsavedOutgoingMessages;
 
 @end
@@ -194,7 +193,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _thread = thread;
     _delegate = delegate;
-    _persistedViewItems = @[];
     _unsavedOutgoingMessages = @[];
     _focusMessageIdOnOpen = focusMessageIdOnOpen;
     _viewState = [[ConversationViewState alloc] initWithViewItems:@[] focusMessageId:focusMessageIdOnOpen];
@@ -554,11 +552,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (TSOutgoingMessage *unsavedOutgoingMessage in self.unsavedOutgoingMessages) {
-        // unsavedOutgoingMessages should only exist for a short period (usually 30-50ms) before
-        // they are saved and moved into the `persistedViewItems`
-        //        OWSAssertDebug(unsavedOutgoingMessage.timestamp >= ([NSDate ows_millisecondTimeStamp] - 1 *
-        //        kSecondInMs));
-
         BOOL isFound = ([diff.addedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
             [diff.removedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
             [diff.updatedItemIds containsObject:unsavedOutgoingMessage.uniqueId]);

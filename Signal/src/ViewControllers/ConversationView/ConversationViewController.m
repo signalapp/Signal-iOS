@@ -113,7 +113,6 @@ typedef enum : NSUInteger {
     ConversationSearchControllerDelegate,
     ContactsViewHelperDelegate,
     LongTextViewDelegate,
-    MessageActionsDelegate,
     MessageDetailViewDelegate,
     OWSMessageBubbleViewDelegate,
     OWSMessageStickerViewDelegate,
@@ -129,8 +128,7 @@ typedef enum : NSUInteger {
     ConversationInputToolbarDelegate,
     ConversationViewModelDelegate,
     LocationPickerDelegate,
-    InputAccessoryViewPlaceholderDelegate,
-    ForwardMessageDelegate>
+    InputAccessoryViewPlaceholderDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) ThreadViewModel *threadViewModel;
@@ -201,7 +199,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) ConversationSearchController *searchController;
 @property (nonatomic, nullable) NSString *lastSearchedText;
-@property (nonatomic) BOOL isShowingSearchUI;
 
 @property (nonatomic, nullable) MessageRequestView *messageRequestView;
 
@@ -213,6 +210,10 @@ typedef enum : NSUInteger {
 @property (nonatomic) CGFloat messageActionsOriginalFocusY;
 
 @property (nonatomic, nullable, weak) ReactionsDetailSheet *reactionsDetailSheet;
+@property (nonatomic) ConversationUIMode uiMode;
+@property (nonatomic) MessageActionsToolbar *selectionToolbar;
+@property (nonatomic, readonly) SelectionHighlightView *selectionHighlightView;
+@property (nonatomic) NSDictionary<NSString *, id<ConversationViewItem>> *selectedItems;
 
 @end
 
@@ -246,6 +247,8 @@ typedef enum : NSUInteger {
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
     _conversationStyle = [[ConversationStyle alloc] initWithThread:threadViewModel.threadRecord];
+
+    _selectedItems = @{};
 
     _conversationViewModel = [[ConversationViewModel alloc] initWithThread:threadViewModel.threadRecord
                                                       focusMessageIdOnOpen:focusMessageId
@@ -597,6 +600,7 @@ typedef enum : NSUInteger {
     self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
+    self.collectionView.allowsMultipleSelection = YES;
     if (@available(iOS 10, *)) {
         // To minimize time to initial apearance, we initially disable prefetching, but then
         // re-enable it once the view has appeared.
@@ -618,6 +622,28 @@ typedef enum : NSUInteger {
     [self.view addSubview:self.bottomBar];
     self.bottomBarBottomConstraint = [self.bottomBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.bottomBar autoPinWidthToSuperview];
+
+    _selectionToolbar = [self buildSelectionToolbar];
+    _selectionHighlightView = [SelectionHighlightView new];
+    self.selectionHighlightView.userInteractionEnabled = NO;
+    [self.collectionView addSubview:self.selectionHighlightView];
+
+    // Selection Highlight View Layout:
+    //
+    // We want the highlight view to have the same frame as the collectionView
+    // but [selectionHighlightView autoPinEdgesToSuperviewEdges] undesirably
+    // affects the size of the collection view. To witness this, you can longpress
+    // on an item and see the collectionView offsets change. Pinning to just the
+    // top left and the same height/width achieves the desired results without
+    // the negative side effects.
+    [self.selectionHighlightView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.selectionHighlightView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [self.selectionHighlightView autoMatchDimension:ALDimensionWidth
+                                        toDimension:ALDimensionWidth
+                                             ofView:self.collectionView];
+    [self.selectionHighlightView autoMatchDimension:ALDimensionHeight
+                                        toDimension:ALDimensionHeight
+                                             ofView:self.collectionView];
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self updateShowLoadMoreHeadersWithTransaction:transaction];
@@ -782,11 +808,6 @@ typedef enum : NSUInteger {
     [self showMessageRequestDialogIfRequired];
 }
 
-- (NSArray<id<ConversationViewItem>> *)viewItems
-{
-    return self.conversationViewModel.viewState.viewItems;
-}
-
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
 {
     NSNumber *_Nullable unreadIndicatorIndex = self.conversationViewModel.viewState.unreadIndicatorIndex;
@@ -866,6 +887,11 @@ typedef enum : NSUInteger {
     if (self.viewHasEverAppeared) {
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         [self updateLastKnownDistanceFromBottom];
+    }
+
+    if (self.isShowingSelectionUI) {
+        [self maintainSelectionAfterMappingChange];
+        [self updateSelectionHighlight];
     }
 }
 
@@ -1447,92 +1473,111 @@ typedef enum : NSUInteger {
     self.navigationItem.hidesBackButton = NO;
     if (self.customBackButton) {
         self.navigationItem.leftBarButtonItem = self.customBackButton;
+    } else {
+        self.navigationItem.leftBarButtonItem = nil;
     }
 
-    if (self.userLeftGroup) {
-        self.navigationItem.rightBarButtonItems = @[];
-        return;
-    }
-
-    if (self.isShowingSearchUI) {
-        if (@available(iOS 13.0, *)) {
-            OWSAssertDebug(self.navigationItem.searchController != nil);
-        } else {
-            self.navigationItem.rightBarButtonItems = @[];
-            self.navigationItem.leftBarButtonItem = nil;
+    switch (self.uiMode) {
+        case ConversationUIMode_Search: {
+            if (self.userLeftGroup) {
+                self.navigationItem.rightBarButtonItems = @[];
+                return;
+            }
+            if (@available(iOS 13.0, *)) {
+                OWSAssertDebug(self.navigationItem.searchController != nil);
+            } else {
+                self.navigationItem.rightBarButtonItems = @[];
+                self.navigationItem.leftBarButtonItem = nil;
+                self.navigationItem.hidesBackButton = YES;
+            }
+            return;
+        }
+        case ConversationUIMode_Selection: {
+            self.navigationItem.rightBarButtonItems = @[ self.cancelSelectionBarButtonItem ];
+            self.navigationItem.leftBarButtonItem = self.deleteAllBarButtonItem;
             self.navigationItem.hidesBackButton = YES;
             return;
         }
-    }
+        case ConversationUIMode_Normal: {
+            if (self.userLeftGroup) {
+                self.navigationItem.rightBarButtonItems = @[];
+                return;
+            }
+            const CGFloat kBarButtonSize = 44;
+            NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
+            if ([self canCall]) {
+                // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
+                // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
+                // The contents of the navigation bar are cramped in this view.
+                UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
+                UIImage *image =
+                    [[Theme iconImage:ThemeIconPhone] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                [callButton setImage:image forState:UIControlStateNormal];
 
-    const CGFloat kBarButtonSize = 44;
-    NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
-    if ([self canCall]) {
-        // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
-        // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
-        // The contents of the navigation bar are cramped in this view.
-        UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [[Theme iconImage:ThemeIconPhone] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        [callButton setImage:image forState:UIControlStateNormal];
-        
-        if (OWSWindowManager.sharedManager.hasCall) {
-            callButton.enabled = NO;
-            callButton.userInteractionEnabled = NO;
-            callButton.tintColor = [Theme.primaryIconColor colorWithAlphaComponent:0.7];
-        } else {
-            callButton.enabled = YES;
-            callButton.userInteractionEnabled = YES;
-            callButton.tintColor = Theme.primaryIconColor;
-        }
+                if (OWSWindowManager.sharedManager.hasCall) {
+                    callButton.enabled = NO;
+                    callButton.userInteractionEnabled = NO;
+                    callButton.tintColor = [Theme.primaryIconColor colorWithAlphaComponent:0.7];
+                } else {
+                    callButton.enabled = YES;
+                    callButton.userInteractionEnabled = YES;
+                    callButton.tintColor = Theme.primaryIconColor;
+                }
 
-        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
-        
-        // We normally would want to use left and right insets that ensure the button
-        // is square and the icon is centered.  However UINavigationBar doesn't offer us
-        // control over the margins and spacing of its content, and the buttons end up
-        // too far apart and too far from the edge of the screen. So we use a smaller
-        // right inset tighten up the layout.
-        BOOL hasCompactHeader = self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-        if (!hasCompactHeader) {
-            imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
-            imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
-            imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-            imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
-        }
-        callButton.imageEdgeInsets = imageEdgeInsets;
-        callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
-        [callButton addTarget:self action:@selector(startAudioCall) forControlEvents:UIControlEventTouchUpInside];
-        callButton.frame = CGRectMake(0,
-            0,
-            round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
-            round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-        [barButtons
-            addObject:[[UIBarButtonItem alloc] initWithCustomView:callButton
+                UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+
+                // We normally would want to use left and right insets that ensure the button
+                // is square and the icon is centered.  However UINavigationBar doesn't offer us
+                // control over the margins and spacing of its content, and the buttons end up
+                // too far apart and too far from the edge of the screen. So we use a smaller
+                // right inset tighten up the layout.
+                BOOL hasCompactHeader = self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+                if (!hasCompactHeader) {
+                    imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
+                    imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
+                    imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+                    imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+                }
+                callButton.imageEdgeInsets = imageEdgeInsets;
+                callButton.accessibilityLabel
+                    = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
+                [callButton addTarget:self
+                               action:@selector(startAudioCall)
+                     forControlEvents:UIControlEventTouchUpInside];
+                callButton.frame = CGRectMake(0,
+                    0,
+                    round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
+                    round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
+                [barButtons addObject:[[UIBarButtonItem alloc]
+                                               initWithCustomView:callButton
                                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")]];
-    }
+            }
 
-    if (self.disappearingMessagesConfiguration.isEnabled && !self.threadViewModel.hasPendingMessageRequest) {
-        DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
-            initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
-        timerView.delegate = self;
-        timerView.tintColor = Theme.primaryIconColor;
+            if (self.disappearingMessagesConfiguration.isEnabled && !self.threadViewModel.hasPendingMessageRequest) {
+                DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
+                    initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
+                timerView.delegate = self;
+                timerView.tintColor = Theme.primaryIconColor;
 
-        // As of iOS11, we can size barButton item custom views with autoLayout.
-        // Before that, though we can still use autoLayout *within* the customView,
-        // setting the view's size with constraints causes the customView to be temporarily
-        // laid out with a misplaced origin.
-        if (@available(iOS 11.0, *)) {
-            [timerView autoSetDimensionsToSize:CGSizeMake(36, 44)];
-        } else {
-            timerView.frame = CGRectMake(0, 0, 36, 44);
-        }
+                // As of iOS11, we can size barButton item custom views with autoLayout.
+                // Before that, though we can still use autoLayout *within* the customView,
+                // setting the view's size with constraints causes the customView to be temporarily
+                // laid out with a misplaced origin.
+                if (@available(iOS 11.0, *)) {
+                    [timerView autoSetDimensionsToSize:CGSizeMake(36, 44)];
+                } else {
+                    timerView.frame = CGRectMake(0, 0, 36, 44);
+                }
 
-        [barButtons
-            addObject:[[UIBarButtonItem alloc] initWithCustomView:timerView
+                [barButtons addObject:[[UIBarButtonItem alloc]
+                                               initWithCustomView:timerView
                                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"timer")]];
-    }
+            }
 
-    self.navigationItem.rightBarButtonItems = [barButtons copy];
+            self.navigationItem.rightBarButtonItems = [barButtons copy];
+            return;
+        }
+    }
 }
 
 - (void)updateNavigationBarSubtitleLabel
@@ -1884,7 +1929,7 @@ typedef enum : NSUInteger {
     [actionSheet addAction:[OWSActionSheets cancelAction]];
 
     ActionSheetAction *deleteMessageAction = [[ActionSheetAction alloc]
-        initWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
+        initWithTitle:CommonStrings.deleteButton
                 style:ActionSheetActionStyleDestructive
               handler:^(ActionSheetAction *action) {
                   [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -2037,25 +2082,6 @@ typedef enum : NSUInteger {
     [self.inputToolbar clearDesiredKeyboard];
     [self dismissKeyBoard];
     [self presentActionSheet:alert];
-}
-
-#pragma mark - MessageActionsDelegate
-
-- (void)messageActionsShowDetailsForItem:(id<ConversationViewItem>)conversationViewItem
-{
-    [self showDetailViewForViewItem:conversationViewItem];
-}
-
-- (void)messageActionsReplyToItem:(id<ConversationViewItem>)conversationViewItem
-{
-    [self populateReplyForViewItem:conversationViewItem];
-}
-
-- (void)messageActionsForwardItem:(id<ConversationViewItem>)conversationViewItem
-{
-    OWSAssertDebug(conversationViewItem);
-
-    [ForwardMessageNavigationController presentFor:conversationViewItem from:self delegate:self];
 }
 
 #pragma mark - MessageDetailViewDelegate
@@ -2362,6 +2388,54 @@ typedef enum : NSUInteger {
 - (BOOL)conversationCellHasPendingMessageRequest:(ConversationViewCell *)cell
 {
     return self.threadViewModel.hasPendingMessageRequest;
+}
+
+- (BOOL)isShowingSelectionUI
+{
+    return self.uiMode == ConversationUIMode_Selection;
+}
+
+- (BOOL)isViewItemSelected:(id<ConversationViewItem>)viewItem
+{
+    return [self.selectedItems objectForKey:viewItem.interaction.uniqueId] != nil;
+}
+
+- (void)conversationCell:(nonnull ConversationViewCell *)cell didSelectViewItem:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertDebug(self.isShowingSelectionUI);
+
+    NSIndexPath *_Nullable indexPath = [self.conversationViewModel indexPathForViewItem:viewItem];
+    if (indexPath == nil) {
+        OWSFailDebug(@"indexPath was unexpectedly nil");
+        return;
+    }
+
+    [self.collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+
+    NSMutableDictionary *dict = [self.selectedItems mutableCopy];
+    dict[viewItem.interaction.uniqueId] = viewItem;
+    self.selectedItems = [dict copy];
+    [self updateSelectionButtons];
+    [self updateSelectionHighlight];
+}
+
+- (void)conversationCell:(nonnull ConversationViewCell *)cell didDeselectViewItem:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertDebug(self.isShowingSelectionUI);
+
+    NSIndexPath *_Nullable indexPath = [self.conversationViewModel indexPathForViewItem:viewItem];
+    if (indexPath == nil) {
+        OWSFailDebug(@"indexPath was unexpectedly nil");
+        return;
+    }
+
+    [self.collectionView deselectItemAtIndexPath:indexPath animated:NO];
+
+    NSMutableDictionary *dict = [self.selectedItems mutableCopy];
+    [dict removeObjectForKey:viewItem.interaction.uniqueId];
+    self.selectedItems = [dict copy];
+    [self updateSelectionButtons];
+    [self updateSelectionHighlight];
 }
 
 - (void)reloadReactionsDetailSheetWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -2818,7 +2892,7 @@ typedef enum : NSUInteger {
 - (void)populateReplyForViewItem:(id<ConversationViewItem>)conversationItem
 {
     OWSLogDebug(@"user did tap reply");
-    [self hideSearchUI];
+    self.uiMode = ConversationUIMode_Normal;
 
     __block OWSQuotedReplyModel *quotedReply;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -4155,9 +4229,22 @@ typedef enum : NSUInteger {
 
 #pragma mark - Conversation Search
 
+- (void)setUiMode:(ConversationUIMode)newValue
+{
+    ConversationUIMode oldValue = _uiMode;
+    if (newValue == oldValue) {
+        return;
+    }
+
+    _uiMode = newValue;
+    [self uiModeDidChangeWithOldValue:oldValue];
+}
+
+#pragma mark - Conversation Search
+
 - (void)conversationSettingsDidRequestConversationSearch:(OWSConversationSettingsViewController *)conversationSettingsViewController
 {
-    [self showSearchUI];
+    self.uiMode = ConversationUIMode_Search;
     [self popAllConversationSettingsViewsWithCompletion:^{
         // This delay is unfortunate, but without it, self.searchController.uiSearchController.searchBar
         // isn't yet ready to become first responder. Presumably we're still mid transition.
@@ -4176,47 +4263,20 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void)showSearchUI
-{
-    self.isShowingSearchUI = YES;
-
-    if (@available(iOS 13.0, *)) {
-        self.navigationItem.searchController = self.searchController.uiSearchController;
-    } else {
-        // Note: setting a searchBar as the titleView causes UIKit to render the navBar
-        // *slightly* taller (44pt -> 56pt)
-        self.navigationItem.titleView = self.searchController.uiSearchController.searchBar;
-    }
-
-    [self updateBarButtonItems];
-    [self reloadBottomBar];
-}
-
-- (void)hideSearchUI
-{
-    self.isShowingSearchUI = NO;
-
-    if (@available(iOS 13.0, *)) {
-        self.navigationItem.searchController = nil;
-        // HACK: For some reason at this point the OWSNavbar retains the extra space it
-        // used to house the search bar. This only seems to occur when dismissing
-        // the search UI when scrolled to the very top of the conversation.
-        [self.navigationController.navigationBar sizeToFit];
-    } else {
-        self.navigationItem.titleView = self.headerView;
-    }
-
-    [self updateBarButtonItems];
-    [self reloadBottomBar];
-}
-
 #pragma mark ConversationSearchControllerDelegate
 
 - (void)didDismissSearchController:(UISearchController *)searchController
 {
     OWSLogVerbose(@"");
     OWSAssertIsOnMainThread();
-    [self hideSearchUI];
+    // This method is called not only when the user taps "cancel" in the searchController, but also
+    // called when the searchController was dismissed because we switched to another uiMode, like
+    // "selection". We only want to revert to "normal" in the former case - when the user tapped
+    // "cancel" in the search controller. Otherwise, if we're already in another mode, like
+    // "selection", we want to stay in that mode.
+    if (self.uiMode == ConversationUIMode_Search) {
+        self.uiMode = ConversationUIMode_Normal;
+    }
 }
 
 - (void)conversationSearchController:(ConversationSearchController *)conversationSearchController
@@ -4513,17 +4573,6 @@ typedef enum : NSUInteger {
     [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 }
 
-#pragma mark - View Items
-
-- (nullable id<ConversationViewItem>)viewItemForIndex:(NSInteger)index
-{
-    if (index < 0 || index >= (NSInteger)self.viewItems.count) {
-        OWSFailDebug(@"Invalid view item index: %lu", (unsigned long)index);
-        return nil;
-    }
-    return self.viewItems[(NSUInteger)index];
-}
-
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
@@ -4559,6 +4608,7 @@ typedef enum : NSUInteger {
     cell.conversationStyle = self.conversationStyle;
 
     [cell loadForDisplay];
+    [cell layoutIfNeeded];
 
     // This must happen after load for display, since the tap
     // gesture doesn't get added to a view until this point.
@@ -5054,13 +5104,17 @@ typedef enum : NSUInteger {
             OWSLogInfo(@"performBatchUpdates did not finish");
             // If did not finish, reset to get back to a known good state.
             [self resetContentAndLayoutWithSneakyTransaction];
+        } else {
+            if (self.isShowingSelectionUI) {
+                [self maintainSelectionAfterMappingChange];
+                [self updateSelectionHighlight];
+            }
         }
     };
 
     @try {
         if (shouldAnimateUpdates) {
             [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-
         } else {
             // HACK: We use `UIView.animateWithDuration:0` rather than `UIView.performWithAnimation` to work around a
             // UIKit Crash like:
@@ -5236,6 +5290,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     if (!self.conversationViewModel) {
+        OWSFailDebug(@"conversationViewModel was unexpectedly nil");
         return;
     }
 
@@ -5320,6 +5375,8 @@ typedef enum : NSUInteger {
     [self updateInputToolbarLayout];
     [self updateHeaderViewFrame];
     [self updateLeftBarItem];
+    [self maintainSelectionAfterMappingChange];
+    [self updateSelectionHighlight];
 }
 
 - (void)viewSafeAreaInsetsDidChange
@@ -5489,10 +5546,18 @@ typedef enum : NSUInteger {
 
     if (self.messageRequestView) {
         bottomView = self.messageRequestView;
-    } else if (self.isShowingSearchUI) {
-        bottomView = self.searchController.resultsBar;
     } else {
-        bottomView = self.inputToolbar;
+        switch (self.uiMode) {
+            case ConversationUIMode_Search:
+                bottomView = self.searchController.resultsBar;
+                break;
+            case ConversationUIMode_Selection:
+                bottomView = self.selectionToolbar;
+                break;
+            case ConversationUIMode_Normal:
+                bottomView = self.inputToolbar;
+                break;
+        }
     }
 
     if (bottomView.superview == self.bottomBar && self.viewHasEverAppeared) {
@@ -5505,7 +5570,7 @@ typedef enum : NSUInteger {
     }
 
     [self.bottomBar addSubview:bottomView];
-    [bottomView autoPinEdgesToSuperviewEdges];
+    [bottomView autoPinEdgesToSuperviewMargins];
 
     [self updateInputAccessoryPlaceholderHeight];
     [self updateContentInsetsAnimated:self.viewHasEverAppeared];
@@ -5652,35 +5717,6 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self showGifPicker];
-}
-
-#pragma mark - ForwardMessageDelegate
-
-- (void)forwardMessageFlowDidCompleteWithViewItem:(id<ConversationViewItem>)viewItem
-                                          threads:(NSArray<TSThread *> *)threads
-{
-    __weak ConversationViewController *weakSelf = self;
-    [self dismissViewControllerAnimated:true
-                             completion:^{
-                                 [weakSelf didForwardMessageToThreads:threads];
-                             }];
-}
-
-- (void)didForwardMessageToThreads:(NSArray<TSThread *> *)threads
-{
-    if (threads.count > 1) {
-        return;
-    }
-    TSThread *thread = threads.firstObject;
-    if ([thread.uniqueId isEqualToString:self.thread.uniqueId]) {
-        return;
-    }
-    [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
-}
-
-- (void)forwardMessageFlowDidCancel
-{
-    [self dismissViewControllerAnimated:true completion:nil];
 }
 
 @end

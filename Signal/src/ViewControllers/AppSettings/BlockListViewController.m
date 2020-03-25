@@ -61,7 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableContents *contents = [OWSTableContents new];
 
     __weak BlockListViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
 
     // "Add" section
 
