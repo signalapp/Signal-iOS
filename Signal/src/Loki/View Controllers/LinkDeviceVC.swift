@@ -33,7 +33,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Link to your existing account by going into your in-app settings and clicking \"Devices\".", comment: "")
+        let message = NSLocalizedString("Navigate to \"Settings\" > \"Devices\" > \"Link a Device\" on your other device and then scan the QR code that comes up to start the linking process.", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -167,7 +167,7 @@ private final class EnterPublicKeyVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "Enter your Session ID to start the linking process."
+        explanationLabel.text = "Navigate to \"Settings\" > \"Devices\" > \"Link a Device\" on your other device and then enter your Session ID here to start the linking process."
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Link button

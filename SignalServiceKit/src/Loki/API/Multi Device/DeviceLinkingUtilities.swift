@@ -1,6 +1,19 @@
 
-public enum DeviceLinkingUtilities {
-    
+@objc(LKDeviceLinkingUtilities)
+public final class DeviceLinkingUtilities : NSObject {
+    private static var lastUnexpectedDeviceLinkRequestDate: Date? = nil
+
+    private override init() { }
+
+    @objc public static var shouldShowUnexpectedDeviceLinkRequestReceivedAlert: Bool {
+        let now = Date()
+        if let lastUnexpectedDeviceLinkRequestDate = lastUnexpectedDeviceLinkRequestDate {
+            if now.timeIntervalSince(lastUnexpectedDeviceLinkRequestDate) < 30 { return false }
+        }
+        lastUnexpectedDeviceLinkRequestDate = now
+        return true
+    }
+
     // When requesting a device link, the slave device signs the master device's public key. When authorizing
     // a device link, the master device signs the slave device's public key.
     
