@@ -37,10 +37,9 @@ public extension LokiAPI {
             let target = seedNodePool.randomElement()!
             let url = URL(string: "\(target)/json_rpc")!
             let request = TSRequest(url: url, method: "POST", parameters: [
-                "method" : "get_n_service_nodes",
+                "method" : "get_service_nodes",
                 "params" : [
                     "active_only" : true,
-                    "limit" : maxRandomSnodePoolSize,
                     "fields" : [
                         "public_ip" : true,
                         "storage_port" : true,
