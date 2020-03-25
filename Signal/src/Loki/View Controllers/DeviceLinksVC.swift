@@ -219,12 +219,12 @@ private extension DeviceLinksVC {
             stackView.axis = .vertical
             stackView.distribution = .equalCentering
             stackView.spacing = Values.verySmallSpacing
-            stackView.set(.height, to: 36)
+            stackView.set(.height, to: 44)
             contentView.addSubview(stackView)
             stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
-            stackView.pin(.top, to: .top, of: contentView, withInset: Values.mediumSpacing)
+            stackView.pin(.top, to: .top, of: contentView, withInset: 12)
             contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.largeSpacing)
-            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.mediumSpacing)
+            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: 12)
             stackView.set(.width, to: UIScreen.main.bounds.width - 2 * Values.largeSpacing)
         }
         
