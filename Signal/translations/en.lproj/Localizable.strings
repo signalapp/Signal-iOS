@@ -2768,7 +2768,7 @@
 "Link to an existing account" = "Link to an existing account";
 "Enter your public key" = "Enter your public key";
 "Link to your existing account by going into your in-app settings and clicking \"Devices\"." = "Link to your existing account by going into your in-app settings and clicking \"Devices\".";
-"Open Session on your secondary device and tap \"Link to an existing account\"" = "Open Session on your secondary device and tap \"Link to an existing account\"";
+"Download Session on your other device and tap \"Link to an existing account\" at the bottom of the landing screen. If you have an existing account on your other device already you will have to delete that account first." = "Download Session on your other device and tap \"Link to an existing account\" at the bottom of the landing screen. If you have an existing account on your other device already you will have to delete that account first.";
 "Group Settings" = "Group Settings";
 "Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design." = "Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design.";
 "Enter the recovery phrase that was given to you when you signed up to restore your account." = "Enter the recovery phrase that was given to you when you signed up to restore your account.";
