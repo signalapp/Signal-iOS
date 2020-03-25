@@ -89,6 +89,7 @@ public extension LokiAPI {
     }
 
     internal static func getFileServerProxy() -> Promise<LokiAPITarget> {
+        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
         let (promise, seal) = Promise<LokiAPITarget>.pending()
         func getVersion(for snode: LokiAPITarget) -> Promise<String> {
             let url = URL(string: "\(snode.address):\(snode.port)/get_stats/v1")!
