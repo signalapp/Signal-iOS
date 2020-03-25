@@ -99,7 +99,6 @@ typedef void (^SystemMessageActionBlock)(void);
     contentStackView.alignment = UIStackViewAlignmentCenter;
 
     self.button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.button setTitleColor:UIColor.ows_accentBlueColor forState:UIControlStateNormal];
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.button.layer.cornerRadius = 4.f;
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -159,6 +158,7 @@ typedef void (^SystemMessageActionBlock)(void);
     self.cellBackgroundView.backgroundColor = [Theme backgroundColor];
 
     [self.button setBackgroundColor:Theme.conversationButtonBackgroundColor];
+    [self.button setTitleColor:Theme.conversationButtonTextColor forState:UIControlStateNormal];
 
     TSInteraction *interaction = self.viewItem.interaction;
 

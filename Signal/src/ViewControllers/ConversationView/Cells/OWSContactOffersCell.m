@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.titleLabel.textColor = Theme.secondaryTextAndIconColor;
     for (UIButton *button in self.buttons) {
-        [button setTitleColor:UIColor.ows_accentBlueColor forState:UIControlStateNormal];
+        [button setTitleColor:Theme.conversationButtonTextColor forState:UIControlStateNormal];
         [button setBackgroundColor:Theme.conversationButtonBackgroundColor];
     }
 

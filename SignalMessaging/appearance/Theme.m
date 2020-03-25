@@ -412,8 +412,14 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (UIColor *)conversationButtonBackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.35f alpha:1.f] : UIColor.ows_gray02Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_gray02Color);
 }
+
++ (UIColor *)conversationButtonTextColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray05Color : UIColor.ows_accentBlueColor);
+}
+
 
 + (UIBlurEffect *)barBlurEffect
 {
