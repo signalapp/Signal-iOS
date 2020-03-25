@@ -47,6 +47,7 @@ public final class LokiAPI : NSObject {
         @objc public static let messageConversionFailed = LokiAPIError(domain: "LokiAPIErrorDomain", code: 2, userInfo: [ NSLocalizedDescriptionKey : "Failed to construct message." ])
         @objc public static let clockOutOfSync = LokiAPIError(domain: "LokiAPIErrorDomain", code: 3, userInfo: [ NSLocalizedDescriptionKey : "Your clock is out of sync with the service node network." ])
         @objc public static let randomSnodePoolUpdatingFailed = LokiAPIError(domain: "LokiAPIErrorDomain", code: 4, userInfo: [ NSLocalizedDescriptionKey : "Failed to update random service node pool." ])
+        @objc public static let missingSnodeVersion = LokiAPIError(domain: "LokiAPIErrorDomain", code: 5, userInfo: [ NSLocalizedDescriptionKey : "Missing service node version." ])
     }
     
     @objc(LKDestination)
