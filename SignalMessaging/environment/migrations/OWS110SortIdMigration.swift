@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -106,7 +106,7 @@ public class OWS110SortIdMigration: YDBDatabaseMigration {
 
             Logger.info("re-archiving \(archivedThreads.count) threads which were previously archived")
             for archivedThread in archivedThreads {
-                archivedThread.archiveThread(with: transaction.asAnyWrite)
+                archivedThread.archiveThread(updateStorageService: false, transaction: transaction.asAnyWrite)
             }
 
             self.markAsComplete(with: transaction.asAnyWrite)

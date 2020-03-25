@@ -20,6 +20,8 @@ public protocol StorageServiceManagerProtocol {
     // or recordPendingUpdates(updatedGroupV2MasterKeys:).
     func recordPendingUpdates(groupModel: TSGroupModel)
 
+    func recordPendingLocalAccountUpdates()
+
     func backupPendingChanges()
 
     @discardableResult
@@ -70,17 +72,24 @@ public struct StorageService {
 
     /// An identifier representing a given storage item.
     /// This can be used to fetch specific items from the service.
-    public struct StorageIdentifier: Hashable {
+    public struct StorageIdentifier: Hashable, Codable {
         public static let identifierLength: Int32 = 16
         public let data: Data
+        public let type: StorageServiceProtoManifestRecordKeyType
 
-        public init(data: Data) {
+        public init(data: Data, type: StorageServiceProtoManifestRecordKeyType) {
             if data.count != StorageIdentifier.identifierLength { owsFail("Initialized with invalid data") }
             self.data = data
+            self.type = type
         }
 
-        public static func generate() -> StorageIdentifier {
-            return .init(data: Randomness.generateRandomBytes(identifierLength))
+        public static func generate(type: StorageServiceProtoManifestRecordKeyType) -> StorageIdentifier {
+            return .init(data: Randomness.generateRandomBytes(identifierLength), type: type)
+        }
+
+        public func buildRecord() throws -> StorageServiceProtoManifestRecordKey {
+            let builder = StorageServiceProtoManifestRecordKey.builder(data: data, type: type)
+            return try builder.build()
         }
     }
 
@@ -88,50 +97,65 @@ public struct StorageService {
         public let identifier: StorageIdentifier
         public let record: StorageServiceProtoStorageRecord
 
-        public var type: UInt32 { return record.type }
+        public var type: StorageServiceProtoManifestRecordKeyType { identifier.type }
 
         public var contactRecord: StorageServiceProtoContactRecord? {
-            guard type == StorageServiceProtoStorageRecordType.contact.rawValue else { return nil }
-            guard let contact = record.contact else {
+            guard case .contact = type else { return nil }
+            guard case .contact(let record) = record.record else {
                 owsFailDebug("unexpectedly missing contact record")
                 return nil
             }
-            return contact
+            return record
         }
 
         public var groupV1Record: StorageServiceProtoGroupV1Record? {
-            guard type == StorageServiceProtoStorageRecordType.groupv1.rawValue else { return nil }
-            guard let groupV1 = record.groupV1 else {
+            guard case .groupv1 = type else { return nil }
+            guard case .groupV1(let record) = record.record else {
                 owsFailDebug("unexpectedly missing group v1 record")
                 return nil
             }
-            return groupV1
+            return record
         }
 
         public var groupV2Record: StorageServiceProtoGroupV2Record? {
-            guard type == StorageServiceProtoStorageRecordType.groupv2.rawValue else { return nil }
-            guard let groupV2 = record.groupV2 else {
+            guard case .groupv2 = type else { return nil }
+            guard case .groupV2(let record) = record.record else {
                 owsFailDebug("unexpectedly missing group v2 record")
                 return nil
             }
-            return groupV2
+            return record
+        }
+
+        public var accountRecord: StorageServiceProtoAccountRecord? {
+            guard case .account = type else { return nil }
+            guard case .account(let record) = record.record else {
+                owsFailDebug("unexpectedly missing account record")
+                return nil
+            }
+            return record
         }
 
         public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) throws {
-            let storageRecord = StorageServiceProtoStorageRecord.builder(type: UInt32(StorageServiceProtoStorageRecordType.contact.rawValue))
-            storageRecord.setContact(contact)
+            let storageRecord = StorageServiceProtoStorageRecord.builder()
+            storageRecord.setRecord(.contact(contact))
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 
         public init(identifier: StorageIdentifier, groupV1: StorageServiceProtoGroupV1Record) throws {
-            let storageRecord = StorageServiceProtoStorageRecord.builder(type: UInt32(StorageServiceProtoStorageRecordType.groupv1.rawValue))
-            storageRecord.setGroupV1(groupV1)
+            let storageRecord = StorageServiceProtoStorageRecord.builder()
+            storageRecord.setRecord(.groupV1(groupV1))
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 
         public init(identifier: StorageIdentifier, groupV2: StorageServiceProtoGroupV2Record) throws {
-            let storageRecord = StorageServiceProtoStorageRecord.builder(type: UInt32(StorageServiceProtoStorageRecordType.groupv2.rawValue))
-            storageRecord.setGroupV2(groupV2)
+            let storageRecord = StorageServiceProtoStorageRecord.builder()
+            storageRecord.setRecord(.groupV2(groupV2))
+            self.init(identifier: identifier, record: try storageRecord.build())
+        }
+
+        public init(identifier: StorageIdentifier, account: StorageServiceProtoAccountRecord) throws {
+            let storageRecord = StorageServiceProtoStorageRecord.builder()
+            storageRecord.setRecord(.account(account))
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 
@@ -288,9 +312,14 @@ public struct StorageService {
 
             let itemsProto = try StorageServiceProtoStorageItems.parseData(response.data)
 
+            let keyToIdentifier = Dictionary(uniqueKeysWithValues: keys.map { ($0.data, $0) })
+
             return try itemsProto.items.map { item in
                 let encryptedItemData = item.value
-                let itemIdentifier = StorageIdentifier(data: item.key)
+                guard let itemIdentifier = keyToIdentifier[item.key] else {
+                    owsFailDebug("missing identifier for fetched item")
+                    throw StorageError.assertion
+                }
                 let itemData: Data
                 do {
                     itemData = try KeyBackupService.decrypt(
@@ -442,7 +471,7 @@ public extension StorageService {
         let testNames = ["abc", "def", "ghi", "jkl", "mno"]
         var recordsInManifest = [StorageItem]()
         for i in 0...4 {
-            let identifier = StorageService.StorageIdentifier.generate()
+            let identifier = StorageService.StorageIdentifier.generate(type: .contact)
 
             let contactRecordBuilder = StorageServiceProtoContactRecord.builder()
             contactRecordBuilder.setServiceUuid(testNames[i])
@@ -457,20 +486,20 @@ public extension StorageService {
         // Fetch Existing
         fetchLatestManifest().map { response in
             let previousVersion: UInt64
-            var existingKeys: [Data]?
+            var existingKeys: [StorageIdentifier]?
             switch response {
             case .latestManifest(let latestManifest):
                 previousVersion = latestManifest.version
-                existingKeys = latestManifest.keys
+                existingKeys = latestManifest.keys.map { StorageIdentifier(data: $0.data, type: $0.type ?? .unknown) }
             case .noNewerManifest, .noExistingManifest:
                 previousVersion = ourManifestVersion
             }
 
             // set keys
             let newManifestBuilder = StorageServiceProtoManifestRecord.builder(version: ourManifestVersion)
-            newManifestBuilder.setKeys(recordsInManifest.map { $0.identifier.data })
+            newManifestBuilder.setKeys(recordsInManifest.map { try! $0.identifier.buildRecord() })
 
-            return (try! newManifestBuilder.build(), existingKeys?.map { StorageIdentifier(data: $0) } ?? [])
+            return (try! newManifestBuilder.build(), existingKeys ?? [])
 
         // Update or create initial manifest with test data
         }.then { latestManifest, deletedKeys in
@@ -488,7 +517,7 @@ public extension StorageService {
                 throw StorageError.assertion
             }
 
-            guard Set(latestManifest.keys) == Set(identifiersInManfest.map { $0.data }) else {
+            guard Set(latestManifest.keys.map { $0.data }) == Set(identifiersInManfest.map { $0.data }) else {
                 owsFailDebug("manifest should only contain our test keys")
                 throw StorageError.assertion
             }
@@ -543,7 +572,7 @@ public extension StorageService {
 
         // Fetch a contact that doesn't exist
         }.then {
-            fetchItem(for: .generate())
+            fetchItem(for: .generate(type: .contact))
         }.map { item in
             guard item == nil else {
                 owsFailDebug("this contact should not exist")
@@ -584,12 +613,12 @@ public extension StorageService {
         }.map {
             let oldManifestBuilder = StorageServiceProtoManifestRecord.builder(version: 0)
 
-            let identifier = StorageIdentifier.generate()
+            let identifier = StorageIdentifier.generate(type: .contact)
 
             let recordBuilder = StorageServiceProtoContactRecord.builder()
             recordBuilder.setServiceUuid(testNames[0])
 
-            oldManifestBuilder.setKeys([identifier.data])
+            oldManifestBuilder.setKeys([try! identifier.buildRecord()])
 
             return (try! oldManifestBuilder.build(), try! StorageItem(identifier: identifier, contact: try! recordBuilder.build()))
         }.then { oldManifest, item in
@@ -616,3 +645,5 @@ public extension StorageService {
 }
 
 #endif
+
+extension StorageServiceProtoManifestRecordKeyType: Codable {}

@@ -771,6 +771,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }];
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+    [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
 }
 
 

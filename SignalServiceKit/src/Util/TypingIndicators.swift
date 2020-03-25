@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -122,6 +122,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
         syncManager.sendConfigurationSyncMessage()
 
+        SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+
         NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }
 
@@ -141,8 +143,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
     @objc
     public func areTypingIndicatorsEnabled() -> Bool {
-        AssertIsOnMainThread()
-
         return serialQueue.sync { _areTypingIndicatorsEnabled }
     }
 

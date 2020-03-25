@@ -1030,7 +1030,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [selectedThread archiveThreadWithTransaction:transaction];
+        [selectedThread archiveThreadAndUpdateStorageService:YES transaction:transaction];
     }];
     [self updateViewState];
 }
@@ -1054,7 +1054,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [selectedThread unarchiveThreadWithTransaction:transaction];
+        [selectedThread unarchiveThreadAndUpdateStorageService:YES transaction:transaction];
     }];
     [self updateViewState];
 }
@@ -1638,10 +1638,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         switch (self.conversationListMode) {
             case ConversationListMode_Inbox:
-                [thread archiveThreadWithTransaction:transaction];
+                [thread archiveThreadAndUpdateStorageService:YES transaction:transaction];
                 break;
             case ConversationListMode_Archive:
-                [thread unarchiveThreadWithTransaction:transaction];
+                [thread unarchiveThreadAndUpdateStorageService:YES transaction:transaction];
                 break;
         }
     }];

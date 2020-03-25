@@ -131,7 +131,9 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
  *
  *  @param transaction Database transaction.
  */
-- (void)archiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)archiveThreadAndUpdateStorageService:(BOOL)updateStorageService
+                                 transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(archiveThread(updateStorageService:transaction:));
 
 - (void)softDeleteThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -140,7 +142,9 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
  *
  *  @param transaction Database transaction.
  */
-- (void)unarchiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)unarchiveThreadAndUpdateStorageService:(BOOL)updateStorageService
+                                   transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(unarchiveThread(updateStorageService:transaction:));
 
 - (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(removeAllThreadInteractions(transaction:));

@@ -29,6 +29,7 @@ public class SSKPreferences: NSObject {
     public static func setAreLinkPreviewsEnabledAndSendSyncMessage(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
         setAreLinkPreviewsEnabled(newValue, transaction: transaction)
         SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
+        SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
     @objc

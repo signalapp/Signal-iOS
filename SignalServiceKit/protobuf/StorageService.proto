@@ -2,25 +2,16 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-// iOS - since we use a modern proto-compiler, we must specify
-// the legacy proto format.
-syntax = "proto2";
+syntax = "proto3";
 
 // iOS - package name determines class prefix
 package StorageServiceProtos;
 
 message StorageItem {
   // @required
-  optional bytes key   = 1;  // Randomly generated 16-byte value
+  bytes key   = 1;  // Randomly generated 16-byte value
   // @required
-  optional bytes value = 2;  // Encrypted serialized bytes
-}
-
-message StorageManifest {
-  // @required
-  optional uint64 version = 1; // Monotonically increasing value
-  // @required
-  optional bytes  value   = 2; // Encrypted serialized bytes
+  bytes value = 2;  // Encrypted serialized bytes
 }
 
 message StorageItems {
@@ -28,76 +19,98 @@ message StorageItems {
                                   // keys that were found
 }
 
+message StorageManifest {
+  // @required
+  uint64 version = 1; // Monotonically increasing value
+  // @required
+  bytes  value   = 2; // Encrypted ManifestRecord bytes
+}
+
 message ReadOperation {
   repeated bytes readKey = 1;
 }
 
 message WriteOperation {
-  optional StorageManifest manifest   = 1;
+           StorageManifest manifest   = 1;
   repeated StorageItem     insertItem = 2;
   repeated bytes           deleteKey  = 3;
-  optional bool            deleteAll  = 4;
+           bool            deleteAll  = 4;
 }
 
-message StorageRecord {
-  enum Type {
-    UNKNOWN = 0;
-    CONTACT = 1;
-    GROUPV1 = 2;
-    GROUPV2 = 3;
+message ManifestRecord {
+  message Key {
+    enum Type {
+      UNKNOWN = 0;
+      CONTACT = 1;
+      GROUPV1 = 2;
+      GROUPV2 = 3;
+      ACCOUNT = 4;
+    }
+
+    // @required
+    bytes data = 1;
+    // @required
+    Type  type = 2;
   }
 
   // @required
-  optional uint32        type    = 1;
-  optional ContactRecord contact = 2;
-  optional GroupV1Record groupV1 = 3;
-  optional GroupV2Record groupV2 = 4;
+           uint64 version = 1;
+  repeated Key    keys    = 2;
+}
+
+message StorageRecord {
+  oneof record {
+    ContactRecord contact = 1;
+    GroupV1Record groupV1 = 2;
+    GroupV2Record groupV2 = 3;
+    AccountRecord account = 4;
+  }
 }
 
 message ContactRecord {
-  message Identity {
-    enum State {
-      DEFAULT    = 0;
-      VERIFIED   = 1;
-      UNVERIFIED = 2;
-    }
-
-    optional bytes key   = 1;
-    optional State state = 2;
+  enum IdentityState {
+    DEFAULT    = 0;
+    VERIFIED   = 1;
+    UNVERIFIED = 2;
   }
 
-  message Profile {
-    optional string givenName  = 1;
-    optional bytes  key        = 2;
-    optional string username   = 3;
-    optional string familyName = 4;
-  }
-
-  optional string   serviceUuid = 1;
-  optional string   serviceE164 = 2;
-  optional Profile  profile     = 3;
-  optional Identity identity    = 4;
-  optional bool     blocked     = 5;
-  optional bool     whitelisted = 6;
-  optional string   nickname    = 7;
+  string        serviceUuid   = 1;
+  string        serviceE164   = 2;
+  bytes         profileKey    = 3;
+  bytes         identityKey   = 4;
+  IdentityState identityState = 5;
+  string        givenName     = 6;
+  string        familyName    = 7;
+  string        username      = 8;
+  bool          blocked       = 9;
+  bool          whitelisted   = 10;
+  bool          archived      = 11;
 }
 
 message GroupV1Record {
   // @required
-  optional bytes id          = 1;
-  optional bool  blocked     = 2;
-  optional bool  whitelisted = 3;
+  bytes id          = 1;
+  bool  blocked     = 2;
+  bool  whitelisted = 3;
+  bool  archived    = 4;
 }
 
 message GroupV2Record {
   // @required
-  optional bytes masterKey   = 1;
-  optional bool  blocked     = 2;
-  optional bool  whitelisted = 3;
+  bytes masterKey   = 1;
+  bool  blocked     = 2;
+  bool  whitelisted = 3;
+  bool  archived    = 4;
 }
 
-message ManifestRecord {
-  // @required
-  optional uint64 version  = 1;
-  repeated bytes  keys     = 2;
+message AccountRecord {
+  bytes  profileKey             = 1;
+  string givenName              = 2;
+  string familyName             = 3;
+  string avatarUrl              = 4;
+  bool   noteToSelfArchived     = 5;
+  bool   readReceipts           = 6;
+  bool   sealedSenderIndicators = 7;
+  bool   typingIndicators       = 8;
+  bool   linkPreviews           = 9;
 }

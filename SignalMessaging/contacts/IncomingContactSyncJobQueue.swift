@@ -307,7 +307,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             let inboxSortOrder = contactDetails.inboxSortOrder ?? UInt32.max
             newThreads.append((threadId: contactThread.uniqueId, sortOrder: inboxSortOrder))
             if let isArchived = contactDetails.isArchived, isArchived == true {
-                contactThread.archiveThread(with: transaction)
+                contactThread.archiveThread(updateStorageService: false, transaction: transaction)
             }
         } else if threadDidChange {
             contactThread.anyOverwritingUpdate(transaction: transaction)

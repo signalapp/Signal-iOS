@@ -42,6 +42,13 @@ NS_ASSUME_NONNULL_BEGIN
         wasLocallyInitiated:(BOOL)wasLocallyInitiated
                 transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)setProfileGivenName:(nullable NSString *)firstName
+                 familyName:(nullable NSString *)lastName
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+                 forAddress:(SignalServiceAddress *)address
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                transaction:(SDSAnyWriteTransaction *)transaction;
+
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;

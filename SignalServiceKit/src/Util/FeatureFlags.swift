@@ -177,7 +177,8 @@ public class FeatureFlags: NSObject {
     @objc
     public static let multiRing: Bool = false
 
-    fileprivate static let groupsV2 = build.includes(.dev) && !isUsingProductionService
+    @objc
+    public static let groupsV2 = build.includes(.dev) && !isUsingProductionService
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.

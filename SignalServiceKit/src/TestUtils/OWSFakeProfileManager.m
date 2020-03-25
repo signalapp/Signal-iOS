@@ -89,6 +89,16 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
+- (void)setProfileGivenName:(nullable NSString *)firstName
+                 familyName:(nullable NSString *)lastName
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+                 forAddress:(nonnull SignalServiceAddress *)address
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
