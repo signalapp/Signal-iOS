@@ -42,7 +42,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     
     private lazy var subtitleLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        result.textColor = Colors.text
         result.font = .systemFont(ofSize: Values.smallFontSize)
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
@@ -131,7 +131,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         }()
         subtitleLabel.text = {
             switch mode {
-            case .master: return NSLocalizedString("Open Session on your secondary device and tap \"Link to an existing account\"", comment: "")
+            case .master: return NSLocalizedString("Download Session on your other device and tap \"Link to an existing account\" at the bottom of the landing screen. If you have an existing account on your other device already you will have to delete that account first.", comment: "")
             case .slave: return NSLocalizedString("Please check that the words below match those shown on your other device", comment: "")
             }
         }()
