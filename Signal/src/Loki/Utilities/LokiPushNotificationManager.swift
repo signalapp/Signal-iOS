@@ -54,7 +54,7 @@ final class LokiPushNotificationManager : NSObject {
         let now = Date().timeIntervalSince1970
         // Send token to Loki server
         let parameters = [ "token" : hexEncodedToken,
-                           "pubkey": pubkey]
+                           "pubKey": pubkey]
         #if DEBUG
         let url = URL(string: "https://dev.apns.getsession.org/register")!
         #else
