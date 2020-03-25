@@ -26,14 +26,14 @@
 "ACCESSIBILITY_LABEL_STICKER" = "Adhesiu";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Trucada Signal";
+"ACTION_AUDIO_CALL" = "Trucada del Signal";
 
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Convida al Signal";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Envieu-li un missatge";
+"ACTION_SEND_MESSAGE" = "Envia-li un missatge";
 
 /* Label for 'share contact' button. */
 "ACTION_SHARE_CONTACT" = "Comparteix el contacte";
@@ -896,7 +896,7 @@
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Missatges efímers";
 
-/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Els missatges d'aquest xat desapareixeran en %@.";
 
 /* subheading in conversation settings */
@@ -960,10 +960,10 @@
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirmeu el vostre PIN.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "No s'ha pogut desactivar el bloqueig de registre.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "No s'ha pogut desactivar el registre segur.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "No s'ha pogut activar el bloqueig de registre.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "No s'ha pogut activar el registre segur.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "Desactiva";
@@ -981,19 +981,19 @@
 "ENABLE_2FA_VIEW_PIN_TOO_LONG" = "El PIN no ha de superar els 20 dígits.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "El PIN ha de tenir un mínim de 4 dígits.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "El PIN ha de tenir més de 4 dígits.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Introduïu un PIN com a Pany de Registre. Se us demanarà la pròxima vegada que registreu aquest número de telèfon al Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Introduïu un PIN de Registre Segur. Se us demanarà la pròxima vegada que registreu aquest número de telèfon al Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Per a més seguretat, activeu el PIN com a Pany de Registre, que se us demanarà quan vullgueu tornar a registrar aquest número de telèfon al Signal.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Per a més seguretat, activeu el PIN de Registre Segur, que se us demanarà quan vulgueu tornar a registrar aquest número de telèfon al Signal.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "S'ha activat el Pany de Registre. Caldrà que introduïu el PIN quan torneu a registrar el número de telèfon al Signal.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "S'ha activat el Registre Segur. Caldrà que introduïu el PIN quan torneu a registrar el número de telèfon al Signal.";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Pany de Registre";
+"ENABLE_2FA_VIEW_TITLE" = "Registre Segur";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Ocupat";
@@ -1002,7 +1002,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Ha fallat.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "Les darreres novetats del Signal no funcionaran en aquesta versió d'iOS. Si us plau, actualitzeu el dispositiu per rebre les futures actualitzacions del Signal.";
+"END_OF_LIFE_OS_WARNING" = "Les darreres característiques del Signal no funcionaran en aquesta versió de l'iOS. Actualitzeu el dispositiu per a rebre les futures actualitzacions del Signal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "No s'ha pogut accedir als contactes.";
@@ -1014,31 +1014,31 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "No s'ha pogut enviar el missatge.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Impossible enviar per dades prekey massa antigues.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "No es pot enviar per dades «prekey» massa antigues.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "No s'ha pogut enviar el missatge perquè heu blocat l'usuari.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal no s'ha pogut conectar a Internet. Torna-ho a intentar.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "El Signal no s'ha pogut connectar a Internet. Torneu a provar-ho.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Ha fallat l'enviament del missatge, no hi ha recipients vàlids.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "No s'ha pogut enviar el missatge, no hi ha destinataris vàlids.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Ha fallat la xarxa.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Ha fallat la sol·licitud de xarxa.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Ha expirat l'operació de xarxa";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Ha vençut la sol·licitud de xarxa.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Resposta invàlida del servei";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Resposta del servei no vàlida.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Aquest dispositiu ja no està registrat amb el número de telèfon. Torneu a instal·lar el Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Aquest dispositiu ja no està registrat amb el vostre número. Torneu a instal·lar el Signal.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Error del servidor. Proveu de nou més tard.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Error del servidor. Torneu a provar-ho més tard.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "S'ha produït un error desconegut.";
@@ -1050,25 +1050,25 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Ha fallat la baixada de l'adjunt.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Error amb el fitxer adjunt. Torna'l a demanar després d'actualitzar Signal a la darrera versió.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Error amb el fitxer adjunt. Demaneu que actualitzin la seva versió del Signal i us el tornen a enviar.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Rebut un missatge duplicat.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "S'ha rebut un missatge duplicat.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clau del destinatari no és vàlida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "El missatge rebut està desincronitzat.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "El missatge rebut no està sincronitzat.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Rebut un missatge que no és compatible amb aquesta versió.";
+"ERROR_MESSAGE_INVALID_VERSION" = "El missatge rebut no és compatible amb aquesta versió.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Cap sessió disponible per a contactar.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Els números de seguretat han canviat.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "El número de seguretat ha canviat.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "El número de seguretat amb %@ ha canviat.";
@@ -1077,46 +1077,46 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "S'ha produït un error desconegut.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Els números de seguretat han canviat.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "El número de seguretat ha canviat.";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "El vostre dispositiu ja no està enllaçat. Torneu-lo a enllaçar per enviar més missatges.";
+"ERROR_SENDING_DELINKED" = "El vostre dispositiu ja no està enllaçat. Torneu a enllaçar-lo per a enviar més missatges.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "El vostre dispositiu ja no està registrat. Registreu-vos per enviar més missatges.";
+"ERROR_SENDING_DEREGISTERED" = "El vostre dispositiu ja no està registrat. Registreu-vos per a enviar més missatges.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "La versió del Signal ha caducat. Si us plau, actualitzeu-lo per enviar missatges.";
+"ERROR_SENDING_EXPIRED" = "La versió del Signal ha vençut. Actualitzeu-lo per a enviar missatges.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Usuari no registrat: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "La versió del Signal ha caducat! Els missatges ja no s'enviaran correctament. Toqueu per actualitzar-lo a la versió més recent.";
+"EXPIRATION_ERROR" = "La versió del Signal ha vençut! Els missatges ja no s'enviaran correctament. Toqueu per a actualitzar-lo a la versió més recent.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "La versió del Signal caducarà d'aquí a %d dies. Toqueu per a actualitzar-la a la versió més recent.";
+"EXPIRATION_WARNING_SOON" = "La versió del Signal vencerà d'aquí %d dies. Toqueu per a actualitzar-la a la versió més recent.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "La versió del Signal caducarà avui. Toqueu per actualitzar-la a la versió més recent.";
+"EXPIRATION_WARNING_TODAY" = "La versió del Signal venç avui. Toqueu per actualitzar-la a la versió més recent.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Massa errors amb aquest contacte. Torna-ho a intentar més tard";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Massa errors amb aquest contacte. Torneu a provar-ho més tard.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "El codi de seguretat amb %@ ha canviat recentment. Potser voleu comprovar-lo abans de tornar a enviar aquest missatge.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "El número de seguretat amb %@ ha canviat fa poc. Potser voleu comprovar-lo abans de tornar a enviar aquest missatge.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "No s'ha pogut verificar els números.";
+"FAILED_VERIFICATION_TITLE" = "No s'ha pogut verificar el número de seguretat!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marca com a verificat";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reinicialitza la sessió";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Restableix la sessió";
 
 /* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Acaba de crear el grup";
+"FINISH_GROUP_CREATION_LABEL" = "Acaba la creació del grup";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Reenvia el contacte";
@@ -1125,70 +1125,148 @@
 "FORWARD_MESSAGE" = "Reenvia el missatge";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "No teniu contingut en aquesta conversa.";
+"GALLERY_TILES_EMPTY_GALLERY" = "No teniu cap fitxer en aquesta conversa.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Es carrega contingut nou...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Es carreguen els recents...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Es carregant contingut antic...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Es carreguen els antics...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Fitxer adjunt";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Ha fallat obtenir el GIF demanat. Comproveu que estigueu en línia.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "No s'ha pogut obtenir el GIF. Comproveu que estigueu en línia.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "S'ha produït un error desconegut.";
 
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Error descarregant el GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "No s'ha pogut triar el GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Si us plau, escriviu el que cerqueu.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Si us plau, introduïu una cerca.";
 
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Cerca GIF";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Torneu-ho a intentar.";
+"GIF_VIEW_SEARCH_ERROR" = "Error. Torneu a intentar-ho.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "No hi ha cap resultat.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Escriviu el que cerqueu.";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Introduïu una cerca";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "Aquesta versió del Signal inclou optimitzacions de bases de dades i millores de rendiment. És possible que hàgiu d’obrir l’aplicació per completar el procés.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Aquesta versió del Signal inclou optimitzacions de la base de dades i millores de rendiment. És possible que hàgiu d’obrir l’aplicació per a completar el procés.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "S'optimitza la base de dades";
 
-/* conversation history entry */
-"GROUP_CREATED" = "S'ha creat el grup.";
+/* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
 
-/* conversation history entry when the local user created a group */
-"GROUP_CREATED_BY_LOCAL_USER" = "Sou el creador del grup.";
+/* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed who can edit group info to “%@“.";
 
-/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+/* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
+
+/* Description of the 'admins only' access level. */
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
+
+/* Description of the 'all users' access level. */
+"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+
+/* Description of the 'all members' access level. */
+"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+
+/* Description of the 'unknown' access level. */
+"GROUP_ACCESS_LEVEL_UNKNOWN" = "Desconegut";
+
+/* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+
+/* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed who can edit group membership to “%@“.";
+
+/* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+
+/* Error indicating that a member cannot be added to a group. */
+"GROUP_CANNOT_ADD_INVALID_MEMBER" = "This user cannot be added to the group.";
+
+/* Message indicating that group was created by the local user. */
+"GROUP_CREATED_BY_LOCAL_USER" = "Heu creat el grup.";
+
+/* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ us ha afegit al grup.";
+
+/* Message indicating that group was created by an unknown user. */
+"GROUP_CREATED_BY_UNKNOWN_USER" = "Group was created.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "No tots els membres s'han pogut afegir al grup. Toqueu per tornar a provar-ho.";
 
+/* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+
+/* Message indicating that the local user was granted administrator role. */
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+
+/* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
+
+/* Message indicating that the local user accepted an invite to the group. */
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "You accepted an invitation to the group.";
+
+/* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "You accepted an invitation to the group from %@.";
+
+/* Message indicating that the local user declined an invite to the group. */
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "You declined an invitation to the group.";
+
+/* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "You declined an invitation to the group from %@.";
+
+/* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
+
+/* Message indicating that the local user's invite was revoked by an unknown user. */
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
+
+/* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+
+/* Message indicating that the local user was invited to the group. */
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+
+/* Message indicating that the local user has joined the group. */
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+
+/* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+
+/* Message indicating that the local user was removed from the group by an unknown user. */
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+
+/* Message indicating that the local user had their administrator role revoked. */
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+
+/* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Gestió del grup";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = "%@ ha abandonat el grup.";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Truca";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Esborra les verificacions per tothom";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Esborra totes les verificacions";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Això esborrarà la verificació de tots els membres del grup el número dels quals hagin canviat des que els vau verificar.";
@@ -1202,38 +1280,152 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Missatge";
 
-/* conversation history entry */
+/* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+
+/* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+
+/* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+
+/* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+
+/* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+
+/* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+
+/* Message indicating that a remote user has declined their invite. */
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+
+/* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+
+/* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+
+/* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+
+/* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+
+/* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+
+/* Message indicating that a single remote user's invite was revoked. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
+
+/* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+
+/* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+
+/* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+
+/* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+
+/* Message indicating that a single remote user was invited to the group. */
+"GROUP_REMOTE_USER_INVITED_1" = "1 person was invited to the group.";
+
+/* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+
+/* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+
+/* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+
+/* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+
+/* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ s'ha unit al grup.";
+
+/* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ left the group.";
+
+/* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+
+/* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+
+/* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+
+/* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+
+/* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+
+/* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "S'ha actualitzat el grup.";
 
-/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
-"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ i %@ s'han afegit al grup.";
+/* Message indicating that the group's avatar was removed. */
+"GROUP_UPDATED_AVATAR_REMOVED" = "The group avatar was removed.";
 
-/* conversation history entry. Embeds the {{added user's name}} */
-"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ s'ha afegit al grup.";
+/* Message indicating that the group's avatar was removed. */
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the avatar.";
 
-/* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "S'ha suprimit l'avatar del grup.";
+/* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the avatar.";
 
-/* conversation history entry */
+/* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "S'ha actualitzat l'avatar del grup.";
 
-/* conversation history entry. */
+/* Message indicating that the group's avatar was changed. */
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the avatar.";
+
+/* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the avatar.";
+
+/* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Heu actualitzat el grup.";
 
-/* conversation history entry. Embeds {{remote user's name}} */
+/* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ha actualitzat el grup.";
 
-/* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "S'ha suprimit el nom.";
+/* Message indicating that the group's name was removed. */
+"GROUP_UPDATED_NAME_REMOVED" = "The group name was removed.";
 
-/* conversation history entry. Embeds {{group name}} */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "El nom del grup ara és %@.";
+/* Message indicating that the group's name was removed by the local user. */
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "You removed the group name.";
 
-/* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Se us ha tornat a afegir al grup.";
+/* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group name.";
 
-/* No comment provided by engineer. */
+/* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%@“.";
+
+/* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@“.";
+
+/* Message indicating that the group's name was changed. Embeds {{new group name}}. */
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "El nom del grup ara és «%@».";
+
+/* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Heu abandonat el grup.";
+
+/* Error indicating that an error occurred while accepting an invite. */
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
+
+/* Label for 'block group' button in group invite view. */
+"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+
+/* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
+
+/* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Converses arxivades";
@@ -1610,6 +1802,9 @@
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Heu de compartir el perfil per continuar la conversa a %@.";
 
+/* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
+
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Més informació";
 
@@ -1748,6 +1943,9 @@
 /* Error indicating that a new group could not be created. */
 "NEW_GROUP_CREATION_FAILED" = "No s'ha pogut crear el grup nou.";
 
+/* Error indicating that a new group could not be created due to network connectivity problems. */
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "New group could not be created. Check your internet connection and try again.";
+
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Grup nou";
 
@@ -1762,6 +1960,9 @@
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Altres usuaris";
+
+/* The placeholder text for the search input in the 'create new group' view. */
+"NEW_GROUP_SEARCH_PLACEHOLDER" = "Cerca";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Voleu descartar aquests canvis?";
@@ -1946,10 +2147,10 @@
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Configuració";
 
-/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+/* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha desactivat els missatges efímers.";
 
-/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+/* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha establert els missatges efímers en %@.";
 
 /* Label warning the user that the Signal service may be down. */
@@ -3143,6 +3344,12 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Podeu demanar al remitent que us torni a enviar aquest missatge ara que useu una versió actualitzada del Signal.";
 
+/* Info Message when an unknown user disabled disappearing messages. */
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";
+
+/* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
+
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Desconegut";
 
@@ -3181,6 +3388,9 @@
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "No s'ha pogut actualitzar el grup.";
+
+/* Error indicating that a group could not be updated due to network connectivity problems. */
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creeu el PIN";
@@ -3299,11 +3509,11 @@
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completeu la configuració al Signal Desktop.";
 
-/* Info Message when you disable disappearing messages */
+/* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Heu desactivat els missatges efímers.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Heu de completar la configuració abans de continuar.";
 
-/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Heu establert els missatges efímers en %@.";

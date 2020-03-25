@@ -78,13 +78,13 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "오류";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "데이터베이스를 불러올 수 없음";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "최신 버전의 Signal로 업데이트해 주세요.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "알 수 없는 데이터베이스 버전";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "이름 입력";
@@ -129,10 +129,10 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "자막";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "첨부 파일 내보내기에 실패하였습니다.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Failed to Save";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "저장에 실패했습니다.";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "파일 종류: %@";
@@ -186,7 +186,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "첨부 파일이 비어 있음";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "보낼 미디어를 선택";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "카메라";
@@ -312,13 +312,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "차단 해제";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "당신은 이제 서로 메시지를 전송하고 연락할 수 있습니다.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "그룹에 있는 사용자가 다시 그룹에 초대할 수 있게 됩니다.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "그룹 멤버는 당신을 그룹에 다시 초대 가능합니다. ";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "이 그룹을 차단을 해제하겠습니까?";
@@ -360,7 +360,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "차단된 사용자는 나에게 전화 또는 메시지를 보낼 수 없습니다.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "보기";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "계속";
@@ -516,7 +516,7 @@
 "COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "작성하기";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "연락처";
@@ -525,7 +525,7 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "그룹";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Phone number search";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "휴대전화 번호 검색하기";
 
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "사용자 이름 검색";
@@ -651,19 +651,19 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
 
 /* button text */
-"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Try Again";
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "다시 시도해 보세요.";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "디버그 로그를 보내겠습니까?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "디버그 로그와 함께 보내기";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "디버그 로그를 제외하고 보내기";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "지도에서 열기";
@@ -684,19 +684,19 @@
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "다운로드";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "%@개 이상의 대화를 선택할 수 없습니다.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "그룹";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Recent Chats";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "최근 대화";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "대화 상대";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "수신자 선택";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "일치 결과 없음";
@@ -714,7 +714,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "이미 있는 연락처에 추가";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "시스템 연락처에 추가하기";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "이 그룹 차단";
@@ -771,7 +771,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "알림 켜기";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "연락처에 있는 사용자입니다.";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "이 그룹은 내 프로필을 볼 수 있습니다.";
@@ -896,7 +896,7 @@
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "사라지는 메시지";
 
-/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "%@ 뒤 이 대화의 메시지가 사라집니다.";
 
 /* subheading in conversation settings */
@@ -978,10 +978,10 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "번호가 일치하지 않습니다.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "20자리 이하의 PIN 번호를 입력해 주세요.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN must be at least 4 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "최소 4자리 이상의 PIN 번호를 입력해 주세요.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "등록 잠금 번호를 입력하세요. 이 전화번호로 Signal에 다시 등록할 때 이 번호를 입력해야 합니다.";
@@ -1166,23 +1166,101 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "데이터베이스 최적화 중";
 
-/* conversation history entry */
-"GROUP_CREATED" = "그룹 창조 완성.";
+/* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
 
-/* conversation history entry when the local user created a group */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+/* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed who can edit group info to “%@“.";
 
-/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+/* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
+
+/* Description of the 'admins only' access level. */
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
+
+/* Description of the 'all users' access level. */
+"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+
+/* Description of the 'all members' access level. */
+"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+
+/* Description of the 'unknown' access level. */
+"GROUP_ACCESS_LEVEL_UNKNOWN" = "알 수 없음";
+
+/* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+
+/* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed who can edit group membership to “%@“.";
+
+/* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+
+/* Error indicating that a member cannot be added to a group. */
+"GROUP_CANNOT_ADD_INVALID_MEMBER" = "This user cannot be added to the group.";
+
+/* Message indicating that group was created by the local user. */
+"GROUP_CREATED_BY_LOCAL_USER" = "그룹을 생성했습니다.";
+
+/* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+
+/* Message indicating that group was created by an unknown user. */
+"GROUP_CREATED_BY_UNKNOWN_USER" = "Group was created.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "모든 멤버를 그룹에 추가할 수 없었습니다. 탭하여 다시 시도하세요.";
 
+/* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+
+/* Message indicating that the local user was granted administrator role. */
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+
+/* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
+
+/* Message indicating that the local user accepted an invite to the group. */
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "You accepted an invitation to the group.";
+
+/* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "You accepted an invitation to the group from %@.";
+
+/* Message indicating that the local user declined an invite to the group. */
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "You declined an invitation to the group.";
+
+/* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "You declined an invitation to the group from %@.";
+
+/* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
+
+/* Message indicating that the local user's invite was revoked by an unknown user. */
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
+
+/* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+
+/* Message indicating that the local user was invited to the group. */
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+
+/* Message indicating that the local user has joined the group. */
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+
+/* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+
+/* Message indicating that the local user was removed from the group by an unknown user. */
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+
+/* Message indicating that the local user had their administrator role revoked. */
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+
+/* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "그룹 관리";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = "%@님이 그룹을 나감.";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "전화걸기";
@@ -1202,38 +1280,152 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "메시지";
 
-/* conversation history entry */
+/* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+
+/* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+
+/* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+
+/* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+
+/* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+
+/* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+
+/* Message indicating that a remote user has declined their invite. */
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+
+/* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+
+/* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+
+/* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+
+/* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+
+/* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+
+/* Message indicating that a single remote user's invite was revoked. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
+
+/* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+
+/* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+
+/* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+
+/* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+
+/* Message indicating that a single remote user was invited to the group. */
+"GROUP_REMOTE_USER_INVITED_1" = "1 person was invited to the group.";
+
+/* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+
+/* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+
+/* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+
+/* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+
+/* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ joined the group.";
+
+/* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ left the group.";
+
+/* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+
+/* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+
+/* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+
+/* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+
+/* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+
+/* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "그룹 업데이트됨.";
 
-/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
-"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ and %@ joined the group.";
+/* Message indicating that the group's avatar was removed. */
+"GROUP_UPDATED_AVATAR_REMOVED" = "The group avatar was removed.";
 
-/* conversation history entry. Embeds the {{added user's name}} */
-"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ joined the group.";
+/* Message indicating that the group's avatar was removed. */
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the avatar.";
 
-/* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Removed the group avatar.";
+/* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the avatar.";
 
-/* conversation history entry */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+/* Message indicating that the group's avatar was changed. */
+"GROUP_UPDATED_AVATAR_UPDATED" = "그룹 아이콘을 업데이트했습니다.";
 
-/* conversation history entry. */
+/* Message indicating that the group's avatar was changed. */
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the avatar.";
+
+/* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the avatar.";
+
+/* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "그룹을 갱신하였습니다.";
 
-/* conversation history entry. Embeds {{remote user's name}} */
+/* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
 
-/* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "Removed the name.";
+/* Message indicating that the group's name was removed. */
+"GROUP_UPDATED_NAME_REMOVED" = "The group name was removed.";
 
-/* conversation history entry. Embeds {{group name}} */
+/* Message indicating that the group's name was removed by the local user. */
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "You removed the group name.";
+
+/* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group name.";
+
+/* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%@“.";
+
+/* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@“.";
+
+/* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
 
-/* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Re-added you to the group.";
-
-/* No comment provided by engineer. */
+/* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "그룹에서 나갔습니다.";
+
+/* Error indicating that an error occurred while accepting an invite. */
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
+
+/* Label for 'block group' button in group invite view. */
+"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+
+/* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
+
+/* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "보관된 대화";
@@ -1245,7 +1437,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "검색";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+"HOME_VIEW_DRAFT_PREFIX" = "작성 중:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "%@ 등 이미 내가 아는 사람이 Signal을 사용하고 있습니다.";
@@ -1368,10 +1560,10 @@
 "KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "입력 바 활성화";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "GIF 검색으로 이동";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "새 그룹";
@@ -1380,10 +1572,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "새 메시지";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "다음 대화로 이동";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "이전 대화로 이동";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "검색";
@@ -1392,7 +1584,7 @@
 "KEY_COMMAND_SETTINGS" = "설정";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "스티커 보기";
 
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
@@ -1404,7 +1596,7 @@
 "LEAVE_GROUP_ACTION" = "그룹 나가기";
 
 /* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+"LEAVE_GROUP_FAILED" = "그룹 나가기 도중 오류가 발생했습니다.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "이 QR 코드는 올바르지 않습니다. 스캔하고자 하는 기기에 있는 QR 코드를 읽혔는지 다시 한 번 확인하세요.";
@@ -1443,10 +1635,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "그룹 멤버";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "이름, 주소로 검색";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "위치 선택";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "로깅";
@@ -1479,13 +1671,13 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "이번달";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "나중에 알림 받기";
 
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "메시지 내용 복사";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
@@ -1500,7 +1692,7 @@
 "MESSAGE_ACTION_REPLY" = "Reply to This Message";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "미디어 공유";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "메시지";
@@ -1509,16 +1701,16 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "새 메시지";
 
 /* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "File Size";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "파일 크기";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME 타입";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "전송됨";
 
 /* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "실패";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "읽음";
@@ -1530,10 +1722,10 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "보낸 시간:";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "건너뛰어짐";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploading";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "업로드 중";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
@@ -1548,7 +1740,7 @@
 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "보낸 시간:";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "파일명";
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "메시지";
@@ -1557,16 +1749,16 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "차단";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "차단하고 삭제하기";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "차단된 사용자는 당신에게 메시지를 보내거나 전화를 걸 수 없습니다.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ 사용자를 차단하시겠습니까?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "당신은 이 그룹에서 떠나며, 더 이상 메시지나 업데이트를 받을 수 없습니다.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
@@ -1575,19 +1767,19 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "삭제";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "이 대화는 당신의 모든 기기에서 삭제될 겁니다. ";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "대화를 삭제하시겠습니까?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "삭제하고 나가기";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "당신은 그룹을 떠날 것이며, 당신의 모든 기기에서 삭제될 겁니다.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "그룹을 삭제하고 나가시겠습니까?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "수락";
@@ -1609,6 +1801,9 @@
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+
+/* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "자세히 알아보기";
@@ -1635,7 +1830,7 @@
 "MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
 
 /* Toast indicating that a profile name has been created. */
-"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "당신의 프로필 이름이 저장되었습니다.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "전송됨";
@@ -1647,13 +1842,13 @@
 "MESSAGE_STATUS_FAILED" = "Sending failed.";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+"MESSAGE_STATUS_FAILED_SHORT" = "실패";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "읽음";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "건너뛰어짐";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "보내기 실패";
@@ -1665,7 +1860,7 @@
 "MESSAGE_STATUS_SENT" = "보낸 시간:";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading…";
+"MESSAGE_STATUS_UPLOADING" = "업로드 중...";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "새 메시지";
@@ -1674,16 +1869,16 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "이 사용자는 차단되어 있습니다.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "이 그룹의 멤버 1명을 차단했습니다";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "이 그룹을 차단했습니다";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
@@ -1692,7 +1887,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "탭하여 설정하기";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "새 메시지";
@@ -1704,22 +1899,22 @@
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal이 카메라 권한을 요청합니다.";
 
 /* Alert body indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "iOS 설정 앱에서 권한을 활성화할 수 있습니다. ";
 
 /* Alert title indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "iOS 설정 앱에서 권한을 활성화할 수 있습니다. ";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "더 이상 기기를 연결할 수 없습니다.";
 
 /* alert body: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
@@ -1737,7 +1932,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "전화번호로 추가";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "그룹 사진 설정하기";
 
 /* Accessibility label for the new group button */
 "NEW_GROUP_BUTTON_LABEL" = "Create a new group";
@@ -1748,11 +1943,14 @@
 /* Error indicating that a new group could not be created. */
 "NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
 
+/* Error indicating that a new group could not be created due to network connectivity problems. */
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "New group could not be created. Check your internet connection and try again.";
+
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "새 그룹";
 
 /* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Member";
+"NEW_GROUP_MEMBER_LABEL" = "멤버";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
@@ -1762,6 +1960,9 @@
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Other Users";
+
+/* The placeholder text for the search input in the 'create new group' view. */
+"NEW_GROUP_SEARCH_PLACEHOLDER" = "검색";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to discard these changes?";
@@ -1830,10 +2031,10 @@
 "ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "숫자 PIN 번호 입력하기";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "도움이 필요하신가요?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "틀린 번호";
@@ -1848,19 +2049,19 @@
 "ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "잠긴 계정에 대해 알아보기";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "계정 잠김";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad 등록하기";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "iPhone 연결하기";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
@@ -1946,10 +2147,10 @@
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "설정";
 
-/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+/* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@(이)가 사라지는 메시지 기능을 껐습니다.";
 
-/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+/* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ 님이 사라지는 메시지 시간을 %@로 설정했습니다";
 
 /* Label warning the user that the Signal service may be down. */
@@ -2229,7 +2430,7 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "당신의 프로필 이름이 저장되었습니다.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";
@@ -2376,7 +2577,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "번호를 잃어버렸습니다.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "도움이 필요하신가요?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
@@ -2400,7 +2601,7 @@
 "REGISTER_CONTACTS_WELCOME" = "환영합니다!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Try Again";
+"REGISTER_FAILED_TRY_AGAIN" = "다시 시도해 보세요.";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
@@ -2604,10 +2805,10 @@
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Other Contacts";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Recent Chats";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "최근 대화";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Send Again";
+"SEND_AGAIN_BUTTON" = "다시 보내기";
 
 /* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "발신";
@@ -2622,7 +2823,7 @@
 "SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "미디어 삭제하기";
 
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
@@ -2688,7 +2889,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
 
 /* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "Backup";
+"SETTINGS_BACKUP" = "백업";
 
 /* Label for 'backup now' button in the backup settings view. */
 "SETTINGS_BACKUP_BACKUP_NOW" = "Backup Now";
@@ -2964,7 +3165,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploading…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "업로드 중...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Unable to Prepare Attachment";
@@ -3051,7 +3252,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "이 대화에서 당신은 당신에게 노트를  적을 수 있습니다. 만약 아무 기기나 당신의 계정과 연동되어 있다면, 새 노트는 동기화될 것 입니다.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
@@ -3143,6 +3344,12 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
 
+/* Info Message when an unknown user disabled disappearing messages. */
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";
+
+/* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
+
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "알 수 없음";
 
@@ -3181,6 +3388,9 @@
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Group could not be updated.";
+
+/* Error indicating that a group could not be updated due to network connectivity problems. */
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "내 번호 생성";
@@ -3299,11 +3509,11 @@
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";
 
-/* Info Message when you disable disappearing messages */
+/* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "사라지는 메시지 기능을 껐습니다.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
 
-/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "사라지는 메시지 시간을 %@ 로 설정합니다";
