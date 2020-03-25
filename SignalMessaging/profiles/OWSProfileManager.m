@@ -557,6 +557,25 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 // key, adding all `group.recipientIds` to `whitelistedRecipientIds` here, would
                 // include Alice, and we'd rotate our profile key every time this method is called.
             }
+
+            // Treat all the members of every group that is whitelisted as if they were directly
+            // whitelisted, since they likely have access to our profile key. We don't explicitly
+            // whitelist group members because we don't want to automatically bypass message requests
+            // for 1:1 threads with every member of a group you've shared your profile in.
+            for (NSData *groupId in whitelistedGroupIds) {
+                TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+                if (!groupThread) {
+                    continue;
+                }
+                for (SignalServiceAddress *address in groupThread.groupModel.groupMembers) {
+                    if (address.phoneNumber) {
+                        [whitelistedPhoneNumbers addObject:address.phoneNumber];
+                    }
+                    if (address.uuidString) {
+                        [whitelistedUUIDS addObject:address.uuidString];
+                    }
+                }
+            }
         }];
 
         SignalServiceAddress *_Nullable localAddress = [self.tsAccountManager localAddress];
