@@ -17,6 +17,8 @@ public extension Notification.Name {
     public static let seedViewed = Notification.Name("seedViewed")
     // Interaction
     public static let dataNukeRequested = Notification.Name("dataNukeRequested")
+    // Device linking
+    public static let unexpectedDeviceLinkRequestReceived = Notification.Name("unexpectedDeviceLinkRequestReceived")
 }
 
 @objc public extension NSNotification {
@@ -37,4 +39,6 @@ public extension Notification.Name {
     @objc public static let seedViewed = Notification.Name.seedViewed.rawValue as NSString
     // Interaction
     @objc public static let dataNukeRequested = Notification.Name.dataNukeRequested.rawValue as NSString
+    // Device linking
+    @objc public static let unexpectedDeviceLinkRequestReceived = Notification.Name.unexpectedDeviceLinkRequestReceived.rawValue as NSString
 }

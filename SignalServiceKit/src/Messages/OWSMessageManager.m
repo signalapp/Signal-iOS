@@ -494,6 +494,9 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             } else if (slaveSignature != nil) { // Request
                 OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey
+                if (LKDeviceLinkingSession.current == nil) {
+                    [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.unexpectedDeviceLinkRequestReceived object:nil];
+                }
                 [LKDeviceLinkingSession.current processLinkingRequestFrom:slaveHexEncodedPublicKey to:masterHexEncodedPublicKey with:slaveSignature];
             }
         } else if (contentProto.syncMessage) {
