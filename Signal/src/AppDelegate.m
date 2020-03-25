@@ -587,7 +587,9 @@ static BOOL isInternalTestVersion = NO;
     }
 
     OWSLogInfo(@"Registered for push notifications with token: %@.", deviceToken);
-    [LKPushNotificationManager.shared registerWithToken:deviceToken];
+    //TODO: For normal push notification test
+    [LKPushNotificationManager.shared registerWithToken:deviceToken pubkey:self.tsAccountManager.localNumber];
+//    [LKPushNotificationManager.shared registerWithToken:deviceToken];
 //    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
@@ -1552,6 +1554,10 @@ static BOOL isInternalTestVersion = NO;
     __IOS_AVAILABLE(10.0)__TVOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)__OSX_AVAILABLE(10.14)
 {
     OWSLogInfo(@"");
+    if (notification.request.content.userInfo[@"remote"]) {
+        OWSLogInfo(@"[Loki] Ignore remote notifications when app is foreground.");
+        return;
+    }
     [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
         // We need to respect the in-app notification sound preference. This method, which is called
         // for modern UNUserNotification users, could be a place to do that, but since we'd still
