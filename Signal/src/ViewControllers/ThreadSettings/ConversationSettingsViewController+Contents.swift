@@ -615,15 +615,14 @@ extension ConversationSettingsViewController {
                                                  comment: "Label indicating that only administrators can update the group's attributes: name, avatar, etc.")
             }
             let cell = self.buildCellWithAccessoryLabel(icon: .settingsEditGroupAccess,
-                                                        itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ACCESS",
-                                                                                    comment: "Label for 'edit access' button in conversation settings view."),
+                                                        itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS",
+                                                                                    comment: "Label for 'edit attributes access' action in conversation settings view."),
                                                         accessoryText: accessStatus)
             cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "edit_group_access")
             return cell
             },
                                  actionBlock: { [weak self] in
-                                    // TODO: Show group access action sheet.
-                                    self?.showGroupAttributesView(editAction: .none)
+                                    self?.showGroupAttributesAccessView()
         }))
 
         return section

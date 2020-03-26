@@ -239,6 +239,16 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         shouldLeaveGroupDeclineInvite = true
     }
 
+    public func setAccessForMembers(_ value: GroupV2Access) {
+        assert(accessForMembers == nil)
+        accessForMembers = value
+    }
+
+    public func setAccessForAttributes(_ value: GroupV2Access) {
+        assert(accessForAttributes == nil)
+        accessForAttributes = value
+    }
+
     public func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken) {
         assert(self.newDisappearingMessageToken == nil)
         self.newDisappearingMessageToken = newDisappearingMessageToken

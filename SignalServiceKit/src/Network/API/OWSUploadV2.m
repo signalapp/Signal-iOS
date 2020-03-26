@@ -226,7 +226,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     return [OWSUploadV2 uploadObjcWithData:self.avatarData
                                 uploadForm:form
                              uploadUrlPath:uploadUrlPath
-                             progressBlock:progressBlock];
+                             progressBlock:nil];
 }
 
 @end

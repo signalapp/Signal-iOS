@@ -110,6 +110,10 @@ public protocol GroupsV2ChangeSet: AnyObject {
 
     func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole)
 
+    func setAccessForMembers(_ value: GroupV2Access)
+
+    func setAccessForAttributes(_ value: GroupV2Access)
+
     func setShouldAcceptInvite()
 
     func setShouldLeaveGroupDeclineInvite()
