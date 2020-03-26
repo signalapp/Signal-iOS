@@ -246,6 +246,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isIncoming && self.viewItem.isGroupThread) {
         [messageStackView addArrangedSubview:self.avatarViewSpacer];
         [self.avatarViewSpacer autoPinHeightToSuperview];
+
+        [self.swipeableContentView addSubview:self.avatarView];
+        [self.avatarView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:self.avatarViewSpacer];
+        [self.avatarView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarViewSpacer];
     }
 
     NSArray<UIView *> *arrangedMessageViews;
@@ -260,10 +264,6 @@ NS_ASSUME_NONNULL_BEGIN
     [messageStackView addSubview:self.reactionCountsView];
 
     if (self.isIncoming) {
-        [self.swipeableContentView addSubview:self.avatarView];
-        [self.avatarView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:self.avatarViewSpacer];
-        [self.avatarView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarViewSpacer];
-
         [self.reactionCountsView autoPinEdge:ALEdgeLeading
                                       toEdge:ALEdgeLeading
                                       ofView:self.messageView
