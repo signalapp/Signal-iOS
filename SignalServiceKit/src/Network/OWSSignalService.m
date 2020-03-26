@@ -194,6 +194,9 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
     sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
+    NSMutableSet<NSString *> *acceptableContentTypes = sessionManager.responseSerializer.acceptableContentTypes.mutableCopy;
+    [acceptableContentTypes addObject:@"text/plain"];
+    sessionManager.responseSerializer.acceptableContentTypes = acceptableContentTypes;
     return sessionManager;
 }
 
