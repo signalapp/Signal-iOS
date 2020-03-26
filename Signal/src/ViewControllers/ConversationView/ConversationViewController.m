@@ -733,6 +733,8 @@ typedef enum : NSUInteger {
     [self.cellMediaCache removeAllObjects];
     [self cancelReadTimer];
     [self dismissPresentedViewControllerIfNecessary];
+
+    [self dismissKeyBoard];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
