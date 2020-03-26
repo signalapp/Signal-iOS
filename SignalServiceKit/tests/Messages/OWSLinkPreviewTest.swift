@@ -305,8 +305,6 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
-    #endif
-
     func testLinkParsingWithRealData3() {
         let expectation = self.expectation(description: "link download and parsing")
 
@@ -486,6 +484,8 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
+
+    #endif
 
     // When using regular expressions to parse link titles, we need to use
     // String.utf16.count, not String.count in the range.

@@ -1048,10 +1048,7 @@ public class GroupManager: NSObject {
                 throw OWSAssertionError("Local user is not a member of the group.")
             }
 
-            let messageBuilder = TSOutgoingMessageBuilder(thread: groupThread)
-            messageBuilder.groupMetaMessage = .quit
-            let message = messageBuilder.build()
-            self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            sendGroupQuitMessage(inThread: groupThread, transaction: transaction)
 
             let hasMessages = groupThread.numberOfInteractions(with: transaction) > 0
             let infoMessagePolicy: InfoMessagePolicy = hasMessages ? .always : .never
@@ -1094,8 +1091,6 @@ public class GroupManager: NSObject {
             owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
             return
         }
-
-        sendGroupQuitMessage(inThread: groupThread, transaction: transaction)
 
         transaction.addAsyncCompletion {
             firstly {
@@ -1270,8 +1265,8 @@ public class GroupManager: NSObject {
         }
     }
 
-    public static func sendGroupQuitMessage(inThread groupThread: TSGroupThread,
-                                            transaction: SDSAnyWriteTransaction) {
+    private static func sendGroupQuitMessage(inThread groupThread: TSGroupThread,
+                                             transaction: SDSAnyWriteTransaction) {
 
         guard groupThread.groupModel.groupsVersion == .V1 else {
             return

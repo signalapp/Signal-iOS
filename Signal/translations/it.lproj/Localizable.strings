@@ -81,7 +81,7 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Impossibile caricare il database";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Per favore aggiorna all'ultima versione di Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Aggiorna all'ultima versione di Signal.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versione del database sconosciuta.";
@@ -132,7 +132,7 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Impossibile esportare l'allegato.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Salvataggio fallito";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Salvataggio non riuscito";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Formato file: %@";
@@ -153,7 +153,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Allegato";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download fallito. Premi per riprovare.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download non riuscito. Tocca per riprovare.";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Errore invio allegato";
@@ -213,7 +213,7 @@
 "ATTACHMENT_LABEL" = "Allegato";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Scelta del documento fallita.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Scelta del documento non riuscita.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Crea un archivio compresso di questo file o cartella e quindi prova a inviarlo.";
@@ -426,7 +426,7 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Rifiuta chiamata";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Clicca per abilitare la tua videocamera";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Fai clic per abilitare la tua videocamera";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Termina chiamata";
@@ -534,10 +534,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Puoi abilitare l'accesso ai contatti nelle impostazioni di iOS per vedere quali dei tuoi contatti è un utente Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Questo azzererà l'applicazione cancellando i messaggi e rimuovendo la tua registrazione dal server. L'applicazione si chiuderà una volta completato il processo.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Questo ripristinerà l'applicazione eliminando i messaggi e rimuovendo la tua registrazione dal server. L'applicazione si chiuderà una volta completato il processo.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Se sicuro di voler cancellare il tuo account?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Se sicuro di voler eliminare il tuo account?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ciò resetterà l'applicazione eliminando tutti i tuoi messaggi da questo dispositivo. Puoi sempre associarlo di nuovo al tuo telefono, ma ciò non ripristinerà i messaggi eliminati. L'app si chiuderà al termine di questo processo.";
@@ -882,7 +882,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registra nuovamente questo numero di telefono";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Dispositivo non più registrato. Il tuo numero di telefono potrebbe essere registrato con Signal su un altro dispositivo. Clicca per registrare di nuovo.";
+"DEREGISTRATION_WARNING" = "Dispositivo non più registrato. Il tuo numero di telefono potrebbe essere registrato con Signal su un altro dispositivo. Fai clic per registrare di nuovo.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Ultima attività: %@";
@@ -896,7 +896,7 @@
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Messaggi a scomparsa";
 
-/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "I messaggi in questa conversazione scompariranno dopo %@.";
 
 /* subheading in conversation settings */
@@ -999,10 +999,10 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Occupato";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Chiamata fallita.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Chiamata non riuscita.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "Le ultime funzionalità di Signal non funzioneranno in questa versione di iOS. Per favore aggiorna questo dispositivo per ricevere i futuri aggiornamenti di Signal.";
+"END_OF_LIFE_OS_WARNING" = "Le ultime funzionalità di Signal non funzioneranno in questa versione di iOS. Aggiorna questo dispositivo per ricevere i futuri aggiornamenti di Signal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Impossibile accedere ai contatti.";
@@ -1011,7 +1011,7 @@
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Impossibile salvare il video.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Invio messaggio fallito.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Invio messaggio non riuscito.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Impossibile inviare a causa di dati prekey non aggiornati.";
@@ -1023,10 +1023,10 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal non è in grado di connettersi ad Internet. Riprovare.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Invio messaggio fallito per mancanza di un valido destinatario.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Invio messaggio non riuscito per mancanza di destinatari validi.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Accesso alla rete fallito.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Accesso alla rete non riuscito.";
 
 /* Error indicating that a socket request timed out. */
 "ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "La richiesta di rete è scaduta.";
@@ -1059,7 +1059,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La chiave del destinatario non è valida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Il messaggio ricevuto è disallineato.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Il messaggio ricevuto non era sincronizzato.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Ricevuto un messaggio non compatibile con questa versione.";
@@ -1080,13 +1080,13 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Codice di sicurezza cambiato.";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Il tuo dispositivo non è più associato. Per favore riassocialo per inviare altri messaggi,";
+"ERROR_SENDING_DELINKED" = "Il tuo dispositivo non è più associato. Associalo nuovamente per inviare altri messaggi.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Il tuo dispositivo non è più registrato. Per favore registrati di nuovo per inviare altri messaggi.";
+"ERROR_SENDING_DEREGISTERED" = "Il tuo dispositivo non è più registrato. Registrati di nuovo per inviare altri messaggi.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "La tua versione di Signal è obsoleta. Per favore aggiornala per continuare a inviare messaggi.";
+"ERROR_SENDING_EXPIRED" = "La tua versione di Signal è obsoleta. Aggiornala per continuare a inviare messaggi.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Utente non registrato: %@";
@@ -1101,13 +1101,13 @@
 "EXPIRATION_WARNING_TODAY" = "La tua versione di Signal scade oggi. Premi per aggiornare alla versione più recente.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Troppi tentativi falliti con questo contatto. Riprovare più tardi.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Troppi tentativi non riusciti con questo contatto. Riprova più tardi.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Il tuo codice di sicurezza con %@ è cambiato di recente. Ti consigliamo di fare una verifica prima di inviare nuovamente.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Verifica del codice di sicurezza fallita!";
+"FAILED_VERIFICATION_TITLE" = "Verifica del codice di sicurezza non riuscita!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Segna come verificato";
@@ -1166,23 +1166,101 @@
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Ottimizzazione del database";
 
-/* conversation history entry */
-"GROUP_CREATED" = "Gruppo creato.";
+/* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
 
-/* conversation history entry when the local user created a group */
+/* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed who can edit group info to “%@“.";
+
+/* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
+
+/* Description of the 'admins only' access level. */
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
+
+/* Description of the 'all users' access level. */
+"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+
+/* Description of the 'all members' access level. */
+"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+
+/* Description of the 'unknown' access level. */
+"GROUP_ACCESS_LEVEL_UNKNOWN" = "Sconosciuto";
+
+/* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+
+/* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed who can edit group membership to “%@“.";
+
+/* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+
+/* Error indicating that a member cannot be added to a group. */
+"GROUP_CANNOT_ADD_INVALID_MEMBER" = "This user cannot be added to the group.";
+
+/* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Hai creato il gruppo.";
 
-/* conversation history entry after a remote user added you to a group. Embeds {{remote user name}} */
+/* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ ti ha aggiunto al gruppo.";
+
+/* Message indicating that group was created by an unknown user. */
+"GROUP_CREATED_BY_UNKNOWN_USER" = "Group was created.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Non tutti i membri possono essere aggiunti al gruppo. Tocca per ripovare.";
 
+/* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+
+/* Message indicating that the local user was granted administrator role. */
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+
+/* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
+
+/* Message indicating that the local user accepted an invite to the group. */
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "You accepted an invitation to the group.";
+
+/* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "You accepted an invitation to the group from %@.";
+
+/* Message indicating that the local user declined an invite to the group. */
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "You declined an invitation to the group.";
+
+/* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "You declined an invitation to the group from %@.";
+
+/* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
+
+/* Message indicating that the local user's invite was revoked by an unknown user. */
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
+
+/* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+
+/* Message indicating that the local user was invited to the group. */
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+
+/* Message indicating that the local user has joined the group. */
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+
+/* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+
+/* Message indicating that the local user was removed from the group by an unknown user. */
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+
+/* Message indicating that the local user had their administrator role revoked. */
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+
+/* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Gestione gruppo";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = "%@ ha lasciato il gruppo.";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Chiama";
@@ -1202,38 +1280,152 @@
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Messaggio";
 
-/* conversation history entry */
+/* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+
+/* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+
+/* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+
+/* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+
+/* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+
+/* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+
+/* Message indicating that a remote user has declined their invite. */
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+
+/* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+
+/* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+
+/* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+
+/* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+
+/* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+
+/* Message indicating that a single remote user's invite was revoked. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
+
+/* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+
+/* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+
+/* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+
+/* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+
+/* Message indicating that a single remote user was invited to the group. */
+"GROUP_REMOTE_USER_INVITED_1" = "1 person was invited to the group.";
+
+/* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+
+/* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+
+/* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+
+/* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+
+/* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ si è unito al gruppo.";
+
+/* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ left the group.";
+
+/* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+
+/* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+
+/* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+
+/* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+
+/* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+
+/* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Gruppo aggiornato.";
 
-/* conversation history entry.  embeds {0: all but the final member} and {1: the final member} */
-"GROUP_UPDATED_ADDED_MULTIPLE_MEMBERS_FORMAT" = "%@ e %@ si sono uniti al gruppo.";
+/* Message indicating that the group's avatar was removed. */
+"GROUP_UPDATED_AVATAR_REMOVED" = "The group avatar was removed.";
 
-/* conversation history entry. Embeds the {{added user's name}} */
-"GROUP_UPDATED_ADDED_ONE_MEMBER_FORMAT" = "%@ si è unito al gruppo.";
+/* Message indicating that the group's avatar was removed. */
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the avatar.";
 
-/* conversation history entry */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Rimosso l'avatar del gruppo.";
+/* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the avatar.";
 
-/* conversation history entry */
+/* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "Aggiornato l'avatar del gruppo.";
 
-/* conversation history entry. */
+/* Message indicating that the group's avatar was changed. */
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the avatar.";
+
+/* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the avatar.";
+
+/* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Hai aggiornato il gruppo.";
 
-/* conversation history entry. Embeds {{remote user's name}} */
+/* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ha aggiornato il gruppo.";
 
-/* conversation history entry */
-"GROUP_UPDATED_NAME_REMOVED" = "Rimosso il nome.";
+/* Message indicating that the group's name was removed. */
+"GROUP_UPDATED_NAME_REMOVED" = "The group name was removed.";
 
-/* conversation history entry. Embeds {{group name}} */
+/* Message indicating that the group's name was removed by the local user. */
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "You removed the group name.";
+
+/* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group name.";
+
+/* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%@“.";
+
+/* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@“.";
+
+/* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Il nome del gruppo è ora “%@”.";
 
-/* conversation history entry */
-"GROUP_UPDATED_READDED_YOU" = "Sei stato aggiunto di nuovo al gruppo.";
-
-/* No comment provided by engineer. */
+/* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Hai lasciato il gruppo.";
+
+/* Error indicating that an error occurred while accepting an invite. */
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
+
+/* Label for 'block group' button in group invite view. */
+"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+
+/* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
+
+/* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Conversazioni archiviate";
@@ -1278,7 +1470,7 @@
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Non puoi condividere più di %@ elementi.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Selezione allegato fallita";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Selezione allegato non riuscita.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Connessione...";
@@ -1410,7 +1602,7 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "Questo codice QR non è valido. Assicurarati che stai effettuando la scansione del codice QR visualizzato sul dispositivo che desideri collegare.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Collegamento con dispositivo fallito";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Collegamento con dispositivo non riuscito";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Questo dispositivo sarà in grado di vedere i tuoi gruppi e contatti, accedere alle conversazioni e inviare messaggi a tuo nome.";
@@ -1437,7 +1629,7 @@
 "LINKED_DEVICES_TITLE" = "Dispositivi associati";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Associazione dispositivo fallita";
+"LINKING_DEVICE_FAILED_TITLE" = "Associazione dispositivo non riuscita";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Membri del gruppo";
@@ -1518,7 +1710,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Consegnato";
 
 /* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Fallito";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Non riuscito";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Letto";
@@ -1610,6 +1802,9 @@
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Devi condividere il tuo profilo per continuare la tua conversazione in %@.";
 
+/* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
+
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Scopri di più";
 
@@ -1644,10 +1839,10 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Caricamento in corso";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Invio fallito.";
+"MESSAGE_STATUS_FAILED" = "Invio non riuscito.";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Fallito";
+"MESSAGE_STATUS_FAILED_SHORT" = "Non riuscito";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Letto";
@@ -1656,7 +1851,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Saltato";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Invio fallito";
+"MESSAGE_STATUS_SEND_FAILED" = "Invio non riuscito";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Invio in corso...";
@@ -1748,6 +1943,9 @@
 /* Error indicating that a new group could not be created. */
 "NEW_GROUP_CREATION_FAILED" = "Non è stato possibile creare un nuovo gruppo.";
 
+/* Error indicating that a new group could not be created due to network connectivity problems. */
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "New group could not be created. Check your internet connection and try again.";
+
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nuovo gruppo";
 
@@ -1762,6 +1960,9 @@
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Altri utenti";
+
+/* The placeholder text for the search input in the 'create new group' view. */
+"NEW_GROUP_SEARCH_PLACEHOLDER" = "Cerca";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vuoi abbandonare questi cambiamenti?";
@@ -1863,10 +2064,10 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Associa iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Cliccando “Registra iPad” potrai creare un nuovo account Signal o spostare un account esistente su questo iPad. Questo disattiverà Signal su ogni altro dispositivo attualmente registrato con lo stesso numero di telefono.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Facendo clic su “Registra iPad” potrai creare un nuovo account Signal o spostare un account esistente su questo iPad. Questo disattiverà Signal su ogni altro dispositivo attualmente registrato con lo stesso numero di telefono.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Cliccando “Associa iPhone” potrai collegare il tuo telefono a un account esistente. Associare il tuo telefono è generalmente sconsigliato e limiterà alcune funzionalità, come la chiamata.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Facendo clic su “Associa iPhone” potrai collegare il tuo telefono a un account esistente. Associare il tuo telefono è generalmente sconsigliato e limiterà alcune funzionalità, come la chiamata.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registra questo iPad";
@@ -1946,10 +2147,10 @@
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Impostazioni";
 
-/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+/* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha disabilitato la scomparsa dei messaggi.";
 
-/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+/* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha impostato il tempo di scomparsa dei messaggi a %@.";
 
 /* Label warning the user that the Signal service may be down. */
@@ -2067,7 +2268,7 @@
 "PIN_CREATION_ERROR_MESSAGE" = "Il tuo PIN non è stato salvato. Ti chiederemo di creare un PIN più tardi.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "Creazione PIN fallita";
+"PIN_CREATION_ERROR_TITLE" = "Creazione PIN non riuscita";
 
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "I PIN aggiungono ulteriore sicurezza al tuo account e non possono essere recuperati. Avrai bisogno del tuo PIN per registrarti di nuovo con Signal.";
@@ -2433,7 +2634,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Devi iscriverti prima di poter inviare un messaggio.";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifica fallita";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifica non riuscita";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "I numeri che hai inserito non corrispondono con quelli inviati. Vuoi fare un nuovo controllo?";
@@ -2511,10 +2712,10 @@
 "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Impossibile accedere all'autenticazione.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Autenticazione fallita.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Autenticazione non riuscita.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Troppi tentativi di autenticazione falliti. Si prega di riprovare più tardi.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Troppi tentativi di autenticazione non riusciti. Riprova più tardi.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Devi abilitare il codice nelle impostazioni iOS per poter usare il blocco schermo.";
@@ -2529,7 +2730,7 @@
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autenticarsi per aprire Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Autenticazione fallita";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Autenticazione non riuscita";
 
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Sblocca Signal";
@@ -2556,7 +2757,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Impossibile recuperare il codice di associazione";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "L'altro tuo dispositivo sta eseguendo una vecchia versione di Signal che non supporta la scansione dei codici QR per iPad. Per favore installa l'ultima versione di Signal e riprova.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "L'altro tuo dispositivo sta eseguendo una vecchia versione di Signal che non supporta la scansione dei codici QR per iPad. Installa l'ultima versione di Signal e riprova.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Aggiorna il dispositivo che scansiona";
@@ -2589,7 +2790,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installa Signal sul tuo telefono";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Clicca sulla tua foto del profilo per aprire le impostazioni di Signal sul tuo telefono. Poi \"Dispositivi associati\" e \"Associa nuovo dispositivo\" per scansionare questo codice con il tuo telefono:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Fai clic sulla tua foto del profilo per aprire le impostazioni di Signal sul tuo telefono. Poi \"Dispositivi associati\" e \"Associa nuovo dispositivo\" per scansionare questo codice con il tuo telefono:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Qui puoi ottenere aiuto per associare il tuo iPad";
@@ -2613,10 +2814,10 @@
 "SEND_BUTTON_TITLE" = "Invia";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Invio del messaggio fallito.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Invio del messaggio non riuscito.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Invio dell'invito fallito, riprova più tardi";
+"SEND_INVITE_FAILURE" = "Invio dell'invito non riuscito, riprova più tardi";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Hai invitato il tuo amico ad usare Signal!";
@@ -2703,7 +2904,7 @@
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "Stato di iCloud";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Ripristino del backup fallito";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Ripristino del backup non riuscito";
 
 /* Indicates that app is not restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Ripristino del backup in attesa";
@@ -2724,7 +2925,7 @@
 "SETTINGS_BACKUP_STATUS" = "Stato";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Backup fallito";
+"SETTINGS_BACKUP_STATUS_FAILED" = "Backup non riuscito";
 
 /* Indicates that app is not backing up. */
 "SETTINGS_BACKUP_STATUS_IDLE" = "Attendere";
@@ -2760,13 +2961,13 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicenza secondo direttive GPLv3";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Cancella account";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Elimina account";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Cancella tutti i dati";
+"SETTINGS_DELETE_DATA_BUTTON" = "Elimina tutti i dati";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Sei sicuro di voler cancellare tutta la tua cronologia (messaggi, allegati, chiamate, ecc.)? Questa azione non può essere annullata.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Sei sicuro di voler eliminare tutta la tua cronologia (messaggi, allegati, chiamate, ecc.)? Questa azione non può essere annullata.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Elimina tutto";
@@ -3003,7 +3204,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Adesivi che hai ricevuto";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Caricamento di alcuni pacchetti adesivi fallito";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Caricamento di alcuni pacchetti adesivi non riuscito";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Adesivi installati";
@@ -3030,7 +3231,7 @@
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Pacchetto di adesivi";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Caricamento pacchetto di adesivi fallito";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Caricamento pacchetto di adesivi non riuscito";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Disinstalla";
@@ -3143,6 +3344,12 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Puoi chiedere al mittente di reinviarti questo messaggio, ora che stai usando una versione aggiornata di Signal.";
 
+/* Info Message when an unknown user disabled disappearing messages. */
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";
+
+/* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
+
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Sconosciuto";
 
@@ -3165,7 +3372,7 @@
 "UNNAMED_DEVICE" = "Dispositivo senza nome";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Cancellazione da Signal fallita.";
+"UNREGISTER_SIGNAL_FAIL" = "Cancellazione da Signal non riuscita.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Ricevuto un tipo di allegato non supportato.";
@@ -3181,6 +3388,9 @@
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Il gruppo non può essere aggiornato.";
+
+/* Error indicating that a group could not be updated due to network connectivity problems. */
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Crea il tuo PIN";
@@ -3219,7 +3429,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "I nomi utente possono contenere solo a-z, 0-9, e _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Si è verificato un errore durante la ricerca del nome utente. Per favore riprova più tardi.";
+"USERNAME_LOOKUP_ERROR" = "Si è verificato un errore durante la ricerca del nome utente. Riprova più tardi.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ non è un utente Signal. Assicurati di aver inserito il nome utente completo.";
@@ -3246,7 +3456,7 @@
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ è preso.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Aggiornamento nome utente fallito.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Aggiornamento nome utente non riuscito.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Il nome del dispositivo non può essere vuoto";
@@ -3279,13 +3489,13 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Hai già visualizzato questo messaggio.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Clicca qui per far scomparire questo messaggio dopo che è stato visualizzato.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Fai clic qui per far scomparire questo messaggio dopo che è stato visualizzato.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "I file multimediali visualizzabili una volta in uscita sono automaticamente rimossi dopo l'invio.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Scorri per cancellare";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Scorri per annullare";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Messaggio vocale";
@@ -3299,11 +3509,11 @@
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configurazione su Signal Desktop.";
 
-/* Info Message when you disable disappearing messages */
+/* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Hai disabilitato la scomparsa dei messaggi.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "È necessario completare l'installazione prima di procedere.";
 
-/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Hai impostato la scomparsa dei messaggi a %@.";
