@@ -1,14 +1,14 @@
 import PromiseKit
 
 public extension LokiAPI {
+    private static var snodeVersion: [LokiAPITarget:String] = [:]
 
     /// Only ever accessed from `LokiAPI.errorHandlingQueue` to avoid race conditions.
     fileprivate static var failureCount: [LokiAPITarget:UInt] = [:]
-    
+
     // MARK: Settings
     private static let minimumSnodeCount = 2
     private static let targetSnodeCount = 3
-    private static let maxRandomSnodePoolSize = 1024
     fileprivate static let failureThreshold = 2
     
     // MARK: Caching
@@ -37,10 +37,9 @@ public extension LokiAPI {
             let target = seedNodePool.randomElement()!
             let url = URL(string: "\(target)/json_rpc")!
             let request = TSRequest(url: url, method: "POST", parameters: [
-                "method" : "get_n_service_nodes",
+                "method" : "get_service_nodes",
                 "params" : [
                     "active_only" : true,
-                    "limit" : maxRandomSnodePoolSize,
                     "fields" : [
                         "public_ip" : true,
                         "storage_port" : true,
@@ -49,7 +48,7 @@ public extension LokiAPI {
                     ]
                 ]
             ])
-            print("[Loki] Invoking get_n_service_nodes on \(target).")
+            print("[Loki] Invoking get_service_nodes on \(target).")
             return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { intermediate in
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }
@@ -84,10 +83,46 @@ public extension LokiAPI {
         }
     }
 
-    // MARK: Public API
     internal static func getTargetSnodes(for hexEncodedPublicKey: String) -> Promise<[LokiAPITarget]> {
         // shuffled() uses the system's default random generator, which is cryptographically secure
         return getSwarm(for: hexEncodedPublicKey).map { Array($0.shuffled().prefix(targetSnodeCount)) }
+    }
+
+    internal static func getFileServerProxy() -> Promise<LokiAPITarget> {
+        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
+        let (promise, seal) = Promise<LokiAPITarget>.pending()
+        func getVersion(for snode: LokiAPITarget) -> Promise<String> {
+            if let version = snodeVersion[snode] {
+                return Promise { $0.fulfill(version) }
+            } else {
+                let url = URL(string: "\(snode.address):\(snode.port)/get_stats/v1")!
+                let request = TSRequest(url: url)
+                return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { intermediate in
+                    let rawResponse = intermediate.responseObject
+                    guard let json = rawResponse as? JSON, let version = json["version"] as? String else { throw LokiAPIError.missingSnodeVersion }
+                    snodeVersion[snode] = version
+                    return version
+                }
+            }
+        }
+        getRandomSnode().then(on: DispatchQueue.global()) { snode -> Promise<LokiAPITarget> in
+            return getVersion(for: snode).then(on: DispatchQueue.global()) { version -> Promise<LokiAPITarget> in
+                if version >= "2.0.2" {
+                    print("[Loki] Using file server proxy with version number \(version).")
+                    return Promise { $0.fulfill(snode) }
+                } else {
+                    print("[Loki] Rejecting file server proxy with version number \(version).")
+                    return getFileServerProxy()
+                }
+            }.recover(on: DispatchQueue.global()) { error in
+                return getFileServerProxy()
+            }
+        }.done(on: DispatchQueue.global()) { snode in
+            seal.fulfill(snode)
+        }.catch(on: DispatchQueue.global()) { error in
+            seal.reject(error)
+        }
+        return promise
     }
     
     // MARK: Parsing

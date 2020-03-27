@@ -5488,7 +5488,7 @@ typedef enum : NSUInteger {
 {
     if (!LKDeviceLinkingUtilities.shouldShowUnexpectedDeviceLinkRequestReceivedAlert) { return; }
     dispatch_async(dispatch_get_main_queue(), ^{
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Device Link Request Received" message:@"Open the device link screen by going to \"Settings\"> \"Devices\" > \"Link a Device\" to link your devices." preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Device Link Request Received" message:@"Open the device link screen by going to \"Settings\" > \"Devices\" > \"Link a Device\" to link your devices." preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:alert animated:YES completion:nil];
     });
