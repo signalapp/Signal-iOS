@@ -101,9 +101,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     }
     
     @objc
-    public override var ttl: UInt32 {
-        return UInt32(5 * kMinuteInMs)
-    }
+    public override var ttl: UInt32 { return UInt32(2 * kMinuteInMs) }
 
     @objc
     public override var debugDescription: String {
