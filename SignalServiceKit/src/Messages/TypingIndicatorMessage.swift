@@ -99,6 +99,9 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     public override func shouldBeSaved() -> Bool {
         return false
     }
+    
+    @objc
+    public override var ttl: UInt32 { return UInt32(2 * kMinuteInMs) }
 
     @objc
     public override var debugDescription: String {

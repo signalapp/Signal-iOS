@@ -8,6 +8,7 @@ public enum LKUserDefaults {
         case hasViewedSeed
         /// Whether the device was unlinked as a slave device (used to notify the user on the landing screen).
         case wasUnlinked
+        case isUsingFullAPNs
     }
 
     public enum Date : Swift.String {

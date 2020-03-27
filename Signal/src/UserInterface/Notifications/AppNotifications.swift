@@ -642,7 +642,7 @@ class NotificationActionHandler {
 
     func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
-            throw NotificationError.failDebug("threadId was unexpectedly nil")
+            return showHomeVC()
         }
 
         // If this happens when the the app is not, visible we skip the animation so the thread
@@ -650,6 +650,11 @@ class NotificationActionHandler {
         // it animate in from the homescreen.
         let shouldAnimate = UIApplication.shared.applicationState == .active
         signalApp.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadId, animated: shouldAnimate)
+        return Promise.value(())
+    }
+    
+    func showHomeVC() -> Promise<Void> {
+        signalApp.showHomeView()
         return Promise.value(())
     }
 

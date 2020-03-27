@@ -59,7 +59,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 static NSTimeInterval launchStartedAt;
 
+// Debug settings
 static BOOL isInternalTestVersion = NO;
+static BOOL isUsingFullAPNs = YES;
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
@@ -587,7 +589,11 @@ static BOOL isInternalTestVersion = NO;
     }
 
     OWSLogInfo(@"Registered for push notifications with token: %@.", deviceToken);
-    [LKPushNotificationManager.shared registerWithToken:deviceToken];
+    if (isUsingFullAPNs) {
+        [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber];
+    } else {
+        [LKPushNotificationManager registerWithToken:deviceToken];
+    }
 //    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
@@ -1552,6 +1558,10 @@ static BOOL isInternalTestVersion = NO;
     __IOS_AVAILABLE(10.0)__TVOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)__OSX_AVAILABLE(10.14)
 {
     OWSLogInfo(@"");
+    if (notification.request.content.userInfo[@"remote"]) {
+        OWSLogInfo(@"[Loki] Ignoring remote notifications while the app is in the foreground.");
+        return;
+    }
     [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
         // We need to respect the in-app notification sound preference. This method, which is called
         // for modern UNUserNotification users, could be a place to do that, but since we'd still
