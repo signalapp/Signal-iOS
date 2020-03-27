@@ -4725,6 +4725,7 @@
 				LLVM_LTO = NO;
 				MARKETING_VERSION = 1.0.8;
 				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger";
 				PRODUCT_NAME = Session;
 				PROVISIONING_PROFILE = "";
