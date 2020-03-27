@@ -588,7 +588,7 @@ static BOOL isInternalTestVersion = NO;
 
     OWSLogInfo(@"Registered for push notifications with token: %@.", deviceToken);
     //TODO: For normal push notification test
-    [LKPushNotificationManager.shared registerWithToken:deviceToken pubkey:self.tsAccountManager.localNumber];
+    [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber];
 //    [LKPushNotificationManager.shared registerWithToken:deviceToken];
 //    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
