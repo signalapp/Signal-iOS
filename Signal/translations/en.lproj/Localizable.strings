@@ -720,10 +720,10 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Administrators";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "All members";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "All";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Block This Group";
@@ -738,9 +738,9 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Conversation Color";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
 
-/* Label for button that sets 'group membership access' to 'administrators-only'. */
+/* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
 
 /* Description for the 'edit group attributes access' alert. */
@@ -1333,6 +1333,12 @@
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Group Management";
+
+/* Label indicating that a group member is an admin. */
+"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+
+/* Label indicating that the local user. */
+"GROUP_MEMBER_LOCAL_USER_INDICATOR" = "(me)";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Call";
