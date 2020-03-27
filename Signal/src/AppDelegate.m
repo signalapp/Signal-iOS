@@ -1559,7 +1559,7 @@ static BOOL isUsingFullAPNs = YES;
 {
     OWSLogInfo(@"");
     if (notification.request.content.userInfo[@"remote"]) {
-        OWSLogInfo(@"[Loki] Ignore remote notifications when app is foreground.");
+        OWSLogInfo(@"[Loki] Ignoring remote notifications while the app is in the foreground.");
         return;
     }
     [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
