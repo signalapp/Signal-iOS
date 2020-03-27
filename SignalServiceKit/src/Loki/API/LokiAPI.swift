@@ -2,10 +2,12 @@ import PromiseKit
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
+    private static let stateQueue = DispatchQueue(label: "stateQueue")
+
     /// Only ever modified from the message processing queue (`OWSBatchMessageProcessor.processingQueue`).
     private static var syncMessageTimestamps: [String:Set<UInt64>] = [:]
     
-    public static var _lastDeviceLinkUpdate: [String:Date] = [:]
+    private static var _lastDeviceLinkUpdate: [String:Date] = [:]
     /// A mapping from hex encoded public key to date updated.
     public static var lastDeviceLinkUpdate: [String:Date] {
         get { stateQueue.sync { _lastDeviceLinkUpdate } }
@@ -18,8 +20,6 @@ public final class LokiAPI : NSObject {
         get { stateQueue.sync { _userHexEncodedPublicKeyCache } }
         set { stateQueue.sync { _userHexEncodedPublicKeyCache = newValue } }
     }
-    
-    private static let stateQueue = DispatchQueue(label: "stateQueue")
     
     /// All service node related errors must be handled on this queue to avoid race conditions maintaining e.g. failure counts.
     public static let errorHandlingQueue = DispatchQueue(label: "errorHandlingQueue")
