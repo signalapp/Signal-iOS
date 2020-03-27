@@ -59,7 +59,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 static NSTimeInterval launchStartedAt;
 
+// Debug settings
 static BOOL isInternalTestVersion = NO;
+static BOOL isUsingFullAPNs = YES;
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
@@ -587,9 +589,11 @@ static BOOL isInternalTestVersion = NO;
     }
 
     OWSLogInfo(@"Registered for push notifications with token: %@.", deviceToken);
-    //TODO: For normal push notification test
-    [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber];
-//    [LKPushNotificationManager.shared registerWithToken:deviceToken];
+    if (isUsingFullAPNs) {
+        [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber];
+    } else {
+        [LKPushNotificationManager registerWithToken:deviceToken];
+    }
 //    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
