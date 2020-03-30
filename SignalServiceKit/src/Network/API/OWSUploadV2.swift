@@ -8,8 +8,14 @@ import PromiseKit
 @objc
 public class OWSUploadV2: NSObject {
     @objc
-    public class func uploadObjc(data: Data, uploadForm: OWSUploadForm, uploadUrlPath: String) -> AnyPromise {
-        return AnyPromise(upload(data: data, uploadForm: uploadForm, uploadUrlPath: uploadUrlPath))
+    public class func uploadObjc(data: Data,
+                                 uploadForm: OWSUploadForm,
+                                 uploadUrlPath: String,
+                                 progressBlock: ((Progress) -> Void)?) -> AnyPromise {
+        return AnyPromise(upload(data: data,
+                                 uploadForm: uploadForm,
+                                 uploadUrlPath: uploadUrlPath,
+                                 progressBlock: progressBlock))
     }
 }
 
@@ -25,12 +31,15 @@ public extension OWSUploadV2 {
 
     // MARK: -
 
-    class func upload(data: Data, uploadForm: OWSUploadForm, uploadUrlPath: String) -> Promise<String> {
+    class func upload(data: Data,
+                      uploadForm: OWSUploadForm,
+                      uploadUrlPath: String,
+                      progressBlock: ((Progress) -> Void)? = nil) -> Promise<String> {
         let (promise, resolver) = Promise<String>.pending()
         DispatchQueue.global().async {
             self.uploadSessionManager.post(uploadUrlPath,
-                                        parameters: nil,
-                                        constructingBodyWith: { (formData: AFMultipartFormData) -> Void in
+                                           parameters: nil,
+                                           constructingBodyWith: { (formData: AFMultipartFormData) -> Void in
 
                                             // We have to build up the form manually vs. simply passing in a parameters dict
                                             // because AWS is sensitive to the order of the form params (at least the "key"
@@ -43,10 +52,14 @@ public extension OWSUploadV2 {
 
                                             formData.appendPart(withForm: data, name: "file")
             },
-                                        progress: { progress in
+                                           progress: { progress in
                                             Logger.verbose("progress: \(progress.fractionCompleted)")
+
+                                            if let progressBlock = progressBlock {
+                                                progressBlock(progress)
+                                            }
             },
-                                        success: { (_, _) in
+                                           success: { (_, _) in
                                             Logger.verbose("Success.")
                                             let uploadedUrlPath = uploadForm.key
                                             resolver.fulfill(uploadedUrlPath)
