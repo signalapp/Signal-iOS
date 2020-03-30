@@ -6,11 +6,13 @@ internal enum OnionRequestAPI {
     internal static var guardSnodes: Set<LokiAPITarget> = []
     internal static var paths: Set<Path> = []
 
+    // MARK: Settings
     private static let pathCount: UInt = 3
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
     private static let guardSnodeCount: UInt = 3
 
+    // MARK: Error
     internal enum Error : LocalizedError {
         case insufficientSnodes
 
@@ -21,6 +23,7 @@ internal enum OnionRequestAPI {
         }
     }
 
+    // MARK: Path
     internal typealias Path = OnionRequestPath
 
     // MARK: Private API
