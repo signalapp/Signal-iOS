@@ -62,6 +62,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createPendingReadReceipts
         case createInteractionAttachmentIdsIndex
         case addIsUuidCapableToUserProfiles
+        case uploadTimestamp
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -434,6 +435,12 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.addIsUuidCapableToUserProfiles.rawValue) { db in
             try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
                 table.add(column: "isUuidCapable", .boolean).notNull().defaults(to: false)
+            }
+        }
+
+        migrator.registerMigration(MigrationId.uploadTimestamp.rawValue) { db in
+            try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
+                table.add(column: "uploadTimestamp", .integer).notNull().defaults(to: 0)
             }
         }
 

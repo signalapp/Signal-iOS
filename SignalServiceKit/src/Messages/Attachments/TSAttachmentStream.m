@@ -1080,6 +1080,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     OWSAssertDebug(encryptionKey.length > 0);
     OWSAssertDebug(digest.length > 0);
     OWSAssertDebug(serverId > 0);
+    OWSAssertDebug(uploadTimestamp > 0);
 
     [self anyUpdateAttachmentStreamWithTransaction:transaction
                                              block:^(TSAttachmentStream *attachment) {

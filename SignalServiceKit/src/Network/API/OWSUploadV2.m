@@ -373,13 +373,16 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     }
 
     self.serverId = serverId;
-    self.uploadTimestamp = [NSDate ows_millisecondTimeStamp];
 
+    __weak OWSAttachmentUploadV2 *weakSelf = self;
     NSString *uploadUrlPath = @"attachments/";
     return [OWSUploadV2 uploadObjcWithData:self.attachmentData
                                 uploadForm:form
                              uploadUrlPath:uploadUrlPath
-                             progressBlock:progressBlock];
+                             progressBlock:progressBlock]
+        .then(^{
+            weakSelf.uploadTimestamp = NSDate.ows_millisecondTimeStamp;
+        });
 }
 
 @end
