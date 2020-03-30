@@ -1,8 +1,8 @@
 import PromiseKit
 
 internal enum OnionRequestAPI {
-    private static let workQueue = DispatchQueue.global() // TODO: We should probably move away from using the global queue for this
-
+    /// - Note: Exposed for testing purposes.
+    internal static let workQueue = DispatchQueue.global() // TODO: We should probably move away from using the global queue for this
     internal static var guardSnodes: Set<LokiAPITarget> = []
     internal static var paths: Set<Path> = []
 
