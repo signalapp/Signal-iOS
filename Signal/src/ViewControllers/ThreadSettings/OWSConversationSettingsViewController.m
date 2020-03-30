@@ -378,6 +378,8 @@ const CGFloat kIconViewLength = 24;
                                                                          contactThread.contactAddress];
                                                              }]];
 
+                                     [actionSheet addAction:OWSActionSheets.cancelAction];
+
                                      [self presentActionSheet:actionSheet];
                                  }]];
     }
