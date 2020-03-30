@@ -3862,7 +3862,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                    albumMessageId:nil
                                                    attachmentType:TSAttachmentTypeDefault
                                                         mediaSize:CGSizeZero
-                                                         blurHash:nil];
+                                                         blurHash:nil
+                                                  uploadTimestamp:0];
                 pointer.state = TSAttachmentPointerStateFailed;
                 [pointer anyInsertWithTransaction:transaction];
                 // MJK - should be safe to remove this senderTimestamp
@@ -4745,7 +4746,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                            albumMessageId:nil
                                            attachmentType:TSAttachmentTypeDefault
                                                 mediaSize:CGSizeZero
-                                                 blurHash:nil];
+                                                 blurHash:nil
+                                          uploadTimestamp:0];
         attachmentPointer.state = TSAttachmentPointerStateFailed;
         [attachmentPointer anyInsertWithTransaction:transaction];
         return attachmentPointer;

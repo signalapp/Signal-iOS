@@ -76,7 +76,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                   albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType
                        mediaSize:(CGSize)mediaSize
-                        blurHash:(nullable NSString *)blurHash NS_DESIGNATED_INITIALIZER;
+                        blurHash:(nullable NSString *)blurHash
+                 uploadTimestamp:(unsigned long long)uploadTimestamp NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream NS_DESIGNATED_INITIALIZER;
 
@@ -97,12 +98,13 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
-NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
 
 // clang-format on
 

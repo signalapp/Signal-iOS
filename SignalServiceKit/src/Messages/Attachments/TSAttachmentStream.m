@@ -153,6 +153,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
                cachedImageHeight:(nullable NSNumber *)cachedImageHeight
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
@@ -173,7 +174,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
-                    sourceFilename:sourceFilename];
+                    sourceFilename:sourceFilename
+                   uploadTimestamp:uploadTimestamp];
 
     if (!self) {
         return self;
@@ -1072,6 +1074,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (void)updateAsUploadedWithEncryptionKey:(NSData *)encryptionKey
                                    digest:(NSData *)digest
                                  serverId:(UInt64)serverId
+                          uploadTimestamp:(unsigned long long)uploadTimestamp
                               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(encryptionKey.length > 0);
@@ -1083,6 +1086,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                                  [attachment setEncryptionKey:encryptionKey];
                                                  [attachment setDigest:digest];
                                                  [attachment setServerId:serverId];
+                                                 [attachment setUploadTimestamp:uploadTimestamp];
                                                  [attachment setIsUploaded:YES];
                                              }];
 }

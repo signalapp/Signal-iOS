@@ -40,6 +40,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
                         blurHash:(nullable NSString *)blurHash
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
 {
     OWSAssertDebug(serverId > 0);
     OWSAssertDebug(encryptionKey.length > 0);
@@ -67,6 +68,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     _caption = caption;
     _albumMessageId = albumMessageId;
     _blurHash = blurHash;
+    _uploadTimestamp = uploadTimestamp;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -173,6 +175,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     _caption = pointer.caption;
     _albumMessageId = pointer.albumMessageId;
     _blurHash = pointer.blurHash;
+    _uploadTimestamp = pointer.uploadTimestamp;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -223,6 +226,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
@@ -240,6 +244,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     _encryptionKey = encryptionKey;
     _serverId = serverId;
     _sourceFilename = sourceFilename;
+    _uploadTimestamp = uploadTimestamp;
 
     [self sdsFinalizeAttachment];
 

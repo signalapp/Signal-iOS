@@ -42,6 +42,9 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 @property (nonatomic, readonly, nullable) NSString *blurHash;
 
+// This property will be non-zero if set.
+@property (nonatomic) UInt64 uploadTimestamp;
+
 #pragma mark - Media Album
 
 @property (nonatomic, readonly, nullable) NSString *caption;
@@ -66,7 +69,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
-                        blurHash:(nullable NSString *)blurHash;
+                        blurHash:(nullable NSString *)blurHash
+                 uploadTimestamp:(unsigned long long)uploadTimestamp;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded restoring attachments.
@@ -105,7 +109,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
-NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:));
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
+NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:));
 
 // clang-format on
 

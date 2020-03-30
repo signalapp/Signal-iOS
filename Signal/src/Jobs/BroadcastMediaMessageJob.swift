@@ -118,11 +118,15 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
                 }
 
                 let serverId = uploadedAttachment.serverId
+                let uploadTimestamp = uploadedAttachment.uploadTimestamp
                 guard let encryptionKey = uploadedAttachment.encryptionKey,
                     let digest = uploadedAttachment.digest,
                     serverId > 0 else {
                         owsFailDebug("uploaded attachment was incomplete")
                         continue
+                }
+                if uploadTimestamp < 1 {
+                    owsFailDebug("Missing uploadTimestamp.")
                 }
 
                 for correspondingId in correspondingAttachments {
@@ -134,6 +138,7 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
                     correspondingAttachment.updateAsUploaded(withEncryptionKey: encryptionKey,
                                                              digest: digest,
                                                              serverId: serverId,
+                                                             uploadTimestamp: uploadTimestamp,
                                                              transaction: transaction)
 
                     guard let albumMessageId = correspondingAttachment.albumMessageId else {

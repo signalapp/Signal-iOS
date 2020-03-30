@@ -7,6 +7,7 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
@@ -173,7 +174,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
 // If avatarData is nil, we are clearing the avatar.
 - (AnyPromise *)uploadAvatarToService:(nullable NSData *)avatarData
-                        progressBlock:(UploadProgressBlock)progressBlock
 {
     OWSAssertDebug(avatarData == nil || avatarData.length > 0);
     self.avatarData = avatarData;
@@ -194,7 +194,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                         return resolve(@(1));
                     }
 
-                    [[strongSelf parseFormAndUpload:formResponseObject progressBlock:progressBlock]
+                    [[strongSelf parseFormAndUpload:formResponseObject]
                             .thenInBackground(^{
                                 return resolve(@(1));
                             })
@@ -213,7 +213,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 }
 
 - (AnyPromise *)parseFormAndUpload:(nullable id)formResponseObject
-                     progressBlock:(UploadProgressBlock)progressBlock
 {
     OWSUploadForm *_Nullable form = [OWSUploadForm parseDictionary:formResponseObject];
     if (!form) {
@@ -374,6 +373,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     }
 
     self.serverId = serverId;
+    self.uploadTimestamp = [NSDate ows_millisecondTimeStamp];
 
     NSString *uploadUrlPath = @"attachments/";
     return [OWSUploadV2 uploadObjcWithData:self.attachmentData
