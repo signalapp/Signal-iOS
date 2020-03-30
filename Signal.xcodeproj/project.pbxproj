@@ -583,7 +583,6 @@
 		B83F2B88240CB75A000A54AB /* UIImage+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
 		B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F4235022F30083A1CD /* MentionUtilities.swift */; };
-		B847570323D5698100759540 /* LokiPushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B847570223D5698100759540 /* LokiPushNotificationManager.swift */; };
 		B85357BF23A1AE0800AAF6CD /* SeedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */; };
 		B85357C123A1B81900AAF6CD /* SeedReminderViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C023A1B81900AAF6CD /* SeedReminderViewDelegate.swift */; };
 		B85357C323A1BD1200AAF6CD /* SeedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C223A1BD1200AAF6CD /* SeedVC.swift */; };
@@ -1448,7 +1447,6 @@
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
 		B84664F4235022F30083A1CD /* MentionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionUtilities.swift; sourceTree = "<group>"; };
 		B847570023D568EB00759540 /* SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B847570223D5698100759540 /* LokiPushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiPushNotificationManager.swift; sourceTree = "<group>"; };
 		B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedReminderView.swift; sourceTree = "<group>"; };
 		B85357C023A1B81900AAF6CD /* SeedReminderViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedReminderViewDelegate.swift; sourceTree = "<group>"; };
 		B85357C223A1BD1200AAF6CD /* SeedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedVC.swift; sourceTree = "<group>"; };
@@ -2881,7 +2879,6 @@
 			isa = PBXGroup;
 			children = (
 				B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */,
-				B847570223D5698100759540 /* LokiPushNotificationManager.swift */,
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 				B886B4A82398BA1500211ABE /* QRCode.swift */,
 				B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */,
@@ -4033,7 +4030,6 @@
 				34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */,
 				348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */,
 				450DF2091E0DD2C6003D14BE /* UserNotificationsAdaptee.swift in Sources */,
-				B847570323D5698100759540 /* LokiPushNotificationManager.swift in Sources */,
 				34B6A907218B5241007C4606 /* TypingIndicatorCell.swift in Sources */,
 				4CFD151D22415AA400F2450F /* CallVideoHintView.swift in Sources */,
 				34D1F0AB1F867BFC0066283D /* OWSContactOffersCell.m in Sources */,

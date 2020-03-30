@@ -1,14 +1,11 @@
-
-// Ideally this should be in SignalServiceKit, but somehow linking fails when it is.
-
 @objc(LKPushNotificationManager)
 final class LokiPushNotificationManager : NSObject {
 
     // MARK: Settings
     #if DEBUG
-    private static let url = URL(string: "https://dev.apns.getsession.org/register")!
+    private static let server = "https://dev.apns.getsession.org/"
     #else
-    private static let url = URL(string: "https://live.apns.getsession.org/register")!
+    private static let server = "https://live.apns.getsession.org/"
     #endif
     private static let tokenExpirationInterval: TimeInterval = 2 * 24 * 60 * 60
 
@@ -16,6 +13,8 @@ final class LokiPushNotificationManager : NSObject {
     private override init() { }
 
     // MARK: Registration
+    /** This method is for users to register for Silent Push Notification.
+        We only need the device token to make the SPN work.*/
     @objc(registerWithToken:)
     static func register(with token: Data) {
         let hexEncodedToken = token.toHexString()
@@ -31,6 +30,7 @@ final class LokiPushNotificationManager : NSObject {
             return print("[Loki] Using full APNs; no need to upload device token.")
         }
         let parameters = [ "token" : hexEncodedToken ]
+        let url = URL(string: server + "register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         TSNetworkManager.shared().makeRequest(request, success: { _, response in
@@ -48,12 +48,15 @@ final class LokiPushNotificationManager : NSObject {
         })
     }
     
+    /** This method is for users to register for Normal Push Notification.
+        We need the device token and user's public key (session id) to make the NPN work.*/
     @objc(registerWithToken:hexEncodedPublicKey:)
     static func register(with token: Data, hexEncodedPublicKey: String) {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
         let now = Date().timeIntervalSince1970
         let parameters = [ "token" : hexEncodedToken, "pubKey" : hexEncodedPublicKey]
+        let url = URL(string: server + "register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         TSNetworkManager.shared().makeRequest(request, success: { _, response in
@@ -68,6 +71,24 @@ final class LokiPushNotificationManager : NSObject {
             userDefaults[.isUsingFullAPNs] = true
         }, failure: { _, error in
             print("[Loki] Couldn't register device token.")
+        })
+    }
+    
+    @objc(acknowledgeDeliveryForMessageWithHash:hexEncodedPublicKey:)
+    static func acknowledgeDeliveryForMessage(with hash: String, hexEncodedPublicKey: String) {
+        let parameters: [String : Any] = [ "lastHash" : hash, "pubKey" : hexEncodedPublicKey]
+        let url = URL(string: server + "acknowledge_message_delivery")!
+        let request = TSRequest(url: url, method: "POST", parameters: parameters)
+        request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
+        TSNetworkManager.shared().makeRequest(request, success: { _, response in
+            guard let json = response as? JSON else {
+                return print("[Loki] Couldn't acknowledge the delivery for message with last hash: " + hash)
+            }
+            guard json["code"] as? Int != 0 else {
+                return print("[Loki] Couldn't acknowledge the delivery for message due to error: \(json["message"] as? String ?? "nil").")
+            }
+        }, failure: { _, error in
+            print("[Loki] Couldn't acknowledge the delivery for message with last hash: " + hash)
         })
     }
 }
