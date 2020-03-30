@@ -48,7 +48,7 @@ public extension LokiAPI {
                     ]
                 ]
             ])
-            print("[Loki] Invoking get_n_service_nodes on \(target).")
+            print("[Loki] Invoking get_service_nodes on \(target).")
             return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { intermediate in
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }

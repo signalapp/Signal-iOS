@@ -352,8 +352,7 @@ public class SystemContactsFetcher: NSObject {
 
             guard let contacts = fetchedContacts else {
                 owsFailDebug("contacts was unexpectedly not set.")
-                completion(nil)
-                return
+                return completion(nil)
             }
 
             Logger.info("fetched \(contacts.count) contacts.")

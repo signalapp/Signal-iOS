@@ -60,11 +60,6 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     public override var isOnline: Bool {
         return true
     }
-    
-    @objc
-    public override var ttl: UInt32 {
-        return UInt32(10 * kMinuteInMs)
-    }
 
     private func protoAction(forAction action: TypingIndicatorAction) -> SSKProtoTypingMessage.SSKProtoTypingMessageAction {
         switch action {
@@ -104,6 +99,9 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     public override func shouldBeSaved() -> Bool {
         return false
     }
+ 
+    @objc
+    public override var ttl: UInt32 { return UInt32(2 * kMinuteInMs) }
 
     @objc
     public override var debugDescription: String {
