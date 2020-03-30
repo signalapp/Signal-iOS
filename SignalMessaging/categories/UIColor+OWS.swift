@@ -71,6 +71,11 @@ public extension UIColor {
         return UIColor(rgbHex: 0x2C6BED)
     }
 
+    @objc(ows_accentBlueTintColor)
+    class var ows_accentBlueTint: UIColor {
+        return UIColor(rgbHex: 0xB0C8F9)
+    }
+
     /// Making calls, success states
     @objc(ows_accentGreenColor)
     class var ows_accentGreen: UIColor {
@@ -219,12 +224,6 @@ public extension UIColor {
     }
 
     // MARK: UI Colors
-
-    // FIXME OFF-PALETTE
-    @objc(ows_fadedBlueColor)
-    class var ows_fadedBlue: UIColor {
-        return UIColor(rgbHex: 0xB6DEF4)
-    }
 
     // FIXME OFF-PALETTE
     @objc(ows_reminderYellowColor)
