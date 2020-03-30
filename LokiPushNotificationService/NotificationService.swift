@@ -5,6 +5,7 @@ import SignalMessaging
 class NotificationService: UNNotificationServiceExtension {
 
     static let threadIdKey = "Signal.AppNotificationsUserInfoKey.threadId"
+    static let isFromRemoteKey = "remote"
     var areVersionMigrationsComplete = false
     var contentHandler: ((UNNotificationContent) -> Void)?
     var notificationContent: UNMutableNotificationContent?
@@ -25,8 +26,7 @@ class NotificationService: UNNotificationServiceExtension {
             if (envelope != nil && envelopeData != nil) {
                 decrypter.decryptEnvelope(envelope!, envelopeData: envelopeData!,
                                           successBlock: { result,transaction in
-                                            if let envelope = try? SSKProtoEnvelope.parseData(result.envelopeData) {
-                                                self.removeDecryptionChain(envelope: envelope, transaction: transaction)
+                                            if (try? SSKProtoEnvelope.parseData(result.envelopeData)) != nil {
                                                 self.handelDecryptionResult(result: result, notificationContent: notificationContent, transaction: transaction)
                                             } else {
                                                 self.completeWithFailure(content: notificationContent)
@@ -39,11 +39,6 @@ class NotificationService: UNNotificationServiceExtension {
                 self.completeWithFailure(content: notificationContent)
             }
         }
-    }
-    
-    func removeDecryptionChain(envelope: SSKProtoEnvelope, transaction: YapDatabaseReadWriteTransaction) {
-        let sessionRecord = SSKEnvironment.shared.primaryStorage.loadSession(envelope.source!, deviceId: Int32(envelope.sourceDevice), protocolContext: transaction)
-        let sessionState = sessionRecord.sessionState()
     }
     
     func handelDecryptionResult(result: OWSMessageDecryptResult, notificationContent: UNMutableNotificationContent, transaction: YapDatabaseReadWriteTransaction) {
@@ -84,9 +79,11 @@ class NotificationService: UNNotificationServiceExtension {
             thread = TSContactThread.getOrCreateThread(withContactId: result.source, transaction: transaction)
             displayName = contentProto?.dataMessage?.profile?.displayName ?? displayName
         }
-        let userInfo: [String: Any] = [NotificationService.threadIdKey: thread.uniqueId!]
+        let userInfo: [String: Any] = [NotificationService.threadIdKey: thread.uniqueId!,
+                                       NotificationService.isFromRemoteKey: true]
         notificationContent.title = displayName
         notificationContent.userInfo = userInfo
+        notificationContent.badge = 1
         if newNotificationBody.count < 1 {
             newNotificationBody = contentProto?.dataMessage?.body ?? ""
         }
@@ -205,6 +202,8 @@ class NotificationService: UNNotificationServiceExtension {
     func completeWithFailure(content: UNMutableNotificationContent) {
         content.body = "You've got a new message."
         content.title = "Session"
+        let userInfo: [String: Any] = [NotificationService.isFromRemoteKey: true]
+        content.userInfo = userInfo
         contentHandler?(content)
     }
 

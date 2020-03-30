@@ -4817,6 +4817,7 @@
 					"-fobjc-arc-exceptions",
 					"-Werror=protocol",
 				);
+				"OTHER_SWIFT_FLAGS[arch=*]" = "-D DEBUG";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
