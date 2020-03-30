@@ -1,8 +1,8 @@
 import PromiseKit
 
-// TODO: Threading
-
 internal enum OnionRequestAPI {
+    private static let workQueue = DispatchQueue.global() // TODO: We should probably move away from using the global queue for this
+
     internal static var guardSnodes: Set<LokiAPITarget> = []
     internal static var paths: Set<Path> = []
 
@@ -33,7 +33,7 @@ internal enum OnionRequestAPI {
         let hexEncodedPublicKey = getUserHexEncodedPublicKey()
         let parameters: JSON = [ "pubKey" : hexEncodedPublicKey ]
         let timeout: TimeInterval = 10 // Use a shorter timeout for testing
-        return LokiAPI.invoke(.getSwarm, on: candidate, associatedWith: hexEncodedPublicKey, parameters: parameters, timeout: timeout).map { _ in }
+        return LokiAPI.invoke(.getSwarm, on: candidate, associatedWith: hexEncodedPublicKey, parameters: parameters, timeout: timeout).map(on: workQueue) { _ in }
     }
 
     /// Finds `guardSnodeCount` reliable guard snodes to use for path building. The returned promise may error out with `Error.insufficientSnodes`
@@ -43,18 +43,18 @@ internal enum OnionRequestAPI {
             return Promise<Set<LokiAPITarget>> { $0.fulfill(guardSnodes) }
         } else {
             print("[Loki] Populating guard snode cache.")
-            return LokiAPI.getRandomSnode().then { _ -> Promise<Set<LokiAPITarget>> in // Just used to populate the snode pool
+            return LokiAPI.getRandomSnode().then(on: workQueue) { _ -> Promise<Set<LokiAPITarget>> in // Just used to populate the snode pool
                 let snodePool = LokiAPI.randomSnodePool
                 guard !snodePool.isEmpty else { throw Error.insufficientSnodes }
-                var result: Set<LokiAPITarget> = [] // TODO: Sync on DispatchQueue.global()
+                var result: Set<LokiAPITarget> = [] // Sync on DispatchQueue.global()
                 // Loops until a valid guard snode is found
                 func getGuardSnode() -> Promise<LokiAPITarget> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
                     guard let candidate = snodePool.randomElement() else { return Promise<LokiAPITarget> { $0.reject(Error.insufficientSnodes) } }
-                    return testGuardSnodeCandidate(candidate).map { candidate }.recover { _ in getGuardSnode() }
+                    return testGuardSnodeCandidate(candidate).map(on: workQueue) { candidate }.recover(on: workQueue) { _ in getGuardSnode() }
                 }
                 func getAndStoreGuardSnode() -> Promise<LokiAPITarget> {
-                    return getGuardSnode().then { guardSnode -> Promise<LokiAPITarget> in
+                    return getGuardSnode().then(on: workQueue) { guardSnode -> Promise<LokiAPITarget> in
                         if !result.contains(guardSnode) {
                             result.insert(guardSnode)
                             return Promise { $0.fulfill(guardSnode) }
@@ -64,7 +64,7 @@ internal enum OnionRequestAPI {
                     }
                 }
                 let promises = (0..<guardSnodeCount).map { _ in getAndStoreGuardSnode() }
-                return when(fulfilled: promises).map { guardSnodes in
+                return when(fulfilled: promises).map(on: workQueue) { guardSnodes in
                     let guardSnodesAsSet = Set(guardSnodes)
                     OnionRequestAPI.guardSnodes = guardSnodesAsSet
                     return guardSnodesAsSet
@@ -77,9 +77,9 @@ internal enum OnionRequestAPI {
     /// if not enough (reliable) snodes are available.
     private static func buildPaths() -> Promise<Set<Path>> {
         print("[Loki] Building onion request paths.")
-        return LokiAPI.getRandomSnode().then { _ -> Promise<Set<Path>> in // Just used to populate the snode pool
+        return LokiAPI.getRandomSnode().then(on: workQueue) { _ -> Promise<Set<Path>> in // Just used to populate the snode pool
             let snodePool = LokiAPI.randomSnodePool
-            return getGuardSnodes().map { guardSnodes in
+            return getGuardSnodes().map(on: workQueue) { guardSnodes in
                 var unusedSnodes = snodePool.subtracting(guardSnodes)
                 let minSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
                 guard unusedSnodes.count >= minSnodeCount else { throw Error.insufficientSnodes }
@@ -102,7 +102,7 @@ internal enum OnionRequestAPI {
         if paths.count >= pathCount {
             return Promise<Path> { $0.fulfill(paths.randomElement()!) }
         } else {
-            return buildPaths().map { paths in
+            return buildPaths().map(on: workQueue) { paths in
                 let path = paths.randomElement()!
                 OnionRequestAPI.paths = paths
                 return path
