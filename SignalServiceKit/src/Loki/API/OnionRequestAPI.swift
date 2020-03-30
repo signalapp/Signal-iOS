@@ -83,7 +83,7 @@ internal enum OnionRequestAPI {
                 var unusedSnodes = snodePool.subtracting(guardSnodes)
                 let minSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
                 guard unusedSnodes.count >= minSnodeCount else { throw Error.insufficientSnodes }
-                let result = Set(guardSnodes.map { guardSnode -> Path in
+                let result: Set<Path> = Set(guardSnodes.map { guardSnode in
                     // The force unwraps are safe because of the minSnodeCount check above
                     let snode1 = unusedSnodes.randomElement()!
                     let snode2 = unusedSnodes.randomElement()!
