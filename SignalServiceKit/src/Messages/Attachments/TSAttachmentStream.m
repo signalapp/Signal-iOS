@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachmentStream.h"
@@ -153,6 +153,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
                cachedImageHeight:(nullable NSNumber *)cachedImageHeight
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
@@ -173,7 +174,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
-                    sourceFilename:sourceFilename];
+                    sourceFilename:sourceFilename
+                   uploadTimestamp:uploadTimestamp];
 
     if (!self) {
         return self;

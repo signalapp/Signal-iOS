@@ -143,12 +143,12 @@ extension OWSDisappearingMessagesConfigurationSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
     // Properties
-    static let durationSecondsColumn = SDSColumnMetadata(columnName: "durationSeconds", columnType: .int64, columnIndex: 3)
-    static let enabledColumn = SDSColumnMetadata(columnName: "enabled", columnType: .int, columnIndex: 4)
+    static let durationSecondsColumn = SDSColumnMetadata(columnName: "durationSeconds", columnType: .int64)
+    static let enabledColumn = SDSColumnMetadata(columnName: "enabled", columnType: .int)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.

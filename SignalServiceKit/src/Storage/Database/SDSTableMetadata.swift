@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,16 +38,12 @@ public class SDSColumnMetadata: NSObject {
     public let skipSelect: Bool
 
     @objc
-    public let columnIndex: Int32
-
-    @objc
-    public init(columnName: String, columnType: SDSColumnType, isOptional: Bool = false, isUnique: Bool = false, skipSelect: Bool = false, columnIndex: Int32 = 0) {
+    public init(columnName: String, columnType: SDSColumnType, isOptional: Bool = false, isUnique: Bool = false, skipSelect: Bool = false) {
         self.columnName = columnName
         self.columnType = columnType
         self.isOptional = isOptional
         self.isUnique = isUnique
         self.skipSelect = skipSelect
-        self.columnIndex = columnIndex
     }
 }
 

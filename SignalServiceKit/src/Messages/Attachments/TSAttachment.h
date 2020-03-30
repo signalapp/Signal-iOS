@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -105,7 +105,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
-NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:));
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
+NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:));
 
 // clang-format on
 

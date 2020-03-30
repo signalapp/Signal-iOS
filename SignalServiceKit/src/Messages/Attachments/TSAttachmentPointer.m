@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachmentPointer.h"
@@ -121,6 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
@@ -137,7 +138,8 @@ NS_ASSUME_NONNULL_BEGIN
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
-                    sourceFilename:sourceFilename];
+                    sourceFilename:sourceFilename
+                   uploadTimestamp:uploadTimestamp];
 
     if (!self) {
         return self;

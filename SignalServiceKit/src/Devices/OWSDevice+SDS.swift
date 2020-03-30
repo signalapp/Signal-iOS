@@ -155,14 +155,14 @@ extension OWSDeviceSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
     // Properties
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double, columnIndex: 3)
-    static let deviceIdColumn = SDSColumnMetadata(columnName: "deviceId", columnType: .int64, columnIndex: 4)
-    static let lastSeenAtColumn = SDSColumnMetadata(columnName: "lastSeenAt", columnType: .double, columnIndex: 5)
-    static let nameColumn = SDSColumnMetadata(columnName: "name", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double)
+    static let deviceIdColumn = SDSColumnMetadata(columnName: "deviceId", columnType: .int64)
+    static let lastSeenAtColumn = SDSColumnMetadata(columnName: "lastSeenAt", columnType: .double)
+    static let nameColumn = SDSColumnMetadata(columnName: "name", columnType: .unicodeString, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
