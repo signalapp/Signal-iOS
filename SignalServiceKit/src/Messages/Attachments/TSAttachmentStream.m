@@ -1165,6 +1165,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     if (self.blurHash.length > 0) {
         builder.blurHash = self.blurHash;
     }
+    if (self.uploadTimestamp > 0) {
+        builder.uploadTimestamp = self.uploadTimestamp;
+    }
 
     if (self.shouldHaveImageSize) {
         CGSize imageSize = self.imageSize;
