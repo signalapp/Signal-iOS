@@ -147,11 +147,6 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     return 4.f;
 }
 
-- (UIColor *)quoteBubbleBackgroundColor
-{
-    return [self.conversationStyle quotedReplyBubbleColorWithIsIncoming:!self.isOutgoing];
-}
-
 - (void)createContents
 {
     // Ensure only called once.
@@ -188,11 +183,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             maskLayer.path = bezierPath.CGPath;
         }];
     innerBubbleView.layer.mask = maskLayer;
-    if (self.isForPreview) {
-        innerBubbleView.backgroundColor = [UIColor.ows_accentBlueColor colorWithAlphaComponent:0.4f];
-    } else {
-        innerBubbleView.backgroundColor = self.quoteBubbleBackgroundColor;
-    }
+    innerBubbleView.backgroundColor = self.conversationStyle.quotedReplyBubbleColor;
     [self addSubview:innerBubbleView];
     [innerBubbleView autoPinLeadingToSuperviewMarginWithInset:self.bubbleHMargin];
     [innerBubbleView autoPinTrailingToSuperviewMarginWithInset:self.bubbleHMargin];
@@ -207,7 +198,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     UIView *stripeView = [UIView new];
     if (self.isForPreview) {
-        stripeView.backgroundColor = UIColor.ows_accentBlueColor;
+        stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:YES];
     } else {
         stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];
     }
@@ -244,7 +235,6 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         if (thumbnailImage) {
             quotedAttachmentView = [self imageViewForImage:thumbnailImage];
             quotedAttachmentView.clipsToBounds = YES;
-            quotedAttachmentView.backgroundColor = [UIColor whiteColor];
 
             if (self.isVideoAttachment) {
                 UIImage *contentIcon = [UIImage imageNamed:@"attachment_play_button"];
@@ -360,7 +350,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     OWSAssertDebug(CGSizeEqualToSize(
         CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength), glyphImage.size));
     UIImageView *glyphView = [[UIImageView alloc] initWithImage:glyphImage];
-    glyphView.tintColor = Theme.secondaryTextAndIconColor;
+    glyphView.tintColor = Theme.lightThemePrimaryColor;
     [glyphView
         autoSetDimensionsToSize:CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength)];
 
@@ -477,7 +467,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     OWSAssertDebug(self.quoteContentSourceLabel);
 
     self.quoteContentSourceLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
-    self.quoteContentSourceLabel.textColor = Theme.primaryTextColor;
+    self.quoteContentSourceLabel.textColor = Theme.lightThemePrimaryColor;
     self.quoteContentSourceLabel.text = NSLocalizedString(@"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
         @"Footer label that appears below quoted messages when the quoted content was not derived locally. When the "
         @"local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead "

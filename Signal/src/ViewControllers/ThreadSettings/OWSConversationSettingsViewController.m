@@ -378,6 +378,8 @@ const CGFloat kIconViewLength = 24;
                                                                          contactThread.contactAddress];
                                                              }]];
 
+                                     [actionSheet addAction:OWSActionSheets.cancelAction];
+
                                      [self presentActionSheet:actionSheet];
                                  }]];
     }
@@ -707,9 +709,11 @@ const CGFloat kIconViewLength = 24;
             ]];
         }
 
-        [contents addSection:[OWSTableSection sectionWithTitle:NSLocalizedString(@"GROUP_MANAGEMENT_SECTION",
-                                                                   @"Conversation settings table section title")
-                                                         items:groupItems]];
+        if (groupItems.count > 0) {
+            [contents addSection:[OWSTableSection sectionWithTitle:NSLocalizedString(@"GROUP_MANAGEMENT_SECTION",
+                                                                       @"Conversation settings table section title")
+                                                             items:groupItems]];
+        }
     }
 
     // Mute thread section.
