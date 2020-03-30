@@ -71,7 +71,6 @@ typedef void (^OWSThumbnailFailure)(void);
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
-                 uploadTimestamp:(unsigned long long)uploadTimestamp
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
                cachedImageHeight:(nullable NSNumber *)cachedImageHeight
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
@@ -81,7 +80,7 @@ typedef void (^OWSThumbnailFailure)(void);
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
-NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
 
 // clang-format on
 

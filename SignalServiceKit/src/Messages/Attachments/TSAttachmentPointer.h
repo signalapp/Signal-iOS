@@ -97,13 +97,12 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
-                 uploadTimestamp:(unsigned long long)uploadTimestamp
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
-NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
 
 // clang-format on
 

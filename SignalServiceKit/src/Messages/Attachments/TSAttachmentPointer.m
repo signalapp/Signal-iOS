@@ -121,7 +121,6 @@ NS_ASSUME_NONNULL_BEGIN
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
-                 uploadTimestamp:(unsigned long long)uploadTimestamp
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
@@ -138,8 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
-                    sourceFilename:sourceFilename
-                   uploadTimestamp:uploadTimestamp];
+                    sourceFilename:sourceFilename];
 
     if (!self) {
         return self;

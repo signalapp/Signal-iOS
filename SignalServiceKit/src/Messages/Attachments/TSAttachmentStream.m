@@ -153,7 +153,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
-                 uploadTimestamp:(unsigned long long)uploadTimestamp
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
                cachedImageHeight:(nullable NSNumber *)cachedImageHeight
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
@@ -174,8 +173,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
-                    sourceFilename:sourceFilename
-                   uploadTimestamp:uploadTimestamp];
+                    sourceFilename:sourceFilename];
 
     if (!self) {
         return self;

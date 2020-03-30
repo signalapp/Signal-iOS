@@ -223,7 +223,6 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
-                 uploadTimestamp:(unsigned long long)uploadTimestamp
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
@@ -241,7 +240,6 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     _encryptionKey = encryptionKey;
     _serverId = serverId;
     _sourceFilename = sourceFilename;
-    _uploadTimestamp = uploadTimestamp;
 
     [self sdsFinalizeAttachment];
 
