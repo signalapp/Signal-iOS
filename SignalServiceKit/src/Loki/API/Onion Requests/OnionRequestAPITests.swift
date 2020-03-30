@@ -17,4 +17,7 @@ class OnionRequestAPITests : XCTestCase {
         semaphore.wait()
         XCTAssert(error == nil)
     }
+
+    // TODO: Add request sending test
+    // TODO: Add error handling test
 }
