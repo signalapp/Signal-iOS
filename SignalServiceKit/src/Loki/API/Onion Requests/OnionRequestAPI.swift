@@ -1,4 +1,5 @@
 import PromiseKit
+import SignalMetadataKit
 
 // TODO: Test path snodes as well
 
@@ -29,11 +30,19 @@ internal enum OnionRequestAPI {
     // MARK: Error
     internal enum Error : LocalizedError {
         case insufficientSnodes
+        case snodePublicKeySetMissing
+        case symmetricKeyGenerationFailed
+        case jsonSerializationFailed
+        case encryptionFailed
         case generic
 
         var errorDescription: String? {
             switch self {
             case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
+            case .snodePublicKeySetMissing: return "Missing snode public key set."
+            case .symmetricKeyGenerationFailed: return "Couldn't generate symmetric key."
+            case .jsonSerializationFailed: return "Couldn't serialize JSON."
+            case .encryptionFailed: return "Couldn't encrypt request."
             case .generic: return "An error occurred."
             }
         }
@@ -107,6 +116,45 @@ internal enum OnionRequestAPI {
                 return result
             }
         }
+    }
+
+    private static func getCanonicalHeaders(for request: TSRequest) -> [String:Any] {
+        guard let headers = request.allHTTPHeaderFields else { return [:] }
+        return headers.mapValues { value in
+            switch value.lowercased() {
+            case "true": return true
+            case "false": return false
+            default: return value
+            }
+        }
+    }
+
+    private static func encrypt(_ request: TSRequest, forSnode snode: LokiAPITarget) -> Promise<URLRequest> {
+        let (promise, seal) = Promise<URLRequest>.pending()
+        let headers = getCanonicalHeaders(for: request)
+        workQueue.async {
+            guard let snodeHexEncodedPublicKeySet = snode.publicKeySet else { return seal.reject(Error.snodePublicKeySetMissing) }
+            let snodeEncryptionKey = Data(hex: snodeHexEncodedPublicKeySet.encryptionKey)
+            let ephemeralKeyPair = Curve25519.generateKeyPair()
+            let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: snodeEncryptionKey, privateKey: ephemeralKeyPair.privateKey)
+            guard let symmetricKey = uncheckedSymmetricKey else { return seal.reject(Error.symmetricKeyGenerationFailed) }
+            let url = "\(snode.address):\(snode.port)/onion_req"
+            guard let parametersAsData = try? JSONSerialization.data(withJSONObject: request.parameters, options: []) else { return seal.reject(Error.jsonSerializationFailed) }
+            let onionRequestParameters: JSON = [
+                "method" : request.httpMethod,
+                "body" : String(bytes: parametersAsData, encoding: .utf8),
+                "headers" : headers
+            ]
+            guard let onionRequestParametersAsData = try? JSONSerialization.data(withJSONObject: onionRequestParameters, options: []) else { return seal.reject(Error.jsonSerializationFailed) }
+            guard let ivAndCipherText = try? DiffieHellman.encrypt(onionRequestParametersAsData, using: symmetricKey) else { return seal.reject(Error.encryptionFailed) }
+            let onionRequestHeaders = [
+                "X-Sender-Public-Key" : ephemeralKeyPair.publicKey.toHexString(),
+                "X-Target-Snode-Key" : snodeHexEncodedPublicKeySet.idKey
+            ]
+            let onionRequest = AFHTTPRequestSerializer().request(withMethod: "POST", urlString: url, parameters: nil, error: nil) as URLRequest
+            seal.fulfill(onionRequest)
+        }
+        return promise
     }
 
     private static func encrypt(_ request: TSRequest, forTargetSnode snode: LokiAPITarget) -> Promise<TSRequest> {
