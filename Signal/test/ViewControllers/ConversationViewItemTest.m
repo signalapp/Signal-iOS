@@ -13,6 +13,7 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
+/*
 @interface ConversationViewItemTest : SignalBaseTest
 
 @property TSThread *thread;
@@ -271,3 +272,4 @@
 }
 
 @end
+ */

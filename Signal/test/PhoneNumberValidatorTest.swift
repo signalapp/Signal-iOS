@@ -3,7 +3,7 @@
 //
 
 import XCTest
-import Signal
+import Session
 
 class PhoneNumberValidatorTest: SignalBaseTest {
 

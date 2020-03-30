@@ -3,7 +3,7 @@
 //
 
 import XCTest
-@testable import Signal
+@testable import Session
 @testable import SignalMessaging
 
 class DisplayableTextTest: SignalBaseTest {

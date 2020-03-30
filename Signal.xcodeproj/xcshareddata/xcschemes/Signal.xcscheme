@@ -77,6 +77,104 @@
                BlueprintName = "SignalServiceKit-Unit-Tests"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "ContactSortingTest">
+               </Test>
+               <Test
+                  Identifier = "DeviceNamesTest">
+               </Test>
+               <Test
+                  Identifier = "JobQueueTest">
+               </Test>
+               <Test
+                  Identifier = "MessageSenderJobQueueTest">
+               </Test>
+               <Test
+                  Identifier = "OWSAnalyticsTests">
+               </Test>
+               <Test
+                  Identifier = "OWSDeviceProvisionerTest">
+               </Test>
+               <Test
+                  Identifier = "OWSDisappearingMessageFinderTest">
+               </Test>
+               <Test
+                  Identifier = "OWSDisappearingMessagesConfigurationTest">
+               </Test>
+               <Test
+                  Identifier = "OWSDisappearingMessagesJobTest">
+               </Test>
+               <Test
+                  Identifier = "OWSFingerprintTest">
+               </Test>
+               <Test
+                  Identifier = "OWSIncomingMessageFinderTest">
+               </Test>
+               <Test
+                  Identifier = "OWSLinkPreviewTest">
+               </Test>
+               <Test
+                  Identifier = "OWSMessageManagerTest">
+               </Test>
+               <Test
+                  Identifier = "OWSMessageSenderTest">
+               </Test>
+               <Test
+                  Identifier = "OWSProvisioningCipherTest">
+               </Test>
+               <Test
+                  Identifier = "OWSSignalAddressTest">
+               </Test>
+               <Test
+                  Identifier = "OWSUDManagerTest">
+               </Test>
+               <Test
+                  Identifier = "PhoneNumberTest">
+               </Test>
+               <Test
+                  Identifier = "PhoneNumberUtilTest">
+               </Test>
+               <Test
+                  Identifier = "SSKBaseTestObjC">
+               </Test>
+               <Test
+                  Identifier = "SSKBaseTestSwift">
+               </Test>
+               <Test
+                  Identifier = "SSKMessageSenderJobRecordTest">
+               </Test>
+               <Test
+                  Identifier = "SignalRecipientTest">
+               </Test>
+               <Test
+                  Identifier = "SignedPreKeyDeletionTests">
+               </Test>
+               <Test
+                  Identifier = "TSContactThreadTest">
+               </Test>
+               <Test
+                  Identifier = "TSGroupThreadTest">
+               </Test>
+               <Test
+                  Identifier = "TSMessageStorageTests">
+               </Test>
+               <Test
+                  Identifier = "TSMessageTest">
+               </Test>
+               <Test
+                  Identifier = "TSOutgoingMessageTest">
+               </Test>
+               <Test
+                  Identifier = "TSStorageIdentityKeyStoreTests">
+               </Test>
+               <Test
+                  Identifier = "TSStoragePreKeyStoreTests">
+               </Test>
+               <Test
+                  Identifier = "TSThreadTest">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "NO">
