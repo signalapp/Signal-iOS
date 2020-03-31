@@ -13,11 +13,20 @@ internal enum OnionRequestAPI {
     internal static let workQueue = DispatchQueue(label: "OnionRequestAPI.workQueue", qos: .userInitiated)
 
     // MARK: Settings
-    private static let guardSnodeCount: UInt = 3
     private static let pathCount: UInt = 3
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
     private static let timeout: TimeInterval = 20
+
+    private static var guardSnodeCount: UInt { return pathCount }
+
+    // MARK: HTTP Verb
+    private enum HTTPVerb : String {
+        case get = "GET"
+        case put = "PUT"
+        case post = "POST"
+        case delete = "DELETE"
+    }
 
     // MARK: URL Session Delegate Implementation
     private final class URLSessionDelegateImplementation : NSObject, URLSessionDelegate {
@@ -31,18 +40,24 @@ internal enum OnionRequestAPI {
     // MARK: Error
     internal enum Error : LocalizedError {
         case generic
+        case httpRequestFailed(statusCode: UInt, json: JSON?)
         case insufficientSnodes
         case invalidJSON
+        case missingSnodeVersion
         case randomDataGenerationFailed
         case snodePublicKeySetMissing
+        case unsupportedSnodeVersion(String)
 
         var errorDescription: String? {
             switch self {
             case .generic: return "An error occurred."
+            case .httpRequestFailed(let statusCode, _): return "HTTP request failed with status code: \(statusCode)."
             case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
             case .invalidJSON: return "Invalid JSON."
+            case .missingSnodeVersion: return "Missing snode version."
             case .randomDataGenerationFailed: return "Couldn't generate random data."
             case .snodePublicKeySetMissing: return "Missing snode public key set."
+            case .unsupportedSnodeVersion(let version): return "Unsupported snode version: \(version)."
             }
         }
     }
@@ -50,20 +65,73 @@ internal enum OnionRequestAPI {
     // MARK: Path
     internal typealias Path = [LokiAPITarget]
 
+    // MARK: Onion Building Result
+    private typealias OnionBuildingResult = (guardSnode: LokiAPITarget, encryptionResult: EncryptionResult)
+
     // MARK: Private API
+    private static func execute(_ verb: HTTPVerb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = OnionRequestAPI.timeout) -> Promise<Any> {
+        return Promise<Any> { seal in
+            let url = URL(string: url)!
+            var request = URLRequest(url: url)
+            request.httpMethod = verb.rawValue
+            if let parameters = parameters {
+                do {
+                    guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
+                    request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
+                } catch (let error) {
+                    return seal.reject(error)
+                }
+            }
+            request.timeoutInterval = timeout
+            let task = urlSession.dataTask(with: request) { data, response, error in
+                guard let data = data, let response = response as? HTTPURLResponse else {
+                    print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed.")
+                    return seal.reject(Error.generic)
+                }
+                if let error = error {
+                    print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed due to error: \(error).")
+                    return seal.reject(error)
+                }
+                let statusCode = UInt(response.statusCode)
+                guard 200...299 ~= statusCode else {
+                    print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed with status code: \(statusCode).")
+                    var json: JSON? = nil
+                    if JSONSerialization.isValidJSONObject(data) {
+                        json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON
+                    }
+                    return seal.reject(Error.httpRequestFailed(statusCode: statusCode, json: json))
+                }
+                do {
+                    guard JSONSerialization.isValidJSONObject(data) else { return seal.reject(Error.invalidJSON) }
+                    let json = try JSONSerialization.jsonObject(with: data, options: [])
+                    seal.fulfill(json)
+                } catch (let error) {
+                    print("[Loki] [Onion Request API] Couldn't parse JSON returned by \(verb.rawValue) request to \(url).")
+                    seal.reject(error)
+                }
+            }
+            task.resume()
+        }
+    }
+
     /// Tests the given snode. The returned promise errors out if the snode is faulty; the promise is fulfilled otherwise.
     private static func testSnode(_ snode: LokiAPITarget) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let queue = DispatchQueue(label: UUID().uuidString, qos: .userInitiated) // No need to block the work queue for this
         queue.async {
             print("[Loki] [Onion Request API] Testing snode: \(snode).")
-            let hexEncodedPublicKey = getUserHexEncodedPublicKey()
-            let parameters: JSON = [ "pubKey" : hexEncodedPublicKey ]
+            let url = "\(snode.address):\(snode.port)/get_stats/v1"
             let timeout: TimeInterval = 6 // Use a shorter timeout for testing
-            // TODO: Move LokiAPI away from using TSNetworkManager so that we can be smarter about threading
-            LokiAPI.invoke(.getSwarm, on: snode, associatedWith: hexEncodedPublicKey, parameters: parameters, timeout: timeout).done(on: queue) { _ in
-                seal.fulfill(())
-            }.catch { error in
+            execute(.get, url, timeout: timeout).done(on: queue) { rawResponse in
+                guard let json = rawResponse as? JSON, let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
+                // TODO: Caching
+                if version >= "2.0.3" {
+                    seal.fulfill(())
+                } else {
+                    print("[Loki] [Onion Request API] Unsupported snode version: \(version).")
+                    seal.reject(Error.unsupportedSnodeVersion(version))
+                }
+            }.catch(on: queue) { error in
                 seal.reject(error)
             }
         }
@@ -131,7 +199,6 @@ internal enum OnionRequestAPI {
 
     /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
     private static func getPath() -> Promise<Path> {
-        // TODO: Handle potential race condition on paths
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= pathCount {
             return Promise<Path> { $0.fulfill(paths.randomElement()!) }
@@ -145,7 +212,7 @@ internal enum OnionRequestAPI {
     }
 
     /// Builds an onion around `payload` and returns the result.
-    private static func buildOnion(around payload: Data, targetedAt snode: LokiAPITarget) -> Promise<(guardSnode: LokiAPITarget, encryptionResult: EncryptionResult)> {
+    private static func buildOnion(around payload: Data, targetedAt snode: LokiAPITarget) -> Promise<OnionBuildingResult> {
         var guardSnode: LokiAPITarget!
         return getPath().then(on: workQueue) { path -> Promise<EncryptionResult> in
             guardSnode = path.first!
@@ -185,29 +252,20 @@ internal enum OnionRequestAPI {
             }
             buildOnion(around: payload, targetedAt: snode).done(on: workQueue) { intermediate in
                 let guardSnode = intermediate.guardSnode
+                let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
                 let encryptionResult = intermediate.encryptionResult
                 let onion = encryptionResult.ciphertext
-                let url = URL(string: "\(guardSnode.address):\(guardSnode.port)/onion_req")!
-                var request = URLRequest(url: url)
-                request.httpMethod = "POST"
                 let parameters: JSON = [
                     "ciphertext" : onion.base64EncodedString(),
                     "ephemeral_key" : encryptionResult.ephemeralPublicKey.toHexString()
                 ]
-                guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
-                request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
-                request.timeoutInterval = timeout
-                print("[Loki] [Onion Request API] Sending onion request.")
-                let task = urlSession.dataTask(with: request) { response, result, error in
-                    if let error = error {
-                        seal.reject(error)
-                    } else if let result = result {
-                        seal.fulfill(result)
-                    } else {
-                        seal.reject(Error.generic)
-                    }
+                execute(.post, url, parameters: parameters).done(on: workQueue) { rawResponse in
+                    seal.fulfill(rawResponse)
+                }.catch(on: workQueue) { error in
+                    seal.reject(error)
                 }
-                task.resume()
+            }.catch(on: workQueue) { error in
+                seal.reject(error)
             }
         }
         return promise
