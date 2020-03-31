@@ -11,6 +11,7 @@
 #import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import "NSObject+Casting.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @implementation OWSPrimaryStorage (Loki)
 
@@ -58,7 +59,7 @@
     @try {
         return [self throws_loadPreKey:preKeyId];
     } @catch (NSException *exception) {
-        NSLog(@"[Loki] New pre key generated for %@.", pubKey);
+        [LKLogger print:[NSString stringWithFormat:@"[Loki] New pre key generated for %@.", pubKey]];
         return [self generateAndStorePreKeyForContact:pubKey];
     }
 }
@@ -95,7 +96,7 @@
         [signedPreKeyRecord markAsAcceptedByService];
         [self storeSignedPreKey:signedPreKeyRecord.Id signedPreKeyRecord:signedPreKeyRecord];
         [self setCurrentSignedPrekeyId:signedPreKeyRecord.Id];
-        NSLog(@"[Loki] Pre keys refreshed successfully.");
+        [LKLogger print:@"[Loki] Pre keys refreshed successfully."];
     }
 
     SignedPreKeyRecord *_Nullable signedPreKey = self.currentSignedPreKey;
@@ -134,7 +135,7 @@
             forceClean = YES;
         }
     }
-    OWSLogWarn(@"[Loki] Failed to generate a valid pre key bundle for: %@.", pubKey);
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Failed to generate a valid pre key bundle for: %@.", pubKey]];
     return nil;
 }
 

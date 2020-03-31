@@ -450,7 +450,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Loki: Handle pre key bundle message if needed
         if (contentProto.prekeyBundleMessage != nil) {
-            OWSLogInfo(@"[Loki] Received a pre key bundle message from: %@.", envelope.source);
+            [LKLogger print:[NSString stringWithFormat:@"[Loki] Received a pre key bundle message from: %@.", envelope.source]];
             PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage getPreKeyBundleWithTransaction:transaction];
             if (bundle == nil) {
                 OWSFailDebug(@"Failed to create a pre key bundle.");
@@ -484,7 +484,7 @@ NS_ASSUME_NONNULL_BEGIN
             NSData *masterSignature = contentProto.lokiDeviceLinkMessage.masterSignature;
             NSData *slaveSignature = contentProto.lokiDeviceLinkMessage.slaveSignature;
             if (masterSignature != nil) { // Authorization
-                OWSLogInfo(@"[Loki] Received a device linking authorization from: %@", envelope.source); // Not masterHexEncodedPublicKey
+                [LKLogger print:[NSString stringWithFormat:@"[Loki] Received a device linking authorization from: %@", envelope.source]]; // Not masterHexEncodedPublicKey
                 [LKDeviceLinkingSession.current processLinkingAuthorizationFrom:masterHexEncodedPublicKey for:slaveHexEncodedPublicKey masterSignature:masterSignature slaveSignature:slaveSignature];
                 // Set any profile info
                 if (contentProto.dataMessage) {
@@ -493,7 +493,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [self handleProfileKeyUpdateIfNeeded:dataMessage recipientId:masterHexEncodedPublicKey];
                 }
             } else if (slaveSignature != nil) { // Request
-                OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey
+                [LKLogger print: [NSString stringWithFormat:@"[Loki] Received a device linking request from: %@", envelope.source]]; // Not slaveHexEncodedPublicKey
                 if (LKDeviceLinkingSession.current == nil) {
                     [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.unexpectedDeviceLinkRequestReceived object:nil];
                 }
@@ -1140,7 +1140,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (syncMessage.openGroups != nil) {
         if (wasSentByMasterDevice && syncMessage.openGroups.count > 0) {
-            OWSLogInfo(@"[Loki] Received open group sync message.");
+            [LKLogger print:@"[Loki] Received open group sync message."];
             for (SSKProtoSyncMessageOpenGroups* openGroup in syncMessage.openGroups) {
                 [LKPublicChatManager.shared addChatWithServer:openGroup.url channel:openGroup.channel];
             }
@@ -1191,7 +1191,7 @@ NS_ASSUME_NONNULL_BEGIN
     LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
     [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
 
-    NSLog(@"[Loki] Session reset received from %@.", hexEncodedPublicKey);
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Session reset received from %@.", hexEncodedPublicKey]];
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -1788,11 +1788,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope data:(SSKProtoDataMessage *)data message:(TSIncomingMessage *)message thread:(TSContactThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
     if (envelope.isGroupChatMessage) {
-        return NSLog(@"[Loki] Ignoring friend request in group chat.", @"");
+        return [LKLogger print:@"[Loki] Ignoring friend request in group chat."];
     }
     // The envelope type is set during UD decryption.
     if (envelope.type != SSKProtoEnvelopeTypeFriendRequest) {
-        return NSLog(@"[Loki] Ignoring friend request logic for non friend request type envelope.");
+        return [LKLogger print:@"[Loki] Ignoring friend request logic for non friend request type envelope."];
     }
     if ([self canFriendRequestBeAutoAcceptedForThread:thread transaction:transaction]) {
         [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];

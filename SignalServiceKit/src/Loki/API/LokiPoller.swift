@@ -60,7 +60,6 @@ public final class LokiPoller : NSObject {
             // randomElement() uses the system's default random generator, which is cryptographically secure
             let nextSnode = unusedSnodes.randomElement()!
             usedSnodes.insert(nextSnode)
-            print("[Loki] Polling \(nextSnode).")
             poll(nextSnode, seal: seal).done(on: DispatchQueue.global()) {
                 seal.fulfill(())
             }.catch(on: LokiAPI.errorHandlingQueue) { [weak self] error in

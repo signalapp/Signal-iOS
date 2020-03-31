@@ -98,9 +98,6 @@ public final class LokiAPI : NSObject {
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         if let headers = headers { request.allHTTPHeaderFields = headers }
         request.timeoutInterval = timeout ?? defaultTimeout
-        let headers = request.allHTTPHeaderFields ?? [:]
-        let headersDescription = headers.isEmpty ? "no custom headers specified" : headers.prettifiedDescription
-        print("[Loki] Invoking \(method.rawValue) on \(target) with \(parameters.prettifiedDescription) (\(headersDescription)).")
         return LokiSnodeProxy(for: target).perform(request, withCompletionQueue: DispatchQueue.global())
             .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
             .recoveringNetworkErrorsIfNeeded()
@@ -259,11 +256,6 @@ public final class LokiAPI : NSObject {
         let newRawMessages = removeDuplicates(from: rawMessages)
         let newMessages = parseProtoEnvelopes(from: newRawMessages)
         let newMessageCount = newMessages.count
-        if newMessageCount == 1 {
-            print("[Loki] Retrieved 1 new message.")
-        } else if (newMessageCount != 0) {
-            print("[Loki] Retrieved \(newMessageCount) new messages.")
-        }
         return newMessages
     }
     

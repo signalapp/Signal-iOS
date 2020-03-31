@@ -38,7 +38,6 @@ internal class LokiSnodeProxy : LokiHTTPClient {
                 guard let symmetricKey = uncheckedSymmetricKey else { return seal.reject(Error.symmetricKeyGenerationFailed) }
                 LokiAPI.getRandomSnode().then(on: DispatchQueue.global()) { proxy -> Promise<LokiAPI.RawResponse> in
                     let url = "\(proxy.address):\(proxy.port)/proxy"
-                    print("[Loki] Proxying request to \(target) through \(proxy).")
                     let parametersAsData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
                     let proxyRequestParameters: JSON = [
                         "method" : request.httpMethod,
