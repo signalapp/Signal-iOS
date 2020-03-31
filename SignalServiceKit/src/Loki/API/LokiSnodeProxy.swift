@@ -34,7 +34,7 @@ internal class LokiSnodeProxy : LokiHTTPClient {
         let headers = getCanonicalHeaders(for: request)
         return Promise<LokiAPI.RawResponse> { [target = self.target, keyPair = self.keyPair, httpSession = self.httpSession] seal in
             DispatchQueue.global().async {
-                let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: Data(hex: targetHexEncodedPublicKeySet.encryptionKey), privateKey: keyPair.privateKey)
+                let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: Data(hex: targetHexEncodedPublicKeySet.x25519Key), privateKey: keyPair.privateKey)
                 guard let symmetricKey = uncheckedSymmetricKey else { return seal.reject(Error.symmetricKeyGenerationFailed) }
                 LokiAPI.getRandomSnode().then(on: DispatchQueue.global()) { proxy -> Promise<LokiAPI.RawResponse> in
                     let url = "\(proxy.address):\(proxy.port)/proxy"
@@ -49,7 +49,7 @@ internal class LokiSnodeProxy : LokiHTTPClient {
                     let ivAndCipherText = try DiffieHellman.encrypt(proxyRequestParametersAsData, using: symmetricKey)
                     let proxyRequestHeaders = [
                         "X-Sender-Public-Key" : keyPair.publicKey.toHexString(),
-                        "X-Target-Snode-Key" : targetHexEncodedPublicKeySet.idKey
+                        "X-Target-Snode-Key" : targetHexEncodedPublicKeySet.ed25519Key
                     ]
                     let (promise, resolver) = LokiAPI.RawResponsePromise.pending()
                     let proxyRequest = AFHTTPRequestSerializer().request(withMethod: "POST", urlString: url, parameters: nil, error: nil)

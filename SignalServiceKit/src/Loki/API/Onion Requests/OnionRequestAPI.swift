@@ -1,25 +1,16 @@
 import PromiseKit
-import SignalMetadataKit
 
 // TODO: Test path snodes as well
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 internal enum OnionRequestAPI {
+    private static let urlSessionDelegate = URLSessionDelegateImplementation()
+    private static let urlSession = URLSession(configuration: .ephemeral, delegate: urlSessionDelegate, delegateQueue: nil)
+
     /// - Note: Exposed for testing purposes.
     internal static let workQueue = DispatchQueue.global() // TODO: We should probably move away from using the global queue for this
     internal static var guardSnodes: Set<LokiAPITarget> = []
     internal static var paths: Set<Path> = []
-
-    private static let httpSession: AFHTTPSessionManager = {
-        let result = AFHTTPSessionManager(sessionConfiguration: .ephemeral)
-        let securityPolicy = AFSecurityPolicy.default()
-        securityPolicy.allowInvalidCertificates = true
-        securityPolicy.validatesDomainName = false // TODO: Do we need this?
-        result.securityPolicy = securityPolicy
-        result.responseSerializer = AFHTTPResponseSerializer()
-        result.completionQueue = workQueue
-        return result
-    }()
 
     // MARK: Settings
     private static let pathCount: UInt = 3
@@ -27,22 +18,27 @@ internal enum OnionRequestAPI {
     private static let pathSize: UInt = 3
     private static let guardSnodeCount: UInt = 3
 
+    // MARK: URL Session Delegate Implementation
+    private final class URLSessionDelegateImplementation : NSObject, URLSessionDelegate {
+
+        func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+            // Snode to snode communication uses self-signed certificates but clients can safely ignore this
+            completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
+        }
+    }
+
     // MARK: Error
     internal enum Error : LocalizedError {
         case insufficientSnodes
         case snodePublicKeySetMissing
-        case symmetricKeyGenerationFailed
-        case jsonSerializationFailed
-        case encryptionFailed
+        case randomDataGenerationFailed
         case generic
 
         var errorDescription: String? {
             switch self {
             case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
             case .snodePublicKeySetMissing: return "Missing snode public key set."
-            case .symmetricKeyGenerationFailed: return "Couldn't generate symmetric key."
-            case .jsonSerializationFailed: return "Couldn't serialize JSON."
-            case .encryptionFailed: return "Couldn't encrypt request."
+            case .randomDataGenerationFailed: return "Couldn't generate random data."
             case .generic: return "An error occurred."
             }
         }
@@ -61,7 +57,7 @@ internal enum OnionRequestAPI {
         return LokiAPI.invoke(.getSwarm, on: snode, associatedWith: hexEncodedPublicKey, parameters: parameters, timeout: timeout).map(on: workQueue) { _ in }
     }
 
-    /// Finds `guardSnodeCount` guard snodes to use for path building. The returned promise may error out with `Error.insufficientSnodes`
+    /// Finds `guardSnodeCount` guard snodes to use for path building. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
     private static func getGuardSnodes() -> Promise<Set<LokiAPITarget>> {
         if !guardSnodes.isEmpty {
@@ -98,7 +94,7 @@ internal enum OnionRequestAPI {
         }
     }
 
-    /// Builds and returns `pathCount` paths. The returned promise may error out with `Error.insufficientSnodes`
+    /// Builds and returns `pathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
     private static func buildPaths() -> Promise<Set<Path>> {
         print("[Loki] [Onion Request API] Building onion request paths.")
@@ -110,6 +106,7 @@ internal enum OnionRequestAPI {
                 guard unusedSnodes.count >= minSnodeCount else { throw Error.insufficientSnodes }
                 let result: Set<Path> = Set(guardSnodes.map { guardSnode in
                     // Force unwrapping is safe because of the minSnodeCount check above
+                    // randomElement() uses the system's default random generator, which is cryptographically secure
                     return [ guardSnode ] + (0..<(pathSize - 1)).map { _ in unusedSnodes.randomElement()! }
                 })
                 print("[Loki] [Onion Request API] Built new onion request paths: \(result.map { "\($0.description)" }.joined(separator: ", "))")
@@ -118,58 +115,10 @@ internal enum OnionRequestAPI {
         }
     }
 
-    private static func getCanonicalHeaders(for request: TSRequest) -> [String:Any] {
-        guard let headers = request.allHTTPHeaderFields else { return [:] }
-        return headers.mapValues { value in
-            switch value.lowercased() {
-            case "true": return true
-            case "false": return false
-            default: return value
-            }
-        }
-    }
-
-    private static func encrypt(_ request: TSRequest, forSnode snode: LokiAPITarget) -> Promise<URLRequest> {
-        let (promise, seal) = Promise<URLRequest>.pending()
-        let headers = getCanonicalHeaders(for: request)
-        workQueue.async {
-            guard let snodeHexEncodedPublicKeySet = snode.publicKeySet else { return seal.reject(Error.snodePublicKeySetMissing) }
-            let snodeEncryptionKey = Data(hex: snodeHexEncodedPublicKeySet.encryptionKey)
-            let ephemeralKeyPair = Curve25519.generateKeyPair()
-            let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: snodeEncryptionKey, privateKey: ephemeralKeyPair.privateKey)
-            guard let symmetricKey = uncheckedSymmetricKey else { return seal.reject(Error.symmetricKeyGenerationFailed) }
-            let url = "\(snode.address):\(snode.port)/onion_req"
-            guard let parametersAsData = try? JSONSerialization.data(withJSONObject: request.parameters, options: []) else { return seal.reject(Error.jsonSerializationFailed) }
-            let onionRequestParameters: JSON = [
-                "method" : request.httpMethod,
-                "body" : String(bytes: parametersAsData, encoding: .utf8),
-                "headers" : headers
-            ]
-            guard let onionRequestParametersAsData = try? JSONSerialization.data(withJSONObject: onionRequestParameters, options: []) else { return seal.reject(Error.jsonSerializationFailed) }
-            guard let ivAndCipherText = try? DiffieHellman.encrypt(onionRequestParametersAsData, using: symmetricKey) else { return seal.reject(Error.encryptionFailed) }
-            let onionRequestHeaders = [
-                "X-Sender-Public-Key" : ephemeralKeyPair.publicKey.toHexString(),
-                "X-Target-Snode-Key" : snodeHexEncodedPublicKeySet.idKey
-            ]
-            let onionRequest = AFHTTPRequestSerializer().request(withMethod: "POST", urlString: url, parameters: nil, error: nil) as URLRequest
-            seal.fulfill(onionRequest)
-        }
-        return promise
-    }
-
-    private static func encrypt(_ request: TSRequest, forTargetSnode snode: LokiAPITarget) -> Promise<TSRequest> {
-        return Promise<TSRequest> { $0.fulfill(request) }
-    }
-
-    private static func encrypt(_ request: TSRequest, forRelayFrom snode1: LokiAPITarget, to snode2: LokiAPITarget) -> Promise<TSRequest> {
-        return Promise<TSRequest> { $0.fulfill(request) }
-    }
-
-    // MARK: Internal API
-    /// Returns an `OnionRequestPath` to be used for onion requests. Builds new paths as needed.
+    /// Returns a `Path` to be used for onion requests. Builds paths as needed.
     ///
     /// - Note: Should ideally only ever be invoked from `DispatchQueue.global()`.
-    internal static func getPath() -> Promise<Path> {
+    private static func getPath() -> Promise<Path> {
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= pathCount {
             return Promise<Path> { $0.fulfill(paths.randomElement()!) }
@@ -182,38 +131,42 @@ internal enum OnionRequestAPI {
         }
     }
 
-    /// Sends an onion request to `snode`. Builds paths as needed.
-    internal static func send(_ request: TSRequest, to snode: LokiAPITarget) -> Promise<Any> {
-        var request = request
-        return getPath().then(on: workQueue) { path -> Promise<TSRequest> in
-            var path = path
-            path.removeFirst() // Drop the guard snode
-            return encrypt(request, forTargetSnode: snode).then(on: workQueue) { r -> Promise<TSRequest> in
-                request = r
+    /// Builds an onion around `payload` and returns the result.
+    private static func buildOnion(around payload: Data, targetedAt snode: LokiAPITarget) -> Promise<(guardSnode: LokiAPITarget, onion: Data)> {
+        var guardSnode: LokiAPITarget!
+        return getPath().then(on: workQueue) { path -> Promise<EncryptionResult> in
+            guardSnode = path.first!
+            return encrypt(payload, forTargetSnode: snode).then(on: workQueue) { r -> Promise<EncryptionResult> in
+                var path = path
+                var encryptionResult = r
                 var rhs = snode
-                func encryptForNextLayer() -> Promise<TSRequest> {
+                func addLayer() -> Promise<EncryptionResult> {
                     if path.isEmpty {
-                        return Promise<TSRequest> { $0.fulfill(request) }
+                        return Promise<EncryptionResult> { $0.fulfill(encryptionResult) }
                     } else {
                         let lhs = path.removeLast()
-                        return encrypt(request, forRelayFrom: lhs, to: rhs).then(on: workQueue) { r -> Promise<TSRequest> in
-                            request = r
+                        return OnionRequestAPI.encryptHop(from: lhs, to: rhs, using: encryptionResult).then(on: workQueue) { e -> Promise<EncryptionResult> in
+                            encryptionResult = e
                             rhs = lhs
-                            return encryptForNextLayer()
+                            return addLayer()
                         }
                     }
                 }
-                return encryptForNextLayer()
+                return addLayer()
             }
-        }.then { request -> Promise<Any> in
-            let (promise, seal) = LokiAPI.RawResponsePromise.pending()
-            var task: URLSessionDataTask!
-            task = httpSession.dataTask(with: request as URLRequest) { response, result, error in
+        }.map { (guardSnode: guardSnode, onion: $0.ciphertext) }
+    }
+
+    // MARK: Internal API
+    /// Sends an onion request to `snode`. Builds paths as needed.
+    internal static func send(_ request: URLRequest, to snode: LokiAPITarget) -> Promise<Any> {
+        return buildOnion(around: request.httpBody!, targetedAt: snode).then(on: workQueue) { intermediate -> Promise<Any> in
+            let guardSnode = intermediate.guardSnode
+            let onion = intermediate.onion
+            let (promise, seal) = Promise<Any>.pending()
+            let task = urlSession.dataTask(with: request) { response, result, error in
                 if let error = error {
-                    let nmError = NetworkManagerError.taskError(task: task, underlyingError: error)
-                    let nsError = nmError as NSError
-                    nsError.isRetryable = false
-                    seal.reject(nsError)
+                    seal.reject(error)
                 } else if let result = result {
                     seal.fulfill(result)
                 } else {

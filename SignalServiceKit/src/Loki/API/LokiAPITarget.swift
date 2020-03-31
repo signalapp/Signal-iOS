@@ -14,8 +14,8 @@ internal final class LokiAPITarget : NSObject, NSCoding {
     }
     
     internal struct KeySet {
-        let idKey: String
-        let encryptionKey: String
+        let ed25519Key: String
+        let x25519Key: String
     }
     
     // MARK: Initialization
@@ -30,7 +30,7 @@ internal final class LokiAPITarget : NSObject, NSCoding {
         address = coder.decodeObject(forKey: "address") as! String
         port = coder.decodeObject(forKey: "port") as! UInt16
         if let idKey = coder.decodeObject(forKey: "idKey") as? String, let encryptionKey = coder.decodeObject(forKey: "encryptionKey") as? String {
-            publicKeySet = KeySet(idKey: idKey, encryptionKey: encryptionKey)
+            publicKeySet = KeySet(ed25519Key: idKey, x25519Key: encryptionKey)
         } else {
             publicKeySet = nil
         }
@@ -41,8 +41,8 @@ internal final class LokiAPITarget : NSObject, NSCoding {
         coder.encode(address, forKey: "address")
         coder.encode(port, forKey: "port")
         if let keySet = publicKeySet {
-            coder.encode(keySet.idKey, forKey: "idKey")
-            coder.encode(keySet.encryptionKey, forKey: "encryptionKey")
+            coder.encode(keySet.ed25519Key, forKey: "idKey")
+            coder.encode(keySet.x25519Key, forKey: "encryptionKey")
         }
     }
     
