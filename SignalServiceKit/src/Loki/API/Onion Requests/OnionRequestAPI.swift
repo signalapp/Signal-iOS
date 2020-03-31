@@ -95,14 +95,10 @@ internal enum OnionRequestAPI {
                 let statusCode = UInt(response.statusCode)
                 guard 200...299 ~= statusCode else {
                     print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed with status code: \(statusCode).")
-                    var json: JSON? = nil
-                    if JSONSerialization.isValidJSONObject(data) {
-                        json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON
-                    }
+                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON
                     return seal.reject(Error.httpRequestFailed(statusCode: statusCode, json: json))
                 }
                 do {
-                    guard JSONSerialization.isValidJSONObject(data) else { return seal.reject(Error.invalidJSON) }
                     let json = try JSONSerialization.jsonObject(with: data, options: [])
                     seal.fulfill(json)
                 } catch (let error) {
@@ -121,7 +117,7 @@ internal enum OnionRequestAPI {
         queue.async {
             print("[Loki] [Onion Request API] Testing snode: \(snode).")
             let url = "\(snode.address):\(snode.port)/get_stats/v1"
-            let timeout: TimeInterval = 6 // Use a shorter timeout for testing
+            let timeout: TimeInterval = 10 // Use a shorter timeout for testing
             execute(.get, url, timeout: timeout).done(on: queue) { rawResponse in
                 guard let json = rawResponse as? JSON, let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
                 // TODO: Caching
