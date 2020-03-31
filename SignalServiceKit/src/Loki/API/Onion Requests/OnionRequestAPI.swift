@@ -10,7 +10,7 @@ internal enum OnionRequestAPI {
     internal static var guardSnodes: Set<LokiAPITarget> = []
     internal static var paths: Set<Path> = []
     /// - Note: Exposed for testing purposes.
-    internal static let workQueue = DispatchQueue.global() // TODO: We should probably move away from using the global queue for this
+    internal static let workQueue = DispatchQueue(label: "OnionRequestAPI.workQueue", qos: .userInitiated)
 
     // MARK: Settings
     private static let guardSnodeCount: UInt = 3
@@ -32,6 +32,7 @@ internal enum OnionRequestAPI {
     internal enum Error : LocalizedError {
         case generic
         case insufficientSnodes
+        case invalidJSON
         case randomDataGenerationFailed
         case snodePublicKeySetMissing
 
@@ -39,6 +40,7 @@ internal enum OnionRequestAPI {
             switch self {
             case .generic: return "An error occurred."
             case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
+            case .invalidJSON: return "Invalid JSON."
             case .randomDataGenerationFailed: return "Couldn't generate random data."
             case .snodePublicKeySetMissing: return "Missing snode public key set."
             }
@@ -51,11 +53,21 @@ internal enum OnionRequestAPI {
     // MARK: Private API
     /// Tests the given snode. The returned promise errors out if the snode is faulty; the promise is fulfilled otherwise.
     private static func testSnode(_ snode: LokiAPITarget) -> Promise<Void> {
-        print("[Loki] [Onion Request API] Testing snode: \(snode).")
-        let hexEncodedPublicKey = getUserHexEncodedPublicKey()
-        let parameters: JSON = [ "pubKey" : hexEncodedPublicKey ]
-        let timeout: TimeInterval = 10 // Use a shorter timeout for testing
-        return LokiAPI.invoke(.getSwarm, on: snode, associatedWith: hexEncodedPublicKey, parameters: parameters, timeout: timeout).map(on: workQueue) { _ in }
+        let (promise, seal) = Promise<Void>.pending()
+        let queue = DispatchQueue(label: UUID().uuidString, qos: .userInitiated) // No need to block the work queue for this
+        queue.async {
+            print("[Loki] [Onion Request API] Testing snode: \(snode).")
+            let hexEncodedPublicKey = getUserHexEncodedPublicKey()
+            let parameters: JSON = [ "pubKey" : hexEncodedPublicKey ]
+            let timeout: TimeInterval = 6 // Use a shorter timeout for testing
+            // TODO: Move LokiAPI away from using TSNetworkManager so that we can be smarter about threading
+            LokiAPI.invoke(.getSwarm, on: snode, associatedWith: hexEncodedPublicKey, parameters: parameters, timeout: timeout).done(on: queue) { _ in
+                seal.fulfill(())
+            }.catch { error in
+                seal.reject(error)
+            }
+        }
+        return promise
     }
 
     /// Finds `guardSnodeCount` guard snodes to use for path building. The returned promise errors out with `Error.insufficientSnodes`
@@ -108,9 +120,10 @@ internal enum OnionRequestAPI {
                 let result: Set<Path> = Set(guardSnodes.map { guardSnode in
                     // Force unwrapping is safe because of the minSnodeCount check above
                     // randomElement() uses the system's default random generator, which is cryptographically secure
-                    return [ guardSnode ] + (0..<(pathSize - 1)).map { _ in unusedSnodes.randomElement()! }
+                    let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in unusedSnodes.randomElement()! }
+                    print("[Loki] [Onion Request API] Built new onion request path: \(result.prettifiedDescription).")
+                    return result
                 })
-                print("[Loki] [Onion Request API] Built new onion request paths: \(result.map { "\($0.description)" }.joined(separator: ", "))")
                 return result
             }
         }
@@ -176,6 +189,7 @@ internal enum OnionRequestAPI {
             request.httpBody = onion
             request.timeoutInterval = timeout
             let (promise, seal) = Promise<Any>.pending()
+            print("[Loki] [Onion Request API] Sending onion request.")
             let task = urlSession.dataTask(with: request) { response, result, error in
                 if let error = error {
                     seal.reject(error)

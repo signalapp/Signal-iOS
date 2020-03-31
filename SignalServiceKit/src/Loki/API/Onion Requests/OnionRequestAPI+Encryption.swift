@@ -5,6 +5,10 @@ extension OnionRequestAPI {
 
     internal typealias EncryptionResult = (ciphertext: Data, symmetricKey: Data, ephemeralPublicKey: Data)
 
+    private static func getQueue() -> DispatchQueue {
+        return DispatchQueue(label: UUID().uuidString, qos: .userInitiated)
+    }
+
     /// Returns `size` bytes of random data generated using the default random number generator. See
     /// [SecRandomCopyBytes](https://developer.apple.com/documentation/security/1399291-secrandomcopybytes) for more information.
     private static func getRandomData(ofSize size: UInt) throws -> Data {
@@ -43,9 +47,10 @@ extension OnionRequestAPI {
     /// Encrypts `payload` for `snode` and returns the result. Use this to build the core of an onion request.
     internal static func encrypt(_ payload: Data, forTargetSnode snode: LokiAPITarget) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
-        workQueue.async {
-            let parameters: JSON = [ "body" : payload ]
+        getQueue().async {
+            let parameters: JSON = [ "body" : payload.base64EncodedString() ]
             do {
+                guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
                 let plaintext = try JSONSerialization.data(withJSONObject: parameters, options: [])
                 let result = try encrypt(plaintext, forSnode: snode)
                 seal.fulfill(result)
@@ -59,13 +64,14 @@ extension OnionRequestAPI {
     /// Encrypts the previous encryption result (i.e. that of the hop after this one) for the given hop. Use this to build the layers of an onion request.
     internal static func encryptHop(from snode1: LokiAPITarget, to snode2: LokiAPITarget, using previousEncryptionResult: EncryptionResult) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
-        workQueue.async {
+        getQueue().async {
             let parameters: JSON = [
                 "ciphertext" : previousEncryptionResult.ciphertext.base64EncodedString(),
                 "ephemeral_key" : previousEncryptionResult.ephemeralPublicKey.toHexString(),
                 "destination" : snode2.publicKeySet!.ed25519Key
             ]
             do {
+                guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
                 let plaintext = try JSONSerialization.data(withJSONObject: parameters, options: [])
                 let result = try encrypt(plaintext, forSnode: snode1)
                 seal.fulfill(result)
