@@ -4,19 +4,20 @@ import PromiseKit
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 internal enum OnionRequestAPI {
-    private static let urlSessionDelegate = URLSessionDelegateImplementation()
     private static let urlSession = URLSession(configuration: .ephemeral, delegate: urlSessionDelegate, delegateQueue: nil)
+    private static let urlSessionDelegate = URLSessionDelegateImplementation()
 
-    /// - Note: Exposed for testing purposes.
-    internal static let workQueue = DispatchQueue.global() // TODO: We should probably move away from using the global queue for this
     internal static var guardSnodes: Set<LokiAPITarget> = []
     internal static var paths: Set<Path> = []
+    /// - Note: Exposed for testing purposes.
+    internal static let workQueue = DispatchQueue.global() // TODO: We should probably move away from using the global queue for this
 
     // MARK: Settings
+    private static let guardSnodeCount: UInt = 3
     private static let pathCount: UInt = 3
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
-    private static let guardSnodeCount: UInt = 3
+    private static let timeout: TimeInterval = 20
 
     // MARK: URL Session Delegate Implementation
     private final class URLSessionDelegateImplementation : NSObject, URLSessionDelegate {
@@ -29,17 +30,17 @@ internal enum OnionRequestAPI {
 
     // MARK: Error
     internal enum Error : LocalizedError {
-        case insufficientSnodes
-        case snodePublicKeySetMissing
-        case randomDataGenerationFailed
         case generic
+        case insufficientSnodes
+        case randomDataGenerationFailed
+        case snodePublicKeySetMissing
 
         var errorDescription: String? {
             switch self {
-            case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
-            case .snodePublicKeySetMissing: return "Missing snode public key set."
-            case .randomDataGenerationFailed: return "Couldn't generate random data."
             case .generic: return "An error occurred."
+            case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
+            case .randomDataGenerationFailed: return "Couldn't generate random data."
+            case .snodePublicKeySetMissing: return "Missing snode public key set."
             }
         }
     }
@@ -71,7 +72,7 @@ internal enum OnionRequestAPI {
                 func getGuardSnode() -> Promise<LokiAPITarget> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
                     guard let candidate = snodePool.randomElement() else { return Promise<LokiAPITarget> { $0.reject(Error.insufficientSnodes) } }
-                    // Loop until a valid guard snode is found
+                    // Loop until a reliable guard snode is found
                     return testSnode(candidate).map(on: workQueue) { candidate }.recover(on: workQueue) { _ in getGuardSnode() }
                 }
                 func getAndStoreGuardSnode() -> Promise<LokiAPITarget> {
@@ -115,10 +116,9 @@ internal enum OnionRequestAPI {
         }
     }
 
-    /// Returns a `Path` to be used for onion requests. Builds paths as needed.
-    ///
-    /// - Note: Should ideally only ever be invoked from `DispatchQueue.global()`.
+    /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
     private static func getPath() -> Promise<Path> {
+        // TODO: Handle potential race condition on paths
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= pathCount {
             return Promise<Path> { $0.fulfill(paths.randomElement()!) }
@@ -145,8 +145,8 @@ internal enum OnionRequestAPI {
                         return Promise<EncryptionResult> { $0.fulfill(encryptionResult) }
                     } else {
                         let lhs = path.removeLast()
-                        return OnionRequestAPI.encryptHop(from: lhs, to: rhs, using: encryptionResult).then(on: workQueue) { e -> Promise<EncryptionResult> in
-                            encryptionResult = e
+                        return OnionRequestAPI.encryptHop(from: lhs, to: rhs, using: encryptionResult).then(on: workQueue) { r -> Promise<EncryptionResult> in
+                            encryptionResult = r
                             rhs = lhs
                             return addLayer()
                         }
@@ -154,15 +154,27 @@ internal enum OnionRequestAPI {
                 }
                 return addLayer()
             }
-        }.map { (guardSnode: guardSnode, onion: $0.ciphertext) }
+        }.map(on: workQueue) { (guardSnode: guardSnode, onion: $0.ciphertext) }
     }
 
     // MARK: Internal API
-    /// Sends an onion request to `snode`. Builds paths as needed.
-    internal static func send(_ request: URLRequest, to snode: LokiAPITarget) -> Promise<Any> {
-        return buildOnion(around: request.httpBody!, targetedAt: snode).then(on: workQueue) { intermediate -> Promise<Any> in
+    /// Sends an onion request to `snode`. Builds new paths as needed.
+    internal static func invoke(_ method: LokiAPITarget.Method, on snode: LokiAPITarget, parameters: JSON) -> Promise<Any> {
+        let parameters: JSON = [ "method" : method.rawValue, "params" : parameters ]
+        let payload: Data
+        do {
+            payload = try JSONSerialization.data(withJSONObject: parameters, options: [])
+        } catch (let error) {
+            return Promise<Any> { $0.reject(error) }
+        }
+        return buildOnion(around: payload, targetedAt: snode).then(on: workQueue) { intermediate -> Promise<Any> in
             let guardSnode = intermediate.guardSnode
             let onion = intermediate.onion
+            let url = URL(string: "\(guardSnode.address):\(guardSnode.port)/onion_req")!
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.httpBody = onion
+            request.timeoutInterval = timeout
             let (promise, seal) = Promise<Any>.pending()
             let task = urlSession.dataTask(with: request) { response, result, error in
                 if let error = error {
