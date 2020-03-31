@@ -1137,7 +1137,7 @@ public class GroupManager: NSObject {
 
     // MARK: - Removed from Group or Invite Revoked
 
-    public static func handleWasRemovedFromGroupOrInviteRevoked(groupId: Data,
+    public static func handleNotInGroup(groupId: Data,
                                                                 transaction: SDSAnyWriteTransaction) {
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("Missing localAddress.")

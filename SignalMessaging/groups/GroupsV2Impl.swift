@@ -183,7 +183,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         return performServiceRequest(requestBuilder: requestBuilder,
                                      groupId: nil,
-                                     shouldRemoveOn403: false).asVoid()
+                                     behavior403: .nothing).asVoid()
     }
 
     // MARK: - Update Group
@@ -259,7 +259,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return firstly {
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              shouldRemoveOn403: true)
+                                              behavior403: .updateGroup)
         }.then(on: DispatchQueue.global()) { (response: ServiceResponse) -> Promise<UpdatedV2Group> in
 
             guard let changeActionsProtoData = response.responseObject as? Data else {
@@ -368,7 +368,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              shouldRemoveOn403: true)
+                                              behavior403: .updateGroup)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoAvatarUploadAttributes in
 
             guard let protoData = response.responseObject as? Data else {
@@ -428,7 +428,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              shouldRemoveOn403: true)
+                                              behavior403: .removeFromGroup)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoGroup in
             guard let groupProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -501,7 +501,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return firstly { () -> Promise<ServiceResponse> in
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: nil,
-                                              shouldRemoveOn403: false)
+                                              behavior403: .removeFromGroup)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoGroupChanges in
             guard let groupChangesProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -687,9 +687,16 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     private typealias AuthCredentialMap = [UInt32: AuthCredential]
     private typealias RequestBuilder = (AuthCredential, AFHTTPSessionManager) -> Promise<NSURLRequest>
 
+    // Represents how we should respond to 403 status codes.
+    private enum Behavior403 {
+        case nothing
+        case removeFromGroup
+        case updateGroup
+    }
+
     private func performServiceRequest(requestBuilder: @escaping RequestBuilder,
                                        groupId: Data?,
-                                       shouldRemoveOn403: Bool,
+                                       behavior403: Behavior403,
                                        remainingRetries: UInt = 3) -> Promise<ServiceResponse> {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
@@ -713,7 +720,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                         firstly {
                             self.performServiceRequest(requestBuilder: requestBuilder,
                                                        groupId: groupId,
-                                                       shouldRemoveOn403: shouldRemoveOn403,
+                                                       behavior403: behavior403,
                                                        remainingRetries: remainingRetries - 1)
                         }.done(on: DispatchQueue.global()) { (response: ServiceResponse) in
                             resolver.fulfill(response)
@@ -738,15 +745,35 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     case 403:
                         // 403 indicates that we are no longer in the group for
                         // many (but not all) group v2 service requests.
-                        if shouldRemoveOn403 {
-                            // We should only receive 403 when groupId is not nil.
-                            if let groupId = groupId {
+
+                        if let groupId = groupId {
+                            switch behavior403 {
+                            case .nothing:
+                                // We should never receive 403 when creating groups.
+                                owsFailDebug("Unexpected 403.")
+                                break
+                            case .removeFromGroup:
+                                // If we receive 403 when trying to fetch group state,
+                                // we have left the group, been removed from the group
+                                // or had our invite revoked and we should make sure
+                                // group state in the database reflects that.
                                 self.databaseStorage.write { transaction in
-                                    GroupManager.handleWasRemovedFromGroupOrInviteRevoked(groupId: groupId, transaction: transaction)
+                                    GroupManager.handleNotInGroup(groupId: groupId,
+                                                                  transaction: transaction)
                                 }
-                            } else {
-                                owsFailDebug("Missing groupId.")
+                            case .updateGroup:
+                                // Service returns 403 if client tries to perform an
+                                // update for which it is not authorized (e.g. add a
+                                // new member if membership access is admin-only).
+                                // The local client can't assume that 403 means they
+                                // are not in the group. Therefore we "update group
+                                // to latest" to check for and handle that case (see
+                                // previous case).
+                                self.tryToUpdateGroupToLatest(groupId: groupId)
                             }
+                        } else {
+                            // We should only receive 403 when groupId is not nil.
+                            owsFailDebug("Missing groupId.")
                         }
 
                         resolver.reject(GroupsV2Error.localUserNotInGroup)
@@ -837,6 +864,33 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             blockTask = task
             task.resume()
         }
+    }
+
+    private func tryToUpdateGroupToLatest(groupId: Data) {
+        guard let groupThread = (databaseStorage.read { transaction in
+            TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+        }) else {
+            owsFailDebug("Missing group thread.")
+            return
+        }
+        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid group model.")
+            return
+        }
+        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
+        firstly {
+            self.groupV2Updates.tryToRefreshV2GroupThreadWithThrottling(groupId: groupId,
+                                                                        groupSecretParamsData: groupModelV2.secretParamsData,
+                                                                        groupUpdateMode: groupUpdateMode)
+        }.done { _ in
+            Logger.verbose("Update succeeded.")
+        }.catch { error in
+            if IsNetworkConnectivityFailure(error) {
+                Logger.warn("Error: \(error)")
+            } else {
+                owsFailDebug("Error: \(error)")
+            }
+        }.retainUntilComplete()
     }
 
     // MARK: - ProfileKeyCredentials
