@@ -173,41 +173,43 @@ internal enum OnionRequestAPI {
     // MARK: Internal API
     /// Sends an onion request to `snode`. Builds new paths as needed.
     internal static func invoke(_ method: LokiAPITarget.Method, on snode: LokiAPITarget, parameters: JSON) -> Promise<Any> {
-        let parameters: JSON = [ "method" : method.rawValue, "params" : parameters ]
-        let payload: Data
-        do {
-            guard JSONSerialization.isValidJSONObject(parameters) else { return Promise<Any> { $0.reject(Error.invalidJSON) } }
-            payload = try JSONSerialization.data(withJSONObject: parameters, options: [])
-        } catch (let error) {
-            return Promise<Any> { $0.reject(error) }
-        }
-        return buildOnion(around: payload, targetedAt: snode).then(on: workQueue) { intermediate -> Promise<Any> in
-            let guardSnode = intermediate.guardSnode
-            let encryptionResult = intermediate.encryptionResult
-            let onion = encryptionResult.ciphertext
-            let url = URL(string: "\(guardSnode.address):\(guardSnode.port)/onion_req")!
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            let parameters: JSON = [
-                "ciphertext" : onion.base64EncodedString(),
-                "ephemeral_key" : encryptionResult.ephemeralPublicKey.toHexString()
-            ]
-            guard JSONSerialization.isValidJSONObject(parameters) else { throw Error.invalidJSON }
-            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
-            request.timeoutInterval = timeout
-            let (promise, seal) = Promise<Any>.pending()
-            print("[Loki] [Onion Request API] Sending onion request.")
-            let task = urlSession.dataTask(with: request) { response, result, error in
-                if let error = error {
-                    seal.reject(error)
-                } else if let result = result {
-                    seal.fulfill(result)
-                } else {
-                    seal.reject(Error.generic)
-                }
+        let (promise, seal) = Promise<Any>.pending()
+        workQueue.async {
+            let parameters: JSON = [ "method" : method.rawValue, "params" : parameters ]
+            let payload: Data
+            do {
+                guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
+                payload = try JSONSerialization.data(withJSONObject: parameters, options: [])
+            } catch (let error) {
+                return seal.reject(error)
             }
-            task.resume()
-            return promise
+            buildOnion(around: payload, targetedAt: snode).done(on: workQueue) { intermediate in
+                let guardSnode = intermediate.guardSnode
+                let encryptionResult = intermediate.encryptionResult
+                let onion = encryptionResult.ciphertext
+                let url = URL(string: "\(guardSnode.address):\(guardSnode.port)/onion_req")!
+                var request = URLRequest(url: url)
+                request.httpMethod = "POST"
+                let parameters: JSON = [
+                    "ciphertext" : onion.base64EncodedString(),
+                    "ephemeral_key" : encryptionResult.ephemeralPublicKey.toHexString()
+                ]
+                guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
+                request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                request.timeoutInterval = timeout
+                print("[Loki] [Onion Request API] Sending onion request.")
+                let task = urlSession.dataTask(with: request) { response, result, error in
+                    if let error = error {
+                        seal.reject(error)
+                    } else if let result = result {
+                        seal.fulfill(result)
+                    } else {
+                        seal.reject(Error.generic)
+                    }
+                }
+                task.resume()
+            }
         }
+        return promise
     }
 }
