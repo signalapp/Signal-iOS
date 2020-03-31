@@ -15,7 +15,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @class SDSKeyValueStore;
 @class SignalAccount;
 @class SignalServiceAddress;
-@class TSThread;
 @class UIFont;
 
 /**

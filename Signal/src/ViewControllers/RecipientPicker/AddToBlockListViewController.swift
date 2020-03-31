@@ -100,4 +100,6 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     }
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
+
+    func recipientPickerNewGroupButtonWasPressed() {}
 }

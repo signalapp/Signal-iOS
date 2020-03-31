@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
                                   transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address;
+- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
+                                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread

@@ -15,26 +15,16 @@ class ComposeViewController: OWSViewController {
 
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowInvites = true
+        recipientPicker.shouldShowNewGroup = true
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(dismissPressed))
-
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btnGroup--white"), style: .plain, target: self, action: #selector(newGroupPressed))
-        navigationItem.rightBarButtonItem?.accessibilityLabel = NSLocalizedString("NEW_GROUP_BUTTON_LABEL",
-                                                                                  comment: "Accessibility label for the new group button")
     }
 
     @objc func dismissPressed() {
         dismiss(animated: true)
-    }
-
-    @objc func newGroupPressed() {
-        let newGroupView: UIViewController = (RemoteConfig.groupsV2CreateGroups
-            ? NewGroupViewController2()
-            : NewGroupViewController())
-        navigationController?.pushViewController(newGroupView, animated: true)
     }
 
     func newConversation(address: SignalServiceAddress) {
@@ -94,4 +84,11 @@ extension ComposeViewController: RecipientPickerDelegate {
     }
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
+
+    func recipientPickerNewGroupButtonWasPressed() {
+        let newGroupView: UIViewController = (RemoteConfig.groupsV2CreateGroups
+            ? NewGroupViewController2()
+            : NewGroupViewController())
+        navigationController?.pushViewController(newGroupView, animated: true)
+    }
 }

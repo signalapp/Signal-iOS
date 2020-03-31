@@ -529,18 +529,13 @@ class ConversationSettingsViewController: OWSTableViewController {
             owsFailDebug("Can't edit membership.")
             return
         }
-        guard let conversationSettingsViewDelegate = conversationSettingsViewDelegate else {
-            owsFailDebug("Missing conversationSettingsViewDelegate.")
-            return
-        }
         guard let groupThread = thread as? TSGroupThread else {
             owsFailDebug("Invalid thread.")
             return
         }
-        // TODO: This view will be replaced.
-        let updateGroupViewController = UpdateGroupViewController(groupThread: groupThread, mode: .`default`)
-        updateGroupViewController.conversationSettingsViewDelegate = conversationSettingsViewDelegate
-        navigationController?.pushViewController(updateGroupViewController, animated: true)
+        let addGroupMembersViewController = AddGroupMembersViewController(groupThread: groupThread)
+        addGroupMembersViewController.addGroupMembersViewControllerDelegate = self
+        navigationController?.pushViewController(addGroupMembersViewController, animated: true)
     }
 
     func presentContactViewController() {
@@ -923,9 +918,16 @@ extension ConversationSettingsViewController: ColorPickerDelegate {
 // MARK: -
 
 extension ConversationSettingsViewController: GroupAttributesViewControllerDelegate {
+    func groupAttributesDidUpdate() {
+        updateTableContents()
+    }
+}
 
-    func groupAttributesDidUpdate(groupName: String?, groupAvatar: GroupAvatar?) {
-        // TODO:
+// MARK: -
+
+extension ConversationSettingsViewController: AddGroupMembersViewControllerDelegate {
+    func addGroupMembersViewDidUpdate() {
+        updateTableContents()
     }
 }
 

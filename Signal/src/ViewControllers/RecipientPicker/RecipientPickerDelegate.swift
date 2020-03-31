@@ -19,6 +19,8 @@ protocol RecipientPickerDelegate: AnyObject {
                          accessoryViewForRecipient recipient: PickedRecipient) -> UIView?
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController)
+
+    func recipientPickerNewGroupButtonWasPressed()
 }
 
 @objc

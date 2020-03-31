@@ -477,6 +477,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.groupNameTextField resignFirstResponder];
 }
 
+- (void)recipientPickerNewGroupButtonWasPressed
+{
+    OWSFailDebug(@"Invalid action.");
+}
+
 #pragma mark - OWSNavigationView
 
 - (BOOL)shouldCancelNavigationBack

@@ -53,4 +53,9 @@ public class NewGroupSeed: NSObject {
         }
         return groupIdV1
     }
+
+    @objc
+    public var possibleConversationColorName: ConversationColorName {
+        return TSGroupThread.defaultConversationColorName(forGroupId: possibleGroupId)
+    }
 }

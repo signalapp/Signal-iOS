@@ -230,7 +230,7 @@ const NSUInteger kMinimumSearchLength = 2;
     const CGFloat kHeroSize = ScaleFromIPhone5To7Plus(100, 150);
     [heroImageView autoSetDimension:ALDimensionWidth toSize:kHeroSize];
     [heroImageView autoSetDimension:ALDimensionHeight toSize:kHeroSize];
-    UIView *lastSubview = heroImageView;
+    __block UIView *lastSubview = heroImageView;
 
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = NSLocalizedString(
@@ -258,39 +258,40 @@ const NSUInteger kMinimumSearchLength = 2;
     [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview withOffset:15];
     lastSubview = subtitleLabel;
 
+    void (^addButton)(NSString *, SEL, NSString *)
+        = ^(NSString *title, SEL selector, NSString *accessibilityIdentifierName) {
+              UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+              [button setTitle:title forState:UIControlStateNormal];
+              [button setTitleColor:UIColor.ows_accentBlueColor forState:UIControlStateNormal];
+              [button.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
+              [contents addSubview:button];
+              [button autoHCenterInSuperview];
+              [button autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview withOffset:50];
+              [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
+              lastSubview = button;
+              SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, button);
+              button.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, accessibilityIdentifierName);
+          };
+
     if (self.shouldShowInvites) {
-        UIButton *inviteContactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [inviteContactsButton setTitle:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                                           "Label for the cell that presents the 'invite contacts' workflow.")
-                              forState:UIControlStateNormal];
-        [inviteContactsButton setTitleColor:UIColor.ows_accentBlueColor forState:UIControlStateNormal];
-        [inviteContactsButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
-        [contents addSubview:inviteContactsButton];
-        [inviteContactsButton autoHCenterInSuperview];
-        [inviteContactsButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview withOffset:50];
-        [inviteContactsButton addTarget:self
-                                 action:@selector(presentInviteFlow)
-                       forControlEvents:UIControlEventTouchUpInside];
-        lastSubview = inviteContactsButton;
-        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, inviteContactsButton);
+        addButton(NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                      "Label for the cell that presents the 'invite contacts' workflow."),
+            @selector(presentInviteFlow),
+            @"inviteContactsButton");
     }
 
     if (self.allowsAddByPhoneNumber) {
-        UIButton *searchByPhoneNumberButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [searchByPhoneNumberButton
-            setTitle:NSLocalizedString(@"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
-                         @"Label for a button that lets users search for contacts by phone number")
-            forState:UIControlStateNormal];
-        [searchByPhoneNumberButton setTitleColor:UIColor.ows_accentBlueColor forState:UIControlStateNormal];
-        [searchByPhoneNumberButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
-        [contents addSubview:searchByPhoneNumberButton];
-        [searchByPhoneNumberButton autoHCenterInSuperview];
-        [searchByPhoneNumberButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview withOffset:20];
-        [searchByPhoneNumberButton addTarget:self
-                                      action:@selector(hideBackgroundView)
-                            forControlEvents:UIControlEventTouchUpInside];
-        lastSubview = searchByPhoneNumberButton;
-        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchByPhoneNumberButton);
+        addButton(NSLocalizedString(@"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
+                      @"Label for a button that lets users search for contacts by phone number"),
+            @selector(hideBackgroundView),
+            @"searchByPhoneNumberButton");
+    }
+
+    if (self.shouldShowNewGroup) {
+        addButton(NSLocalizedString(@"NEW_GROUP_BUTTON", comment
+                                    : @"Label for the 'create new group' button."),
+            @selector(newGroupButtonPressed),
+            @"newGroupButton");
     }
 
     [lastSubview autoPinEdgeToSuperviewMargin:ALEdgeBottom];
@@ -407,6 +408,44 @@ const NSUInteger kMinimumSearchLength = 2;
                                     actionBlock:^{
                                         [weakSelf presentInviteFlow];
                                     }]];
+    }
+
+    if (self.shouldShowNewGroup) {
+        [staticSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            NSString *cellName = NSLocalizedString(@"NEW_GROUP_BUTTON", comment
+                                                                   : @"Label for the 'create new group' button.");
+                            UIImage *iconBackgroundImage = [UIImage imageWithColor:Theme.washColor];
+                            UIImageView *iconBackgroundImageView =
+                                [[AvatarImageView alloc] initWithImage:iconBackgroundImage];
+                            UIImageView *iconForegroundImageView =
+                                [UIImageView withTemplateImageName:@"group-outline-40"
+                                                         tintColor:Theme.primaryIconColor];
+                            [iconBackgroundImageView addSubview:iconForegroundImageView];
+                            [iconForegroundImageView autoCenterInSuperview];
+                            [iconBackgroundImageView
+                                autoSetDimensionsToSize:CGSizeMake(kStandardAvatarSize, kStandardAvatarSize)];
+                            [iconForegroundImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
+                            [iconBackgroundImageView setContentHuggingHorizontalHigh];
+                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
+                                                                           iconView:iconBackgroundImageView];
+
+                            __strong typeof(self) strongSelf = weakSelf;
+                            if (!strongSelf) {
+                                return cell;
+                            }
+
+                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                            cell.accessibilityIdentifier
+                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"new_group");
+
+                            return cell;
+                        }
+                        customRowHeight:UITableViewAutomaticDimension
+                        actionBlock:^{
+                            [weakSelf newGroupButtonPressed];
+                        }]];
     }
 
     // Render any non-contact picked recipients
@@ -816,6 +855,11 @@ const NSUInteger kMinimumSearchLength = 2;
         // don't show "no signal contacts", show "no contact access"
         self.isNoContactsModeActive = NO;
     }
+}
+
+- (void)newGroupButtonPressed
+{
+    [self.delegate recipientPickerNewGroupButtonWasPressed];
 }
 
 - (void)setIsNoContactsModeActive:(BOOL)isNoContactsModeActive

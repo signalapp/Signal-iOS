@@ -46,7 +46,7 @@ extension ConversationSettingsViewController {
             if let groupThread = viewController.thread as? TSGroupThread,
                 groupThread.groupModel.groupAvatarData == nil,
                 viewController.canEditConversationAttributes {
-                let cameraButton = GroupAttributesViewController.buildCameraButton()
+                let cameraButton = GroupAttributesEditorHelper.buildCameraButtonForCorner()
                 avatarWrapper.addSubview(cameraButton)
                 cameraButton.autoPinEdge(toSuperviewEdge: .trailing)
                 cameraButton.autoPinEdge(toSuperviewEdge: .bottom)

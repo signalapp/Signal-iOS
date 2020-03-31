@@ -41,6 +41,27 @@
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Video Call";
 
+/* Label for the 'add group member' button. */
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Add Member";
+
+/* Label for the 'add group members' button. */
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
+
+/* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Add member to “%2$@”?";
+
+/* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Add %1$@ members to “%2$@”?";
+
+/* Title for the 'add group member' confirmation alert. */
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Add New Member";
+
+/* Title for the 'add group members' confirmation alert. */
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Add New Members";
+
+/* The title for the 'add group members' view. */
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Add Members";
+
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Would you like to share your profile with this group?";
 
@@ -995,6 +1016,9 @@
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Edit Group";
 
+/* Error message indicating the a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "User can't be added to the group.";
+
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
 
@@ -1337,6 +1361,9 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
 
+/* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
+"GROUP_MEMBER_COUNT_FORMAT" = "%@/%@";
+
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER_INDICATOR" = "(me)";
 
@@ -1357,6 +1384,9 @@
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Message";
+
+/* Placeholder text for 'group name' field. */
+"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
@@ -2021,8 +2051,8 @@
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
 
-/* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+/* Label for the 'create new group' button. */
+"NEW_GROUP_BUTTON" = "New Group";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Create";
@@ -2033,6 +2063,12 @@
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "New group could not be created. Check your internet connection and try again.";
 
+/* Message for error alert indicating that a group name is required. */
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "A group name is required.";
+
+/* Title for error alert indicating that a group name is required. */
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Missing Group Name";
+
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "New Group";
 
@@ -2042,14 +2078,17 @@
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
 
+/* The title for the 'name new group' view. */
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Name Group";
+
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Name this group chat";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Other Users";
 
-/* The placeholder text for the search input in the 'create new group' view. */
-"NEW_GROUP_SEARCH_PLACEHOLDER" = "Search";
+/* The title for the 'select members for new group' view. */
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Select Members";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to discard these changes?";
