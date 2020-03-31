@@ -145,7 +145,7 @@ internal enum OnionRequestAPI {
     }
 
     /// Builds an onion around `payload` and returns the result.
-    private static func buildOnion(around payload: Data, targetedAt snode: LokiAPITarget) -> Promise<(guardSnode: LokiAPITarget, onion: Data)> {
+    private static func buildOnion(around payload: Data, targetedAt snode: LokiAPITarget) -> Promise<(guardSnode: LokiAPITarget, encryptionResult: EncryptionResult)> {
         var guardSnode: LokiAPITarget!
         return getPath().then(on: workQueue) { path -> Promise<EncryptionResult> in
             guardSnode = path.first!
@@ -167,7 +167,7 @@ internal enum OnionRequestAPI {
                 }
                 return addLayer()
             }
-        }.map(on: workQueue) { (guardSnode: guardSnode, onion: $0.ciphertext) }
+        }.map(on: workQueue) { (guardSnode: guardSnode, encryptionResult: $0) }
     }
 
     // MARK: Internal API
@@ -176,17 +176,24 @@ internal enum OnionRequestAPI {
         let parameters: JSON = [ "method" : method.rawValue, "params" : parameters ]
         let payload: Data
         do {
+            guard JSONSerialization.isValidJSONObject(parameters) else { return Promise<Any> { $0.reject(Error.invalidJSON) } }
             payload = try JSONSerialization.data(withJSONObject: parameters, options: [])
         } catch (let error) {
             return Promise<Any> { $0.reject(error) }
         }
         return buildOnion(around: payload, targetedAt: snode).then(on: workQueue) { intermediate -> Promise<Any> in
             let guardSnode = intermediate.guardSnode
-            let onion = intermediate.onion
+            let encryptionResult = intermediate.encryptionResult
+            let onion = encryptionResult.ciphertext
             let url = URL(string: "\(guardSnode.address):\(guardSnode.port)/onion_req")!
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
-            request.httpBody = onion
+            let parameters: JSON = [
+                "ciphertext" : onion.base64EncodedString(),
+                "ephemeral_key" : encryptionResult.ephemeralPublicKey.toHexString()
+            ]
+            guard JSONSerialization.isValidJSONObject(parameters) else { throw Error.invalidJSON }
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
             request.timeoutInterval = timeout
             let (promise, seal) = Promise<Any>.pending()
             print("[Loki] [Onion Request API] Sending onion request.")
