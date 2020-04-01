@@ -101,7 +101,7 @@ internal enum OnionRequestAPI {
                         json = [ "message" : message ]
                     }
                     let jsonDescription = json?.prettifiedDescription ?? "no debugging info provided"
-                    print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed with status code: \(statusCode) (\(jsonDescription).")
+                    print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed with status code: \(statusCode) (\(jsonDescription)).")
                     return seal.reject(Error.httpRequestFailed(statusCode: statusCode, json: json))
                 }
                 do {
@@ -126,7 +126,6 @@ internal enum OnionRequestAPI {
             let timeout: TimeInterval = 10 // Use a shorter timeout for testing
             execute(.get, url, timeout: timeout).done(on: queue) { rawResponse in
                 guard let json = rawResponse as? JSON, let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
-                // TODO: Caching
                 if version >= "2.0.0" {
                     seal.fulfill(())
                 } else {

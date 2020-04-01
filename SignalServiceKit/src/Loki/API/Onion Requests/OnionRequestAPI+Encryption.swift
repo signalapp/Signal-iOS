@@ -9,9 +9,9 @@ extension OnionRequestAPI {
         return DispatchQueue(label: UUID().uuidString, qos: .userInitiated)
     }
 
-    /// Returns `size` bytes of random data generated using the default random number generator. See
+    /// Returns `size` bytes of random data generated using the default secure random number generator. See
     /// [SecRandomCopyBytes](https://developer.apple.com/documentation/security/1399291-secrandomcopybytes) for more information.
-    private static func getRandomData(ofSize size: UInt) throws -> Data {
+    private static func getSecureRandomData(ofSize size: UInt) throws -> Data {
         var data = Data(count: Int(size))
         let result = data.withUnsafeMutableBytes { SecRandomCopyBytes(kSecRandomDefault, Int(size), $0.baseAddress!) }
         guard result == errSecSuccess else { throw Error.randomDataGenerationFailed }
@@ -22,10 +22,10 @@ extension OnionRequestAPI {
     private static func encrypt(_ plaintext: Data, usingAESGCMWithSymmetricKey symmetricKey: Data) throws -> Data {
         guard !Thread.isMainThread else { preconditionFailure("It's illegal to call encrypt(_:usingAESGCMWithSymmetricKey:) from the main thread.") }
         let ivSize: UInt = 12
-        let iv = try getRandomData(ofSize: ivSize)
+        let iv = try getSecureRandomData(ofSize: ivSize)
         let gcmTagLength: UInt = 128
         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagLength), mode: .combined)
-        let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .noPadding)
+        let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .pkcs7)
         let ciphertext = try aes.encrypt(plaintext.bytes)
         return iv + Data(bytes: ciphertext)
     }
@@ -48,7 +48,7 @@ extension OnionRequestAPI {
     internal static func encrypt(_ payload: Data, forTargetSnode snode: LokiAPITarget) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
         getQueue().async {
-            let parameters: JSON = [ "body" : payload.base64EncodedString() ]
+            let parameters: JSON = [ "body" : payload.base64EncodedString(), "headers" : "" ]
             do {
                 guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
                 let plaintext = try JSONSerialization.data(withJSONObject: parameters, options: [])
