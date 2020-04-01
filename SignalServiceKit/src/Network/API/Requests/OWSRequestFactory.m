@@ -503,6 +503,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (SSKFeatureFlags.groupsV2SetCapability) {
         capabilities[@"gv2"] = @(YES);
     }
+    if (OWSKeyBackupService.hasMasterKey) {
+        capabilities[@"storage"] = @(YES);
+    }
     return [capabilities copy];
 }
 
