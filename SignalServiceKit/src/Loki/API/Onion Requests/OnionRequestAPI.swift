@@ -172,8 +172,8 @@ internal enum OnionRequestAPI {
             let snodePool = LokiAPI.randomSnodePool
             return getGuardSnodes().then(on: workQueue) { guardSnodes -> Promise<Set<LokiAPITarget>> in
                 var unusedSnodes = snodePool.subtracting(guardSnodes) // Sync on workQueue
-                let minSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
-                guard unusedSnodes.count >= minSnodeCount else { throw Error.insufficientSnodes }
+                let pathSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
+                guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
                 func getPathSnode() -> Promise<LokiAPITarget> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
                     guard let candidate = unusedSnodes.randomElement() else { return Promise<LokiAPITarget> { $0.reject(Error.insufficientSnodes) } }
@@ -182,14 +182,14 @@ internal enum OnionRequestAPI {
                     // Loop until a reliable guard snode is found
                     return testSnode(candidate).map(on: workQueue) { candidate }.recover(on: workQueue) { _ in getPathSnode() }
                 }
-                let promises = (0..<guardSnodeCount).map { _ in getPathSnode() }
+                let promises = (0..<pathSnodeCount).map { _ in getPathSnode() }
                 return when(fulfilled: promises).map(on: workQueue) { Set($0) }
             }.map(on: workQueue) { pathSnodes in
                 var pathSnodes = pathSnodes
                 return Set(guardSnodes.map { guardSnode in
                     let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
                         // randomElement() uses the system's default random generator, which is cryptographically secure
-                        let pathSnode = pathSnodes.randomElement()! // Safe because of the minSnodeCount check above
+                        let pathSnode = pathSnodes.randomElement()! // Should be safe
                         pathSnodes.remove(pathSnode)
                         return pathSnode
                     }
@@ -261,11 +261,11 @@ internal enum OnionRequestAPI {
                 let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
                 let encryptionResult = intermediate.encryptionResult
                 let onion = encryptionResult.ciphertext
-                let symmetricKey = intermediate.symmetricKey
                 let parameters: JSON = [
                     "ciphertext" : onion.base64EncodedString(),
                     "ephemeral_key" : encryptionResult.ephemeralPublicKey.toHexString()
                 ]
+                let symmetricKey = intermediate.symmetricKey
                 execute(.post, url, parameters: parameters).done(on: workQueue) { rawResponse in
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
                         let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext) else { return seal.reject(Error.invalidJSON) }
