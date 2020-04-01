@@ -60,7 +60,7 @@ extension OnionRequestAPI {
         return promise
     }
 
-    /// Encrypts the previous encryption result (i.e. that of the hop after this one) for the given hop. Use this to build the layers of an onion request.
+    /// Encrypts the previous encryption result (i.e. that of the hop after this one) for this hop. Use this to build the layers of an onion request.
     internal static func encryptHop(from snode1: LokiAPITarget, to snode2: LokiAPITarget, using previousEncryptionResult: EncryptionResult) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
         getQueue().async {

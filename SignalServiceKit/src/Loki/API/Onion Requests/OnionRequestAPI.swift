@@ -12,7 +12,7 @@ internal enum OnionRequestAPI {
     internal static let workQueue = DispatchQueue(label: "OnionRequestAPI.workQueue", qos: .userInitiated)
 
     // MARK: Settings
-    private static let pathCount: UInt = 3
+    private static let pathCount: UInt = 2
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
     private static let timeout: TimeInterval = 20
@@ -65,7 +65,7 @@ internal enum OnionRequestAPI {
     internal typealias Path = [LokiAPITarget]
 
     // MARK: Onion Building Result
-    private typealias OnionBuildingResult = (guardSnode: LokiAPITarget, encryptionResult: EncryptionResult, symmetricKey: Data)
+    private typealias OnionBuildingResult = (guardSnode: LokiAPITarget, encryptionResult: EncryptionResult, targetSnodeSymmetricKey: Data)
 
     // MARK: Private API
     private static func execute(_ verb: HTTPVerb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = OnionRequestAPI.timeout) -> Promise<JSON> {
@@ -217,13 +217,15 @@ internal enum OnionRequestAPI {
     /// Builds an onion around `payload` and returns the result.
     private static func buildOnion(around payload: Data, targetedAt snode: LokiAPITarget) -> Promise<OnionBuildingResult> {
         var guardSnode: LokiAPITarget!
+        var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the target snode
         var encryptionResult: EncryptionResult!
-        var symmetricKey: Data!
         return getPath().then(on: workQueue) { path -> Promise<EncryptionResult> in
             guardSnode = path.first!
+            // Encrypt in reverse order, i.e. the target snode first
             return encrypt(payload, forTargetSnode: snode).then(on: workQueue) { r -> Promise<EncryptionResult> in
+                targetSnodeSymmetricKey = r.symmetricKey
+                // Recursively encrypt the layers of the onion (again in reverse order)
                 encryptionResult = r
-                symmetricKey = r.symmetricKey
                 var path = path
                 var rhs = snode
                 func addLayer() -> Promise<EncryptionResult> {
@@ -240,12 +242,12 @@ internal enum OnionRequestAPI {
                 }
                 return addLayer()
             }
-        }.map(on: workQueue) { _ in (guardSnode: guardSnode, encryptionResult: encryptionResult, symmetricKey: symmetricKey) }
+        }.map(on: workQueue) { _ in (guardSnode, encryptionResult, targetSnodeSymmetricKey) }
     }
 
     // MARK: Internal API
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    internal static func invoke(_ method: LokiAPITarget.Method, on snode: LokiAPITarget, parameters: JSON) -> Promise<Any> {
+    internal static func invoke(_ method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON) -> Promise<Any> {
         let (promise, seal) = Promise<Any>.pending()
         workQueue.async {
             let parameters: JSON = [ "method" : method.rawValue, "params" : parameters ]
@@ -265,7 +267,7 @@ internal enum OnionRequestAPI {
                     "ciphertext" : onion.base64EncodedString(),
                     "ephemeral_key" : encryptionResult.ephemeralPublicKey.toHexString()
                 ]
-                let symmetricKey = intermediate.symmetricKey
+                let targetSnodeSymmetricKey = intermediate.targetSnodeSymmetricKey
                 execute(.post, url, parameters: parameters).done(on: workQueue) { rawResponse in
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
                         let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext) else { return seal.reject(Error.invalidJSON) }
@@ -273,7 +275,7 @@ internal enum OnionRequestAPI {
                     let ciphertext = ivAndCiphertext[Int(ivSize)...]
                     do {
                         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
-                        let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .pkcs7)
+                        let aes = try AES(key: targetSnodeSymmetricKey.bytes, blockMode: gcm, padding: .pkcs7)
                         let result = try aes.decrypt(ciphertext.bytes)
                         seal.fulfill(Data(bytes: result))
                     } catch (let error) {
