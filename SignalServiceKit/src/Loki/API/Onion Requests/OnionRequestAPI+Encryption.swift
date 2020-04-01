@@ -2,7 +2,7 @@ import CryptoSwift
 import PromiseKit
 
 extension OnionRequestAPI {
-    internal static let gcmTagLength: UInt = 128
+    internal static let gcmTagSize: UInt = 16
     internal static let ivSize: UInt = 12
 
     internal typealias EncryptionResult = (ciphertext: Data, symmetricKey: Data, ephemeralPublicKey: Data)
@@ -24,7 +24,7 @@ extension OnionRequestAPI {
     private static func encrypt(_ plaintext: Data, usingAESGCMWithSymmetricKey symmetricKey: Data) throws -> Data {
         guard !Thread.isMainThread else { preconditionFailure("It's illegal to call encrypt(_:usingAESGCMWithSymmetricKey:) from the main thread.") }
         let iv = try getSecureRandomData(ofSize: ivSize)
-        let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagLength), mode: .combined)
+        let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
         let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .pkcs7)
         let ciphertext = try aes.encrypt(plaintext.bytes)
         return iv + Data(bytes: ciphertext)

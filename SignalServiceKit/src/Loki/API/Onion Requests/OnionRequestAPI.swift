@@ -272,12 +272,12 @@ internal enum OnionRequestAPI {
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
                         let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext) else { return seal.reject(Error.invalidJSON) }
                     let iv = ivAndCiphertext[0..<Int(ivSize)]
-                    let ciphertext = ivAndCiphertext[Int(ivSize)..<ivAndCiphertext.endIndex]
+                    let ciphertext = ivAndCiphertext[Int(ivSize)...]
                     do {
-                        let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagLength), mode: .combined)
+                        let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
                         let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .pkcs7)
                         let result = try aes.decrypt(ciphertext.bytes)
-                        seal.fulfill(result)
+                        seal.fulfill(Data(bytes: result))
                     } catch (let error) {
                         seal.reject(error)
                     }
