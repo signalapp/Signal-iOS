@@ -49,13 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
     [ProtoUtils addLocalProfileKeyToDataMessageBuilder:builder];
     [builder setFlags:SSKProtoDataMessageFlagsProfileKeyUpdate];
 
-    if (address.isValid) {
-        // Once we've shared our profile key with a user (perhaps due to being
-        // a member of a whitelisted group), make sure they're whitelisted.
-        id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-        [profileManager addUserToProfileWhitelist:address];
-    }
-
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
     if (error || !dataProto) {

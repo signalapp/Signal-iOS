@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ProtoUtils.h"
@@ -58,15 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([self shouldMessageHaveLocalProfileKey:thread address:address transaction:transaction]) {
         [dataMessageBuilder setProfileKey:self.localProfileKey.keyData];
-
-        if (address.isValid) {
-            // Once we've shared our profile key with a user (perhaps due to being
-            // a member of a whitelisted group), make sure they're whitelisted.
-            // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.profileManager addUserToProfileWhitelist:address];
-            });
-        }
     }
 }
 
@@ -89,13 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([self shouldMessageHaveLocalProfileKey:thread address:address transaction:transaction]) {
         [callMessageBuilder setProfileKey:self.localProfileKey.keyData];
-
-        // Once we've shared our profile key with a user (perhaps due to being
-        // a member of a whitelisted group), make sure they're whitelisted.
-        // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.profileManager addUserToProfileWhitelist:address];
-        });
     }
 }
 
