@@ -155,13 +155,8 @@ public class SDSDatabaseStorage: SDSTransactable {
             owsFailDebug("Unexpected data store.")
         }
 
-        // crash if we can't read the DB.
-        do {
-            return try Bench(title: "Creating GRDB storage") {
-                return try GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
-            }
-        } catch {
-            owsFail("\(error.grdbErrorForLogging)")
+        return Bench(title: "Creating GRDB storage") {
+            return GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
         }
     }
 
