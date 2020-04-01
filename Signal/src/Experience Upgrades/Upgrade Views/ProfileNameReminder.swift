@@ -21,7 +21,12 @@ class ProfileNameReminderMegaphone: MegaphoneView {
                                 comment: "Body for profile name reminder megaphone when user already has a profile name")
             : NSLocalizedString("PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY",
                                 comment: "Body for profile name reminder megaphone when user doesn't have a profile name")
-        imageName = "profileMegaphone"
+
+        if let profileImage = OWSProfileManager.shared().localProfileAvatarImage() {
+            image = profileImage.resizedImage(to: CGSize(square: 64))?.withCornerRadius(32)
+        } else {
+            imageName = "profileMegaphone"
+        }
 
         let primaryButton = MegaphoneView.Button(
             title: NSLocalizedString("PROFILE_NAME_REMINDER_MEGAPHONE_ACTION",
