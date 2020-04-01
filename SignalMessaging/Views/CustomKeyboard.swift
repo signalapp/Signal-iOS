@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -132,11 +132,15 @@ private class CustomKeyboardResponder: UITextView {
     init(customKeyboard: CustomKeyboard) {
         self.customKeyboard = customKeyboard
         super.init(frame: .zero, textContainer: nil)
-        inputView = customKeyboard
         autocorrectionType = .no
         keyboardAppearance = Theme.keyboardAppearance
         inputAssistantItem.leadingBarButtonGroups = []
         inputAssistantItem.trailingBarButtonGroups = []
+    }
+
+    override var inputView: UIView? {
+        get { customKeyboard }
+        set {}
     }
 
     required init?(coder aDecoder: NSCoder) {
