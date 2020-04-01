@@ -1,8 +1,6 @@
 import CryptoSwift
 import PromiseKit
 
-// TODO: Test path snodes as well
-
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 internal enum OnionRequestAPI {
     private static let urlSession = URLSession(configuration: .ephemeral, delegate: urlSessionDelegate, delegateQueue: nil)
@@ -70,8 +68,8 @@ internal enum OnionRequestAPI {
     private typealias OnionBuildingResult = (guardSnode: LokiAPITarget, encryptionResult: EncryptionResult, symmetricKey: Data)
 
     // MARK: Private API
-    private static func execute(_ verb: HTTPVerb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = OnionRequestAPI.timeout) -> Promise<Any> {
-        return Promise<Any> { seal in
+    private static func execute(_ verb: HTTPVerb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = OnionRequestAPI.timeout) -> Promise<JSON> {
+        return Promise<JSON> { seal in
             let url = URL(string: url)!
             var request = URLRequest(url: url)
             request.httpMethod = verb.rawValue
@@ -94,27 +92,23 @@ internal enum OnionRequestAPI {
                     return seal.reject(error)
                 }
                 let statusCode = UInt(response.statusCode)
-                guard 200...299 ~= statusCode else {
-                    var json: JSON? = nil
-                    if let j = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON {
-                        json = j
-                    } else if let result = String(data: data, encoding: .utf8) {
-                        json = [ "result" : result ]
-                    }
-                    let jsonDescription = json?.prettifiedDescription ?? "no debugging info provided"
-                    print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed with status code: \(statusCode) (\(jsonDescription)).")
-                    return seal.reject(Error.httpRequestFailed(statusCode: statusCode, json: json))
-                }
-                var json: JSON! = nil
+                var json: JSON? = nil
                 if let j = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON {
                     json = j
                 } else if let result = String(data: data, encoding: .utf8) {
                     json = [ "result" : result ]
+                }
+                guard 200...299 ~= statusCode else {
+                    let jsonDescription = json?.prettifiedDescription ?? "no debugging info provided"
+                    print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed with status code: \(statusCode) (\(jsonDescription)).")
+                    return seal.reject(Error.httpRequestFailed(statusCode: statusCode, json: json))
+                }
+                if let json = json {
+                    seal.fulfill(json)
                 } else {
                     print("[Loki] [Onion Request API] Couldn't parse JSON returned by \(verb.rawValue) request to \(url).")
                     return seal.reject(Error.invalidJSON)
                 }
-                seal.fulfill(json!)
             }
             task.resume()
         }
@@ -125,9 +119,8 @@ internal enum OnionRequestAPI {
         let (promise, seal) = Promise<Void>.pending()
         let queue = DispatchQueue(label: UUID().uuidString, qos: .userInitiated) // No need to block the work queue for this
         queue.async {
-            print("[Loki] [Onion Request API] Testing snode: \(snode).")
             let url = "\(snode.address):\(snode.port)/get_stats/v1"
-            let timeout: TimeInterval = 10 // Use a shorter timeout for testing
+            let timeout: TimeInterval = 6 // Use a shorter timeout for testing
             execute(.get, url, timeout: timeout).done(on: queue) { rawResponse in
                 guard let json = rawResponse as? JSON, let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
                 if version >= "2.0.0" {
@@ -146,31 +139,22 @@ internal enum OnionRequestAPI {
     /// Finds `guardSnodeCount` guard snodes to use for path building. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
     private static func getGuardSnodes() -> Promise<Set<LokiAPITarget>> {
-        if !guardSnodes.isEmpty {
+        if guardSnodes.count >= guardSnodeCount {
             return Promise<Set<LokiAPITarget>> { $0.fulfill(guardSnodes) }
         } else {
             print("[Loki] [Onion Request API] Populating guard snode cache.")
             return LokiAPI.getRandomSnode().then(on: workQueue) { _ -> Promise<Set<LokiAPITarget>> in // Just used to populate the snode pool
-                let snodePool = LokiAPI.randomSnodePool
-                guard !snodePool.isEmpty else { throw Error.insufficientSnodes }
-                var result: Set<LokiAPITarget> = [] // Sync on DispatchQueue.global()
+                var unusedSnodes = LokiAPI.randomSnodePool // Sync on workQueue
+                guard unusedSnodes.count >= guardSnodeCount else { throw Error.insufficientSnodes }
                 func getGuardSnode() -> Promise<LokiAPITarget> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
-                    guard let candidate = snodePool.randomElement() else { return Promise<LokiAPITarget> { $0.reject(Error.insufficientSnodes) } }
+                    guard let candidate = unusedSnodes.randomElement() else { return Promise<LokiAPITarget> { $0.reject(Error.insufficientSnodes) } }
+                    unusedSnodes.remove(candidate)
+                    print("[Loki] [Onion Request API] Testing guard snode: \(candidate).")
                     // Loop until a reliable guard snode is found
                     return testSnode(candidate).map(on: workQueue) { candidate }.recover(on: workQueue) { _ in getGuardSnode() }
                 }
-                func getAndStoreGuardSnode() -> Promise<LokiAPITarget> {
-                    return getGuardSnode().then(on: workQueue) { guardSnode -> Promise<LokiAPITarget> in
-                        if !result.contains(guardSnode) {
-                            result.insert(guardSnode)
-                            return Promise { $0.fulfill(guardSnode) }
-                        } else {
-                            return getAndStoreGuardSnode()
-                        }
-                    }
-                }
-                let promises = (0..<guardSnodeCount).map { _ in getAndStoreGuardSnode() }
+                let promises = (0..<guardSnodeCount).map { _ in getGuardSnode() }
                 return when(fulfilled: promises).map(on: workQueue) { guardSnodes in
                     let guardSnodesAsSet = Set(guardSnodes)
                     OnionRequestAPI.guardSnodes = guardSnodesAsSet
@@ -186,18 +170,32 @@ internal enum OnionRequestAPI {
         print("[Loki] [Onion Request API] Building onion request paths.")
         return LokiAPI.getRandomSnode().then(on: workQueue) { _ -> Promise<Set<Path>> in // Just used to populate the snode pool
             let snodePool = LokiAPI.randomSnodePool
-            return getGuardSnodes().map(on: workQueue) { guardSnodes in
-                var unusedSnodes = snodePool.subtracting(guardSnodes)
+            return getGuardSnodes().then(on: workQueue) { guardSnodes -> Promise<Set<LokiAPITarget>> in
+                var unusedSnodes = snodePool.subtracting(guardSnodes) // Sync on workQueue
                 let minSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
                 guard unusedSnodes.count >= minSnodeCount else { throw Error.insufficientSnodes }
-                let result: Set<Path> = Set(guardSnodes.map { guardSnode in
-                    // Force unwrapping is safe because of the minSnodeCount check above
+                func getPathSnode() -> Promise<LokiAPITarget> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
-                    let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in unusedSnodes.randomElement()! }
+                    guard let candidate = unusedSnodes.randomElement() else { return Promise<LokiAPITarget> { $0.reject(Error.insufficientSnodes) } }
+                    unusedSnodes.remove(candidate)
+                    print("[Loki] [Onion Request API] Testing path snode: \(candidate).")
+                    // Loop until a reliable guard snode is found
+                    return testSnode(candidate).map(on: workQueue) { candidate }.recover(on: workQueue) { _ in getPathSnode() }
+                }
+                let promises = (0..<guardSnodeCount).map { _ in getPathSnode() }
+                return when(fulfilled: promises).map(on: workQueue) { Set($0) }
+            }.map(on: workQueue) { pathSnodes in
+                var pathSnodes = pathSnodes
+                return Set(guardSnodes.map { guardSnode in
+                    let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
+                        // randomElement() uses the system's default random generator, which is cryptographically secure
+                        let pathSnode = pathSnodes.randomElement()! // Safe because of the minSnodeCount check above
+                        pathSnodes.remove(pathSnode)
+                        return pathSnode
+                    }
                     print("[Loki] [Onion Request API] Built new onion request path: \(result.prettifiedDescription).")
                     return result
                 })
-                return result
             }
         }
     }
