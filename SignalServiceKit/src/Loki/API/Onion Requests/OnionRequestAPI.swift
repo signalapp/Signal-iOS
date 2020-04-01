@@ -1,3 +1,4 @@
+import CryptoSwift
 import PromiseKit
 
 // TODO: Test path snodes as well
@@ -66,7 +67,7 @@ internal enum OnionRequestAPI {
     internal typealias Path = [LokiAPITarget]
 
     // MARK: Onion Building Result
-    private typealias OnionBuildingResult = (guardSnode: LokiAPITarget, encryptionResult: EncryptionResult)
+    private typealias OnionBuildingResult = (guardSnode: LokiAPITarget, encryptionResult: EncryptionResult, symmetricKey: Data)
 
     // MARK: Private API
     private static func execute(_ verb: HTTPVerb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = OnionRequestAPI.timeout) -> Promise<Any> {
@@ -113,7 +114,7 @@ internal enum OnionRequestAPI {
                     print("[Loki] [Onion Request API] Couldn't parse JSON returned by \(verb.rawValue) request to \(url).")
                     return seal.reject(Error.invalidJSON)
                 }
-                seal.fulfill(json)
+                seal.fulfill(json!)
             }
             task.resume()
         }
@@ -219,10 +220,12 @@ internal enum OnionRequestAPI {
     private static func buildOnion(around payload: Data, targetedAt snode: LokiAPITarget) -> Promise<OnionBuildingResult> {
         var guardSnode: LokiAPITarget!
         var encryptionResult: EncryptionResult!
+        var symmetricKey: Data!
         return getPath().then(on: workQueue) { path -> Promise<EncryptionResult> in
             guardSnode = path.first!
             return encrypt(payload, forTargetSnode: snode).then(on: workQueue) { r -> Promise<EncryptionResult> in
                 encryptionResult = r
+                symmetricKey = r.symmetricKey
                 var path = path
                 var rhs = snode
                 func addLayer() -> Promise<EncryptionResult> {
@@ -239,7 +242,7 @@ internal enum OnionRequestAPI {
                 }
                 return addLayer()
             }
-        }.map(on: workQueue) { _ in (guardSnode: guardSnode, encryptionResult: encryptionResult) }
+        }.map(on: workQueue) { _ in (guardSnode: guardSnode, encryptionResult: encryptionResult, symmetricKey: symmetricKey) }
     }
 
     // MARK: Internal API
@@ -260,12 +263,24 @@ internal enum OnionRequestAPI {
                 let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
                 let encryptionResult = intermediate.encryptionResult
                 let onion = encryptionResult.ciphertext
+                let symmetricKey = intermediate.symmetricKey
                 let parameters: JSON = [
                     "ciphertext" : onion.base64EncodedString(),
                     "ephemeral_key" : encryptionResult.ephemeralPublicKey.toHexString()
                 ]
                 execute(.post, url, parameters: parameters).done(on: workQueue) { rawResponse in
-                    seal.fulfill(rawResponse)
+                    guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
+                        let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext) else { return seal.reject(Error.invalidJSON) }
+                    let iv = ivAndCiphertext[0..<Int(ivSize)]
+                    let ciphertext = ivAndCiphertext[Int(ivSize)..<ivAndCiphertext.endIndex]
+                    do {
+                        let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagLength), mode: .combined)
+                        let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .pkcs7)
+                        let result = try aes.decrypt(ciphertext.bytes)
+                        seal.fulfill(result)
+                    } catch (let error) {
+                        seal.reject(error)
+                    }
                 }.catch(on: workQueue) { error in
                     seal.reject(error)
                 }
