@@ -18,7 +18,7 @@ internal enum OnionRequestAPI {
     private static let pathSize: UInt = 3
     private static let timeout: TimeInterval = 20
 
-    private static var guardSnodeCount: UInt { return pathCount }
+    private static var guardSnodeCount: UInt { return pathCount } // One per path
 
     // MARK: HTTP Verb
     private enum HTTPVerb : String {
@@ -94,8 +94,14 @@ internal enum OnionRequestAPI {
                 }
                 let statusCode = UInt(response.statusCode)
                 guard 200...299 ~= statusCode else {
-                    print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed with status code: \(statusCode).")
-                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON
+                    var json: JSON? = nil
+                    if let j = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON {
+                        json = j
+                    } else if let message = String(data: data, encoding: .utf8) {
+                        json = [ "message" : message ]
+                    }
+                    let jsonDescription = json?.prettifiedDescription ?? "no debugging info provided"
+                    print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed with status code: \(statusCode) (\(jsonDescription).")
                     return seal.reject(Error.httpRequestFailed(statusCode: statusCode, json: json))
                 }
                 do {
@@ -121,7 +127,7 @@ internal enum OnionRequestAPI {
             execute(.get, url, timeout: timeout).done(on: queue) { rawResponse in
                 guard let json = rawResponse as? JSON, let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
                 // TODO: Caching
-                if version >= "2.0.3" {
+                if version >= "2.0.0" {
                     seal.fulfill(())
                 } else {
                     print("[Loki] [Onion Request API] Unsupported snode version: \(version).")
@@ -210,11 +216,12 @@ internal enum OnionRequestAPI {
     /// Builds an onion around `payload` and returns the result.
     private static func buildOnion(around payload: Data, targetedAt snode: LokiAPITarget) -> Promise<OnionBuildingResult> {
         var guardSnode: LokiAPITarget!
+        var encryptionResult: EncryptionResult!
         return getPath().then(on: workQueue) { path -> Promise<EncryptionResult> in
             guardSnode = path.first!
             return encrypt(payload, forTargetSnode: snode).then(on: workQueue) { r -> Promise<EncryptionResult> in
+                encryptionResult = r
                 var path = path
-                var encryptionResult = r
                 var rhs = snode
                 func addLayer() -> Promise<EncryptionResult> {
                     if path.isEmpty {
@@ -230,7 +237,7 @@ internal enum OnionRequestAPI {
                 }
                 return addLayer()
             }
-        }.map(on: workQueue) { (guardSnode: guardSnode, encryptionResult: $0) }
+        }.map(on: workQueue) { _ in (guardSnode: guardSnode, encryptionResult: encryptionResult) }
     }
 
     // MARK: Internal API

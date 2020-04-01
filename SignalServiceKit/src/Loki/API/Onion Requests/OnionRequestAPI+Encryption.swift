@@ -20,14 +20,14 @@ extension OnionRequestAPI {
 
     /// - Note: Sync. Don't call from the main thread.
     private static func encrypt(_ plaintext: Data, usingAESGCMWithSymmetricKey symmetricKey: Data) throws -> Data {
-        guard !Thread.isMainThread else { preconditionFailure("It's illegal to call encryptUsingAESGCM(symmetricKey:plainText:) from the main thread.") }
+        guard !Thread.isMainThread else { preconditionFailure("It's illegal to call encrypt(_:usingAESGCMWithSymmetricKey:) from the main thread.") }
         let ivSize: UInt = 12
         let iv = try getRandomData(ofSize: ivSize)
         let gcmTagLength: UInt = 128
         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagLength), mode: .combined)
         let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .noPadding)
         let ciphertext = try aes.encrypt(plaintext.bytes)
-        return Data(bytes: ciphertext)
+        return iv + Data(bytes: ciphertext)
     }
 
     /// - Note: Sync. Don't call from the main thread.
