@@ -245,17 +245,11 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
-    public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
+    public var quotedReplyBubbleColor: UIColor {
         if Theme.isDarkThemeEnabled {
-            if isIncoming {
-                return UIColor(rgbHex: 0x1976D2).withAlphaComponent(0.75)
-            } else {
-                return UIColor.ows_black.withAlphaComponent(0.4)
-            }
-        } else if isIncoming {
-            return bubbleColorOutgoingSent.withAlphaComponent(0.25)
+            return .ows_signalBlueDark
         } else {
-            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.75)
+            return .ows_accentBlueTint
         }
     }
 
@@ -263,14 +257,14 @@ public class ConversationStyle: NSObject {
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
         if Theme.isDarkThemeEnabled {
             if isIncoming {
-                return UIColor(rgbHex: 0x1976D2)
+                return .ows_accentBlueTint
             } else {
-                return UIColor.ows_black
+                return .ows_black
             }
         } else if isIncoming {
-            return bubbleColorOutgoingSent
+            return .ows_accentBlue
         } else {
-            return UIColor.white
+            return .ows_white
         }
     }
 
@@ -296,7 +290,10 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func quotedReplyAttachmentColor() -> UIColor {
-        // TODO:
-        return Theme.middleGrayColor
+        if Theme.isDarkThemeEnabled {
+            return UIColor.ows_gray05
+        } else {
+            return UIColor.ows_gray90
+        }
     }
 }
