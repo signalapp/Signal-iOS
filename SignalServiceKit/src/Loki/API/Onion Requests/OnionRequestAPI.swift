@@ -97,20 +97,23 @@ internal enum OnionRequestAPI {
                     var json: JSON? = nil
                     if let j = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON {
                         json = j
-                    } else if let message = String(data: data, encoding: .utf8) {
-                        json = [ "message" : message ]
+                    } else if let result = String(data: data, encoding: .utf8) {
+                        json = [ "result" : result ]
                     }
                     let jsonDescription = json?.prettifiedDescription ?? "no debugging info provided"
                     print("[Loki] [Onion Request API] \(verb.rawValue) request to \(url) failed with status code: \(statusCode) (\(jsonDescription)).")
                     return seal.reject(Error.httpRequestFailed(statusCode: statusCode, json: json))
                 }
-                do {
-                    let json = try JSONSerialization.jsonObject(with: data, options: [])
-                    seal.fulfill(json)
-                } catch (let error) {
+                var json: JSON! = nil
+                if let j = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON {
+                    json = j
+                } else if let result = String(data: data, encoding: .utf8) {
+                    json = [ "result" : result ]
+                } else {
                     print("[Loki] [Onion Request API] Couldn't parse JSON returned by \(verb.rawValue) request to \(url).")
-                    seal.reject(error)
+                    return seal.reject(Error.invalidJSON)
                 }
+                seal.fulfill(json)
             }
             task.resume()
         }
