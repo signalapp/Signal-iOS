@@ -178,8 +178,8 @@ internal enum OnionRequestAPI {
 
     // MARK: Internal API
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    internal static func invoke(_ method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON) -> Promise<Any> {
-        let (promise, seal) = Promise<Any>.pending()
+    internal static func invoke(_ method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON) -> Promise<Data> {
+        let (promise, seal) = Promise<Data>.pending()
         workQueue.async {
             let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
             buildOnion(around: payload, targetedAt: snode).done(on: workQueue) { intermediate in
