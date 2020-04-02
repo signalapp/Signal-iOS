@@ -4,18 +4,6 @@ import XCTest
 
 class OnionRequestAPITests : XCTestCase {
 
-    func testPathBuilding() {
-        let semaphore = DispatchSemaphore(value: 0)
-        var error: Error? = nil
-        let _ = OnionRequestAPI.getPath().done(on: OnionRequestAPI.workQueue) { _ in
-            semaphore.signal()
-        }.catch(on: OnionRequestAPI.workQueue) {
-            error = $0; semaphore.signal()
-        }
-        semaphore.wait()
-        XCTAssert(error == nil)
-    }
-
     /// Builds a path and then routes the same request through it several times. Logs the number of successes
     /// versus the number of failures.
     func testOnionRequestSending() {

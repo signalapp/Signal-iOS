@@ -123,16 +123,16 @@ internal enum OnionRequestAPI {
     }
 
     /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
-    ///
-    /// - Note: Exposed for testing purposes.
-    internal static func getPath() -> Promise<Path> {
+    private static func getPath(excluding snode: LokiAPITarget) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Cannot build path of size zero.") }
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= pathCount {
-            return Promise<Path> { $0.fulfill(paths.randomElement()!) }
+            return Promise<Path> { seal in
+                seal.fulfill(paths.filter { !$0.contains(snode) }.randomElement()!)
+            }
         } else {
             return buildPaths().map(on: workQueue) { paths in
-                let path = paths.randomElement()!
+                let path = paths.filter { !$0.contains(snode) }.randomElement()!
                 OnionRequestAPI.paths = paths
                 return path
             }
@@ -148,7 +148,7 @@ internal enum OnionRequestAPI {
         var guardSnode: LokiAPITarget!
         var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the target snode
         var encryptionResult: EncryptionResult!
-        return getPath().then(on: workQueue) { path -> Promise<EncryptionResult> in
+        return getPath(excluding: snode).then(on: workQueue) { path -> Promise<EncryptionResult> in
             guardSnode = path.first!
             // Encrypt in reverse order, i.e. the target snode first
             return encrypt(payload, forTargetSnode: snode).then(on: workQueue) { r -> Promise<EncryptionResult> in
