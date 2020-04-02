@@ -2,7 +2,7 @@ import PromiseKit
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
-    private static let stateQueue = DispatchQueue(label: "stateQueue")
+    private static let stateQueue = DispatchQueue(label: "LokiAPI.stateQueue")
 
     /// Only ever modified from the message processing queue (`OWSBatchMessageProcessor.processingQueue`).
     private static var syncMessageTimestamps: [String:Set<UInt64>] = [:]
@@ -22,7 +22,7 @@ public final class LokiAPI : NSObject {
     }
     
     /// All service node related errors must be handled on this queue to avoid race conditions maintaining e.g. failure counts.
-    public static let errorHandlingQueue = DispatchQueue(label: "errorHandlingQueue")
+    public static let errorHandlingQueue = DispatchQueue(label: "LokiAPI.errorHandlingQueue")
     
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()
