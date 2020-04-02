@@ -149,10 +149,7 @@ extension ConversationSettingsViewController {
         addBasicItems(to: mainSection)
 
         // TODO: We can remove this item once message requests are mandatory.
-        let shouldShowProfileSharingItem = !RemoteConfig.messageRequests && !thread.isGroupV2Thread
-        if shouldShowProfileSharingItem {
-            addProfileSharingItems(to: mainSection)
-        }
+        addProfileSharingItems(to: mainSection)
 
         if shouldShowColorPicker {
             addColorPickerItems(to: mainSection)
@@ -277,6 +274,10 @@ extension ConversationSettingsViewController {
     }
 
     private func addProfileSharingItems(to section: OWSTableSection) {
+        guard !thread.isGroupV2Thread else {
+            return
+        }
+
         let isNoteToSelf = thread.isNoteToSelf
         let isLocalUserInConversation = self.isLocalUserInConversation
 
