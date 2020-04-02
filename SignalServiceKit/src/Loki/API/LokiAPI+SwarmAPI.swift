@@ -114,7 +114,7 @@ public extension LokiAPI {
                     print("[Loki] Rejecting file server proxy with version number \(version).")
                     return getFileServerProxy()
                 }
-            }.recover(on: DispatchQueue.global()) { error in
+            }.recover(on: DispatchQueue.global()) { _ in
                 return getFileServerProxy()
             }
         }.done(on: DispatchQueue.global()) { snode in

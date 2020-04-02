@@ -48,11 +48,11 @@ extension OnionRequestAPI {
         let (promise, seal) = Promise<EncryptionResult>.pending()
         getQueue().async {
             do {
-                guard JSONSerialization.isValidJSONObject(payload) else { return seal.reject(Error.invalidJSON) }
+                guard JSONSerialization.isValidJSONObject(payload) else { return seal.reject(HTTP.Error.invalidJSON) }
                 let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [])
                 let payloadAsString = String(data: payloadAsData, encoding: .utf8)! // Snodes only accept this as a string
                 let wrapper: JSON = [ "body" : payloadAsString, "headers" : "" ]
-                guard JSONSerialization.isValidJSONObject(wrapper) else { return seal.reject(Error.invalidJSON) }
+                guard JSONSerialization.isValidJSONObject(wrapper) else { return seal.reject(HTTP.Error.invalidJSON) }
                 let plaintext = try JSONSerialization.data(withJSONObject: wrapper, options: [])
                 let result = try encrypt(plaintext, forSnode: snode)
                 seal.fulfill(result)
@@ -73,7 +73,7 @@ extension OnionRequestAPI {
                 "destination" : rhs.publicKeySet!.ed25519Key
             ]
             do {
-                guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
+                guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(HTTP.Error.invalidJSON) }
                 let plaintext = try JSONSerialization.data(withJSONObject: parameters, options: [])
                 let result = try encrypt(plaintext, forSnode: lhs)
                 seal.fulfill(result)
