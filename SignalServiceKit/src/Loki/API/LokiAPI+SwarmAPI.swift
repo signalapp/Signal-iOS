@@ -9,6 +9,7 @@ public extension LokiAPI {
     // MARK: Settings
     private static let minimumSnodeCount = 2
     private static let targetSnodeCount = 3
+    
     fileprivate static let failureThreshold = 2
     
     // MARK: Caching

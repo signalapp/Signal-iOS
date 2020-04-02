@@ -13,7 +13,7 @@ class OnionRequestAPITests : XCTestCase {
         }.done(on: OnionRequestAPI.workQueue) { snode in
             var successCount = 0
             var failureCount = 0
-            let promises: [Promise<Void>] = (0..<16).map { _ in
+            let promises: [Promise<Void>] = (0..<8).map { _ in
                 let mockSessionID = "0582bc30f11e8a9736407adcaca03b049f4acd4af3ae7eb6b6608d30f0b1e6a20e"
                 let parameters: JSON = [ "pubKey" : mockSessionID ]
                 let (promise, seal) = Promise<Void>.pending()
@@ -24,7 +24,8 @@ class OnionRequestAPITests : XCTestCase {
                     failureCount += 1
                     seal.reject(error)
                 }.finally(on: OnionRequestAPI.workQueue) {
-                    print("[Loki] [Onion Request API] Successes/Failures: \(successCount)/\(failureCount).")
+                    let percentage = (successCount == 0) ? 0 : (failureCount == 0) ? 100 : (100 * Double(successCount))/Double(failureCount)
+                    print("[Loki] [Onion Request API] Succes %: \(percentage).")
                 }
                 return promise
             }
