@@ -153,6 +153,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
                cachedImageHeight:(nullable NSNumber *)cachedImageHeight
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
@@ -173,7 +174,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
-                    sourceFilename:sourceFilename];
+                    sourceFilename:sourceFilename
+                   uploadTimestamp:uploadTimestamp];
 
     if (!self) {
         return self;
@@ -1072,17 +1074,20 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (void)updateAsUploadedWithEncryptionKey:(NSData *)encryptionKey
                                    digest:(NSData *)digest
                                  serverId:(UInt64)serverId
+                          uploadTimestamp:(unsigned long long)uploadTimestamp
                               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(encryptionKey.length > 0);
     OWSAssertDebug(digest.length > 0);
     OWSAssertDebug(serverId > 0);
+    OWSAssertDebug(uploadTimestamp > 0);
 
     [self anyUpdateAttachmentStreamWithTransaction:transaction
                                              block:^(TSAttachmentStream *attachment) {
                                                  [attachment setEncryptionKey:encryptionKey];
                                                  [attachment setDigest:digest];
                                                  [attachment setServerId:serverId];
+                                                 [attachment setUploadTimestamp:uploadTimestamp];
                                                  [attachment setIsUploaded:YES];
                                              }];
 }
@@ -1159,6 +1164,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     builder.flags = self.isVoiceMessage ? SSKProtoAttachmentPointerFlagsVoiceMessage : 0;
     if (self.blurHash.length > 0) {
         builder.blurHash = self.blurHash;
+    }
+    if (self.uploadTimestamp > 0) {
+        builder.uploadTimestamp = self.uploadTimestamp;
     }
 
     if (self.shouldHaveImageSize) {

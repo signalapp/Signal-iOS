@@ -8030,6 +8030,9 @@ public class SSKProtoAttachmentPointer: NSObject {
         if let _value = blurHash {
             builder.setBlurHash(_value)
         }
+        if hasUploadTimestamp {
+            builder.setUploadTimestamp(uploadTimestamp)
+        }
         return builder
     }
 
@@ -8148,6 +8151,11 @@ public class SSKProtoAttachmentPointer: NSObject {
 
         public func setBlurHash(_ valueParam: String) {
             proto.blurHash = valueParam
+        }
+
+        @objc
+        public func setUploadTimestamp(_ valueParam: UInt64) {
+            proto.uploadTimestamp = valueParam
         }
 
         @objc
@@ -8284,6 +8292,15 @@ public class SSKProtoAttachmentPointer: NSObject {
     @objc
     public var hasBlurHash: Bool {
         return proto.hasBlurHash
+    }
+
+    @objc
+    public var uploadTimestamp: UInt64 {
+        return proto.uploadTimestamp
+    }
+    @objc
+    public var hasUploadTimestamp: Bool {
+        return proto.hasUploadTimestamp
     }
 
     private init(proto: SignalServiceProtos_AttachmentPointer,

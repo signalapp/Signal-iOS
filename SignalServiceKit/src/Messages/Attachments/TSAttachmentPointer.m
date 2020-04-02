@@ -61,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
                   attachmentType:(TSAttachmentType)attachmentType
                        mediaSize:(CGSize)mediaSize
                         blurHash:(nullable NSString *)blurHash
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
 {
     self = [super initWithServerId:serverId
                      encryptionKey:key
@@ -69,7 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
                     sourceFilename:sourceFilename
                            caption:caption
                     albumMessageId:albumMessageId
-                          blurHash:blurHash];
+                          blurHash:blurHash
+                   uploadTimestamp:uploadTimestamp];
     if (!self) {
         return self;
     }
@@ -121,6 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
@@ -137,7 +140,8 @@ NS_ASSUME_NONNULL_BEGIN
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
-                    sourceFilename:sourceFilename];
+                    sourceFilename:sourceFilename
+                   uploadTimestamp:uploadTimestamp];
 
     if (!self) {
         return self;
@@ -222,6 +226,11 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    unsigned long long uploadTimestamp = 0;
+    if (attachmentProto.hasUploadTimestamp) {
+        uploadTimestamp = attachmentProto.uploadTimestamp;
+    }
+
     TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:serverId
                                                                              key:attachmentProto.key
                                                                           digest:digest
@@ -232,7 +241,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   albumMessageId:albumMessageId
                                                                   attachmentType:attachmentType
                                                                        mediaSize:mediaSize
-                                                                        blurHash:blurHash];
+                                                                        blurHash:blurHash
+                                                                 uploadTimestamp:uploadTimestamp];
     return pointer;
 }
 

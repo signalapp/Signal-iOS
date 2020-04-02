@@ -375,10 +375,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         }
 
         OWSAvatarUploadV2 *upload = [OWSAvatarUploadV2 new];
-        [[upload uploadAvatarToService:encryptedAvatarData
-                         progressBlock:^(NSProgress *progress){
-                             // Do nothing.
-                         }]
+        [[upload uploadAvatarToService:encryptedAvatarData]
                 .thenInBackground(^{
                     OWSLogVerbose(@"Upload complete.");
 

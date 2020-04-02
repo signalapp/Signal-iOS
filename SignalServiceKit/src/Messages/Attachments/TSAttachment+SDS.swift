@@ -50,6 +50,7 @@ public struct AttachmentRecord: SDSRecord {
     public let mediaSize: Data?
     public let pointerType: TSAttachmentPointerType?
     public let state: TSAttachmentPointerState?
+    public let uploadTimestamp: UInt64
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -77,6 +78,7 @@ public struct AttachmentRecord: SDSRecord {
         case mediaSize
         case pointerType
         case state
+        case uploadTimestamp
     }
 
     public static func columnName(_ column: AttachmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -125,6 +127,7 @@ public extension AttachmentRecord {
         mediaSize = row[22]
         pointerType = row[23]
         state = row[24]
+        uploadTimestamp = row[25]
     }
 }
 
@@ -165,6 +168,7 @@ extension TSAttachment {
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let serverId: UInt64 = record.serverId
             let sourceFilename: String? = record.sourceFilename
+            let uploadTimestamp: UInt64 = record.uploadTimestamp
 
             return TSAttachment(grdbId: recordId,
                                 uniqueId: uniqueId,
@@ -176,7 +180,8 @@ extension TSAttachment {
                                 contentType: contentType,
                                 encryptionKey: encryptionKey,
                                 serverId: serverId,
-                                sourceFilename: sourceFilename)
+                                sourceFilename: sourceFilename,
+                                uploadTimestamp: uploadTimestamp)
 
         case .attachmentPointer:
 
@@ -190,6 +195,7 @@ extension TSAttachment {
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let serverId: UInt64 = record.serverId
             let sourceFilename: String? = record.sourceFilename
+            let uploadTimestamp: UInt64 = record.uploadTimestamp
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
             let lazyRestoreFragmentId: String? = record.lazyRestoreFragmentId
             let mediaSizeSerialized: Data? = record.mediaSize
@@ -212,6 +218,7 @@ extension TSAttachment {
                                        encryptionKey: encryptionKey,
                                        serverId: serverId,
                                        sourceFilename: sourceFilename,
+                                       uploadTimestamp: uploadTimestamp,
                                        digest: digest,
                                        lazyRestoreFragmentId: lazyRestoreFragmentId,
                                        mediaSize: mediaSize,
@@ -230,6 +237,7 @@ extension TSAttachment {
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let serverId: UInt64 = record.serverId
             let sourceFilename: String? = record.sourceFilename
+            let uploadTimestamp: UInt64 = record.uploadTimestamp
             let cachedAudioDurationSeconds: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedAudioDurationSeconds, name: "cachedAudioDurationSeconds", conversion: { NSNumber(value: $0) })
             let cachedImageHeight: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageHeight, name: "cachedImageHeight", conversion: { NSNumber(value: $0) })
             let cachedImageWidth: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageWidth, name: "cachedImageWidth", conversion: { NSNumber(value: $0) })
@@ -254,6 +262,7 @@ extension TSAttachment {
                                       encryptionKey: encryptionKey,
                                       serverId: serverId,
                                       sourceFilename: sourceFilename,
+                                      uploadTimestamp: uploadTimestamp,
                                       cachedAudioDurationSeconds: cachedAudioDurationSeconds,
                                       cachedImageHeight: cachedImageHeight,
                                       cachedImageWidth: cachedImageWidth,
@@ -335,6 +344,7 @@ extension TSAttachmentSerializer {
     static let mediaSizeColumn = SDSColumnMetadata(columnName: "mediaSize", columnType: .blob, isOptional: true)
     static let pointerTypeColumn = SDSColumnMetadata(columnName: "pointerType", columnType: .int, isOptional: true)
     static let stateColumn = SDSColumnMetadata(columnName: "state", columnType: .int, isOptional: true)
+    static let uploadTimestampColumn = SDSColumnMetadata(columnName: "uploadTimestamp", columnType: .int64)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -365,7 +375,8 @@ extension TSAttachmentSerializer {
         localRelativeFilePathColumn,
         mediaSizeColumn,
         pointerTypeColumn,
-        stateColumn
+        stateColumn,
+        uploadTimestampColumn
         ])
 }
 
@@ -797,7 +808,8 @@ class TSAttachmentSerializer: SDSSerializer {
         let mediaSize: Data? = nil
         let pointerType: TSAttachmentPointerType? = nil
         let state: TSAttachmentPointerState? = nil
+        let uploadTimestamp: UInt64 = model.uploadTimestamp
 
-        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state)
+        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp)
     }
 }
