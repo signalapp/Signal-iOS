@@ -748,8 +748,10 @@ public class OnboardingController: NSObject {
                 // to us again if we still need to do KBS operations.
                 self.kbsAuth = nil
 
-                if self.tsAccountManager.isRegistered {
-                    completion(.success)
+                if self.hasPendingRestoration {
+                    self.accountManager.performInitialStorageServiceRestore()
+                        .ensure { completion(.success) }
+                        .retainUntilComplete()
                 } else {
                     // We've restored our keys, we can now re-run this method to post our registration token
                     self.submitVerification(fromViewController: fromViewController, completion: completion)

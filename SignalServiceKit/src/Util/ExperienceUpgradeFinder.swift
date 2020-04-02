@@ -18,7 +18,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             // The PIN setup flow requires an internet connection and you to not already have a PIN
             return RemoteConfig.pinsForEveryone &&
                 SSKEnvironment.shared.reachabilityManager.isReachable &&
-                !OWS2FAManager.shared().isRegistrationLockV2Enabled(transaction: transaction.asAnyRead)
+                !KeyBackupService.hasMasterKey(transaction: transaction.asAnyRead)
         case .reactions:
             return true
         case .profileNameReminder:
