@@ -38,12 +38,22 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return storage.pool
     }
 
-    init(baseDir: URL) throws {
+    init(baseDir: URL) {
         databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
 
-        try GRDBDatabaseStorageAdapter.ensureDatabaseKeySpecExists(baseDir: baseDir)
+        do {
+            // Crash if keychain is inaccessible.
+            try GRDBDatabaseStorageAdapter.ensureDatabaseKeySpecExists(baseDir: baseDir)
+        } catch {
+            owsFail("\(error.grdbErrorForLogging)")
+        }
 
-        storage = try GRDBStorage(dbURL: databaseUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
+        do {
+            // Crash if storage can't be initialized.
+            storage = try GRDBStorage(dbURL: databaseUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
+        } catch {
+            owsFail("\(error.grdbErrorForLogging)")
+        }
 
         super.init()
 
