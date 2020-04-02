@@ -749,17 +749,35 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertDebug(transaction);
 
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
-    return [self cachedContactNameForAddress:address signalAccount:signalAccount];
+    NSString *_Nullable phoneNumber = nil;
+    if (signalAccount == nil) {
+        // cachedContactNameForAddress only needs the phone number
+        // if signalAccount is nil.
+        phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
+    }
+    return [self cachedContactNameForAddress:address signalAccount:signalAccount phoneNumber:phoneNumber];
 }
 
 - (nullable NSString *)cachedContactNameForAddress:(SignalServiceAddress *)address
                                      signalAccount:(nullable SignalAccount *)signalAccount
 {
+    NSString *_Nullable phoneNumber = nil;
+    if (signalAccount == nil) {
+        // cachedContactNameForAddress only needs the phone number
+        // if signalAccount is nil.
+        phoneNumber = [self phoneNumberForAddress:address];
+    }
+    return [self cachedContactNameForAddress:address signalAccount:signalAccount phoneNumber:phoneNumber];
+}
+
+- (nullable NSString *)cachedContactNameForAddress:(SignalServiceAddress *)address
+                                     signalAccount:(nullable SignalAccount *)signalAccount
+                                       phoneNumber:(nullable NSString *)phoneNumber
+{
     OWSAssertDebug(address);
 
     if (!signalAccount) {
         // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
-        NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
         Contact *_Nullable nonSignalContact = self.allContactsMap[phoneNumber];
         if (!nonSignalContact) {
             return nil;
