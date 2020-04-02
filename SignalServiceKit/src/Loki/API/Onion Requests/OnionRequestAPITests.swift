@@ -9,7 +9,7 @@ class OnionRequestAPITests : XCTestCase {
     func testOnionRequestSending() {
         let semaphore = DispatchSemaphore(value: 0)
         LokiAPI.getRandomSnode().then(on: OnionRequestAPI.workQueue) { snode -> Promise<LokiAPITarget> in
-            return OnionRequestAPI.getPath().map(on: OnionRequestAPI.workQueue) { _ in snode }
+            return OnionRequestAPI.getPath(excluding: snode).map(on: OnionRequestAPI.workQueue) { _ in snode }
         }.done(on: OnionRequestAPI.workQueue) { snode in
             var successCount = 0
             var failureCount = 0

@@ -123,7 +123,9 @@ internal enum OnionRequestAPI {
     }
 
     /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
-    private static func getPath(excluding snode: LokiAPITarget) -> Promise<Path> {
+    ///
+    /// - Note: Exposed for testing purposes.
+    internal static func getPath(excluding snode: LokiAPITarget) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Cannot build path of size zero.") }
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= pathCount {
@@ -199,10 +201,8 @@ internal enum OnionRequestAPI {
                         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
                         let aes = try AES(key: targetSnodeSymmetricKey.bytes, blockMode: gcm, padding: .pkcs7)
                         let result = try aes.decrypt(ciphertext.bytes)
-                        print("[Loki] [Onion Request API] Succeeded with result: \(String(data: Data(bytes: result), encoding: .utf8)!).")
                         seal.fulfill(Data(bytes: result))
                     } catch (let error) {
-                        print("[Loki] [Onion Request API] Decryption failed.")
                         seal.reject(error)
                     }
                 }.catch(on: workQueue) { error in
