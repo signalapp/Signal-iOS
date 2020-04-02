@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -67,16 +67,6 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:deviceId:lastSeenAt:name:));
 + (nullable instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error;
 
 /**
- * Set local database of devices to `devices`.
- *
- * This will create missing devices, update existing devices, and delete stale devices.
- * @param devices Removes any existing devices, replacing them with `devices`
- *
- * Returns YES if any devices were added or removed.
- */
-+ (BOOL)replaceAll:(NSArray<OWSDevice *> *)devices transaction:(SDSAnyWriteTransaction *)transaction;
-
-/**
  * The id of the device currently running this application
  */
 + (uint32_t)currentDeviceId;
@@ -101,6 +91,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:deviceId:lastSeenAt:name:));
  *  YES if any values on self changed, else NO
  */
 - (BOOL)updateAttributesWithDevice:(OWSDevice *)other;
+
+- (BOOL)areAttributesEqual:(OWSDevice *)other;
 
 @end
 

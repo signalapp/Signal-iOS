@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDevice.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSError.h"
-#import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import <Mantle/MTLValueTransformer.h>
@@ -123,11 +122,6 @@ NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevi
 
 #pragma mark - Dependencies
 
-+ (id<ProfileManagerProtocol>)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
-}
-
 + (TSAccountManager *)tsAccountManager
 {
     return TSAccountManager.sharedInstance;
@@ -223,46 +217,6 @@ NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevi
 + (MTLValueTransformer *)lastSeenAtJSONTransformer
 {
     return self.millisecondTimestampToDateTransformer;
-}
-
-+ (BOOL)replaceAll:(NSArray<OWSDevice *> *)currentDevices transaction:(SDSAnyWriteTransaction *)transaction
-{
-    BOOL didAddOrRemove = NO;
-    NSMutableArray<OWSDevice *> *existingDevices = [[self anyFetchAllWithTransaction:transaction] mutableCopy];
-    for (OWSDevice *currentDevice in currentDevices) {
-        NSUInteger existingDeviceIndex = [existingDevices indexOfObject:currentDevice];
-        if (existingDeviceIndex == NSNotFound) {
-            // New Device
-            OWSLogInfo(@"Adding device: %@", currentDevice);
-            [currentDevice anyInsertWithTransaction:transaction];
-            didAddOrRemove = YES;
-        } else {
-            OWSDevice *existingDevice = existingDevices[existingDeviceIndex];
-            [existingDevice anyUpdateWithTransaction:transaction
-                                               block:^(OWSDevice *latestCopy) {
-                                                   [existingDevice updateAttributesWithDevice:currentDevice];
-                                               }];
-            [existingDevices removeObjectAtIndex:existingDeviceIndex];
-        }
-    }
-
-    // Since we removed existing devices as we went, only stale devices remain
-    for (OWSDevice *staleDevice in existingDevices) {
-        OWSLogVerbose(@"Removing device: %@", staleDevice);
-        [staleDevice anyRemoveWithTransaction:transaction];
-        didAddOrRemove = YES;
-    }
-
-    if (didAddOrRemove) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            // Device changes can affect the UD access mode for a recipient,
-            // so we need to fetch the profile for this user to update UD access mode.
-            [self.profileManager fetchAndUpdateLocalUsersProfile];
-        });
-        return YES;
-    } else {
-        return NO;
-    }
 }
 
 + (MTLValueTransformer *)millisecondTimestampToDateTransformer
@@ -382,6 +336,11 @@ NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevi
 - (BOOL)isEqualToDevice:(OWSDevice *)device
 {
     return self.deviceId == device.deviceId;
+}
+
+- (BOOL)areAttributesEqual:(OWSDevice *)other
+{
+    return [self.dictionaryValue isEqualToDictionary:other.dictionaryValue];
 }
 
 @end
