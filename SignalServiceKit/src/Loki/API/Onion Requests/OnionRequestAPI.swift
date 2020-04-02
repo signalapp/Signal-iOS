@@ -149,7 +149,7 @@ internal enum OnionRequestAPI {
                 func getGuardSnode() -> Promise<LokiAPITarget> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
                     guard let candidate = unusedSnodes.randomElement() else { return Promise<LokiAPITarget> { $0.reject(Error.insufficientSnodes) } }
-                    unusedSnodes.remove(candidate)
+                    unusedSnodes.remove(candidate) // All used snodes should be unique
                     print("[Loki] [Onion Request API] Testing guard snode: \(candidate).")
                     // Loop until a reliable guard snode is found
                     return testSnode(candidate).map(on: workQueue) { candidate }.recover(on: workQueue) { _ in getGuardSnode() }
@@ -170,27 +170,16 @@ internal enum OnionRequestAPI {
         print("[Loki] [Onion Request API] Building onion request paths.")
         return LokiAPI.getRandomSnode().then(on: workQueue) { _ -> Promise<Set<Path>> in // Just used to populate the snode pool
             let snodePool = LokiAPI.randomSnodePool
-            return getGuardSnodes().then(on: workQueue) { guardSnodes -> Promise<Set<LokiAPITarget>> in
-                var unusedSnodes = snodePool.subtracting(guardSnodes) // Sync on workQueue
+            return getGuardSnodes().map(on: workQueue) { guardSnodes in
+                var unusedSnodes = snodePool.subtracting(guardSnodes)
                 let pathSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
                 guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
-                func getPathSnode() -> Promise<LokiAPITarget> {
-                    // randomElement() uses the system's default random generator, which is cryptographically secure
-                    guard let candidate = unusedSnodes.randomElement() else { return Promise<LokiAPITarget> { $0.reject(Error.insufficientSnodes) } }
-                    unusedSnodes.remove(candidate)
-                    print("[Loki] [Onion Request API] Testing path snode: \(candidate).")
-                    // Loop until a reliable guard snode is found
-                    return testSnode(candidate).map(on: workQueue) { candidate }.recover(on: workQueue) { _ in getPathSnode() }
-                }
-                let promises = (0..<pathSnodeCount).map { _ in getPathSnode() }
-                return when(fulfilled: promises).map(on: workQueue) { Set($0) }
-            }.map(on: workQueue) { pathSnodes in
-                var pathSnodes = pathSnodes
+                // Don't test path snodes as this would reveal the user's IP to them
                 return Set(guardSnodes.map { guardSnode in
                     let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
                         // randomElement() uses the system's default random generator, which is cryptographically secure
-                        let pathSnode = pathSnodes.randomElement()! // Should be safe
-                        pathSnodes.remove(pathSnode)
+                        let pathSnode = unusedSnodes.randomElement()! // Safe because of the minSnodeCount check above
+                        unusedSnodes.remove(pathSnode) // All used snodes should be unique
                         return pathSnode
                     }
                     print("[Loki] [Onion Request API] Built new onion request path: \(result.prettifiedDescription).")
