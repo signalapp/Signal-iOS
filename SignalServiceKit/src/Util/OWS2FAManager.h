@@ -14,7 +14,7 @@ extern const NSUInteger kLegacyTruncated2FAv1PinLength;
 typedef void (^OWS2FASuccess)(void);
 typedef void (^OWS2FAFailure)(NSError *error);
 
-typedef NS_ENUM(NSUInteger, OWS2FAMode) {
+typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
     OWS2FAMode_Disabled = 0,
     OWS2FAMode_V1,
     OWS2FAMode_V2,
@@ -55,7 +55,10 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
 
 - (void)updateRepetitionIntervalWithWasSuccessful:(BOOL)wasSuccessful;
 
-- (void)mark2FAAsEnabledWithPin:(NSString *)pin;
+- (void)markEnabledWithPin:(NSString *)pin
+               transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markEnabled(pin:transaction:));
+- (void)markEnabledWithTransaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markEnabled(transaction:));
+- (void)markDisabledWithTransaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markDisabled(transaction:));
 
 // used for testing
 - (void)setDefaultRepetitionIntervalWithTransaction:(SDSAnyWriteTransaction *)transaction;

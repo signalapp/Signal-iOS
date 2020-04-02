@@ -6,14 +6,16 @@ import Foundation
 import PromiseKit
 
 public class ContactSupportAlert {
-    public class func presentAlert(title: String, message: String, emailSubject: String, fromViewController: UIViewController) {
-        presentStep1(title: title, message: message, emailSubject: emailSubject, fromViewController: fromViewController)
+    public class func presentAlert(title: String, message: String, emailSubject: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction] = []) {
+        presentStep1(title: title, message: message, emailSubject: emailSubject, fromViewController: fromViewController, additionalActions: additionalActions)
     }
 
     // MARK: -
 
-    private class func presentStep1(title: String, message: String, emailSubject: String, fromViewController: UIViewController) {
+    private class func presentStep1(title: String, message: String, emailSubject: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction]) {
         let actionSheet = ActionSheetController(title: title, message: message)
+
+        additionalActions.forEach { actionSheet.addAction($0) }
 
         let proceedAction = ActionSheetAction(title: CommonStrings.contactSupport, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }

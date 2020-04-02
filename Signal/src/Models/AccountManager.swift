@@ -145,17 +145,24 @@ public class AccountManager: NSObject {
         }
 
         Logger.debug("registering with signal server")
-        let registrationPromise: Promise<Void> = firstly { () -> Promise<UUID?> in
+        let registrationPromise: Promise<Void> = firstly {
             self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
-        }.then { (uuid: UUID?) -> Promise<Void> in
-            assert(!FeatureFlags.allowUUIDOnlyContacts || uuid != nil)
-            self.tsAccountManager.uuidAwaitingVerification = uuid
+        }.then { response -> Promise<Void> in
+            assert(!FeatureFlags.allowUUIDOnlyContacts || response.uuid != nil)
+            self.tsAccountManager.uuidAwaitingVerification = response.uuid
 
-            if !self.tsAccountManager.isReregistering {
-                self.databaseStorage.write { transaction in
+            self.databaseStorage.write { transaction in
+                if !self.tsAccountManager.isReregistering {
                     // For new users, read receipts are on by default.
                     self.readReceiptManager.setAreReadReceiptsEnabled(true,
                                                                       transaction: transaction)
+                }
+
+                // If the user previously had a PIN, but we don't have record of it,
+                // mark them as pending restoration during onboarding. Reg lock users
+                // will have already restored their PIN by this point.
+                if response.hasPreviouslyUsedKBS, !KeyBackupService.hasMasterKey {
+                    KeyBackupService.recordPendingRestoration(transaction: transaction)
                 }
             }
 
@@ -316,7 +323,12 @@ public class AccountManager: NSObject {
         }
     }
 
-    private func registerForTextSecure(verificationCode: String, pin: String?) -> Promise<UUID?> {
+    private struct RegistrationResponse {
+        var uuid: UUID?
+        var hasPreviouslyUsedKBS = false
+    }
+
+    private func registerForTextSecure(verificationCode: String, pin: String?) -> Promise<RegistrationResponse> {
         let serverAuthToken = generateServerAuthToken()
 
         return Promise<Any?> { resolver in
@@ -332,7 +344,7 @@ public class AccountManager: NSObject {
             tsAccountManager.verifyAccount(with: request,
                                            success: resolver.fulfill,
                                            failure: resolver.reject)
-        }.map(on: .global()) { responseObject throws -> UUID? in
+        }.map(on: .global()) { responseObject throws -> RegistrationResponse in
             self.databaseStorage.write { transaction in
                 self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
                                                                deviceId: OWSDevicePrimaryDeviceId,
@@ -340,7 +352,8 @@ public class AccountManager: NSObject {
             }
 
             guard let responseObject = responseObject else {
-                return nil
+                owsFailDebug("unexpectedly missing responseObject")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
             }
 
             guard let params = ParamParser(responseObject: responseObject) else {
@@ -348,17 +361,20 @@ public class AccountManager: NSObject {
                 throw OWSErrorMakeUnableToProcessServerResponseError()
             }
 
+            var registrationResponse = RegistrationResponse()
+
             // TODO UUID: this UUID param should be non-optional when the production service is updated
-            guard let uuidString: String = try params.optional(key: "uuid") else {
-                return nil
+            if let uuidString: String = try params.optional(key: "uuid") {
+                guard let uuid = UUID(uuidString: uuidString) else {
+                    owsFailDebug("invalid uuidString: \(uuidString)")
+                    throw OWSErrorMakeUnableToProcessServerResponseError()
+                }
+                registrationResponse.uuid = uuid
             }
 
-            guard let uuid = UUID(uuidString: uuidString) else {
-                owsFailDebug("invalid uuidString: \(uuidString)")
-                throw OWSErrorMakeUnableToProcessServerResponseError()
-            }
+            registrationResponse.hasPreviouslyUsedKBS = params.hasKey("backupCredentials")
 
-            return uuid
+            return registrationResponse
         }
     }
 

@@ -55,6 +55,10 @@ public class KeyBackupService: NSObject {
         return cacheQueue.sync { cachedMasterKey != nil }
     }
 
+    public static func hasMasterKey(transaction: SDSAnyReadTransaction) -> Bool {
+        return keyValueStore.getData(masterKeyIdentifer, transaction: transaction) != nil
+    }
+
     public static var currentPinType: PinType? {
         return cacheQueue.sync { cachedPinType }
     }
@@ -495,6 +499,7 @@ public class KeyBackupService: NSObject {
     private static let pinTypeIdentifier = "pinType"
     private static let encodedVerificationStringIdentifier = "encodedVerificationString"
     private static let hasBackupKeyRequestFailedIdentifier = "hasBackupKeyRequestFailed"
+    private static let hasPendingRestorationIdentifier = "hasPendingRestoration"
     private static let cacheQueue = DispatchQueue(label: "org.signal.KeyBackupService")
 
     @objc
@@ -816,6 +821,18 @@ public class KeyBackupService: NSObject {
 
     public static func hasBackupKeyRequestFailed(transaction: SDSAnyReadTransaction) -> Bool {
         keyValueStore.getBool(hasBackupKeyRequestFailedIdentifier, defaultValue: false, transaction: transaction)
+    }
+
+    public static func hasPendingRestoration(transaction: SDSAnyReadTransaction) -> Bool {
+        keyValueStore.getBool(hasPendingRestorationIdentifier, defaultValue: false, transaction: transaction)
+    }
+
+    public static func recordPendingRestoration(transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setBool(true, key: hasPendingRestorationIdentifier, transaction: transaction)
+    }
+
+    public static func clearPendingRestoration(transaction: SDSAnyWriteTransaction) {
+        keyValueStore.removeValue(forKey: hasPendingRestorationIdentifier, transaction: transaction)
     }
 
     // PRAGMA MARK: - Token

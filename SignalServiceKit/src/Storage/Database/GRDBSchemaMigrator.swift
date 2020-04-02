@@ -87,6 +87,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_markOnboardedUsers_v2
         case dataMigration_rotateStorageServiceKeyAndResetLocalDataV3
         case dataMigration_clearLaunchScreenCache
+        case dataMigration_enableV2RegistrationLockIfNecessary
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -468,6 +469,12 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db).asAnyWrite
             SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction)
             KeyBackupService.rotateStorageServiceKey(transaction: transaction)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_enableV2RegistrationLockIfNecessary.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
+            guard KeyBackupService.hasMasterKey(transaction: transaction) else { return }
+            OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction)
         }
     }
 }

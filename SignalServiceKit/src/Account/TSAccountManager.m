@@ -819,6 +819,8 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
             [self.keyValueStore setBool:NO key:TSAccountManager_IsOnboardedKey transaction:transaction];
 
             [self loadAccountStateWithTransaction:transaction];
+
+            [OWSKeyBackupService clearKeysWithTransaction:transaction];
         }
     }];
 

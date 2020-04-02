@@ -46,12 +46,17 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         }
     }
 
+    private var databaseStorage: SDSDatabaseStorage { .shared }
+    private var hasPendingRestoration: Bool {
+        databaseStorage.read { KeyBackupService.hasPendingRestoration(transaction: $0) }
+    }
+
     public init(onboardingController: OnboardingController, isUsingKBS: Bool) {
         self.isUsingKBS = isUsingKBS
         super.init(onboardingController: onboardingController)
     }
 
-    var forgotPinLink: OWSFlatButton!
+    var needHelpLink: OWSFlatButton!
 
     override public func loadView() {
         view = UIView()
@@ -89,17 +94,17 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         validationWarningLabel.numberOfLines = 0
         validationWarningLabel.setCompressionResistanceHigh()
 
-        self.forgotPinLink = self.linkButton(title: NSLocalizedString("ONBOARDING_2FA_FORGOT_PIN_LINK",
+        self.needHelpLink = self.linkButton(title: NSLocalizedString("ONBOARDING_2FA_FORGOT_PIN_LINK",
                                                                      comment: "Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view."),
-                                            selector: #selector(forgotPinLinkTapped))
-        forgotPinLink.accessibilityIdentifier = "onboarding.2fa." + "forgotPinLink"
+                                            selector: #selector(needHelpLinkWasTapped))
+        needHelpLink.accessibilityIdentifier = "onboarding.2fa." + "forgotPinLink"
 
         let pinStack = UIStackView(arrangedSubviews: [
             pinTextField,
             UIView.spacer(withHeight: 10),
             validationWarningLabel,
             UIView.spacer(withHeight: 10),
-            forgotPinLink
+            needHelpLink
         ])
         pinStack.axis = .vertical
         pinStack.alignment = .fill
@@ -161,24 +166,54 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
     // MARK: - Events
 
-    @objc func forgotPinLinkTapped() {
+    @objc func needHelpLinkWasTapped() {
         Logger.info("")
         let title = NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
                                       comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'.")
 
         let message: String
         let emailSubject: String
+        var additionalActions = [ActionSheetAction]()
         if isUsingKBS {
-            message = NSLocalizedString("REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE",
-                                        comment: "Alert body for a forgotten SVR (V2) PIN")
-            emailSubject = "Signal PIN - iOS (V2 PIN)"
+            if hasPendingRestoration {
+                message = NSLocalizedString("REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE",
+                                            comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock")
+                emailSubject = "Signal PIN - iOS (V2 PIN without RegLock)"
+
+                let createNewPinAction = ActionSheetAction(
+                    title: NSLocalizedString("ONBOARDING_2FA_CREATE_NEW_PIN",
+                                             comment: "Label for the 'create new pin' button when reglock is disabled during onboarding.")
+                ) { [weak self] _ in
+                    let actionSheet = ActionSheetController(
+                        title: NSLocalizedString("ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE",
+                                                 comment: "Title for the skip pin entry action sheet during onboarding."),
+                        message: NSLocalizedString("ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE",
+                                                   comment: "Explanation for the skip pin entry action sheet during onboarding.")
+                    )
+                    let skipAndCreateNew = ActionSheetAction(
+                        title: NSLocalizedString("ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN",
+                                                 comment: "Label for the 'skip and create new pin' button when reglock is disabled during onboarding."),
+                        style: .destructive
+                    ) { [weak self] _ in
+                        self?.showNextMilestone(wasSuccessful: false)
+                    }
+                    actionSheet.addAction(skipAndCreateNew)
+                    actionSheet.addAction(OWSActionSheets.cancelAction)
+                    self?.presentActionSheet(actionSheet)
+                }
+                additionalActions.append(createNewPinAction)
+            } else {
+                message = NSLocalizedString("REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE",
+                                            comment: "Alert body for a forgotten SVR (V2) PIN")
+                emailSubject = "Signal PIN - iOS (V2 PIN)"
+            }
         } else {
             message = NSLocalizedString("REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE",
                                         comment: "Alert body for a forgotten V1 PIN")
             emailSubject = "Signal PIN - iOS (V1 PIN)"
         }
 
-        ContactSupportAlert.presentAlert(title: title, message: message, emailSubject: emailSubject, fromViewController: self)
+        ContactSupportAlert.presentAlert(title: title, message: message, emailSubject: emailSubject, fromViewController: self, additionalActions: additionalActions)
     }
 
     @objc func nextPressed() {
@@ -228,23 +263,45 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
                 self.attemptState = .invalid(remainingAttempts: remainingAttempts)
             case .exhaustedV2RegistrationLockAttempts:
                 self.attemptState = .exhausted
-                self.showAccountLocked()
+                self.showAttemptsExhausted()
             case .success:
                 self.attemptState = .valid
+                // If we have success while pending  restoration, show the next onboarding milestone.
+                if self.hasPendingRestoration { self.showNextMilestone(wasSuccessful: true) }
             case .invalidVerificationCode:
                 owsFailDebug("Invalid verification code in 2FA view.")
             }
         })
     }
 
-    private func showAccountLocked() {
+    private func showAttemptsExhausted() {
         guard let navigationController = navigationController else {
             owsFailDebug("Missing navigationController")
             return
         }
 
-        let vc = OnboardingAccountLockedViewController(onboardingController: onboardingController)
+        let vc = OnboardingPinAttemptsExhaustedViewController(onboardingController: onboardingController)
         navigationController.pushViewController(vc, animated: true)
+    }
+
+    private func showNextMilestone(wasSuccessful: Bool) {
+        guard let navigationController = navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        databaseStorage.write { transaction in
+            // Clear any pending restoration before moving on. At this point we've either
+            // successfully restored the user's PIN or the user chose to re-create their PIN.
+            KeyBackupService.clearPendingRestoration(transaction: transaction)
+
+            // If we were successful, also mark the user as having a PIN
+            if wasSuccessful {
+                OWS2FAManager.shared().markEnabled(transaction: transaction)
+            }
+        }
+
+        onboardingController.showNextMilestone(navigationController: navigationController)
     }
 
     var hasEverGuessedWrongPIN = false
@@ -257,7 +314,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinStrokeNormal.isHidden = attemptState.isInvalid
         pinStrokeError.isHidden = !attemptState.isInvalid
         validationWarningLabel.isHidden = !attemptState.isInvalid
-        forgotPinLink.isHidden = !hasEverGuessedWrongPIN
+        needHelpLink.isHidden = !hasEverGuessedWrongPIN
 
         switch attemptState {
         case .exhausted:
@@ -274,11 +331,17 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             if remaining < attemptsAlertThreshold {
                 let formatMessage: String
                 if remaining == 1 {
-                    formatMessage = NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE",
-                                                      comment: "Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'.")
+                    formatMessage = hasPendingRestoration
+                        ? NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE",
+                                            comment: "Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled.")
+                        : NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE",
+                                            comment: "Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled.")
                 } else {
-                    formatMessage = NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT",
-                                                      comment: "Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'.")
+                    formatMessage = hasPendingRestoration
+                        ? NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT",
+                                            comment: "Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled.")
+                        : NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT",
+                                            comment: "Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled.")
                 }
 
                 OWSActionSheets.showActionSheet(

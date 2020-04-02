@@ -152,6 +152,7 @@ public class OnboardingController: NSObject {
     enum OnboardingMilestone {
         case verifiedPhoneNumber
         case verifiedLinkedDevice
+        case restorePin
         case setupProfile
         case setupPin
     }
@@ -163,13 +164,23 @@ public class OnboardingController: NSObject {
         case .registering:
             var milestones: [OnboardingMilestone] = [.verifiedPhoneNumber, .setupProfile]
 
-            if FeatureFlags.pinsForNewUsers {
+            let hasPendingPinRestoration = databaseStorage.read {
+                KeyBackupService.hasPendingRestoration(transaction: $0)
+            }
+
+            if hasPendingPinRestoration {
+                milestones.insert(.restorePin, at: 0)
+            }
+
+            if FeatureFlags.pinsForNewUsers || hasPendingPinRestoration {
                 let hasBackupKeyRequestFailed = databaseStorage.read {
                     KeyBackupService.hasBackupKeyRequestFailed(transaction: $0)
                 }
 
                 if hasBackupKeyRequestFailed {
                     Logger.info("skipping setupPin since a previous request failed")
+                } else if hasPendingPinRestoration {
+                    milestones.insert(.setupPin, at: 1)
                 } else {
                     milestones.append(.setupPin)
                 }
@@ -212,6 +223,7 @@ public class OnboardingController: NSObject {
         }
 
         if KeyBackupService.hasMasterKey {
+            milestones.append(.restorePin)
             milestones.append(.setupPin)
         }
 
@@ -227,7 +239,7 @@ public class OnboardingController: NSObject {
         }
     }
 
-    private func showNextMilestone(navigationController: UINavigationController) {
+    func showNextMilestone(navigationController: UINavigationController) {
         guard let nextMilestone = nextMilestone else {
             SignalApp.shared().showConversationSplitView()
             markAsOnboarded()
@@ -247,6 +259,8 @@ public class OnboardingController: NSObject {
             return OnboardingSplashViewController(onboardingController: self)
         case .setupProfile:
             return buildProfileViewController()
+        case .restorePin:
+            return Onboarding2FAViewController(onboardingController: self, isUsingKBS: true)
         case .setupPin:
             return buildPinSetupViewController()
         }
@@ -713,26 +727,35 @@ public class OnboardingController: NSObject {
         case exhaustedV2RegistrationLockAttempts
     }
 
+    private var hasPendingRestoration: Bool {
+        databaseStorage.read { KeyBackupService.hasPendingRestoration(transaction: $0) }
+    }
+
     public func submitVerification(fromViewController: UIViewController,
                                    completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
-        // If we have credentials for KBS auth, we need to restore our keys.
-        if let kbsAuth = kbsAuth {
+        // If we have credentials for KBS auth or we're trying to verify
+        // after registering, we need to restore our keys from KBS.
+        if kbsAuth != nil || hasPendingRestoration {
             guard let twoFAPin = twoFAPin else {
                 owsFailDebug("We expected a 2fa attempt, but we don't have a code to try")
                 return completion(.invalid2FAPin)
             }
 
             ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: false) { modal in
-                KeyBackupService.restoreKeys(with: twoFAPin, and: kbsAuth).done {
+                KeyBackupService.restoreKeys(with: twoFAPin, and: self.kbsAuth).done {
                     // If we restored successfully clear out KBS auth, the server will give it
                     // to us again if we still need to do KBS operations.
                     self.kbsAuth = nil
 
                     modal.dismiss {
-                        // We've restored our keys, we can now re-run this method to post our registration token
-                        self.submitVerification(fromViewController: fromViewController, completion: completion)
+                        if self.tsAccountManager.isRegistered {
+                            completion(.success)
+                        } else {
+                            // We've restored our keys, we can now re-run this method to post our registration token
+                            self.submitVerification(fromViewController: fromViewController, completion: completion)
+                        }
                     }
                 }.catch { error in
                     modal.dismiss {
@@ -779,12 +802,20 @@ public class OnboardingController: NSObject {
                                                      canCancel: true) { (modal) in
 
                                                         self.accountManager.register(verificationCode: verificationCode, pin: twoFAPin)
-                                                            .done { (_) in
-                                                                // Enable 2FA with the registered pin, if any
+                                                            .then { _ -> Promise<Void> in
+                                                                // Re-enable 2FA and RegLock with the registered pin, if any
                                                                 if let pin = twoFAPin {
-                                                                    OWS2FAManager.shared().mark2FAAsEnabled(withPin: pin)
+                                                                    self.databaseStorage.write { transaction in
+                                                                        OWS2FAManager.shared().markEnabled(pin: pin, transaction: transaction)
+                                                                    }
+
+                                                                    if OWS2FAManager.shared().mode == .V2 {
+                                                                        return OWS2FAManager.shared().enableRegistrationLockV2()
+                                                                    }
                                                                 }
 
+                                                                return Promise.value(())
+                                                            }.done { (_) in
                                                                 DispatchQueue.main.async {
                                                                     modal.dismiss(completion: {
                                                                         self.verificationDidComplete(fromView: fromViewController)
