@@ -191,6 +191,7 @@ internal enum OnionRequestAPI {
 
     /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
     private static func getPath() -> Promise<Path> {
+        guard pathSize >= 1 else { preconditionFailure("Cannot build path of size zero.") }
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= pathCount {
             return Promise<Path> { $0.fulfill(paths.randomElement()!) }
