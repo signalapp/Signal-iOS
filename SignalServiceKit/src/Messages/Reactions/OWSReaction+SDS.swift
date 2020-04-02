@@ -163,16 +163,16 @@ extension OWSReactionSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
     // Properties
-    static let emojiColumn = SDSColumnMetadata(columnName: "emoji", columnType: .unicodeString, columnIndex: 3)
-    static let reactorE164Column = SDSColumnMetadata(columnName: "reactorE164", columnType: .unicodeString, isOptional: true, columnIndex: 4)
-    static let reactorUUIDColumn = SDSColumnMetadata(columnName: "reactorUUID", columnType: .unicodeString, isOptional: true, columnIndex: 5)
-    static let receivedAtTimestampColumn = SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64, columnIndex: 6)
-    static let sentAtTimestampColumn = SDSColumnMetadata(columnName: "sentAtTimestamp", columnType: .int64, columnIndex: 7)
-    static let uniqueMessageIdColumn = SDSColumnMetadata(columnName: "uniqueMessageId", columnType: .unicodeString, columnIndex: 8)
+    static let emojiColumn = SDSColumnMetadata(columnName: "emoji", columnType: .unicodeString)
+    static let reactorE164Column = SDSColumnMetadata(columnName: "reactorE164", columnType: .unicodeString, isOptional: true)
+    static let reactorUUIDColumn = SDSColumnMetadata(columnName: "reactorUUID", columnType: .unicodeString, isOptional: true)
+    static let receivedAtTimestampColumn = SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64)
+    static let sentAtTimestampColumn = SDSColumnMetadata(columnName: "sentAtTimestamp", columnType: .int64)
+    static let uniqueMessageIdColumn = SDSColumnMetadata(columnName: "uniqueMessageId", columnType: .unicodeString)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.

@@ -29,16 +29,16 @@ public struct ExperienceUpgradeRecord: SDSRecord {
 
     // Properties
     public let firstViewedTimestamp: Double
-    public let isComplete: Bool
     public let lastSnoozedTimestamp: Double
+    public let isComplete: Bool
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case recordType
         case uniqueId
         case firstViewedTimestamp
-        case isComplete
         case lastSnoozedTimestamp
+        case isComplete
     }
 
     public static func columnName(_ column: ExperienceUpgradeRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -148,13 +148,13 @@ extension ExperienceUpgradeSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
     // Properties
-    static let firstViewedTimestampColumn = SDSColumnMetadata(columnName: "firstViewedTimestamp", columnType: .double, columnIndex: 3)
-    static let isCompleteColumn = SDSColumnMetadata(columnName: "isComplete", columnType: .int, columnIndex: 4)
-    static let lastSnoozedTimestampColumn = SDSColumnMetadata(columnName: "lastSnoozedTimestamp", columnType: .double, columnIndex: 5)
+    static let firstViewedTimestampColumn = SDSColumnMetadata(columnName: "firstViewedTimestamp", columnType: .double)
+    static let lastSnoozedTimestampColumn = SDSColumnMetadata(columnName: "lastSnoozedTimestamp", columnType: .double)
+    static let isCompleteColumn = SDSColumnMetadata(columnName: "isComplete", columnType: .int)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -165,8 +165,8 @@ extension ExperienceUpgradeSerializer {
         recordTypeColumn,
         uniqueIdColumn,
         firstViewedTimestampColumn,
-        isCompleteColumn,
-        lastSnoozedTimestampColumn
+        lastSnoozedTimestampColumn,
+        isCompleteColumn
         ])
 }
 
@@ -577,9 +577,9 @@ class ExperienceUpgradeSerializer: SDSSerializer {
 
         // Properties
         let firstViewedTimestamp: Double = model.firstViewedTimestamp
-        let isComplete: Bool = model.isComplete
         let lastSnoozedTimestamp: Double = model.lastSnoozedTimestamp
+        let isComplete: Bool = model.isComplete
 
-        return ExperienceUpgradeRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, firstViewedTimestamp: firstViewedTimestamp, isComplete: isComplete, lastSnoozedTimestamp: lastSnoozedTimestamp)
+        return ExperienceUpgradeRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, firstViewedTimestamp: firstViewedTimestamp, lastSnoozedTimestamp: lastSnoozedTimestamp, isComplete: isComplete)
     }
 }

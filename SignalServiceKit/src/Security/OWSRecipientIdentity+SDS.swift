@@ -159,15 +159,15 @@ extension OWSRecipientIdentitySerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
     // Properties
-    static let accountIdColumn = SDSColumnMetadata(columnName: "accountId", columnType: .unicodeString, columnIndex: 3)
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double, columnIndex: 4)
-    static let identityKeyColumn = SDSColumnMetadata(columnName: "identityKey", columnType: .blob, columnIndex: 5)
-    static let isFirstKnownKeyColumn = SDSColumnMetadata(columnName: "isFirstKnownKey", columnType: .int, columnIndex: 6)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, columnIndex: 7)
+    static let accountIdColumn = SDSColumnMetadata(columnName: "accountId", columnType: .unicodeString)
+    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double)
+    static let identityKeyColumn = SDSColumnMetadata(columnName: "identityKey", columnType: .blob)
+    static let isFirstKnownKeyColumn = SDSColumnMetadata(columnName: "isFirstKnownKey", columnType: .int)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
