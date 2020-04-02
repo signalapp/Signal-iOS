@@ -41,7 +41,7 @@ class FailingTSAccountManager: TSAccountManager {
 
 class VerifyingTSAccountManager: FailingTSAccountManager {
     override func verifyAccount(with request: TSRequest, success successBlock: @escaping (Any?) -> Void, failure failureBlock: @escaping (Error) -> Void) {
-        successBlock(nil)
+        successBlock(["uuid": UUID().uuidString])
     }
 
 }
