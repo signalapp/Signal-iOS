@@ -221,16 +221,28 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateProfileName
 {
+    BOOL hasCustomName = self.customName.length > 0;
     BOOL isNoteToSelf = IsNoteToSelfEnabled() && self.address.isLocalAddress;
-    if (isNoteToSelf) {
+    if (hasCustomName > 0) {
+        self.nameLabel.text = self.customName;
+    } else if (isNoteToSelf) {
         self.nameLabel.text = MessageStrings.noteToSelf;
     } else {
         self.nameLabel.text = [self.contactsManager displayNameForAddress:self.address];
     }
 
-    if (!RemoteConfig.messageRequests && ![self.contactsManager hasNameInSystemContactsForAddress:self.address]) {
-        self.profileNameLabel.text = [self.contactsManager formattedProfileNameForAddress:self.address];
-        [self.profileNameLabel setNeedsLayout];
+    if (!isNoteToSelf && !hasCustomName && !RemoteConfig.messageRequests
+        && ![self.contactsManager hasNameInSystemContactsForAddress:self.address]) {
+        NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:self.address];
+        if (profileName != nil && ![profileName isEqualToString:self.nameLabel.text]) {
+            self.profileNameLabel.text = profileName;
+            self.profileNameLabel.hidden = NO;
+            [self.profileNameLabel setNeedsLayout];
+        } else {
+            self.profileNameLabel.hidden = YES;
+        }
+    } else {
+        self.profileNameLabel.hidden = YES;
     }
 
     [self.nameLabel setNeedsLayout];
@@ -246,6 +258,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.subtitleLabel.text = nil;
     self.profileNameLabel.text = nil;
     self.accessoryLabel.text = nil;
+    self.customName = nil;
     for (UIView *subview in self.accessoryViewContainer.subviews) {
         [subview removeFromSuperview];
     }

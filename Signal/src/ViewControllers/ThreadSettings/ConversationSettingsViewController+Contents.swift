@@ -94,35 +94,41 @@ extension ConversationSettingsViewController {
         return iconView
     }
 
-    private func buildCellWithAccessoryLabel() -> UITableViewCell {
-        let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-        OWSTableItem.configureCell(cell)
-        cell.preservesSuperviewLayoutMargins = true
-        cell.contentView.preservesSuperviewLayoutMargins = true
-        return cell
-    }
-
     private func buildCellWithAccessoryLabel(icon: ThemeIcon,
                                              itemName: String,
                                              accessoryText: String) -> UITableViewCell {
-        let cell = self.buildCellWithAccessoryLabel()
+
+        // We can't use the built-in UITableViewCell with CellStyle.value1,
+        // because if the content of the primary label and the accessory label
+        // overflow the cell layout, their contents will overlap.  We want
+        // the labels to truncate in that scenario.
+        let cell = OWSTableItem.newCell()
+        cell.preservesSuperviewLayoutMargins = true
+        cell.contentView.preservesSuperviewLayoutMargins = true
 
         let iconView = self.imageView(forIcon: icon)
+        iconView.setCompressionResistanceHorizontalHigh()
 
-        let rowLabel = UILabel()
-        rowLabel.text = itemName
-        rowLabel.textColor = Theme.primaryTextColor
-        rowLabel.font = .ows_dynamicTypeBody
-        rowLabel.lineBreakMode = .byTruncatingTail
+        let nameLabel = UILabel()
+        nameLabel.text = itemName
+        nameLabel.textColor = Theme.primaryTextColor
+        nameLabel.font = .ows_dynamicTypeBody
+        nameLabel.lineBreakMode = .byTruncatingTail
+        nameLabel.setCompressionResistanceHorizontalLow()
+
+        let accessoryLabel = UILabel()
+        accessoryLabel.text = accessoryText
+        accessoryLabel.textColor = Theme.secondaryTextAndIconColor
+        accessoryLabel.font = .ows_dynamicTypeBody
+        accessoryLabel.lineBreakMode = .byTruncatingTail
 
         let contentRow =
-            UIStackView(arrangedSubviews: [ iconView, rowLabel ])
+            UIStackView(arrangedSubviews: [ iconView, nameLabel, UIView.hStretchingSpacer(), accessoryLabel ])
         contentRow.spacing = self.iconSpacing
         contentRow.alignment = .center
         cell.contentView.addSubview(contentRow)
         contentRow.autoPinEdgesToSuperviewMargins()
 
-        cell.detailTextLabel?.text = accessoryText
         cell.accessoryType = .disclosureIndicator
 
         return cell
@@ -674,22 +680,34 @@ extension ConversationSettingsViewController {
                                     self?.showAddMembersView()
         })
 
-        var allMembers = groupModel.groupMembership.nonPendingMembers
-        allMembers.remove(localAddress)
-
+        let groupMembership = groupModel.groupMembership
+        let allMembers = groupMembership.nonPendingMembers
+        var allMembersSorted = [SignalServiceAddress]()
         var verificationStateMap = [SignalServiceAddress: OWSVerificationState]()
         databaseStorage.uiRead { transaction in
             for memberAddress in allMembers {
                 verificationStateMap[memberAddress] = self.identityManager.verificationState(for: memberAddress,
                                                                                              transaction: transaction)
             }
+            allMembersSorted = self.contactsManager.sortSignalServiceAddresses(Array(allMembers),
+                                                                               transaction: transaction)
         }
 
-        let sortedMembers = GroupMembership.normalize(Array(allMembers))
+        var membersToRender = [SignalServiceAddress]()
+        if groupMembership.isNonPendingMember(localAddress) {
+            // Make sure local user is first.
+            membersToRender.insert(localAddress, at: 0)
+        }
+        // Admin users are second.
+        let adminMembers = allMembersSorted.filter { $0 != localAddress && groupMembership.isAdministrator($0) }
+        membersToRender += adminMembers
+        // Non-admin users are third.
+        let nonAdminMembers = allMembersSorted.filter { $0 != localAddress && !groupMembership.isAdministrator($0) }
+        membersToRender += nonAdminMembers
+
         // TODO: Do we show pending members here? How?
-        var hasMoreMembers = groupModel.groupMembership.pendingMembers.count > 0
-        for memberAddress in sortedMembers {
-            // TODO: Is this the final value?
+        var hasMoreMembers = groupMembership.pendingMembers.count > 0
+        for memberAddress in membersToRender {
             let maxMembersToShow = 5
             // Note that we use <= to account for the header cell.
             guard isShowingAllGroupMembers || section.itemCount() <= maxMembersToShow else {
@@ -708,6 +726,8 @@ extension ConversationSettingsViewController {
                     return OWSTableItem.newCell()
                 }
                 let cell = ContactTableViewCell()
+                let isLocalUser = memberAddress == localAddress
+                let isGroupAdmin = groupMembership.isAdministrator(memberAddress)
                 let isVerified = verificationState == .verified
                 let isNoLongerVerified = verificationState == .noLongerVerified
                 let isBlocked = helper.isSignalServiceAddressBlocked(memberAddress)
@@ -720,7 +740,22 @@ extension ConversationSettingsViewController {
 
                 cell.configure(withRecipientAddress: memberAddress)
 
-                if isVerified {
+                if isLocalUser {
+                    cell.setCustomName(self.contactsManager.displayName(for: memberAddress) +
+                    " " +
+                        NSLocalizedString("GROUP_MEMBER_LOCAL_USER_INDICATOR",
+                                          comment: "Label indicating the local user."))
+                }
+
+                if isGroupAdmin {
+                    let subtitle = NSAttributedString(string: NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
+                                                                                comment: "Label indicating that a group member is an admin."),
+                                                      attributes: [
+                                                        .font: UIFont.ows_dynamicTypeBody.ows_semibold(),
+                                                        .foregroundColor: Theme.primaryTextColor
+                    ])
+                    cell.setAttributedSubtitle(subtitle)
+                } else if isVerified {
                     cell.setAttributedSubtitle(cell.verifiedSubtitle())
                 } else {
                     cell.setAttributedSubtitle(nil)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This method should be called _after_ the configure... methods.
 - (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle;
+
+- (void)setCustomName:(nullable NSString *)customName;
 
 - (NSAttributedString *)verifiedSubtitle;
 
