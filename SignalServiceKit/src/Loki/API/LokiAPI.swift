@@ -99,7 +99,7 @@ public final class LokiAPI : NSObject {
         if let headers = headers { request.allHTTPHeaderFields = headers }
         request.timeoutInterval = timeout ?? defaultTimeout
         return LokiSnodeProxy(for: target).perform(request, withCompletionQueue: DispatchQueue.global())
-            .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
+            .handlingSnodeErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
             .recoveringNetworkErrorsIfNeeded()
     }
     
