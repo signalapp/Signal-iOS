@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
 import os
 import sys
-import subprocess 
+import subprocess
 import datetime
 import argparse
 import commands
@@ -183,17 +183,17 @@ def find_matching_section(text, match_test):
         if match_test(line):
             first_matching_line_index = index
             break
-        
+
     if first_matching_line_index is None:
         return None
-            
+
     # Absorb any leading empty lines.
     while first_matching_line_index > 0:
         prev_line = lines[first_matching_line_index - 1]
         if prev_line.strip():
             break
         first_matching_line_index = first_matching_line_index - 1
-        
+
     first_non_matching_line_index = None
     for index, line in enumerate(lines[first_matching_line_index:]):
         if not line.strip():
@@ -233,7 +233,7 @@ def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, ma
             processed = '\n'.join((processed, text0,))
         else:
             processed = text0
-        
+
         # print 'before:'
         # temp_lines = text1.split('\n')
         # for index, line in enumerate(temp_lines):
@@ -263,7 +263,7 @@ def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, ma
 def find_class_statement_section(text):
     def is_class_statement(line):
         return line.strip().startswith('@class ')
-        
+
     return find_matching_section(text, is_class_statement)
 
 
@@ -271,7 +271,7 @@ def find_include_section(text):
     def is_include_line(line):
         return is_include_or_import(line)
         # return is_include_or_import_or_empty(line)
-        
+
     return find_matching_section(text, is_include_line)
 
 
@@ -303,14 +303,14 @@ def splitall(path):
             path = parts[0]
             allparts.insert(0, parts[1])
     return allparts
-    
-    
+
+
 def process(filepath):
 
     short_filepath = filepath[len(git_repo_path):]
     if short_filepath.startswith(os.sep):
-       short_filepath = short_filepath[len(os.sep):] 
-    
+       short_filepath = short_filepath[len(os.sep):]
+
     filename = os.path.basename(filepath)
     if filename.startswith('.'):
         raise "shouldn't call process with dotfile"
@@ -326,15 +326,15 @@ def process(filepath):
         except subprocess.CalledProcessError, e:
             lint_output = e.output
         print lint_output
-    
+
     with open(filepath, 'rt') as f:
         text = f.read()
 
     original_text = text
-        
+
     text = sort_includes(filepath, filename, file_ext, text)
     text = sort_class_statements(filepath, filename, file_ext, text)
-    
+
     lines = text.split('\n')
     while lines and lines[0].startswith('//'):
         lines = lines[1:]
@@ -345,16 +345,16 @@ def process(filepath):
 //  Copyright (c) %s Open Whisper Systems. All rights reserved.
 //
 
-''' % ( 
+''' % (
     datetime.datetime.now().year,
     )
     text = header + text + '\n'
 
     if original_text == text:
         return
-    
+
     print 'Updating:', short_filepath
-    
+
     with open(filepath, 'wt') as f:
         f.write(text)
 
@@ -372,10 +372,10 @@ def should_ignore_path(path):
         if component.endswith('.framework'):
             return True
         if component in ('Pods', 'ThirdParty', 'Carthage',):
-            return True                
-        
+            return True
+
     return False
-    
+
 
 def process_if_appropriate(filepath):
     filename = os.path.basename(filepath)
@@ -392,26 +392,26 @@ def process_if_appropriate(filepath):
 def check_diff_for_keywords():
     objc_keywords = [
         "OWSAbstractMethod\(",
-        "OWSAssert\(", 
-        "OWSCAssert\(", 
-        "OWSFail\(", 
-        "OWSCFail\(", 
-        "ows_add_overflow\(", 
+        "OWSAssert\(",
+        "OWSCAssert\(",
+        "OWSFail\(",
+        "OWSCFail\(",
+        "ows_add_overflow\(",
         "ows_sub_overflow\(",
     ]
 
     swift_keywords = [
-        "owsFail\(", 
-        "precondition\(", 
-        "fatalError\(", 
-        "dispatchPrecondition\(", 
-        "preconditionFailure\(", 
+        "owsFail\(",
+        "precondition\(",
+        "fatalError\(",
+        "dispatchPrecondition\(",
+        "preconditionFailure\(",
         "notImplemented\("
     ]
 
     keywords = objc_keywords + swift_keywords
 
-    matching_expression = "|".join(keywords) 
+    matching_expression = "|".join(keywords)
     command_line = 'git diff --staged | grep --color=always -C 3 -E "%s"' % matching_expression
     try:
         output = subprocess.check_output(command_line, shell=True)
@@ -434,7 +434,7 @@ def check_diff_for_keywords():
         print(output)
 
 if __name__ == "__main__":
-    
+
     parser = argparse.ArgumentParser(description='Precommit script.')
     parser.add_argument('--all', action='store_true', help='process all files in or below current dir')
     parser.add_argument('--path', help='used to specify a path to process.')
@@ -469,7 +469,7 @@ if __name__ == "__main__":
         clang_format_commit = args.ref
     else:
         filepaths = []
-        
+
         # Staging
         output = commands.getoutput('git diff --cached --name-only --diff-filter=ACMR')
         filepaths.extend([line.strip() for line in output.split('\n')])
@@ -477,7 +477,7 @@ if __name__ == "__main__":
         # Working
         output = commands.getoutput('git diff --name-only --diff-filter=ACMR')
         filepaths.extend([line.strip() for line in output.split('\n')])
-        
+
         # Only process each path once.
         filepaths = sorted(set(filepaths))
 
