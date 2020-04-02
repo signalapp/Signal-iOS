@@ -126,7 +126,7 @@ internal enum OnionRequestAPI {
     ///
     /// - Note: Exposed for testing purposes.
     internal static func getPath(excluding snode: LokiAPITarget) -> Promise<Path> {
-        guard pathSize >= 1 else { preconditionFailure("Cannot build path of size zero.") }
+        guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= pathCount {
             return Promise<Path> { seal in

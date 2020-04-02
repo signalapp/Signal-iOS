@@ -24,7 +24,7 @@ class OnionRequestAPITests : XCTestCase {
                     failureCount += 1
                     seal.reject(error)
                 }.finally(on: OnionRequestAPI.workQueue) {
-                    print("[Loki] [Onion Request API] Success rate: \(successCount)/\(failureCount).")
+                    print("[Loki] [Onion Request API] Successes/Failures: \(successCount)/\(failureCount).")
                 }
                 return promise
             }
