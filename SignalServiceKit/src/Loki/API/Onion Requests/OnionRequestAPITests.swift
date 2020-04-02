@@ -10,12 +10,12 @@ class OnionRequestAPITests : XCTestCase {
     func testOnionRequestSending() {
         let semaphore = DispatchSemaphore(value: 0)
         var totalSuccessRate: Double = 0
+        let testCount = 10
         LokiAPI.getRandomSnode().then(on: OnionRequestAPI.workQueue) { snode -> Promise<LokiAPITarget> in
             return OnionRequestAPI.getPath(excluding: snode).map(on: OnionRequestAPI.workQueue) { _ in snode } // Ensure we only build a path once
         }.done(on: OnionRequestAPI.workQueue) { snode in
             var successCount = 0
-            var failureCount = 0
-            let promises: [Promise<Void>] = (0..<10).map { _ in
+            let promises: [Promise<Void>] = (0..<testCount).map { _ in
                 let mockSessionID = "0582bc30f11e8a9736407adcaca03b049f4acd4af3ae7eb6b6608d30f0b1e6a20e"
                 let parameters: JSON = [ "pubKey" : mockSessionID ]
                 let (promise, seal) = Promise<Void>.pending()
@@ -24,7 +24,6 @@ class OnionRequestAPITests : XCTestCase {
                     print("[Loki] [Onion Request API] Onion request succeeded with result: \(String(data: data, encoding: .utf8)).")
                     seal.fulfill(())
                 }.catch(on: OnionRequestAPI.workQueue) { error in
-                    failureCount += 1
                     if case GCM.Error.fail = error {
                         print("[Loki] [Onion Request API] Onion request failed due a decryption error.")
                     } else {
@@ -32,13 +31,13 @@ class OnionRequestAPITests : XCTestCase {
                     }
                     seal.reject(error)
                 }.finally(on: OnionRequestAPI.workQueue) {
-                    let currentSuccessRate = min((100 * Double(successCount))/Double(failureCount), 100)
+                    let currentSuccessRate = min((100 * Double(successCount))/Double(testCount), 100)
                     print("[Loki] [Onion Request API] Current onion request succes rate: \(String(format: "%.1f", currentSuccessRate))%.")
                 }
                 return promise
             }
             when(resolved: promises).done(on: OnionRequestAPI.workQueue) { _ in
-                totalSuccessRate = min((100 * Double(successCount))/Double(failureCount), 100)
+                totalSuccessRate = min((100 * Double(successCount))/Double(testCount), 100)
                 semaphore.signal()
             }
         }.catch(on: OnionRequestAPI.workQueue) { error in
