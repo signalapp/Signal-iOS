@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -363,6 +363,7 @@ public class SystemContactsFetcher: NSObject {
             guard let contacts = fetchedContacts else {
                 owsFailDebug("contacts was unexpectedly not set.")
                 completion(nil)
+                return
             }
 
             Logger.info("fetched \(contacts.count) contacts.")
