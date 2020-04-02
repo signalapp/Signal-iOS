@@ -429,8 +429,8 @@ class ConversationSettingsViewController: OWSTableViewController {
 
     func showGroupAttributesView(editAction: GroupAttributesViewController.EditAction) {
 
-        if !canEditConversationAttributes {
-            owsFailDebug("failure: !self.canEditConversationAttributes")
+        guard canEditConversationAttributes else {
+            owsFailDebug("!canEditConversationAttributes")
             return
         }
 
@@ -444,6 +444,84 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                                           editAction: editAction,
                                                                           delegate: self)
         navigationController?.pushViewController(groupAttributesViewController, animated: true)
+    }
+
+    func showGroupAttributesAccessView() {
+
+        guard canEditConversationAccess else {
+            owsFailDebug("!canEditConversationAccess")
+            return
+        }
+        guard let groupThread = thread as? TSGroupThread,
+            let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid thread.")
+            return
+        }
+
+        let currentValue = groupModelV2.access.attributes
+
+        let alert = ActionSheetController(title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS",
+                                                                   comment: "Label for 'edit attributes access' action in conversation settings view."),
+                                          message: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION",
+                                                                     comment: "Description for the 'edit group attributes access' alert."))
+
+        let memberAction = ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON",
+                                                                      comment: "Label for button that sets 'group attributes access' to 'members-only'."),
+                                             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self,
+                                                                                                     name: "group_attributes_access_members"),
+                                             style: .default) { _ in
+                                                self.setGroupAttributesAccess(groupModelV2: groupModelV2,
+                                                                              access: .member)
+        }
+        if currentValue == .member {
+            memberAction.trailingIcon = .checkCircle
+        }
+        alert.addAction(memberAction)
+
+        let adminAction = ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON",
+                                                                     comment: "Label for button that sets 'group attributes access' to 'administrators-only'."),
+                                            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self,
+                                                                                                    name: "group_attributes_access_administrators"),
+                                            style: .default) { _ in
+                                                self.setGroupAttributesAccess(groupModelV2: groupModelV2,
+                                                                              access: .administrator)
+        }
+        if currentValue == .administrator {
+            adminAction.trailingIcon = .checkCircle
+        }
+        alert.addAction(adminAction)
+
+        alert.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(alert)
+    }
+
+    private func setGroupAttributesAccess(groupModelV2: TSGroupModelV2,
+                                          access: GroupV2Access) {
+        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
+                                                        updatePromiseBlock: {
+                                                            self.setGroupAttributesAccessPromise(groupModelV2: groupModelV2,
+                                                                                                 access: access)
+        },
+                                                        completion: { [weak self] in
+                                                            self?.reloadGroupModelAndUpdateContent()
+        })
+    }
+
+    private func setGroupAttributesAccessPromise(groupModelV2: TSGroupModelV2,
+                                                 access: GroupV2Access) -> Promise<Void> {
+        let thread = self.thread
+
+        return firstly { () -> Promise<Void> in
+            return GroupManager.messageProcessingPromise(for: thread,
+                                                         description: "Update group attributes access")
+        }.map(on: .global()) {
+            // We're sending a message, so we're accepting any pending message request.
+            ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+        }.then(on: .global()) {
+            GroupManager.changeGroupAttributesAccessV2(groupModel: groupModelV2,
+                                                       access: access)
+        }.asVoid()
     }
 
     func showAddMembersView() {

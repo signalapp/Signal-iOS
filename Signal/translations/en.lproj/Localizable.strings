@@ -737,8 +737,17 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Conversation Color";
 
-/* Label for 'edit access' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ACCESS" = "Edit group info";
+/* Label for 'edit attributes access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+
+/* Label for button that sets 'group membership access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+
+/* Description for the 'edit group attributes access' alert. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name and photo:";
+
+/* Label for button that sets 'group attributes access' to 'members-only'. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
 
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Edit";

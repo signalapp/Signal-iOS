@@ -1106,7 +1106,17 @@ public class GroupManager: NSObject {
                                           role: TSGroupMemberRole) -> Promise<TSGroupThread> {
         return updateGroupv2(groupModel: groupModel,
                              description: "Change member role") { groupChangeSet in
-            groupChangeSet.changeRoleForMember(uuid, role: role)
+                                groupChangeSet.changeRoleForMember(uuid, role: role)
+        }
+    }
+
+    // MARK: - Change Group Membership Access
+
+    public static func changeGroupAttributesAccessV2(groupModel: TSGroupModelV2,
+                                                     access: GroupV2Access) -> Promise<TSGroupThread> {
+        return updateGroupv2(groupModel: groupModel,
+                             description: "Change group membership access") { groupChangeSet in
+                                groupChangeSet.setAccessForAttributes(access)
         }
     }
 
