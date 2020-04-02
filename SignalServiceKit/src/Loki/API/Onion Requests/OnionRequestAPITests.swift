@@ -4,8 +4,6 @@ import XCTest
 class OnionRequestAPITests : XCTestCase {
     private let maxRetryCount: UInt = 2 // Be a bit more stringent when testing
 
-    // TODO: Remove dependency on SSKEnvironment
-
     func testGetPath() {
         let semaphore = DispatchSemaphore(value: 0)
         var error: Error? = nil
