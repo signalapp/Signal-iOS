@@ -1191,6 +1191,28 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     };
 }
 
+- (NSArray<SignalServiceAddress *> *)sortSignalServiceAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                                                    transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [addresses sortedArrayUsingComparator:[self signalServiceAddressComparatorWithTransaction:transaction]];
+}
+
+- (NSComparisonResult (^)(SignalServiceAddress *left,
+    SignalServiceAddress *right))signalServiceAddressComparatorWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return ^NSComparisonResult(SignalServiceAddress *left, SignalServiceAddress *right) {
+        NSString *leftName = [self comparableNameForAddress:left transaction:transaction];
+        NSString *rightName = [self comparableNameForAddress:right transaction:transaction];
+
+        NSComparisonResult nameComparison = [leftName caseInsensitiveCompare:rightName];
+        if (nameComparison == NSOrderedSame) {
+            return [left.stringForDisplay compare:right.stringForDisplay];
+        }
+
+        return nameComparison;
+    };
+}
+
 - (BOOL)shouldSortByGivenName
 {
     return [[CNContactsUserDefaults sharedDefaults] sortOrder] == CNContactSortOrderGivenName;

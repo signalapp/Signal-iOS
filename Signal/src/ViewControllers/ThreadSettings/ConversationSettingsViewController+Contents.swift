@@ -682,47 +682,32 @@ extension ConversationSettingsViewController {
 
         let groupMembership = groupModel.groupMembership
         let allMembers = groupMembership.nonPendingMembers
-
+        var allMembersSorted = [SignalServiceAddress]()
         var verificationStateMap = [SignalServiceAddress: OWSVerificationState]()
-        var comparableNameMap = [SignalServiceAddress: String]()
         databaseStorage.uiRead { transaction in
             for memberAddress in allMembers {
                 verificationStateMap[memberAddress] = self.identityManager.verificationState(for: memberAddress,
                                                                                              transaction: transaction)
-                comparableNameMap[memberAddress] = self.contactsManager.comparableName(for: memberAddress,
-                                                                                       transaction: transaction)
             }
+            allMembersSorted = self.contactsManager.sortSignalServiceAddresses(Array(allMembers),
+                                                                               transaction: transaction)
         }
 
-        // Sort member blocks using comparable names.
-        let sortAddressSet = { (addressSet: Set<SignalServiceAddress>) -> [SignalServiceAddress] in
-            return Array(addressSet).sorted { (left, right) -> Bool in
-                guard let leftName = comparableNameMap[left] else {
-                    owsFailDebug("Missing comparableName")
-                    return false
-                }
-                guard let rightName = comparableNameMap[right] else {
-                    owsFailDebug("Missing comparableName")
-                    return false
-                }
-                return leftName < rightName
-            }
-        }
-        var sortedMembers = [SignalServiceAddress]()
+        var membersToRender = [SignalServiceAddress]()
         if groupMembership.isNonPendingMember(localAddress) {
             // Make sure local user is first.
-            sortedMembers.insert(localAddress, at: 0)
+            membersToRender.insert(localAddress, at: 0)
         }
         // Admin users are second.
-        let adminMembers = allMembers.filter { $0 != localAddress && groupMembership.isAdministrator($0) }
-        sortedMembers += sortAddressSet(adminMembers)
+        let adminMembers = allMembersSorted.filter { $0 != localAddress && groupMembership.isAdministrator($0) }
+        membersToRender += adminMembers
         // Non-admin users are third.
-        let nonAdminMembers = allMembers.filter { $0 != localAddress && !groupMembership.isAdministrator($0) }
-        sortedMembers += sortAddressSet(nonAdminMembers)
+        let nonAdminMembers = allMembersSorted.filter { $0 != localAddress && !groupMembership.isAdministrator($0) }
+        membersToRender += nonAdminMembers
 
         // TODO: Do we show pending members here? How?
         var hasMoreMembers = groupMembership.pendingMembers.count > 0
-        for memberAddress in sortedMembers {
+        for memberAddress in membersToRender {
             let maxMembersToShow = 5
             // Note that we use <= to account for the header cell.
             guard isShowingAllGroupMembers || section.itemCount() <= maxMembersToShow else {

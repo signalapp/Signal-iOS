@@ -54,6 +54,11 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         ConversationColorName.indigo.rawValue
     }
 
+    public func sortSignalServiceAddresses(_ addresses: [SignalServiceAddress],
+                                           transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        return addresses
+    }
+
     public func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
         // If this method ends up being used by the tests, we should provide a better implementation.
         assertionFailure("TODO")

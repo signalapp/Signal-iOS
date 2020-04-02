@@ -44,6 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
 
+- (NSArray<SignalServiceAddress *> *)sortSignalServiceAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                                                    transaction:(SDSAnyReadTransaction *)transaction;
+
 - (NSComparisonResult)compareSignalAccount:(SignalAccount *)left
                          withSignalAccount:(SignalAccount *)right NS_SWIFT_NAME(compare(signalAccount:with:));
 
