@@ -86,6 +86,15 @@ public extension NSAttributedString {
     }
 }
 
+// MARK: - 
+
+public extension NSMutableAttributedString {
+    @objc
+    func append(_ string: String, attributes: [NSAttributedString.Key: Any] = [:]) {
+        append(NSAttributedString(string: string, attributes: attributes))
+    }
+}
+
 // MARK: - Natural Text Alignment
 
 public extension String {

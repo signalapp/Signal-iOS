@@ -31,7 +31,7 @@ class ComposeViewController: OWSViewController {
     }
 
     @objc func newGroupPressed() {
-        let newGroupView: UIViewController = (FeatureFlags.groupsV2CreateGroups
+        let newGroupView: UIViewController = (RemoteConfig.groupsV2CreateGroups
             ? NewGroupViewController2()
             : NewGroupViewController())
         navigationController?.pushViewController(newGroupView, animated: true)

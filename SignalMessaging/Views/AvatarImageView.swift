@@ -22,7 +22,7 @@ public class AvatarImageView: UIImageView {
         self.configureView()
     }
 
-    override init(image: UIImage?) {
+    public override init(image: UIImage?) {
         super.init(image: image)
         self.configureView()
     }

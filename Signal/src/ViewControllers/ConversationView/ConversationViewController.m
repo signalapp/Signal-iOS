@@ -376,7 +376,7 @@ typedef enum : NSUInteger {
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(identityStateDidChange:)
-                                                 name:kNSNotificationName_IdentityStateDidChange
+                                                 name:kNSNotificationNameIdentityStateDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didChangePreferredContentSize:)
@@ -1771,12 +1771,25 @@ typedef enum : NSUInteger {
     [self showConversationSettingsAndShowVerification:NO];
 }
 
+- (UIViewController *)buildConversationSettingsView:(BOOL)showVerificationOnAppear
+{
+    BOOL shouldUseNewView = RemoteConfig.groupsV2CreateGroups || self.threadViewModel.threadRecord.isGroupV2Thread;
+    if (shouldUseNewView) {
+        ConversationSettingsViewController *settingsVC =
+            [[ConversationSettingsViewController alloc] initWithThreadViewModel:self.threadViewModel];
+        settingsVC.conversationSettingsViewDelegate = self;
+        return settingsVC;
+    } else {
+        OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
+        settingsVC.conversationSettingsViewDelegate = self;
+        [settingsVC configureWithThreadViewModel:self.threadViewModel];
+        return settingsVC;
+    }
+}
+
 - (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
 {
-    OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
-    settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThreadViewModel:self.threadViewModel];
-    settingsVC.showVerificationOnAppear = showVerification;
+    UIViewController *settingsVC = [self buildConversationSettingsView:showVerification];
 
     [self.navigationController setViewControllers:[self.viewControllersUpToSelf arrayByAddingObject:settingsVC]
                                          animated:YES];
@@ -1784,9 +1797,7 @@ typedef enum : NSUInteger {
 
 - (void)showConversationSettingsAndShowAllMedia
 {
-    OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
-    settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThreadViewModel:self.threadViewModel];
+    UIViewController *settingsVC = [self buildConversationSettingsView:NO];
 
     MediaTileViewController *allMedia = [[MediaTileViewController alloc] initWithThread:self.thread];
 
@@ -4244,7 +4255,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - Conversation Search
 
-- (void)conversationSettingsDidRequestConversationSearch:(OWSConversationSettingsViewController *)conversationSettingsViewController
+- (void)conversationSettingsDidRequestConversationSearch
 {
     self.uiMode = ConversationUIMode_Search;
     [self popAllConversationSettingsViewsWithCompletion:^{

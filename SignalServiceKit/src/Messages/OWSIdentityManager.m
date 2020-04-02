@@ -42,7 +42,7 @@ const NSUInteger kIdentityKeyLength = 33;
 // TODO: migrate to storing the full 33 byte representation.
 const NSUInteger kStoredIdentityKeyLength = 32;
 
-NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationName_IdentityStateDidChange";
+NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotificationNameIdentityStateDidChange";
 
 @interface OWSIdentityManager ()
 
@@ -439,7 +439,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)fireIdentityStateChangeNotificationAfterTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [transaction addAsyncCompletion:^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_IdentityStateDidChange
+        [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationNameIdentityStateDidChange
                                                             object:nil];
     }];
 }
