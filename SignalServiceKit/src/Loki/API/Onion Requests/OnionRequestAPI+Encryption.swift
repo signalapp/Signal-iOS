@@ -44,13 +44,16 @@ extension OnionRequestAPI {
     }
 
     /// Encrypts `payload` for `snode` and returns the result. Use this to build the core of an onion request.
-    internal static func encrypt(_ payload: Data, forTargetSnode snode: LokiAPITarget) -> Promise<EncryptionResult> {
+    internal static func encrypt(_ payload: JSON, forTargetSnode snode: LokiAPITarget) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
         getQueue().async {
-            let parameters: JSON = [ "body" : payload.base64EncodedString(), "headers" : "" ]
             do {
-                guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
-                let plaintext = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                guard JSONSerialization.isValidJSONObject(payload) else { return seal.reject(Error.invalidJSON) }
+                let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [])
+                let payloadAsString = String(data: payloadAsData, encoding: .utf8)! // Snodes only accept this as a string
+                let wrapper: JSON = [ "body" : payloadAsString, "headers" : "" ]
+                guard JSONSerialization.isValidJSONObject(wrapper) else { return seal.reject(Error.invalidJSON) }
+                let plaintext = try JSONSerialization.data(withJSONObject: wrapper, options: [])
                 let result = try encrypt(plaintext, forSnode: snode)
                 seal.fulfill(result)
             } catch (let error) {

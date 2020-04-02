@@ -65,7 +65,7 @@ internal enum OnionRequestAPI {
     internal typealias Path = [LokiAPITarget]
 
     // MARK: Onion Building Result
-    private typealias OnionBuildingResult = (guardSnode: LokiAPITarget, encryptionResult: EncryptionResult, targetSnodeSymmetricKey: Data)
+    private typealias OnionBuildingResult = (guardSnode: LokiAPITarget, finalEncryptionResult: EncryptionResult, targetSnodeSymmetricKey: Data)
 
     // MARK: Private API
     private static func execute(_ verb: HTTPVerb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = OnionRequestAPI.timeout) -> Promise<JSON> {
@@ -215,7 +215,7 @@ internal enum OnionRequestAPI {
     }
 
     /// Builds an onion around `payload` and returns the result.
-    private static func buildOnion(around payload: Data, targetedAt snode: LokiAPITarget) -> Promise<OnionBuildingResult> {
+    private static func buildOnion(around payload: JSON, targetedAt snode: LokiAPITarget) -> Promise<OnionBuildingResult> {
         var guardSnode: LokiAPITarget!
         var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the target snode
         var encryptionResult: EncryptionResult!
@@ -250,22 +250,15 @@ internal enum OnionRequestAPI {
     internal static func invoke(_ method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON) -> Promise<Any> {
         let (promise, seal) = Promise<Any>.pending()
         workQueue.async {
-            let parameters: JSON = [ "method" : method.rawValue, "params" : parameters ]
-            let payload: Data
-            do {
-                guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
-                payload = try JSONSerialization.data(withJSONObject: parameters, options: [])
-            } catch (let error) {
-                return seal.reject(error)
-            }
+            let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
             buildOnion(around: payload, targetedAt: snode).done(on: workQueue) { intermediate in
                 let guardSnode = intermediate.guardSnode
                 let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
-                let encryptionResult = intermediate.encryptionResult
-                let onion = encryptionResult.ciphertext
+                let finalEncryptionResult = intermediate.finalEncryptionResult
+                let onion = finalEncryptionResult.ciphertext
                 let parameters: JSON = [
                     "ciphertext" : onion.base64EncodedString(),
-                    "ephemeral_key" : encryptionResult.ephemeralPublicKey.toHexString()
+                    "ephemeral_key" : finalEncryptionResult.ephemeralPublicKey.toHexString()
                 ]
                 let targetSnodeSymmetricKey = intermediate.targetSnodeSymmetricKey
                 execute(.post, url, parameters: parameters).done(on: workQueue) { rawResponse in
