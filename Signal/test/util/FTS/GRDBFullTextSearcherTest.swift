@@ -47,6 +47,10 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         return PersonNameComponents()
     }
 
+    func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
+        return PersonNameComponents()
+    }
+
     func signalAccounts() -> [SignalAccount] {
         return []
     }
