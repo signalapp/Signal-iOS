@@ -3,8 +3,8 @@ import PromiseKit
 public extension LokiAPI {
     private static var snodeVersion: [LokiAPITarget:String] = [:]
 
-    /// Only ever accessed from `LokiAPI.errorHandlingQueue` to avoid race conditions.
-    fileprivate static var failureCount: [LokiAPITarget:UInt] = [:]
+    /// Only ever modified from `LokiAPI.errorHandlingQueue` to avoid race conditions.
+    internal static var failureCount: [LokiAPITarget:UInt] = [:]
 
     // MARK: Settings
     private static let minimumSnodeCount = 2

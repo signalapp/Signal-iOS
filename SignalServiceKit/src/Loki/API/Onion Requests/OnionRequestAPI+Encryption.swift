@@ -64,18 +64,18 @@ extension OnionRequestAPI {
     }
 
     /// Encrypts the previous encryption result (i.e. that of the hop after this one) for this hop. Use this to build the layers of an onion request.
-    internal static func encryptHop(from snode1: LokiAPITarget, to snode2: LokiAPITarget, using previousEncryptionResult: EncryptionResult) -> Promise<EncryptionResult> {
+    internal static func encryptHop(from lhs: LokiAPITarget, to rhs: LokiAPITarget, using previousEncryptionResult: EncryptionResult) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
         getQueue().async {
             let parameters: JSON = [
                 "ciphertext" : previousEncryptionResult.ciphertext.base64EncodedString(),
                 "ephemeral_key" : previousEncryptionResult.ephemeralPublicKey.toHexString(),
-                "destination" : snode2.publicKeySet!.ed25519Key
+                "destination" : rhs.publicKeySet!.ed25519Key
             ]
             do {
                 guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
                 let plaintext = try JSONSerialization.data(withJSONObject: parameters, options: [])
-                let result = try encrypt(plaintext, forSnode: snode1)
+                let result = try encrypt(plaintext, forSnode: lhs)
                 seal.fulfill(result)
             } catch (let error) {
                 seal.reject(error)

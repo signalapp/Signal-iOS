@@ -6,10 +6,17 @@ internal enum OnionRequestAPI {
     private static let urlSession = URLSession(configuration: .ephemeral, delegate: urlSessionDelegate, delegateQueue: nil)
     private static let urlSessionDelegate = URLSessionDelegateImplementation()
 
-    internal static var guardSnodes: Set<LokiAPITarget> = []
-    internal static var paths: Set<Path> = []
     /// - Note: Exposed for testing purposes.
     internal static let workQueue = DispatchQueue(label: "OnionRequestAPI.workQueue", qos: .userInitiated)
+    /// - Note: Must only be modified from `workQueue`.
+    internal static var guardSnodes: Set<LokiAPITarget> = []
+    /// - Note: Must only be modified from `workQueue`.
+    internal static var paths: Set<Path> = []
+
+    private static var snodePool: Set<LokiAPITarget> {
+        let unreliableSnodes = Set(LokiAPI.failureCount.keys)
+        return LokiAPI.randomSnodePool.subtracting(unreliableSnodes)
+    }
 
     // MARK: Settings
     private static let pathCount: UInt = 2
@@ -76,7 +83,7 @@ internal enum OnionRequestAPI {
             if let parameters = parameters {
                 do {
                     guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(Error.invalidJSON) }
-                    request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
+                    request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
                 } catch (let error) {
                     return seal.reject(error)
                 }
@@ -144,7 +151,7 @@ internal enum OnionRequestAPI {
         } else {
             print("[Loki] [Onion Request API] Populating guard snode cache.")
             return LokiAPI.getRandomSnode().then(on: workQueue) { _ -> Promise<Set<LokiAPITarget>> in // Just used to populate the snode pool
-                var unusedSnodes = LokiAPI.randomSnodePool // Sync on workQueue
+                var unusedSnodes = snodePool // Sync on workQueue
                 guard unusedSnodes.count >= guardSnodeCount else { throw Error.insufficientSnodes }
                 func getGuardSnode() -> Promise<LokiAPITarget> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
@@ -169,7 +176,6 @@ internal enum OnionRequestAPI {
     private static func buildPaths() -> Promise<Set<Path>> {
         print("[Loki] [Onion Request API] Building onion request paths.")
         return LokiAPI.getRandomSnode().then(on: workQueue) { _ -> Promise<Set<Path>> in // Just used to populate the snode pool
-            let snodePool = LokiAPI.randomSnodePool
             return getGuardSnodes().map(on: workQueue) { guardSnodes in
                 var unusedSnodes = snodePool.subtracting(guardSnodes)
                 let pathSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
@@ -202,6 +208,10 @@ internal enum OnionRequestAPI {
                 return path
             }
         }
+    }
+
+    private static func dropPath(containing snode: LokiAPITarget) {
+        paths = paths.filter { !$0.contains(snode) }
     }
 
     /// Builds an onion around `payload` and returns the result.
