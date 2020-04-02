@@ -13,6 +13,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
     private let pinTextField = UITextField()
     private let pinTypeToggle = UIButton()
+    private lazy var nextButton = self.primaryButton(title: CommonStrings.nextButton,
+                                                     selector: #selector(nextPressed))
 
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
     private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
@@ -121,8 +123,6 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTypeToggle.addTarget(self, action: #selector(togglePinType), for: .touchUpInside)
         pinTypeToggle.accessibilityIdentifier = "pinCreation.pinTypeToggle"
 
-        let nextButton = self.primaryButton(title: CommonStrings.nextButton,
-                                     selector: #selector(nextPressed))
         nextButton.accessibilityIdentifier = "onboarding.2fa." + "nextButton"
         let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
@@ -241,6 +241,30 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             return
         }
 
+        let progressView = PinProgressView(
+            loadingText: NSLocalizedString("REGISTER_2FA_PIN_PROGRESS",
+                                           comment: "Indicates the work we are doing while verifying the user's pin")
+        )
+        view.addSubview(progressView)
+        progressView.autoPinWidthToSuperview()
+        progressView.autoVCenterInSuperview()
+
+        progressView.startLoading {
+            self.view.isUserInteractionEnabled = false
+            self.nextButton.alpha = 0.5
+            self.pinTypeToggle.alpha = 0.5
+        }
+
+        func animateProgressFail() {
+            progressView.loadingComplete(success: false, animateAlongside: {
+                self.nextButton.alpha = 1
+                self.pinTypeToggle.alpha = 1
+            }) {
+                self.view.isUserInteractionEnabled = true
+                progressView.removeFromSuperview()
+            }
+        }
+
         // v1 pins also have a max length, but we'll rely on the server to verify that
         // since we do not know if this is a v1 or a v2 pin at registration time.
 
@@ -259,17 +283,30 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
                 }
 
                 self.attemptState = .invalid(remainingAttempts: nil)
+                animateProgressFail()
             case .invalidV2RegistrationLockPin(let remainingAttempts):
                 self.attemptState = .invalid(remainingAttempts: remainingAttempts)
+                animateProgressFail()
             case .exhaustedV2RegistrationLockAttempts:
                 self.attemptState = .exhausted
-                self.showAttemptsExhausted()
+
+                progressView.loadingComplete(success: false, animated: false) { [weak self] in
+                    guard let self = self else { return }
+                    self.showAttemptsExhausted()
+                }
             case .success:
                 self.attemptState = .valid
-                // If we have success while pending  restoration, show the next onboarding milestone.
-                if self.hasPendingRestoration { self.showNextMilestone(wasSuccessful: true) }
+
+                // The completion handler always dismisses this view, so we don't want to animate anything.
+                progressView.loadingComplete(success: true, animated: false) { [weak self] in
+                    guard let self = self else { return }
+                    // If we have success while pending  restoration, show the next onboarding milestone.
+                    if self.hasPendingRestoration { self.showNextMilestone(wasSuccessful: true) }
+                }
+
             case .invalidVerificationCode:
                 owsFailDebug("Invalid verification code in 2FA view.")
+                animateProgressFail()
             }
         })
     }

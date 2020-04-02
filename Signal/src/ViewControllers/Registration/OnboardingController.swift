@@ -743,42 +743,36 @@ public class OnboardingController: NSObject {
                 return completion(.invalid2FAPin)
             }
 
-            ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: false) { modal in
-                KeyBackupService.restoreKeys(with: twoFAPin, and: self.kbsAuth).done {
-                    // If we restored successfully clear out KBS auth, the server will give it
-                    // to us again if we still need to do KBS operations.
-                    self.kbsAuth = nil
+            KeyBackupService.restoreKeys(with: twoFAPin, and: self.kbsAuth).done {
+                // If we restored successfully clear out KBS auth, the server will give it
+                // to us again if we still need to do KBS operations.
+                self.kbsAuth = nil
 
-                    modal.dismiss {
-                        if self.tsAccountManager.isRegistered {
-                            completion(.success)
-                        } else {
-                            // We've restored our keys, we can now re-run this method to post our registration token
-                            self.submitVerification(fromViewController: fromViewController, completion: completion)
-                        }
-                    }
-                }.catch { error in
-                    modal.dismiss {
-                        guard let error = error as? KeyBackupService.KBSError else {
-                            owsFailDebug("unexpected response from KBS")
-                            return completion(.invalid2FAPin)
-                        }
+                if self.tsAccountManager.isRegistered {
+                    completion(.success)
+                } else {
+                    // We've restored our keys, we can now re-run this method to post our registration token
+                    self.submitVerification(fromViewController: fromViewController, completion: completion)
+                }
+            }.catch { error in
+                guard let error = error as? KeyBackupService.KBSError else {
+                    owsFailDebug("unexpected response from KBS")
+                    return completion(.invalid2FAPin)
+                }
 
-                        switch error {
-                        case .assertion:
-                            owsFailDebug("unexpected response from KBS")
-                            completion(.invalid2FAPin)
-                        case .invalidPin(let remainingAttempts):
-                            completion(.invalidV2RegistrationLockPin(remainingAttempts: remainingAttempts))
-                        case .backupMissing:
-                            // We don't have a backup for this person, it probably
-                            // was deleted due to too many failed attempts. They'll
-                            // have to retry after the registration lock window expires.
-                            completion(.exhaustedV2RegistrationLockAttempts)
-                        }
-                    }
-                }.retainUntilComplete()
-            }
+                switch error {
+                case .assertion:
+                    owsFailDebug("unexpected response from KBS")
+                    completion(.invalid2FAPin)
+                case .invalidPin(let remainingAttempts):
+                    completion(.invalidV2RegistrationLockPin(remainingAttempts: remainingAttempts))
+                case .backupMissing:
+                    // We don't have a backup for this person, it probably
+                    // was deleted due to too many failed attempts. They'll
+                    // have to retry after the registration lock window expires.
+                    completion(.exhaustedV2RegistrationLockAttempts)
+                }
+            }.retainUntilComplete()
 
             return
         }

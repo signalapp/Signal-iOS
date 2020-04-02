@@ -429,7 +429,7 @@ public class PinSetupViewController: OWSViewController {
 
         pinTextField.resignFirstResponder()
 
-        let progressView = ProgressView(
+        let progressView = PinProgressView(
             loadingText: NSLocalizedString("PIN_CREATION_PIN_PROGRESS",
                                            comment: "Indicates the work we are doing while creating the user's pin")
         )
@@ -520,7 +520,7 @@ extension PinSetupViewController: UITextFieldDelegate {
     }
 }
 
-private class ProgressView: UIView {
+class PinProgressView: UIView {
     private let label = UILabel()
     private let progressAnimation = AnimationView(name: "pinCreationInProgress")
     private let errorAnimation = AnimationView(name: "pinCreationFail")
