@@ -17,7 +17,7 @@ public extension OWSDevice {
 
     // Updates the list of devices in the database.
     //
-    // Returns true if any devices were added or removed (but changed).
+    // Returns true if any devices were added or removed (but not changed).
     class func replaceAll(_ newDevices: [OWSDevice], transaction: SDSAnyWriteTransaction) -> Bool {
 
         var wasDeviceAddedOrRemoved = false
