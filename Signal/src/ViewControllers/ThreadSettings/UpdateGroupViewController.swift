@@ -77,62 +77,23 @@ public extension UpdateGroupViewController {
                            newGroupModel: TSGroupModel,
                            delegate: OWSConversationSettingsViewDelegate) {
 
-        // GroupsV2 TODO: Should we allow cancel here?
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false) { modalActivityIndicator in
-                                                        firstly {
+        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
+                                                        updatePromiseBlock: {
                                                             self.updateGroupThreadPromise(oldGroupModel: oldGroupModel,
-                                                                                          newGroupModel: newGroupModel)
-                                                        }.done { groupThread in
-                                                            modalActivityIndicator.dismiss {
-                                                                delegate.conversationSettingsDidUpdate(groupThread)
-                                                                delegate.popAllConversationSettingsViews()
-                                                            }
-                                                        }.catch { error in
-                                                            if case GroupsV2Error.redundantChange = error {
-                                                                if let groupThread = (self.databaseStorage.read { transaction in
-                                                                    TSGroupThread.fetch(groupId: newGroupModel.groupId, transaction: transaction)
-                                                                    }) {
-                                                                    // Treat GroupsV2Error.redundantChange as a success.
-                                                                    modalActivityIndicator.dismiss {
-                                                                        delegate.conversationSettingsDidUpdate(groupThread)
-                                                                        delegate.popAllConversationSettingsViews()
-                                                                    }
-                                                                    return
-                                                                }
-                                                            }
-
-                                                            owsFailDebug("Could not update group: \(error)")
-
-                                                            modalActivityIndicator.dismiss {
-                                                                UpdateGroupViewController.showUpdateErrorUI(error: error)
-                                                            }
-                                                        }.retainUntilComplete()
-        }
-    }
-
-    class func showUpdateErrorUI(error: Error) {
-        AssertIsOnMainThread()
-
-        let showUpdateNetworkErrorUI = {
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("UPDATE_GROUP_FAILED_DUE_TO_NETWORK",
-                                                                     comment: "Error indicating that a group could not be updated due to network connectivity problems."))
-        }
-
-        if error.isNetworkFailureOrTimeout {
-            return showUpdateNetworkErrorUI()
-        }
-
-        OWSActionSheets.showActionSheet(title: NSLocalizedString("UPDATE_GROUP_FAILED",
-                                                                 comment: "Error indicating that a group could not be updated."))
+                                                                newGroupModel: newGroupModel)
+        },
+                                                        completion: {
+                                                            delegate.conversationSettingsDidUpdate()
+            delegate.popAllConversationSettingsViews()
+        })
     }
 }
 
 // MARK: -
 
 extension UpdateGroupViewController {
-    private func updateGroupThreadPromise(oldGroupModel: TSGroupModel,
-                                          newGroupModel: TSGroupModel) -> Promise<TSGroupThread> {
+    fileprivate func updateGroupThreadPromise(oldGroupModel: TSGroupModel,
+                                              newGroupModel: TSGroupModel) -> Promise<Void> {
 
         guard let localAddress = tsAccountManager.localAddress else {
             return Promise(error: OWSAssertionError("Missing localAddress."))
@@ -146,6 +107,6 @@ extension UpdateGroupViewController {
             GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
-        }
+        }.asVoid()
     }
 }

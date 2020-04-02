@@ -18,33 +18,14 @@ public extension OWSConversationSettingsViewController {
     @objc
     func updateDisappearingMessagesConfigurationObjc(_ dmConfiguration: OWSDisappearingMessagesConfiguration,
                                                      thread: TSThread) {
-
-        // GroupsV2 TODO: Should we allow cancel here?
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false) { modalActivityIndicator in
-                                                        firstly {
+        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
+                                                        updatePromiseBlock: {
                                                             self.updateDisappearingMessagesConfiguration(dmConfiguration,
                                                                                                          thread: thread)
-                                                        }.done { _ in
-                                                            modalActivityIndicator.dismiss {
-                                                                self.navigationController?.popViewController(animated: true)
-                                                            }
-                                                        }.catch { error in
-                                                            switch error {
-                                                            case GroupsV2Error.redundantChange:
-                                                                // Treat GroupsV2Error.redundantChange as a success.
-                                                                modalActivityIndicator.dismiss {
-                                                                    self.navigationController?.popViewController(animated: true)
-                                                                }
-                                                            default:
-                                                                owsFailDebug("Could not update group: \(error)")
-
-                                                                modalActivityIndicator.dismiss {
-                                                                    UpdateGroupViewController.showUpdateErrorUI(error: error)
-                                                                }
-                                                            }
-                                                        }.retainUntilComplete()
-        }
+        },
+                                                        completion: { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        })
     }
 }
 

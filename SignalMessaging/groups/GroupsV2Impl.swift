@@ -643,26 +643,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return promise
     }
 
-    // MARK: - Accept Invites
+    // MARK: - Generic Group Change
 
-    public func acceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
+    public func updateGroupv2(groupModel: TSGroupModelV2,
+                              changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
             let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,
                                                   groupSecretParamsData: groupModel.secretParamsData)
-            changeSet.setShouldAcceptInvite()
-            return changeSet
-        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
-            return self.updateExistingGroupOnService(changeSet: changeSet)
-        }
-    }
-
-    // MARK: - Leave Group / Decline Invite
-
-    public func leaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
-            let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,
-                                                  groupSecretParamsData: groupModel.secretParamsData)
-            changeSet.setShouldLeaveGroupDeclineInvite()
+            changeSetBlock(changeSet)
             return changeSet
         }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
             return self.updateExistingGroupOnService(changeSet: changeSet)
@@ -686,20 +674,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     @objc
     public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
         profileKeyUpdater.updateLocalProfileKeyInGroup(groupId: groupId, transaction: transaction)
-    }
-
-    // MARK: - Disappearing Messages
-
-    public func updateDisappearingMessageStateOnService(groupModel: TSGroupModelV2,
-                                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread> {
-        return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
-            let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,
-                                                  groupSecretParamsData: groupModel.secretParamsData)
-            changeSet.setNewDisappearingMessageToken(disappearingMessageToken)
-            return changeSet
-        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
-            return self.updateExistingGroupOnService(changeSet: changeSet)
-        }
     }
 
     // MARK: - Perform Request

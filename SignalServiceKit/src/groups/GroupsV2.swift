@@ -84,12 +84,8 @@ public protocol GroupsV2Swift: GroupsV2 {
     // reflect changes after the change set.
     func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread>
 
-    func acceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread>
-
-    func leaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread>
-
-    func updateDisappearingMessageStateOnService(groupModel: TSGroupModelV2,
-                                                 disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread>
+    func updateGroupv2(groupModel: TSGroupModelV2,
+                       changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
 
@@ -109,6 +105,16 @@ public protocol GroupsV2ChangeSet: AnyObject {
 
     var newAvatarData: Data? { get }
     var newAvatarUrlPath: String? { get }
+
+    func removeMember(_ uuid: UUID)
+
+    func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole)
+
+    func setShouldAcceptInvite()
+
+    func setShouldLeaveGroupDeclineInvite()
+
+    func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken)
 
     func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
                                currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
@@ -352,16 +358,8 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func acceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        owsFail("Not implemented.")
-    }
-
-    public func leaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        owsFail("Not implemented.")
-    }
-
-    public func updateDisappearingMessageStateOnService(groupModel: TSGroupModelV2,
-                                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread> {
+    public func updateGroupv2(groupModel: TSGroupModelV2,
+                              changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 

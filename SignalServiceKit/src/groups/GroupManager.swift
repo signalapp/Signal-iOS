@@ -927,14 +927,9 @@ public class GroupManager: NSObject {
             return simpleUpdate()
         }
 
-        return firstly {
-            return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            return groupsV2.updateDisappearingMessageStateOnService(groupModel: groupModel,
-                                                                    disappearingMessageToken: disappearingMessageToken)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
-                  description: "Update DM state") {
-            GroupsV2Error.timeout
+        return updateGroupv2(groupModel: groupModel,
+                             description: "Update disappearing messages") { groupChangeSet in
+            groupChangeSet.setNewDisappearingMessageToken(disappearingMessageToken)
         }.asVoid()
     }
 
@@ -1014,14 +1009,9 @@ public class GroupManager: NSObject {
     // MARK: - Accept Invites
 
     public static func localAcceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-
-        return firstly {
-            return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            return self.groupsV2.acceptInviteToGroupV2(groupModel: groupModel)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
-                  description: "Accept invite") {
-            GroupsV2Error.timeout
+        return updateGroupv2(groupModel: groupModel,
+                             description: "Accept invite") { groupChangeSet in
+            groupChangeSet.setShouldAcceptInvite()
         }
     }
 
@@ -1072,13 +1062,9 @@ public class GroupManager: NSObject {
     }
 
     private static func localLeaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        return firstly {
-            return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            return self.groupsV2.leaveGroupV2OrDeclineInvite(groupModel: groupModel)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
-                  description: "Leave group") {
-            GroupsV2Error.timeout
+        return updateGroupv2(groupModel: groupModel,
+                             description: "Leave group or decline invite") { groupChangeSet in
+            groupChangeSet.setShouldLeaveGroupDeclineInvite()
         }
     }
 
@@ -1100,6 +1086,42 @@ public class GroupManager: NSObject {
             }.catch { error in
                 owsFailDebug("Leave group failed: \(error)")
             }.retainUntilComplete()
+        }
+    }
+
+    // MARK: - Remove From Group / Revoke Invite
+
+    public static func removeFromGroupOrRevokeInviteV2(groupModel: TSGroupModelV2,
+                                                       uuid: UUID) -> Promise<TSGroupThread> {
+        return updateGroupv2(groupModel: groupModel,
+                             description: "Remove from group or revoke invite") { groupChangeSet in
+            groupChangeSet.removeMember(uuid)
+        }
+    }
+
+    // MARK: - Change Member Role
+
+    public static func changeMemberRoleV2(groupModel: TSGroupModelV2,
+                                          uuid: UUID,
+                                          role: TSGroupMemberRole) -> Promise<TSGroupThread> {
+        return updateGroupv2(groupModel: groupModel,
+                             description: "Change member role") { groupChangeSet in
+            groupChangeSet.changeRoleForMember(uuid, role: role)
+        }
+    }
+
+    // MARK: - Generic Group Change
+
+    public static func updateGroupv2(groupModel: TSGroupModelV2,
+                                     description: String,
+                                     changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
+        return firstly {
+            return self.ensureLocalProfileHasCommitmentIfNecessary()
+        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
+            return self.groupsV2.updateGroupv2(groupModel: groupModel, changeSetBlock: changeSetBlock)
+        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+                  description: description) {
+                    GroupsV2Error.timeout
         }
     }
 
