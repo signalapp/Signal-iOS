@@ -710,11 +710,20 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Definições da conversa";
 
+/* Label for 'add members' button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Adicionar membros";
+
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Adicionar a um contacto existente";
 
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Adicionar aos contactos do sistema";
+
+/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+
+/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Tudo";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bloquear este grupo";
@@ -728,8 +737,32 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Cor da conversa";
 
+/* Label for 'edit attributes access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+
+/* Label for button that sets 'group attributes access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+
+/* Description for the 'edit group attributes access' alert. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name and photo:";
+
+/* Label for button that sets 'group attributes access' to 'members-only'. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Todos os membros";
+
+/* Label for the 'edit group' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_GROUP" = "Editar";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informação de grupo";
+
+/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
+"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ members";
+
+/* Label for 'make group admin' button in conversation settings view. */
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
+
+/* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenciar";
@@ -761,6 +794,18 @@
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Criar novo contacto";
 
+/* Label for 'remove from group' button in conversation settings view. */
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+
+/* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
+
+/* Label for 'revoke group admin' button in conversation settings view. */
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remove as Admin";
+
+/* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
+
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Procurar conversa";
 
@@ -769,6 +814,9 @@
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Remover do silêncio";
+
+/* Label for 'view all members' button in conversation settings view. */
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Este utilizador encontra-se nos seus contactos";
@@ -796,6 +844,9 @@
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Este utilizador não se encontra nos seus contactos.";
+
+/* button text to delete all items in the current conversation */
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "A carregar mais mensagens...";
@@ -878,6 +929,18 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redireccionar para GitHub";
 
+/* action sheet body */
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+
+/* button text */
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+
+/* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+
+/* action sheet body */
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Voltar a registar este número";
 
@@ -923,11 +986,20 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Editar grupo";
 
+/* The 'clear avatar' button in the 'edit group' view. */
+"EDIT_GROUP_CLEAR_AVATAR" = "Remove Avatar";
+
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contactos";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Editar grupo";
+
+/* Error message indicating that an avatar image is invalid and cannot be used. */
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
+
+/* Label for the group name in the 'edit group' view. */
+"EDIT_GROUP_GROUP_NAME" = "Group Name";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "Adicionado";
@@ -1167,37 +1239,37 @@
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "A optimizar a base de dados";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Você alterou quem pode editar a informação do grupo para \"%@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed who can edit group info to “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ alterou quem pode editar a informação do grupo para \"%@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "A informação do grupo pode ser alterada por \"%@\".";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Apenas administradores";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+"GROUP_ACCESS_LEVEL_ANY" = "Qualquer utilizador";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+"GROUP_ACCESS_LEVEL_MEMBER" = "Todos os membros";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Desconhecido";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Você alterou quem pode editar a participação no grupo para \"%@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed who can edit group membership to “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ alterou quem pode editar a participação no grupo para \"%@\".";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "A participação no grupo pode ser alterada por \"%@\".";
 
 /* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "This user cannot be added to the group.";
+"GROUP_CANNOT_ADD_INVALID_MEMBER" = "Este utilizador não pode ser adicionado ao grupo.";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Criou o grupo.";
@@ -1206,61 +1278,67 @@
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ adicionou-o(a) ao grupo.";
 
 /* Message indicating that group was created by an unknown user. */
-"GROUP_CREATED_BY_UNKNOWN_USER" = "Group was created.";
+"GROUP_CREATED_BY_UNKNOWN_USER" = "Foi criado o grupo";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Nem todos os membros foram adicionados ao grupo. Toque para tentar novamente.";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ adicionou-o(a).";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Você, é agora administrador.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ tornou-o num administrador.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "You accepted an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Você aceitou um convite para o grupo.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "You accepted an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Você aceitou um convite para o grupo. a partir de %@";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "You declined an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Você recusou um convite para o grupo.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "You declined an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Você recusou um convite para o grupo, a partir de %@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revogou o seu convite para o grupo,";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "O seu convite para o grupo foi revogado.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ convidou-o(a).";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Foi convidado para o grupo.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Juntou-se ao grupo.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removeu-o(a).";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Foi removido do grupo.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Os seus privilégios de administrador foram revogados.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revogou os seus privilégios de administrador.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Gestão do grupo";
+
+/* Label indicating that a group member is an admin. */
+"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+
+/* Label indicating the local user. */
+"GROUP_MEMBER_LOCAL_USER_INDICATOR" = "(me)";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Telefonar";
@@ -1281,70 +1359,70 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "Mensagem";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ aceitou um convite para o grupo.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ aceitou o seu convite para o grupo.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ aceitou um convite para o grupo de %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Adicionou %@.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ adicionou %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ foi adicionado ao grupo.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 pessoa declinou o convite para o grupo.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 pessoa convidada por %@ declinou o convite para o grupo.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declinou o seu convite de grupo.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ é agora um administrador";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Você fez %@ um administrador";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ fez %2$@ um administrador.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "O convite para o grupo foi revogado por 1 pessoa.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "O convite par ao grupo foi revogado por %@.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revogou o convite de 1 pessoa para o grupo.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revogou o convite de %2$@ pessoas para o grupo.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Os convites para o grupo foram revogados por %@ pessoa(s).";
 
 /* Message indicating that a single remote user was invited to the group. */
-"GROUP_REMOTE_USER_INVITED_1" = "1 person was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1" = "1 pessoa foi convidada para o grupo.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Você convidou %@ para o grupo.";
 
 /* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ convidou 1 pessoa para o grupo.";
 
 /* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ convidou %2$@ pessoas para o grupo.";
 
 /* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
-"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ pessoas foram convidados para o grupo.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ juntou-se ao grupo.";
@@ -1682,14 +1760,23 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Eliminar esta mensagem";
 
+/* accessibility label */
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Delete Selected Messages";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Mais informação";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Reencaminhar esta mensagem";
 
+/* accessibility label */
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Forward Selected Message";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Responder a esta mensagem";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SELECT_MESSAGE" = "Select Multiple";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Partilhar multimédia";
@@ -2027,6 +2114,9 @@
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN incorreto. Tentativas esgotadas.";
 
+/* Label for the 'create new pin' button when reglock is disabled during onboarding. */
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "Create New PIN";
+
 /* Button asking if the user would like to enter an alphanumeric PIN */
 "ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Introduzir PIN alfanumérico";
 
@@ -2045,14 +2135,14 @@
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN incorreto. Resta 1 tentativa.";
 
-/* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "De forma a proteger a privacidade e segurança da sua conta, ela foi bloqueada durante 7 dias.\n\nApós 7 dias de inatividade, ser-lhe-á permitido voltar a registar este número de telefone sem ser necessário o seu PIN. Todo o conteúdo presente nela será eliminado.";
+/* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New Pin";
 
-/* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Saber mais acerca de contas bloqueadas";
+/* Explanation for the skip pin entry action sheet during onboarding. */
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
 
-/* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Conta bloqueada";
+/* Title for the skip pin entry action sheet during onboarding. */
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Skip PIN Entry?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Adicione um toque de humanidade às suas mensagens";
@@ -2095,6 +2185,24 @@
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Número inválido";
+
+/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
+
+/* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Saber mais acerca dos PINs";
+
+/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "De forma a proteger a privacidade e segurança da sua conta, ela foi bloqueada durante 7 dias.\n\nApós 7 dias de inatividade, ser-lhe-á permitido voltar a registar este número de telefone sem ser necessário o seu PIN. Todo o conteúdo presente nela será eliminado.";
+
+/* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Saber mais acerca de contas bloqueadas";
+
+/* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Conta bloqueada";
+
+/* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN incorreto";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "Introduza o PIN que criou para a sua conta. Ele é diferente do seu código de verificação SMS.";
@@ -2271,7 +2379,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Falha ao criar PIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Os PINs adicionam uma camada de segurança extra à sua conta e não podem ser recuperados. Necessita do seu PIN para registar-se novamente no Signal.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. Write your PIN down and keep it in a safe place. It can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Os PINs não coincidem. Tente novamente.";
@@ -2582,17 +2690,29 @@
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "O seu PIN é um código de 6 ou mais dígitos que você criou e pode ser numérico ou alfanumérico. Se não se recorda do seu PIN, necessita de esperar 7 dias até poder voltar a registar-se na sua conta.";
 
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "O seu PIN é um código numérico de 4 ou mais dígitos que você criou. Se não se recorda do seu PIN, necessita de esperar 7 dias até poder voltar a registar-se na sua conta.";
 
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Restam-lhe %lu tentativas. Quando não restarem mais tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, poderá voltar a registar-se sem ser necessário o seu PIN. A sua conta será limpa e todo o conteúdo presente nela será eliminado.";
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
 
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Resta-lhe 1 tentativa. Quando não restarem mais tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, você poderá voltar a registar-se sem ser necessário o seu PIN. A sua conta será limpa e todo o conteúdo presente nela será eliminado.";
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Restam-lhe %lu tentativas. Quando não restarem mais tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, poderá voltar a registar-se sem ser necessário o seu PIN. A sua conta será limpa e todo o conteúdo presente nela será eliminado.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Resta-lhe 1 tentativa. Quando não restarem mais tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, você poderá voltar a registar-se sem ser necessário o seu PIN. A sua conta será limpa e todo o conteúdo presente nela será eliminado.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorreto";
+
+/* Indicates the work we are doing while verifying the user's pin */
+"REGISTER_2FA_PIN_PROGRESS" = "Verifying PIN…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Enviar";
@@ -2781,7 +2901,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Inicie o Signal no seu telemóvel para associar este iPad à sua conta";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Não tenho o Signal no meu telemóvel...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Vá até à App Store no seu telemóvel, instale o Signal, termine o processo de registo e, depois poderá associar o seu iPad à mesma conta.";
@@ -3021,7 +3141,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notificações";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "O seu PIN dá-lhe uma camada de proteção extra à sua conta. Ser-lhe-á pedido quando registar o seu número de telemóvel com o Signal. Se se esquecer do seu PIN, a sua conta será bloqueada durante 7 dias.";
+"SETTINGS_PINS_FOOTER" = "Your PIN backs up profile settings and preferences to save you time when re-registering your account.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Alterar o seu PIN";
@@ -3030,7 +3150,7 @@
 "SETTINGS_PINS_ITEM_CREATE" = "Criar um PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN";
+"SETTINGS_PINS_TITLE" = "SIGNAL PIN";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Mostrar nome e número";
@@ -3101,8 +3221,14 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Ativada";
 
+/* Footer for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Registration Lock adds an extra layer of security to your account. You’ll be asked for your Signal PIN when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Bloqueio de registo";
+
+/* Label for the 'enable registration lock' switch of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueio de registo";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Bloqueio de registo";
@@ -3308,7 +3434,7 @@
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Cancelar";
 
-/* No comment provided by engineer. */
+/* Label for the delete button in an alert or action sheet. */
 "TXT_DELETE_TITLE" = "Eliminar";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */

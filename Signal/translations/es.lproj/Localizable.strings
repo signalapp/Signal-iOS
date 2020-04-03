@@ -710,11 +710,20 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Ajustes del chat";
 
+/* Label for 'add members' button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Añadir participantes";
+
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Añadir a contacto existente";
 
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Añadir a los contactos de iOS";
+
+/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+
+/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Todo";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bloquear grupo";
@@ -728,8 +737,32 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color de chat";
 
+/* Label for 'edit attributes access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+
+/* Label for button that sets 'group attributes access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+
+/* Description for the 'edit group attributes access' alert. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name and photo:";
+
+/* Label for button that sets 'group attributes access' to 'members-only'. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Cualquier participante";
+
+/* Label for the 'edit group' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_GROUP" = "Editar";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Detalles de grupo";
+
+/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
+"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ members";
+
+/* Label for 'make group admin' button in conversation settings view. */
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
+
+/* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenciar";
@@ -761,6 +794,18 @@
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Crear nuevo contacto";
 
+/* Label for 'remove from group' button in conversation settings view. */
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+
+/* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
+
+/* Label for 'revoke group admin' button in conversation settings view. */
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remove as Admin";
+
+/* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
+
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Buscar en el chat";
 
@@ -769,6 +814,9 @@
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "No silenciar";
+
+/* Label for 'view all members' button in conversation settings view. */
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Este usuario está entre tus contactos";
@@ -796,6 +844,9 @@
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Este usuario no está en tus contactos.";
+
+/* button text to delete all items in the current conversation */
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Cargando más mensajes ...";
@@ -878,6 +929,18 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirigir a GitHub";
 
+/* action sheet body */
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+
+/* button text */
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+
+/* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+
+/* action sheet body */
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Volver a registrar este número";
 
@@ -923,11 +986,20 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Editar grupo";
 
+/* The 'clear avatar' button in the 'edit group' view. */
+"EDIT_GROUP_CLEAR_AVATAR" = "Remove Avatar";
+
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contactos";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Editar grupo";
+
+/* Error message indicating that an avatar image is invalid and cannot be used. */
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
+
+/* Label for the group name in the 'edit group' view. */
+"EDIT_GROUP_GROUP_NAME" = "Group Name";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "Agregad@";
@@ -1261,6 +1333,12 @@
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Gestión del grupo";
+
+/* Label indicating that a group member is an admin. */
+"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+
+/* Label indicating the local user. */
+"GROUP_MEMBER_LOCAL_USER_INDICATOR" = "(me)";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Llamar";
@@ -1682,14 +1760,23 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Eliminar este mensaje";
 
+/* accessibility label */
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Delete Selected Messages";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Más detalles";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Reenviar mensaje";
 
+/* accessibility label */
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Forward Selected Message";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Responder a este mensaje";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SELECT_MESSAGE" = "Select Multiple";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Compartir multimedia";
@@ -2027,6 +2114,9 @@
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN incorrecto. Intentos agotados.";
 
+/* Label for the 'create new pin' button when reglock is disabled during onboarding. */
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "Create New PIN";
+
 /* Button asking if the user would like to enter an alphanumeric PIN */
 "ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Introduce PIN alfanumérico";
 
@@ -2045,14 +2135,14 @@
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN incorrecto. Te queda 1 intento.";
 
-/* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Para proteger tu privacidad y la seguridad de tu cuenta de Signal, hemos bloqueado tu número por 7 días.\n\nTras 7 días con tu cuenta inactiva, podrás volver a registrar este número de teléfono sin necesidad de tu PIN. Se eliminará todo el contenido de tu cuenta.";
+/* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New Pin";
 
-/* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Saber más sobre cuentas bloqueadas";
+/* Explanation for the skip pin entry action sheet during onboarding. */
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
 
-/* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Cuenta de Signal bloqueada";
+/* Title for the skip pin entry action sheet during onboarding. */
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Skip PIN Entry?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Añade un toque de personalidad a tus mensajes";
@@ -2082,7 +2172,7 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Enlazar tu iPhone no está recomendado ya que limitará funcionalidades importantes.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Habilitar permisos";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Activar permisos";
 
 /* Explanation in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "Las notificaciones permiten mostrar cuando recibes mensajes y sobre otros eventos en chats.";
@@ -2095,6 +2185,24 @@
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Número incorrecto";
+
+/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
+
+/* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Saber más sobre el PIN";
+
+/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Para proteger tu privacidad y la seguridad de tu cuenta de Signal, hemos bloqueado tu número por 7 días.\n\nTras 7 días con tu cuenta inactiva, podrás volver a registrar este número de teléfono sin necesidad de tu PIN. Se eliminará todo el contenido de tu cuenta.";
+
+/* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Saber más sobre cuentas bloqueadas";
+
+/* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Cuenta de Signal bloqueada";
+
+/* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN incorrecto";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "Introduce el PIN que has seleccionado al crear tu cuenta de Signal. El PIN es diferente al del SMS de verificación.";
@@ -2271,7 +2379,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Fallo al crear el PIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "El PIN añade un nivel extra de seguridad a tu cuenta y es imposible recuperarlo si lo olvidas. Necesitarás el PIN para volverte a registrar en Signal con tu número de teléfono desde otro dispositivo.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. Write your PIN down and keep it in a safe place. It can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "El PIN no coincide. Inténtalo de nuevo.";
@@ -2582,17 +2690,29 @@
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Tu PIN es un código de 6+ caracteres creado por ti que puede constar de dígitos o caracteres alfanuméricos. Si no puedes recordar tu PIN tendrás que esperar 7 días para poder volver a registrar tu cuenta.";
 
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Tu PIN es un código de 4+ dígitos creado por ti. Si no puedes recordar tu PIN tendrás que esperar 7 días para poder volver a registrar tu cuenta.";
 
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Te quedan %lu intentos. Cuando superes el número de intentos permitidos, tu cuenta se bloqueará. Tras 7 días con tu cuenta inactiva, podrás volver a registrar este número sin tu PIN. Se eliminará tu cuenta y todo su contenido.";
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
 
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Tan sólo te queda 1 intento. Si fallas, tu cuenta se bloqueará. Tras 7 días con tu cuenta inactiva, podrás volver a registrar este número sin tu PIN. Se eliminará tu cuenta y todo su contenido.";
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Te quedan %lu intentos. Cuando superes el número de intentos permitidos, tu cuenta se bloqueará. Tras 7 días con tu cuenta inactiva, podrás volver a registrar este número sin tu PIN. Se eliminará tu cuenta y todo su contenido.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Tan sólo te queda 1 intento. Si fallas, tu cuenta se bloqueará. Tras 7 días con tu cuenta inactiva, podrás volver a registrar este número sin tu PIN. Se eliminará tu cuenta y todo su contenido.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorrecto";
+
+/* Indicates the work we are doing while verifying the user's pin */
+"REGISTER_2FA_PIN_PROGRESS" = "Verifying PIN…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Enviar";
@@ -2781,7 +2901,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Ve a Signal en tu teléfono para enlazar este iPad con tu cuenta";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "No tengo Signal en mi teléfono ...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Ve a la App/Play Store en tu teléfono, instala Signal y completa el proceso de registro para poder enlazar este iPad con tu cuenta.";
@@ -3021,7 +3141,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notificaciones";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "El PIN añade una capa de seguridad extra a tu cuenta. Te preguntaremos el PIN al registrar tu número desde otro dispositivo en Signal. Si olvidas tu PIN, tu cuenta permanecerá bloqueada durante 7 días.";
+"SETTINGS_PINS_FOOTER" = "Your PIN backs up profile settings and preferences to save you time when re-registering your account.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Cambiar PIN";
@@ -3030,7 +3150,7 @@
 "SETTINGS_PINS_ITEM_CREATE" = "Crear PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN";
+"SETTINGS_PINS_TITLE" = "SIGNAL PIN";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Mostrar nombre y número";
@@ -3072,7 +3192,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Bloqueo de acceso";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Habilitar protección de pantalla";
+"SETTINGS_SCREEN_SECURITY" = "Activar protección de pantalla";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Esta opción evita que aparezca contenido de Signal en las capturas de pantalla del gestor de aplicaciones.";
@@ -3101,8 +3221,14 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Activado";
 
+/* Footer for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Registration Lock adds an extra layer of security to your account. You’ll be asked for your Signal PIN when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Bloqueo de registro";
+
+/* Label for the 'enable registration lock' switch of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueo de registro";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Bloqueo de registro";
@@ -3308,7 +3434,7 @@
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Cancelar";
 
-/* No comment provided by engineer. */
+/* Label for the delete button in an alert or action sheet. */
 "TXT_DELETE_TITLE" = "Eliminar";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */

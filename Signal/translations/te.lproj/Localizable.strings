@@ -710,11 +710,20 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = " సంభాషణ అమరికలు ";
 
+/* Label for 'add members' button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "సభ్యులు జోడించు";
+
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "ఇప్పటికే ఉన్న పరిచయానికి జోడించండి";
 
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "సిస్టమ్ పరిచయాలకు జోడించండి";
+
+/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+
+/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "అన్ని";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "ఈ సమూహాన్ని బ్లాక్ చేయాలా";
@@ -728,8 +737,32 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "సంభాషణ రంగు";
 
+/* Label for 'edit attributes access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+
+/* Label for button that sets 'group attributes access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+
+/* Description for the 'edit group attributes access' alert. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name and photo:";
+
+/* Label for button that sets 'group attributes access' to 'members-only'. */
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+
+/* Label for the 'edit group' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_GROUP" = "సరిచేయు";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "సమూహ సమాచారం";
+
+/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
+"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ members";
+
+/* Label for 'make group admin' button in conversation settings view. */
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
+
+/* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "నిశబ్ధం";
@@ -761,6 +794,18 @@
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "క్రొత్త పరిచయాన్ని సృష్టించండి";
 
+/* Label for 'remove from group' button in conversation settings view. */
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+
+/* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
+
+/* Label for 'revoke group admin' button in conversation settings view. */
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remove as Admin";
+
+/* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
+
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "సంభాషణను శోధించండి";
 
@@ -769,6 +814,9 @@
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "మ్యూట్ తీసివేయి";
+
+/* Label for 'view all members' button in conversation settings view. */
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "ఈ వినియోగదారు మీ పరిచయాలలో ఉన్నారు";
@@ -796,6 +844,9 @@
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "ఈ వినియోగదారు మీ పరిచయాలలో లేరు.";
+
+/* button text to delete all items in the current conversation */
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "మరిన్ని సందేశాలను లోడ్ చేస్తోంది…";
@@ -878,6 +929,18 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub కొత్త చిరునామాకు మళ్లింపు";
 
+/* action sheet body */
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+
+/* button text */
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+
+/* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+
+/* action sheet body */
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "ఈ ఫోన్ నంబర్‌ను తిరిగి నమోదు చేయండి";
 
@@ -923,11 +986,20 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "సమూహాన్ని సవరించండి";
 
+/* The 'clear avatar' button in the 'edit group' view. */
+"EDIT_GROUP_CLEAR_AVATAR" = "Remove Avatar";
+
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "పరిచయాలు ";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "సమూహాన్ని సవరించండి";
+
+/* Error message indicating that an avatar image is invalid and cannot be used. */
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
+
+/* Label for the group name in the 'edit group' view. */
+"EDIT_GROUP_GROUP_NAME" = "Group Name";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "చేర్చబడింది";
@@ -1261,6 +1333,12 @@
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "సమూహ నిర్వహణ";
+
+/* Label indicating that a group member is an admin. */
+"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+
+/* Label indicating the local user. */
+"GROUP_MEMBER_LOCAL_USER_INDICATOR" = "(me)";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "కాల్";
@@ -1682,14 +1760,23 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "ఈ సందేశాన్ని తొలగించండి";
 
+/* accessibility label */
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Delete Selected Messages";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "మరింత సమాచారం";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "ఈ సందేశాన్ని ఫార్వార్డ్ చేయండి";
 
+/* accessibility label */
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Forward Selected Message";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "ఈ సందేశానికి ప్రత్యుత్తరం ఇవ్వండి";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SELECT_MESSAGE" = "Select Multiple";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "మీడియాను భాగస్వామ్యం చేయండి";
@@ -2027,6 +2114,9 @@
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "తప్పు పిన్. ప్రయత్నాలు అయిపోయాయి.";
 
+/* Label for the 'create new pin' button when reglock is disabled during onboarding. */
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "Create New PIN";
+
 /* Button asking if the user would like to enter an alphanumeric PIN */
 "ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
 
@@ -2045,14 +2135,14 @@
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "తప్పు పిన్. 1 ప్రయత్నం మిగిలి ఉంది.";
 
-/* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "మీ గోప్యత మరియు మీ ఖాతా యొక్క భద్రతను రక్షించడానికి, మేము దీన్ని 7 రోజులు లాక్ చేసాము.\n\n7 రోజుల నిష్క్రియాత్మకత తరువాత, మీరు మీ పిన్ అవసరం లేకుండా ఈ ఫోన్ నంబర్‌ను తిరిగి నమోదు చేయగలరు. కానీ అన్ని కంటెంట్ తుడిచివేయబడుతుంది.";
+/* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New Pin";
 
-/* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "లాక్ చేసిన ఖాతాల గురించి మరింత తెలుసుకోండి";
+/* Explanation for the skip pin entry action sheet during onboarding. */
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
 
-/* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "ఖాతా లాక్ చేయబడింది";
+/* Title for the skip pin entry action sheet during onboarding. */
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Skip PIN Entry?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "మీ సందేశాలకు మానవత్వం యొక్క స్పర్శను జోడించండి";
@@ -2095,6 +2185,24 @@
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "చెల్లని సంఖ్య";
+
+/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
+
+/* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "పిన్‌ల గురించి మరింత తెలుసుకోండి";
+
+/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "మీ గోప్యత మరియు మీ ఖాతా యొక్క భద్రతను రక్షించడానికి, మేము దీన్ని 7 రోజులు లాక్ చేసాము.\n\n7 రోజుల నిష్క్రియాత్మకత తరువాత, మీరు మీ పిన్ అవసరం లేకుండా ఈ ఫోన్ నంబర్‌ను తిరిగి నమోదు చేయగలరు. కానీ అన్ని కంటెంట్ తుడిచివేయబడుతుంది.";
+
+/* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "లాక్ చేసిన ఖాతాల గురించి మరింత తెలుసుకోండి";
+
+/* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "ఖాతా లాక్ చేయబడింది";
+
+/* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "తప్పయిన పిన్";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "మీ ఖాతా కోసం మీరు సృష్టించిన పిన్‌ను నమోదు చేయండి. ఇది మీ SMS ధృవీకరణ కోడ్‌కు భిన్నంగా ఉంటుంది.";
@@ -2271,7 +2379,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add extra security to your account and can’t be recovered. You’ll need your PIN to register with Signal again.";
+"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. Write your PIN down and keep it in a safe place. It can’t be recovered.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "పిన్‌లు సరిపోలడం లేదు. మళ్ళీ ప్రయత్నించండి.";
@@ -2283,7 +2391,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "పిన్‌ను తిరిగి నమోదు చేయండి";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creating PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "Creating PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
@@ -2582,17 +2690,29 @@
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "మీకు %lu ప్రయత్నం మిగిలి ఉంది. మీ ప్రయత్నాలు అయిపోతే మీ ఖాతా లాక్ అవుతుంది. 7 రోజుల నిష్క్రియాత్మకత తరువాత, మీరు మీ పిన్ లేకుండా తిరిగి నమోదు చేసుకోవచ్చు. మీ ఖాతా తుడిచివేయబడుతుంది మరియు మొత్తం కంటెంట్ తొలగించబడుతుంది.";
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
 
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "మీకు 1 ప్రయత్నం మిగిలి ఉంది. మీ ప్రయత్నాలు అయిపోతే మీ ఖాతా లాక్ అవుతుంది. 7 రోజుల నిష్క్రియాత్మకత తరువాత, మీరు మీ పిన్ లేకుండా తిరిగి నమోదు చేసుకోవచ్చు. మీ ఖాతా తుడిచివేయబడుతుంది మరియు మొత్తం కంటెంట్ తొలగించబడుతుంది.";
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "మీకు %lu ప్రయత్నం మిగిలి ఉంది. మీ ప్రయత్నాలు అయిపోతే మీ ఖాతా లాక్ అవుతుంది. 7 రోజుల నిష్క్రియాత్మకత తరువాత, మీరు మీ పిన్ లేకుండా తిరిగి నమోదు చేసుకోవచ్చు. మీ ఖాతా తుడిచివేయబడుతుంది మరియు మొత్తం కంటెంట్ తొలగించబడుతుంది.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "మీకు 1 ప్రయత్నం మిగిలి ఉంది. మీ ప్రయత్నాలు అయిపోతే మీ ఖాతా లాక్ అవుతుంది. 7 రోజుల నిష్క్రియాత్మకత తరువాత, మీరు మీ పిన్ లేకుండా తిరిగి నమోదు చేసుకోవచ్చు. మీ ఖాతా తుడిచివేయబడుతుంది మరియు మొత్తం కంటెంట్ తొలగించబడుతుంది.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "తప్పయిన పిన్";
+
+/* Indicates the work we are doing while verifying the user's pin */
+"REGISTER_2FA_PIN_PROGRESS" = "Verifying PIN…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "సమర్పించండి";
@@ -2781,7 +2901,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "ఈ iPad ను మీ ఖాతాకు లింక్ చేయడానికి మీ ఫోన్‌లో Signal  ప్రారంభించండి";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "నా ఫోన్‌లో Signal లేదు ...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "మీ ఫోన్‌లోని యాప్ స్టోర్‌కు వెళ్లి, Signal ను ఇన్‌స్టాల్ చేయండి, రిజిస్ట్రేషన్ ప్రాసెస్‌ను పూర్తి చేయండి, ఆపై మీరు మీ iPad ను అదే ఖాతాకు లింక్ చేయవచ్చు.";
@@ -3021,7 +3141,7 @@
 "SETTINGS_NOTIFICATIONS" = "ప్రకటనలు";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security to your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "Your PIN backs up profile settings and preferences to save you time when re-registering your account.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "మీ పిన్ మార్చండి";
@@ -3030,7 +3150,7 @@
 "SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "పిన్";
+"SETTINGS_PINS_TITLE" = "SIGNAL PIN";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "కాలర్ పేరు & సంఖ్యను చూపించు";
@@ -3101,8 +3221,14 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "చేతనం అయింది";
 
+/* Footer for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Registration Lock adds an extra layer of security to your account. You’ll be asked for your Signal PIN when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "నమోదు లాక్";
+
+/* Label for the 'enable registration lock' switch of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "నమోదు లాక్";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "నమోదు లాక్";
@@ -3308,7 +3434,7 @@
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "రద్దు";
 
-/* No comment provided by engineer. */
+/* Label for the delete button in an alert or action sheet. */
 "TXT_DELETE_TITLE" = "తొలగించండి";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
