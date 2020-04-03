@@ -281,7 +281,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(address.isValid);
 
     MemberActionSheet *memberActionSheet = [[MemberActionSheet alloc] initWithAddress:address
-                                                                   contactsViewHelper:self.contactsViewHelper];
+                                                                   contactsViewHelper:self.contactsViewHelper
+                                                                      groupViewHelper:nil];
     [memberActionSheet presentFromViewController:self];
 }
 

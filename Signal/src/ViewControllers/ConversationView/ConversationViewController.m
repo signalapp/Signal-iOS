@@ -2350,8 +2350,11 @@ typedef enum : NSUInteger {
     }
 
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
+    GroupViewHelper *groupViewHelper = [[GroupViewHelper alloc] initWithThreadViewModel:self.threadViewModel];
+    groupViewHelper.delegate = self;
     MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:incomingMessage.authorAddress
-                                                             contactsViewHelper:self.contactsViewHelper];
+                                                             contactsViewHelper:self.contactsViewHelper
+                                                                groupViewHelper:groupViewHelper];
     [actionSheet presentFromViewController:self];
 }
 

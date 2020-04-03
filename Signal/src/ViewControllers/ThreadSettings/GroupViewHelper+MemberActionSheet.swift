@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-extension ConversationSettingsViewController: MemberActionSheetDelegate {
+extension GroupViewHelper {
 
     // This group of member actions follow a similar pattern:
     //
@@ -17,11 +17,15 @@ extension ConversationSettingsViewController: MemberActionSheetDelegate {
                                                          titleFormat: String,
                                                          actionTitle: String,
                                                          updatePromiseBlock: @escaping () -> Promise<Void>) {
+        guard let fromViewController = fromViewController else {
+            owsFailDebug("Missing fromViewController.")
+            return
+        }
         let actionBlock = {
-            GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
+            GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: fromViewController,
                                                             updatePromiseBlock: updatePromiseBlock,
                                                             completion: { [weak self] in
-                                                                self?.reloadGroupModelAndUpdateContent()
+                                                                self?.delegate?.groupViewHelperDidUpdateGroup()
             })
         }
         let title = String(format: titleFormat, contactsManager.displayName(for: address))
@@ -32,7 +36,7 @@ extension ConversationSettingsViewController: MemberActionSheetDelegate {
                                                     actionBlock()
         }))
         actionSheet.addAction(OWSActionSheets.cancelAction)
-        presentActionSheet(actionSheet)
+        fromViewController.presentActionSheet(actionSheet)
     }
 
     // MARK: - Make Group Admin
@@ -66,7 +70,7 @@ extension ConversationSettingsViewController: MemberActionSheetDelegate {
     }
 
     private func makeGroupAdminPromise(address: SignalServiceAddress) -> Promise<Void> {
-        guard let oldGroupModel = self.currentGroupModel as? TSGroupModelV2 else {
+        guard let oldGroupModel = delegate?.currentGroupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Missing group model."))
         }
         guard oldGroupModel.groupMembership.isPendingOrNonPendingMember(address) else {
@@ -114,7 +118,7 @@ extension ConversationSettingsViewController: MemberActionSheetDelegate {
     }
 
     private func revokeGroupAdminPromise(address: SignalServiceAddress) -> Promise<Void> {
-        guard let oldGroupModel = self.currentGroupModel as? TSGroupModelV2 else {
+        guard let oldGroupModel = delegate?.currentGroupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Missing group model."))
         }
         guard oldGroupModel.groupMembership.isPendingOrNonPendingMember(address) else {
@@ -163,7 +167,7 @@ extension ConversationSettingsViewController: MemberActionSheetDelegate {
     }
 
     private func removeFromGroupPromise(address: SignalServiceAddress) -> Promise<Void> {
-        guard let oldGroupModel = self.currentGroupModel as? TSGroupModelV2 else {
+        guard let oldGroupModel = delegate?.currentGroupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Missing group model."))
         }
         guard oldGroupModel.groupMembership.isPendingOrNonPendingMember(address) else {
