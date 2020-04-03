@@ -57,6 +57,8 @@ typedef void (^SystemMessageActionBlock)(void);
 @property (nonatomic, nullable) SystemMessageAction *action;
 @property (nonatomic) MessageSelectionView *selectionView;
 @property (nonatomic, readonly) UITapGestureRecognizer *contentViewTapGestureRecognizer;
+@property (nonatomic) UIView *iconSpacer;
+@property (nonatomic) UIView *buttonSpacer;
 
 @end
 
@@ -104,11 +106,14 @@ typedef void (^SystemMessageActionBlock)(void);
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.button autoSetDimension:ALDimensionHeight toSize:self.buttonHeight];
 
+    self.iconSpacer = [UIView spacerWithHeight:self.iconVSpacing];
+    self.buttonSpacer = [UIView spacerWithHeight:self.buttonVSpacing];
+
     UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.iconView,
-        [UIView spacerWithHeight:self.iconVSpacing],
+        self.iconSpacer,
         self.titleLabel,
-        [UIView spacerWithHeight:self.buttonVSpacing],
+        self.buttonSpacer,
         self.button,
     ]];
     vStackView.axis = UILayoutConstraintAxisVertical;
@@ -187,10 +192,12 @@ typedef void (^SystemMessageActionBlock)(void);
     UIImage *_Nullable icon = [self iconForInteraction:interaction];
     if (icon) {
         self.iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.iconView.hidden = NO;
         self.iconView.tintColor = [self iconColorForInteraction:interaction];
+        self.iconView.hidden = NO;
+        self.iconSpacer.hidden = NO;
     } else {
         self.iconView.hidden = YES;
+        self.iconSpacer.hidden = YES;
     }
 
     self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
@@ -203,11 +210,13 @@ typedef void (^SystemMessageActionBlock)(void);
         [self.button setTitle:self.action.title forState:UIControlStateNormal];
         UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
         self.button.titleLabel.font = buttonFont;
-        self.button.hidden = NO;
         self.button.accessibilityIdentifier = self.action.accessibilityIdentifier;
+        self.button.hidden = NO;
+        self.buttonSpacer.hidden = NO;
     } else {
-        self.button.hidden = YES;
         self.button.accessibilityIdentifier = nil;
+        self.button.hidden = YES;
+        self.buttonSpacer.hidden = YES;
     }
     CGSize buttonSize = [self.button sizeThatFits:CGSizeZero];
 
