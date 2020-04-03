@@ -323,8 +323,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 // only intersect new contacts which were not in the last successful
                 // "full" intersection.
                 NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers =
-                    [self.keyValueStore getObject:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                      transaction:transaction];
+                    [self.keyValueStore getObjectForKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                                            transaction:transaction];
                 if (lastKnownContactPhoneNumbers) {
                     // Do a "delta" sync which only intersects phone numbers not included
                     // in the last full intersection.
@@ -364,8 +364,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                         __block NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers;
                         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                             lastKnownContactPhoneNumbers =
-                                [self.keyValueStore getObject:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                                  transaction:transaction];
+                                [self.keyValueStore getObjectForKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                                                        transaction:transaction];
                         }];
 
                         if (lastKnownContactPhoneNumbers != nil && lastKnownContactPhoneNumbers.count > 0) {
@@ -430,8 +430,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                 transaction:transaction];
             } else {
                 NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers =
-                    [self.keyValueStore getObject:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                      transaction:transaction];
+                    [self.keyValueStore getObjectForKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                                            transaction:transaction];
 
                 // If a user has a "flaky" address book, perhaps a network linked directory that
                 // goes in and out of existence, we could get thrashing between what the last

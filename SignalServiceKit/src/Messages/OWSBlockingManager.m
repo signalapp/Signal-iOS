@@ -681,12 +681,13 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     __block NSArray<NSString *> *blockedUUIDs;
     __block NSDictionary<NSData *, TSGroupModel *> *storedBlockedGroupMap;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        blockedPhoneNumbers = [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_BlockedPhoneNumbersKey
-                                                              transaction:transaction];
-        blockedUUIDs =
-            [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_BlockedUUIDsKey transaction:transaction];
-        storedBlockedGroupMap =
-            [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_BlockedGroupMapKey transaction:transaction];
+        blockedPhoneNumbers =
+            [OWSBlockingManager.keyValueStore getObjectForKey:kOWSBlockingManager_BlockedPhoneNumbersKey
+                                                  transaction:transaction];
+        blockedUUIDs = [OWSBlockingManager.keyValueStore getObjectForKey:kOWSBlockingManager_BlockedUUIDsKey
+                                                             transaction:transaction];
+        storedBlockedGroupMap = [OWSBlockingManager.keyValueStore getObjectForKey:kOWSBlockingManager_BlockedGroupMapKey
+                                                                      transaction:transaction];
     }];
     _blockedPhoneNumberSet = [[NSMutableSet alloc] initWithArray:(blockedPhoneNumbers ?: @[])];
     _blockedUUIDSet = [[NSMutableSet alloc] initWithArray:(blockedUUIDs ?: @[])];
@@ -724,12 +725,13 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     __block NSArray<NSData *> *syncedBlockedGroupIds;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         syncedBlockedPhoneNumbers =
-            [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
-                                            transaction:transaction];
-        syncedBlockedUUIDs = [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_SyncedBlockedUUIDsKey
-                                                             transaction:transaction];
-        syncedBlockedGroupIds = [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_SyncedBlockedGroupIdsKey
-                                                                transaction:transaction];
+            [OWSBlockingManager.keyValueStore getObjectForKey:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
+                                                  transaction:transaction];
+        syncedBlockedUUIDs = [OWSBlockingManager.keyValueStore getObjectForKey:kOWSBlockingManager_SyncedBlockedUUIDsKey
+                                                                   transaction:transaction];
+        syncedBlockedGroupIds =
+            [OWSBlockingManager.keyValueStore getObjectForKey:kOWSBlockingManager_SyncedBlockedGroupIdsKey
+                                                  transaction:transaction];
     }];
 
     NSSet<NSString *> *syncedBlockedPhoneNumberSet = [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: @[])];

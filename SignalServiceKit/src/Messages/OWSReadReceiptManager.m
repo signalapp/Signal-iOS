@@ -176,12 +176,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 @interface OWSReadReceiptManager ()
 
-// A map of "thread unique id"-to-"read receipt" for read receipts that
-// we will send to our linked devices.
-//
-// Should only be accessed while synchronized on the OWSReadReceiptManager.
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSLinkedDeviceReadReceipt *> *toLinkedDevicesReadReceiptMap;
-
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic) BOOL isProcessing;
 
@@ -218,8 +212,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         return self;
     }
 
-    _toLinkedDevicesReadReceiptMap = [NSMutableDictionary new];
-
     OWSSingletonAssert();
 
     // Start processing.
@@ -236,11 +228,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 }
 
 #pragma mark - Dependencies
-
-- (MessageSenderJobQueue *)messageSenderJobQueue
-{
-    return SSKEnvironment.shared.messageSenderJobQueue;
-}
 
 - (OWSOutgoingReceiptManager *)outgoingReceiptManager
 {
@@ -276,64 +263,14 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             self.isProcessing = YES;
         }
 
-        [self process];
-    });
-}
+        [self processReadReceiptsForLinkedDevicesWithCompletion:^{
+            @synchronized(self) {
+                OWSAssertDebug(self.isProcessing);
 
-- (void)process
-{
-    if (SSKDebugFlags.suppressBackgroundActivity) {
-        // Don't process queues.
-        return;
-    }
-
-    OWSLogVerbose(@"Processing read receipts.");
-
-    NSArray<OWSLinkedDeviceReadReceipt *> *readReceiptsForLinkedDevices;
-    @synchronized(self)
-    {
-        readReceiptsForLinkedDevices = [self.toLinkedDevicesReadReceiptMap allValues];
-        [self.toLinkedDevicesReadReceiptMap removeAllObjects];
-    }
-
-    if (readReceiptsForLinkedDevices.count > 0) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
-            if (thread == nil) {
-                OWSFailDebug(@"Missing thread.");
-                return;
+                self.isProcessing = NO;
             }
-
-            OWSReadReceiptsForLinkedDevicesMessage *message =
-                [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithThread:thread
-                                                                  readReceipts:readReceiptsForLinkedDevices];
-
-            [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
         }];
-    }
-
-    BOOL didWork = readReceiptsForLinkedDevices.count > 0;
-
-    if (didWork) {
-        // Wait N seconds before processing read receipts again.
-        // This allows time for a batch to accumulate.
-        //
-        // We want a value high enough to allow us to effectively de-duplicate,
-        // read receipts without being so high that we risk not sending read
-        // receipts due to app exit.
-        const CGFloat kProcessingFrequencySeconds = 3.f;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
-            dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-            ^{
-                [self process];
-            });
-    } else {
-        @synchronized(self) {
-            OWSAssertDebug(self.isProcessing);
-
-            self.isProcessing = NO;
-        }
-    }
+    });
 }
 
 #pragma mark - Mark as Read Locally
@@ -389,8 +326,11 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                                         transaction:transaction.unwrapGrdbWrite];
             }
             break;
-        case OWSReadCircumstanceReadOnThisDevice:
+        case OWSReadCircumstanceReadOnThisDevice: {
             [self enqueueLinkedDeviceReadReceiptForMessage:message transaction:transaction];
+            [transaction addAsyncCompletion:^{
+                [self scheduleProcessing];
+            }];
 
             if (message.authorAddress.isLocalAddress) {
                 OWSFailDebug(@"We don't support incoming messages from self.");
@@ -404,6 +344,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                               transaction:transaction];
             }
             break;
+        }
         case OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest:
             [self enqueueLinkedDeviceReadReceiptForMessage:message transaction:transaction];
             if ([self areReadReceiptsEnabled]) {
@@ -412,37 +353,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                                         transaction:transaction.unwrapGrdbWrite];
             }
             break;
-    }
-
-    [transaction addAsyncCompletion:^{
-        [self scheduleProcessing];
-    }];
-}
-
-- (void)enqueueLinkedDeviceReadReceiptForMessage:(TSIncomingMessage *)message
-                                     transaction:(SDSAnyWriteTransaction *)transaction
-{
-    NSString *threadUniqueId = message.uniqueThreadId;
-    OWSAssertDebug(threadUniqueId.length > 0);
-
-    SignalServiceAddress *messageAuthorAddress = message.authorAddress;
-    OWSAssertDebug(messageAuthorAddress.isValid);
-
-    OWSLinkedDeviceReadReceipt *newReadReceipt =
-        [[OWSLinkedDeviceReadReceipt alloc] initWithSenderAddress:messageAuthorAddress
-                                               messageIdTimestamp:message.timestamp
-                                                    readTimestamp:[NSDate ows_millisecondTimeStamp]];
-
-    @synchronized(self) {
-        OWSLinkedDeviceReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
-        if (oldReadReceipt && oldReadReceipt.messageIdTimestamp > newReadReceipt.messageIdTimestamp) {
-            // If there's an existing "linked device" read receipt for the same thread with
-            // a newer timestamp, discard this "linked device" read receipt.
-            OWSLogVerbose(@"Ignoring redundant read receipt for linked devices.");
-        } else {
-            OWSLogVerbose(@"Enqueuing read receipt for linked devices.");
-            self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
-        }
     }
 }
 

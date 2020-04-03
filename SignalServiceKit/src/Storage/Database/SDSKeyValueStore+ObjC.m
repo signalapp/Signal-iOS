@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SDSKeyValueStore+ObjC.h"
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(key.length > 0);
 
-    id _Nullable value = [self.keyValueStore getObject:key transaction:transaction];
+    id _Nullable value = [self.keyValueStore getObjectForKey:key transaction:transaction];
 
     OWSAssert(!value || [value isKindOfClass:klass]);
     return value;

@@ -523,8 +523,8 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     //
     // Since other code in this class which uses @synchronized(self) also needs to open write
     // transaction, using @synchronized(self) here, inside of a WriteTransaction risks deadlock.
-    NSNumber *_Nullable storedId =
-        [self.keyValueStore getObject:TSAccountManager_LocalRegistrationIdKey transaction:transaction];
+    NSNumber *_Nullable storedId = [self.keyValueStore getObjectForKey:TSAccountManager_LocalRegistrationIdKey
+                                                           transaction:transaction];
 
     uint32_t registrationID = storedId.unsignedIntValue;
 
@@ -912,8 +912,8 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
     __block NSDate *_Nullable updateRequestDate;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        updateRequestDate =
-            [self.keyValueStore getObject:TSAccountManager_NeedsAccountAttributesUpdateKey transaction:transaction];
+        updateRequestDate = [self.keyValueStore getObjectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
+                                                    transaction:transaction];
     }];
 
     if (!updateRequestDate) {
@@ -925,7 +925,8 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
             // Clear the update request unless a new update has been requested
             // while this update was in flight.
             NSDate *_Nullable latestUpdateRequestDate =
-                [self.keyValueStore getObject:TSAccountManager_NeedsAccountAttributesUpdateKey transaction:transaction];
+                [self.keyValueStore getObjectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
+                                        transaction:transaction];
 
             if (latestUpdateRequestDate && [latestUpdateRequestDate isEqual:updateRequestDate]) {
                 [self.keyValueStore removeValueForKey:TSAccountManager_NeedsAccountAttributesUpdateKey

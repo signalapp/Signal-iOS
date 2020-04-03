@@ -287,12 +287,12 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
     NSSet<NSNumber *> *_Nullable oldUUIDTimestamps;
     if (address.uuidString) {
-        oldUUIDTimestamps = [store getObject:address.uuidString transaction:transaction];
+        oldUUIDTimestamps = [store getObjectForKey:address.uuidString transaction:transaction];
     }
 
     NSSet<NSNumber *> *_Nullable oldPhoneNumberTimestamps;
     if (address.phoneNumber) {
-        oldPhoneNumberTimestamps = [store getObject:address.phoneNumber transaction:transaction];
+        oldPhoneNumberTimestamps = [store getObjectForKey:address.phoneNumber transaction:transaction];
     }
 
     NSSet<NSNumber *> *_Nullable oldTimestamps;
@@ -336,12 +336,12 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
         NSSet<NSNumber *> *_Nullable oldUUIDTimestamps;
         if (address.uuidString) {
-            oldUUIDTimestamps = [store getObject:address.uuidString transaction:transaction];
+            oldUUIDTimestamps = [store getObjectForKey:address.uuidString transaction:transaction];
         }
 
         NSSet<NSNumber *> *_Nullable oldPhoneNumberTimestamps;
         if (address.phoneNumber) {
-            oldPhoneNumberTimestamps = [store getObject:address.phoneNumber transaction:transaction];
+            oldPhoneNumberTimestamps = [store getObjectForKey:address.phoneNumber transaction:transaction];
         }
 
         NSSet<NSNumber *> *_Nullable oldTimestamps = oldUUIDTimestamps;

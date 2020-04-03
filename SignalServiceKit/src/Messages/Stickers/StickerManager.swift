@@ -1218,7 +1218,7 @@ extension SDSKeyValueStore {
                            maxCount: Int? = nil) {
         // Prepend value to ensure descending order of recency.
         var stringSet = [value]
-        if let storedValue = getObject(key, transaction: transaction) as? [String] {
+        if let storedValue = getObject(forKey: key, transaction: transaction) as? [String] {
             stringSet += storedValue.filter {
                 $0 != value
             }
@@ -1233,7 +1233,7 @@ extension SDSKeyValueStore {
                              value: String,
                              transaction: SDSAnyWriteTransaction) {
         var stringSet = [String]()
-        if let storedValue = getObject(key, transaction: transaction) as? [String] {
+        if let storedValue = getObject(forKey: key, transaction: transaction) as? [String] {
             guard storedValue.contains(value) else {
                 // No work to do.
                 return
@@ -1247,7 +1247,7 @@ extension SDSKeyValueStore {
 
     func stringSet(forKey key: String,
                    transaction: SDSAnyReadTransaction) -> [String] {
-        guard let object = self.getObject(key, transaction: transaction) else {
+        guard let object = self.getObject(forKey: key, transaction: transaction) else {
             return []
         }
         guard let stringSet = object as? [String] else {

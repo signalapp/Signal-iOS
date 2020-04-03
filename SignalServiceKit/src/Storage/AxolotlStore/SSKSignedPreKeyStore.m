@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKSignedPreKeyStore.h"
@@ -165,7 +165,7 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 {
     __block NSNumber *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.metadataStore getObject:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
+        result = [self.metadataStore getObjectForKey:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
     }];
     return result;
 }
@@ -181,8 +181,8 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 {
     __block SignedPreKeyRecord *_Nullable currentRecord;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        NSNumber *_Nullable preKeyId =
-            [self.metadataStore getObject:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
+        NSNumber *_Nullable preKeyId = [self.metadataStore getObjectForKey:kPrekeyCurrentSignedPrekeyIdKey
+                                                               transaction:transaction];
 
         if (preKeyId == nil) {
             return;
@@ -200,7 +200,7 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 {
     __block NSNumber *_Nullable value;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        value = [self.metadataStore getObject:kPrekeyUpdateFailureCountKey transaction:transaction];
+        value = [self.metadataStore getObjectForKey:kPrekeyUpdateFailureCountKey transaction:transaction];
     }];
     // Will default to zero.
     return [value intValue];

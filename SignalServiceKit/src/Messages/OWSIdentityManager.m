@@ -186,8 +186,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 - (nullable ECKeyPair *)identityKeyPairWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    id _Nullable object =
-        [self.ownIdentityKeyValueStore getObject:kIdentityKeyStore_IdentityKey transaction:transaction];
+    id _Nullable object = [self.ownIdentityKeyValueStore getObjectForKey:kIdentityKeyStore_IdentityKey
+                                                             transaction:transaction];
     if ([object isKindOfClass:[ECKeyPair class]]) {
         return (ECKeyPair *)object;
     } else {
