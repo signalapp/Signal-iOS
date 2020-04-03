@@ -1337,7 +1337,7 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
 
-/* Label indicating that the local user. */
+/* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER_INDICATOR" = "(me)";
 
 /* Button label for the 'call group member' button */
