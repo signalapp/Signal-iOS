@@ -56,7 +56,11 @@ internal enum HTTP {
             request.timeoutInterval = timeout
             let task = urlSession.dataTask(with: request) { data, response, error in
                 guard let data = data, let response = response as? HTTPURLResponse else {
-                    print("[Loki] \(verb.rawValue) request to \(url) failed.")
+                    if let error = error {
+                        print("[Loki] \(verb.rawValue) request to \(url) failed due to error: \(error).")
+                    } else {
+                        print("[Loki] \(verb.rawValue) request to \(url) failed.")
+                    }
                     return seal.reject(error ?? Error.generic)
                 }
                 if let error = error {

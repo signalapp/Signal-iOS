@@ -25,19 +25,19 @@ class OnionRequestAPITests : XCTestCase {
                     seal.fulfill(())
                 }.catch(on: OnionRequestAPI.workQueue) { error in
                     if case GCM.Error.fail = error {
-                        print("[Loki] [Onion Request API] Onion request failed due a decryption error.")
+                        print("[Loki] [Onion Request API] Onion request failed due to a decryption error.")
                     } else {
                         print("[Loki] [Onion Request API] Onion request failed due to error: \(error).")
                     }
                     seal.reject(error)
                 }.finally(on: OnionRequestAPI.workQueue) {
-                    let currentSuccessRate = min((100 * Double(successCount))/Double(testCount), 100)
-                    print("[Loki] [Onion Request API] Current onion request succes rate: \(String(format: "%.1f", currentSuccessRate))%.")
+                    let currentSuccessRate = min((100 * Double(successCount)) / Double(testCount), 100)
+                    print("[Loki] [Onion Request API] Current onion request success rate: \(String(format: "%.1f", currentSuccessRate))%.")
                 }
                 return promise
             }
             when(resolved: promises).done(on: OnionRequestAPI.workQueue) { _ in
-                totalSuccessRate = min((100 * Double(successCount))/Double(testCount), 100)
+                totalSuccessRate = min((100 * Double(successCount)) / Double(testCount), 100)
                 semaphore.signal()
             }
         }.catch(on: OnionRequestAPI.workQueue) { error in
@@ -45,7 +45,7 @@ class OnionRequestAPITests : XCTestCase {
             semaphore.signal()
         }
         semaphore.wait()
-        print("[Loki] [Onion Request API] Total onion request succes rate: \(String(format: "%.1f", totalSuccessRate))%.")
+        print("[Loki] [Onion Request API] Total onion request success rate: \(String(format: "%.1f", totalSuccessRate))%.")
         XCTAssert(totalSuccessRate >= 90)
     }
 
