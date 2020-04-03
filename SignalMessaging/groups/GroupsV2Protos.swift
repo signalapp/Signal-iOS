@@ -241,28 +241,26 @@ public class GroupsV2Protos {
             guard memberProto.hasRole, let role = memberProto.role else {
                 throw OWSAssertionError("Group member missing role.")
             }
-            guard let profileKeyCiphertextData = memberProto.profileKey else {
-                throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
-            }
+
             let uuid = try groupV2Params.uuid(forUserId: userID)
-            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
-            // NOTE: presentation is set when creating and updating groups, not
-            //       when fetching group state.
-            guard memberProto.hasJoinedAtVersion else {
-                throw OWSAssertionError("Group member missing joinedAtVersion.")
-            }
-            let joinedAtVersion = memberProto.joinedAtVersion
 
             let member = GroupV2SnapshotImpl.Member(userID: userID,
                                                     uuid: uuid,
-                                                    role: role,
-                                                    profileKey: profileKey,
-                                                    joinedAtVersion: joinedAtVersion)
+                                                    role: role)
             members.append(member)
 
-            profileKeys[uuid] = profileKey
+            do {
+                let uuid = try groupV2Params.uuid(forUserId: userID)
+                guard let profileKeyCiphertextData = memberProto.profileKey else {
+                    throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
+                }
+                let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+                let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                              uuid: uuid)
+                profileKeys[uuid] = profileKey
+            } catch {
+                owsFailDebug("Error parsing profile key: \(error)")
+            }
         }
 
         var pendingMembers = [GroupV2SnapshotImpl.PendingMember]()
@@ -270,22 +268,24 @@ public class GroupsV2Protos {
             guard let memberProto = pendingMemberProto.member else {
                 throw OWSAssertionError("Group pending member missing memberProto.")
             }
-            guard let userID = memberProto.userID else {
+            guard let userId = memberProto.userID else {
                 throw OWSAssertionError("Group pending member missing userID.")
             }
             guard pendingMemberProto.hasTimestamp else {
                 throw OWSAssertionError("Group pending member missing timestamp.")
             }
+            guard let addedByUserId = pendingMemberProto.addedByUserID else {
+                throw OWSAssertionError("Group pending member missing addedByUserID.")
+            }
             let timestamp = pendingMemberProto.timestamp
-            let uuid = try groupV2Params.uuid(forUserId: userID)
+
+            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserId)
+
             guard memberProto.hasRole, let role = memberProto.role else {
                 throw OWSAssertionError("Group member missing role.")
             }
-            guard let addedByUserID = pendingMemberProto.addedByUserID else {
-                throw OWSAssertionError("Group pending member missing addedByUserID.")
-            }
-            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
-            let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userID,
+            let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userId,
                                                                   uuid: uuid,
                                                                   timestamp: timestamp,
                                                                   role: role,

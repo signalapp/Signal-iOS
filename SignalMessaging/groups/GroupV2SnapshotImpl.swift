@@ -16,8 +16,6 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
             return SignalServiceAddress(uuid: uuid)
         }
         let role: GroupsProtoMemberRole
-        let profileKey: Data
-        let joinedAtVersion: UInt32
     }
 
     public struct PendingMember {
