@@ -142,8 +142,8 @@ public class BaseGroupMemberViewController: OWSViewController {
         let format = NSLocalizedString("GROUP_MEMBER_COUNT_FORMAT",
                                        comment: "Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}.")
         memberCountLabel.text = String(format: format,
-                                       OWSFormat.formatInt(Int32(recipientSet.count)),
-                                       OWSFormat.formatInt(Int32(GroupManager.maxGroupMemberCount)))
+                                       OWSFormat.formatInt(recipientSet.count),
+                                       OWSFormat.formatUInt(GroupManager.maxGroupMemberCount))
     }
 
     public func removeRecipient(_ recipient: PickedRecipient) {

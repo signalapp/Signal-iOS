@@ -131,18 +131,25 @@ public class NewGroupConfirmViewController: OWSViewController {
         let members = databaseStorage.uiRead { transaction in
             BaseGroupMemberViewController.orderedMembers(recipientSet: self.recipientSet, transaction: transaction)
         }.compactMap { $0.address }
-        for address in members {
-            section.add(OWSTableItem(
-                customCellBlock: {
-                    let cell = ContactTableViewCell()
 
-                    cell.selectionStyle = .none
+        if members.count > 0 {
+            for address in members {
+                section.add(OWSTableItem(
+                    customCellBlock: {
+                        let cell = ContactTableViewCell()
 
-                    cell.configure(withRecipientAddress: address)
+                        cell.selectionStyle = .none
 
-                    return cell
+                        cell.configure(withRecipientAddress: address)
+
+                        return cell
                 },
-                customRowHeight: UITableView.automaticDimension))
+                    customRowHeight: UITableView.automaticDimension))
+            }
+        } else {
+            section.add(OWSTableItem.softCenterLabel(withText: NSLocalizedString("GROUP_MEMBERS_NO_OTHER_MEMBERS",
+                                                                                 comment: "Label indicating that a group has no other members."),
+                                                     customRowHeight: UITableView.automaticDimension))
         }
 
         let contents = OWSTableContents()
@@ -182,10 +189,8 @@ public class NewGroupConfirmViewController: OWSViewController {
                                                                                              newGroupSeed: newGroupSeed,
                                                                                              shouldSendMessage: true)
                                                         }.done { groupThread in
-                                                            SignalApp.shared().presentConversation(for: groupThread,
-                                                                                                   action: .compose,
-                                                                                                   animated: false)
-                                                            self.presentingViewController?.dismiss(animated: true)
+                                                            self.groupWasCreated(groupThread: groupThread,
+                                                                                 modalActivityIndicator: modalActivityIndicator)
                                                         }.catch { error in
                                                             owsFailDebug("Could not create group: \(error)")
 
@@ -205,7 +210,9 @@ public class NewGroupConfirmViewController: OWSViewController {
         AssertIsOnMainThread()
 
         if error.isNetworkFailureOrTimeout {
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK",
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("ERROR_NETWORK_FAILURE",
+                                                                     comment: "Error indicating network connectivity problems."),
+                                            message: NSLocalizedString("NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK",
                                                                      comment: "Error indicating that a new group could not be created due to network connectivity problems."))
             return
         }
@@ -220,7 +227,59 @@ public class NewGroupConfirmViewController: OWSViewController {
         OWSActionSheets.showActionSheet(title: NSLocalizedString("NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE",
                                                                  comment: "Title for error alert indicating that a group name is required."),
                                         message: NSLocalizedString("NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE",
-                                                                 comment: "Message for error alert indicating that a group name is required."))
+                                                                   comment: "Message for error alert indicating that a group name is required."))
+    }
+
+    func groupWasCreated(groupThread: TSGroupThread,
+                         modalActivityIndicator: ModalActivityIndicatorViewController) {
+        AssertIsOnMainThread()
+
+        let navigateToNewGroup = {
+            SignalApp.shared().presentConversation(for: groupThread,
+                                                   action: .compose,
+                                                   animated: false)
+            self.presentingViewController?.dismiss(animated: true)
+        }
+
+        let pendingMembers = groupThread.groupModel.groupMembership.pendingMembers
+        guard let firstPendingMember = pendingMembers.first else {
+            // No pending members.
+            return navigateToNewGroup()
+        }
+
+        let alertTitle: String
+        let alertMessage: String
+        if pendingMembers.count > 0 {
+            let alertTitleFormat = NSLocalizedString("GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT",
+                                           comment: "Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }}")
+            alertTitle = String(format: alertTitleFormat, OWSFormat.formatInt(pendingMembers.count))
+            alertMessage = NSLocalizedString("GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE",
+                                             comment: "Message for an alert indicating that some members were invited to a group.")
+        } else {
+            alertTitle = NSLocalizedString("GROUP_INVITES_SENT_ALERT_TITLE_1",
+                                                     comment: "Title for an alert indicating that a member was invited to a group.")
+            let inviteeName = contactsManager.displayName(for: firstPendingMember)
+            let alertMessageFormat = NSLocalizedString("GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT",
+                                                     comment: "Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }}")
+            alertMessage = String(format: alertMessageFormat, inviteeName)
+        }
+
+        let actionSheet = ActionSheetController(title: alertTitle, message: alertMessage)
+
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON",
+                                                                         comment: "A button used to learn more about why you must share your profile."),
+                                                style: .default) { _ in
+                                                    // GroupsV2 TODO:
+                                                    navigateToNewGroup()
+        })
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton,
+                                                style: .default) { _ in
+                                                    navigateToNewGroup()
+        })
+
+        modalActivityIndicator.dismiss {
+            self.presentActionSheet(actionSheet)
+        }
     }
 }
 

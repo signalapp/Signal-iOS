@@ -27,6 +27,7 @@ public enum ThemeIcon: UInt {
     case settingsViewMakeGroupAdmin
     case settingsViewRevokeGroupAdmin
     case settingsViewRemoveFromGroup
+    case settingsViewPendingInvites
 
     case stickerButton
     case cameraButton
@@ -112,6 +113,9 @@ public extension Theme {
             return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
         case .settingsViewRemoveFromGroup:
             return "leave-24"
+        case .settingsViewPendingInvites:
+            // GroupsV2 TODO: We're missing an asset.
+            return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
         case .settingsTimer:
             return "timer-24"
         case .settingsTimerDisabled:

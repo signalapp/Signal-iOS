@@ -3860,7 +3860,7 @@ typedef enum : NSUInteger {
 
     // Max out the unread count at 99+.
     const NSUInteger kMaxUnreadCount = 99;
-    _backButtonUnreadCountLabel.text = [OWSFormat formatInt:(int)MIN(kMaxUnreadCount, unreadCount)];
+    _backButtonUnreadCountLabel.text = [OWSFormat formatUInt:MIN(kMaxUnreadCount, unreadCount)];
 }
 
 #pragma mark 3D Touch Preview Actions

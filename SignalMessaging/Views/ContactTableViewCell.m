@@ -8,6 +8,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -92,6 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)setCustomName:(nullable NSString *)customName
+{
+    [self.cellView setCustomName:customName.asAttributedString];
+}
+
+- (void)setCustomNameAttributed:(nullable NSAttributedString *)customName
 {
     [self.cellView setCustomName:customName];
 }

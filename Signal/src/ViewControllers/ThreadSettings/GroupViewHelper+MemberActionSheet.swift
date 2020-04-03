@@ -180,7 +180,7 @@ extension GroupViewHelper {
             return GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                          description: "Remove user from group")
         }.then(on: .global()) {
-            GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: oldGroupModel, uuid: uuid)
+            GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: oldGroupModel, uuids: [uuid])
         }.asVoid()
     }
 }

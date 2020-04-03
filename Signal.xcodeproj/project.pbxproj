@@ -192,6 +192,8 @@
 		3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
 		347B83F724367EC10019A52C /* GroupViewHelper+MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */; };
 		347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83F82436820C0019A52C /* GroupViewHelper.swift */; };
+		347B83FB243779270019A52C /* OWSFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83FA243779270019A52C /* OWSFormat.swift */; };
+		347B83FD24378DDF0019A52C /* PendingGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83FC24378DDE0019A52C /* PendingGroupMembersViewController.swift */; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
 		34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
@@ -1068,6 +1070,8 @@
 		347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopCallMessageHandler.swift; sourceTree = "<group>"; };
 		347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupViewHelper+MemberActionSheet.swift"; sourceTree = "<group>"; };
 		347B83F82436820C0019A52C /* GroupViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupViewHelper.swift; sourceTree = "<group>"; };
+		347B83FA243779270019A52C /* OWSFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFormat.swift; sourceTree = "<group>"; };
+		347B83FC24378DDE0019A52C /* PendingGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingGroupMembersViewController.swift; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
 		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
 		34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanDataCleanerTest.m; sourceTree = "<group>"; };
@@ -1974,6 +1978,7 @@
 				340FC89A204DAC8D007AEB0F /* OWSConversationSettingsViewController.m */,
 				3425648723E214BC0016905B /* OWSConversationSettingsViewController.swift */,
 				340FC899204DAC8D007AEB0F /* OWSConversationSettingsViewDelegate.h */,
+				347B83FC24378DDE0019A52C /* PendingGroupMembersViewController.swift */,
 				340FC89E204DAC8D007AEB0F /* ShowGroupMembersViewController.h */,
 				340FC8A6204DAC8D007AEB0F /* ShowGroupMembersViewController.m */,
 				340FC8A3204DAC8D007AEB0F /* UpdateGroupViewController.h */,
@@ -2047,6 +2052,7 @@
 				45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */,
 				346129A81FD1F0DF00532771 /* OWSFormat.h */,
 				346129AA1FD1F0EE00532771 /* OWSFormat.m */,
+				347B83FA243779270019A52C /* OWSFormat.swift */,
 				45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */,
 				45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */,
 				3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */,
@@ -4424,6 +4430,7 @@
 				340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */,
 				34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */,
 				34035D7A2367747400F5215A /* VideoEditorModel.swift in Sources */,
+				347B83FB243779270019A52C /* OWSFormat.swift in Sources */,
 				34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
 				451F8A481FD715BA005CB9DA /* OWSContactAvatarBuilder.m in Sources */,
@@ -4509,6 +4516,7 @@
 			files = (
 				4CC0B59C20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift in Sources */,
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,
+				347B83FD24378DDF0019A52C /* PendingGroupMembersViewController.swift in Sources */,
 				8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */,

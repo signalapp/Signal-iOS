@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle;
 
 - (void)setCustomName:(nullable NSString *)customName;
+- (void)setCustomNameAttributed:(nullable NSAttributedString *)customName;
 
 - (NSAttributedString *)verifiedSubtitle;
 

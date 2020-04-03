@@ -55,7 +55,7 @@ public extension StorageService {
                                                     sessionManager: AFHTTPSessionManager,
                                                     authCredential: AuthCredential) throws -> NSURLRequest {
 
-        let urlPath = "/v1/groups/logs/\(OWSFormat.formatInt(Int32(fromRevision)))"
+        let urlPath = "/v1/groups/logs/\(OWSFormat.formatUInt32(fromRevision))"
         return try buildGroupV2Request(protoData: nil,
                                        urlPath: urlPath,
                                        httpMethod: "GET",

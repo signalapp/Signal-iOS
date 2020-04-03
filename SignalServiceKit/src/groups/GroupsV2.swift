@@ -84,7 +84,7 @@ public protocol GroupsV2Swift: GroupsV2 {
     // reflect changes after the change set.
     func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread>
 
-    func updateGroupv2(groupModel: TSGroupModelV2,
+    func updateGroupV2(groupModel: TSGroupModelV2,
                        changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
@@ -362,7 +362,7 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func updateGroupv2(groupModel: TSGroupModelV2,
+    public func updateGroupV2(groupModel: TSGroupModelV2,
                               changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }

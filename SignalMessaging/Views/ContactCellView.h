@@ -14,7 +14,7 @@ extern const CGFloat kContactCellAvatarTextMargin;
 
 @property (nonatomic, nullable) NSString *accessoryMessage;
 
-@property (nonatomic, nullable) NSString *customName;
+@property (nonatomic, nullable) NSAttributedString *customName;
 
 - (void)configureWithRecipientAddress:(SignalServiceAddress *)address;
 
