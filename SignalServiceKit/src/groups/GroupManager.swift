@@ -1137,7 +1137,7 @@ public class GroupManager: NSObject {
 
     // MARK: - Removed from Group or Invite Revoked
 
-    public static func handleWasRemovedFromGroupOrInviteRevoked(groupId: Data,
+    public static func handleNotInGroup(groupId: Data,
                                                                 transaction: SDSAnyWriteTransaction) {
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("Missing localAddress.")
@@ -1149,7 +1149,10 @@ public class GroupManager: NSObject {
             return
         }
         // Remove local user from group.
-        // We do _not_ bump the revision number since.
+        // We do _not_ bump the revision number since this (unlike all other
+        // changes to group state) is inferred from a 403. This is fine; if
+        // we're ever re-added to the group the groups v2 machinery will
+        // recover.
         var groupMembershipBuilder = groupThread.groupModel.groupMembership.asBuilder
         groupMembershipBuilder.remove(localAddress)
         var groupModelBuilder = groupThread.groupModel.asBuilder

@@ -73,6 +73,10 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         return .orderedAscending
     }
 
+    func sortSignalServiceAddresses(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        return addresses
+    }
+
     func cnContact(withId contactId: String?) -> CNContact? {
         return nil
     }
