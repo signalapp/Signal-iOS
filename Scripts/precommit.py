@@ -464,7 +464,8 @@ if __name__ == "__main__":
 
         for filepath in filepaths:
             filepath = os.path.abspath(os.path.join(git_repo_path, filepath))
-            process_if_appropriate(filepath)
+            if os.path.exists(filepath):
+                process_if_appropriate(filepath)
 
         clang_format_commit = args.ref
     else:

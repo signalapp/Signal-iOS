@@ -610,7 +610,7 @@
 		8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809CE8922F93C2200D38867 /* RecentPhotoCollectionView.swift */; };
 		880BFFEA234590FA00F6FAB1 /* ConversationSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */; };
 		880C0FF7233D3F7C00386FB8 /* playPauseButton.json in Resources */ = {isa = PBXBuildFile; fileRef = 880C0FF6233D3F7C00386FB8 /* playPauseButton.json */; };
-		8810223722DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8810223622DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift */; };
+		8810223722DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8810223622DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift */; };
 		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881218EF238CA51600E6F271 /* MessageReactionPicker.swift */; };
 		88139CD6236290090003B264 /* ActionSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885DDD212362695B0003AC9C /* ActionSheetController.swift */; };
@@ -1532,7 +1532,7 @@
 		880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSplitViewController.swift; sourceTree = "<group>"; };
 		880C0FF6233D3F7C00386FB8 /* playPauseButton.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = playPauseButton.json; sourceTree = "<group>"; };
 		880FC0A023BFDADC00A2A900 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = translations/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
-		8810223622DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAccountLockedViewController.swift; sourceTree = "<group>"; };
+		8810223622DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPinAttemptsExhaustedViewController.swift; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
 		881218EF238CA51600E6F271 /* MessageReactionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionPicker.swift; sourceTree = "<group>"; };
 		881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinReminderViewController.swift; sourceTree = "<group>"; };
@@ -1889,7 +1889,7 @@
 				4C3A2BC5235661AB004B3986 /* SecondaryLinking */,
 				3441FD9E21A3604F00BB9542 /* BackupRestoreViewController.swift */,
 				349ED98F221B0194008045B0 /* Onboarding2FAViewController.swift */,
-				8810223622DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift */,
+				8810223622DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift */,
 				3448E1612213585C004B052E /* OnboardingBaseViewController.swift */,
 				3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */,
 				3448E15D221333F5004B052E /* OnboardingController.swift */,
@@ -4687,7 +4687,7 @@
 				34C2EEB92272244600BCA1D0 /* OWSMessageStickerView.m in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */,
-				8810223722DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift in Sources */,
+				8810223722DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift in Sources */,
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
 				345BC30C2047030700257B7C /* OWS2FASettingsViewController.m in Sources */,

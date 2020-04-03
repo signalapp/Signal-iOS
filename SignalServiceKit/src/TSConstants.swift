@@ -206,7 +206,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
         return contactDiscoveryEnclaveName
     }
 
-    public let keyBackupEnclaveName = "a1e9c1d3f352b5c4f0fc7a421b98119e60e5ff703c28fbea85c66bfa7306deab"
+    public let keyBackupEnclaveName = "823a3b2c037ff0cbe305cc48928cfcc97c9ed4a8ca6d49af6f7d6981fb60a4e9"
     public let keyBackupMrEnclave = "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87"
     public var keyBackupServiceId: String {
         return keyBackupEnclaveName

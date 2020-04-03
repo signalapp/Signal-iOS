@@ -85,8 +85,9 @@ public class GRDBSchemaMigrator: NSObject {
         // migrations must be inserted *before* any of these Data Migrations.
         case dataMigration_populateGalleryItems
         case dataMigration_markOnboardedUsers_v2
-        case dataMigration_rotateStorageServiceKeyAndResetLocalDataV3
         case dataMigration_clearLaunchScreenCache
+        case dataMigration_enableV2RegistrationLockIfNecessary
+        case dataMigration_resetStorageServiceData
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -464,10 +465,15 @@ public class GRDBSchemaMigrator: NSObject {
             OWSFileSystem.deleteFileIfExists(NSHomeDirectory() + "/Library/SplashBoard")
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_rotateStorageServiceKeyAndResetLocalDataV3.rawValue) { db in
+        migrator.registerMigration(MigrationId.dataMigration_enableV2RegistrationLockIfNecessary.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
+            guard KeyBackupService.hasMasterKey(transaction: transaction) else { return }
+            OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_resetStorageServiceData.rawValue) { db in
             let transaction = GRDBWriteTransaction(database: db).asAnyWrite
             SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction)
-            KeyBackupService.rotateStorageServiceKey(transaction: transaction)
         }
     }
 }

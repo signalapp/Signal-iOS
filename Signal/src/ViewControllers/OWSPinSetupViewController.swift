@@ -4,6 +4,7 @@
 
 import UIKit
 import Lottie
+import PromiseKit
 
 @objc(OWSPinSetupViewController)
 public class PinSetupViewController: OWSViewController {
@@ -61,17 +62,31 @@ public class PinSetupViewController: OWSViewController {
     // Called once pin setup has finished. Error will be nil upon success
     private let completionHandler: (PinSetupViewController, Error?) -> Void
 
-    init(mode: Mode, initialMode: Mode? = nil, pinType: KeyBackupService.PinType = .numeric, completionHandler: @escaping (PinSetupViewController, Error?) -> Void) {
+    private let enableRegistrationLock: Bool
+
+    init(
+        mode: Mode,
+        initialMode: Mode? = nil,
+        pinType: KeyBackupService.PinType = .numeric,
+        enableRegistrationLock: Bool = OWS2FAManager.shared().isRegistrationLockEnabled,
+        completionHandler: @escaping (PinSetupViewController, Error?) -> Void
+    ) {
         assert(TSAccountManager.sharedInstance().isRegisteredPrimaryDevice)
         self.mode = mode
         self.initialMode = initialMode ?? mode
         self.pinType = pinType
+        self.enableRegistrationLock = enableRegistrationLock
         self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)
 
         if case .confirming = self.initialMode {
             owsFailDebug("pin setup flow should never start in the confirming state")
         }
+    }
+
+    @objc
+    class func creatingRegistrationLock(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
+        return .init(mode: .creating, enableRegistrationLock: true, completionHandler: completionHandler)
     }
 
     @objc
@@ -336,6 +351,7 @@ public class PinSetupViewController: OWSViewController {
                 mode: .confirming(pinToMatch: pin),
                 initialMode: initialMode,
                 pinType: pinType,
+                enableRegistrationLock: enableRegistrationLock,
                 completionHandler: completionHandler
             )
             navigationController?.pushViewController(confirmingVC, animated: true)
@@ -413,7 +429,7 @@ public class PinSetupViewController: OWSViewController {
 
         pinTextField.resignFirstResponder()
 
-        let progressView = ProgressView(
+        let progressView = PinProgressView(
             loadingText: NSLocalizedString("PIN_CREATION_PIN_PROGRESS",
                                            comment: "Indicates the work we are doing while creating the user's pin")
         )
@@ -426,7 +442,13 @@ public class PinSetupViewController: OWSViewController {
             self.nextButton.alpha = 0.5
         }
 
-        OWS2FAManager.shared().requestEnable2FA(withPin: pin, mode: .V2, success: {
+        OWS2FAManager.shared().requestEnable2FA(withPin: pin, mode: .V2).then { () -> Promise<Void> in
+            if self.enableRegistrationLock {
+                return OWS2FAManager.shared().enableRegistrationLockV2()
+            } else {
+                return Promise.value(())
+            }
+        }.done {
             AssertIsOnMainThread()
 
             // The completion handler always dismisses this view, so we don't want to animate anything.
@@ -439,7 +461,7 @@ public class PinSetupViewController: OWSViewController {
             SDSDatabaseStorage.shared.asyncWrite { transaction in
                 ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: transaction.unwrapGrdbWrite)
             }
-        }, failure: { error in
+        }.catch { error in
             AssertIsOnMainThread()
 
             Logger.error("Failed to enable 2FA with error: \(error)")
@@ -474,7 +496,7 @@ public class PinSetupViewController: OWSViewController {
                     )
                 }
             }
-        })
+        }
     }
 }
 
@@ -498,7 +520,7 @@ extension PinSetupViewController: UITextFieldDelegate {
     }
 }
 
-private class ProgressView: UIView {
+class PinProgressView: UIView {
     private let label = UILabel()
     private let progressAnimation = AnimationView(name: "pinCreationInProgress")
     private let errorAnimation = AnimationView(name: "pinCreationFail")

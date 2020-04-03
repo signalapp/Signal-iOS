@@ -12,6 +12,7 @@
 #import <SignalServiceKit/KnownStickerPack.h>
 #import <SignalServiceKit/MockSSKEnvironment.h>
 #import <SignalServiceKit/NotificationsProtocol.h>
+#import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSBackupFragment.h>

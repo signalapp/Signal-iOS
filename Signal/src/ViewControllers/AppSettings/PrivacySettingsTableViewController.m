@@ -15,6 +15,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @import SafariServices;
+@import PromiseKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -145,8 +146,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                     selector:@selector(didToggleTypingIndicatorsSwitch:)]];
     [contents addSection:typingIndicatorsSection];
 
-    // If pins are enabled for everyone, show the change pin section
-    // TODO Linked PIN editing
+    // If pins are enabled for everyone, show the change pin and regloock sections
     if (RemoteConfig.pinsForEveryone && self.accountManager.isRegisteredPrimaryDevice) {
         OWSTableSection *pinsSection = [OWSTableSection new];
         pinsSection.headerTitle
@@ -170,6 +170,26 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                  }
                                              }]];
         [contents addSection:pinsSection];
+
+        OWSTableSection *registrationLockSection = [OWSTableSection new];
+        registrationLockSection.headerTitle = NSLocalizedString(
+            @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
+        registrationLockSection.footerTitle = NSLocalizedString(
+            @"SETTINGS_TWO_FACTOR_AUTH_FOOTER", @"Footer for the 'two factor auth' section of the privacy settings.");
+        [registrationLockSection
+            addItem:[OWSTableItem switchItemWithText:
+                                      NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL",
+                                          @"Label for the 'enable registration lock' switch of the privacy settings.")
+                        accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"2fa"]
+                        isOnBlock:^{
+                            return [OWS2FAManager.sharedManager isRegistrationLockV2Enabled];
+                        }
+                        isEnabledBlock:^{
+                            return YES;
+                        }
+                        target:self
+                        selector:@selector(isRegistrationLockV2EnabledDidChange:)]];
+        [contents addSection:registrationLockSection];
     }
 
     OWSTableSection *screenLockSection = [OWSTableSection new];
@@ -611,6 +631,36 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
             [weakSelf.navigationController popToViewController:weakSelf animated:YES];
         }];
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)isRegistrationLockV2EnabledDidChange:(UISwitch *)sender
+{
+    BOOL shouldBeEnabled = sender.isOn;
+
+    if (shouldBeEnabled == OWS2FAManager.sharedManager.isRegistrationLockV2Enabled) {
+        OWSLogInfo(@"ignoring redundant 2fa change.");
+        return;
+    }
+
+    if (shouldBeEnabled) {
+        // If we don't have a PIN yet, we need to create one.
+        if (!OWS2FAManager.sharedManager.is2FAEnabled) {
+            __weak PrivacySettingsTableViewController *weakSelf = self;
+            OWSPinSetupViewController *vc = [OWSPinSetupViewController creatingRegistrationLockWithCompletionHandler:^(
+                OWSPinSetupViewController *pinSetupVC, NSError *_Nullable error) {
+                [weakSelf.navigationController popToViewController:weakSelf animated:YES];
+            }];
+            [self.navigationController pushViewController:vc animated:YES];
+        } else {
+            [[OWS2FAManager.sharedManager enableRegistrationLockV2].then(^{
+                [self updateTableContents];
+            }) retainUntilComplete];
+        }
+    } else {
+        [[OWS2FAManager.sharedManager disableRegistrationLockV2].then(^{
+            [self updateTableContents];
+        }) retainUntilComplete];
+    }
 }
 
 - (void)isScreenLockEnabledDidChange:(UISwitch *)sender

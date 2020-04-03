@@ -15,9 +15,10 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
         switch self {
         case .introducingPins:
-            // The PIN setup flow requires an internet connection
+            // The PIN setup flow requires an internet connection and you to not already have a PIN
             return RemoteConfig.pinsForEveryone &&
-                SSKEnvironment.shared.reachabilityManager.isReachable
+                SSKEnvironment.shared.reachabilityManager.isReachable &&
+                !KeyBackupService.hasMasterKey(transaction: transaction.asAnyRead)
         case .reactions:
             return true
         case .profileNameReminder:
