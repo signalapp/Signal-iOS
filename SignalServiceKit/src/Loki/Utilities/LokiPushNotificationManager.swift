@@ -1,3 +1,4 @@
+
 @objc(LKPushNotificationManager)
 final class LokiPushNotificationManager : NSObject {
 
@@ -13,8 +14,8 @@ final class LokiPushNotificationManager : NSObject {
     private override init() { }
 
     // MARK: Registration
-    /** This method is for users to register for Silent Push Notification.
-        We only need the device token to make the SPN work.*/
+    /// Registers the user for silent push notifications (that then trigger the app
+    /// into fetching messages). Only the user's device token is needed for this.
     @objc(registerWithToken:)
     static func register(with token: Data) {
         let hexEncodedToken = token.toHexString()
@@ -47,9 +48,9 @@ final class LokiPushNotificationManager : NSObject {
             print("[Loki] Couldn't register device token.")
         })
     }
-    
-    /** This method is for users to register for Normal Push Notification.
-        We need the device token and user's public key (session id) to make the NPN work.*/
+
+    /// Registers the user for normal push notifications. Requires the user's device
+    /// token and their Session ID.
     @objc(registerWithToken:hexEncodedPublicKey:)
     static func register(with token: Data, hexEncodedPublicKey: String) {
         let hexEncodedToken = token.toHexString()
@@ -75,22 +76,20 @@ final class LokiPushNotificationManager : NSObject {
     }
     
     @objc(acknowledgeDeliveryForMessageWithHash:expiration:hexEncodedPublicKey:)
-    static func acknowledgeDelivery(forMessageWithHash hash: String, expiration:Int, hexEncodedPublicKey: String) {
-        let parameters: JSON = [ "lastHash" : hash,
-                                           "pubKey" : hexEncodedPublicKey,
-                                           "expiration": expiration]
+    static func acknowledgeDelivery(forMessageWithHash hash: String, expiration: Int, hexEncodedPublicKey: String) {
+        let parameters: JSON = [ "lastHash" : hash, "pubKey" : hexEncodedPublicKey, "expiration" : expiration]
         let url = URL(string: server + "acknowledge_message_delivery")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         TSNetworkManager.shared().makeRequest(request, success: { _, response in
             guard let json = response as? JSON else {
-                return print("[Loki] Couldn't acknowledge the delivery for message with last hash: " + hash)
+                return print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash).")
             }
             guard json["code"] as? Int != 0 else {
-                return print("[Loki] Couldn't acknowledge the delivery for message due to error: \(json["message"] as? String ?? "nil").")
+                return print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash) due to error: \(json["message"] as? String ?? "nil").")
             }
         }, failure: { _, error in
-            print("[Loki] Couldn't acknowledge the delivery for message with last hash: " + hash)
+            print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash).")
         })
     }
 }

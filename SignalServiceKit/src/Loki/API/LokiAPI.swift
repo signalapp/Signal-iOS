@@ -269,6 +269,7 @@ public final class LokiAPI : NSObject {
     private static func updateLastMessageHashValueIfPossible(for target: LokiAPITarget, from rawMessages: [JSON]) {
         if let lastMessage = rawMessages.last, let hashValue = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? Int {
             setLastMessageHashValue(for: target, hashValue: hashValue, expirationDate: UInt64(expirationDate))
+            // FIXME: Move this out of here 
             if UserDefaults.standard[.isUsingFullAPNs] {
                 LokiPushNotificationManager.acknowledgeDelivery(forMessageWithHash: hashValue, expiration: expirationDate, hexEncodedPublicKey: userHexEncodedPublicKey)
             }

@@ -2,10 +2,12 @@ import UserNotifications
 import SignalServiceKit
 import SignalMessaging
 
-class NotificationService: UNNotificationServiceExtension {
-
-    static let threadIdKey = "Signal.AppNotificationsUserInfoKey.threadId"
+final class NotificationService : UNNotificationServiceExtension {
     static let isFromRemoteKey = "remote"
+    static let threadIdKey = "Signal.AppNotificationsUserInfoKey.threadId"
+
+    private var didPerformSetup = false
+
     var areVersionMigrationsComplete = false
     var contentHandler: ((UNNotificationContent) -> Void)?
     var notificationContent: UNMutableNotificationContent?
@@ -14,7 +16,7 @@ class NotificationService: UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         notificationContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        DispatchQueue.main.sync { self.setupIfNecessary() }
+        DispatchQueue.main.sync { self.setUpIfNecessary() }
         
         if let notificationContent = notificationContent {
             // Modify the notification content here...
@@ -24,31 +26,33 @@ class NotificationService: UNNotificationServiceExtension {
             let envelopeData = try? envelope?.serializedData()
             let decrypter = SSKEnvironment.shared.messageDecrypter
             if (envelope != nil && envelopeData != nil) {
-                decrypter.decryptEnvelope(envelope!, envelopeData: envelopeData!,
-                                          successBlock: { result,transaction in
-                                            if (try? SSKProtoEnvelope.parseData(result.envelopeData)) != nil {
-                                                self.handelDecryptionResult(result: result, notificationContent: notificationContent, transaction: transaction)
-                                            } else {
-                                                self.completeWithFailure(content: notificationContent)
-                                            }
-                },
+                decrypter.decryptEnvelope(envelope!,
+                                          envelopeData: envelopeData!,
+                                          successBlock: { result, transaction in
+                                              if (try? SSKProtoEnvelope.parseData(result.envelopeData)) != nil {
+                                                  self.handleDecryptionResult(result: result, notificationContent: notificationContent, transaction: transaction)
+                                              } else {
+                                                  self.completeWithFailure(content: notificationContent)
+                                              }
+                                          },
                                           failureBlock: {
-                                            self.completeWithFailure(content: notificationContent)
-                })
+                                              self.completeWithFailure(content: notificationContent)
+                                          }
+                )
             } else {
                 self.completeWithFailure(content: notificationContent)
             }
         }
     }
     
-    func handelDecryptionResult(result: OWSMessageDecryptResult, notificationContent: UNMutableNotificationContent, transaction: YapDatabaseReadWriteTransaction) {
+    func handleDecryptionResult(result: OWSMessageDecryptResult, notificationContent: UNMutableNotificationContent, transaction: YapDatabaseReadWriteTransaction) {
         let contentProto = try? SSKProtoContent.parseData(result.plaintextData!)
         var thread: TSThread
         var newNotificationBody = ""
-        let masterHexEncodedPublicKey: String = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: result.source, in: transaction) ?? result.source
+        let masterHexEncodedPublicKey = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: result.source, in: transaction) ?? result.source
         var displayName = masterHexEncodedPublicKey
-        if let groupId = contentProto?.dataMessage?.group?.id {
-           thread = TSGroupThread.getOrCreateThread(withGroupId: groupId, groupType: .closedGroup, transaction: transaction)
+        if let groupID = contentProto?.dataMessage?.group?.id {
+           thread = TSGroupThread.getOrCreateThread(withGroupId: groupID, groupType: .closedGroup, transaction: transaction)
             displayName = thread.name()
             if displayName.count < 1 {
                 displayName = MessageStrings.newGroupDefaultTitle
@@ -79,8 +83,7 @@ class NotificationService: UNNotificationServiceExtension {
             thread = TSContactThread.getOrCreateThread(withContactId: result.source, transaction: transaction)
             displayName = contentProto?.dataMessage?.profile?.displayName ?? displayName
         }
-        let userInfo: [String: Any] = [NotificationService.threadIdKey: thread.uniqueId!,
-                                       NotificationService.isFromRemoteKey: true]
+        let userInfo: [String:Any] = [ NotificationService.threadIdKey : thread.uniqueId!, NotificationService.isFromRemoteKey : true ]
         notificationContent.title = displayName
         notificationContent.userInfo = userInfo
         notificationContent.badge = 1
@@ -94,17 +97,16 @@ class NotificationService: UNNotificationServiceExtension {
             self.contentHandler!(notificationContent)
         }
     }
-    
-    private var hasSetup = false
-    func setupIfNecessary() {
+
+    func setUpIfNecessary() {
         AssertIsOnMainThread()
 
         // The NSE will often re-use the same process, so if we're
-        // already setup we want to do nothing. We're already ready
+        // already set up we want to do nothing; we're already ready
         // to process new messages.
-        guard !hasSetup else { return }
+        guard !didPerformSetup else { return }
 
-        hasSetup = true
+        didPerformSetup = true
 
         // This should be the first thing we do.
         SetCurrentAppContext(NotificationServiceExtensionContext())
@@ -142,9 +144,6 @@ class NotificationService: UNNotificationServiceExtension {
                                                selector: #selector(storageIsReady),
                                                name: .StorageIsReady,
                                                object: nil)
-
-        Logger.info("completed.")
-
     }
     
     override func serviceExtensionTimeWillExpire() {
@@ -191,8 +190,6 @@ class NotificationService: UNNotificationServiceExtension {
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
-
-//        AppVersion.sharedInstance().nseLaunchDidComplete()
     }
     
     func completeSilenty() {
@@ -202,9 +199,8 @@ class NotificationService: UNNotificationServiceExtension {
     func completeWithFailure(content: UNMutableNotificationContent) {
         content.body = "You've got a new message."
         content.title = "Session"
-        let userInfo: [String: Any] = [NotificationService.isFromRemoteKey: true]
+        let userInfo: [String:Any] = [NotificationService.isFromRemoteKey : true]
         content.userInfo = userInfo
         contentHandler?(content)
     }
-
 }
