@@ -1222,14 +1222,6 @@ NS_ASSUME_NONNULL_BEGIN
         tryToAddViewItemForInteraction(typingIndicatorInteraction);
     }
 
-    // Flag to ensure that we only increment once per launch.
-    if (hasError) {
-        OWSLogWarn(@"incrementing version of: %@", TSMessageDatabaseViewExtensionName);
-        if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-            [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
-        }
-    }
-
     // Update the properties of the view items.
     //
     // NOTE: This logic uses the break properties which are set in the previous pass.
