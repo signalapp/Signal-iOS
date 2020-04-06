@@ -42,8 +42,7 @@ internal enum HTTP {
     // MARK: Main
     internal static func execute(_ verb: Verb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = HTTP.timeout) -> Promise<JSON> {
         return Promise<JSON> { seal in
-            let url = URL(string: url)!
-            var request = URLRequest(url: url)
+            var request = URLRequest(url: URL(string: url)!)
             request.httpMethod = verb.rawValue
             if let parameters = parameters {
                 do {

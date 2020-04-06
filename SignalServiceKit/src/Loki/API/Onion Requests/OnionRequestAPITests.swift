@@ -12,6 +12,7 @@ class OnionRequestAPITests : XCTestCase {
         var totalSuccessRate: Double = 0
         let testCount = 10
         LokiAPI.getRandomSnode().then(on: OnionRequestAPI.workQueue) { snode -> Promise<LokiAPITarget> in
+            print("[Loki] [Onion Request API] Target snode: \(snode).")
             return OnionRequestAPI.getPath(excluding: snode).map(on: OnionRequestAPI.workQueue) { _ in snode } // Ensure we only build a path once
         }.done(on: OnionRequestAPI.workQueue) { snode in
             var successCount = 0

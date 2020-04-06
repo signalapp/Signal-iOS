@@ -25,7 +25,7 @@ extension OnionRequestAPI {
         guard !Thread.isMainThread else { preconditionFailure("It's illegal to call encrypt(_:usingAESGCMWithSymmetricKey:) from the main thread.") }
         let iv = try getSecureRandomData(ofSize: ivSize)
         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
-        let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .pkcs7)
+        let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .noPadding)
         let ciphertext = try aes.encrypt(plaintext.bytes)
         return iv + Data(bytes: ciphertext)
     }

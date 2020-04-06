@@ -199,7 +199,7 @@ internal enum OnionRequestAPI {
                     let ciphertext = ivAndCiphertext[Int(ivSize)...]
                     do {
                         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
-                        let aes = try AES(key: targetSnodeSymmetricKey.bytes, blockMode: gcm, padding: .pkcs7)
+                        let aes = try AES(key: targetSnodeSymmetricKey.bytes, blockMode: gcm, padding: .noPadding)
                         let result = try aes.decrypt(ciphertext.bytes)
                         seal.fulfill(Data(bytes: result))
                     } catch (let error) {

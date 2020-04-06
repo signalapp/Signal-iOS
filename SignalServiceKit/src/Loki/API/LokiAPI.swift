@@ -29,12 +29,13 @@ public final class LokiAPI : NSObject {
     internal static let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
     
     // MARK: Settings
-    private static let apiVersion = "v1"
-    private static let maxRetryCount: UInt = 8
+    private static let maxRetryCount: UInt = 4
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
     private static var userIDScanLimit: UInt = 4096
-    internal static var powDifficulty: UInt = 4
+
+    internal static var powDifficulty: UInt = 2
+
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
     public static let deviceLinkUpdateInterval: TimeInterval = 20
     
@@ -93,8 +94,8 @@ public final class LokiAPI : NSObject {
     
     // MARK: Internal API
     internal static func invoke(_ method: LokiAPITarget.Method, on target: LokiAPITarget, associatedWith hexEncodedPublicKey: String,
-        parameters: [String:Any], headers: [String:String]? = nil, timeout: TimeInterval? = nil) -> RawResponsePromise {
-        let url = URL(string: "\(target.address):\(target.port)/storage_rpc/\(apiVersion)")!
+        parameters: JSON, headers: [String:String]? = nil, timeout: TimeInterval? = nil) -> RawResponsePromise {
+        let url = URL(string: "\(target.address):\(target.port)/storage_rpc/v1")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         if let headers = headers { request.allHTTPHeaderFields = headers }
         request.timeoutInterval = timeout ?? defaultTimeout

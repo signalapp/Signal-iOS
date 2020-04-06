@@ -43,14 +43,14 @@ public extension LokiAPI {
             let target = seedNodePool.randomElement()!
             let url = "\(target)/json_rpc"
             let parameters: JSON = [
-                "method" : "get_service_nodes",
+                "method" : "get_n_service_nodes",
                 "params" : [
                     "active_only" : true,
                     "fields" : [
                         "public_ip" : true,
                         "storage_port" : true,
-                        "pubkey_ed25519": true,
-                        "pubkey_x25519": true
+                        "pubkey_ed25519" : true,
+                        "pubkey_x25519" : true
                     ]
                 ]
             ]
