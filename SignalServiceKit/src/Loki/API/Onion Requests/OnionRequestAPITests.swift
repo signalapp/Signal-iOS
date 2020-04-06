@@ -18,7 +18,7 @@ class OnionRequestAPITests : XCTestCase {
                 let mockSessionID = "0582bc30f11e8a9736407adcaca03b049f4acd4af3ae7eb6b6608d30f0b1e6a20e"
                 let parameters: JSON = [ "pubKey" : mockSessionID ]
                 let (promise, seal) = Promise<Void>.pending()
-                OnionRequestAPI.invoke(.getSwarm, on: snode, with: parameters).done(on: OnionRequestAPI.workQueue) { json in
+                OnionRequestAPI.sendOnionRequest(invoking: .getSwarm, on: snode, with: parameters).done(on: OnionRequestAPI.workQueue) { json in
                     successCount += 1
                     print("[Loki] [Onion Request API] Onion request succeeded with result: \(json.prettifiedDescription).")
                     seal.fulfill(())

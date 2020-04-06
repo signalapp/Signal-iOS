@@ -101,7 +101,7 @@ public final class LokiAPI : NSObject {
         if let headers = headers { request.allHTTPHeaderFields = headers }
         request.timeoutInterval = timeout ?? defaultTimeout
         if useOnionRequests {
-            return OnionRequestAPI.sendOnionRequest(invoking: method, on: target, with: parameters).map { $0 as Any }
+            return OnionRequestAPI.sendOnionRequest(invoking: method, on: target, with: parameters, associatedWith: hexEncodedPublicKey).map { $0 as Any }
         } else {
             return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global())
                 .map { $0.responseObject }

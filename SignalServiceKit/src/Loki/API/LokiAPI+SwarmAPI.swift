@@ -10,7 +10,7 @@ public extension LokiAPI {
     private static let minimumSnodeCount = 2
     private static let targetSnodeCount = 3
     
-    fileprivate static let failureThreshold = 2
+    internal static let failureThreshold = 2
     
     // MARK: Caching
     internal static var swarmCache: [String:[LokiAPITarget]] = [:]

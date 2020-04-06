@@ -24,6 +24,7 @@ internal enum OnionRequestAPI {
 
     // MARK: Error
     internal enum Error : LocalizedError {
+        case httpRequestFailedAtTargetSnode(statusCode: UInt, json: JSON)
         case insufficientSnodes
         case missingSnodeVersion
         case randomDataGenerationFailed
@@ -32,6 +33,7 @@ internal enum OnionRequestAPI {
 
         var errorDescription: String? {
             switch self {
+            case .httpRequestFailedAtTargetSnode(let statusCode): return "HTTP request failed at target snode with status code: \(statusCode)."
             case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
             case .missingSnodeVersion: return "Missing snode version."
             case .randomDataGenerationFailed: return "Couldn't generate random data."
@@ -178,12 +180,13 @@ internal enum OnionRequestAPI {
 
     // MARK: Internal API
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    internal static func sendOnionRequest(invoking method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON) -> Promise<JSON> {
+    internal static func sendOnionRequest(invoking method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON, associatedWith hexEncodedPublicKey: String) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
+        var guardSnode: LokiAPITarget!
         workQueue.async {
             let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
             buildOnion(around: payload, targetedAt: snode).done(on: workQueue) { intermediate in
-                let guardSnode = intermediate.guardSnode
+                guardSnode = intermediate.guardSnode
                 let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
@@ -203,7 +206,9 @@ internal enum OnionRequestAPI {
                         let data = Data(try aes.decrypt(ciphertext.bytes))
                         guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? JSON,
                             let bodyAsString = json["body"] as? String, let bodyAsData = bodyAsString.data(using: .utf8),
-                            let body = try JSONSerialization.jsonObject(with: bodyAsData, options: []) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
+                            let body = try JSONSerialization.jsonObject(with: bodyAsData, options: []) as? JSON,
+                            let statusCode = json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
+                        guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: body)) }
                         seal.fulfill(body)
                     } catch (let error) {
                         seal.reject(error)
@@ -214,6 +219,47 @@ internal enum OnionRequestAPI {
             }.catch(on: workQueue) { error in
                 seal.reject(error)
             }
+        }
+        promise.catch(on: workQueue) { error in // Must be invoked on workQueue
+            guard case HTTP.Error.httpRequestFailed(_, _) = error else { return }
+            dropPath(containing: guardSnode) // A snode in the path is bad; retry with a different path
+        }
+        promise.recover(on: LokiAPI.errorHandlingQueue) { error -> Promise<JSON> in // Must be invoked on LokiAPI.errorHandlingQueue
+            // The code below is very similar to that in LokiAPI.handlingSnodeErrorsIfNeeded(for:associatedWith:), but unfortunately slightly
+            // different due to the fact that OnionRequestAPI uses the newer HTTP API, whereas LokiAPI still uses TSNetworkManager
+            guard case Error.httpRequestFailedAtTargetSnode(let statusCode, let json) = error else { throw error }
+            switch statusCode {
+            case 0, 400, 500, 503:
+                // The snode is unreachable
+                let oldFailureCount = LokiAPI.failureCount[snode] ?? 0
+                let newFailureCount = oldFailureCount + 1
+                LokiAPI.failureCount[snode] = newFailureCount
+                print("[Loki] Couldn't reach snode at: \(snode); setting failure count to \(newFailureCount).")
+                if newFailureCount >= LokiAPI.failureThreshold {
+                    print("[Loki] Failure threshold reached for: \(snode); dropping it.")
+                    LokiAPI.dropIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
+                    LokiAPI.randomSnodePool.remove(snode) // Remove it from the random snode pool
+                    LokiAPI.failureCount[snode] = 0
+                }
+            case 406:
+                print("[Loki] The user's clock is out of sync with the service node network.")
+                throw LokiAPI.LokiAPIError.clockOutOfSync
+            case 421:
+                // The snode isn't associated with the given public key anymore
+                print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
+                LokiAPI.dropIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey)
+            case 432:
+                // The proof of work difficulty is too low
+                if let powDifficulty = json["difficulty"] as? Int {
+                    print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
+                    LokiAPI.powDifficulty = UInt(powDifficulty)
+                } else {
+                    print("[Loki] Failed to update proof of work difficulty.")
+                }
+                break
+            default: break
+            }
+            throw error
         }
         return promise
     }

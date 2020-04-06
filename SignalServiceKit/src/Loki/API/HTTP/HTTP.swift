@@ -60,11 +60,13 @@ internal enum HTTP {
                     } else {
                         print("[Loki] \(verb.rawValue) request to \(url) failed.")
                     }
-                    return seal.reject(error ?? Error.generic)
+                    // Override the actual error so that we can correctly catch failed requests in sendOnionRequest(invoking:on:with:)
+                    return seal.reject(Error.httpRequestFailed(statusCode: 0, json: nil))
                 }
                 if let error = error {
                     print("[Loki] \(verb.rawValue) request to \(url) failed due to error: \(error).")
-                    return seal.reject(error)
+                    // Override the actual error so that we can correctly catch failed requests in sendOnionRequest(invoking:on:with:)
+                    return seal.reject(Error.httpRequestFailed(statusCode: 0, json: nil))
                 }
                 let statusCode = UInt(response.statusCode)
                 var json: JSON? = nil
