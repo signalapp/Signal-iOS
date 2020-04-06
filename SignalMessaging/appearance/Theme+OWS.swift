@@ -114,8 +114,7 @@ public extension Theme {
         case .settingsViewRemoveFromGroup:
             return "leave-24"
         case .settingsViewPendingInvites:
-            // GroupsV2 TODO: We're missing an asset.
-            return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
+            return "pending-invite-24"
         case .settingsTimer:
             return "timer-24"
         case .settingsTimerDisabled:
