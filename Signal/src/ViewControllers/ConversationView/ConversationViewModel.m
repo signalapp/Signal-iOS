@@ -202,12 +202,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dependencies
 
-// POST GRDB TODO - Remove
-- (nullable OWSPrimaryStorage *)primaryStorage
-{
-    return SSKEnvironment.shared.primaryStorage;
-}
-
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;

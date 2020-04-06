@@ -7,7 +7,6 @@
 #import "AppSettingsViewController.h"
 #import "ConversationListCell.h"
 #import "OWSNavigationController.h"
-#import "OWSPrimaryStorage.h"
 #import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -150,12 +149,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
-}
-
-// POST GRDB TODO - Remove
-- (nullable OWSPrimaryStorage *)primaryStorage
-{
-    return SSKEnvironment.shared.primaryStorage;
 }
 
 - (nullable MessageFetcherJob *)messageFetcherJob

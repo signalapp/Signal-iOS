@@ -220,15 +220,6 @@ protocol MediaGalleryDelegate: class {
 
 class MediaGallery {
 
-    // MARK: - Dependencies
-
-    // POST GRDB TODO - Remove
-    private var primaryStorage: OWSPrimaryStorage? {
-        return SSKEnvironment.shared.primaryStorage
-    }
-
-    // MARK: -
-
     var deletedAttachments: Set<TSAttachment> = Set()
     var deletedGalleryItems: Set<MediaGalleryItem> = Set()
 
